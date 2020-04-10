@@ -11,14 +11,15 @@ make flags and flag bits separate // separate, but more scaffolding needed
 deal with aliases?
 member arrays (+ vk constants -> int's)
 variables with bitfields
-
-extensions -- need to be gotten from 'features'
+function pointers
 functions -- basic
-variables with double arrays eg [3][4]
 platform specific entities - done: struct, union, function
 dispatchable handles (instance, physdevice, device, queue, command buffer)
 
-Done: enum/flags with members from extensions (need 'features' stuff)
+Done: 
+extensions -- need to be gotten from 'features'
+enum/flags with members from extensions (need 'features' stuff)
+variables with double arrays eg [3][4]
 '''
 
 vendor_abbreviations = []
@@ -88,6 +89,7 @@ class Enum:
     def __init__(self, node, ext_enums):
         self.vk_name = node.get('name')  # for internal use
         self.name = node.get('name')[2:]  # for output
+        self.underlying_size = 'uint32_t'  # for ABI
         self.alias = node.get('alias')
         if self.alias is not None:
             self.alias = self.alias[2:]
@@ -98,6 +100,7 @@ class Enum:
         enum_name_len = len(re.findall('[A-Z][^A-Z]+', self.vk_name))
         if self.vk_name == 'VkResult':
             enum_name_len = 1
+            self.underlying_size = 'int32_t'
 
         self.values = []
         for elem in node:
@@ -114,7 +117,8 @@ class Enum:
         if self.alias is not None:
             file.write('using ' + self.name + ' = ' + self.alias + ';\n')
         elif hasattr(self, 'values'):
-            file.write('enum class ' + self.name + ' {\n')
+            file.write('enum class ' + self.name + ': ' +
+                       self.underlying_size + '{\n')
             for elem in self.values:
                 file.write("    e" + elem.name + ' = ' +
                            str(elem.value) + ",\n")
@@ -252,32 +256,17 @@ class Variable:
     def __init__(self, node, constants, handles, default_values):
         self.name = node.find('name').text
         self.sType_values = node.get('values')
-        self.is_opt = node.get('optional')
-        self.len_mem_name = node.get('len')
+        # attributes
+        self.optional = node.get('optional')
+        self.len_attrib = node.get('len')
         self.noautovalidity = node.get('noautovalidity')
-        self.array_length = None
-        self.default_value = None
 
-        edited_node = node
-        if edited_node.find('comment') is not None:
-            edited_node.remove(edited_node.find('comment'))
-
-        type_text = ''.join(edited_node.itertext())
-
-        array_len = node.find('enum')
-        if array_len is not None:
-            self.array_length = array_len.text
-
-        bracket_contents = re.search('(?<=\\[)[a-zA-Z0-9_]+(?=\\])', type_text)
-        if bracket_contents is not None:
-            self.array_length = bracket_contents.string[bracket_contents.start(
-            ):bracket_contents.end()]
-        if self.array_length in constants:
-            self.array_length = self.array_length[3:]
+        # type characteristics
+        self.is_const = False
         self.is_ptr = False
-        for t in edited_node.itertext():
-            if '*' in t:
-                self.is_ptr = True
+        self.is_double_ptr = False
+        self.array_lengths = []  # multidimentional
+        self.default_value = None
 
         self.vk_base_type = node.find('type').text
         self.base_type = self.vk_base_type
@@ -286,6 +275,49 @@ class Variable:
 
         if self.base_type == 'Bool32':
             self.base_type = 'bool'
+
+        if node.find('comment') is not None:
+            node.remove(node.find('comment'))
+
+        type_list = ' '.join(node.itertext()).split()
+
+        # type parsing
+        cur = 0
+        if type_list[cur] == 'const':
+            self.is_const = True
+            cur += 1
+        if type_list[cur] == 'struct':
+            cur += 1
+        if type_list[cur] == self.vk_base_type:
+            cur += 1
+        if type_list[cur] == '*':
+            self.is_ptr = True
+            cur += 1
+        if type_list[cur] == 'const*':
+            self.is_double_ptr = True
+            cur += 1
+        if type_list[cur] == self.name:
+            cur += 1
+
+        while len(type_list) > cur:
+            if type_list[cur] == '[':
+                cur += 1
+                arr_len = type_list[cur]
+                cur += 2
+            elif len(type_list[cur]) > 0 and type_list[cur][0] == '[':
+                next_bracket = 1
+                for t in type_list[cur][1:]:
+                    if t == ']':
+                        break
+                    next_bracket += 1
+                arr_len = type_list[cur][1:next_bracket]
+                type_list[cur] = type_list[cur][next_bracket + 1:]
+            else:
+                break
+            if arr_len in constants:
+                arr_len = arr_len[3:]
+            self.array_lengths.append(arr_len)
+
         if self.base_type in default_values:
             self.default_value = default_values[self.base_type]
         if self.name == 'sType' and self.sType_values is not None:
@@ -295,25 +327,35 @@ class Variable:
         self.is_handle = self.vk_base_type in handles
 
     def get_base_type_decl(self):
-        type_decl = self.vk_base_type
+        type_decl = ''
+        if self.is_const:
+            type_decl += 'const '
+        type_decl += self.base_type
         if self.is_ptr:
             type_decl += '*'
-        if self.array_length is not None:
-            type_decl += '[' + self.array_length + ']'
+        if self.is_double_ptr:
+            type_decl += 'const*'
+        for arr in self.array_lengths:
+            type_decl += '[' + arr + ']'
         return type_decl
 
     def get_decl(self, default_init):
-        type_decl = self.base_type
+        type_decl = ''
+        if self.is_const:
+            type_decl += 'const '
+        type_decl += self.base_type
         if self.is_ptr:
             type_decl += '*'
+        if self.is_double_ptr:
+            type_decl += 'const*'
         type_decl += ' ' + self.name
-        if self.array_length is not None:
-            type_decl += '[' + self.array_length + ']'
+        for arr in self.array_lengths:
+            type_decl += '[' + arr + ']'
         if default_init:
-            if self.is_ptr:
+            if self.is_ptr or self.is_double_ptr:
                 type_decl += ' = nullptr'
             elif self.default_value is not None:
-                if self.array_length is not None:
+                if len(self.array_lengths) > 0:
                     type_decl += ' = {}'
                 else:
                     type_decl += ' = ' + self.default_value
@@ -712,7 +754,7 @@ def main():
     file = open('include/vk-binding.h', 'w')
     file.write('#pragma once\n')
     file.write('// clang-format off\n')
-    file.write('#include <cstdint>\n')
+    file.write('#include <stdint.h>\n')
     file.write('#include <vulkan/vulkan.h>\n')
     file.write('namespace vk {\n')
     bindings.print(file)

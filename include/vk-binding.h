@@ -1,6 +1,6 @@
 #pragma once
 // clang-format off
-#include <cstdint>
+#include <stdint.h>
 #include <vulkan/vulkan.h>
 namespace vk {
 #define VK_MAKE_VERSION(major, minor, patch) \
@@ -71,7 +71,7 @@ using Bool32 = uint32_t;
 using Flags = uint32_t;
 using DeviceSize = uint64_t;
 using DeviceAddress = uint64_t;
-enum class ImageLayout {
+enum class ImageLayout: uint32_t{
     eUndefined = 0,
     eGeneral = 1,
     eColorAttachmentOptimal = 2,
@@ -92,26 +92,26 @@ enum class ImageLayout {
     eStencilAttachmentOptimal = 1000241002,
     eStencilReadOnlyOptimal = 1000241003,
 };
-enum class AttachmentLoadOp {
+enum class AttachmentLoadOp: uint32_t{
     eLoad = 0,
     eClear = 1,
     eDontCare = 2,
 };
-enum class AttachmentStoreOp {
+enum class AttachmentStoreOp: uint32_t{
     eStore = 0,
     eDontCare = 1,
 };
-enum class ImageType {
+enum class ImageType: uint32_t{
     e1D = 0,
     e2D = 1,
     e3D = 2,
 };
-enum class ImageTiling {
+enum class ImageTiling: uint32_t{
     eOptimal = 0,
     eLinear = 1,
     eDrmFormatModifierEXT = 1000158000,
 };
-enum class ImageViewType {
+enum class ImageViewType: uint32_t{
     e1D = 0,
     e2D = 1,
     e3D = 2,
@@ -120,11 +120,11 @@ enum class ImageViewType {
     e2DArray = 5,
     eCubeArray = 6,
 };
-enum class CommandBufferLevel {
+enum class CommandBufferLevel: uint32_t{
     ePrimary = 0,
     eSecondary = 1,
 };
-enum class ComponentSwizzle {
+enum class ComponentSwizzle: uint32_t{
     eIdentity = 0,
     eZero = 1,
     eOne = 2,
@@ -133,7 +133,7 @@ enum class ComponentSwizzle {
     eB = 5,
     eA = 6,
 };
-enum class DescriptorType {
+enum class DescriptorType: uint32_t{
     eSampler = 0,
     eCombinedImageSampler = 1,
     eSampledImage = 2,
@@ -148,7 +148,7 @@ enum class DescriptorType {
     eInlineUniformBlockEXT = 1000138000,
     eAccelerationStructureKHR = 1000150000,
 };
-enum class QueryType {
+enum class QueryType: uint32_t{
     eOcclusion = 0,
     ePipelineStatistics = 1,
     eTimestamp = 2,
@@ -160,7 +160,7 @@ enum class QueryType {
     eAccelerationStructureSerializationSizeKHR = 1000150000,
     ePerformanceQueryINTEL = 1000210000,
 };
-enum class BorderColor {
+enum class BorderColor: uint32_t{
     eFloatTransparentBlack = 0,
     eIntTransparentBlack = 1,
     eFloatOpaqueBlack = 2,
@@ -168,15 +168,15 @@ enum class BorderColor {
     eFloatOpaqueWhite = 4,
     eIntOpaqueWhite = 5,
 };
-enum class PipelineBindPoint {
+enum class PipelineBindPoint: uint32_t{
     eGraphics = 0,
     eCompute = 1,
     eRayTracingKHR = 1000150000,
 };
-enum class PipelineCacheHeaderVersion {
+enum class PipelineCacheHeaderVersion: uint32_t{
     eOne = 1,
 };
-enum class PrimitiveTopology {
+enum class PrimitiveTopology: uint32_t{
     ePointList = 0,
     eLineList = 1,
     eLineStrip = 2,
@@ -189,33 +189,33 @@ enum class PrimitiveTopology {
     eTriangleStripWithAdjacency = 9,
     ePatchList = 10,
 };
-enum class SharingMode {
+enum class SharingMode: uint32_t{
     eExclusive = 0,
     eConcurrent = 1,
 };
-enum class IndexType {
+enum class IndexType: uint32_t{
     eUint16 = 0,
     eUint32 = 1,
     eNoneKHR = 1000150000,
     eUint8EXT = 1000265000,
 };
-enum class Filter {
+enum class Filter: uint32_t{
     eNearest = 0,
     eLinear = 1,
     eCubicIMG = 1000015000,
 };
-enum class SamplerMipmapMode {
+enum class SamplerMipmapMode: uint32_t{
     eNearest = 0,
     eLinear = 1,
 };
-enum class SamplerAddressMode {
+enum class SamplerAddressMode: uint32_t{
     eRepeat = 0,
     eMirroredRepeat = 1,
     eClampToEdge = 2,
     eClampToBorder = 3,
     eMirrorClampToEdge = 4,
 };
-enum class CompareOp {
+enum class CompareOp: uint32_t{
     eNever = 0,
     eLess = 1,
     eEqual = 2,
@@ -225,17 +225,17 @@ enum class CompareOp {
     eGreaterOrEqual = 6,
     eAlways = 7,
 };
-enum class PolygonMode {
+enum class PolygonMode: uint32_t{
     eFill = 0,
     eLine = 1,
     ePoint = 2,
     eFillRectangleNV = 1000153000,
 };
-enum class FrontFace {
+enum class FrontFace: uint32_t{
     eCounterClockwise = 0,
     eClockwise = 1,
 };
-enum class BlendFactor {
+enum class BlendFactor: uint32_t{
     eZero = 0,
     eOne = 1,
     eSrcColor = 2,
@@ -256,7 +256,7 @@ enum class BlendFactor {
     eSrc1Alpha = 17,
     eOneMinusSrc1Alpha = 18,
 };
-enum class BlendOp {
+enum class BlendOp: uint32_t{
     eAdd = 0,
     eSubtract = 1,
     eReverseSubtract = 2,
@@ -309,7 +309,7 @@ enum class BlendOp {
     eGreenEXT = 1000148044,
     eBlueEXT = 1000148045,
 };
-enum class StencilOp {
+enum class StencilOp: uint32_t{
     eKeep = 0,
     eZero = 1,
     eReplace = 2,
@@ -319,7 +319,7 @@ enum class StencilOp {
     eIncrementAndWrap = 6,
     eDecrementAndWrap = 7,
 };
-enum class LogicOp {
+enum class LogicOp: uint32_t{
     eClear = 0,
     eAnd = 1,
     eAndReverse = 2,
@@ -337,28 +337,28 @@ enum class LogicOp {
     eNand = 14,
     eSet = 15,
 };
-enum class InternalAllocationType {
+enum class InternalAllocationType: uint32_t{
     eExecutable = 0,
 };
-enum class SystemAllocationScope {
+enum class SystemAllocationScope: uint32_t{
     eCommand = 0,
     eObject = 1,
     eCache = 2,
     eDevice = 3,
     eInstance = 4,
 };
-enum class PhysicalDeviceType {
+enum class PhysicalDeviceType: uint32_t{
     eOther = 0,
     eIntegratedGpu = 1,
     eDiscreteGpu = 2,
     eVirtualGpu = 3,
     eCpu = 4,
 };
-enum class VertexInputRate {
+enum class VertexInputRate: uint32_t{
     eVertex = 0,
     eInstance = 1,
 };
-enum class Format {
+enum class Format: uint32_t{
     eUndefined = 0,
     eR4G4UnormPack8 = 1,
     eR4G4B4A4UnormPack16 = 2,
@@ -601,7 +601,7 @@ enum class Format {
     eG16B16R162Plane422Unorm = 1000156032,
     eG16B16R163Plane444Unorm = 1000156033,
 };
-enum class StructureType {
+enum class StructureType: uint32_t{
     eApplicationInfo = 0,
     eInstanceCreateInfo = 1,
     eDeviceQueueCreateInfo = 2,
@@ -1041,11 +1041,11 @@ enum class StructureType {
     eMemoryOpaqueCaptureAddressAllocateInfo = 1000257003,
     eDeviceMemoryOpaqueCaptureAddressInfo = 1000257004,
 };
-enum class SubpassContents {
+enum class SubpassContents: uint32_t{
     eInline = 0,
     eSecondaryCommandBuffers = 1,
 };
-enum class Result {
+enum class Result: int32_t{
     eSuccess = 0,
     eNotReady = 1,
     eTimeout = 2,
@@ -1086,7 +1086,7 @@ enum class Result {
     eErrorFragmentation = -1000161000,
     eErrorInvalidOpaqueCaptureAddress = -1000257000,
 };
-enum class DynamicState {
+enum class DynamicState: uint32_t{
     eViewport = 0,
     eScissor = 1,
     eLineWidth = 2,
@@ -1104,10 +1104,10 @@ enum class DynamicState {
     eExclusiveScissorNV = 1000205001,
     eLineStippleEXT = 1000259000,
 };
-enum class DescriptorUpdateTemplateType {
+enum class DescriptorUpdateTemplateType: uint32_t{
     eDescriptorSet = 0,
 };
-enum class ObjectType {
+enum class ObjectType: uint32_t{
     eUnknown = 0,
     eInstance = 1,
     ePhysicalDevice = 2,
@@ -1148,11 +1148,11 @@ enum class ObjectType {
     eSamplerYcbcrConversion = 1000156000,
     eDescriptorUpdateTemplate = 1000085000,
 };
-enum class SemaphoreType {
+enum class SemaphoreType: uint32_t{
     eBinary = 0,
     eTimeline = 1,
 };
-enum class PresentModeKHR {
+enum class PresentModeKHR: uint32_t{
     eImmediateKHR = 0,
     eMailboxKHR = 1,
     eFifoKHR = 2,
@@ -1160,7 +1160,7 @@ enum class PresentModeKHR {
     eSharedDemandRefreshKHR = 1000111000,
     eSharedContinuousRefreshKHR = 1000111001,
 };
-enum class ColorSpaceKHR {
+enum class ColorSpaceKHR: uint32_t{
     eSrgbNonlinearKHR = 0,
     eDisplayP3NonlinearEXT = 1000104001,
     eExtendedSrgbLinearEXT = 1000104002,
@@ -1178,13 +1178,13 @@ enum class ColorSpaceKHR {
     eExtendedSrgbNonlinearEXT = 1000104014,
     eDisplayNativeAMD = 1000213000,
 };
-enum class TimeDomainEXT {
+enum class TimeDomainEXT: uint32_t{
     eDeviceEXT = 0,
     eClockMonotonicEXT = 1,
     eClockMonotonicRawEXT = 2,
     eQueryPerformanceCounterEXT = 3,
 };
-enum class DebugReportObjectTypeEXT {
+enum class DebugReportObjectTypeEXT: uint32_t{
     eUnknownEXT = 0,
     eInstanceEXT = 1,
     ePhysicalDeviceEXT = 2,
@@ -1222,21 +1222,21 @@ enum class DebugReportObjectTypeEXT {
     eAccelerationStructureKhrEXT = 1000150000,
     eSamplerYcbcrConversionEXT = 1000156000,
 };
-enum class RasterizationOrderAMD {
+enum class RasterizationOrderAMD: uint32_t{
     eStrictAMD = 0,
     eRelaxedAMD = 1,
 };
-enum class ValidationCheckEXT {
+enum class ValidationCheckEXT: uint32_t{
     eAllEXT = 0,
     eShadersEXT = 1,
 };
-enum class ValidationFeatureEnableEXT {
+enum class ValidationFeatureEnableEXT: uint32_t{
     eGpuAssistedEXT = 0,
     eGpuAssistedReserveBindingSlotEXT = 1,
     eBestPracticesEXT = 2,
     eDebugPrintfEXT = 3,
 };
-enum class ValidationFeatureDisableEXT {
+enum class ValidationFeatureDisableEXT: uint32_t{
     eAllEXT = 0,
     eShadersEXT = 1,
     eThreadSafetyEXT = 2,
@@ -1245,7 +1245,7 @@ enum class ValidationFeatureDisableEXT {
     eCoreChecksEXT = 5,
     eUniqueHandlesEXT = 6,
 };
-enum class IndirectCommandsTokenTypeNV {
+enum class IndirectCommandsTokenTypeNV: uint32_t{
     eShaderGroupNV = 0,
     eStateFlagsNV = 1,
     eIndexBufferNV = 2,
@@ -1255,18 +1255,18 @@ enum class IndirectCommandsTokenTypeNV {
     eDrawNV = 6,
     eDrawTasksNV = 7,
 };
-enum class DisplayPowerStateEXT {
+enum class DisplayPowerStateEXT: uint32_t{
     eOffEXT = 0,
     eSuspendEXT = 1,
     eOnEXT = 2,
 };
-enum class DeviceEventTypeEXT {
+enum class DeviceEventTypeEXT: uint32_t{
     eDisplayHotplugEXT = 0,
 };
-enum class DisplayEventTypeEXT {
+enum class DisplayEventTypeEXT: uint32_t{
     eFirstPixelOutEXT = 0,
 };
-enum class ViewportCoordinateSwizzleNV {
+enum class ViewportCoordinateSwizzleNV: uint32_t{
     ePositiveXNV = 0,
     eNegativeXNV = 1,
     ePositiveYNV = 2,
@@ -1276,79 +1276,79 @@ enum class ViewportCoordinateSwizzleNV {
     ePositiveWNV = 6,
     eNegativeWNV = 7,
 };
-enum class DiscardRectangleModeEXT {
+enum class DiscardRectangleModeEXT: uint32_t{
     eInclusiveEXT = 0,
     eExclusiveEXT = 1,
 };
-enum class PointClippingBehavior {
+enum class PointClippingBehavior: uint32_t{
     eAllClipPlanes = 0,
     eUserClipPlanesOnly = 1,
 };
-enum class SamplerReductionMode {
+enum class SamplerReductionMode: uint32_t{
     eWeightedAverage = 0,
     eMin = 1,
     eMax = 2,
 };
-enum class TessellationDomainOrigin {
+enum class TessellationDomainOrigin: uint32_t{
     eUpperLeft = 0,
     eLowerLeft = 1,
 };
-enum class SamplerYcbcrModelConversion {
+enum class SamplerYcbcrModelConversion: uint32_t{
     eRgbIdentity = 0,
     eYcbcrIdentity = 1,
     eYcbcr709 = 2,
     eYcbcr601 = 3,
     eYcbcr2020 = 4,
 };
-enum class SamplerYcbcrRange {
+enum class SamplerYcbcrRange: uint32_t{
     eItuFull = 0,
     eItuNarrow = 1,
 };
-enum class ChromaLocation {
+enum class ChromaLocation: uint32_t{
     eCositedEven = 0,
     eMidpoint = 1,
 };
-enum class BlendOverlapEXT {
+enum class BlendOverlapEXT: uint32_t{
     eUncorrelatedEXT = 0,
     eDisjointEXT = 1,
     eConjointEXT = 2,
 };
-enum class CoverageModulationModeNV {
+enum class CoverageModulationModeNV: uint32_t{
     eNoneNV = 0,
     eRgbNV = 1,
     eAlphaNV = 2,
     eRgbaNV = 3,
 };
-enum class CoverageReductionModeNV {
+enum class CoverageReductionModeNV: uint32_t{
     eMergeNV = 0,
     eTruncateNV = 1,
 };
-enum class ValidationCacheHeaderVersionEXT {
+enum class ValidationCacheHeaderVersionEXT: uint32_t{
     eOneEXT = 1,
 };
-enum class ShaderInfoTypeAMD {
+enum class ShaderInfoTypeAMD: uint32_t{
     eStatisticsAMD = 0,
     eBinaryAMD = 1,
     eDisassemblyAMD = 2,
 };
-enum class QueueGlobalPriorityEXT {
+enum class QueueGlobalPriorityEXT: uint32_t{
     eLowEXT = 128,
     eMediumEXT = 256,
     eHighEXT = 512,
     eRealtimeEXT = 1024,
 };
-enum class ConservativeRasterizationModeEXT {
+enum class ConservativeRasterizationModeEXT: uint32_t{
     eDisabledEXT = 0,
     eOverestimateEXT = 1,
     eUnderestimateEXT = 2,
 };
-enum class VendorId {
+enum class VendorId: uint32_t{
     eVIV = 0x10001,
     eVSI = 0x10002,
     eKazan = 0x10003,
     eCodeplay = 0x10004,
 };
-enum class DriverId {
+enum class DriverId: uint32_t{
     eAmdProprietary = 1,
     eAmdOpenSource = 2,
     eMesaRadv = 3,
@@ -1362,7 +1362,7 @@ enum class DriverId {
     eGgpProprietary = 11,
     eBroadcomProprietary = 12,
 };
-enum class ShadingRatePaletteEntryNV {
+enum class ShadingRatePaletteEntryNV: uint32_t{
     eNoInvocationsNV = 0,
     e16InvocationsPerPixelNV = 1,
     e8InvocationsPerPixelNV = 2,
@@ -1376,54 +1376,54 @@ enum class ShadingRatePaletteEntryNV {
     e1InvocationPer2X4PixelsNV = 10,
     e1InvocationPer4X4PixelsNV = 11,
 };
-enum class CoarseSampleOrderTypeNV {
+enum class CoarseSampleOrderTypeNV: uint32_t{
     eDefaultNV = 0,
     eCustomNV = 1,
     ePixelMajorNV = 2,
     eSampleMajorNV = 3,
 };
-enum class CopyAccelerationStructureModeKHR {
+enum class CopyAccelerationStructureModeKHR: uint32_t{
     eCloneKHR = 0,
     eCompactKHR = 1,
     eSerializeKHR = 2,
     eDeserializeKHR = 3,
 };
-enum class AccelerationStructureTypeKHR {
+enum class AccelerationStructureTypeKHR: uint32_t{
     eTopLevelKHR = 0,
     eBottomLevelKHR = 1,
 };
-enum class GeometryTypeKHR {
+enum class GeometryTypeKHR: uint32_t{
     eTrianglesKHR = 0,
     eAabbsKHR = 1,
     eInstancesKHR = 1000150000,
 };
-enum class AccelerationStructureMemoryRequirementsTypeKHR {
+enum class AccelerationStructureMemoryRequirementsTypeKHR: uint32_t{
     eObjectKHR = 0,
     eBuildScratchKHR = 1,
     eUpdateScratchKHR = 2,
 };
-enum class AccelerationStructureBuildTypeKHR {
+enum class AccelerationStructureBuildTypeKHR: uint32_t{
     eHostKHR = 0,
     eDeviceKHR = 1,
     eHostOrDeviceKHR = 2,
 };
-enum class RayTracingShaderGroupTypeKHR {
+enum class RayTracingShaderGroupTypeKHR: uint32_t{
     eGeneralKHR = 0,
     eTrianglesHitGroupKHR = 1,
     eProceduralHitGroupKHR = 2,
 };
-enum class MemoryOverallocationBehaviorAMD {
+enum class MemoryOverallocationBehaviorAMD: uint32_t{
     eDefaultAMD = 0,
     eAllowedAMD = 1,
     eDisallowedAMD = 2,
 };
-enum class ScopeNV {
+enum class ScopeNV: uint32_t{
     eDeviceNV = 1,
     eWorkgroupNV = 2,
     eSubgroupNV = 3,
     eQueueFamilyNV = 5,
 };
-enum class ComponentTypeNV {
+enum class ComponentTypeNV: uint32_t{
     eFloat16NV = 0,
     eFloat32NV = 1,
     eFloat64NV = 2,
@@ -1436,18 +1436,18 @@ enum class ComponentTypeNV {
     eUint32NV = 9,
     eUint64NV = 10,
 };
-enum class FullScreenExclusiveEXT {
+enum class FullScreenExclusiveEXT: uint32_t{
     eDefaultEXT = 0,
     eAllowedEXT = 1,
     eDisallowedEXT = 2,
     eApplicationControlledEXT = 3,
 };
-enum class PerformanceCounterScopeKHR {
+enum class PerformanceCounterScopeKHR: uint32_t{
     eCommandBufferKHR = 0,
     eRenderPassKHR = 1,
     eCommandKHR = 2,
 };
-enum class PerformanceCounterUnitKHR {
+enum class PerformanceCounterUnitKHR: uint32_t{
     eGenericKHR = 0,
     ePercentageKHR = 1,
     eNanosecondsKHR = 2,
@@ -1460,7 +1460,7 @@ enum class PerformanceCounterUnitKHR {
     eHertzKHR = 9,
     eCyclesKHR = 10,
 };
-enum class PerformanceCounterStorageKHR {
+enum class PerformanceCounterStorageKHR: uint32_t{
     eInt32KHR = 0,
     eInt64KHR = 1,
     eUint32KHR = 2,
@@ -1468,39 +1468,39 @@ enum class PerformanceCounterStorageKHR {
     eFloat32KHR = 4,
     eFloat64KHR = 5,
 };
-enum class PerformanceConfigurationTypeINTEL {
+enum class PerformanceConfigurationTypeINTEL: uint32_t{
     eCommandQueueMetricsDiscoveryActivatedINTEL = 0,
 };
-enum class QueryPoolSamplingModeINTEL {
+enum class QueryPoolSamplingModeINTEL: uint32_t{
     eManualINTEL = 0,
 };
-enum class PerformanceOverrideTypeINTEL {
+enum class PerformanceOverrideTypeINTEL: uint32_t{
     eNullHardwareINTEL = 0,
     eFlushGpuCachesINTEL = 1,
 };
-enum class PerformanceParameterTypeINTEL {
+enum class PerformanceParameterTypeINTEL: uint32_t{
     eHwCountersSupportedINTEL = 0,
     eStreamMarkerValidBitsINTEL = 1,
 };
-enum class PerformanceValueTypeINTEL {
+enum class PerformanceValueTypeINTEL: uint32_t{
     eUint32INTEL = 0,
     eUint64INTEL = 1,
     eFloatINTEL = 2,
     eBoolINTEL = 3,
     eStringINTEL = 4,
 };
-enum class ShaderFloatControlsIndependence {
+enum class ShaderFloatControlsIndependence: uint32_t{
     e32BitOnly = 0,
     eAll = 1,
     eNone = 2,
 };
-enum class PipelineExecutableStatisticFormatKHR {
+enum class PipelineExecutableStatisticFormatKHR: uint32_t{
     eBool32KHR = 0,
     eInt64KHR = 1,
     eUint64KHR = 2,
     eFloat64KHR = 3,
 };
-enum class LineRasterizationModeEXT {
+enum class LineRasterizationModeEXT: uint32_t{
     eDefaultEXT = 0,
     eRectangularEXT = 1,
     eBresenhamEXT = 2,
@@ -2443,7 +2443,7 @@ union PerformanceValueDataINTEL {
     uint64_t value64;
     float valueFloat;
     bool valueBool;
-    char* valueString;
+    constchar* valueString;
 };
 union PipelineExecutableStatisticValueKHR {
     bool b32;
@@ -2460,7 +2460,7 @@ union DeviceOrHostAddressKHR {
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 union DeviceOrHostAddressConstKHR {
     DeviceAddress deviceAddress;
-    void* hostAddress;
+    constvoid* hostAddress;
 };
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
@@ -2476,7 +2476,7 @@ struct BaseOutStructure {
 };
 struct BaseInStructure {
     StructureType sType = static_cast<StructureType>(0);
-    BaseInStructure* pNext = nullptr;
+    constBaseInStructure* pNext = nullptr;
 };
 struct Offset2D {
     int32_t x = 0;
@@ -2542,10 +2542,10 @@ struct LayerProperties {
 };
 struct ApplicationInfo {
     StructureType sType = StructureType::eApplicationInfo;
-    void* pNext = nullptr;
-    char* pApplicationName = nullptr;
+    constvoid* pNext = nullptr;
+    constchar* pApplicationName = nullptr;
     uint32_t applicationVersion = 0;
-    char* pEngineName = nullptr;
+    constchar* pEngineName = nullptr;
     uint32_t engineVersion = 0;
     uint32_t apiVersion = 0;
 };
@@ -2559,33 +2559,33 @@ struct AllocationCallbacks {
 };
 struct DeviceQueueCreateInfo {
     StructureType sType = StructureType::eDeviceQueueCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DeviceQueueCreateFlags flags = static_cast<DeviceQueueCreateFlags>(0);
     uint32_t queueFamilyIndex = 0;
     uint32_t queueCount = 0;
-    float* pQueuePriorities = nullptr;
+    constfloat* pQueuePriorities = nullptr;
 };
 struct DeviceCreateInfo {
     StructureType sType = StructureType::eDeviceCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DeviceCreateFlags flags = static_cast<DeviceCreateFlags>(0);
     uint32_t queueCreateInfoCount = 0;
-    DeviceQueueCreateInfo* pQueueCreateInfos = nullptr;
+    constDeviceQueueCreateInfo* pQueueCreateInfos = nullptr;
     uint32_t enabledLayerCount = 0;
-    char* ppEnabledLayerNames = nullptr;
+    constchar*const* ppEnabledLayerNames = nullptr;
     uint32_t enabledExtensionCount = 0;
-    char* ppEnabledExtensionNames = nullptr;
-    PhysicalDeviceFeatures* pEnabledFeatures = nullptr;
+    constchar*const* ppEnabledExtensionNames = nullptr;
+    constPhysicalDeviceFeatures* pEnabledFeatures = nullptr;
 };
 struct InstanceCreateInfo {
     StructureType sType = StructureType::eInstanceCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     InstanceCreateFlags flags = static_cast<InstanceCreateFlags>(0);
-    ApplicationInfo* pApplicationInfo = nullptr;
+    constApplicationInfo* pApplicationInfo = nullptr;
     uint32_t enabledLayerCount = 0;
-    char* ppEnabledLayerNames = nullptr;
+    constchar*const* ppEnabledLayerNames = nullptr;
     uint32_t enabledExtensionCount = 0;
-    char* ppEnabledExtensionNames = nullptr;
+    constchar*const* ppEnabledExtensionNames = nullptr;
 };
 struct QueueFamilyProperties {
     QueueFlags queueFlags = static_cast<QueueFlags>(0);
@@ -2601,7 +2601,7 @@ struct PhysicalDeviceMemoryProperties {
 };
 struct MemoryAllocateInfo {
     StructureType sType = StructureType::eMemoryAllocateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DeviceSize allocationSize = 0;
     uint32_t memoryTypeIndex = 0;
 };
@@ -2632,7 +2632,7 @@ struct MemoryHeap {
 };
 struct MappedMemoryRange {
     StructureType sType = StructureType::eMappedMemoryRange;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DeviceMemory memory;
     DeviceSize offset = 0;
     DeviceSize size = 0;
@@ -2661,19 +2661,19 @@ struct DescriptorImageInfo {
 };
 struct WriteDescriptorSet {
     StructureType sType = StructureType::eWriteDescriptorSet;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DescriptorSet dstSet;
     uint32_t dstBinding = 0;
     uint32_t dstArrayElement = 0;
     uint32_t descriptorCount = 0;
     DescriptorType descriptorType = static_cast<DescriptorType>(0);
-    DescriptorImageInfo* pImageInfo = nullptr;
-    DescriptorBufferInfo* pBufferInfo = nullptr;
-    BufferView* pTexelBufferView = nullptr;
+    constDescriptorImageInfo* pImageInfo = nullptr;
+    constDescriptorBufferInfo* pBufferInfo = nullptr;
+    constBufferView* pTexelBufferView = nullptr;
 };
 struct CopyDescriptorSet {
     StructureType sType = StructureType::eCopyDescriptorSet;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DescriptorSet srcSet;
     uint32_t srcBinding = 0;
     uint32_t srcArrayElement = 0;
@@ -2684,17 +2684,17 @@ struct CopyDescriptorSet {
 };
 struct BufferCreateInfo {
     StructureType sType = StructureType::eBufferCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     BufferCreateFlags flags = static_cast<BufferCreateFlags>(0);
     DeviceSize size = 0;
     BufferUsageFlags usage = static_cast<BufferUsageFlags>(0);
     SharingMode sharingMode = static_cast<SharingMode>(0);
     uint32_t queueFamilyIndexCount = 0;
-    uint32_t* pQueueFamilyIndices = nullptr;
+    constuint32_t* pQueueFamilyIndices = nullptr;
 };
 struct BufferViewCreateInfo {
     StructureType sType = StructureType::eBufferViewCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     BufferViewCreateFlags flags = static_cast<BufferViewCreateFlags>(0);
     Buffer buffer;
     Format format = static_cast<Format>(0);
@@ -2721,13 +2721,13 @@ struct ImageSubresourceRange {
 };
 struct MemoryBarrier {
     StructureType sType = StructureType::eMemoryBarrier;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     AccessFlags srcAccessMask = static_cast<AccessFlags>(0);
     AccessFlags dstAccessMask = static_cast<AccessFlags>(0);
 };
 struct BufferMemoryBarrier {
     StructureType sType = StructureType::eBufferMemoryBarrier;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     AccessFlags srcAccessMask = static_cast<AccessFlags>(0);
     AccessFlags dstAccessMask = static_cast<AccessFlags>(0);
     uint32_t srcQueueFamilyIndex = 0;
@@ -2738,7 +2738,7 @@ struct BufferMemoryBarrier {
 };
 struct ImageMemoryBarrier {
     StructureType sType = StructureType::eImageMemoryBarrier;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     AccessFlags srcAccessMask = static_cast<AccessFlags>(0);
     AccessFlags dstAccessMask = static_cast<AccessFlags>(0);
     ImageLayout oldLayout = static_cast<ImageLayout>(0);
@@ -2750,7 +2750,7 @@ struct ImageMemoryBarrier {
 };
 struct ImageCreateInfo {
     StructureType sType = StructureType::eImageCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ImageCreateFlags flags = static_cast<ImageCreateFlags>(0);
     ImageType imageType = static_cast<ImageType>(0);
     Format format = static_cast<Format>(0);
@@ -2762,7 +2762,7 @@ struct ImageCreateInfo {
     ImageUsageFlags usage = static_cast<ImageUsageFlags>(0);
     SharingMode sharingMode = static_cast<SharingMode>(0);
     uint32_t queueFamilyIndexCount = 0;
-    uint32_t* pQueueFamilyIndices = nullptr;
+    constuint32_t* pQueueFamilyIndices = nullptr;
     ImageLayout initialLayout = static_cast<ImageLayout>(0);
 };
 struct SubresourceLayout {
@@ -2774,7 +2774,7 @@ struct SubresourceLayout {
 };
 struct ImageViewCreateInfo {
     StructureType sType = StructureType::eImageViewCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ImageViewCreateFlags flags = static_cast<ImageViewCreateFlags>(0);
     Image image;
     ImageViewType viewType = static_cast<ImageViewType>(0);
@@ -2805,31 +2805,31 @@ struct SparseImageMemoryBind {
 struct SparseBufferMemoryBindInfo {
     Buffer buffer;
     uint32_t bindCount = 0;
-    SparseMemoryBind* pBinds = nullptr;
+    constSparseMemoryBind* pBinds = nullptr;
 };
 struct SparseImageOpaqueMemoryBindInfo {
     Image image;
     uint32_t bindCount = 0;
-    SparseMemoryBind* pBinds = nullptr;
+    constSparseMemoryBind* pBinds = nullptr;
 };
 struct SparseImageMemoryBindInfo {
     Image image;
     uint32_t bindCount = 0;
-    SparseImageMemoryBind* pBinds = nullptr;
+    constSparseImageMemoryBind* pBinds = nullptr;
 };
 struct BindSparseInfo {
     StructureType sType = StructureType::eBindSparseInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t waitSemaphoreCount = 0;
-    Semaphore* pWaitSemaphores = nullptr;
+    constSemaphore* pWaitSemaphores = nullptr;
     uint32_t bufferBindCount = 0;
-    SparseBufferMemoryBindInfo* pBufferBinds = nullptr;
+    constSparseBufferMemoryBindInfo* pBufferBinds = nullptr;
     uint32_t imageOpaqueBindCount = 0;
-    SparseImageOpaqueMemoryBindInfo* pImageOpaqueBinds = nullptr;
+    constSparseImageOpaqueMemoryBindInfo* pImageOpaqueBinds = nullptr;
     uint32_t imageBindCount = 0;
-    SparseImageMemoryBindInfo* pImageBinds = nullptr;
+    constSparseImageMemoryBindInfo* pImageBinds = nullptr;
     uint32_t signalSemaphoreCount = 0;
-    Semaphore* pSignalSemaphores = nullptr;
+    constSemaphore* pSignalSemaphores = nullptr;
 };
 struct ImageCopy {
     ImageSubresourceLayers srcSubresource;
@@ -2861,24 +2861,24 @@ struct ImageResolve {
 };
 struct ShaderModuleCreateInfo {
     StructureType sType = StructureType::eShaderModuleCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ShaderModuleCreateFlags flags = static_cast<ShaderModuleCreateFlags>(0);
     size_t codeSize = 0;
-    uint32_t* pCode = nullptr;
+    constuint32_t* pCode = nullptr;
 };
 struct DescriptorSetLayoutBinding {
     uint32_t binding = 0;
     DescriptorType descriptorType = static_cast<DescriptorType>(0);
     uint32_t descriptorCount = 0;
     ShaderStageFlags stageFlags = static_cast<ShaderStageFlags>(0);
-    Sampler* pImmutableSamplers = nullptr;
+    constSampler* pImmutableSamplers = nullptr;
 };
 struct DescriptorSetLayoutCreateInfo {
     StructureType sType = StructureType::eDescriptorSetLayoutCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DescriptorSetLayoutCreateFlags flags = static_cast<DescriptorSetLayoutCreateFlags>(0);
     uint32_t bindingCount = 0;
-    DescriptorSetLayoutBinding* pBindings = nullptr;
+    constDescriptorSetLayoutBinding* pBindings = nullptr;
 };
 struct DescriptorPoolSize {
     DescriptorType type = static_cast<DescriptorType>(0);
@@ -2886,18 +2886,18 @@ struct DescriptorPoolSize {
 };
 struct DescriptorPoolCreateInfo {
     StructureType sType = StructureType::eDescriptorPoolCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DescriptorPoolCreateFlags flags = static_cast<DescriptorPoolCreateFlags>(0);
     uint32_t maxSets = 0;
     uint32_t poolSizeCount = 0;
-    DescriptorPoolSize* pPoolSizes = nullptr;
+    constDescriptorPoolSize* pPoolSizes = nullptr;
 };
 struct DescriptorSetAllocateInfo {
     StructureType sType = StructureType::eDescriptorSetAllocateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DescriptorPool descriptorPool;
     uint32_t descriptorSetCount = 0;
-    DescriptorSetLayout* pSetLayouts = nullptr;
+    constDescriptorSetLayout* pSetLayouts = nullptr;
 };
 struct SpecializationMapEntry {
     uint32_t constantID = 0;
@@ -2906,22 +2906,22 @@ struct SpecializationMapEntry {
 };
 struct SpecializationInfo {
     uint32_t mapEntryCount = 0;
-    SpecializationMapEntry* pMapEntries = nullptr;
+    constSpecializationMapEntry* pMapEntries = nullptr;
     size_t dataSize = 0;
-    void* pData = nullptr;
+    constvoid* pData = nullptr;
 };
 struct PipelineShaderStageCreateInfo {
     StructureType sType = StructureType::ePipelineShaderStageCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PipelineShaderStageCreateFlags flags = static_cast<PipelineShaderStageCreateFlags>(0);
     ShaderStageFlagBits stage = static_cast<ShaderStageFlagBits>(0);
     ShaderModule module;
-    char* pName = nullptr;
-    SpecializationInfo* pSpecializationInfo = nullptr;
+    constchar* pName = nullptr;
+    constSpecializationInfo* pSpecializationInfo = nullptr;
 };
 struct ComputePipelineCreateInfo {
     StructureType sType = StructureType::eComputePipelineCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PipelineCreateFlags flags = static_cast<PipelineCreateFlags>(0);
     PipelineShaderStageCreateInfo stage;
     PipelineLayout layout;
@@ -2941,38 +2941,38 @@ struct VertexInputAttributeDescription {
 };
 struct PipelineVertexInputStateCreateInfo {
     StructureType sType = StructureType::ePipelineVertexInputStateCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PipelineVertexInputStateCreateFlags flags = static_cast<PipelineVertexInputStateCreateFlags>(0);
     uint32_t vertexBindingDescriptionCount = 0;
-    VertexInputBindingDescription* pVertexBindingDescriptions = nullptr;
+    constVertexInputBindingDescription* pVertexBindingDescriptions = nullptr;
     uint32_t vertexAttributeDescriptionCount = 0;
-    VertexInputAttributeDescription* pVertexAttributeDescriptions = nullptr;
+    constVertexInputAttributeDescription* pVertexAttributeDescriptions = nullptr;
 };
 struct PipelineInputAssemblyStateCreateInfo {
     StructureType sType = StructureType::ePipelineInputAssemblyStateCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PipelineInputAssemblyStateCreateFlags flags = static_cast<PipelineInputAssemblyStateCreateFlags>(0);
     PrimitiveTopology topology = static_cast<PrimitiveTopology>(0);
     bool primitiveRestartEnable = false;
 };
 struct PipelineTessellationStateCreateInfo {
     StructureType sType = StructureType::ePipelineTessellationStateCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PipelineTessellationStateCreateFlags flags = static_cast<PipelineTessellationStateCreateFlags>(0);
     uint32_t patchControlPoints = 0;
 };
 struct PipelineViewportStateCreateInfo {
     StructureType sType = StructureType::ePipelineViewportStateCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PipelineViewportStateCreateFlags flags = static_cast<PipelineViewportStateCreateFlags>(0);
     uint32_t viewportCount = 0;
-    Viewport* pViewports = nullptr;
+    constViewport* pViewports = nullptr;
     uint32_t scissorCount = 0;
-    Rect2D* pScissors = nullptr;
+    constRect2D* pScissors = nullptr;
 };
 struct PipelineRasterizationStateCreateInfo {
     StructureType sType = StructureType::ePipelineRasterizationStateCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PipelineRasterizationStateCreateFlags flags = static_cast<PipelineRasterizationStateCreateFlags>(0);
     bool depthClampEnable = false;
     bool rasterizerDiscardEnable = false;
@@ -2987,12 +2987,12 @@ struct PipelineRasterizationStateCreateInfo {
 };
 struct PipelineMultisampleStateCreateInfo {
     StructureType sType = StructureType::ePipelineMultisampleStateCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PipelineMultisampleStateCreateFlags flags = static_cast<PipelineMultisampleStateCreateFlags>(0);
     SampleCountFlagBits rasterizationSamples = static_cast<SampleCountFlagBits>(0);
     bool sampleShadingEnable = false;
     float minSampleShading = 0.f;
-    SampleMask* pSampleMask = nullptr;
+    constSampleMask* pSampleMask = nullptr;
     bool alphaToCoverageEnable = false;
     bool alphaToOneEnable = false;
 };
@@ -3008,20 +3008,20 @@ struct PipelineColorBlendAttachmentState {
 };
 struct PipelineColorBlendStateCreateInfo {
     StructureType sType = StructureType::ePipelineColorBlendStateCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PipelineColorBlendStateCreateFlags flags = static_cast<PipelineColorBlendStateCreateFlags>(0);
     bool logicOpEnable = false;
     LogicOp logicOp = static_cast<LogicOp>(0);
     uint32_t attachmentCount = 0;
-    PipelineColorBlendAttachmentState* pAttachments = nullptr;
+    constPipelineColorBlendAttachmentState* pAttachments = nullptr;
     float blendConstants[4] = {};
 };
 struct PipelineDynamicStateCreateInfo {
     StructureType sType = StructureType::ePipelineDynamicStateCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PipelineDynamicStateCreateFlags flags = static_cast<PipelineDynamicStateCreateFlags>(0);
     uint32_t dynamicStateCount = 0;
-    DynamicState* pDynamicStates = nullptr;
+    constDynamicState* pDynamicStates = nullptr;
 };
 struct StencilOpState {
     StencilOp failOp = static_cast<StencilOp>(0);
@@ -3034,7 +3034,7 @@ struct StencilOpState {
 };
 struct PipelineDepthStencilStateCreateInfo {
     StructureType sType = StructureType::ePipelineDepthStencilStateCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PipelineDepthStencilStateCreateFlags flags = static_cast<PipelineDepthStencilStateCreateFlags>(0);
     bool depthTestEnable = false;
     bool depthWriteEnable = false;
@@ -3048,19 +3048,19 @@ struct PipelineDepthStencilStateCreateInfo {
 };
 struct GraphicsPipelineCreateInfo {
     StructureType sType = StructureType::eGraphicsPipelineCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PipelineCreateFlags flags = static_cast<PipelineCreateFlags>(0);
     uint32_t stageCount = 0;
-    PipelineShaderStageCreateInfo* pStages = nullptr;
-    PipelineVertexInputStateCreateInfo* pVertexInputState = nullptr;
-    PipelineInputAssemblyStateCreateInfo* pInputAssemblyState = nullptr;
-    PipelineTessellationStateCreateInfo* pTessellationState = nullptr;
-    PipelineViewportStateCreateInfo* pViewportState = nullptr;
-    PipelineRasterizationStateCreateInfo* pRasterizationState = nullptr;
-    PipelineMultisampleStateCreateInfo* pMultisampleState = nullptr;
-    PipelineDepthStencilStateCreateInfo* pDepthStencilState = nullptr;
-    PipelineColorBlendStateCreateInfo* pColorBlendState = nullptr;
-    PipelineDynamicStateCreateInfo* pDynamicState = nullptr;
+    constPipelineShaderStageCreateInfo* pStages = nullptr;
+    constPipelineVertexInputStateCreateInfo* pVertexInputState = nullptr;
+    constPipelineInputAssemblyStateCreateInfo* pInputAssemblyState = nullptr;
+    constPipelineTessellationStateCreateInfo* pTessellationState = nullptr;
+    constPipelineViewportStateCreateInfo* pViewportState = nullptr;
+    constPipelineRasterizationStateCreateInfo* pRasterizationState = nullptr;
+    constPipelineMultisampleStateCreateInfo* pMultisampleState = nullptr;
+    constPipelineDepthStencilStateCreateInfo* pDepthStencilState = nullptr;
+    constPipelineColorBlendStateCreateInfo* pColorBlendState = nullptr;
+    constPipelineDynamicStateCreateInfo* pDynamicState = nullptr;
     PipelineLayout layout;
     RenderPass renderPass;
     uint32_t subpass = 0;
@@ -3069,10 +3069,10 @@ struct GraphicsPipelineCreateInfo {
 };
 struct PipelineCacheCreateInfo {
     StructureType sType = StructureType::ePipelineCacheCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PipelineCacheCreateFlags flags = static_cast<PipelineCacheCreateFlags>(0);
     size_t initialDataSize = 0;
-    void* pInitialData = nullptr;
+    constvoid* pInitialData = nullptr;
 };
 struct PushConstantRange {
     ShaderStageFlags stageFlags = static_cast<ShaderStageFlags>(0);
@@ -3081,16 +3081,16 @@ struct PushConstantRange {
 };
 struct PipelineLayoutCreateInfo {
     StructureType sType = StructureType::ePipelineLayoutCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PipelineLayoutCreateFlags flags = static_cast<PipelineLayoutCreateFlags>(0);
     uint32_t setLayoutCount = 0;
-    DescriptorSetLayout* pSetLayouts = nullptr;
+    constDescriptorSetLayout* pSetLayouts = nullptr;
     uint32_t pushConstantRangeCount = 0;
-    PushConstantRange* pPushConstantRanges = nullptr;
+    constPushConstantRange* pPushConstantRanges = nullptr;
 };
 struct SamplerCreateInfo {
     StructureType sType = StructureType::eSamplerCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     SamplerCreateFlags flags = static_cast<SamplerCreateFlags>(0);
     Filter magFilter = static_cast<Filter>(0);
     Filter minFilter = static_cast<Filter>(0);
@@ -3110,20 +3110,20 @@ struct SamplerCreateInfo {
 };
 struct CommandPoolCreateInfo {
     StructureType sType = StructureType::eCommandPoolCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     CommandPoolCreateFlags flags = static_cast<CommandPoolCreateFlags>(0);
     uint32_t queueFamilyIndex = 0;
 };
 struct CommandBufferAllocateInfo {
     StructureType sType = StructureType::eCommandBufferAllocateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     CommandPool commandPool;
     CommandBufferLevel level = static_cast<CommandBufferLevel>(0);
     uint32_t commandBufferCount = 0;
 };
 struct CommandBufferInheritanceInfo {
     StructureType sType = StructureType::eCommandBufferInheritanceInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     RenderPass renderPass;
     uint32_t subpass = 0;
     Framebuffer framebuffer;
@@ -3133,18 +3133,18 @@ struct CommandBufferInheritanceInfo {
 };
 struct CommandBufferBeginInfo {
     StructureType sType = StructureType::eCommandBufferBeginInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     CommandBufferUsageFlags flags = static_cast<CommandBufferUsageFlags>(0);
-    CommandBufferInheritanceInfo* pInheritanceInfo = nullptr;
+    constCommandBufferInheritanceInfo* pInheritanceInfo = nullptr;
 };
 struct RenderPassBeginInfo {
     StructureType sType = StructureType::eRenderPassBeginInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     RenderPass renderPass;
     Framebuffer framebuffer;
     Rect2D renderArea;
     uint32_t clearValueCount = 0;
-    ClearValue* pClearValues = nullptr;
+    constClearValue* pClearValues = nullptr;
 };
 struct ClearDepthStencilValue {
     float depth = 0.f;
@@ -3174,13 +3174,13 @@ struct SubpassDescription {
     SubpassDescriptionFlags flags = static_cast<SubpassDescriptionFlags>(0);
     PipelineBindPoint pipelineBindPoint = static_cast<PipelineBindPoint>(0);
     uint32_t inputAttachmentCount = 0;
-    AttachmentReference* pInputAttachments = nullptr;
+    constAttachmentReference* pInputAttachments = nullptr;
     uint32_t colorAttachmentCount = 0;
-    AttachmentReference* pColorAttachments = nullptr;
-    AttachmentReference* pResolveAttachments = nullptr;
-    AttachmentReference* pDepthStencilAttachment = nullptr;
+    constAttachmentReference* pColorAttachments = nullptr;
+    constAttachmentReference* pResolveAttachments = nullptr;
+    constAttachmentReference* pDepthStencilAttachment = nullptr;
     uint32_t preserveAttachmentCount = 0;
-    uint32_t* pPreserveAttachments = nullptr;
+    constuint32_t* pPreserveAttachments = nullptr;
 };
 struct SubpassDependency {
     uint32_t srcSubpass = 0;
@@ -3193,23 +3193,23 @@ struct SubpassDependency {
 };
 struct RenderPassCreateInfo {
     StructureType sType = StructureType::eRenderPassCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     RenderPassCreateFlags flags = static_cast<RenderPassCreateFlags>(0);
     uint32_t attachmentCount = 0;
-    AttachmentDescription* pAttachments = nullptr;
+    constAttachmentDescription* pAttachments = nullptr;
     uint32_t subpassCount = 0;
-    SubpassDescription* pSubpasses = nullptr;
+    constSubpassDescription* pSubpasses = nullptr;
     uint32_t dependencyCount = 0;
-    SubpassDependency* pDependencies = nullptr;
+    constSubpassDependency* pDependencies = nullptr;
 };
 struct EventCreateInfo {
     StructureType sType = StructureType::eEventCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     EventCreateFlags flags = static_cast<EventCreateFlags>(0);
 };
 struct FenceCreateInfo {
     StructureType sType = StructureType::eFenceCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     FenceCreateFlags flags = static_cast<FenceCreateFlags>(0);
 };
 struct PhysicalDeviceFeatures {
@@ -3386,12 +3386,12 @@ struct PhysicalDeviceLimits {
 };
 struct SemaphoreCreateInfo {
     StructureType sType = StructureType::eSemaphoreCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     SemaphoreCreateFlags flags = static_cast<SemaphoreCreateFlags>(0);
 };
 struct QueryPoolCreateInfo {
     StructureType sType = StructureType::eQueryPoolCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     QueryPoolCreateFlags flags = static_cast<QueryPoolCreateFlags>(0);
     QueryType queryType = static_cast<QueryType>(0);
     uint32_t queryCount = 0;
@@ -3399,11 +3399,11 @@ struct QueryPoolCreateInfo {
 };
 struct FramebufferCreateInfo {
     StructureType sType = StructureType::eFramebufferCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     FramebufferCreateFlags flags = static_cast<FramebufferCreateFlags>(0);
     RenderPass renderPass;
     uint32_t attachmentCount = 0;
-    ImageView* pAttachments = nullptr;
+    constImageView* pAttachments = nullptr;
     uint32_t width = 0;
     uint32_t height = 0;
     uint32_t layers = 0;
@@ -3428,18 +3428,18 @@ struct DispatchIndirectCommand {
 };
 struct SubmitInfo {
     StructureType sType = StructureType::eSubmitInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t waitSemaphoreCount = 0;
-    Semaphore* pWaitSemaphores = nullptr;
-    PipelineStageFlags* pWaitDstStageMask = nullptr;
+    constSemaphore* pWaitSemaphores = nullptr;
+    constPipelineStageFlags* pWaitDstStageMask = nullptr;
     uint32_t commandBufferCount = 0;
-    CommandBuffer* pCommandBuffers = nullptr;
+    constCommandBuffer* pCommandBuffers = nullptr;
     uint32_t signalSemaphoreCount = 0;
-    Semaphore* pSignalSemaphores = nullptr;
+    constSemaphore* pSignalSemaphores = nullptr;
 };
 struct DisplayPropertiesKHR {
     DisplayKHR display;
-    char* displayName = nullptr;
+    constchar* displayName = nullptr;
     Extent2D physicalDimensions;
     Extent2D physicalResolution;
     SurfaceTransformFlagsKHR supportedTransforms = static_cast<SurfaceTransformFlagsKHR>(0);
@@ -3460,7 +3460,7 @@ struct DisplayModePropertiesKHR {
 };
 struct DisplayModeCreateInfoKHR {
     StructureType sType = StructureType::eDisplayModeCreateInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DisplayModeCreateFlagsKHR flags = static_cast<DisplayModeCreateFlagsKHR>(0);
     DisplayModeParametersKHR parameters;
 };
@@ -3477,7 +3477,7 @@ struct DisplayPlaneCapabilitiesKHR {
 };
 struct DisplaySurfaceCreateInfoKHR {
     StructureType sType = StructureType::eDisplaySurfaceCreateInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DisplaySurfaceCreateFlagsKHR flags = static_cast<DisplaySurfaceCreateFlagsKHR>(0);
     DisplayModeKHR displayMode;
     uint32_t planeIndex = 0;
@@ -3489,7 +3489,7 @@ struct DisplaySurfaceCreateInfoKHR {
 };
 struct DisplayPresentInfoKHR {
     StructureType sType = StructureType::eDisplayPresentInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Rect2D srcRect;
     Rect2D dstRect;
     bool persistent = false;
@@ -3509,7 +3509,7 @@ struct SurfaceCapabilitiesKHR {
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 struct AndroidSurfaceCreateInfoKHR {
     StructureType sType = StructureType::eAndroidSurfaceCreateInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     AndroidSurfaceCreateFlagsKHR flags = static_cast<AndroidSurfaceCreateFlagsKHR>(0);
     ANativeWindow* window = nullptr;
 };
@@ -3517,7 +3517,7 @@ struct AndroidSurfaceCreateInfoKHR {
 #if defined(VK_USE_PLATFORM_VI_NN)
 struct ViSurfaceCreateInfoNN {
     StructureType sType = StructureType::eViSurfaceCreateInfoNN;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ViSurfaceCreateFlagsNN flags = static_cast<ViSurfaceCreateFlagsNN>(0);
     void* window = nullptr;
 };
@@ -3525,7 +3525,7 @@ struct ViSurfaceCreateInfoNN {
 #if defined(VK_USE_PLATFORM_WAYLAND_KHR)
 struct WaylandSurfaceCreateInfoKHR {
     StructureType sType = StructureType::eWaylandSurfaceCreateInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     WaylandSurfaceCreateFlagsKHR flags = static_cast<WaylandSurfaceCreateFlagsKHR>(0);
     wl_display* display = nullptr;
     wl_surface* surface = nullptr;
@@ -3534,7 +3534,7 @@ struct WaylandSurfaceCreateInfoKHR {
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct Win32SurfaceCreateInfoKHR {
     StructureType sType = StructureType::eWin32SurfaceCreateInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Win32SurfaceCreateFlagsKHR flags = static_cast<Win32SurfaceCreateFlagsKHR>(0);
     HINSTANCE hinstance;
     HWND hwnd;
@@ -3543,7 +3543,7 @@ struct Win32SurfaceCreateInfoKHR {
 #if defined(VK_USE_PLATFORM_XLIB_KHR)
 struct XlibSurfaceCreateInfoKHR {
     StructureType sType = StructureType::eXlibSurfaceCreateInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     XlibSurfaceCreateFlagsKHR flags = static_cast<XlibSurfaceCreateFlagsKHR>(0);
     Display* dpy = nullptr;
     Window window;
@@ -3552,7 +3552,7 @@ struct XlibSurfaceCreateInfoKHR {
 #if defined(VK_USE_PLATFORM_XCB_KHR)
 struct XcbSurfaceCreateInfoKHR {
     StructureType sType = StructureType::eXcbSurfaceCreateInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     XcbSurfaceCreateFlagsKHR flags = static_cast<XcbSurfaceCreateFlagsKHR>(0);
     xcb_connection_t* connection = nullptr;
     xcb_window_t window;
@@ -3561,7 +3561,7 @@ struct XcbSurfaceCreateInfoKHR {
 #if defined(VK_USE_PLATFORM_FUCHSIA)
 struct ImagePipeSurfaceCreateInfoFUCHSIA {
     StructureType sType = StructureType::eImagepipeSurfaceCreateInfoFUCHSIA;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ImagePipeSurfaceCreateFlagsFUCHSIA flags = static_cast<ImagePipeSurfaceCreateFlagsFUCHSIA>(0);
     zx_handle_t imagePipeHandle;
 };
@@ -3569,7 +3569,7 @@ struct ImagePipeSurfaceCreateInfoFUCHSIA {
 #if defined(VK_USE_PLATFORM_GGP)
 struct StreamDescriptorSurfaceCreateInfoGGP {
     StructureType sType = StructureType::eStreamDescriptorSurfaceCreateInfoGGP;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     StreamDescriptorSurfaceCreateFlagsGGP flags = static_cast<StreamDescriptorSurfaceCreateFlagsGGP>(0);
     GgpStreamDescriptor streamDescriptor;
 };
@@ -3580,7 +3580,7 @@ struct SurfaceFormatKHR {
 };
 struct SwapchainCreateInfoKHR {
     StructureType sType = StructureType::eSwapchainCreateInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     SwapchainCreateFlagsKHR flags = static_cast<SwapchainCreateFlagsKHR>(0);
     SurfaceKHR surface;
     uint32_t minImageCount = 0;
@@ -3591,7 +3591,7 @@ struct SwapchainCreateInfoKHR {
     ImageUsageFlags imageUsage = static_cast<ImageUsageFlags>(0);
     SharingMode imageSharingMode = static_cast<SharingMode>(0);
     uint32_t queueFamilyIndexCount = 0;
-    uint32_t* pQueueFamilyIndices = nullptr;
+    constuint32_t* pQueueFamilyIndices = nullptr;
     SurfaceTransformFlagBitsKHR preTransform = static_cast<SurfaceTransformFlagBitsKHR>(0);
     CompositeAlphaFlagBitsKHR compositeAlpha = static_cast<CompositeAlphaFlagBitsKHR>(0);
     PresentModeKHR presentMode = static_cast<PresentModeKHR>(0);
@@ -3600,75 +3600,75 @@ struct SwapchainCreateInfoKHR {
 };
 struct PresentInfoKHR {
     StructureType sType = StructureType::ePresentInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t waitSemaphoreCount = 0;
-    Semaphore* pWaitSemaphores = nullptr;
+    constSemaphore* pWaitSemaphores = nullptr;
     uint32_t swapchainCount = 0;
-    SwapchainKHR* pSwapchains = nullptr;
-    uint32_t* pImageIndices = nullptr;
+    constSwapchainKHR* pSwapchains = nullptr;
+    constuint32_t* pImageIndices = nullptr;
     Result* pResults = nullptr;
 };
 struct DebugReportCallbackCreateInfoEXT {
     StructureType sType = StructureType::eDebugReportCallbackCreateInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DebugReportFlagsEXT flags = static_cast<DebugReportFlagsEXT>(0);
     PFN_vkDebugReportCallbackEXT pfnCallback;
     void* pUserData = nullptr;
 };
 struct ValidationFlagsEXT {
     StructureType sType = StructureType::eValidationFlagsEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t disabledValidationCheckCount = 0;
-    ValidationCheckEXT* pDisabledValidationChecks = nullptr;
+    constValidationCheckEXT* pDisabledValidationChecks = nullptr;
 };
 struct ValidationFeaturesEXT {
     StructureType sType = StructureType::eValidationFeaturesEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t enabledValidationFeatureCount = 0;
-    ValidationFeatureEnableEXT* pEnabledValidationFeatures = nullptr;
+    constValidationFeatureEnableEXT* pEnabledValidationFeatures = nullptr;
     uint32_t disabledValidationFeatureCount = 0;
-    ValidationFeatureDisableEXT* pDisabledValidationFeatures = nullptr;
+    constValidationFeatureDisableEXT* pDisabledValidationFeatures = nullptr;
 };
 struct PipelineRasterizationStateRasterizationOrderAMD {
     StructureType sType = StructureType::ePipelineRasterizationStateRasterizationOrderAMD;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     RasterizationOrderAMD rasterizationOrder = static_cast<RasterizationOrderAMD>(0);
 };
 struct DebugMarkerObjectNameInfoEXT {
     StructureType sType = StructureType::eDebugMarkerObjectNameInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DebugReportObjectTypeEXT objectType = static_cast<DebugReportObjectTypeEXT>(0);
     uint64_t object = 0;
-    char* pObjectName = nullptr;
+    constchar* pObjectName = nullptr;
 };
 struct DebugMarkerObjectTagInfoEXT {
     StructureType sType = StructureType::eDebugMarkerObjectTagInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DebugReportObjectTypeEXT objectType = static_cast<DebugReportObjectTypeEXT>(0);
     uint64_t object = 0;
     uint64_t tagName = 0;
     size_t tagSize = 0;
-    void* pTag = nullptr;
+    constvoid* pTag = nullptr;
 };
 struct DebugMarkerMarkerInfoEXT {
     StructureType sType = StructureType::eDebugMarkerMarkerInfoEXT;
-    void* pNext = nullptr;
-    char* pMarkerName = nullptr;
+    constvoid* pNext = nullptr;
+    constchar* pMarkerName = nullptr;
     float color[4] = {};
 };
 struct DedicatedAllocationImageCreateInfoNV {
     StructureType sType = StructureType::eDedicatedAllocationImageCreateInfoNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     bool dedicatedAllocation = false;
 };
 struct DedicatedAllocationBufferCreateInfoNV {
     StructureType sType = StructureType::eDedicatedAllocationBufferCreateInfoNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     bool dedicatedAllocation = false;
 };
 struct DedicatedAllocationMemoryAllocateInfoNV {
     StructureType sType = StructureType::eDedicatedAllocationMemoryAllocateInfoNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Image image;
     Buffer buffer;
 };
@@ -3680,18 +3680,18 @@ struct ExternalImageFormatPropertiesNV {
 };
 struct ExternalMemoryImageCreateInfoNV {
     StructureType sType = StructureType::eExternalMemoryImageCreateInfoNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ExternalMemoryHandleTypeFlagsNV handleTypes = static_cast<ExternalMemoryHandleTypeFlagsNV>(0);
 };
 struct ExportMemoryAllocateInfoNV {
     StructureType sType = StructureType::eExportMemoryAllocateInfoNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ExternalMemoryHandleTypeFlagsNV handleTypes = static_cast<ExternalMemoryHandleTypeFlagsNV>(0);
 };
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ImportMemoryWin32HandleInfoNV {
     StructureType sType = StructureType::eImportMemoryWin32HandleInfoNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ExternalMemoryHandleTypeFlagsNV handleType = static_cast<ExternalMemoryHandleTypeFlagsNV>(0);
     HANDLE handle;
 };
@@ -3699,22 +3699,22 @@ struct ImportMemoryWin32HandleInfoNV {
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ExportMemoryWin32HandleInfoNV {
     StructureType sType = StructureType::eExportMemoryWin32HandleInfoNV;
-    void* pNext = nullptr;
-    SECURITY_ATTRIBUTES* pAttributes = nullptr;
+    constvoid* pNext = nullptr;
+    constSECURITY_ATTRIBUTES* pAttributes = nullptr;
     DWORD dwAccess;
 };
 #endif // VK_USE_PLATFORM_WIN32_KHR
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct Win32KeyedMutexAcquireReleaseInfoNV {
     StructureType sType = StructureType::eWin32KeyedMutexAcquireReleaseInfoNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t acquireCount = 0;
-    DeviceMemory* pAcquireSyncs = nullptr;
-    uint64_t* pAcquireKeys = nullptr;
-    uint32_t* pAcquireTimeoutMilliseconds = nullptr;
+    constDeviceMemory* pAcquireSyncs = nullptr;
+    constuint64_t* pAcquireKeys = nullptr;
+    constuint32_t* pAcquireTimeoutMilliseconds = nullptr;
     uint32_t releaseCount = 0;
-    DeviceMemory* pReleaseSyncs = nullptr;
-    uint64_t* pReleaseKeys = nullptr;
+    constDeviceMemory* pReleaseSyncs = nullptr;
+    constuint64_t* pReleaseKeys = nullptr;
 };
 #endif // VK_USE_PLATFORM_WIN32_KHR
 struct PhysicalDeviceDeviceGeneratedCommandsFeaturesNV {
@@ -3724,7 +3724,7 @@ struct PhysicalDeviceDeviceGeneratedCommandsFeaturesNV {
 };
 struct PhysicalDeviceDeviceGeneratedCommandsPropertiesNV {
     StructureType sType = StructureType::ePhysicalDeviceDeviceGeneratedCommandsPropertiesNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t maxGraphicsShaderGroupCount = 0;
     uint32_t maxIndirectSequenceCount = 0;
     uint32_t maxIndirectCommandsTokenCount = 0;
@@ -3737,19 +3737,19 @@ struct PhysicalDeviceDeviceGeneratedCommandsPropertiesNV {
 };
 struct GraphicsShaderGroupCreateInfoNV {
     StructureType sType = StructureType::eGraphicsShaderGroupCreateInfoNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t stageCount = 0;
-    PipelineShaderStageCreateInfo* pStages = nullptr;
-    PipelineVertexInputStateCreateInfo* pVertexInputState = nullptr;
-    PipelineTessellationStateCreateInfo* pTessellationState = nullptr;
+    constPipelineShaderStageCreateInfo* pStages = nullptr;
+    constPipelineVertexInputStateCreateInfo* pVertexInputState = nullptr;
+    constPipelineTessellationStateCreateInfo* pTessellationState = nullptr;
 };
 struct GraphicsPipelineShaderGroupsCreateInfoNV {
     StructureType sType = StructureType::eGraphicsPipelineShaderGroupsCreateInfoNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t groupCount = 0;
-    GraphicsShaderGroupCreateInfoNV* pGroups = nullptr;
+    constGraphicsShaderGroupCreateInfoNV* pGroups = nullptr;
     uint32_t pipelineCount = 0;
-    Pipeline* pPipelines = nullptr;
+    constPipeline* pPipelines = nullptr;
 };
 struct BindShaderGroupIndirectCommandNV {
     uint32_t groupIndex = 0;
@@ -3773,7 +3773,7 @@ struct IndirectCommandsStreamNV {
 };
 struct IndirectCommandsLayoutTokenNV {
     StructureType sType = StructureType::eIndirectCommandsLayoutTokenNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     IndirectCommandsTokenTypeNV tokenType = static_cast<IndirectCommandsTokenTypeNV>(0);
     uint32_t stream = 0;
     uint32_t offset = 0;
@@ -3785,27 +3785,27 @@ struct IndirectCommandsLayoutTokenNV {
     uint32_t pushconstantSize = 0;
     IndirectStateFlagsNV indirectStateFlags = static_cast<IndirectStateFlagsNV>(0);
     uint32_t indexTypeCount = 0;
-    IndexType* pIndexTypes = nullptr;
-    uint32_t* pIndexTypeValues = nullptr;
+    constIndexType* pIndexTypes = nullptr;
+    constuint32_t* pIndexTypeValues = nullptr;
 };
 struct IndirectCommandsLayoutCreateInfoNV {
     StructureType sType = StructureType::eIndirectCommandsLayoutCreateInfoNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     IndirectCommandsLayoutUsageFlagsNV flags = static_cast<IndirectCommandsLayoutUsageFlagsNV>(0);
     PipelineBindPoint pipelineBindPoint = static_cast<PipelineBindPoint>(0);
     uint32_t tokenCount = 0;
-    IndirectCommandsLayoutTokenNV* pTokens = nullptr;
+    constIndirectCommandsLayoutTokenNV* pTokens = nullptr;
     uint32_t streamCount = 0;
-    uint32_t* pStreamStrides = nullptr;
+    constuint32_t* pStreamStrides = nullptr;
 };
 struct GeneratedCommandsInfoNV {
     StructureType sType = StructureType::eGeneratedCommandsInfoNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PipelineBindPoint pipelineBindPoint = static_cast<PipelineBindPoint>(0);
     Pipeline pipeline;
     IndirectCommandsLayoutNV indirectCommandsLayout;
     uint32_t streamCount = 0;
-    IndirectCommandsStreamNV* pStreams = nullptr;
+    constIndirectCommandsStreamNV* pStreams = nullptr;
     uint32_t sequencesCount = 0;
     Buffer preprocessBuffer;
     DeviceSize preprocessOffset = 0;
@@ -3817,7 +3817,7 @@ struct GeneratedCommandsInfoNV {
 };
 struct GeneratedCommandsMemoryRequirementsInfoNV {
     StructureType sType = StructureType::eGeneratedCommandsMemoryRequirementsInfoNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PipelineBindPoint pipelineBindPoint = static_cast<PipelineBindPoint>(0);
     Pipeline pipeline;
     IndirectCommandsLayoutNV indirectCommandsLayout;
@@ -3849,7 +3849,7 @@ struct ImageFormatProperties2 {
 using ImageFormatProperties2KHR = ImageFormatProperties2;
 struct PhysicalDeviceImageFormatInfo2 {
     StructureType sType = StructureType::ePhysicalDeviceImageFormatInfo2;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Format format = static_cast<Format>(0);
     ImageType type = static_cast<ImageType>(0);
     ImageTiling tiling = static_cast<ImageTiling>(0);
@@ -3877,7 +3877,7 @@ struct SparseImageFormatProperties2 {
 using SparseImageFormatProperties2KHR = SparseImageFormatProperties2;
 struct PhysicalDeviceSparseImageFormatInfo2 {
     StructureType sType = StructureType::ePhysicalDeviceSparseImageFormatInfo2;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Format format = static_cast<Format>(0);
     ImageType type = static_cast<ImageType>(0);
     SampleCountFlagBits samples = static_cast<SampleCountFlagBits>(0);
@@ -3908,13 +3908,13 @@ struct PhysicalDeviceDriverProperties {
 using PhysicalDeviceDriverPropertiesKHR = PhysicalDeviceDriverProperties;
 struct PresentRegionsKHR {
     StructureType sType = StructureType::ePresentRegionsKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t swapchainCount = 0;
-    PresentRegionKHR* pRegions = nullptr;
+    constPresentRegionKHR* pRegions = nullptr;
 };
 struct PresentRegionKHR {
     uint32_t rectangleCount = 0;
-    RectLayerKHR* pRectangles = nullptr;
+    constRectLayerKHR* pRectangles = nullptr;
 };
 struct RectLayerKHR {
     Offset2D offset;
@@ -3938,7 +3938,7 @@ struct ExternalMemoryProperties {
 using ExternalMemoryPropertiesKHR = ExternalMemoryProperties;
 struct PhysicalDeviceExternalImageFormatInfo {
     StructureType sType = StructureType::ePhysicalDeviceExternalImageFormatInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ExternalMemoryHandleTypeFlagBits handleType = static_cast<ExternalMemoryHandleTypeFlagBits>(0);
 };
 using PhysicalDeviceExternalImageFormatInfoKHR = PhysicalDeviceExternalImageFormatInfo;
@@ -3950,7 +3950,7 @@ struct ExternalImageFormatProperties {
 using ExternalImageFormatPropertiesKHR = ExternalImageFormatProperties;
 struct PhysicalDeviceExternalBufferInfo {
     StructureType sType = StructureType::ePhysicalDeviceExternalBufferInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     BufferCreateFlags flags = static_cast<BufferCreateFlags>(0);
     BufferUsageFlags usage = static_cast<BufferUsageFlags>(0);
     ExternalMemoryHandleTypeFlagBits handleType = static_cast<ExternalMemoryHandleTypeFlagBits>(0);
@@ -3974,26 +3974,26 @@ struct PhysicalDeviceIDProperties {
 using PhysicalDeviceIDPropertiesKHR = PhysicalDeviceIDProperties;
 struct ExternalMemoryImageCreateInfo {
     StructureType sType = StructureType::eExternalMemoryImageCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ExternalMemoryHandleTypeFlags handleTypes = static_cast<ExternalMemoryHandleTypeFlags>(0);
 };
 using ExternalMemoryImageCreateInfoKHR = ExternalMemoryImageCreateInfo;
 struct ExternalMemoryBufferCreateInfo {
     StructureType sType = StructureType::eExternalMemoryBufferCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ExternalMemoryHandleTypeFlags handleTypes = static_cast<ExternalMemoryHandleTypeFlags>(0);
 };
 using ExternalMemoryBufferCreateInfoKHR = ExternalMemoryBufferCreateInfo;
 struct ExportMemoryAllocateInfo {
     StructureType sType = StructureType::eExportMemoryAllocateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ExternalMemoryHandleTypeFlags handleTypes = static_cast<ExternalMemoryHandleTypeFlags>(0);
 };
 using ExportMemoryAllocateInfoKHR = ExportMemoryAllocateInfo;
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ImportMemoryWin32HandleInfoKHR {
     StructureType sType = StructureType::eImportMemoryWin32HandleInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ExternalMemoryHandleTypeFlagBits handleType = static_cast<ExternalMemoryHandleTypeFlagBits>(0);
     HANDLE handle;
     LPCWSTR name;
@@ -4002,8 +4002,8 @@ struct ImportMemoryWin32HandleInfoKHR {
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ExportMemoryWin32HandleInfoKHR {
     StructureType sType = StructureType::eExportMemoryWin32HandleInfoKHR;
-    void* pNext = nullptr;
-    SECURITY_ATTRIBUTES* pAttributes = nullptr;
+    constvoid* pNext = nullptr;
+    constSECURITY_ATTRIBUTES* pAttributes = nullptr;
     DWORD dwAccess;
     LPCWSTR name;
 };
@@ -4018,14 +4018,14 @@ struct MemoryWin32HandlePropertiesKHR {
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct MemoryGetWin32HandleInfoKHR {
     StructureType sType = StructureType::eMemoryGetWin32HandleInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DeviceMemory memory;
     ExternalMemoryHandleTypeFlagBits handleType = static_cast<ExternalMemoryHandleTypeFlagBits>(0);
 };
 #endif // VK_USE_PLATFORM_WIN32_KHR
 struct ImportMemoryFdInfoKHR {
     StructureType sType = StructureType::eImportMemoryFdInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ExternalMemoryHandleTypeFlagBits handleType = static_cast<ExternalMemoryHandleTypeFlagBits>(0);
     int fd = 0;
 };
@@ -4036,26 +4036,26 @@ struct MemoryFdPropertiesKHR {
 };
 struct MemoryGetFdInfoKHR {
     StructureType sType = StructureType::eMemoryGetFdInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DeviceMemory memory;
     ExternalMemoryHandleTypeFlagBits handleType = static_cast<ExternalMemoryHandleTypeFlagBits>(0);
 };
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct Win32KeyedMutexAcquireReleaseInfoKHR {
     StructureType sType = StructureType::eWin32KeyedMutexAcquireReleaseInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t acquireCount = 0;
-    DeviceMemory* pAcquireSyncs = nullptr;
-    uint64_t* pAcquireKeys = nullptr;
-    uint32_t* pAcquireTimeouts = nullptr;
+    constDeviceMemory* pAcquireSyncs = nullptr;
+    constuint64_t* pAcquireKeys = nullptr;
+    constuint32_t* pAcquireTimeouts = nullptr;
     uint32_t releaseCount = 0;
-    DeviceMemory* pReleaseSyncs = nullptr;
-    uint64_t* pReleaseKeys = nullptr;
+    constDeviceMemory* pReleaseSyncs = nullptr;
+    constuint64_t* pReleaseKeys = nullptr;
 };
 #endif // VK_USE_PLATFORM_WIN32_KHR
 struct PhysicalDeviceExternalSemaphoreInfo {
     StructureType sType = StructureType::ePhysicalDeviceExternalSemaphoreInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ExternalSemaphoreHandleTypeFlagBits handleType = static_cast<ExternalSemaphoreHandleTypeFlagBits>(0);
 };
 using PhysicalDeviceExternalSemaphoreInfoKHR = PhysicalDeviceExternalSemaphoreInfo;
@@ -4069,14 +4069,14 @@ struct ExternalSemaphoreProperties {
 using ExternalSemaphorePropertiesKHR = ExternalSemaphoreProperties;
 struct ExportSemaphoreCreateInfo {
     StructureType sType = StructureType::eExportSemaphoreCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ExternalSemaphoreHandleTypeFlags handleTypes = static_cast<ExternalSemaphoreHandleTypeFlags>(0);
 };
 using ExportSemaphoreCreateInfoKHR = ExportSemaphoreCreateInfo;
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ImportSemaphoreWin32HandleInfoKHR {
     StructureType sType = StructureType::eImportSemaphoreWin32HandleInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Semaphore semaphore;
     SemaphoreImportFlags flags = static_cast<SemaphoreImportFlags>(0);
     ExternalSemaphoreHandleTypeFlagBits handleType = static_cast<ExternalSemaphoreHandleTypeFlagBits>(0);
@@ -4087,8 +4087,8 @@ struct ImportSemaphoreWin32HandleInfoKHR {
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ExportSemaphoreWin32HandleInfoKHR {
     StructureType sType = StructureType::eExportSemaphoreWin32HandleInfoKHR;
-    void* pNext = nullptr;
-    SECURITY_ATTRIBUTES* pAttributes = nullptr;
+    constvoid* pNext = nullptr;
+    constSECURITY_ATTRIBUTES* pAttributes = nullptr;
     DWORD dwAccess;
     LPCWSTR name;
 };
@@ -4096,24 +4096,24 @@ struct ExportSemaphoreWin32HandleInfoKHR {
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct D3D12FenceSubmitInfoKHR {
     StructureType sType = StructureType::eD3D12FenceSubmitInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t waitSemaphoreValuesCount = 0;
-    uint64_t* pWaitSemaphoreValues = nullptr;
+    constuint64_t* pWaitSemaphoreValues = nullptr;
     uint32_t signalSemaphoreValuesCount = 0;
-    uint64_t* pSignalSemaphoreValues = nullptr;
+    constuint64_t* pSignalSemaphoreValues = nullptr;
 };
 #endif // VK_USE_PLATFORM_WIN32_KHR
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct SemaphoreGetWin32HandleInfoKHR {
     StructureType sType = StructureType::eSemaphoreGetWin32HandleInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Semaphore semaphore;
     ExternalSemaphoreHandleTypeFlagBits handleType = static_cast<ExternalSemaphoreHandleTypeFlagBits>(0);
 };
 #endif // VK_USE_PLATFORM_WIN32_KHR
 struct ImportSemaphoreFdInfoKHR {
     StructureType sType = StructureType::eImportSemaphoreFdInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Semaphore semaphore;
     SemaphoreImportFlags flags = static_cast<SemaphoreImportFlags>(0);
     ExternalSemaphoreHandleTypeFlagBits handleType = static_cast<ExternalSemaphoreHandleTypeFlagBits>(0);
@@ -4121,13 +4121,13 @@ struct ImportSemaphoreFdInfoKHR {
 };
 struct SemaphoreGetFdInfoKHR {
     StructureType sType = StructureType::eSemaphoreGetFdInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Semaphore semaphore;
     ExternalSemaphoreHandleTypeFlagBits handleType = static_cast<ExternalSemaphoreHandleTypeFlagBits>(0);
 };
 struct PhysicalDeviceExternalFenceInfo {
     StructureType sType = StructureType::ePhysicalDeviceExternalFenceInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ExternalFenceHandleTypeFlagBits handleType = static_cast<ExternalFenceHandleTypeFlagBits>(0);
 };
 using PhysicalDeviceExternalFenceInfoKHR = PhysicalDeviceExternalFenceInfo;
@@ -4141,14 +4141,14 @@ struct ExternalFenceProperties {
 using ExternalFencePropertiesKHR = ExternalFenceProperties;
 struct ExportFenceCreateInfo {
     StructureType sType = StructureType::eExportFenceCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ExternalFenceHandleTypeFlags handleTypes = static_cast<ExternalFenceHandleTypeFlags>(0);
 };
 using ExportFenceCreateInfoKHR = ExportFenceCreateInfo;
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ImportFenceWin32HandleInfoKHR {
     StructureType sType = StructureType::eImportFenceWin32HandleInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Fence fence;
     FenceImportFlags flags = static_cast<FenceImportFlags>(0);
     ExternalFenceHandleTypeFlagBits handleType = static_cast<ExternalFenceHandleTypeFlagBits>(0);
@@ -4159,8 +4159,8 @@ struct ImportFenceWin32HandleInfoKHR {
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ExportFenceWin32HandleInfoKHR {
     StructureType sType = StructureType::eExportFenceWin32HandleInfoKHR;
-    void* pNext = nullptr;
-    SECURITY_ATTRIBUTES* pAttributes = nullptr;
+    constvoid* pNext = nullptr;
+    constSECURITY_ATTRIBUTES* pAttributes = nullptr;
     DWORD dwAccess;
     LPCWSTR name;
 };
@@ -4168,14 +4168,14 @@ struct ExportFenceWin32HandleInfoKHR {
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct FenceGetWin32HandleInfoKHR {
     StructureType sType = StructureType::eFenceGetWin32HandleInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Fence fence;
     ExternalFenceHandleTypeFlagBits handleType = static_cast<ExternalFenceHandleTypeFlagBits>(0);
 };
 #endif // VK_USE_PLATFORM_WIN32_KHR
 struct ImportFenceFdInfoKHR {
     StructureType sType = StructureType::eImportFenceFdInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Fence fence;
     FenceImportFlags flags = static_cast<FenceImportFlags>(0);
     ExternalFenceHandleTypeFlagBits handleType = static_cast<ExternalFenceHandleTypeFlagBits>(0);
@@ -4183,7 +4183,7 @@ struct ImportFenceFdInfoKHR {
 };
 struct FenceGetFdInfoKHR {
     StructureType sType = StructureType::eFenceGetFdInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Fence fence;
     ExternalFenceHandleTypeFlagBits handleType = static_cast<ExternalFenceHandleTypeFlagBits>(0);
 };
@@ -4204,13 +4204,13 @@ struct PhysicalDeviceMultiviewProperties {
 using PhysicalDeviceMultiviewPropertiesKHR = PhysicalDeviceMultiviewProperties;
 struct RenderPassMultiviewCreateInfo {
     StructureType sType = StructureType::eRenderPassMultiviewCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t subpassCount = 0;
-    uint32_t* pViewMasks = nullptr;
+    constuint32_t* pViewMasks = nullptr;
     uint32_t dependencyCount = 0;
-    int32_t* pViewOffsets = nullptr;
+    constint32_t* pViewOffsets = nullptr;
     uint32_t correlationMaskCount = 0;
-    uint32_t* pCorrelationMasks = nullptr;
+    constuint32_t* pCorrelationMasks = nullptr;
 };
 using RenderPassMultiviewCreateInfoKHR = RenderPassMultiviewCreateInfo;
 struct SurfaceCapabilities2EXT {
@@ -4230,22 +4230,22 @@ struct SurfaceCapabilities2EXT {
 };
 struct DisplayPowerInfoEXT {
     StructureType sType = StructureType::eDisplayPowerInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DisplayPowerStateEXT powerState = static_cast<DisplayPowerStateEXT>(0);
 };
 struct DeviceEventInfoEXT {
     StructureType sType = StructureType::eDeviceEventInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DeviceEventTypeEXT deviceEvent = static_cast<DeviceEventTypeEXT>(0);
 };
 struct DisplayEventInfoEXT {
     StructureType sType = StructureType::eDisplayEventInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DisplayEventTypeEXT displayEvent = static_cast<DisplayEventTypeEXT>(0);
 };
 struct SwapchainCounterCreateInfoEXT {
     StructureType sType = StructureType::eSwapchainCounterCreateInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     SurfaceCounterFlagsEXT surfaceCounters = static_cast<SurfaceCounterFlagsEXT>(0);
 };
 struct PhysicalDeviceGroupProperties {
@@ -4258,14 +4258,14 @@ struct PhysicalDeviceGroupProperties {
 using PhysicalDeviceGroupPropertiesKHR = PhysicalDeviceGroupProperties;
 struct MemoryAllocateFlagsInfo {
     StructureType sType = StructureType::eMemoryAllocateFlagsInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     MemoryAllocateFlags flags = static_cast<MemoryAllocateFlags>(0);
     uint32_t deviceMask = 0;
 };
 using MemoryAllocateFlagsInfoKHR = MemoryAllocateFlagsInfo;
 struct BindBufferMemoryInfo {
     StructureType sType = StructureType::eBindBufferMemoryInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Buffer buffer;
     DeviceMemory memory;
     DeviceSize memoryOffset = 0;
@@ -4273,14 +4273,14 @@ struct BindBufferMemoryInfo {
 using BindBufferMemoryInfoKHR = BindBufferMemoryInfo;
 struct BindBufferMemoryDeviceGroupInfo {
     StructureType sType = StructureType::eBindBufferMemoryDeviceGroupInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t deviceIndexCount = 0;
-    uint32_t* pDeviceIndices = nullptr;
+    constuint32_t* pDeviceIndices = nullptr;
 };
 using BindBufferMemoryDeviceGroupInfoKHR = BindBufferMemoryDeviceGroupInfo;
 struct BindImageMemoryInfo {
     StructureType sType = StructureType::eBindImageMemoryInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Image image;
     DeviceMemory memory;
     DeviceSize memoryOffset = 0;
@@ -4288,65 +4288,65 @@ struct BindImageMemoryInfo {
 using BindImageMemoryInfoKHR = BindImageMemoryInfo;
 struct BindImageMemoryDeviceGroupInfo {
     StructureType sType = StructureType::eBindImageMemoryDeviceGroupInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t deviceIndexCount = 0;
-    uint32_t* pDeviceIndices = nullptr;
+    constuint32_t* pDeviceIndices = nullptr;
     uint32_t splitInstanceBindRegionCount = 0;
-    Rect2D* pSplitInstanceBindRegions = nullptr;
+    constRect2D* pSplitInstanceBindRegions = nullptr;
 };
 using BindImageMemoryDeviceGroupInfoKHR = BindImageMemoryDeviceGroupInfo;
 struct DeviceGroupRenderPassBeginInfo {
     StructureType sType = StructureType::eDeviceGroupRenderPassBeginInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t deviceMask = 0;
     uint32_t deviceRenderAreaCount = 0;
-    Rect2D* pDeviceRenderAreas = nullptr;
+    constRect2D* pDeviceRenderAreas = nullptr;
 };
 using DeviceGroupRenderPassBeginInfoKHR = DeviceGroupRenderPassBeginInfo;
 struct DeviceGroupCommandBufferBeginInfo {
     StructureType sType = StructureType::eDeviceGroupCommandBufferBeginInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t deviceMask = 0;
 };
 using DeviceGroupCommandBufferBeginInfoKHR = DeviceGroupCommandBufferBeginInfo;
 struct DeviceGroupSubmitInfo {
     StructureType sType = StructureType::eDeviceGroupSubmitInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t waitSemaphoreCount = 0;
-    uint32_t* pWaitSemaphoreDeviceIndices = nullptr;
+    constuint32_t* pWaitSemaphoreDeviceIndices = nullptr;
     uint32_t commandBufferCount = 0;
-    uint32_t* pCommandBufferDeviceMasks = nullptr;
+    constuint32_t* pCommandBufferDeviceMasks = nullptr;
     uint32_t signalSemaphoreCount = 0;
-    uint32_t* pSignalSemaphoreDeviceIndices = nullptr;
+    constuint32_t* pSignalSemaphoreDeviceIndices = nullptr;
 };
 using DeviceGroupSubmitInfoKHR = DeviceGroupSubmitInfo;
 struct DeviceGroupBindSparseInfo {
     StructureType sType = StructureType::eDeviceGroupBindSparseInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t resourceDeviceIndex = 0;
     uint32_t memoryDeviceIndex = 0;
 };
 using DeviceGroupBindSparseInfoKHR = DeviceGroupBindSparseInfo;
 struct DeviceGroupPresentCapabilitiesKHR {
     StructureType sType = StructureType::eDeviceGroupPresentCapabilitiesKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t presentMask[MAX_DEVICE_GROUP_SIZE] = {};
     DeviceGroupPresentModeFlagsKHR modes = static_cast<DeviceGroupPresentModeFlagsKHR>(0);
 };
 struct ImageSwapchainCreateInfoKHR {
     StructureType sType = StructureType::eImageSwapchainCreateInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     SwapchainKHR swapchain;
 };
 struct BindImageMemorySwapchainInfoKHR {
     StructureType sType = StructureType::eBindImageMemorySwapchainInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     SwapchainKHR swapchain;
     uint32_t imageIndex = 0;
 };
 struct AcquireNextImageInfoKHR {
     StructureType sType = StructureType::eAcquireNextImageInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     SwapchainKHR swapchain;
     uint64_t timeout = 0;
     Semaphore semaphore;
@@ -4355,21 +4355,21 @@ struct AcquireNextImageInfoKHR {
 };
 struct DeviceGroupPresentInfoKHR {
     StructureType sType = StructureType::eDeviceGroupPresentInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t swapchainCount = 0;
-    uint32_t* pDeviceMasks = nullptr;
+    constuint32_t* pDeviceMasks = nullptr;
     DeviceGroupPresentModeFlagBitsKHR mode = static_cast<DeviceGroupPresentModeFlagBitsKHR>(0);
 };
 struct DeviceGroupDeviceCreateInfo {
     StructureType sType = StructureType::eDeviceGroupDeviceCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t physicalDeviceCount = 0;
-    PhysicalDevice* pPhysicalDevices = nullptr;
+    constPhysicalDevice* pPhysicalDevices = nullptr;
 };
 using DeviceGroupDeviceCreateInfoKHR = DeviceGroupDeviceCreateInfo;
 struct DeviceGroupSwapchainCreateInfoKHR {
     StructureType sType = StructureType::eDeviceGroupSwapchainCreateInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DeviceGroupPresentModeFlagsKHR modes = static_cast<DeviceGroupPresentModeFlagsKHR>(0);
 };
 struct DescriptorUpdateTemplateEntry {
@@ -4383,10 +4383,10 @@ struct DescriptorUpdateTemplateEntry {
 using DescriptorUpdateTemplateEntryKHR = DescriptorUpdateTemplateEntry;
 struct DescriptorUpdateTemplateCreateInfo {
     StructureType sType = StructureType::eDescriptorUpdateTemplateCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DescriptorUpdateTemplateCreateFlags flags = static_cast<DescriptorUpdateTemplateCreateFlags>(0);
     uint32_t descriptorUpdateEntryCount = 0;
-    DescriptorUpdateTemplateEntry* pDescriptorUpdateEntries = nullptr;
+    constDescriptorUpdateTemplateEntry* pDescriptorUpdateEntries = nullptr;
     DescriptorUpdateTemplateType templateType = static_cast<DescriptorUpdateTemplateType>(0);
     DescriptorSetLayout descriptorSetLayout;
     PipelineBindPoint pipelineBindPoint = static_cast<PipelineBindPoint>(0);
@@ -4400,7 +4400,7 @@ struct XYColorEXT {
 };
 struct HdrMetadataEXT {
     StructureType sType = StructureType::eHdrMetadataEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     XYColorEXT displayPrimaryRed;
     XYColorEXT displayPrimaryGreen;
     XYColorEXT displayPrimaryBlue;
@@ -4417,7 +4417,7 @@ struct DisplayNativeHdrSurfaceCapabilitiesAMD {
 };
 struct SwapchainDisplayNativeHdrCreateInfoAMD {
     StructureType sType = StructureType::eSwapchainDisplayNativeHdrCreateInfoAMD;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     bool localDimmingEnable = false;
 };
 struct RefreshCycleDurationGOOGLE {
@@ -4432,9 +4432,9 @@ struct PastPresentationTimingGOOGLE {
 };
 struct PresentTimesInfoGOOGLE {
     StructureType sType = StructureType::ePresentTimesInfoGOOGLE;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t swapchainCount = 0;
-    PresentTimeGOOGLE* pTimes = nullptr;
+    constPresentTimeGOOGLE* pTimes = nullptr;
 };
 struct PresentTimeGOOGLE {
     uint32_t presentID = 0;
@@ -4443,25 +4443,25 @@ struct PresentTimeGOOGLE {
 #if defined(VK_USE_PLATFORM_IOS_MVK)
 struct IOSSurfaceCreateInfoMVK {
     StructureType sType = StructureType::eIosSurfaceCreateInfoMVK;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     IOSSurfaceCreateFlagsMVK flags = static_cast<IOSSurfaceCreateFlagsMVK>(0);
-    void* pView = nullptr;
+    constvoid* pView = nullptr;
 };
 #endif // VK_USE_PLATFORM_IOS_MVK
 #if defined(VK_USE_PLATFORM_MACOS_MVK)
 struct MacOSSurfaceCreateInfoMVK {
     StructureType sType = StructureType::eMacosSurfaceCreateInfoMVK;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     MacOSSurfaceCreateFlagsMVK flags = static_cast<MacOSSurfaceCreateFlagsMVK>(0);
-    void* pView = nullptr;
+    constvoid* pView = nullptr;
 };
 #endif // VK_USE_PLATFORM_MACOS_MVK
 #if defined(VK_USE_PLATFORM_METAL_EXT)
 struct MetalSurfaceCreateInfoEXT {
     StructureType sType = StructureType::eMetalSurfaceCreateInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     MetalSurfaceCreateFlagsEXT flags = static_cast<MetalSurfaceCreateFlagsEXT>(0);
-    CAMetalLayer* pLayer = nullptr;
+    constCAMetalLayer* pLayer = nullptr;
 };
 #endif // VK_USE_PLATFORM_METAL_EXT
 struct ViewportWScalingNV {
@@ -4470,10 +4470,10 @@ struct ViewportWScalingNV {
 };
 struct PipelineViewportWScalingStateCreateInfoNV {
     StructureType sType = StructureType::ePipelineViewportWScalingStateCreateInfoNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     bool viewportWScalingEnable = false;
     uint32_t viewportCount = 0;
-    ViewportWScalingNV* pViewportWScalings = nullptr;
+    constViewportWScalingNV* pViewportWScalings = nullptr;
 };
 struct ViewportSwizzleNV {
     ViewportCoordinateSwizzleNV x = static_cast<ViewportCoordinateSwizzleNV>(0);
@@ -4483,10 +4483,10 @@ struct ViewportSwizzleNV {
 };
 struct PipelineViewportSwizzleStateCreateInfoNV {
     StructureType sType = StructureType::ePipelineViewportSwizzleStateCreateInfoNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PipelineViewportSwizzleStateCreateFlagsNV flags = static_cast<PipelineViewportSwizzleStateCreateFlagsNV>(0);
     uint32_t viewportCount = 0;
-    ViewportSwizzleNV* pViewportSwizzles = nullptr;
+    constViewportSwizzleNV* pViewportSwizzles = nullptr;
 };
 struct PhysicalDeviceDiscardRectanglePropertiesEXT {
     StructureType sType = StructureType::ePhysicalDeviceDiscardRectanglePropertiesEXT;
@@ -4495,11 +4495,11 @@ struct PhysicalDeviceDiscardRectanglePropertiesEXT {
 };
 struct PipelineDiscardRectangleStateCreateInfoEXT {
     StructureType sType = StructureType::ePipelineDiscardRectangleStateCreateInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PipelineDiscardRectangleStateCreateFlagsEXT flags = static_cast<PipelineDiscardRectangleStateCreateFlagsEXT>(0);
     DiscardRectangleModeEXT discardRectangleMode = static_cast<DiscardRectangleModeEXT>(0);
     uint32_t discardRectangleCount = 0;
-    Rect2D* pDiscardRectangles = nullptr;
+    constRect2D* pDiscardRectangles = nullptr;
 };
 struct PhysicalDeviceMultiviewPerViewAttributesPropertiesNVX {
     StructureType sType = StructureType::ePhysicalDeviceMultiviewPerViewAttributesPropertiesNVX;
@@ -4514,14 +4514,14 @@ struct InputAttachmentAspectReference {
 using InputAttachmentAspectReferenceKHR = InputAttachmentAspectReference;
 struct RenderPassInputAttachmentAspectCreateInfo {
     StructureType sType = StructureType::eRenderPassInputAttachmentAspectCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t aspectReferenceCount = 0;
-    InputAttachmentAspectReference* pAspectReferences = nullptr;
+    constInputAttachmentAspectReference* pAspectReferences = nullptr;
 };
 using RenderPassInputAttachmentAspectCreateInfoKHR = RenderPassInputAttachmentAspectCreateInfo;
 struct PhysicalDeviceSurfaceInfo2KHR {
     StructureType sType = StructureType::ePhysicalDeviceSurfaceInfo2KHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     SurfaceKHR surface;
 };
 struct SurfaceCapabilities2KHR {
@@ -4551,7 +4551,7 @@ struct DisplayModeProperties2KHR {
 };
 struct DisplayPlaneInfo2KHR {
     StructureType sType = StructureType::eDisplayPlaneInfo2KHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DisplayModeKHR mode;
     uint32_t planeIndex = 0;
 };
@@ -4590,19 +4590,19 @@ struct PhysicalDeviceShaderSubgroupExtendedTypesFeatures {
 using PhysicalDeviceShaderSubgroupExtendedTypesFeaturesKHR = PhysicalDeviceShaderSubgroupExtendedTypesFeatures;
 struct BufferMemoryRequirementsInfo2 {
     StructureType sType = StructureType::eBufferMemoryRequirementsInfo2;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Buffer buffer;
 };
 using BufferMemoryRequirementsInfo2KHR = BufferMemoryRequirementsInfo2;
 struct ImageMemoryRequirementsInfo2 {
     StructureType sType = StructureType::eImageMemoryRequirementsInfo2;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Image image;
 };
 using ImageMemoryRequirementsInfo2KHR = ImageMemoryRequirementsInfo2;
 struct ImageSparseMemoryRequirementsInfo2 {
     StructureType sType = StructureType::eImageSparseMemoryRequirementsInfo2;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Image image;
 };
 using ImageSparseMemoryRequirementsInfo2KHR = ImageSparseMemoryRequirementsInfo2;
@@ -4633,32 +4633,32 @@ struct MemoryDedicatedRequirements {
 using MemoryDedicatedRequirementsKHR = MemoryDedicatedRequirements;
 struct MemoryDedicatedAllocateInfo {
     StructureType sType = StructureType::eMemoryDedicatedAllocateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Image image;
     Buffer buffer;
 };
 using MemoryDedicatedAllocateInfoKHR = MemoryDedicatedAllocateInfo;
 struct ImageViewUsageCreateInfo {
     StructureType sType = StructureType::eImageViewUsageCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ImageUsageFlags usage = static_cast<ImageUsageFlags>(0);
 };
 using ImageViewUsageCreateInfoKHR = ImageViewUsageCreateInfo;
 struct PipelineTessellationDomainOriginStateCreateInfo {
     StructureType sType = StructureType::ePipelineTessellationDomainOriginStateCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     TessellationDomainOrigin domainOrigin = static_cast<TessellationDomainOrigin>(0);
 };
 using PipelineTessellationDomainOriginStateCreateInfoKHR = PipelineTessellationDomainOriginStateCreateInfo;
 struct SamplerYcbcrConversionInfo {
     StructureType sType = StructureType::eSamplerYcbcrConversionInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     SamplerYcbcrConversion conversion;
 };
 using SamplerYcbcrConversionInfoKHR = SamplerYcbcrConversionInfo;
 struct SamplerYcbcrConversionCreateInfo {
     StructureType sType = StructureType::eSamplerYcbcrConversionCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Format format = static_cast<Format>(0);
     SamplerYcbcrModelConversion ycbcrModel = static_cast<SamplerYcbcrModelConversion>(0);
     SamplerYcbcrRange ycbcrRange = static_cast<SamplerYcbcrRange>(0);
@@ -4671,13 +4671,13 @@ struct SamplerYcbcrConversionCreateInfo {
 using SamplerYcbcrConversionCreateInfoKHR = SamplerYcbcrConversionCreateInfo;
 struct BindImagePlaneMemoryInfo {
     StructureType sType = StructureType::eBindImagePlaneMemoryInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ImageAspectFlagBits planeAspect = static_cast<ImageAspectFlagBits>(0);
 };
 using BindImagePlaneMemoryInfoKHR = BindImagePlaneMemoryInfo;
 struct ImagePlaneMemoryRequirementsInfo {
     StructureType sType = StructureType::eImagePlaneMemoryRequirementsInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ImageAspectFlagBits planeAspect = static_cast<ImageAspectFlagBits>(0);
 };
 using ImagePlaneMemoryRequirementsInfoKHR = ImagePlaneMemoryRequirementsInfo;
@@ -4700,14 +4700,14 @@ struct TextureLODGatherFormatPropertiesAMD {
 };
 struct ConditionalRenderingBeginInfoEXT {
     StructureType sType = StructureType::eConditionalRenderingBeginInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Buffer buffer;
     DeviceSize offset = 0;
     ConditionalRenderingFlagsEXT flags = static_cast<ConditionalRenderingFlagsEXT>(0);
 };
 struct ProtectedSubmitInfo {
     StructureType sType = StructureType::eProtectedSubmitInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     bool protectedSubmit = false;
 };
 struct PhysicalDeviceProtectedMemoryFeatures {
@@ -4722,14 +4722,14 @@ struct PhysicalDeviceProtectedMemoryProperties {
 };
 struct DeviceQueueInfo2 {
     StructureType sType = StructureType::eDeviceQueueInfo2;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DeviceQueueCreateFlags flags = static_cast<DeviceQueueCreateFlags>(0);
     uint32_t queueFamilyIndex = 0;
     uint32_t queueIndex = 0;
 };
 struct PipelineCoverageToColorStateCreateInfoNV {
     StructureType sType = StructureType::ePipelineCoverageToColorStateCreateInfoNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PipelineCoverageToColorStateCreateFlagsNV flags = static_cast<PipelineCoverageToColorStateCreateFlagsNV>(0);
     bool coverageToColorEnable = false;
     uint32_t coverageToColorLocation = 0;
@@ -4747,11 +4747,11 @@ struct SampleLocationEXT {
 };
 struct SampleLocationsInfoEXT {
     StructureType sType = StructureType::eSampleLocationsInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     SampleCountFlagBits sampleLocationsPerPixel = static_cast<SampleCountFlagBits>(0);
     Extent2D sampleLocationGridSize;
     uint32_t sampleLocationsCount = 0;
-    SampleLocationEXT* pSampleLocations = nullptr;
+    constSampleLocationEXT* pSampleLocations = nullptr;
 };
 struct AttachmentSampleLocationsEXT {
     uint32_t attachmentIndex = 0;
@@ -4763,15 +4763,15 @@ struct SubpassSampleLocationsEXT {
 };
 struct RenderPassSampleLocationsBeginInfoEXT {
     StructureType sType = StructureType::eRenderPassSampleLocationsBeginInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t attachmentInitialSampleLocationsCount = 0;
-    AttachmentSampleLocationsEXT* pAttachmentInitialSampleLocations = nullptr;
+    constAttachmentSampleLocationsEXT* pAttachmentInitialSampleLocations = nullptr;
     uint32_t postSubpassSampleLocationsCount = 0;
-    SubpassSampleLocationsEXT* pPostSubpassSampleLocations = nullptr;
+    constSubpassSampleLocationsEXT* pPostSubpassSampleLocations = nullptr;
 };
 struct PipelineSampleLocationsStateCreateInfoEXT {
     StructureType sType = StructureType::ePipelineSampleLocationsStateCreateInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     bool sampleLocationsEnable = false;
     SampleLocationsInfoEXT sampleLocationsInfo;
 };
@@ -4791,7 +4791,7 @@ struct MultisamplePropertiesEXT {
 };
 struct SamplerReductionModeCreateInfo {
     StructureType sType = StructureType::eSamplerReductionModeCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     SamplerReductionMode reductionMode = static_cast<SamplerReductionMode>(0);
 };
 using SamplerReductionModeCreateInfoEXT = SamplerReductionModeCreateInfo;
@@ -4812,7 +4812,7 @@ struct PhysicalDeviceBlendOperationAdvancedPropertiesEXT {
 };
 struct PipelineColorBlendAdvancedStateCreateInfoEXT {
     StructureType sType = StructureType::ePipelineColorBlendAdvancedStateCreateInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     bool srcPremultiplied = false;
     bool dstPremultiplied = false;
     BlendOverlapEXT blendOverlap = static_cast<BlendOverlapEXT>(0);
@@ -4834,41 +4834,41 @@ struct PhysicalDeviceInlineUniformBlockPropertiesEXT {
 };
 struct WriteDescriptorSetInlineUniformBlockEXT {
     StructureType sType = StructureType::eWriteDescriptorSetInlineUniformBlockEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t dataSize = 0;
-    void* pData = nullptr;
+    constvoid* pData = nullptr;
 };
 struct DescriptorPoolInlineUniformBlockCreateInfoEXT {
     StructureType sType = StructureType::eDescriptorPoolInlineUniformBlockCreateInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t maxInlineUniformBlockBindings = 0;
 };
 struct PipelineCoverageModulationStateCreateInfoNV {
     StructureType sType = StructureType::ePipelineCoverageModulationStateCreateInfoNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PipelineCoverageModulationStateCreateFlagsNV flags = static_cast<PipelineCoverageModulationStateCreateFlagsNV>(0);
     CoverageModulationModeNV coverageModulationMode = static_cast<CoverageModulationModeNV>(0);
     bool coverageModulationTableEnable = false;
     uint32_t coverageModulationTableCount = 0;
-    float* pCoverageModulationTable = nullptr;
+    constfloat* pCoverageModulationTable = nullptr;
 };
 struct ImageFormatListCreateInfo {
     StructureType sType = StructureType::eImageFormatListCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t viewFormatCount = 0;
-    Format* pViewFormats = nullptr;
+    constFormat* pViewFormats = nullptr;
 };
 using ImageFormatListCreateInfoKHR = ImageFormatListCreateInfo;
 struct ValidationCacheCreateInfoEXT {
     StructureType sType = StructureType::eValidationCacheCreateInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ValidationCacheCreateFlagsEXT flags = static_cast<ValidationCacheCreateFlagsEXT>(0);
     size_t initialDataSize = 0;
-    void* pInitialData = nullptr;
+    constvoid* pInitialData = nullptr;
 };
 struct ShaderModuleValidationCacheCreateInfoEXT {
     StructureType sType = StructureType::eShaderModuleValidationCacheCreateInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ValidationCacheEXT validationCache;
 };
 struct PhysicalDeviceMaintenance3Properties {
@@ -4935,8 +4935,8 @@ struct NativeBufferUsage2ANDROID {
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 struct NativeBufferANDROID {
     StructureType sType = StructureType::eNativeBufferANDROID;
-    void* pNext = nullptr;
-    void* handle = nullptr;
+    constvoid* pNext = nullptr;
+    constvoid* handle = nullptr;
     int stride = 0;
     int format = 0;
     int usage = 0;
@@ -4946,14 +4946,14 @@ struct NativeBufferANDROID {
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 struct SwapchainImageCreateInfoANDROID {
     StructureType sType = StructureType::eSwapchainImageCreateInfoANDROID;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     SwapchainImageUsageFlagsANDROID usage = static_cast<SwapchainImageUsageFlagsANDROID>(0);
 };
 #endif // VK_USE_PLATFORM_ANDROID_KHR
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 struct PhysicalDevicePresentationPropertiesANDROID {
     StructureType sType = StructureType::ePhysicalDevicePresentationPropertiesANDROID;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     bool sharedImage = false;
 };
 #endif // VK_USE_PLATFORM_ANDROID_KHR
@@ -4975,34 +4975,34 @@ struct ShaderStatisticsInfoAMD {
 };
 struct DeviceQueueGlobalPriorityCreateInfoEXT {
     StructureType sType = StructureType::eDeviceQueueGlobalPriorityCreateInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     QueueGlobalPriorityEXT globalPriority = static_cast<QueueGlobalPriorityEXT>(0);
 };
 struct DebugUtilsObjectNameInfoEXT {
     StructureType sType = StructureType::eDebugUtilsObjectNameInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ObjectType objectType = static_cast<ObjectType>(0);
     uint64_t objectHandle = 0;
-    char* pObjectName = nullptr;
+    constchar* pObjectName = nullptr;
 };
 struct DebugUtilsObjectTagInfoEXT {
     StructureType sType = StructureType::eDebugUtilsObjectTagInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ObjectType objectType = static_cast<ObjectType>(0);
     uint64_t objectHandle = 0;
     uint64_t tagName = 0;
     size_t tagSize = 0;
-    void* pTag = nullptr;
+    constvoid* pTag = nullptr;
 };
 struct DebugUtilsLabelEXT {
     StructureType sType = StructureType::eDebugUtilsLabelEXT;
-    void* pNext = nullptr;
-    char* pLabelName = nullptr;
+    constvoid* pNext = nullptr;
+    constchar* pLabelName = nullptr;
     float color[4] = {};
 };
 struct DebugUtilsMessengerCreateInfoEXT {
     StructureType sType = StructureType::eDebugUtilsMessengerCreateInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DebugUtilsMessengerCreateFlagsEXT flags = static_cast<DebugUtilsMessengerCreateFlagsEXT>(0);
     DebugUtilsMessageSeverityFlagsEXT messageSeverity = static_cast<DebugUtilsMessageSeverityFlagsEXT>(0);
     DebugUtilsMessageTypeFlagsEXT messageType = static_cast<DebugUtilsMessageTypeFlagsEXT>(0);
@@ -5011,21 +5011,21 @@ struct DebugUtilsMessengerCreateInfoEXT {
 };
 struct DebugUtilsMessengerCallbackDataEXT {
     StructureType sType = StructureType::eDebugUtilsMessengerCallbackDataEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DebugUtilsMessengerCallbackDataFlagsEXT flags = static_cast<DebugUtilsMessengerCallbackDataFlagsEXT>(0);
-    char* pMessageIdName = nullptr;
+    constchar* pMessageIdName = nullptr;
     int32_t messageIdNumber = 0;
-    char* pMessage = nullptr;
+    constchar* pMessage = nullptr;
     uint32_t queueLabelCount = 0;
-    DebugUtilsLabelEXT* pQueueLabels = nullptr;
+    constDebugUtilsLabelEXT* pQueueLabels = nullptr;
     uint32_t cmdBufLabelCount = 0;
-    DebugUtilsLabelEXT* pCmdBufLabels = nullptr;
+    constDebugUtilsLabelEXT* pCmdBufLabels = nullptr;
     uint32_t objectCount = 0;
-    DebugUtilsObjectNameInfoEXT* pObjects = nullptr;
+    constDebugUtilsObjectNameInfoEXT* pObjects = nullptr;
 };
 struct ImportMemoryHostPointerInfoEXT {
     StructureType sType = StructureType::eImportMemoryHostPointerInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ExternalMemoryHandleTypeFlagBits handleType = static_cast<ExternalMemoryHandleTypeFlagBits>(0);
     void* pHostPointer = nullptr;
 };
@@ -5054,7 +5054,7 @@ struct PhysicalDeviceConservativeRasterizationPropertiesEXT {
 };
 struct CalibratedTimestampInfoEXT {
     StructureType sType = StructureType::eCalibratedTimestampInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     TimeDomainEXT timeDomain = static_cast<TimeDomainEXT>(0);
 };
 struct PhysicalDeviceShaderCorePropertiesAMD {
@@ -5083,7 +5083,7 @@ struct PhysicalDeviceShaderCoreProperties2AMD {
 };
 struct PipelineRasterizationConservativeStateCreateInfoEXT {
     StructureType sType = StructureType::ePipelineRasterizationConservativeStateCreateInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PipelineRasterizationConservativeStateCreateFlagsEXT flags = static_cast<PipelineRasterizationConservativeStateCreateFlagsEXT>(0);
     ConservativeRasterizationModeEXT conservativeRasterizationMode = static_cast<ConservativeRasterizationModeEXT>(0);
     float extraPrimitiveOverestimationSize = 0.f;
@@ -5143,16 +5143,16 @@ struct PhysicalDeviceDescriptorIndexingProperties {
 using PhysicalDeviceDescriptorIndexingPropertiesEXT = PhysicalDeviceDescriptorIndexingProperties;
 struct DescriptorSetLayoutBindingFlagsCreateInfo {
     StructureType sType = StructureType::eDescriptorSetLayoutBindingFlagsCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t bindingCount = 0;
-    DescriptorBindingFlags* pBindingFlags = nullptr;
+    constDescriptorBindingFlags* pBindingFlags = nullptr;
 };
 using DescriptorSetLayoutBindingFlagsCreateInfoEXT = DescriptorSetLayoutBindingFlagsCreateInfo;
 struct DescriptorSetVariableDescriptorCountAllocateInfo {
     StructureType sType = StructureType::eDescriptorSetVariableDescriptorCountAllocateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t descriptorSetCount = 0;
-    uint32_t* pDescriptorCounts = nullptr;
+    constuint32_t* pDescriptorCounts = nullptr;
 };
 using DescriptorSetVariableDescriptorCountAllocateInfoEXT = DescriptorSetVariableDescriptorCountAllocateInfo;
 struct DescriptorSetVariableDescriptorCountLayoutSupport {
@@ -5163,7 +5163,7 @@ struct DescriptorSetVariableDescriptorCountLayoutSupport {
 using DescriptorSetVariableDescriptorCountLayoutSupportEXT = DescriptorSetVariableDescriptorCountLayoutSupport;
 struct AttachmentDescription2 {
     StructureType sType = StructureType::eAttachmentDescription2;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     AttachmentDescriptionFlags flags = static_cast<AttachmentDescriptionFlags>(0);
     Format format = static_cast<Format>(0);
     SampleCountFlagBits samples = static_cast<SampleCountFlagBits>(0);
@@ -5177,7 +5177,7 @@ struct AttachmentDescription2 {
 using AttachmentDescription2KHR = AttachmentDescription2;
 struct AttachmentReference2 {
     StructureType sType = StructureType::eAttachmentReference2;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t attachment = 0;
     ImageLayout layout = static_cast<ImageLayout>(0);
     ImageAspectFlags aspectMask = static_cast<ImageAspectFlags>(0);
@@ -5185,23 +5185,23 @@ struct AttachmentReference2 {
 using AttachmentReference2KHR = AttachmentReference2;
 struct SubpassDescription2 {
     StructureType sType = StructureType::eSubpassDescription2;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     SubpassDescriptionFlags flags = static_cast<SubpassDescriptionFlags>(0);
     PipelineBindPoint pipelineBindPoint = static_cast<PipelineBindPoint>(0);
     uint32_t viewMask = 0;
     uint32_t inputAttachmentCount = 0;
-    AttachmentReference2* pInputAttachments = nullptr;
+    constAttachmentReference2* pInputAttachments = nullptr;
     uint32_t colorAttachmentCount = 0;
-    AttachmentReference2* pColorAttachments = nullptr;
-    AttachmentReference2* pResolveAttachments = nullptr;
-    AttachmentReference2* pDepthStencilAttachment = nullptr;
+    constAttachmentReference2* pColorAttachments = nullptr;
+    constAttachmentReference2* pResolveAttachments = nullptr;
+    constAttachmentReference2* pDepthStencilAttachment = nullptr;
     uint32_t preserveAttachmentCount = 0;
-    uint32_t* pPreserveAttachments = nullptr;
+    constuint32_t* pPreserveAttachments = nullptr;
 };
 using SubpassDescription2KHR = SubpassDescription2;
 struct SubpassDependency2 {
     StructureType sType = StructureType::eSubpassDependency2;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t srcSubpass = 0;
     uint32_t dstSubpass = 0;
     PipelineStageFlags srcStageMask = static_cast<PipelineStageFlags>(0);
@@ -5214,27 +5214,27 @@ struct SubpassDependency2 {
 using SubpassDependency2KHR = SubpassDependency2;
 struct RenderPassCreateInfo2 {
     StructureType sType = StructureType::eRenderPassCreateInfo2;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     RenderPassCreateFlags flags = static_cast<RenderPassCreateFlags>(0);
     uint32_t attachmentCount = 0;
-    AttachmentDescription2* pAttachments = nullptr;
+    constAttachmentDescription2* pAttachments = nullptr;
     uint32_t subpassCount = 0;
-    SubpassDescription2* pSubpasses = nullptr;
+    constSubpassDescription2* pSubpasses = nullptr;
     uint32_t dependencyCount = 0;
-    SubpassDependency2* pDependencies = nullptr;
+    constSubpassDependency2* pDependencies = nullptr;
     uint32_t correlatedViewMaskCount = 0;
-    uint32_t* pCorrelatedViewMasks = nullptr;
+    constuint32_t* pCorrelatedViewMasks = nullptr;
 };
 using RenderPassCreateInfo2KHR = RenderPassCreateInfo2;
 struct SubpassBeginInfo {
     StructureType sType = StructureType::eSubpassBeginInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     SubpassContents contents = static_cast<SubpassContents>(0);
 };
 using SubpassBeginInfoKHR = SubpassBeginInfo;
 struct SubpassEndInfo {
     StructureType sType = StructureType::eSubpassEndInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
 };
 using SubpassEndInfoKHR = SubpassEndInfo;
 struct PhysicalDeviceTimelineSemaphoreFeatures {
@@ -5251,32 +5251,32 @@ struct PhysicalDeviceTimelineSemaphoreProperties {
 using PhysicalDeviceTimelineSemaphorePropertiesKHR = PhysicalDeviceTimelineSemaphoreProperties;
 struct SemaphoreTypeCreateInfo {
     StructureType sType = StructureType::eSemaphoreTypeCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     SemaphoreType semaphoreType = static_cast<SemaphoreType>(0);
     uint64_t initialValue = 0;
 };
 using SemaphoreTypeCreateInfoKHR = SemaphoreTypeCreateInfo;
 struct TimelineSemaphoreSubmitInfo {
     StructureType sType = StructureType::eTimelineSemaphoreSubmitInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t waitSemaphoreValueCount = 0;
-    uint64_t* pWaitSemaphoreValues = nullptr;
+    constuint64_t* pWaitSemaphoreValues = nullptr;
     uint32_t signalSemaphoreValueCount = 0;
-    uint64_t* pSignalSemaphoreValues = nullptr;
+    constuint64_t* pSignalSemaphoreValues = nullptr;
 };
 using TimelineSemaphoreSubmitInfoKHR = TimelineSemaphoreSubmitInfo;
 struct SemaphoreWaitInfo {
     StructureType sType = StructureType::eSemaphoreWaitInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     SemaphoreWaitFlags flags = static_cast<SemaphoreWaitFlags>(0);
     uint32_t semaphoreCount = 0;
-    Semaphore* pSemaphores = nullptr;
-    uint64_t* pValues = nullptr;
+    constSemaphore* pSemaphores = nullptr;
+    constuint64_t* pValues = nullptr;
 };
 using SemaphoreWaitInfoKHR = SemaphoreWaitInfo;
 struct SemaphoreSignalInfo {
     StructureType sType = StructureType::eSemaphoreSignalInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Semaphore semaphore;
     uint64_t value = 0;
 };
@@ -5287,9 +5287,9 @@ struct VertexInputBindingDivisorDescriptionEXT {
 };
 struct PipelineVertexInputDivisorStateCreateInfoEXT {
     StructureType sType = StructureType::ePipelineVertexInputDivisorStateCreateInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t vertexBindingDivisorCount = 0;
-    VertexInputBindingDivisorDescriptionEXT* pVertexBindingDivisors = nullptr;
+    constVertexInputBindingDivisorDescriptionEXT* pVertexBindingDivisors = nullptr;
 };
 struct PhysicalDeviceVertexAttributeDivisorPropertiesEXT {
     StructureType sType = StructureType::ePhysicalDeviceVertexAttributeDivisorPropertiesEXT;
@@ -5307,7 +5307,7 @@ struct PhysicalDevicePCIBusInfoPropertiesEXT {
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 struct ImportAndroidHardwareBufferInfoANDROID {
     StructureType sType = StructureType::eImportAndroidHardwareBufferInfoANDROID;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     AHardwareBuffer* buffer = nullptr;
 };
 #endif // VK_USE_PLATFORM_ANDROID_KHR
@@ -5329,7 +5329,7 @@ struct AndroidHardwareBufferPropertiesANDROID {
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 struct MemoryGetAndroidHardwareBufferInfoANDROID {
     StructureType sType = StructureType::eMemoryGetAndroidHardwareBufferInfoANDROID;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DeviceMemory memory;
 };
 #endif // VK_USE_PLATFORM_ANDROID_KHR
@@ -5349,7 +5349,7 @@ struct AndroidHardwareBufferFormatPropertiesANDROID {
 #endif // VK_USE_PLATFORM_ANDROID_KHR
 struct CommandBufferInheritanceConditionalRenderingInfoEXT {
     StructureType sType = StructureType::eCommandBufferInheritanceConditionalRenderingInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     bool conditionalRenderingEnable = false;
 };
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
@@ -5416,15 +5416,15 @@ struct PhysicalDeviceDepthStencilResolveProperties {
 using PhysicalDeviceDepthStencilResolvePropertiesKHR = PhysicalDeviceDepthStencilResolveProperties;
 struct SubpassDescriptionDepthStencilResolve {
     StructureType sType = StructureType::eSubpassDescriptionDepthStencilResolve;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ResolveModeFlagBits depthResolveMode = static_cast<ResolveModeFlagBits>(0);
     ResolveModeFlagBits stencilResolveMode = static_cast<ResolveModeFlagBits>(0);
-    AttachmentReference2* pDepthStencilResolveAttachment = nullptr;
+    constAttachmentReference2* pDepthStencilResolveAttachment = nullptr;
 };
 using SubpassDescriptionDepthStencilResolveKHR = SubpassDescriptionDepthStencilResolve;
 struct ImageViewASTCDecodeModeEXT {
     StructureType sType = StructureType::eImageViewAstcDecodeModeEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Format decodeMode = static_cast<Format>(0);
 };
 struct PhysicalDeviceASTCDecodeFeaturesEXT {
@@ -5454,7 +5454,7 @@ struct PhysicalDeviceTransformFeedbackPropertiesEXT {
 };
 struct PipelineRasterizationStateStreamCreateInfoEXT {
     StructureType sType = StructureType::ePipelineRasterizationStateStreamCreateInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PipelineRasterizationStateStreamCreateFlagsEXT flags = static_cast<PipelineRasterizationStateStreamCreateFlagsEXT>(0);
     uint32_t rasterizationStream = 0;
 };
@@ -5465,7 +5465,7 @@ struct PhysicalDeviceRepresentativeFragmentTestFeaturesNV {
 };
 struct PipelineRepresentativeFragmentTestStateCreateInfoNV {
     StructureType sType = StructureType::ePipelineRepresentativeFragmentTestStateCreateInfoNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     bool representativeFragmentTestEnable = false;
 };
 struct PhysicalDeviceExclusiveScissorFeaturesNV {
@@ -5475,9 +5475,9 @@ struct PhysicalDeviceExclusiveScissorFeaturesNV {
 };
 struct PipelineViewportExclusiveScissorStateCreateInfoNV {
     StructureType sType = StructureType::ePipelineViewportExclusiveScissorStateCreateInfoNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t exclusiveScissorCount = 0;
-    Rect2D* pExclusiveScissors = nullptr;
+    constRect2D* pExclusiveScissors = nullptr;
 };
 struct PhysicalDeviceCornerSampledImageFeaturesNV {
     StructureType sType = StructureType::ePhysicalDeviceCornerSampledImageFeaturesNV;
@@ -5507,14 +5507,14 @@ struct PhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV {
 };
 struct ShadingRatePaletteNV {
     uint32_t shadingRatePaletteEntryCount = 0;
-    ShadingRatePaletteEntryNV* pShadingRatePaletteEntries = nullptr;
+    constShadingRatePaletteEntryNV* pShadingRatePaletteEntries = nullptr;
 };
 struct PipelineViewportShadingRateImageStateCreateInfoNV {
     StructureType sType = StructureType::ePipelineViewportShadingRateImageStateCreateInfoNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     bool shadingRateImageEnable = false;
     uint32_t viewportCount = 0;
-    ShadingRatePaletteNV* pShadingRatePalettes = nullptr;
+    constShadingRatePaletteNV* pShadingRatePalettes = nullptr;
 };
 struct PhysicalDeviceShadingRateImageFeaturesNV {
     StructureType sType = StructureType::ePhysicalDeviceShadingRateImageFeaturesNV;
@@ -5538,14 +5538,14 @@ struct CoarseSampleOrderCustomNV {
     ShadingRatePaletteEntryNV shadingRate = static_cast<ShadingRatePaletteEntryNV>(0);
     uint32_t sampleCount = 0;
     uint32_t sampleLocationCount = 0;
-    CoarseSampleLocationNV* pSampleLocations = nullptr;
+    constCoarseSampleLocationNV* pSampleLocations = nullptr;
 };
 struct PipelineViewportCoarseSampleOrderStateCreateInfoNV {
     StructureType sType = StructureType::ePipelineViewportCoarseSampleOrderStateCreateInfoNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     CoarseSampleOrderTypeNV sampleOrderType = static_cast<CoarseSampleOrderTypeNV>(0);
     uint32_t customSampleOrderCount = 0;
-    CoarseSampleOrderCustomNV* pCustomSampleOrders = nullptr;
+    constCoarseSampleOrderCustomNV* pCustomSampleOrders = nullptr;
 };
 struct PhysicalDeviceMeshShaderFeaturesNV {
     StructureType sType = StructureType::ePhysicalDeviceMeshShaderFeaturesNV;
@@ -5576,7 +5576,7 @@ struct DrawMeshTasksIndirectCommandNV {
 };
 struct RayTracingShaderGroupCreateInfoNV {
     StructureType sType = StructureType::eRayTracingShaderGroupCreateInfoNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     RayTracingShaderGroupTypeKHR type = static_cast<RayTracingShaderGroupTypeKHR>(0);
     uint32_t generalShader = 0;
     uint32_t closestHitShader = 0;
@@ -5586,23 +5586,23 @@ struct RayTracingShaderGroupCreateInfoNV {
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct RayTracingShaderGroupCreateInfoKHR {
     StructureType sType = StructureType::eRayTracingShaderGroupCreateInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     RayTracingShaderGroupTypeKHR type = static_cast<RayTracingShaderGroupTypeKHR>(0);
     uint32_t generalShader = 0;
     uint32_t closestHitShader = 0;
     uint32_t anyHitShader = 0;
     uint32_t intersectionShader = 0;
-    void* pShaderGroupCaptureReplayHandle = nullptr;
+    constvoid* pShaderGroupCaptureReplayHandle = nullptr;
 };
 #endif // VK_ENABLE_BETA_EXTENSIONS
 struct RayTracingPipelineCreateInfoNV {
     StructureType sType = StructureType::eRayTracingPipelineCreateInfoNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PipelineCreateFlags flags = static_cast<PipelineCreateFlags>(0);
     uint32_t stageCount = 0;
-    PipelineShaderStageCreateInfo* pStages = nullptr;
+    constPipelineShaderStageCreateInfo* pStages = nullptr;
     uint32_t groupCount = 0;
-    RayTracingShaderGroupCreateInfoNV* pGroups = nullptr;
+    constRayTracingShaderGroupCreateInfoNV* pGroups = nullptr;
     uint32_t maxRecursionDepth = 0;
     PipelineLayout layout;
     Pipeline basePipelineHandle;
@@ -5611,15 +5611,15 @@ struct RayTracingPipelineCreateInfoNV {
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct RayTracingPipelineCreateInfoKHR {
     StructureType sType = StructureType::eRayTracingPipelineCreateInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PipelineCreateFlags flags = static_cast<PipelineCreateFlags>(0);
     uint32_t stageCount = 0;
-    PipelineShaderStageCreateInfo* pStages = nullptr;
+    constPipelineShaderStageCreateInfo* pStages = nullptr;
     uint32_t groupCount = 0;
-    RayTracingShaderGroupCreateInfoKHR* pGroups = nullptr;
+    constRayTracingShaderGroupCreateInfoKHR* pGroups = nullptr;
     uint32_t maxRecursionDepth = 0;
     PipelineLibraryCreateInfoKHR libraries;
-    RayTracingPipelineInterfaceCreateInfoKHR* pLibraryInterface = nullptr;
+    constRayTracingPipelineInterfaceCreateInfoKHR* pLibraryInterface = nullptr;
     PipelineLayout layout;
     Pipeline basePipelineHandle;
     int32_t basePipelineIndex = 0;
@@ -5627,7 +5627,7 @@ struct RayTracingPipelineCreateInfoKHR {
 #endif // VK_ENABLE_BETA_EXTENSIONS
 struct GeometryTrianglesNV {
     StructureType sType = StructureType::eGeometryTrianglesNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Buffer vertexData;
     DeviceSize vertexOffset = 0;
     uint32_t vertexCount = 0;
@@ -5642,7 +5642,7 @@ struct GeometryTrianglesNV {
 };
 struct GeometryAABBNV {
     StructureType sType = StructureType::eGeometryAabbNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Buffer aabbData;
     uint32_t numAABBs = 0;
     uint32_t stride = 0;
@@ -5654,35 +5654,35 @@ struct GeometryDataNV {
 };
 struct GeometryNV {
     StructureType sType = StructureType::eGeometryNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     GeometryTypeKHR geometryType = static_cast<GeometryTypeKHR>(0);
     GeometryDataNV geometry;
     GeometryFlagsKHR flags = static_cast<GeometryFlagsKHR>(0);
 };
 struct AccelerationStructureInfoNV {
     StructureType sType = StructureType::eAccelerationStructureInfoNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     AccelerationStructureTypeNV type;
     BuildAccelerationStructureFlagsNV flags = static_cast<BuildAccelerationStructureFlagsNV>(0);
     uint32_t instanceCount = 0;
     uint32_t geometryCount = 0;
-    GeometryNV* pGeometries = nullptr;
+    constGeometryNV* pGeometries = nullptr;
 };
 struct AccelerationStructureCreateInfoNV {
     StructureType sType = StructureType::eAccelerationStructureCreateInfoNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DeviceSize compactedSize = 0;
     AccelerationStructureInfoNV info;
 };
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct BindAccelerationStructureMemoryInfoKHR {
     StructureType sType = StructureType::eBindAccelerationStructureMemoryInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     AccelerationStructureKHR accelerationStructure;
     DeviceMemory memory;
     DeviceSize memoryOffset = 0;
     uint32_t deviceIndexCount = 0;
-    uint32_t* pDeviceIndices = nullptr;
+    constuint32_t* pDeviceIndices = nullptr;
 };
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
@@ -5691,9 +5691,9 @@ using BindAccelerationStructureMemoryInfoNV = BindAccelerationStructureMemoryInf
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct WriteDescriptorSetAccelerationStructureKHR {
     StructureType sType = StructureType::eWriteDescriptorSetAccelerationStructureKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t accelerationStructureCount = 0;
-    AccelerationStructureKHR* pAccelerationStructures = nullptr;
+    constAccelerationStructureKHR* pAccelerationStructures = nullptr;
 };
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
@@ -5702,7 +5702,7 @@ using WriteDescriptorSetAccelerationStructureNV = WriteDescriptorSetAcceleration
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureMemoryRequirementsInfoKHR {
     StructureType sType = StructureType::eAccelerationStructureMemoryRequirementsInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     AccelerationStructureMemoryRequirementsTypeKHR type = static_cast<AccelerationStructureMemoryRequirementsTypeKHR>(0);
     AccelerationStructureBuildTypeKHR buildType = static_cast<AccelerationStructureBuildTypeKHR>(0);
     AccelerationStructureKHR accelerationStructure;
@@ -5710,7 +5710,7 @@ struct AccelerationStructureMemoryRequirementsInfoKHR {
 #endif // VK_ENABLE_BETA_EXTENSIONS
 struct AccelerationStructureMemoryRequirementsInfoNV {
     StructureType sType = StructureType::eAccelerationStructureMemoryRequirementsInfoNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     AccelerationStructureMemoryRequirementsTypeNV type;
     AccelerationStructureNV accelerationStructure;
 };
@@ -5784,24 +5784,24 @@ struct DrmFormatModifierPropertiesEXT {
 };
 struct PhysicalDeviceImageDrmFormatModifierInfoEXT {
     StructureType sType = StructureType::ePhysicalDeviceImageDrmFormatModifierInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint64_t drmFormatModifier = 0;
     SharingMode sharingMode = static_cast<SharingMode>(0);
     uint32_t queueFamilyIndexCount = 0;
-    uint32_t* pQueueFamilyIndices = nullptr;
+    constuint32_t* pQueueFamilyIndices = nullptr;
 };
 struct ImageDrmFormatModifierListCreateInfoEXT {
     StructureType sType = StructureType::eImageDrmFormatModifierListCreateInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t drmFormatModifierCount = 0;
-    uint64_t* pDrmFormatModifiers = nullptr;
+    constuint64_t* pDrmFormatModifiers = nullptr;
 };
 struct ImageDrmFormatModifierExplicitCreateInfoEXT {
     StructureType sType = StructureType::eImageDrmFormatModifierExplicitCreateInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint64_t drmFormatModifier = 0;
     uint32_t drmFormatModifierPlaneCount = 0;
-    SubresourceLayout* pPlaneLayouts = nullptr;
+    constSubresourceLayout* pPlaneLayouts = nullptr;
 };
 struct ImageDrmFormatModifierPropertiesEXT {
     StructureType sType = StructureType::eImageDrmFormatModifierPropertiesEXT;
@@ -5810,13 +5810,13 @@ struct ImageDrmFormatModifierPropertiesEXT {
 };
 struct ImageStencilUsageCreateInfo {
     StructureType sType = StructureType::eImageStencilUsageCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ImageUsageFlags stencilUsage = static_cast<ImageUsageFlags>(0);
 };
 using ImageStencilUsageCreateInfoEXT = ImageStencilUsageCreateInfo;
 struct DeviceMemoryOverallocationCreateInfoAMD {
     StructureType sType = StructureType::eDeviceMemoryOverallocationCreateInfoAMD;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     MemoryOverallocationBehaviorAMD overallocationBehavior = static_cast<MemoryOverallocationBehaviorAMD>(0);
 };
 struct PhysicalDeviceFragmentDensityMapFeaturesEXT {
@@ -5835,7 +5835,7 @@ struct PhysicalDeviceFragmentDensityMapPropertiesEXT {
 };
 struct RenderPassFragmentDensityMapCreateInfoEXT {
     StructureType sType = StructureType::eRenderPassFragmentDensityMapCreateInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     AttachmentReference fragmentDensityMapAttachment;
 };
 struct PhysicalDeviceScalarBlockLayoutFeatures {
@@ -5846,7 +5846,7 @@ struct PhysicalDeviceScalarBlockLayoutFeatures {
 using PhysicalDeviceScalarBlockLayoutFeaturesEXT = PhysicalDeviceScalarBlockLayoutFeatures;
 struct SurfaceProtectedCapabilitiesKHR {
     StructureType sType = StructureType::eSurfaceProtectedCapabilitiesKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     bool supportsProtected = false;
 };
 struct PhysicalDeviceUniformBufferStandardLayoutFeatures {
@@ -5862,7 +5862,7 @@ struct PhysicalDeviceDepthClipEnableFeaturesEXT {
 };
 struct PipelineRasterizationDepthClipStateCreateInfoEXT {
     StructureType sType = StructureType::ePipelineRasterizationDepthClipStateCreateInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PipelineRasterizationDepthClipStateCreateFlagsEXT flags = static_cast<PipelineRasterizationDepthClipStateCreateFlagsEXT>(0);
     bool depthClipEnable = false;
 };
@@ -5879,7 +5879,7 @@ struct PhysicalDeviceMemoryPriorityFeaturesEXT {
 };
 struct MemoryPriorityAllocateInfoEXT {
     StructureType sType = StructureType::eMemoryPriorityAllocateInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     float priority = 0.f;
 };
 struct PhysicalDeviceBufferDeviceAddressFeatures {
@@ -5900,20 +5900,20 @@ struct PhysicalDeviceBufferDeviceAddressFeaturesEXT {
 using PhysicalDeviceBufferAddressFeaturesEXT = PhysicalDeviceBufferDeviceAddressFeaturesEXT;
 struct BufferDeviceAddressInfo {
     StructureType sType = StructureType::eBufferDeviceAddressInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Buffer buffer;
 };
 using BufferDeviceAddressInfoKHR = BufferDeviceAddressInfo;
 using BufferDeviceAddressInfoEXT = BufferDeviceAddressInfo;
 struct BufferOpaqueCaptureAddressCreateInfo {
     StructureType sType = StructureType::eBufferOpaqueCaptureAddressCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint64_t opaqueCaptureAddress = 0;
 };
 using BufferOpaqueCaptureAddressCreateInfoKHR = BufferOpaqueCaptureAddressCreateInfo;
 struct BufferDeviceAddressCreateInfoEXT {
     StructureType sType = StructureType::eBufferDeviceAddressCreateInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DeviceAddress deviceAddress = 0;
 };
 struct PhysicalDeviceImageViewImageFormatInfoEXT {
@@ -5935,28 +5935,28 @@ struct PhysicalDeviceImagelessFramebufferFeatures {
 using PhysicalDeviceImagelessFramebufferFeaturesKHR = PhysicalDeviceImagelessFramebufferFeatures;
 struct FramebufferAttachmentsCreateInfo {
     StructureType sType = StructureType::eFramebufferAttachmentsCreateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t attachmentImageInfoCount = 0;
-    FramebufferAttachmentImageInfo* pAttachmentImageInfos = nullptr;
+    constFramebufferAttachmentImageInfo* pAttachmentImageInfos = nullptr;
 };
 using FramebufferAttachmentsCreateInfoKHR = FramebufferAttachmentsCreateInfo;
 struct FramebufferAttachmentImageInfo {
     StructureType sType = StructureType::eFramebufferAttachmentImageInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ImageCreateFlags flags = static_cast<ImageCreateFlags>(0);
     ImageUsageFlags usage = static_cast<ImageUsageFlags>(0);
     uint32_t width = 0;
     uint32_t height = 0;
     uint32_t layerCount = 0;
     uint32_t viewFormatCount = 0;
-    Format* pViewFormats = nullptr;
+    constFormat* pViewFormats = nullptr;
 };
 using FramebufferAttachmentImageInfoKHR = FramebufferAttachmentImageInfo;
 struct RenderPassAttachmentBeginInfo {
     StructureType sType = StructureType::eRenderPassAttachmentBeginInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t attachmentCount = 0;
-    ImageView* pAttachments = nullptr;
+    constImageView* pAttachments = nullptr;
 };
 using RenderPassAttachmentBeginInfoKHR = RenderPassAttachmentBeginInfo;
 struct PhysicalDeviceTextureCompressionASTCHDRFeaturesEXT {
@@ -5994,7 +5994,7 @@ struct PhysicalDeviceYcbcrImageArraysFeaturesEXT {
 };
 struct ImageViewHandleInfoNVX {
     StructureType sType = StructureType::eImageViewHandleInfoNVX;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     ImageView imageView;
     DescriptorType descriptorType = static_cast<DescriptorType>(0);
     Sampler sampler;
@@ -6002,7 +6002,7 @@ struct ImageViewHandleInfoNVX {
 #if defined(VK_USE_PLATFORM_GGP)
 struct PresentFrameTokenGGP {
     StructureType sType = StructureType::ePresentFrameTokenGGP;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     GgpFrameToken frameToken;
 };
 #endif // VK_USE_PLATFORM_GGP
@@ -6012,7 +6012,7 @@ struct PipelineCreationFeedbackEXT {
 };
 struct PipelineCreationFeedbackCreateInfoEXT {
     StructureType sType = StructureType::ePipelineCreationFeedbackCreateInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PipelineCreationFeedbackEXT* pPipelineCreationFeedback = nullptr;
     uint32_t pipelineStageCreationFeedbackCount = 0;
     PipelineCreationFeedbackEXT* pPipelineStageCreationFeedbacks = nullptr;
@@ -6027,7 +6027,7 @@ struct SurfaceFullScreenExclusiveInfoEXT {
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct SurfaceFullScreenExclusiveWin32InfoEXT {
     StructureType sType = StructureType::eSurfaceFullScreenExclusiveWin32InfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     HMONITOR hmonitor;
 };
 #endif // VK_USE_PLATFORM_WIN32_KHR
@@ -6051,7 +6051,7 @@ struct PhysicalDevicePerformanceQueryPropertiesKHR {
 };
 struct PerformanceCounterKHR {
     StructureType sType = StructureType::ePerformanceCounterKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PerformanceCounterUnitKHR unit = static_cast<PerformanceCounterUnitKHR>(0);
     PerformanceCounterScopeKHR scope = static_cast<PerformanceCounterScopeKHR>(0);
     PerformanceCounterStorageKHR storage = static_cast<PerformanceCounterStorageKHR>(0);
@@ -6059,7 +6059,7 @@ struct PerformanceCounterKHR {
 };
 struct PerformanceCounterDescriptionKHR {
     StructureType sType = StructureType::ePerformanceCounterDescriptionKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PerformanceCounterDescriptionFlagsKHR flags = static_cast<PerformanceCounterDescriptionFlagsKHR>(0);
     char name[MAX_DESCRIPTION_SIZE] = {};
     char category[MAX_DESCRIPTION_SIZE] = {};
@@ -6067,25 +6067,25 @@ struct PerformanceCounterDescriptionKHR {
 };
 struct QueryPoolPerformanceCreateInfoKHR {
     StructureType sType = StructureType::eQueryPoolPerformanceCreateInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t queueFamilyIndex = 0;
     uint32_t counterIndexCount = 0;
-    uint32_t* pCounterIndices = nullptr;
+    constuint32_t* pCounterIndices = nullptr;
 };
 struct AcquireProfilingLockInfoKHR {
     StructureType sType = StructureType::eAcquireProfilingLockInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     AcquireProfilingLockFlagsKHR flags = static_cast<AcquireProfilingLockFlagsKHR>(0);
     uint64_t timeout = 0;
 };
 struct PerformanceQuerySubmitInfoKHR {
     StructureType sType = StructureType::ePerformanceQuerySubmitInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t counterPassIndex = 0;
 };
 struct HeadlessSurfaceCreateInfoEXT {
     StructureType sType = StructureType::eHeadlessSurfaceCreateInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     HeadlessSurfaceCreateFlagsEXT flags = static_cast<HeadlessSurfaceCreateFlagsEXT>(0);
 };
 struct PhysicalDeviceCoverageReductionModeFeaturesNV {
@@ -6095,7 +6095,7 @@ struct PhysicalDeviceCoverageReductionModeFeaturesNV {
 };
 struct PipelineCoverageReductionStateCreateInfoNV {
     StructureType sType = StructureType::ePipelineCoverageReductionStateCreateInfoNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PipelineCoverageReductionStateCreateFlagsNV flags = static_cast<PipelineCoverageReductionStateCreateFlagsNV>(0);
     CoverageReductionModeNV coverageReductionMode = static_cast<CoverageReductionModeNV>(0);
 };
@@ -6118,35 +6118,35 @@ struct PerformanceValueINTEL {
 };
 struct InitializePerformanceApiInfoINTEL {
     StructureType sType = StructureType::eInitializePerformanceApiInfoINTEL;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     void* pUserData = nullptr;
 };
 struct QueryPoolPerformanceQueryCreateInfoINTEL {
     StructureType sType = StructureType::eQueryPoolCreateInfoINTEL;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     QueryPoolSamplingModeINTEL performanceCountersSampling = static_cast<QueryPoolSamplingModeINTEL>(0);
 };
 using QueryPoolCreateInfoINTEL = QueryPoolPerformanceQueryCreateInfoINTEL;
 struct PerformanceMarkerInfoINTEL {
     StructureType sType = StructureType::ePerformanceMarkerInfoINTEL;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint64_t marker = 0;
 };
 struct PerformanceStreamMarkerInfoINTEL {
     StructureType sType = StructureType::ePerformanceStreamMarkerInfoINTEL;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t marker = 0;
 };
 struct PerformanceOverrideInfoINTEL {
     StructureType sType = StructureType::ePerformanceOverrideInfoINTEL;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PerformanceOverrideTypeINTEL type = static_cast<PerformanceOverrideTypeINTEL>(0);
     bool enable = false;
     uint64_t parameter = 0;
 };
 struct PerformanceConfigurationAcquireInfoINTEL {
     StructureType sType = StructureType::ePerformanceConfigurationAcquireInfoINTEL;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PerformanceConfigurationTypeINTEL type = static_cast<PerformanceConfigurationTypeINTEL>(0);
 };
 struct PhysicalDeviceShaderClockFeaturesKHR {
@@ -6204,7 +6204,7 @@ struct PhysicalDevicePipelineExecutablePropertiesFeaturesKHR {
 };
 struct PipelineInfoKHR {
     StructureType sType = StructureType::ePipelineInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Pipeline pipeline;
 };
 struct PipelineExecutablePropertiesKHR {
@@ -6217,7 +6217,7 @@ struct PipelineExecutablePropertiesKHR {
 };
 struct PipelineExecutableInfoKHR {
     StructureType sType = StructureType::ePipelineExecutableInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Pipeline pipeline;
     uint32_t executableIndex = 0;
 };
@@ -6277,13 +6277,13 @@ struct PipelineShaderStageRequiredSubgroupSizeCreateInfoEXT {
 };
 struct MemoryOpaqueCaptureAddressAllocateInfo {
     StructureType sType = StructureType::eMemoryOpaqueCaptureAddressAllocateInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint64_t opaqueCaptureAddress = 0;
 };
 using MemoryOpaqueCaptureAddressAllocateInfoKHR = MemoryOpaqueCaptureAddressAllocateInfo;
 struct DeviceMemoryOpaqueCaptureAddressInfo {
     StructureType sType = StructureType::eDeviceMemoryOpaqueCaptureAddressInfo;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DeviceMemory memory;
 };
 using DeviceMemoryOpaqueCaptureAddressInfoKHR = DeviceMemoryOpaqueCaptureAddressInfo;
@@ -6304,7 +6304,7 @@ struct PhysicalDeviceLineRasterizationPropertiesEXT {
 };
 struct PipelineRasterizationLineStateCreateInfoEXT {
     StructureType sType = StructureType::ePipelineRasterizationLineStateCreateInfoEXT;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     LineRasterizationModeEXT lineRasterizationMode = static_cast<LineRasterizationModeEXT>(0);
     bool stippledLineEnable = false;
     uint32_t lineStippleFactor = 0;
@@ -6459,7 +6459,7 @@ struct PhysicalDeviceVulkan12Properties {
 };
 struct PipelineCompilerControlCreateInfoAMD {
     StructureType sType = StructureType::ePipelineCompilerControlCreateInfoAMD;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     PipelineCompilerControlFlagsAMD compilerControlFlags = static_cast<PipelineCompilerControlFlagsAMD>(0);
 };
 struct PhysicalDeviceCoherentMemoryFeaturesAMD {
@@ -6479,7 +6479,7 @@ struct PhysicalDeviceToolPropertiesEXT {
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureGeometryTrianglesDataKHR {
     StructureType sType = StructureType::eAccelerationStructureGeometryTrianglesDataKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     Format vertexFormat = static_cast<Format>(0);
     DeviceOrHostAddressConstKHR vertexData;
     DeviceSize vertexStride = 0;
@@ -6491,7 +6491,7 @@ struct AccelerationStructureGeometryTrianglesDataKHR {
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureGeometryAabbsDataKHR {
     StructureType sType = StructureType::eAccelerationStructureGeometryAabbsDataKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DeviceOrHostAddressConstKHR data;
     DeviceSize stride = 0;
 };
@@ -6499,7 +6499,7 @@ struct AccelerationStructureGeometryAabbsDataKHR {
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureGeometryInstancesDataKHR {
     StructureType sType = StructureType::eAccelerationStructureGeometryInstancesDataKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     bool arrayOfPointers = false;
     DeviceOrHostAddressConstKHR data;
 };
@@ -6507,7 +6507,7 @@ struct AccelerationStructureGeometryInstancesDataKHR {
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureGeometryKHR {
     StructureType sType = StructureType::eAccelerationStructureGeometryKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     GeometryTypeKHR geometryType = static_cast<GeometryTypeKHR>(0);
     AccelerationStructureGeometryDataKHR geometry;
     GeometryFlagsKHR flags = static_cast<GeometryFlagsKHR>(0);
@@ -6516,7 +6516,7 @@ struct AccelerationStructureGeometryKHR {
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureBuildGeometryInfoKHR {
     StructureType sType = StructureType::eAccelerationStructureBuildGeometryInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     AccelerationStructureTypeKHR type = static_cast<AccelerationStructureTypeKHR>(0);
     BuildAccelerationStructureFlagsKHR flags = static_cast<BuildAccelerationStructureFlagsKHR>(0);
     bool update = false;
@@ -6524,7 +6524,7 @@ struct AccelerationStructureBuildGeometryInfoKHR {
     AccelerationStructureKHR dstAccelerationStructure;
     bool geometryArrayOfPointers = false;
     uint32_t geometryCount = 0;
-    AccelerationStructureGeometryKHR* ppGeometries = nullptr;
+    constAccelerationStructureGeometryKHR*const* ppGeometries = nullptr;
     DeviceOrHostAddressKHR scratchData;
 };
 #endif // VK_ENABLE_BETA_EXTENSIONS
@@ -6539,7 +6539,7 @@ struct AccelerationStructureBuildOffsetInfoKHR {
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureCreateGeometryTypeInfoKHR {
     StructureType sType = StructureType::eAccelerationStructureCreateGeometryTypeInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     GeometryTypeKHR geometryType = static_cast<GeometryTypeKHR>(0);
     uint32_t maxPrimitiveCount = 0;
     IndexType indexType = static_cast<IndexType>(0);
@@ -6551,12 +6551,12 @@ struct AccelerationStructureCreateGeometryTypeInfoKHR {
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureCreateInfoKHR {
     StructureType sType = StructureType::eAccelerationStructureCreateInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DeviceSize compactedSize = 0;
     AccelerationStructureTypeKHR type = static_cast<AccelerationStructureTypeKHR>(0);
     BuildAccelerationStructureFlagsKHR flags = static_cast<BuildAccelerationStructureFlagsKHR>(0);
     uint32_t maxGeometryCount = 0;
-    AccelerationStructureCreateGeometryTypeInfoKHR* pGeometryInfos = nullptr;
+    constAccelerationStructureCreateGeometryTypeInfoKHR* pGeometryInfos = nullptr;
     DeviceAddress deviceAddress = 0;
 };
 #endif // VK_ENABLE_BETA_EXTENSIONS
@@ -6575,7 +6575,7 @@ using AabbPositionsNV = AabbPositionsKHR;
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct TransformMatrixKHR {
-    float matrix[3] = {};
+    float matrix[3][4] = {};
 };
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
@@ -6597,21 +6597,21 @@ using AccelerationStructureInstanceNV = AccelerationStructureInstanceKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureDeviceAddressInfoKHR {
     StructureType sType = StructureType::eAccelerationStructureDeviceAddressInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     AccelerationStructureKHR accelerationStructure;
 };
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureVersionKHR {
     StructureType sType = StructureType::eAccelerationStructureVersionKHR;
-    void* pNext = nullptr;
-    uint8_t* versionData = nullptr;
+    constvoid* pNext = nullptr;
+    constuint8_t* versionData = nullptr;
 };
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct CopyAccelerationStructureInfoKHR {
     StructureType sType = StructureType::eCopyAccelerationStructureInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     AccelerationStructureKHR src;
     AccelerationStructureKHR dst;
     CopyAccelerationStructureModeKHR mode = static_cast<CopyAccelerationStructureModeKHR>(0);
@@ -6620,7 +6620,7 @@ struct CopyAccelerationStructureInfoKHR {
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct CopyAccelerationStructureToMemoryInfoKHR {
     StructureType sType = StructureType::eCopyAccelerationStructureToMemoryInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     AccelerationStructureKHR src;
     DeviceOrHostAddressKHR dst;
     CopyAccelerationStructureModeKHR mode = static_cast<CopyAccelerationStructureModeKHR>(0);
@@ -6629,7 +6629,7 @@ struct CopyAccelerationStructureToMemoryInfoKHR {
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct CopyMemoryToAccelerationStructureInfoKHR {
     StructureType sType = StructureType::eCopyMemoryToAccelerationStructureInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DeviceOrHostAddressConstKHR src;
     AccelerationStructureKHR dst;
     CopyAccelerationStructureModeKHR mode = static_cast<CopyAccelerationStructureModeKHR>(0);
@@ -6638,7 +6638,7 @@ struct CopyMemoryToAccelerationStructureInfoKHR {
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct RayTracingPipelineInterfaceCreateInfoKHR {
     StructureType sType = StructureType::eRayTracingPipelineInterfaceCreateInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t maxPayloadSize = 0;
     uint32_t maxAttributeSize = 0;
     uint32_t maxCallableSize = 0;
@@ -6647,16 +6647,16 @@ struct RayTracingPipelineInterfaceCreateInfoKHR {
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct DeferredOperationInfoKHR {
     StructureType sType = StructureType::eDeferredOperationInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DeferredOperationKHR operationHandle;
 };
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct PipelineLibraryCreateInfoKHR {
     StructureType sType = StructureType::ePipelineLibraryCreateInfoKHR;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     uint32_t libraryCount = 0;
-    Pipeline* pLibraries = nullptr;
+    constPipeline* pLibraries = nullptr;
 };
 #endif // VK_ENABLE_BETA_EXTENSIONS
 struct RenderPassTransformBeginInfoQCOM {
@@ -6677,14 +6677,14 @@ struct PhysicalDeviceDiagnosticsConfigFeaturesNV {
 };
 struct DeviceDiagnosticsConfigCreateInfoNV {
     StructureType sType = StructureType::eDeviceDiagnosticsConfigCreateInfoNV;
-    void* pNext = nullptr;
+    constvoid* pNext = nullptr;
     DeviceDiagnosticsConfigFlagsNV flags = static_cast<DeviceDiagnosticsConfigFlagsNV>(0);
 };
 VkResult CreateInstance(
-    InstanceCreateInfo* pCreateInfo,
-    AllocationCallbacks* pAllocator,
+    constInstanceCreateInfo* pCreateInfo,
+    constAllocationCallbacks* pAllocator,
     Instance* pInstance) {
-    return vkCreateInstance( reinterpret_cast<VkInstanceCreateInfo*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkInstance*>(pInstance));
+    return vkCreateInstance( reinterpret_cast<const InstanceCreateInfo*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<Instance*>(pInstance));
 }
 VkResult EnumerateInstanceVersion(
     uint32_t* pApiVersion) {
@@ -6693,13 +6693,13 @@ VkResult EnumerateInstanceVersion(
 VkResult EnumerateInstanceLayerProperties(
     uint32_t* pPropertyCount,
     LayerProperties* pProperties) {
-    return vkEnumerateInstanceLayerProperties( reinterpret_cast<uint32_t*>(pPropertyCount), reinterpret_cast<VkLayerProperties*>(pProperties));
+    return vkEnumerateInstanceLayerProperties( reinterpret_cast<uint32_t*>(pPropertyCount), reinterpret_cast<LayerProperties*>(pProperties));
 }
 VkResult EnumerateInstanceExtensionProperties(
-    char* pLayerName,
+    constchar* pLayerName,
     uint32_t* pPropertyCount,
     ExtensionProperties* pProperties) {
-    return vkEnumerateInstanceExtensionProperties( reinterpret_cast<char*>(pLayerName), reinterpret_cast<uint32_t*>(pPropertyCount), reinterpret_cast<VkExtensionProperties*>(pProperties));
+    return vkEnumerateInstanceExtensionProperties( reinterpret_cast<const char*>(pLayerName), reinterpret_cast<uint32_t*>(pPropertyCount), reinterpret_cast<ExtensionProperties*>(pProperties));
 }
 const auto ResetQueryPoolEXT = ResetQueryPool;
 const auto GetPhysicalDeviceFeatures2KHR = GetPhysicalDeviceFeatures2;
@@ -6751,103 +6751,103 @@ struct Instance {
     VkInstance handle;
     VkInstance get() { return handle; }
     void DestroyInstance(
-        AllocationCallbacks* pAllocator) {
-        return vkDestroyInstance(get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroyInstance(get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
     VkResult EnumeratePhysicalDevices(
         uint32_t* pPhysicalDeviceCount,    
         PhysicalDevice* pPhysicalDevices) {
-        return vkEnumeratePhysicalDevices(get(), reinterpret_cast<uint32_t*>(pPhysicalDeviceCount), reinterpret_cast<VkPhysicalDevice*>(pPhysicalDevices));
+        return vkEnumeratePhysicalDevices(get(), reinterpret_cast<uint32_t*>(pPhysicalDeviceCount), reinterpret_cast<PhysicalDevice*>(pPhysicalDevices));
     }
     PFN_vkVoidFunction GetInstanceProcAddr(
-        char* pName) {
-        return vkGetInstanceProcAddr(get(), reinterpret_cast<char*>(pName));
+        constchar* pName) {
+        return vkGetInstanceProcAddr(get(), reinterpret_cast<const char*>(pName));
     }
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
     VkResult CreateAndroidSurfaceKHR(
-        AndroidSurfaceCreateInfoKHR* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constAndroidSurfaceCreateInfoKHR* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         SurfaceKHR* pSurface) {
-        return vkCreateAndroidSurfaceKHR(get(), reinterpret_cast<VkAndroidSurfaceCreateInfoKHR*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkSurfaceKHR*>(pSurface));
+        return vkCreateAndroidSurfaceKHR(get(), reinterpret_cast<const AndroidSurfaceCreateInfoKHR*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<SurfaceKHR*>(pSurface));
     }
 #endif // VK_USE_PLATFORM_ANDROID_KHR
     VkResult CreateDisplayPlaneSurfaceKHR(
-        DisplaySurfaceCreateInfoKHR* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constDisplaySurfaceCreateInfoKHR* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         SurfaceKHR* pSurface) {
-        return vkCreateDisplayPlaneSurfaceKHR(get(), reinterpret_cast<VkDisplaySurfaceCreateInfoKHR*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkSurfaceKHR*>(pSurface));
+        return vkCreateDisplayPlaneSurfaceKHR(get(), reinterpret_cast<const DisplaySurfaceCreateInfoKHR*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<SurfaceKHR*>(pSurface));
     }
     void DestroySurfaceKHR(
         SurfaceKHR surface,    
-        AllocationCallbacks* pAllocator) {
-        return vkDestroySurfaceKHR(get(),surface.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroySurfaceKHR(get(),surface.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
 #if defined(VK_USE_PLATFORM_VI_NN)
     VkResult CreateViSurfaceNN(
-        ViSurfaceCreateInfoNN* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constViSurfaceCreateInfoNN* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         SurfaceKHR* pSurface) {
-        return vkCreateViSurfaceNN(get(), reinterpret_cast<VkViSurfaceCreateInfoNN*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkSurfaceKHR*>(pSurface));
+        return vkCreateViSurfaceNN(get(), reinterpret_cast<const ViSurfaceCreateInfoNN*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<SurfaceKHR*>(pSurface));
     }
 #endif // VK_USE_PLATFORM_VI_NN
 #if defined(VK_USE_PLATFORM_WAYLAND_KHR)
     VkResult CreateWaylandSurfaceKHR(
-        WaylandSurfaceCreateInfoKHR* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constWaylandSurfaceCreateInfoKHR* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         SurfaceKHR* pSurface) {
-        return vkCreateWaylandSurfaceKHR(get(), reinterpret_cast<VkWaylandSurfaceCreateInfoKHR*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkSurfaceKHR*>(pSurface));
+        return vkCreateWaylandSurfaceKHR(get(), reinterpret_cast<const WaylandSurfaceCreateInfoKHR*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<SurfaceKHR*>(pSurface));
     }
 #endif // VK_USE_PLATFORM_WAYLAND_KHR
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     VkResult CreateWin32SurfaceKHR(
-        Win32SurfaceCreateInfoKHR* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constWin32SurfaceCreateInfoKHR* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         SurfaceKHR* pSurface) {
-        return vkCreateWin32SurfaceKHR(get(), reinterpret_cast<VkWin32SurfaceCreateInfoKHR*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkSurfaceKHR*>(pSurface));
+        return vkCreateWin32SurfaceKHR(get(), reinterpret_cast<const Win32SurfaceCreateInfoKHR*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<SurfaceKHR*>(pSurface));
     }
 #endif // VK_USE_PLATFORM_WIN32_KHR
 #if defined(VK_USE_PLATFORM_XLIB_KHR)
     VkResult CreateXlibSurfaceKHR(
-        XlibSurfaceCreateInfoKHR* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constXlibSurfaceCreateInfoKHR* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         SurfaceKHR* pSurface) {
-        return vkCreateXlibSurfaceKHR(get(), reinterpret_cast<VkXlibSurfaceCreateInfoKHR*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkSurfaceKHR*>(pSurface));
+        return vkCreateXlibSurfaceKHR(get(), reinterpret_cast<const XlibSurfaceCreateInfoKHR*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<SurfaceKHR*>(pSurface));
     }
 #endif // VK_USE_PLATFORM_XLIB_KHR
 #if defined(VK_USE_PLATFORM_XCB_KHR)
     VkResult CreateXcbSurfaceKHR(
-        XcbSurfaceCreateInfoKHR* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constXcbSurfaceCreateInfoKHR* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         SurfaceKHR* pSurface) {
-        return vkCreateXcbSurfaceKHR(get(), reinterpret_cast<VkXcbSurfaceCreateInfoKHR*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkSurfaceKHR*>(pSurface));
+        return vkCreateXcbSurfaceKHR(get(), reinterpret_cast<const XcbSurfaceCreateInfoKHR*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<SurfaceKHR*>(pSurface));
     }
 #endif // VK_USE_PLATFORM_XCB_KHR
 #if defined(VK_USE_PLATFORM_FUCHSIA)
     VkResult CreateImagePipeSurfaceFUCHSIA(
-        ImagePipeSurfaceCreateInfoFUCHSIA* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constImagePipeSurfaceCreateInfoFUCHSIA* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         SurfaceKHR* pSurface) {
-        return vkCreateImagePipeSurfaceFUCHSIA(get(), reinterpret_cast<VkImagePipeSurfaceCreateInfoFUCHSIA*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkSurfaceKHR*>(pSurface));
+        return vkCreateImagePipeSurfaceFUCHSIA(get(), reinterpret_cast<const ImagePipeSurfaceCreateInfoFUCHSIA*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<SurfaceKHR*>(pSurface));
     }
 #endif // VK_USE_PLATFORM_FUCHSIA
 #if defined(VK_USE_PLATFORM_GGP)
     VkResult CreateStreamDescriptorSurfaceGGP(
-        StreamDescriptorSurfaceCreateInfoGGP* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constStreamDescriptorSurfaceCreateInfoGGP* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         SurfaceKHR* pSurface) {
-        return vkCreateStreamDescriptorSurfaceGGP(get(), reinterpret_cast<VkStreamDescriptorSurfaceCreateInfoGGP*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkSurfaceKHR*>(pSurface));
+        return vkCreateStreamDescriptorSurfaceGGP(get(), reinterpret_cast<const StreamDescriptorSurfaceCreateInfoGGP*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<SurfaceKHR*>(pSurface));
     }
 #endif // VK_USE_PLATFORM_GGP
     VkResult CreateDebugReportCallbackEXT(
-        DebugReportCallbackCreateInfoEXT* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constDebugReportCallbackCreateInfoEXT* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         DebugReportCallbackEXT* pCallback) {
-        return vkCreateDebugReportCallbackEXT(get(), reinterpret_cast<VkDebugReportCallbackCreateInfoEXT*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkDebugReportCallbackEXT*>(pCallback));
+        return vkCreateDebugReportCallbackEXT(get(), reinterpret_cast<const DebugReportCallbackCreateInfoEXT*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<DebugReportCallbackEXT*>(pCallback));
     }
     void DestroyDebugReportCallbackEXT(
         DebugReportCallbackEXT callback,    
-        AllocationCallbacks* pAllocator) {
-        return vkDestroyDebugReportCallbackEXT(get(),callback.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroyDebugReportCallbackEXT(get(),callback.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
     void DebugReportMessageEXT(
         DebugReportFlagsEXT flags,    
@@ -6855,61 +6855,61 @@ struct Instance {
         uint64_t object,    
         size_t location,    
         int32_t messageCode,    
-        char* pLayerPrefix,    
-        char* pMessage) {
-        return vkDebugReportMessageEXT(get(), static_cast<VkDebugReportFlagsEXT>(flags), static_cast<VkDebugReportObjectTypeEXT>(objectType), static_cast<uint64_t>(object), static_cast<size_t>(location), static_cast<int32_t>(messageCode), reinterpret_cast<char*>(pLayerPrefix), reinterpret_cast<char*>(pMessage));
+        constchar* pLayerPrefix,    
+        constchar* pMessage) {
+        return vkDebugReportMessageEXT(get(), static_cast<DebugReportFlagsEXT>(flags), static_cast<DebugReportObjectTypeEXT>(objectType), static_cast<uint64_t>(object), static_cast<size_t>(location), static_cast<int32_t>(messageCode), reinterpret_cast<const char*>(pLayerPrefix), reinterpret_cast<const char*>(pMessage));
     }
     VkResult EnumeratePhysicalDeviceGroups(
         uint32_t* pPhysicalDeviceGroupCount,    
         PhysicalDeviceGroupProperties* pPhysicalDeviceGroupProperties) {
-        return vkEnumeratePhysicalDeviceGroups(get(), reinterpret_cast<uint32_t*>(pPhysicalDeviceGroupCount), reinterpret_cast<VkPhysicalDeviceGroupProperties*>(pPhysicalDeviceGroupProperties));
+        return vkEnumeratePhysicalDeviceGroups(get(), reinterpret_cast<uint32_t*>(pPhysicalDeviceGroupCount), reinterpret_cast<PhysicalDeviceGroupProperties*>(pPhysicalDeviceGroupProperties));
     }
 #if defined(VK_USE_PLATFORM_IOS_MVK)
     VkResult CreateIOSSurfaceMVK(
-        IOSSurfaceCreateInfoMVK* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constIOSSurfaceCreateInfoMVK* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         SurfaceKHR* pSurface) {
-        return vkCreateIOSSurfaceMVK(get(), reinterpret_cast<VkIOSSurfaceCreateInfoMVK*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkSurfaceKHR*>(pSurface));
+        return vkCreateIOSSurfaceMVK(get(), reinterpret_cast<const IOSSurfaceCreateInfoMVK*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<SurfaceKHR*>(pSurface));
     }
 #endif // VK_USE_PLATFORM_IOS_MVK
 #if defined(VK_USE_PLATFORM_MACOS_MVK)
     VkResult CreateMacOSSurfaceMVK(
-        MacOSSurfaceCreateInfoMVK* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constMacOSSurfaceCreateInfoMVK* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         SurfaceKHR* pSurface) {
-        return vkCreateMacOSSurfaceMVK(get(), reinterpret_cast<VkMacOSSurfaceCreateInfoMVK*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkSurfaceKHR*>(pSurface));
+        return vkCreateMacOSSurfaceMVK(get(), reinterpret_cast<const MacOSSurfaceCreateInfoMVK*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<SurfaceKHR*>(pSurface));
     }
 #endif // VK_USE_PLATFORM_MACOS_MVK
 #if defined(VK_USE_PLATFORM_METAL_EXT)
     VkResult CreateMetalSurfaceEXT(
-        MetalSurfaceCreateInfoEXT* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constMetalSurfaceCreateInfoEXT* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         SurfaceKHR* pSurface) {
-        return vkCreateMetalSurfaceEXT(get(), reinterpret_cast<VkMetalSurfaceCreateInfoEXT*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkSurfaceKHR*>(pSurface));
+        return vkCreateMetalSurfaceEXT(get(), reinterpret_cast<const MetalSurfaceCreateInfoEXT*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<SurfaceKHR*>(pSurface));
     }
 #endif // VK_USE_PLATFORM_METAL_EXT
     VkResult CreateDebugUtilsMessengerEXT(
-        DebugUtilsMessengerCreateInfoEXT* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constDebugUtilsMessengerCreateInfoEXT* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         DebugUtilsMessengerEXT* pMessenger) {
-        return vkCreateDebugUtilsMessengerEXT(get(), reinterpret_cast<VkDebugUtilsMessengerCreateInfoEXT*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkDebugUtilsMessengerEXT*>(pMessenger));
+        return vkCreateDebugUtilsMessengerEXT(get(), reinterpret_cast<const DebugUtilsMessengerCreateInfoEXT*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<DebugUtilsMessengerEXT*>(pMessenger));
     }
     void DestroyDebugUtilsMessengerEXT(
         DebugUtilsMessengerEXT messenger,    
-        AllocationCallbacks* pAllocator) {
-        return vkDestroyDebugUtilsMessengerEXT(get(),messenger.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroyDebugUtilsMessengerEXT(get(),messenger.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
     void SubmitDebugUtilsMessageEXT(
         DebugUtilsMessageSeverityFlagBitsEXT messageSeverity,    
         DebugUtilsMessageTypeFlagsEXT messageTypes,    
-        DebugUtilsMessengerCallbackDataEXT* pCallbackData) {
-        return vkSubmitDebugUtilsMessageEXT(get(), static_cast<VkDebugUtilsMessageSeverityFlagBitsEXT>(messageSeverity), static_cast<VkDebugUtilsMessageTypeFlagsEXT>(messageTypes), reinterpret_cast<VkDebugUtilsMessengerCallbackDataEXT*>(pCallbackData));
+        constDebugUtilsMessengerCallbackDataEXT* pCallbackData) {
+        return vkSubmitDebugUtilsMessageEXT(get(), static_cast<DebugUtilsMessageSeverityFlagBitsEXT>(messageSeverity), static_cast<DebugUtilsMessageTypeFlagsEXT>(messageTypes), reinterpret_cast<const DebugUtilsMessengerCallbackDataEXT*>(pCallbackData));
     }
     VkResult CreateHeadlessSurfaceEXT(
-        HeadlessSurfaceCreateInfoEXT* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constHeadlessSurfaceCreateInfoEXT* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         SurfaceKHR* pSurface) {
-        return vkCreateHeadlessSurfaceEXT(get(), reinterpret_cast<VkHeadlessSurfaceCreateInfoEXT*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkSurfaceKHR*>(pSurface));
+        return vkCreateHeadlessSurfaceEXT(get(), reinterpret_cast<const HeadlessSurfaceCreateInfoEXT*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<SurfaceKHR*>(pSurface));
     }
 };
 struct PhysicalDevice {
@@ -6917,25 +6917,25 @@ struct PhysicalDevice {
     VkPhysicalDevice get() { return handle; }
     void GetPhysicalDeviceProperties(
         PhysicalDeviceProperties* pProperties) {
-        return vkGetPhysicalDeviceProperties(get(), reinterpret_cast<VkPhysicalDeviceProperties*>(pProperties));
+        return vkGetPhysicalDeviceProperties(get(), reinterpret_cast<PhysicalDeviceProperties*>(pProperties));
     }
     void GetPhysicalDeviceQueueFamilyProperties(
         uint32_t* pQueueFamilyPropertyCount,    
         QueueFamilyProperties* pQueueFamilyProperties) {
-        return vkGetPhysicalDeviceQueueFamilyProperties(get(), reinterpret_cast<uint32_t*>(pQueueFamilyPropertyCount), reinterpret_cast<VkQueueFamilyProperties*>(pQueueFamilyProperties));
+        return vkGetPhysicalDeviceQueueFamilyProperties(get(), reinterpret_cast<uint32_t*>(pQueueFamilyPropertyCount), reinterpret_cast<QueueFamilyProperties*>(pQueueFamilyProperties));
     }
     void GetPhysicalDeviceMemoryProperties(
         PhysicalDeviceMemoryProperties* pMemoryProperties) {
-        return vkGetPhysicalDeviceMemoryProperties(get(), reinterpret_cast<VkPhysicalDeviceMemoryProperties*>(pMemoryProperties));
+        return vkGetPhysicalDeviceMemoryProperties(get(), reinterpret_cast<PhysicalDeviceMemoryProperties*>(pMemoryProperties));
     }
     void GetPhysicalDeviceFeatures(
         PhysicalDeviceFeatures* pFeatures) {
-        return vkGetPhysicalDeviceFeatures(get(), reinterpret_cast<VkPhysicalDeviceFeatures*>(pFeatures));
+        return vkGetPhysicalDeviceFeatures(get(), reinterpret_cast<PhysicalDeviceFeatures*>(pFeatures));
     }
     void GetPhysicalDeviceFormatProperties(
         Format format,    
         FormatProperties* pFormatProperties) {
-        return vkGetPhysicalDeviceFormatProperties(get(), static_cast<VkFormat>(format), reinterpret_cast<VkFormatProperties*>(pFormatProperties));
+        return vkGetPhysicalDeviceFormatProperties(get(), static_cast<Format>(format), reinterpret_cast<FormatProperties*>(pFormatProperties));
     }
     VkResult GetPhysicalDeviceImageFormatProperties(
         Format format,    
@@ -6944,24 +6944,24 @@ struct PhysicalDevice {
         ImageUsageFlags usage,    
         ImageCreateFlags flags,    
         ImageFormatProperties* pImageFormatProperties) {
-        return vkGetPhysicalDeviceImageFormatProperties(get(), static_cast<VkFormat>(format), static_cast<VkImageType>(type), static_cast<VkImageTiling>(tiling), static_cast<VkImageUsageFlags>(usage), static_cast<VkImageCreateFlags>(flags), reinterpret_cast<VkImageFormatProperties*>(pImageFormatProperties));
+        return vkGetPhysicalDeviceImageFormatProperties(get(), static_cast<Format>(format), static_cast<ImageType>(type), static_cast<ImageTiling>(tiling), static_cast<ImageUsageFlags>(usage), static_cast<ImageCreateFlags>(flags), reinterpret_cast<ImageFormatProperties*>(pImageFormatProperties));
     }
     VkResult CreateDevice(
-        DeviceCreateInfo* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constDeviceCreateInfo* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         Device* pDevice) {
-        return vkCreateDevice(get(), reinterpret_cast<VkDeviceCreateInfo*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkDevice*>(pDevice));
+        return vkCreateDevice(get(), reinterpret_cast<const DeviceCreateInfo*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<Device*>(pDevice));
     }
     VkResult EnumerateDeviceLayerProperties(
         uint32_t* pPropertyCount,    
         LayerProperties* pProperties) {
-        return vkEnumerateDeviceLayerProperties(get(), reinterpret_cast<uint32_t*>(pPropertyCount), reinterpret_cast<VkLayerProperties*>(pProperties));
+        return vkEnumerateDeviceLayerProperties(get(), reinterpret_cast<uint32_t*>(pPropertyCount), reinterpret_cast<LayerProperties*>(pProperties));
     }
     VkResult EnumerateDeviceExtensionProperties(
-        char* pLayerName,    
+        constchar* pLayerName,    
         uint32_t* pPropertyCount,    
         ExtensionProperties* pProperties) {
-        return vkEnumerateDeviceExtensionProperties(get(), reinterpret_cast<char*>(pLayerName), reinterpret_cast<uint32_t*>(pPropertyCount), reinterpret_cast<VkExtensionProperties*>(pProperties));
+        return vkEnumerateDeviceExtensionProperties(get(), reinterpret_cast<const char*>(pLayerName), reinterpret_cast<uint32_t*>(pPropertyCount), reinterpret_cast<ExtensionProperties*>(pProperties));
     }
     void GetPhysicalDeviceSparseImageFormatProperties(
         Format format,    
@@ -6971,65 +6971,65 @@ struct PhysicalDevice {
         ImageTiling tiling,    
         uint32_t* pPropertyCount,    
         SparseImageFormatProperties* pProperties) {
-        return vkGetPhysicalDeviceSparseImageFormatProperties(get(), static_cast<VkFormat>(format), static_cast<VkImageType>(type), static_cast<VkSampleCountFlagBits>(samples), static_cast<VkImageUsageFlags>(usage), static_cast<VkImageTiling>(tiling), reinterpret_cast<uint32_t*>(pPropertyCount), reinterpret_cast<VkSparseImageFormatProperties*>(pProperties));
+        return vkGetPhysicalDeviceSparseImageFormatProperties(get(), static_cast<Format>(format), static_cast<ImageType>(type), static_cast<SampleCountFlagBits>(samples), static_cast<ImageUsageFlags>(usage), static_cast<ImageTiling>(tiling), reinterpret_cast<uint32_t*>(pPropertyCount), reinterpret_cast<SparseImageFormatProperties*>(pProperties));
     }
     VkResult GetPhysicalDeviceDisplayPropertiesKHR(
         uint32_t* pPropertyCount,    
         DisplayPropertiesKHR* pProperties) {
-        return vkGetPhysicalDeviceDisplayPropertiesKHR(get(), reinterpret_cast<uint32_t*>(pPropertyCount), reinterpret_cast<VkDisplayPropertiesKHR*>(pProperties));
+        return vkGetPhysicalDeviceDisplayPropertiesKHR(get(), reinterpret_cast<uint32_t*>(pPropertyCount), reinterpret_cast<DisplayPropertiesKHR*>(pProperties));
     }
     VkResult GetPhysicalDeviceDisplayPlanePropertiesKHR(
         uint32_t* pPropertyCount,    
         DisplayPlanePropertiesKHR* pProperties) {
-        return vkGetPhysicalDeviceDisplayPlanePropertiesKHR(get(), reinterpret_cast<uint32_t*>(pPropertyCount), reinterpret_cast<VkDisplayPlanePropertiesKHR*>(pProperties));
+        return vkGetPhysicalDeviceDisplayPlanePropertiesKHR(get(), reinterpret_cast<uint32_t*>(pPropertyCount), reinterpret_cast<DisplayPlanePropertiesKHR*>(pProperties));
     }
     VkResult GetDisplayPlaneSupportedDisplaysKHR(
         uint32_t planeIndex,    
         uint32_t* pDisplayCount,    
         DisplayKHR* pDisplays) {
-        return vkGetDisplayPlaneSupportedDisplaysKHR(get(), static_cast<uint32_t>(planeIndex), reinterpret_cast<uint32_t*>(pDisplayCount), reinterpret_cast<VkDisplayKHR*>(pDisplays));
+        return vkGetDisplayPlaneSupportedDisplaysKHR(get(), static_cast<uint32_t>(planeIndex), reinterpret_cast<uint32_t*>(pDisplayCount), reinterpret_cast<DisplayKHR*>(pDisplays));
     }
     VkResult GetDisplayModePropertiesKHR(
         DisplayKHR display,    
         uint32_t* pPropertyCount,    
         DisplayModePropertiesKHR* pProperties) {
-        return vkGetDisplayModePropertiesKHR(get(),display.get(), reinterpret_cast<uint32_t*>(pPropertyCount), reinterpret_cast<VkDisplayModePropertiesKHR*>(pProperties));
+        return vkGetDisplayModePropertiesKHR(get(),display.get(), reinterpret_cast<uint32_t*>(pPropertyCount), reinterpret_cast<DisplayModePropertiesKHR*>(pProperties));
     }
     VkResult CreateDisplayModeKHR(
         DisplayKHR display,    
-        DisplayModeCreateInfoKHR* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constDisplayModeCreateInfoKHR* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         DisplayModeKHR* pMode) {
-        return vkCreateDisplayModeKHR(get(),display.get(), reinterpret_cast<VkDisplayModeCreateInfoKHR*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkDisplayModeKHR*>(pMode));
+        return vkCreateDisplayModeKHR(get(),display.get(), reinterpret_cast<const DisplayModeCreateInfoKHR*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<DisplayModeKHR*>(pMode));
     }
     VkResult GetDisplayPlaneCapabilitiesKHR(
         DisplayModeKHR mode,    
         uint32_t planeIndex,    
         DisplayPlaneCapabilitiesKHR* pCapabilities) {
-        return vkGetDisplayPlaneCapabilitiesKHR(get(),mode.get(), static_cast<uint32_t>(planeIndex), reinterpret_cast<VkDisplayPlaneCapabilitiesKHR*>(pCapabilities));
+        return vkGetDisplayPlaneCapabilitiesKHR(get(),mode.get(), static_cast<uint32_t>(planeIndex), reinterpret_cast<DisplayPlaneCapabilitiesKHR*>(pCapabilities));
     }
     VkResult GetPhysicalDeviceSurfaceSupportKHR(
         uint32_t queueFamilyIndex,    
         SurfaceKHR surface,    
         bool* pSupported) {
-        return vkGetPhysicalDeviceSurfaceSupportKHR(get(), static_cast<uint32_t>(queueFamilyIndex),surface.get(), reinterpret_cast<VkBool32*>(pSupported));
+        return vkGetPhysicalDeviceSurfaceSupportKHR(get(), static_cast<uint32_t>(queueFamilyIndex),surface.get(), reinterpret_cast<bool*>(pSupported));
     }
     VkResult GetPhysicalDeviceSurfaceCapabilitiesKHR(
         SurfaceKHR surface,    
         SurfaceCapabilitiesKHR* pSurfaceCapabilities) {
-        return vkGetPhysicalDeviceSurfaceCapabilitiesKHR(get(),surface.get(), reinterpret_cast<VkSurfaceCapabilitiesKHR*>(pSurfaceCapabilities));
+        return vkGetPhysicalDeviceSurfaceCapabilitiesKHR(get(),surface.get(), reinterpret_cast<SurfaceCapabilitiesKHR*>(pSurfaceCapabilities));
     }
     VkResult GetPhysicalDeviceSurfaceFormatsKHR(
         SurfaceKHR surface,    
         uint32_t* pSurfaceFormatCount,    
         SurfaceFormatKHR* pSurfaceFormats) {
-        return vkGetPhysicalDeviceSurfaceFormatsKHR(get(),surface.get(), reinterpret_cast<uint32_t*>(pSurfaceFormatCount), reinterpret_cast<VkSurfaceFormatKHR*>(pSurfaceFormats));
+        return vkGetPhysicalDeviceSurfaceFormatsKHR(get(),surface.get(), reinterpret_cast<uint32_t*>(pSurfaceFormatCount), reinterpret_cast<SurfaceFormatKHR*>(pSurfaceFormats));
     }
     VkResult GetPhysicalDeviceSurfacePresentModesKHR(
         SurfaceKHR surface,    
         uint32_t* pPresentModeCount,    
         PresentModeKHR* pPresentModes) {
-        return vkGetPhysicalDeviceSurfacePresentModesKHR(get(),surface.get(), reinterpret_cast<uint32_t*>(pPresentModeCount), reinterpret_cast<VkPresentModeKHR*>(pPresentModes));
+        return vkGetPhysicalDeviceSurfacePresentModesKHR(get(),surface.get(), reinterpret_cast<uint32_t*>(pPresentModeCount), reinterpret_cast<PresentModeKHR*>(pPresentModes));
     }
 #if defined(VK_USE_PLATFORM_WAYLAND_KHR)
     VkBool32 GetPhysicalDeviceWaylandPresentationSupportKHR(
@@ -7068,55 +7068,55 @@ struct PhysicalDevice {
         ImageCreateFlags flags,    
         ExternalMemoryHandleTypeFlagsNV externalHandleType,    
         ExternalImageFormatPropertiesNV* pExternalImageFormatProperties) {
-        return vkGetPhysicalDeviceExternalImageFormatPropertiesNV(get(), static_cast<VkFormat>(format), static_cast<VkImageType>(type), static_cast<VkImageTiling>(tiling), static_cast<VkImageUsageFlags>(usage), static_cast<VkImageCreateFlags>(flags), static_cast<VkExternalMemoryHandleTypeFlagsNV>(externalHandleType), reinterpret_cast<VkExternalImageFormatPropertiesNV*>(pExternalImageFormatProperties));
+        return vkGetPhysicalDeviceExternalImageFormatPropertiesNV(get(), static_cast<Format>(format), static_cast<ImageType>(type), static_cast<ImageTiling>(tiling), static_cast<ImageUsageFlags>(usage), static_cast<ImageCreateFlags>(flags), static_cast<ExternalMemoryHandleTypeFlagsNV>(externalHandleType), reinterpret_cast<ExternalImageFormatPropertiesNV*>(pExternalImageFormatProperties));
     }
     void GetPhysicalDeviceFeatures2(
         PhysicalDeviceFeatures2* pFeatures) {
-        return vkGetPhysicalDeviceFeatures2(get(), reinterpret_cast<VkPhysicalDeviceFeatures2*>(pFeatures));
+        return vkGetPhysicalDeviceFeatures2(get(), reinterpret_cast<PhysicalDeviceFeatures2*>(pFeatures));
     }
     void GetPhysicalDeviceProperties2(
         PhysicalDeviceProperties2* pProperties) {
-        return vkGetPhysicalDeviceProperties2(get(), reinterpret_cast<VkPhysicalDeviceProperties2*>(pProperties));
+        return vkGetPhysicalDeviceProperties2(get(), reinterpret_cast<PhysicalDeviceProperties2*>(pProperties));
     }
     void GetPhysicalDeviceFormatProperties2(
         Format format,    
         FormatProperties2* pFormatProperties) {
-        return vkGetPhysicalDeviceFormatProperties2(get(), static_cast<VkFormat>(format), reinterpret_cast<VkFormatProperties2*>(pFormatProperties));
+        return vkGetPhysicalDeviceFormatProperties2(get(), static_cast<Format>(format), reinterpret_cast<FormatProperties2*>(pFormatProperties));
     }
     VkResult GetPhysicalDeviceImageFormatProperties2(
-        PhysicalDeviceImageFormatInfo2* pImageFormatInfo,    
+        constPhysicalDeviceImageFormatInfo2* pImageFormatInfo,    
         ImageFormatProperties2* pImageFormatProperties) {
-        return vkGetPhysicalDeviceImageFormatProperties2(get(), reinterpret_cast<VkPhysicalDeviceImageFormatInfo2*>(pImageFormatInfo), reinterpret_cast<VkImageFormatProperties2*>(pImageFormatProperties));
+        return vkGetPhysicalDeviceImageFormatProperties2(get(), reinterpret_cast<const PhysicalDeviceImageFormatInfo2*>(pImageFormatInfo), reinterpret_cast<ImageFormatProperties2*>(pImageFormatProperties));
     }
     void GetPhysicalDeviceQueueFamilyProperties2(
         uint32_t* pQueueFamilyPropertyCount,    
         QueueFamilyProperties2* pQueueFamilyProperties) {
-        return vkGetPhysicalDeviceQueueFamilyProperties2(get(), reinterpret_cast<uint32_t*>(pQueueFamilyPropertyCount), reinterpret_cast<VkQueueFamilyProperties2*>(pQueueFamilyProperties));
+        return vkGetPhysicalDeviceQueueFamilyProperties2(get(), reinterpret_cast<uint32_t*>(pQueueFamilyPropertyCount), reinterpret_cast<QueueFamilyProperties2*>(pQueueFamilyProperties));
     }
     void GetPhysicalDeviceMemoryProperties2(
         PhysicalDeviceMemoryProperties2* pMemoryProperties) {
-        return vkGetPhysicalDeviceMemoryProperties2(get(), reinterpret_cast<VkPhysicalDeviceMemoryProperties2*>(pMemoryProperties));
+        return vkGetPhysicalDeviceMemoryProperties2(get(), reinterpret_cast<PhysicalDeviceMemoryProperties2*>(pMemoryProperties));
     }
     void GetPhysicalDeviceSparseImageFormatProperties2(
-        PhysicalDeviceSparseImageFormatInfo2* pFormatInfo,    
+        constPhysicalDeviceSparseImageFormatInfo2* pFormatInfo,    
         uint32_t* pPropertyCount,    
         SparseImageFormatProperties2* pProperties) {
-        return vkGetPhysicalDeviceSparseImageFormatProperties2(get(), reinterpret_cast<VkPhysicalDeviceSparseImageFormatInfo2*>(pFormatInfo), reinterpret_cast<uint32_t*>(pPropertyCount), reinterpret_cast<VkSparseImageFormatProperties2*>(pProperties));
+        return vkGetPhysicalDeviceSparseImageFormatProperties2(get(), reinterpret_cast<const PhysicalDeviceSparseImageFormatInfo2*>(pFormatInfo), reinterpret_cast<uint32_t*>(pPropertyCount), reinterpret_cast<SparseImageFormatProperties2*>(pProperties));
     }
     void GetPhysicalDeviceExternalBufferProperties(
-        PhysicalDeviceExternalBufferInfo* pExternalBufferInfo,    
+        constPhysicalDeviceExternalBufferInfo* pExternalBufferInfo,    
         ExternalBufferProperties* pExternalBufferProperties) {
-        return vkGetPhysicalDeviceExternalBufferProperties(get(), reinterpret_cast<VkPhysicalDeviceExternalBufferInfo*>(pExternalBufferInfo), reinterpret_cast<VkExternalBufferProperties*>(pExternalBufferProperties));
+        return vkGetPhysicalDeviceExternalBufferProperties(get(), reinterpret_cast<const PhysicalDeviceExternalBufferInfo*>(pExternalBufferInfo), reinterpret_cast<ExternalBufferProperties*>(pExternalBufferProperties));
     }
     void GetPhysicalDeviceExternalSemaphoreProperties(
-        PhysicalDeviceExternalSemaphoreInfo* pExternalSemaphoreInfo,    
+        constPhysicalDeviceExternalSemaphoreInfo* pExternalSemaphoreInfo,    
         ExternalSemaphoreProperties* pExternalSemaphoreProperties) {
-        return vkGetPhysicalDeviceExternalSemaphoreProperties(get(), reinterpret_cast<VkPhysicalDeviceExternalSemaphoreInfo*>(pExternalSemaphoreInfo), reinterpret_cast<VkExternalSemaphoreProperties*>(pExternalSemaphoreProperties));
+        return vkGetPhysicalDeviceExternalSemaphoreProperties(get(), reinterpret_cast<const PhysicalDeviceExternalSemaphoreInfo*>(pExternalSemaphoreInfo), reinterpret_cast<ExternalSemaphoreProperties*>(pExternalSemaphoreProperties));
     }
     void GetPhysicalDeviceExternalFenceProperties(
-        PhysicalDeviceExternalFenceInfo* pExternalFenceInfo,    
+        constPhysicalDeviceExternalFenceInfo* pExternalFenceInfo,    
         ExternalFenceProperties* pExternalFenceProperties) {
-        return vkGetPhysicalDeviceExternalFenceProperties(get(), reinterpret_cast<VkPhysicalDeviceExternalFenceInfo*>(pExternalFenceInfo), reinterpret_cast<VkExternalFenceProperties*>(pExternalFenceProperties));
+        return vkGetPhysicalDeviceExternalFenceProperties(get(), reinterpret_cast<const PhysicalDeviceExternalFenceInfo*>(pExternalFenceInfo), reinterpret_cast<ExternalFenceProperties*>(pExternalFenceProperties));
     }
     VkResult ReleaseDisplayEXT(
         DisplayKHR display) {
@@ -7134,73 +7134,73 @@ struct PhysicalDevice {
         Display* dpy,    
         RROutput rrOutput,    
         DisplayKHR* pDisplay) {
-        return vkGetRandROutputDisplayEXT(get(), reinterpret_cast<Display*>(dpy), static_cast<RROutput>(rrOutput), reinterpret_cast<VkDisplayKHR*>(pDisplay));
+        return vkGetRandROutputDisplayEXT(get(), reinterpret_cast<Display*>(dpy), static_cast<RROutput>(rrOutput), reinterpret_cast<DisplayKHR*>(pDisplay));
     }
 #endif // VK_USE_PLATFORM_XLIB_XRANDR_EXT
     VkResult GetPhysicalDeviceSurfaceCapabilities2EXT(
         SurfaceKHR surface,    
         SurfaceCapabilities2EXT* pSurfaceCapabilities) {
-        return vkGetPhysicalDeviceSurfaceCapabilities2EXT(get(),surface.get(), reinterpret_cast<VkSurfaceCapabilities2EXT*>(pSurfaceCapabilities));
+        return vkGetPhysicalDeviceSurfaceCapabilities2EXT(get(),surface.get(), reinterpret_cast<SurfaceCapabilities2EXT*>(pSurfaceCapabilities));
     }
     VkResult GetPhysicalDevicePresentRectanglesKHR(
         SurfaceKHR surface,    
         uint32_t* pRectCount,    
         Rect2D* pRects) {
-        return vkGetPhysicalDevicePresentRectanglesKHR(get(),surface.get(), reinterpret_cast<uint32_t*>(pRectCount), reinterpret_cast<VkRect2D*>(pRects));
+        return vkGetPhysicalDevicePresentRectanglesKHR(get(),surface.get(), reinterpret_cast<uint32_t*>(pRectCount), reinterpret_cast<Rect2D*>(pRects));
     }
     void GetPhysicalDeviceMultisamplePropertiesEXT(
         SampleCountFlagBits samples,    
         MultisamplePropertiesEXT* pMultisampleProperties) {
-        return vkGetPhysicalDeviceMultisamplePropertiesEXT(get(), static_cast<VkSampleCountFlagBits>(samples), reinterpret_cast<VkMultisamplePropertiesEXT*>(pMultisampleProperties));
+        return vkGetPhysicalDeviceMultisamplePropertiesEXT(get(), static_cast<SampleCountFlagBits>(samples), reinterpret_cast<MultisamplePropertiesEXT*>(pMultisampleProperties));
     }
     VkResult GetPhysicalDeviceSurfaceCapabilities2KHR(
-        PhysicalDeviceSurfaceInfo2KHR* pSurfaceInfo,    
+        constPhysicalDeviceSurfaceInfo2KHR* pSurfaceInfo,    
         SurfaceCapabilities2KHR* pSurfaceCapabilities) {
-        return vkGetPhysicalDeviceSurfaceCapabilities2KHR(get(), reinterpret_cast<VkPhysicalDeviceSurfaceInfo2KHR*>(pSurfaceInfo), reinterpret_cast<VkSurfaceCapabilities2KHR*>(pSurfaceCapabilities));
+        return vkGetPhysicalDeviceSurfaceCapabilities2KHR(get(), reinterpret_cast<const PhysicalDeviceSurfaceInfo2KHR*>(pSurfaceInfo), reinterpret_cast<SurfaceCapabilities2KHR*>(pSurfaceCapabilities));
     }
     VkResult GetPhysicalDeviceSurfaceFormats2KHR(
-        PhysicalDeviceSurfaceInfo2KHR* pSurfaceInfo,    
+        constPhysicalDeviceSurfaceInfo2KHR* pSurfaceInfo,    
         uint32_t* pSurfaceFormatCount,    
         SurfaceFormat2KHR* pSurfaceFormats) {
-        return vkGetPhysicalDeviceSurfaceFormats2KHR(get(), reinterpret_cast<VkPhysicalDeviceSurfaceInfo2KHR*>(pSurfaceInfo), reinterpret_cast<uint32_t*>(pSurfaceFormatCount), reinterpret_cast<VkSurfaceFormat2KHR*>(pSurfaceFormats));
+        return vkGetPhysicalDeviceSurfaceFormats2KHR(get(), reinterpret_cast<const PhysicalDeviceSurfaceInfo2KHR*>(pSurfaceInfo), reinterpret_cast<uint32_t*>(pSurfaceFormatCount), reinterpret_cast<SurfaceFormat2KHR*>(pSurfaceFormats));
     }
     VkResult GetPhysicalDeviceDisplayProperties2KHR(
         uint32_t* pPropertyCount,    
         DisplayProperties2KHR* pProperties) {
-        return vkGetPhysicalDeviceDisplayProperties2KHR(get(), reinterpret_cast<uint32_t*>(pPropertyCount), reinterpret_cast<VkDisplayProperties2KHR*>(pProperties));
+        return vkGetPhysicalDeviceDisplayProperties2KHR(get(), reinterpret_cast<uint32_t*>(pPropertyCount), reinterpret_cast<DisplayProperties2KHR*>(pProperties));
     }
     VkResult GetPhysicalDeviceDisplayPlaneProperties2KHR(
         uint32_t* pPropertyCount,    
         DisplayPlaneProperties2KHR* pProperties) {
-        return vkGetPhysicalDeviceDisplayPlaneProperties2KHR(get(), reinterpret_cast<uint32_t*>(pPropertyCount), reinterpret_cast<VkDisplayPlaneProperties2KHR*>(pProperties));
+        return vkGetPhysicalDeviceDisplayPlaneProperties2KHR(get(), reinterpret_cast<uint32_t*>(pPropertyCount), reinterpret_cast<DisplayPlaneProperties2KHR*>(pProperties));
     }
     VkResult GetDisplayModeProperties2KHR(
         DisplayKHR display,    
         uint32_t* pPropertyCount,    
         DisplayModeProperties2KHR* pProperties) {
-        return vkGetDisplayModeProperties2KHR(get(),display.get(), reinterpret_cast<uint32_t*>(pPropertyCount), reinterpret_cast<VkDisplayModeProperties2KHR*>(pProperties));
+        return vkGetDisplayModeProperties2KHR(get(),display.get(), reinterpret_cast<uint32_t*>(pPropertyCount), reinterpret_cast<DisplayModeProperties2KHR*>(pProperties));
     }
     VkResult GetDisplayPlaneCapabilities2KHR(
-        DisplayPlaneInfo2KHR* pDisplayPlaneInfo,    
+        constDisplayPlaneInfo2KHR* pDisplayPlaneInfo,    
         DisplayPlaneCapabilities2KHR* pCapabilities) {
-        return vkGetDisplayPlaneCapabilities2KHR(get(), reinterpret_cast<VkDisplayPlaneInfo2KHR*>(pDisplayPlaneInfo), reinterpret_cast<VkDisplayPlaneCapabilities2KHR*>(pCapabilities));
+        return vkGetDisplayPlaneCapabilities2KHR(get(), reinterpret_cast<const DisplayPlaneInfo2KHR*>(pDisplayPlaneInfo), reinterpret_cast<DisplayPlaneCapabilities2KHR*>(pCapabilities));
     }
     VkResult GetPhysicalDeviceCalibrateableTimeDomainsEXT(
         uint32_t* pTimeDomainCount,    
         TimeDomainEXT* pTimeDomains) {
-        return vkGetPhysicalDeviceCalibrateableTimeDomainsEXT(get(), reinterpret_cast<uint32_t*>(pTimeDomainCount), reinterpret_cast<VkTimeDomainEXT*>(pTimeDomains));
+        return vkGetPhysicalDeviceCalibrateableTimeDomainsEXT(get(), reinterpret_cast<uint32_t*>(pTimeDomainCount), reinterpret_cast<TimeDomainEXT*>(pTimeDomains));
     }
     VkResult GetPhysicalDeviceCooperativeMatrixPropertiesNV(
         uint32_t* pPropertyCount,    
         CooperativeMatrixPropertiesNV* pProperties) {
-        return vkGetPhysicalDeviceCooperativeMatrixPropertiesNV(get(), reinterpret_cast<uint32_t*>(pPropertyCount), reinterpret_cast<VkCooperativeMatrixPropertiesNV*>(pProperties));
+        return vkGetPhysicalDeviceCooperativeMatrixPropertiesNV(get(), reinterpret_cast<uint32_t*>(pPropertyCount), reinterpret_cast<CooperativeMatrixPropertiesNV*>(pProperties));
     }
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     VkResult GetPhysicalDeviceSurfacePresentModes2EXT(
-        PhysicalDeviceSurfaceInfo2KHR* pSurfaceInfo,    
+        constPhysicalDeviceSurfaceInfo2KHR* pSurfaceInfo,    
         uint32_t* pPresentModeCount,    
         PresentModeKHR* pPresentModes) {
-        return vkGetPhysicalDeviceSurfacePresentModes2EXT(get(), reinterpret_cast<VkPhysicalDeviceSurfaceInfo2KHR*>(pSurfaceInfo), reinterpret_cast<uint32_t*>(pPresentModeCount), reinterpret_cast<VkPresentModeKHR*>(pPresentModes));
+        return vkGetPhysicalDeviceSurfacePresentModes2EXT(get(), reinterpret_cast<const PhysicalDeviceSurfaceInfo2KHR*>(pSurfaceInfo), reinterpret_cast<uint32_t*>(pPresentModeCount), reinterpret_cast<PresentModeKHR*>(pPresentModes));
     }
 #endif // VK_USE_PLATFORM_WIN32_KHR
     VkResult EnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR(
@@ -7208,62 +7208,62 @@ struct PhysicalDevice {
         uint32_t* pCounterCount,    
         PerformanceCounterKHR* pCounters,    
         PerformanceCounterDescriptionKHR* pCounterDescriptions) {
-        return vkEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR(get(), static_cast<uint32_t>(queueFamilyIndex), reinterpret_cast<uint32_t*>(pCounterCount), reinterpret_cast<VkPerformanceCounterKHR*>(pCounters), reinterpret_cast<VkPerformanceCounterDescriptionKHR*>(pCounterDescriptions));
+        return vkEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR(get(), static_cast<uint32_t>(queueFamilyIndex), reinterpret_cast<uint32_t*>(pCounterCount), reinterpret_cast<PerformanceCounterKHR*>(pCounters), reinterpret_cast<PerformanceCounterDescriptionKHR*>(pCounterDescriptions));
     }
     void GetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR(
-        QueryPoolPerformanceCreateInfoKHR* pPerformanceQueryCreateInfo,    
+        constQueryPoolPerformanceCreateInfoKHR* pPerformanceQueryCreateInfo,    
         uint32_t* pNumPasses) {
-        return vkGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR(get(), reinterpret_cast<VkQueryPoolPerformanceCreateInfoKHR*>(pPerformanceQueryCreateInfo), reinterpret_cast<uint32_t*>(pNumPasses));
+        return vkGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR(get(), reinterpret_cast<const QueryPoolPerformanceCreateInfoKHR*>(pPerformanceQueryCreateInfo), reinterpret_cast<uint32_t*>(pNumPasses));
     }
     VkResult GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(
         uint32_t* pCombinationCount,    
         FramebufferMixedSamplesCombinationNV* pCombinations) {
-        return vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(get(), reinterpret_cast<uint32_t*>(pCombinationCount), reinterpret_cast<VkFramebufferMixedSamplesCombinationNV*>(pCombinations));
+        return vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(get(), reinterpret_cast<uint32_t*>(pCombinationCount), reinterpret_cast<FramebufferMixedSamplesCombinationNV*>(pCombinations));
     }
     VkResult GetPhysicalDeviceToolPropertiesEXT(
         uint32_t* pToolCount,    
         PhysicalDeviceToolPropertiesEXT* pToolProperties) {
-        return vkGetPhysicalDeviceToolPropertiesEXT(get(), reinterpret_cast<uint32_t*>(pToolCount), reinterpret_cast<VkPhysicalDeviceToolPropertiesEXT*>(pToolProperties));
+        return vkGetPhysicalDeviceToolPropertiesEXT(get(), reinterpret_cast<uint32_t*>(pToolCount), reinterpret_cast<PhysicalDeviceToolPropertiesEXT*>(pToolProperties));
     }
 };
 struct Device {
     VkDevice handle;
     VkDevice get() { return handle; }
     PFN_vkVoidFunction GetDeviceProcAddr(
-        char* pName) {
-        return vkGetDeviceProcAddr(get(), reinterpret_cast<char*>(pName));
+        constchar* pName) {
+        return vkGetDeviceProcAddr(get(), reinterpret_cast<const char*>(pName));
     }
     void DestroyDevice(
-        AllocationCallbacks* pAllocator) {
-        return vkDestroyDevice(get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroyDevice(get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
     void GetDeviceQueue(
         uint32_t queueFamilyIndex,    
         uint32_t queueIndex,    
         Queue* pQueue) {
-        return vkGetDeviceQueue(get(), static_cast<uint32_t>(queueFamilyIndex), static_cast<uint32_t>(queueIndex), reinterpret_cast<VkQueue*>(pQueue));
+        return vkGetDeviceQueue(get(), static_cast<uint32_t>(queueFamilyIndex), static_cast<uint32_t>(queueIndex), reinterpret_cast<Queue*>(pQueue));
     }
     VkResult DeviceWaitIdle() {
         return vkDeviceWaitIdle(get());
     }
     VkResult AllocateMemory(
-        MemoryAllocateInfo* pAllocateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constMemoryAllocateInfo* pAllocateInfo,    
+        constAllocationCallbacks* pAllocator,    
         DeviceMemory* pMemory) {
-        return vkAllocateMemory(get(), reinterpret_cast<VkMemoryAllocateInfo*>(pAllocateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkDeviceMemory*>(pMemory));
+        return vkAllocateMemory(get(), reinterpret_cast<const MemoryAllocateInfo*>(pAllocateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<DeviceMemory*>(pMemory));
     }
     void FreeMemory(
         DeviceMemory memory,    
-        AllocationCallbacks* pAllocator) {
-        return vkFreeMemory(get(),memory.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkFreeMemory(get(),memory.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
     VkResult MapMemory(
         DeviceMemory memory,    
         DeviceSize offset,    
         DeviceSize size,    
         MemoryMapFlags flags,    
-        void* ppData) {
-        return vkMapMemory(get(),memory.get(), static_cast<VkDeviceSize>(offset), static_cast<VkDeviceSize>(size), static_cast<VkMemoryMapFlags>(flags), reinterpret_cast<void*>(ppData));
+        void ppData) {
+        return vkMapMemory(get(),memory.get(), static_cast<DeviceSize>(offset), static_cast<DeviceSize>(size), static_cast<MemoryMapFlags>(flags), static_cast<void>(ppData));
     }
     void UnmapMemory(
         DeviceMemory memory) {
@@ -7271,62 +7271,62 @@ struct Device {
     }
     VkResult FlushMappedMemoryRanges(
         uint32_t memoryRangeCount,    
-        MappedMemoryRange* pMemoryRanges) {
-        return vkFlushMappedMemoryRanges(get(), static_cast<uint32_t>(memoryRangeCount), reinterpret_cast<VkMappedMemoryRange*>(pMemoryRanges));
+        constMappedMemoryRange* pMemoryRanges) {
+        return vkFlushMappedMemoryRanges(get(), static_cast<uint32_t>(memoryRangeCount), reinterpret_cast<const MappedMemoryRange*>(pMemoryRanges));
     }
     VkResult InvalidateMappedMemoryRanges(
         uint32_t memoryRangeCount,    
-        MappedMemoryRange* pMemoryRanges) {
-        return vkInvalidateMappedMemoryRanges(get(), static_cast<uint32_t>(memoryRangeCount), reinterpret_cast<VkMappedMemoryRange*>(pMemoryRanges));
+        constMappedMemoryRange* pMemoryRanges) {
+        return vkInvalidateMappedMemoryRanges(get(), static_cast<uint32_t>(memoryRangeCount), reinterpret_cast<const MappedMemoryRange*>(pMemoryRanges));
     }
     void GetDeviceMemoryCommitment(
         DeviceMemory memory,    
         DeviceSize* pCommittedMemoryInBytes) {
-        return vkGetDeviceMemoryCommitment(get(),memory.get(), reinterpret_cast<VkDeviceSize*>(pCommittedMemoryInBytes));
+        return vkGetDeviceMemoryCommitment(get(),memory.get(), reinterpret_cast<DeviceSize*>(pCommittedMemoryInBytes));
     }
     void GetBufferMemoryRequirements(
         Buffer buffer,    
         MemoryRequirements* pMemoryRequirements) {
-        return vkGetBufferMemoryRequirements(get(),buffer.get(), reinterpret_cast<VkMemoryRequirements*>(pMemoryRequirements));
+        return vkGetBufferMemoryRequirements(get(),buffer.get(), reinterpret_cast<MemoryRequirements*>(pMemoryRequirements));
     }
     VkResult BindBufferMemory(
         Buffer buffer,    
         DeviceMemory memory,    
         DeviceSize memoryOffset) {
-        return vkBindBufferMemory(get(),buffer.get(),memory.get(), static_cast<VkDeviceSize>(memoryOffset));
+        return vkBindBufferMemory(get(),buffer.get(),memory.get(), static_cast<DeviceSize>(memoryOffset));
     }
     void GetImageMemoryRequirements(
         Image image,    
         MemoryRequirements* pMemoryRequirements) {
-        return vkGetImageMemoryRequirements(get(),image.get(), reinterpret_cast<VkMemoryRequirements*>(pMemoryRequirements));
+        return vkGetImageMemoryRequirements(get(),image.get(), reinterpret_cast<MemoryRequirements*>(pMemoryRequirements));
     }
     VkResult BindImageMemory(
         Image image,    
         DeviceMemory memory,    
         DeviceSize memoryOffset) {
-        return vkBindImageMemory(get(),image.get(),memory.get(), static_cast<VkDeviceSize>(memoryOffset));
+        return vkBindImageMemory(get(),image.get(),memory.get(), static_cast<DeviceSize>(memoryOffset));
     }
     void GetImageSparseMemoryRequirements(
         Image image,    
         uint32_t* pSparseMemoryRequirementCount,    
         SparseImageMemoryRequirements* pSparseMemoryRequirements) {
-        return vkGetImageSparseMemoryRequirements(get(),image.get(), reinterpret_cast<uint32_t*>(pSparseMemoryRequirementCount), reinterpret_cast<VkSparseImageMemoryRequirements*>(pSparseMemoryRequirements));
+        return vkGetImageSparseMemoryRequirements(get(),image.get(), reinterpret_cast<uint32_t*>(pSparseMemoryRequirementCount), reinterpret_cast<SparseImageMemoryRequirements*>(pSparseMemoryRequirements));
     }
     VkResult CreateFence(
-        FenceCreateInfo* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constFenceCreateInfo* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         Fence* pFence) {
-        return vkCreateFence(get(), reinterpret_cast<VkFenceCreateInfo*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkFence*>(pFence));
+        return vkCreateFence(get(), reinterpret_cast<const FenceCreateInfo*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<Fence*>(pFence));
     }
     void DestroyFence(
         Fence fence,    
-        AllocationCallbacks* pAllocator) {
-        return vkDestroyFence(get(),fence.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroyFence(get(),fence.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
     VkResult ResetFences(
         uint32_t fenceCount,    
-        Fence* pFences) {
-        return vkResetFences(get(), static_cast<uint32_t>(fenceCount), reinterpret_cast<VkFence*>(pFences));
+        constFence* pFences) {
+        return vkResetFences(get(), static_cast<uint32_t>(fenceCount), reinterpret_cast<const Fence*>(pFences));
     }
     VkResult GetFenceStatus(
         Fence fence) {
@@ -7334,32 +7334,32 @@ struct Device {
     }
     VkResult WaitForFences(
         uint32_t fenceCount,    
-        Fence* pFences,    
+        constFence* pFences,    
         bool waitAll,    
         uint64_t timeout) {
-        return vkWaitForFences(get(), static_cast<uint32_t>(fenceCount), reinterpret_cast<VkFence*>(pFences), static_cast<VkBool32>(waitAll), static_cast<uint64_t>(timeout));
+        return vkWaitForFences(get(), static_cast<uint32_t>(fenceCount), reinterpret_cast<const Fence*>(pFences), static_cast<bool>(waitAll), static_cast<uint64_t>(timeout));
     }
     VkResult CreateSemaphore(
-        SemaphoreCreateInfo* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constSemaphoreCreateInfo* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         Semaphore* pSemaphore) {
-        return vkCreateSemaphore(get(), reinterpret_cast<VkSemaphoreCreateInfo*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkSemaphore*>(pSemaphore));
+        return vkCreateSemaphore(get(), reinterpret_cast<const SemaphoreCreateInfo*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<Semaphore*>(pSemaphore));
     }
     void DestroySemaphore(
         Semaphore semaphore,    
-        AllocationCallbacks* pAllocator) {
-        return vkDestroySemaphore(get(),semaphore.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroySemaphore(get(),semaphore.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
     VkResult CreateEvent(
-        EventCreateInfo* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constEventCreateInfo* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         Event* pEvent) {
-        return vkCreateEvent(get(), reinterpret_cast<VkEventCreateInfo*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkEvent*>(pEvent));
+        return vkCreateEvent(get(), reinterpret_cast<const EventCreateInfo*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<Event*>(pEvent));
     }
     void DestroyEvent(
         Event event,    
-        AllocationCallbacks* pAllocator) {
-        return vkDestroyEvent(get(),event.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroyEvent(get(),event.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
     VkResult GetEventStatus(
         Event event) {
@@ -7374,15 +7374,15 @@ struct Device {
         return vkResetEvent(get(),event.get());
     }
     VkResult CreateQueryPool(
-        QueryPoolCreateInfo* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constQueryPoolCreateInfo* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         QueryPool* pQueryPool) {
-        return vkCreateQueryPool(get(), reinterpret_cast<VkQueryPoolCreateInfo*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkQueryPool*>(pQueryPool));
+        return vkCreateQueryPool(get(), reinterpret_cast<const QueryPoolCreateInfo*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<QueryPool*>(pQueryPool));
     }
     void DestroyQueryPool(
         QueryPool queryPool,    
-        AllocationCallbacks* pAllocator) {
-        return vkDestroyQueryPool(get(),queryPool.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroyQueryPool(get(),queryPool.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
     VkResult GetQueryPoolResults(
         QueryPool queryPool,    
@@ -7392,7 +7392,7 @@ struct Device {
         void* pData,    
         DeviceSize stride,    
         QueryResultFlags flags) {
-        return vkGetQueryPoolResults(get(),queryPool.get(), static_cast<uint32_t>(firstQuery), static_cast<uint32_t>(queryCount), static_cast<size_t>(dataSize), reinterpret_cast<void*>(pData), static_cast<VkDeviceSize>(stride), static_cast<VkQueryResultFlags>(flags));
+        return vkGetQueryPoolResults(get(),queryPool.get(), static_cast<uint32_t>(firstQuery), static_cast<uint32_t>(queryCount), static_cast<size_t>(dataSize), reinterpret_cast<void*>(pData), static_cast<DeviceSize>(stride), static_cast<QueryResultFlags>(flags));
     }
     void ResetQueryPool(
         QueryPool queryPool,    
@@ -7401,76 +7401,76 @@ struct Device {
         return vkResetQueryPool(get(),queryPool.get(), static_cast<uint32_t>(firstQuery), static_cast<uint32_t>(queryCount));
     }
     VkResult CreateBuffer(
-        BufferCreateInfo* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constBufferCreateInfo* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         Buffer* pBuffer) {
-        return vkCreateBuffer(get(), reinterpret_cast<VkBufferCreateInfo*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkBuffer*>(pBuffer));
+        return vkCreateBuffer(get(), reinterpret_cast<const BufferCreateInfo*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<Buffer*>(pBuffer));
     }
     void DestroyBuffer(
         Buffer buffer,    
-        AllocationCallbacks* pAllocator) {
-        return vkDestroyBuffer(get(),buffer.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroyBuffer(get(),buffer.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
     VkResult CreateBufferView(
-        BufferViewCreateInfo* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constBufferViewCreateInfo* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         BufferView* pView) {
-        return vkCreateBufferView(get(), reinterpret_cast<VkBufferViewCreateInfo*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkBufferView*>(pView));
+        return vkCreateBufferView(get(), reinterpret_cast<const BufferViewCreateInfo*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<BufferView*>(pView));
     }
     void DestroyBufferView(
         BufferView bufferView,    
-        AllocationCallbacks* pAllocator) {
-        return vkDestroyBufferView(get(),bufferView.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroyBufferView(get(),bufferView.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
     VkResult CreateImage(
-        ImageCreateInfo* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constImageCreateInfo* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         Image* pImage) {
-        return vkCreateImage(get(), reinterpret_cast<VkImageCreateInfo*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkImage*>(pImage));
+        return vkCreateImage(get(), reinterpret_cast<const ImageCreateInfo*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<Image*>(pImage));
     }
     void DestroyImage(
         Image image,    
-        AllocationCallbacks* pAllocator) {
-        return vkDestroyImage(get(),image.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroyImage(get(),image.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
     void GetImageSubresourceLayout(
         Image image,    
-        ImageSubresource* pSubresource,    
+        constImageSubresource* pSubresource,    
         SubresourceLayout* pLayout) {
-        return vkGetImageSubresourceLayout(get(),image.get(), reinterpret_cast<VkImageSubresource*>(pSubresource), reinterpret_cast<VkSubresourceLayout*>(pLayout));
+        return vkGetImageSubresourceLayout(get(),image.get(), reinterpret_cast<const ImageSubresource*>(pSubresource), reinterpret_cast<SubresourceLayout*>(pLayout));
     }
     VkResult CreateImageView(
-        ImageViewCreateInfo* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constImageViewCreateInfo* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         ImageView* pView) {
-        return vkCreateImageView(get(), reinterpret_cast<VkImageViewCreateInfo*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkImageView*>(pView));
+        return vkCreateImageView(get(), reinterpret_cast<const ImageViewCreateInfo*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<ImageView*>(pView));
     }
     void DestroyImageView(
         ImageView imageView,    
-        AllocationCallbacks* pAllocator) {
-        return vkDestroyImageView(get(),imageView.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroyImageView(get(),imageView.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
     VkResult CreateShaderModule(
-        ShaderModuleCreateInfo* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constShaderModuleCreateInfo* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         ShaderModule* pShaderModule) {
-        return vkCreateShaderModule(get(), reinterpret_cast<VkShaderModuleCreateInfo*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkShaderModule*>(pShaderModule));
+        return vkCreateShaderModule(get(), reinterpret_cast<const ShaderModuleCreateInfo*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<ShaderModule*>(pShaderModule));
     }
     void DestroyShaderModule(
         ShaderModule shaderModule,    
-        AllocationCallbacks* pAllocator) {
-        return vkDestroyShaderModule(get(),shaderModule.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroyShaderModule(get(),shaderModule.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
     VkResult CreatePipelineCache(
-        PipelineCacheCreateInfo* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constPipelineCacheCreateInfo* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         PipelineCache* pPipelineCache) {
-        return vkCreatePipelineCache(get(), reinterpret_cast<VkPipelineCacheCreateInfo*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkPipelineCache*>(pPipelineCache));
+        return vkCreatePipelineCache(get(), reinterpret_cast<const PipelineCacheCreateInfo*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<PipelineCache*>(pPipelineCache));
     }
     void DestroyPipelineCache(
         PipelineCache pipelineCache,    
-        AllocationCallbacks* pAllocator) {
-        return vkDestroyPipelineCache(get(),pipelineCache.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroyPipelineCache(get(),pipelineCache.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
     VkResult GetPipelineCacheData(
         PipelineCache pipelineCache,    
@@ -7481,174 +7481,174 @@ struct Device {
     VkResult MergePipelineCaches(
         PipelineCache dstCache,    
         uint32_t srcCacheCount,    
-        PipelineCache* pSrcCaches) {
-        return vkMergePipelineCaches(get(),dstCache.get(), static_cast<uint32_t>(srcCacheCount), reinterpret_cast<VkPipelineCache*>(pSrcCaches));
+        constPipelineCache* pSrcCaches) {
+        return vkMergePipelineCaches(get(),dstCache.get(), static_cast<uint32_t>(srcCacheCount), reinterpret_cast<const PipelineCache*>(pSrcCaches));
     }
     VkResult CreateGraphicsPipelines(
         PipelineCache pipelineCache,    
         uint32_t createInfoCount,    
-        GraphicsPipelineCreateInfo* pCreateInfos,    
-        AllocationCallbacks* pAllocator,    
+        constGraphicsPipelineCreateInfo* pCreateInfos,    
+        constAllocationCallbacks* pAllocator,    
         Pipeline* pPipelines) {
-        return vkCreateGraphicsPipelines(get(),pipelineCache.get(), static_cast<uint32_t>(createInfoCount), reinterpret_cast<VkGraphicsPipelineCreateInfo*>(pCreateInfos), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkPipeline*>(pPipelines));
+        return vkCreateGraphicsPipelines(get(),pipelineCache.get(), static_cast<uint32_t>(createInfoCount), reinterpret_cast<const GraphicsPipelineCreateInfo*>(pCreateInfos), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<Pipeline*>(pPipelines));
     }
     VkResult CreateComputePipelines(
         PipelineCache pipelineCache,    
         uint32_t createInfoCount,    
-        ComputePipelineCreateInfo* pCreateInfos,    
-        AllocationCallbacks* pAllocator,    
+        constComputePipelineCreateInfo* pCreateInfos,    
+        constAllocationCallbacks* pAllocator,    
         Pipeline* pPipelines) {
-        return vkCreateComputePipelines(get(),pipelineCache.get(), static_cast<uint32_t>(createInfoCount), reinterpret_cast<VkComputePipelineCreateInfo*>(pCreateInfos), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkPipeline*>(pPipelines));
+        return vkCreateComputePipelines(get(),pipelineCache.get(), static_cast<uint32_t>(createInfoCount), reinterpret_cast<const ComputePipelineCreateInfo*>(pCreateInfos), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<Pipeline*>(pPipelines));
     }
     void DestroyPipeline(
         Pipeline pipeline,    
-        AllocationCallbacks* pAllocator) {
-        return vkDestroyPipeline(get(),pipeline.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroyPipeline(get(),pipeline.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
     VkResult CreatePipelineLayout(
-        PipelineLayoutCreateInfo* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constPipelineLayoutCreateInfo* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         PipelineLayout* pPipelineLayout) {
-        return vkCreatePipelineLayout(get(), reinterpret_cast<VkPipelineLayoutCreateInfo*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkPipelineLayout*>(pPipelineLayout));
+        return vkCreatePipelineLayout(get(), reinterpret_cast<const PipelineLayoutCreateInfo*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<PipelineLayout*>(pPipelineLayout));
     }
     void DestroyPipelineLayout(
         PipelineLayout pipelineLayout,    
-        AllocationCallbacks* pAllocator) {
-        return vkDestroyPipelineLayout(get(),pipelineLayout.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroyPipelineLayout(get(),pipelineLayout.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
     VkResult CreateSampler(
-        SamplerCreateInfo* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constSamplerCreateInfo* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         Sampler* pSampler) {
-        return vkCreateSampler(get(), reinterpret_cast<VkSamplerCreateInfo*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkSampler*>(pSampler));
+        return vkCreateSampler(get(), reinterpret_cast<const SamplerCreateInfo*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<Sampler*>(pSampler));
     }
     void DestroySampler(
         Sampler sampler,    
-        AllocationCallbacks* pAllocator) {
-        return vkDestroySampler(get(),sampler.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroySampler(get(),sampler.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
     VkResult CreateDescriptorSetLayout(
-        DescriptorSetLayoutCreateInfo* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constDescriptorSetLayoutCreateInfo* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         DescriptorSetLayout* pSetLayout) {
-        return vkCreateDescriptorSetLayout(get(), reinterpret_cast<VkDescriptorSetLayoutCreateInfo*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkDescriptorSetLayout*>(pSetLayout));
+        return vkCreateDescriptorSetLayout(get(), reinterpret_cast<const DescriptorSetLayoutCreateInfo*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<DescriptorSetLayout*>(pSetLayout));
     }
     void DestroyDescriptorSetLayout(
         DescriptorSetLayout descriptorSetLayout,    
-        AllocationCallbacks* pAllocator) {
-        return vkDestroyDescriptorSetLayout(get(),descriptorSetLayout.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroyDescriptorSetLayout(get(),descriptorSetLayout.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
     VkResult CreateDescriptorPool(
-        DescriptorPoolCreateInfo* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constDescriptorPoolCreateInfo* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         DescriptorPool* pDescriptorPool) {
-        return vkCreateDescriptorPool(get(), reinterpret_cast<VkDescriptorPoolCreateInfo*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkDescriptorPool*>(pDescriptorPool));
+        return vkCreateDescriptorPool(get(), reinterpret_cast<const DescriptorPoolCreateInfo*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<DescriptorPool*>(pDescriptorPool));
     }
     void DestroyDescriptorPool(
         DescriptorPool descriptorPool,    
-        AllocationCallbacks* pAllocator) {
-        return vkDestroyDescriptorPool(get(),descriptorPool.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroyDescriptorPool(get(),descriptorPool.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
     VkResult ResetDescriptorPool(
         DescriptorPool descriptorPool,    
         DescriptorPoolResetFlags flags) {
-        return vkResetDescriptorPool(get(),descriptorPool.get(), static_cast<VkDescriptorPoolResetFlags>(flags));
+        return vkResetDescriptorPool(get(),descriptorPool.get(), static_cast<DescriptorPoolResetFlags>(flags));
     }
     VkResult AllocateDescriptorSets(
-        DescriptorSetAllocateInfo* pAllocateInfo,    
+        constDescriptorSetAllocateInfo* pAllocateInfo,    
         DescriptorSet* pDescriptorSets) {
-        return vkAllocateDescriptorSets(get(), reinterpret_cast<VkDescriptorSetAllocateInfo*>(pAllocateInfo), reinterpret_cast<VkDescriptorSet*>(pDescriptorSets));
+        return vkAllocateDescriptorSets(get(), reinterpret_cast<const DescriptorSetAllocateInfo*>(pAllocateInfo), reinterpret_cast<DescriptorSet*>(pDescriptorSets));
     }
     VkResult FreeDescriptorSets(
         DescriptorPool descriptorPool,    
         uint32_t descriptorSetCount,    
-        DescriptorSet* pDescriptorSets) {
-        return vkFreeDescriptorSets(get(),descriptorPool.get(), static_cast<uint32_t>(descriptorSetCount), reinterpret_cast<VkDescriptorSet*>(pDescriptorSets));
+        constDescriptorSet* pDescriptorSets) {
+        return vkFreeDescriptorSets(get(),descriptorPool.get(), static_cast<uint32_t>(descriptorSetCount), reinterpret_cast<const DescriptorSet*>(pDescriptorSets));
     }
     void UpdateDescriptorSets(
         uint32_t descriptorWriteCount,    
-        WriteDescriptorSet* pDescriptorWrites,    
+        constWriteDescriptorSet* pDescriptorWrites,    
         uint32_t descriptorCopyCount,    
-        CopyDescriptorSet* pDescriptorCopies) {
-        return vkUpdateDescriptorSets(get(), static_cast<uint32_t>(descriptorWriteCount), reinterpret_cast<VkWriteDescriptorSet*>(pDescriptorWrites), static_cast<uint32_t>(descriptorCopyCount), reinterpret_cast<VkCopyDescriptorSet*>(pDescriptorCopies));
+        constCopyDescriptorSet* pDescriptorCopies) {
+        return vkUpdateDescriptorSets(get(), static_cast<uint32_t>(descriptorWriteCount), reinterpret_cast<const WriteDescriptorSet*>(pDescriptorWrites), static_cast<uint32_t>(descriptorCopyCount), reinterpret_cast<const CopyDescriptorSet*>(pDescriptorCopies));
     }
     VkResult CreateFramebuffer(
-        FramebufferCreateInfo* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constFramebufferCreateInfo* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         Framebuffer* pFramebuffer) {
-        return vkCreateFramebuffer(get(), reinterpret_cast<VkFramebufferCreateInfo*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkFramebuffer*>(pFramebuffer));
+        return vkCreateFramebuffer(get(), reinterpret_cast<const FramebufferCreateInfo*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<Framebuffer*>(pFramebuffer));
     }
     void DestroyFramebuffer(
         Framebuffer framebuffer,    
-        AllocationCallbacks* pAllocator) {
-        return vkDestroyFramebuffer(get(),framebuffer.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroyFramebuffer(get(),framebuffer.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
     VkResult CreateRenderPass(
-        RenderPassCreateInfo* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constRenderPassCreateInfo* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         RenderPass* pRenderPass) {
-        return vkCreateRenderPass(get(), reinterpret_cast<VkRenderPassCreateInfo*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkRenderPass*>(pRenderPass));
+        return vkCreateRenderPass(get(), reinterpret_cast<const RenderPassCreateInfo*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<RenderPass*>(pRenderPass));
     }
     void DestroyRenderPass(
         RenderPass renderPass,    
-        AllocationCallbacks* pAllocator) {
-        return vkDestroyRenderPass(get(),renderPass.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroyRenderPass(get(),renderPass.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
     void GetRenderAreaGranularity(
         RenderPass renderPass,    
         Extent2D* pGranularity) {
-        return vkGetRenderAreaGranularity(get(),renderPass.get(), reinterpret_cast<VkExtent2D*>(pGranularity));
+        return vkGetRenderAreaGranularity(get(),renderPass.get(), reinterpret_cast<Extent2D*>(pGranularity));
     }
     VkResult CreateCommandPool(
-        CommandPoolCreateInfo* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constCommandPoolCreateInfo* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         CommandPool* pCommandPool) {
-        return vkCreateCommandPool(get(), reinterpret_cast<VkCommandPoolCreateInfo*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkCommandPool*>(pCommandPool));
+        return vkCreateCommandPool(get(), reinterpret_cast<const CommandPoolCreateInfo*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<CommandPool*>(pCommandPool));
     }
     void DestroyCommandPool(
         CommandPool commandPool,    
-        AllocationCallbacks* pAllocator) {
-        return vkDestroyCommandPool(get(),commandPool.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroyCommandPool(get(),commandPool.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
     VkResult ResetCommandPool(
         CommandPool commandPool,    
         CommandPoolResetFlags flags) {
-        return vkResetCommandPool(get(),commandPool.get(), static_cast<VkCommandPoolResetFlags>(flags));
+        return vkResetCommandPool(get(),commandPool.get(), static_cast<CommandPoolResetFlags>(flags));
     }
     VkResult AllocateCommandBuffers(
-        CommandBufferAllocateInfo* pAllocateInfo,    
+        constCommandBufferAllocateInfo* pAllocateInfo,    
         CommandBuffer* pCommandBuffers) {
-        return vkAllocateCommandBuffers(get(), reinterpret_cast<VkCommandBufferAllocateInfo*>(pAllocateInfo), reinterpret_cast<VkCommandBuffer*>(pCommandBuffers));
+        return vkAllocateCommandBuffers(get(), reinterpret_cast<const CommandBufferAllocateInfo*>(pAllocateInfo), reinterpret_cast<CommandBuffer*>(pCommandBuffers));
     }
     void FreeCommandBuffers(
         CommandPool commandPool,    
         uint32_t commandBufferCount,    
-        CommandBuffer* pCommandBuffers) {
-        return vkFreeCommandBuffers(get(),commandPool.get(), static_cast<uint32_t>(commandBufferCount), reinterpret_cast<VkCommandBuffer*>(pCommandBuffers));
+        constCommandBuffer* pCommandBuffers) {
+        return vkFreeCommandBuffers(get(),commandPool.get(), static_cast<uint32_t>(commandBufferCount), reinterpret_cast<const CommandBuffer*>(pCommandBuffers));
     }
     VkResult CreateSharedSwapchainsKHR(
         uint32_t swapchainCount,    
-        SwapchainCreateInfoKHR* pCreateInfos,    
-        AllocationCallbacks* pAllocator,    
+        constSwapchainCreateInfoKHR* pCreateInfos,    
+        constAllocationCallbacks* pAllocator,    
         SwapchainKHR* pSwapchains) {
-        return vkCreateSharedSwapchainsKHR(get(), static_cast<uint32_t>(swapchainCount), reinterpret_cast<VkSwapchainCreateInfoKHR*>(pCreateInfos), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkSwapchainKHR*>(pSwapchains));
+        return vkCreateSharedSwapchainsKHR(get(), static_cast<uint32_t>(swapchainCount), reinterpret_cast<const SwapchainCreateInfoKHR*>(pCreateInfos), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<SwapchainKHR*>(pSwapchains));
     }
     VkResult CreateSwapchainKHR(
-        SwapchainCreateInfoKHR* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constSwapchainCreateInfoKHR* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         SwapchainKHR* pSwapchain) {
-        return vkCreateSwapchainKHR(get(), reinterpret_cast<VkSwapchainCreateInfoKHR*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkSwapchainKHR*>(pSwapchain));
+        return vkCreateSwapchainKHR(get(), reinterpret_cast<const SwapchainCreateInfoKHR*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<SwapchainKHR*>(pSwapchain));
     }
     void DestroySwapchainKHR(
         SwapchainKHR swapchain,    
-        AllocationCallbacks* pAllocator) {
-        return vkDestroySwapchainKHR(get(),swapchain.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroySwapchainKHR(get(),swapchain.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
     VkResult GetSwapchainImagesKHR(
         SwapchainKHR swapchain,    
         uint32_t* pSwapchainImageCount,    
         Image* pSwapchainImages) {
-        return vkGetSwapchainImagesKHR(get(),swapchain.get(), reinterpret_cast<uint32_t*>(pSwapchainImageCount), reinterpret_cast<VkImage*>(pSwapchainImages));
+        return vkGetSwapchainImagesKHR(get(),swapchain.get(), reinterpret_cast<uint32_t*>(pSwapchainImageCount), reinterpret_cast<Image*>(pSwapchainImages));
     }
     VkResult AcquireNextImageKHR(
         SwapchainKHR swapchain,    
@@ -7659,47 +7659,47 @@ struct Device {
         return vkAcquireNextImageKHR(get(),swapchain.get(), static_cast<uint64_t>(timeout),semaphore.get(),fence.get(), reinterpret_cast<uint32_t*>(pImageIndex));
     }
     VkResult DebugMarkerSetObjectNameEXT(
-        DebugMarkerObjectNameInfoEXT* pNameInfo) {
-        return vkDebugMarkerSetObjectNameEXT(get(), reinterpret_cast<VkDebugMarkerObjectNameInfoEXT*>(pNameInfo));
+        constDebugMarkerObjectNameInfoEXT* pNameInfo) {
+        return vkDebugMarkerSetObjectNameEXT(get(), reinterpret_cast<const DebugMarkerObjectNameInfoEXT*>(pNameInfo));
     }
     VkResult DebugMarkerSetObjectTagEXT(
-        DebugMarkerObjectTagInfoEXT* pTagInfo) {
-        return vkDebugMarkerSetObjectTagEXT(get(), reinterpret_cast<VkDebugMarkerObjectTagInfoEXT*>(pTagInfo));
+        constDebugMarkerObjectTagInfoEXT* pTagInfo) {
+        return vkDebugMarkerSetObjectTagEXT(get(), reinterpret_cast<const DebugMarkerObjectTagInfoEXT*>(pTagInfo));
     }
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     VkResult GetMemoryWin32HandleNV(
         DeviceMemory memory,    
         ExternalMemoryHandleTypeFlagsNV handleType,    
         HANDLE* pHandle) {
-        return vkGetMemoryWin32HandleNV(get(),memory.get(), static_cast<VkExternalMemoryHandleTypeFlagsNV>(handleType), reinterpret_cast<HANDLE*>(pHandle));
+        return vkGetMemoryWin32HandleNV(get(),memory.get(), static_cast<ExternalMemoryHandleTypeFlagsNV>(handleType), reinterpret_cast<HANDLE*>(pHandle));
     }
 #endif // VK_USE_PLATFORM_WIN32_KHR
     void GetGeneratedCommandsMemoryRequirementsNV(
-        GeneratedCommandsMemoryRequirementsInfoNV* pInfo,    
+        constGeneratedCommandsMemoryRequirementsInfoNV* pInfo,    
         MemoryRequirements2* pMemoryRequirements) {
-        return vkGetGeneratedCommandsMemoryRequirementsNV(get(), reinterpret_cast<VkGeneratedCommandsMemoryRequirementsInfoNV*>(pInfo), reinterpret_cast<VkMemoryRequirements2*>(pMemoryRequirements));
+        return vkGetGeneratedCommandsMemoryRequirementsNV(get(), reinterpret_cast<const GeneratedCommandsMemoryRequirementsInfoNV*>(pInfo), reinterpret_cast<MemoryRequirements2*>(pMemoryRequirements));
     }
     VkResult CreateIndirectCommandsLayoutNV(
-        IndirectCommandsLayoutCreateInfoNV* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constIndirectCommandsLayoutCreateInfoNV* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         IndirectCommandsLayoutNV* pIndirectCommandsLayout) {
-        return vkCreateIndirectCommandsLayoutNV(get(), reinterpret_cast<VkIndirectCommandsLayoutCreateInfoNV*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkIndirectCommandsLayoutNV*>(pIndirectCommandsLayout));
+        return vkCreateIndirectCommandsLayoutNV(get(), reinterpret_cast<const IndirectCommandsLayoutCreateInfoNV*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<IndirectCommandsLayoutNV*>(pIndirectCommandsLayout));
     }
     void DestroyIndirectCommandsLayoutNV(
         IndirectCommandsLayoutNV indirectCommandsLayout,    
-        AllocationCallbacks* pAllocator) {
-        return vkDestroyIndirectCommandsLayoutNV(get(),indirectCommandsLayout.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroyIndirectCommandsLayoutNV(get(),indirectCommandsLayout.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
     void TrimCommandPool(
         CommandPool commandPool,    
         CommandPoolTrimFlags flags) {
-        return vkTrimCommandPool(get(),commandPool.get(), static_cast<VkCommandPoolTrimFlags>(flags));
+        return vkTrimCommandPool(get(),commandPool.get(), static_cast<CommandPoolTrimFlags>(flags));
     }
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     VkResult GetMemoryWin32HandleKHR(
-        MemoryGetWin32HandleInfoKHR* pGetWin32HandleInfo,    
+        constMemoryGetWin32HandleInfoKHR* pGetWin32HandleInfo,    
         HANDLE* pHandle) {
-        return vkGetMemoryWin32HandleKHR(get(), reinterpret_cast<VkMemoryGetWin32HandleInfoKHR*>(pGetWin32HandleInfo), reinterpret_cast<HANDLE*>(pHandle));
+        return vkGetMemoryWin32HandleKHR(get(), reinterpret_cast<const MemoryGetWin32HandleInfoKHR*>(pGetWin32HandleInfo), reinterpret_cast<HANDLE*>(pHandle));
     }
 #endif // VK_USE_PLATFORM_WIN32_KHR
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
@@ -7707,141 +7707,141 @@ struct Device {
         ExternalMemoryHandleTypeFlagBits handleType,    
         HANDLE handle,    
         MemoryWin32HandlePropertiesKHR* pMemoryWin32HandleProperties) {
-        return vkGetMemoryWin32HandlePropertiesKHR(get(), static_cast<VkExternalMemoryHandleTypeFlagBits>(handleType), static_cast<HANDLE>(handle), reinterpret_cast<VkMemoryWin32HandlePropertiesKHR*>(pMemoryWin32HandleProperties));
+        return vkGetMemoryWin32HandlePropertiesKHR(get(), static_cast<ExternalMemoryHandleTypeFlagBits>(handleType), static_cast<HANDLE>(handle), reinterpret_cast<MemoryWin32HandlePropertiesKHR*>(pMemoryWin32HandleProperties));
     }
 #endif // VK_USE_PLATFORM_WIN32_KHR
     VkResult GetMemoryFdKHR(
-        MemoryGetFdInfoKHR* pGetFdInfo,    
+        constMemoryGetFdInfoKHR* pGetFdInfo,    
         int* pFd) {
-        return vkGetMemoryFdKHR(get(), reinterpret_cast<VkMemoryGetFdInfoKHR*>(pGetFdInfo), reinterpret_cast<int*>(pFd));
+        return vkGetMemoryFdKHR(get(), reinterpret_cast<const MemoryGetFdInfoKHR*>(pGetFdInfo), reinterpret_cast<int*>(pFd));
     }
     VkResult GetMemoryFdPropertiesKHR(
         ExternalMemoryHandleTypeFlagBits handleType,    
         int fd,    
         MemoryFdPropertiesKHR* pMemoryFdProperties) {
-        return vkGetMemoryFdPropertiesKHR(get(), static_cast<VkExternalMemoryHandleTypeFlagBits>(handleType), static_cast<int>(fd), reinterpret_cast<VkMemoryFdPropertiesKHR*>(pMemoryFdProperties));
+        return vkGetMemoryFdPropertiesKHR(get(), static_cast<ExternalMemoryHandleTypeFlagBits>(handleType), static_cast<int>(fd), reinterpret_cast<MemoryFdPropertiesKHR*>(pMemoryFdProperties));
     }
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     VkResult GetSemaphoreWin32HandleKHR(
-        SemaphoreGetWin32HandleInfoKHR* pGetWin32HandleInfo,    
+        constSemaphoreGetWin32HandleInfoKHR* pGetWin32HandleInfo,    
         HANDLE* pHandle) {
-        return vkGetSemaphoreWin32HandleKHR(get(), reinterpret_cast<VkSemaphoreGetWin32HandleInfoKHR*>(pGetWin32HandleInfo), reinterpret_cast<HANDLE*>(pHandle));
+        return vkGetSemaphoreWin32HandleKHR(get(), reinterpret_cast<const SemaphoreGetWin32HandleInfoKHR*>(pGetWin32HandleInfo), reinterpret_cast<HANDLE*>(pHandle));
     }
 #endif // VK_USE_PLATFORM_WIN32_KHR
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     VkResult ImportSemaphoreWin32HandleKHR(
-        ImportSemaphoreWin32HandleInfoKHR* pImportSemaphoreWin32HandleInfo) {
-        return vkImportSemaphoreWin32HandleKHR(get(), reinterpret_cast<VkImportSemaphoreWin32HandleInfoKHR*>(pImportSemaphoreWin32HandleInfo));
+        constImportSemaphoreWin32HandleInfoKHR* pImportSemaphoreWin32HandleInfo) {
+        return vkImportSemaphoreWin32HandleKHR(get(), reinterpret_cast<const ImportSemaphoreWin32HandleInfoKHR*>(pImportSemaphoreWin32HandleInfo));
     }
 #endif // VK_USE_PLATFORM_WIN32_KHR
     VkResult GetSemaphoreFdKHR(
-        SemaphoreGetFdInfoKHR* pGetFdInfo,    
+        constSemaphoreGetFdInfoKHR* pGetFdInfo,    
         int* pFd) {
-        return vkGetSemaphoreFdKHR(get(), reinterpret_cast<VkSemaphoreGetFdInfoKHR*>(pGetFdInfo), reinterpret_cast<int*>(pFd));
+        return vkGetSemaphoreFdKHR(get(), reinterpret_cast<const SemaphoreGetFdInfoKHR*>(pGetFdInfo), reinterpret_cast<int*>(pFd));
     }
     VkResult ImportSemaphoreFdKHR(
-        ImportSemaphoreFdInfoKHR* pImportSemaphoreFdInfo) {
-        return vkImportSemaphoreFdKHR(get(), reinterpret_cast<VkImportSemaphoreFdInfoKHR*>(pImportSemaphoreFdInfo));
+        constImportSemaphoreFdInfoKHR* pImportSemaphoreFdInfo) {
+        return vkImportSemaphoreFdKHR(get(), reinterpret_cast<const ImportSemaphoreFdInfoKHR*>(pImportSemaphoreFdInfo));
     }
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     VkResult GetFenceWin32HandleKHR(
-        FenceGetWin32HandleInfoKHR* pGetWin32HandleInfo,    
+        constFenceGetWin32HandleInfoKHR* pGetWin32HandleInfo,    
         HANDLE* pHandle) {
-        return vkGetFenceWin32HandleKHR(get(), reinterpret_cast<VkFenceGetWin32HandleInfoKHR*>(pGetWin32HandleInfo), reinterpret_cast<HANDLE*>(pHandle));
+        return vkGetFenceWin32HandleKHR(get(), reinterpret_cast<const FenceGetWin32HandleInfoKHR*>(pGetWin32HandleInfo), reinterpret_cast<HANDLE*>(pHandle));
     }
 #endif // VK_USE_PLATFORM_WIN32_KHR
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     VkResult ImportFenceWin32HandleKHR(
-        ImportFenceWin32HandleInfoKHR* pImportFenceWin32HandleInfo) {
-        return vkImportFenceWin32HandleKHR(get(), reinterpret_cast<VkImportFenceWin32HandleInfoKHR*>(pImportFenceWin32HandleInfo));
+        constImportFenceWin32HandleInfoKHR* pImportFenceWin32HandleInfo) {
+        return vkImportFenceWin32HandleKHR(get(), reinterpret_cast<const ImportFenceWin32HandleInfoKHR*>(pImportFenceWin32HandleInfo));
     }
 #endif // VK_USE_PLATFORM_WIN32_KHR
     VkResult GetFenceFdKHR(
-        FenceGetFdInfoKHR* pGetFdInfo,    
+        constFenceGetFdInfoKHR* pGetFdInfo,    
         int* pFd) {
-        return vkGetFenceFdKHR(get(), reinterpret_cast<VkFenceGetFdInfoKHR*>(pGetFdInfo), reinterpret_cast<int*>(pFd));
+        return vkGetFenceFdKHR(get(), reinterpret_cast<const FenceGetFdInfoKHR*>(pGetFdInfo), reinterpret_cast<int*>(pFd));
     }
     VkResult ImportFenceFdKHR(
-        ImportFenceFdInfoKHR* pImportFenceFdInfo) {
-        return vkImportFenceFdKHR(get(), reinterpret_cast<VkImportFenceFdInfoKHR*>(pImportFenceFdInfo));
+        constImportFenceFdInfoKHR* pImportFenceFdInfo) {
+        return vkImportFenceFdKHR(get(), reinterpret_cast<const ImportFenceFdInfoKHR*>(pImportFenceFdInfo));
     }
     VkResult DisplayPowerControlEXT(
         DisplayKHR display,    
-        DisplayPowerInfoEXT* pDisplayPowerInfo) {
-        return vkDisplayPowerControlEXT(get(),display.get(), reinterpret_cast<VkDisplayPowerInfoEXT*>(pDisplayPowerInfo));
+        constDisplayPowerInfoEXT* pDisplayPowerInfo) {
+        return vkDisplayPowerControlEXT(get(),display.get(), reinterpret_cast<const DisplayPowerInfoEXT*>(pDisplayPowerInfo));
     }
     VkResult RegisterDeviceEventEXT(
-        DeviceEventInfoEXT* pDeviceEventInfo,    
-        AllocationCallbacks* pAllocator,    
+        constDeviceEventInfoEXT* pDeviceEventInfo,    
+        constAllocationCallbacks* pAllocator,    
         Fence* pFence) {
-        return vkRegisterDeviceEventEXT(get(), reinterpret_cast<VkDeviceEventInfoEXT*>(pDeviceEventInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkFence*>(pFence));
+        return vkRegisterDeviceEventEXT(get(), reinterpret_cast<const DeviceEventInfoEXT*>(pDeviceEventInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<Fence*>(pFence));
     }
     VkResult RegisterDisplayEventEXT(
         DisplayKHR display,    
-        DisplayEventInfoEXT* pDisplayEventInfo,    
-        AllocationCallbacks* pAllocator,    
+        constDisplayEventInfoEXT* pDisplayEventInfo,    
+        constAllocationCallbacks* pAllocator,    
         Fence* pFence) {
-        return vkRegisterDisplayEventEXT(get(),display.get(), reinterpret_cast<VkDisplayEventInfoEXT*>(pDisplayEventInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkFence*>(pFence));
+        return vkRegisterDisplayEventEXT(get(),display.get(), reinterpret_cast<const DisplayEventInfoEXT*>(pDisplayEventInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<Fence*>(pFence));
     }
     VkResult GetSwapchainCounterEXT(
         SwapchainKHR swapchain,    
         SurfaceCounterFlagBitsEXT counter,    
         uint64_t* pCounterValue) {
-        return vkGetSwapchainCounterEXT(get(),swapchain.get(), static_cast<VkSurfaceCounterFlagBitsEXT>(counter), reinterpret_cast<uint64_t*>(pCounterValue));
+        return vkGetSwapchainCounterEXT(get(),swapchain.get(), static_cast<SurfaceCounterFlagBitsEXT>(counter), reinterpret_cast<uint64_t*>(pCounterValue));
     }
     void GetDeviceGroupPeerMemoryFeatures(
         uint32_t heapIndex,    
         uint32_t localDeviceIndex,    
         uint32_t remoteDeviceIndex,    
         PeerMemoryFeatureFlags* pPeerMemoryFeatures) {
-        return vkGetDeviceGroupPeerMemoryFeatures(get(), static_cast<uint32_t>(heapIndex), static_cast<uint32_t>(localDeviceIndex), static_cast<uint32_t>(remoteDeviceIndex), reinterpret_cast<VkPeerMemoryFeatureFlags*>(pPeerMemoryFeatures));
+        return vkGetDeviceGroupPeerMemoryFeatures(get(), static_cast<uint32_t>(heapIndex), static_cast<uint32_t>(localDeviceIndex), static_cast<uint32_t>(remoteDeviceIndex), reinterpret_cast<PeerMemoryFeatureFlags*>(pPeerMemoryFeatures));
     }
     VkResult BindBufferMemory2(
         uint32_t bindInfoCount,    
-        BindBufferMemoryInfo* pBindInfos) {
-        return vkBindBufferMemory2(get(), static_cast<uint32_t>(bindInfoCount), reinterpret_cast<VkBindBufferMemoryInfo*>(pBindInfos));
+        constBindBufferMemoryInfo* pBindInfos) {
+        return vkBindBufferMemory2(get(), static_cast<uint32_t>(bindInfoCount), reinterpret_cast<const BindBufferMemoryInfo*>(pBindInfos));
     }
     VkResult BindImageMemory2(
         uint32_t bindInfoCount,    
-        BindImageMemoryInfo* pBindInfos) {
-        return vkBindImageMemory2(get(), static_cast<uint32_t>(bindInfoCount), reinterpret_cast<VkBindImageMemoryInfo*>(pBindInfos));
+        constBindImageMemoryInfo* pBindInfos) {
+        return vkBindImageMemory2(get(), static_cast<uint32_t>(bindInfoCount), reinterpret_cast<const BindImageMemoryInfo*>(pBindInfos));
     }
     VkResult GetDeviceGroupPresentCapabilitiesKHR(
         DeviceGroupPresentCapabilitiesKHR* pDeviceGroupPresentCapabilities) {
-        return vkGetDeviceGroupPresentCapabilitiesKHR(get(), reinterpret_cast<VkDeviceGroupPresentCapabilitiesKHR*>(pDeviceGroupPresentCapabilities));
+        return vkGetDeviceGroupPresentCapabilitiesKHR(get(), reinterpret_cast<DeviceGroupPresentCapabilitiesKHR*>(pDeviceGroupPresentCapabilities));
     }
     VkResult GetDeviceGroupSurfacePresentModesKHR(
         SurfaceKHR surface,    
         DeviceGroupPresentModeFlagsKHR* pModes) {
-        return vkGetDeviceGroupSurfacePresentModesKHR(get(),surface.get(), reinterpret_cast<VkDeviceGroupPresentModeFlagsKHR*>(pModes));
+        return vkGetDeviceGroupSurfacePresentModesKHR(get(),surface.get(), reinterpret_cast<DeviceGroupPresentModeFlagsKHR*>(pModes));
     }
     VkResult AcquireNextImage2KHR(
-        AcquireNextImageInfoKHR* pAcquireInfo,    
+        constAcquireNextImageInfoKHR* pAcquireInfo,    
         uint32_t* pImageIndex) {
-        return vkAcquireNextImage2KHR(get(), reinterpret_cast<VkAcquireNextImageInfoKHR*>(pAcquireInfo), reinterpret_cast<uint32_t*>(pImageIndex));
+        return vkAcquireNextImage2KHR(get(), reinterpret_cast<const AcquireNextImageInfoKHR*>(pAcquireInfo), reinterpret_cast<uint32_t*>(pImageIndex));
     }
     VkResult CreateDescriptorUpdateTemplate(
-        DescriptorUpdateTemplateCreateInfo* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constDescriptorUpdateTemplateCreateInfo* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         DescriptorUpdateTemplate* pDescriptorUpdateTemplate) {
-        return vkCreateDescriptorUpdateTemplate(get(), reinterpret_cast<VkDescriptorUpdateTemplateCreateInfo*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkDescriptorUpdateTemplate*>(pDescriptorUpdateTemplate));
+        return vkCreateDescriptorUpdateTemplate(get(), reinterpret_cast<const DescriptorUpdateTemplateCreateInfo*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<DescriptorUpdateTemplate*>(pDescriptorUpdateTemplate));
     }
     void DestroyDescriptorUpdateTemplate(
         DescriptorUpdateTemplate descriptorUpdateTemplate,    
-        AllocationCallbacks* pAllocator) {
-        return vkDestroyDescriptorUpdateTemplate(get(),descriptorUpdateTemplate.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroyDescriptorUpdateTemplate(get(),descriptorUpdateTemplate.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
     void UpdateDescriptorSetWithTemplate(
         DescriptorSet descriptorSet,    
         DescriptorUpdateTemplate descriptorUpdateTemplate,    
-        void* pData) {
-        return vkUpdateDescriptorSetWithTemplate(get(),descriptorSet.get(),descriptorUpdateTemplate.get(), reinterpret_cast<void*>(pData));
+        constvoid* pData) {
+        return vkUpdateDescriptorSetWithTemplate(get(),descriptorSet.get(),descriptorUpdateTemplate.get(), reinterpret_cast<const void*>(pData));
     }
     void SetHdrMetadataEXT(
         uint32_t swapchainCount,    
-        SwapchainKHR* pSwapchains,    
-        HdrMetadataEXT* pMetadata) {
-        return vkSetHdrMetadataEXT(get(), static_cast<uint32_t>(swapchainCount), reinterpret_cast<VkSwapchainKHR*>(pSwapchains), reinterpret_cast<VkHdrMetadataEXT*>(pMetadata));
+        constSwapchainKHR* pSwapchains,    
+        constHdrMetadataEXT* pMetadata) {
+        return vkSetHdrMetadataEXT(get(), static_cast<uint32_t>(swapchainCount), reinterpret_cast<const SwapchainKHR*>(pSwapchains), reinterpret_cast<const HdrMetadataEXT*>(pMetadata));
     }
     VkResult GetSwapchainStatusKHR(
         SwapchainKHR swapchain) {
@@ -7850,56 +7850,56 @@ struct Device {
     VkResult GetRefreshCycleDurationGOOGLE(
         SwapchainKHR swapchain,    
         RefreshCycleDurationGOOGLE* pDisplayTimingProperties) {
-        return vkGetRefreshCycleDurationGOOGLE(get(),swapchain.get(), reinterpret_cast<VkRefreshCycleDurationGOOGLE*>(pDisplayTimingProperties));
+        return vkGetRefreshCycleDurationGOOGLE(get(),swapchain.get(), reinterpret_cast<RefreshCycleDurationGOOGLE*>(pDisplayTimingProperties));
     }
     VkResult GetPastPresentationTimingGOOGLE(
         SwapchainKHR swapchain,    
         uint32_t* pPresentationTimingCount,    
         PastPresentationTimingGOOGLE* pPresentationTimings) {
-        return vkGetPastPresentationTimingGOOGLE(get(),swapchain.get(), reinterpret_cast<uint32_t*>(pPresentationTimingCount), reinterpret_cast<VkPastPresentationTimingGOOGLE*>(pPresentationTimings));
+        return vkGetPastPresentationTimingGOOGLE(get(),swapchain.get(), reinterpret_cast<uint32_t*>(pPresentationTimingCount), reinterpret_cast<PastPresentationTimingGOOGLE*>(pPresentationTimings));
     }
     void GetBufferMemoryRequirements2(
-        BufferMemoryRequirementsInfo2* pInfo,    
+        constBufferMemoryRequirementsInfo2* pInfo,    
         MemoryRequirements2* pMemoryRequirements) {
-        return vkGetBufferMemoryRequirements2(get(), reinterpret_cast<VkBufferMemoryRequirementsInfo2*>(pInfo), reinterpret_cast<VkMemoryRequirements2*>(pMemoryRequirements));
+        return vkGetBufferMemoryRequirements2(get(), reinterpret_cast<const BufferMemoryRequirementsInfo2*>(pInfo), reinterpret_cast<MemoryRequirements2*>(pMemoryRequirements));
     }
     void GetImageMemoryRequirements2(
-        ImageMemoryRequirementsInfo2* pInfo,    
+        constImageMemoryRequirementsInfo2* pInfo,    
         MemoryRequirements2* pMemoryRequirements) {
-        return vkGetImageMemoryRequirements2(get(), reinterpret_cast<VkImageMemoryRequirementsInfo2*>(pInfo), reinterpret_cast<VkMemoryRequirements2*>(pMemoryRequirements));
+        return vkGetImageMemoryRequirements2(get(), reinterpret_cast<const ImageMemoryRequirementsInfo2*>(pInfo), reinterpret_cast<MemoryRequirements2*>(pMemoryRequirements));
     }
     void GetImageSparseMemoryRequirements2(
-        ImageSparseMemoryRequirementsInfo2* pInfo,    
+        constImageSparseMemoryRequirementsInfo2* pInfo,    
         uint32_t* pSparseMemoryRequirementCount,    
         SparseImageMemoryRequirements2* pSparseMemoryRequirements) {
-        return vkGetImageSparseMemoryRequirements2(get(), reinterpret_cast<VkImageSparseMemoryRequirementsInfo2*>(pInfo), reinterpret_cast<uint32_t*>(pSparseMemoryRequirementCount), reinterpret_cast<VkSparseImageMemoryRequirements2*>(pSparseMemoryRequirements));
+        return vkGetImageSparseMemoryRequirements2(get(), reinterpret_cast<const ImageSparseMemoryRequirementsInfo2*>(pInfo), reinterpret_cast<uint32_t*>(pSparseMemoryRequirementCount), reinterpret_cast<SparseImageMemoryRequirements2*>(pSparseMemoryRequirements));
     }
     VkResult CreateSamplerYcbcrConversion(
-        SamplerYcbcrConversionCreateInfo* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constSamplerYcbcrConversionCreateInfo* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         SamplerYcbcrConversion* pYcbcrConversion) {
-        return vkCreateSamplerYcbcrConversion(get(), reinterpret_cast<VkSamplerYcbcrConversionCreateInfo*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkSamplerYcbcrConversion*>(pYcbcrConversion));
+        return vkCreateSamplerYcbcrConversion(get(), reinterpret_cast<const SamplerYcbcrConversionCreateInfo*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<SamplerYcbcrConversion*>(pYcbcrConversion));
     }
     void DestroySamplerYcbcrConversion(
         SamplerYcbcrConversion ycbcrConversion,    
-        AllocationCallbacks* pAllocator) {
-        return vkDestroySamplerYcbcrConversion(get(),ycbcrConversion.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroySamplerYcbcrConversion(get(),ycbcrConversion.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
     void GetDeviceQueue2(
-        DeviceQueueInfo2* pQueueInfo,    
+        constDeviceQueueInfo2* pQueueInfo,    
         Queue* pQueue) {
-        return vkGetDeviceQueue2(get(), reinterpret_cast<VkDeviceQueueInfo2*>(pQueueInfo), reinterpret_cast<VkQueue*>(pQueue));
+        return vkGetDeviceQueue2(get(), reinterpret_cast<const DeviceQueueInfo2*>(pQueueInfo), reinterpret_cast<Queue*>(pQueue));
     }
     VkResult CreateValidationCacheEXT(
-        ValidationCacheCreateInfoEXT* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constValidationCacheCreateInfoEXT* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         ValidationCacheEXT* pValidationCache) {
-        return vkCreateValidationCacheEXT(get(), reinterpret_cast<VkValidationCacheCreateInfoEXT*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkValidationCacheEXT*>(pValidationCache));
+        return vkCreateValidationCacheEXT(get(), reinterpret_cast<const ValidationCacheCreateInfoEXT*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<ValidationCacheEXT*>(pValidationCache));
     }
     void DestroyValidationCacheEXT(
         ValidationCacheEXT validationCache,    
-        AllocationCallbacks* pAllocator) {
-        return vkDestroyValidationCacheEXT(get(),validationCache.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroyValidationCacheEXT(get(),validationCache.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
     VkResult GetValidationCacheDataEXT(
         ValidationCacheEXT validationCache,    
@@ -7910,20 +7910,20 @@ struct Device {
     VkResult MergeValidationCachesEXT(
         ValidationCacheEXT dstCache,    
         uint32_t srcCacheCount,    
-        ValidationCacheEXT* pSrcCaches) {
-        return vkMergeValidationCachesEXT(get(),dstCache.get(), static_cast<uint32_t>(srcCacheCount), reinterpret_cast<VkValidationCacheEXT*>(pSrcCaches));
+        constValidationCacheEXT* pSrcCaches) {
+        return vkMergeValidationCachesEXT(get(),dstCache.get(), static_cast<uint32_t>(srcCacheCount), reinterpret_cast<const ValidationCacheEXT*>(pSrcCaches));
     }
     void GetDescriptorSetLayoutSupport(
-        DescriptorSetLayoutCreateInfo* pCreateInfo,    
+        constDescriptorSetLayoutCreateInfo* pCreateInfo,    
         DescriptorSetLayoutSupport* pSupport) {
-        return vkGetDescriptorSetLayoutSupport(get(), reinterpret_cast<VkDescriptorSetLayoutCreateInfo*>(pCreateInfo), reinterpret_cast<VkDescriptorSetLayoutSupport*>(pSupport));
+        return vkGetDescriptorSetLayoutSupport(get(), reinterpret_cast<const DescriptorSetLayoutCreateInfo*>(pCreateInfo), reinterpret_cast<DescriptorSetLayoutSupport*>(pSupport));
     }
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
     VkResult GetSwapchainGrallocUsageANDROID(
         Format format,    
         ImageUsageFlags imageUsage,    
         int* grallocUsage) {
-        return vkGetSwapchainGrallocUsageANDROID(get(), static_cast<VkFormat>(format), static_cast<VkImageUsageFlags>(imageUsage), reinterpret_cast<int*>(grallocUsage));
+        return vkGetSwapchainGrallocUsageANDROID(get(), static_cast<Format>(format), static_cast<ImageUsageFlags>(imageUsage), reinterpret_cast<int*>(grallocUsage));
     }
 #endif // VK_USE_PLATFORM_ANDROID_KHR
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
@@ -7933,7 +7933,7 @@ struct Device {
         SwapchainImageUsageFlagsANDROID swapchainImageUsage,    
         uint64_t* grallocConsumerUsage,    
         uint64_t* grallocProducerUsage) {
-        return vkGetSwapchainGrallocUsage2ANDROID(get(), static_cast<VkFormat>(format), static_cast<VkImageUsageFlags>(imageUsage), static_cast<VkSwapchainImageUsageFlagsANDROID>(swapchainImageUsage), reinterpret_cast<uint64_t*>(grallocConsumerUsage), reinterpret_cast<uint64_t*>(grallocProducerUsage));
+        return vkGetSwapchainGrallocUsage2ANDROID(get(), static_cast<Format>(format), static_cast<ImageUsageFlags>(imageUsage), static_cast<SwapchainImageUsageFlagsANDROID>(swapchainImageUsage), reinterpret_cast<uint64_t*>(grallocConsumerUsage), reinterpret_cast<uint64_t*>(grallocProducerUsage));
     }
 #endif // VK_USE_PLATFORM_ANDROID_KHR
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
@@ -7951,39 +7951,39 @@ struct Device {
         ShaderInfoTypeAMD infoType,    
         size_t* pInfoSize,    
         void* pInfo) {
-        return vkGetShaderInfoAMD(get(),pipeline.get(), static_cast<VkShaderStageFlagBits>(shaderStage), static_cast<VkShaderInfoTypeAMD>(infoType), reinterpret_cast<size_t*>(pInfoSize), reinterpret_cast<void*>(pInfo));
+        return vkGetShaderInfoAMD(get(),pipeline.get(), static_cast<ShaderStageFlagBits>(shaderStage), static_cast<ShaderInfoTypeAMD>(infoType), reinterpret_cast<size_t*>(pInfoSize), reinterpret_cast<void*>(pInfo));
     }
     void SetLocalDimmingAMD(
         SwapchainKHR swapChain,    
         bool localDimmingEnable) {
-        return vkSetLocalDimmingAMD(get(),swapChain.get(), static_cast<VkBool32>(localDimmingEnable));
+        return vkSetLocalDimmingAMD(get(),swapChain.get(), static_cast<bool>(localDimmingEnable));
     }
     VkResult GetCalibratedTimestampsEXT(
         uint32_t timestampCount,    
-        CalibratedTimestampInfoEXT* pTimestampInfos,    
+        constCalibratedTimestampInfoEXT* pTimestampInfos,    
         uint64_t* pTimestamps,    
         uint64_t* pMaxDeviation) {
-        return vkGetCalibratedTimestampsEXT(get(), static_cast<uint32_t>(timestampCount), reinterpret_cast<VkCalibratedTimestampInfoEXT*>(pTimestampInfos), reinterpret_cast<uint64_t*>(pTimestamps), reinterpret_cast<uint64_t*>(pMaxDeviation));
+        return vkGetCalibratedTimestampsEXT(get(), static_cast<uint32_t>(timestampCount), reinterpret_cast<const CalibratedTimestampInfoEXT*>(pTimestampInfos), reinterpret_cast<uint64_t*>(pTimestamps), reinterpret_cast<uint64_t*>(pMaxDeviation));
     }
     VkResult SetDebugUtilsObjectNameEXT(
-        DebugUtilsObjectNameInfoEXT* pNameInfo) {
-        return vkSetDebugUtilsObjectNameEXT(get(), reinterpret_cast<VkDebugUtilsObjectNameInfoEXT*>(pNameInfo));
+        constDebugUtilsObjectNameInfoEXT* pNameInfo) {
+        return vkSetDebugUtilsObjectNameEXT(get(), reinterpret_cast<const DebugUtilsObjectNameInfoEXT*>(pNameInfo));
     }
     VkResult SetDebugUtilsObjectTagEXT(
-        DebugUtilsObjectTagInfoEXT* pTagInfo) {
-        return vkSetDebugUtilsObjectTagEXT(get(), reinterpret_cast<VkDebugUtilsObjectTagInfoEXT*>(pTagInfo));
+        constDebugUtilsObjectTagInfoEXT* pTagInfo) {
+        return vkSetDebugUtilsObjectTagEXT(get(), reinterpret_cast<const DebugUtilsObjectTagInfoEXT*>(pTagInfo));
     }
     VkResult GetMemoryHostPointerPropertiesEXT(
         ExternalMemoryHandleTypeFlagBits handleType,    
-        void* pHostPointer,    
+        constvoid* pHostPointer,    
         MemoryHostPointerPropertiesEXT* pMemoryHostPointerProperties) {
-        return vkGetMemoryHostPointerPropertiesEXT(get(), static_cast<VkExternalMemoryHandleTypeFlagBits>(handleType), reinterpret_cast<void*>(pHostPointer), reinterpret_cast<VkMemoryHostPointerPropertiesEXT*>(pMemoryHostPointerProperties));
+        return vkGetMemoryHostPointerPropertiesEXT(get(), static_cast<ExternalMemoryHandleTypeFlagBits>(handleType), reinterpret_cast<const void*>(pHostPointer), reinterpret_cast<MemoryHostPointerPropertiesEXT*>(pMemoryHostPointerProperties));
     }
     VkResult CreateRenderPass2(
-        RenderPassCreateInfo2* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constRenderPassCreateInfo2* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         RenderPass* pRenderPass) {
-        return vkCreateRenderPass2(get(), reinterpret_cast<VkRenderPassCreateInfo2*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkRenderPass*>(pRenderPass));
+        return vkCreateRenderPass2(get(), reinterpret_cast<const RenderPassCreateInfo2*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<RenderPass*>(pRenderPass));
     }
     VkResult GetSemaphoreCounterValue(
         Semaphore semaphore,    
@@ -7991,26 +7991,26 @@ struct Device {
         return vkGetSemaphoreCounterValue(get(),semaphore.get(), reinterpret_cast<uint64_t*>(pValue));
     }
     VkResult WaitSemaphores(
-        SemaphoreWaitInfo* pWaitInfo,    
+        constSemaphoreWaitInfo* pWaitInfo,    
         uint64_t timeout) {
-        return vkWaitSemaphores(get(), reinterpret_cast<VkSemaphoreWaitInfo*>(pWaitInfo), static_cast<uint64_t>(timeout));
+        return vkWaitSemaphores(get(), reinterpret_cast<const SemaphoreWaitInfo*>(pWaitInfo), static_cast<uint64_t>(timeout));
     }
     VkResult SignalSemaphore(
-        SemaphoreSignalInfo* pSignalInfo) {
-        return vkSignalSemaphore(get(), reinterpret_cast<VkSemaphoreSignalInfo*>(pSignalInfo));
+        constSemaphoreSignalInfo* pSignalInfo) {
+        return vkSignalSemaphore(get(), reinterpret_cast<const SemaphoreSignalInfo*>(pSignalInfo));
     }
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
     VkResult GetAndroidHardwareBufferPropertiesANDROID(
-        AHardwareBuffer* buffer,    
+        constAHardwareBuffer* buffer,    
         AndroidHardwareBufferPropertiesANDROID* pProperties) {
-        return vkGetAndroidHardwareBufferPropertiesANDROID(get(), reinterpret_cast<AHardwareBuffer*>(buffer), reinterpret_cast<VkAndroidHardwareBufferPropertiesANDROID*>(pProperties));
+        return vkGetAndroidHardwareBufferPropertiesANDROID(get(), reinterpret_cast<const AHardwareBuffer*>(buffer), reinterpret_cast<AndroidHardwareBufferPropertiesANDROID*>(pProperties));
     }
 #endif // VK_USE_PLATFORM_ANDROID_KHR
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
     VkResult GetMemoryAndroidHardwareBufferANDROID(
-        MemoryGetAndroidHardwareBufferInfoANDROID* pInfo,    
-        AHardwareBuffer* pBuffer) {
-        return vkGetMemoryAndroidHardwareBufferANDROID(get(), reinterpret_cast<VkMemoryGetAndroidHardwareBufferInfoANDROID*>(pInfo), reinterpret_cast<AHardwareBuffer*>(pBuffer));
+        constMemoryGetAndroidHardwareBufferInfoANDROID* pInfo,    
+        AHardwareBuffer pBuffer) {
+        return vkGetMemoryAndroidHardwareBufferANDROID(get(), reinterpret_cast<const MemoryGetAndroidHardwareBufferInfoANDROID*>(pInfo), static_cast<AHardwareBuffer>(pBuffer));
     }
 #endif // VK_USE_PLATFORM_ANDROID_KHR
     VkResult CompileDeferredNV(
@@ -8019,64 +8019,64 @@ struct Device {
         return vkCompileDeferredNV(get(),pipeline.get(), static_cast<uint32_t>(shader));
     }
     VkResult CreateAccelerationStructureNV(
-        AccelerationStructureCreateInfoNV* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constAccelerationStructureCreateInfoNV* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         AccelerationStructureNV* pAccelerationStructure) {
-        return vkCreateAccelerationStructureNV(get(), reinterpret_cast<VkAccelerationStructureCreateInfoNV*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkAccelerationStructureNV*>(pAccelerationStructure));
+        return vkCreateAccelerationStructureNV(get(), reinterpret_cast<const AccelerationStructureCreateInfoNV*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<AccelerationStructureNV*>(pAccelerationStructure));
     }
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
     void DestroyAccelerationStructureKHR(
         AccelerationStructureKHR accelerationStructure,    
-        AllocationCallbacks* pAllocator) {
-        return vkDestroyAccelerationStructureKHR(get(),accelerationStructure.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroyAccelerationStructureKHR(get(),accelerationStructure.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
     void GetAccelerationStructureMemoryRequirementsKHR(
-        AccelerationStructureMemoryRequirementsInfoKHR* pInfo,    
+        constAccelerationStructureMemoryRequirementsInfoKHR* pInfo,    
         MemoryRequirements2* pMemoryRequirements) {
-        return vkGetAccelerationStructureMemoryRequirementsKHR(get(), reinterpret_cast<VkAccelerationStructureMemoryRequirementsInfoKHR*>(pInfo), reinterpret_cast<VkMemoryRequirements2*>(pMemoryRequirements));
+        return vkGetAccelerationStructureMemoryRequirementsKHR(get(), reinterpret_cast<const AccelerationStructureMemoryRequirementsInfoKHR*>(pInfo), reinterpret_cast<MemoryRequirements2*>(pMemoryRequirements));
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
     void GetAccelerationStructureMemoryRequirementsNV(
-        AccelerationStructureMemoryRequirementsInfoNV* pInfo,    
+        constAccelerationStructureMemoryRequirementsInfoNV* pInfo,    
         MemoryRequirements2KHR* pMemoryRequirements) {
-        return vkGetAccelerationStructureMemoryRequirementsNV(get(), reinterpret_cast<VkAccelerationStructureMemoryRequirementsInfoNV*>(pInfo), reinterpret_cast<VkMemoryRequirements2KHR*>(pMemoryRequirements));
+        return vkGetAccelerationStructureMemoryRequirementsNV(get(), reinterpret_cast<const AccelerationStructureMemoryRequirementsInfoNV*>(pInfo), reinterpret_cast<MemoryRequirements2KHR*>(pMemoryRequirements));
     }
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
     VkResult BindAccelerationStructureMemoryKHR(
         uint32_t bindInfoCount,    
-        BindAccelerationStructureMemoryInfoKHR* pBindInfos) {
-        return vkBindAccelerationStructureMemoryKHR(get(), static_cast<uint32_t>(bindInfoCount), reinterpret_cast<VkBindAccelerationStructureMemoryInfoKHR*>(pBindInfos));
+        constBindAccelerationStructureMemoryInfoKHR* pBindInfos) {
+        return vkBindAccelerationStructureMemoryKHR(get(), static_cast<uint32_t>(bindInfoCount), reinterpret_cast<const BindAccelerationStructureMemoryInfoKHR*>(pBindInfos));
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
     VkResult CopyAccelerationStructureKHR(
-        CopyAccelerationStructureInfoKHR* pInfo) {
-        return vkCopyAccelerationStructureKHR(get(), reinterpret_cast<VkCopyAccelerationStructureInfoKHR*>(pInfo));
+        constCopyAccelerationStructureInfoKHR* pInfo) {
+        return vkCopyAccelerationStructureKHR(get(), reinterpret_cast<const CopyAccelerationStructureInfoKHR*>(pInfo));
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
     VkResult CopyAccelerationStructureToMemoryKHR(
-        CopyAccelerationStructureToMemoryInfoKHR* pInfo) {
-        return vkCopyAccelerationStructureToMemoryKHR(get(), reinterpret_cast<VkCopyAccelerationStructureToMemoryInfoKHR*>(pInfo));
+        constCopyAccelerationStructureToMemoryInfoKHR* pInfo) {
+        return vkCopyAccelerationStructureToMemoryKHR(get(), reinterpret_cast<const CopyAccelerationStructureToMemoryInfoKHR*>(pInfo));
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
     VkResult CopyMemoryToAccelerationStructureKHR(
-        CopyMemoryToAccelerationStructureInfoKHR* pInfo) {
-        return vkCopyMemoryToAccelerationStructureKHR(get(), reinterpret_cast<VkCopyMemoryToAccelerationStructureInfoKHR*>(pInfo));
+        constCopyMemoryToAccelerationStructureInfoKHR* pInfo) {
+        return vkCopyMemoryToAccelerationStructureKHR(get(), reinterpret_cast<const CopyMemoryToAccelerationStructureInfoKHR*>(pInfo));
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
     VkResult WriteAccelerationStructuresPropertiesKHR(
         uint32_t accelerationStructureCount,    
-        AccelerationStructureKHR* pAccelerationStructures,    
+        constAccelerationStructureKHR* pAccelerationStructures,    
         QueryType queryType,    
         size_t dataSize,    
         void* pData,    
         size_t stride) {
-        return vkWriteAccelerationStructuresPropertiesKHR(get(), static_cast<uint32_t>(accelerationStructureCount), reinterpret_cast<VkAccelerationStructureKHR*>(pAccelerationStructures), static_cast<VkQueryType>(queryType), static_cast<size_t>(dataSize), reinterpret_cast<void*>(pData), static_cast<size_t>(stride));
+        return vkWriteAccelerationStructuresPropertiesKHR(get(), static_cast<uint32_t>(accelerationStructureCount), reinterpret_cast<const AccelerationStructureKHR*>(pAccelerationStructures), static_cast<QueryType>(queryType), static_cast<size_t>(dataSize), reinterpret_cast<void*>(pData), static_cast<size_t>(stride));
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
@@ -8108,36 +8108,36 @@ struct Device {
     VkResult CreateRayTracingPipelinesNV(
         PipelineCache pipelineCache,    
         uint32_t createInfoCount,    
-        RayTracingPipelineCreateInfoNV* pCreateInfos,    
-        AllocationCallbacks* pAllocator,    
+        constRayTracingPipelineCreateInfoNV* pCreateInfos,    
+        constAllocationCallbacks* pAllocator,    
         Pipeline* pPipelines) {
-        return vkCreateRayTracingPipelinesNV(get(),pipelineCache.get(), static_cast<uint32_t>(createInfoCount), reinterpret_cast<VkRayTracingPipelineCreateInfoNV*>(pCreateInfos), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkPipeline*>(pPipelines));
+        return vkCreateRayTracingPipelinesNV(get(),pipelineCache.get(), static_cast<uint32_t>(createInfoCount), reinterpret_cast<const RayTracingPipelineCreateInfoNV*>(pCreateInfos), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<Pipeline*>(pPipelines));
     }
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
     VkResult CreateRayTracingPipelinesKHR(
         PipelineCache pipelineCache,    
         uint32_t createInfoCount,    
-        RayTracingPipelineCreateInfoKHR* pCreateInfos,    
-        AllocationCallbacks* pAllocator,    
+        constRayTracingPipelineCreateInfoKHR* pCreateInfos,    
+        constAllocationCallbacks* pAllocator,    
         Pipeline* pPipelines) {
-        return vkCreateRayTracingPipelinesKHR(get(),pipelineCache.get(), static_cast<uint32_t>(createInfoCount), reinterpret_cast<VkRayTracingPipelineCreateInfoKHR*>(pCreateInfos), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkPipeline*>(pPipelines));
+        return vkCreateRayTracingPipelinesKHR(get(),pipelineCache.get(), static_cast<uint32_t>(createInfoCount), reinterpret_cast<const RayTracingPipelineCreateInfoKHR*>(pCreateInfos), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<Pipeline*>(pPipelines));
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
     VkResult GetDeviceAccelerationStructureCompatibilityKHR(
-        AccelerationStructureVersionKHR* version) {
-        return vkGetDeviceAccelerationStructureCompatibilityKHR(get(), reinterpret_cast<VkAccelerationStructureVersionKHR*>(version));
+        constAccelerationStructureVersionKHR* version) {
+        return vkGetDeviceAccelerationStructureCompatibilityKHR(get(), reinterpret_cast<const AccelerationStructureVersionKHR*>(version));
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
     uint32_t GetImageViewHandleNVX(
-        ImageViewHandleInfoNVX* pInfo) {
-        return vkGetImageViewHandleNVX(get(), reinterpret_cast<VkImageViewHandleInfoNVX*>(pInfo));
+        constImageViewHandleInfoNVX* pInfo) {
+        return vkGetImageViewHandleNVX(get(), reinterpret_cast<const ImageViewHandleInfoNVX*>(pInfo));
     }
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     VkResult GetDeviceGroupSurfacePresentModes2EXT(
-        PhysicalDeviceSurfaceInfo2KHR* pSurfaceInfo,    
+        constPhysicalDeviceSurfaceInfo2KHR* pSurfaceInfo,    
         DeviceGroupPresentModeFlagsKHR* pModes) {
-        return vkGetDeviceGroupSurfacePresentModes2EXT(get(), reinterpret_cast<VkPhysicalDeviceSurfaceInfo2KHR*>(pSurfaceInfo), reinterpret_cast<VkDeviceGroupPresentModeFlagsKHR*>(pModes));
+        return vkGetDeviceGroupSurfacePresentModes2EXT(get(), reinterpret_cast<const PhysicalDeviceSurfaceInfo2KHR*>(pSurfaceInfo), reinterpret_cast<DeviceGroupPresentModeFlagsKHR*>(pModes));
     }
 #endif // VK_USE_PLATFORM_WIN32_KHR
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
@@ -8153,8 +8153,8 @@ struct Device {
     }
 #endif // VK_USE_PLATFORM_WIN32_KHR
     VkResult AcquireProfilingLockKHR(
-        AcquireProfilingLockInfoKHR* pInfo) {
-        return vkAcquireProfilingLockKHR(get(), reinterpret_cast<VkAcquireProfilingLockInfoKHR*>(pInfo));
+        constAcquireProfilingLockInfoKHR* pInfo) {
+        return vkAcquireProfilingLockKHR(get(), reinterpret_cast<const AcquireProfilingLockInfoKHR*>(pInfo));
     }
     void ReleaseProfilingLockKHR() {
         return vkReleaseProfilingLockKHR(get());
@@ -8162,27 +8162,27 @@ struct Device {
     VkResult GetImageDrmFormatModifierPropertiesEXT(
         Image image,    
         ImageDrmFormatModifierPropertiesEXT* pProperties) {
-        return vkGetImageDrmFormatModifierPropertiesEXT(get(),image.get(), reinterpret_cast<VkImageDrmFormatModifierPropertiesEXT*>(pProperties));
+        return vkGetImageDrmFormatModifierPropertiesEXT(get(),image.get(), reinterpret_cast<ImageDrmFormatModifierPropertiesEXT*>(pProperties));
     }
     uint64_t GetBufferOpaqueCaptureAddress(
-        BufferDeviceAddressInfo* pInfo) {
-        return vkGetBufferOpaqueCaptureAddress(get(), reinterpret_cast<VkBufferDeviceAddressInfo*>(pInfo));
+        constBufferDeviceAddressInfo* pInfo) {
+        return vkGetBufferOpaqueCaptureAddress(get(), reinterpret_cast<const BufferDeviceAddressInfo*>(pInfo));
     }
     VkDeviceAddress GetBufferDeviceAddress(
-        BufferDeviceAddressInfo* pInfo) {
-        return vkGetBufferDeviceAddress(get(), reinterpret_cast<VkBufferDeviceAddressInfo*>(pInfo));
+        constBufferDeviceAddressInfo* pInfo) {
+        return vkGetBufferDeviceAddress(get(), reinterpret_cast<const BufferDeviceAddressInfo*>(pInfo));
     }
     VkResult InitializePerformanceApiINTEL(
-        InitializePerformanceApiInfoINTEL* pInitializeInfo) {
-        return vkInitializePerformanceApiINTEL(get(), reinterpret_cast<VkInitializePerformanceApiInfoINTEL*>(pInitializeInfo));
+        constInitializePerformanceApiInfoINTEL* pInitializeInfo) {
+        return vkInitializePerformanceApiINTEL(get(), reinterpret_cast<const InitializePerformanceApiInfoINTEL*>(pInitializeInfo));
     }
     void UninitializePerformanceApiINTEL() {
         return vkUninitializePerformanceApiINTEL(get());
     }
     VkResult AcquirePerformanceConfigurationINTEL(
-        PerformanceConfigurationAcquireInfoINTEL* pAcquireInfo,    
+        constPerformanceConfigurationAcquireInfoINTEL* pAcquireInfo,    
         PerformanceConfigurationINTEL* pConfiguration) {
-        return vkAcquirePerformanceConfigurationINTEL(get(), reinterpret_cast<VkPerformanceConfigurationAcquireInfoINTEL*>(pAcquireInfo), reinterpret_cast<VkPerformanceConfigurationINTEL*>(pConfiguration));
+        return vkAcquirePerformanceConfigurationINTEL(get(), reinterpret_cast<const PerformanceConfigurationAcquireInfoINTEL*>(pAcquireInfo), reinterpret_cast<PerformanceConfigurationINTEL*>(pConfiguration));
     }
     VkResult ReleasePerformanceConfigurationINTEL(
         PerformanceConfigurationINTEL configuration) {
@@ -8191,64 +8191,64 @@ struct Device {
     VkResult GetPerformanceParameterINTEL(
         PerformanceParameterTypeINTEL parameter,    
         PerformanceValueINTEL* pValue) {
-        return vkGetPerformanceParameterINTEL(get(), static_cast<VkPerformanceParameterTypeINTEL>(parameter), reinterpret_cast<VkPerformanceValueINTEL*>(pValue));
+        return vkGetPerformanceParameterINTEL(get(), static_cast<PerformanceParameterTypeINTEL>(parameter), reinterpret_cast<PerformanceValueINTEL*>(pValue));
     }
     uint64_t GetDeviceMemoryOpaqueCaptureAddress(
-        DeviceMemoryOpaqueCaptureAddressInfo* pInfo) {
-        return vkGetDeviceMemoryOpaqueCaptureAddress(get(), reinterpret_cast<VkDeviceMemoryOpaqueCaptureAddressInfo*>(pInfo));
+        constDeviceMemoryOpaqueCaptureAddressInfo* pInfo) {
+        return vkGetDeviceMemoryOpaqueCaptureAddress(get(), reinterpret_cast<const DeviceMemoryOpaqueCaptureAddressInfo*>(pInfo));
     }
     VkResult GetPipelineExecutablePropertiesKHR(
-        PipelineInfoKHR* pPipelineInfo,    
+        constPipelineInfoKHR* pPipelineInfo,    
         uint32_t* pExecutableCount,    
         PipelineExecutablePropertiesKHR* pProperties) {
-        return vkGetPipelineExecutablePropertiesKHR(get(), reinterpret_cast<VkPipelineInfoKHR*>(pPipelineInfo), reinterpret_cast<uint32_t*>(pExecutableCount), reinterpret_cast<VkPipelineExecutablePropertiesKHR*>(pProperties));
+        return vkGetPipelineExecutablePropertiesKHR(get(), reinterpret_cast<const PipelineInfoKHR*>(pPipelineInfo), reinterpret_cast<uint32_t*>(pExecutableCount), reinterpret_cast<PipelineExecutablePropertiesKHR*>(pProperties));
     }
     VkResult GetPipelineExecutableStatisticsKHR(
-        PipelineExecutableInfoKHR* pExecutableInfo,    
+        constPipelineExecutableInfoKHR* pExecutableInfo,    
         uint32_t* pStatisticCount,    
         PipelineExecutableStatisticKHR* pStatistics) {
-        return vkGetPipelineExecutableStatisticsKHR(get(), reinterpret_cast<VkPipelineExecutableInfoKHR*>(pExecutableInfo), reinterpret_cast<uint32_t*>(pStatisticCount), reinterpret_cast<VkPipelineExecutableStatisticKHR*>(pStatistics));
+        return vkGetPipelineExecutableStatisticsKHR(get(), reinterpret_cast<const PipelineExecutableInfoKHR*>(pExecutableInfo), reinterpret_cast<uint32_t*>(pStatisticCount), reinterpret_cast<PipelineExecutableStatisticKHR*>(pStatistics));
     }
     VkResult GetPipelineExecutableInternalRepresentationsKHR(
-        PipelineExecutableInfoKHR* pExecutableInfo,    
+        constPipelineExecutableInfoKHR* pExecutableInfo,    
         uint32_t* pInternalRepresentationCount,    
         PipelineExecutableInternalRepresentationKHR* pInternalRepresentations) {
-        return vkGetPipelineExecutableInternalRepresentationsKHR(get(), reinterpret_cast<VkPipelineExecutableInfoKHR*>(pExecutableInfo), reinterpret_cast<uint32_t*>(pInternalRepresentationCount), reinterpret_cast<VkPipelineExecutableInternalRepresentationKHR*>(pInternalRepresentations));
+        return vkGetPipelineExecutableInternalRepresentationsKHR(get(), reinterpret_cast<const PipelineExecutableInfoKHR*>(pExecutableInfo), reinterpret_cast<uint32_t*>(pInternalRepresentationCount), reinterpret_cast<PipelineExecutableInternalRepresentationKHR*>(pInternalRepresentations));
     }
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
     VkResult CreateAccelerationStructureKHR(
-        AccelerationStructureCreateInfoKHR* pCreateInfo,    
-        AllocationCallbacks* pAllocator,    
+        constAccelerationStructureCreateInfoKHR* pCreateInfo,    
+        constAllocationCallbacks* pAllocator,    
         AccelerationStructureKHR* pAccelerationStructure) {
-        return vkCreateAccelerationStructureKHR(get(), reinterpret_cast<VkAccelerationStructureCreateInfoKHR*>(pCreateInfo), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkAccelerationStructureKHR*>(pAccelerationStructure));
+        return vkCreateAccelerationStructureKHR(get(), reinterpret_cast<const AccelerationStructureCreateInfoKHR*>(pCreateInfo), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<AccelerationStructureKHR*>(pAccelerationStructure));
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
     VkResult BuildAccelerationStructureKHR(
         uint32_t infoCount,    
-        AccelerationStructureBuildGeometryInfoKHR* pInfos,    
-        AccelerationStructureBuildOffsetInfoKHR* ppOffsetInfos) {
-        return vkBuildAccelerationStructureKHR(get(), static_cast<uint32_t>(infoCount), reinterpret_cast<VkAccelerationStructureBuildGeometryInfoKHR*>(pInfos), reinterpret_cast<VkAccelerationStructureBuildOffsetInfoKHR*>(ppOffsetInfos));
+        constAccelerationStructureBuildGeometryInfoKHR* pInfos,    
+        constAccelerationStructureBuildOffsetInfoKHR*const* ppOffsetInfos) {
+        return vkBuildAccelerationStructureKHR(get(), static_cast<uint32_t>(infoCount), reinterpret_cast<const AccelerationStructureBuildGeometryInfoKHR*>(pInfos), reinterpret_cast<const AccelerationStructureBuildOffsetInfoKHR*const*>(ppOffsetInfos));
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
     VkDeviceAddress GetAccelerationStructureDeviceAddressKHR(
-        AccelerationStructureDeviceAddressInfoKHR* pInfo) {
-        return vkGetAccelerationStructureDeviceAddressKHR(get(), reinterpret_cast<VkAccelerationStructureDeviceAddressInfoKHR*>(pInfo));
+        constAccelerationStructureDeviceAddressInfoKHR* pInfo) {
+        return vkGetAccelerationStructureDeviceAddressKHR(get(), reinterpret_cast<const AccelerationStructureDeviceAddressInfoKHR*>(pInfo));
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
     VkResult CreateDeferredOperationKHR(
-        AllocationCallbacks* pAllocator,    
+        constAllocationCallbacks* pAllocator,    
         DeferredOperationKHR* pDeferredOperation) {
-        return vkCreateDeferredOperationKHR(get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator), reinterpret_cast<VkDeferredOperationKHR*>(pDeferredOperation));
+        return vkCreateDeferredOperationKHR(get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator), reinterpret_cast<DeferredOperationKHR*>(pDeferredOperation));
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
     void DestroyDeferredOperationKHR(
         DeferredOperationKHR operation,    
-        AllocationCallbacks* pAllocator) {
-        return vkDestroyDeferredOperationKHR(get(),operation.get(), reinterpret_cast<VkAllocationCallbacks*>(pAllocator));
+        constAllocationCallbacks* pAllocator) {
+        return vkDestroyDeferredOperationKHR(get(),operation.get(), reinterpret_cast<const AllocationCallbacks*>(pAllocator));
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
@@ -8275,47 +8275,47 @@ struct Queue {
     VkQueue get() { return handle; }
     VkResult QueueSubmit(
         uint32_t submitCount,    
-        SubmitInfo* pSubmits,    
+        constSubmitInfo* pSubmits,    
         Fence fence) {
-        return vkQueueSubmit(get(), static_cast<uint32_t>(submitCount), reinterpret_cast<VkSubmitInfo*>(pSubmits),fence.get());
+        return vkQueueSubmit(get(), static_cast<uint32_t>(submitCount), reinterpret_cast<const SubmitInfo*>(pSubmits),fence.get());
     }
     VkResult QueueWaitIdle() {
         return vkQueueWaitIdle(get());
     }
     VkResult QueueBindSparse(
         uint32_t bindInfoCount,    
-        BindSparseInfo* pBindInfo,    
+        constBindSparseInfo* pBindInfo,    
         Fence fence) {
-        return vkQueueBindSparse(get(), static_cast<uint32_t>(bindInfoCount), reinterpret_cast<VkBindSparseInfo*>(pBindInfo),fence.get());
+        return vkQueueBindSparse(get(), static_cast<uint32_t>(bindInfoCount), reinterpret_cast<const BindSparseInfo*>(pBindInfo),fence.get());
     }
     VkResult QueuePresentKHR(
-        PresentInfoKHR* pPresentInfo) {
-        return vkQueuePresentKHR(get(), reinterpret_cast<VkPresentInfoKHR*>(pPresentInfo));
+        constPresentInfoKHR* pPresentInfo) {
+        return vkQueuePresentKHR(get(), reinterpret_cast<const PresentInfoKHR*>(pPresentInfo));
     }
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
     VkResult QueueSignalReleaseImageANDROID(
         uint32_t waitSemaphoreCount,    
-        Semaphore* pWaitSemaphores,    
+        constSemaphore* pWaitSemaphores,    
         Image image,    
         int* pNativeFenceFd) {
-        return vkQueueSignalReleaseImageANDROID(get(), static_cast<uint32_t>(waitSemaphoreCount), reinterpret_cast<VkSemaphore*>(pWaitSemaphores),image.get(), reinterpret_cast<int*>(pNativeFenceFd));
+        return vkQueueSignalReleaseImageANDROID(get(), static_cast<uint32_t>(waitSemaphoreCount), reinterpret_cast<const Semaphore*>(pWaitSemaphores),image.get(), reinterpret_cast<int*>(pNativeFenceFd));
     }
 #endif // VK_USE_PLATFORM_ANDROID_KHR
     void QueueBeginDebugUtilsLabelEXT(
-        DebugUtilsLabelEXT* pLabelInfo) {
-        return vkQueueBeginDebugUtilsLabelEXT(get(), reinterpret_cast<VkDebugUtilsLabelEXT*>(pLabelInfo));
+        constDebugUtilsLabelEXT* pLabelInfo) {
+        return vkQueueBeginDebugUtilsLabelEXT(get(), reinterpret_cast<const DebugUtilsLabelEXT*>(pLabelInfo));
     }
     void QueueEndDebugUtilsLabelEXT() {
         return vkQueueEndDebugUtilsLabelEXT(get());
     }
     void QueueInsertDebugUtilsLabelEXT(
-        DebugUtilsLabelEXT* pLabelInfo) {
-        return vkQueueInsertDebugUtilsLabelEXT(get(), reinterpret_cast<VkDebugUtilsLabelEXT*>(pLabelInfo));
+        constDebugUtilsLabelEXT* pLabelInfo) {
+        return vkQueueInsertDebugUtilsLabelEXT(get(), reinterpret_cast<const DebugUtilsLabelEXT*>(pLabelInfo));
     }
     void GetQueueCheckpointDataNV(
         uint32_t* pCheckpointDataCount,    
         CheckpointDataNV* pCheckpointData) {
-        return vkGetQueueCheckpointDataNV(get(), reinterpret_cast<uint32_t*>(pCheckpointDataCount), reinterpret_cast<VkCheckpointDataNV*>(pCheckpointData));
+        return vkGetQueueCheckpointDataNV(get(), reinterpret_cast<uint32_t*>(pCheckpointDataCount), reinterpret_cast<CheckpointDataNV*>(pCheckpointData));
     }
     VkResult QueueSetPerformanceConfigurationINTEL(
         PerformanceConfigurationINTEL configuration) {
@@ -8326,32 +8326,32 @@ struct CommandBuffer {
     VkCommandBuffer handle;
     VkCommandBuffer get() { return handle; }
     VkResult BeginCommandBuffer(
-        CommandBufferBeginInfo* pBeginInfo) {
-        return vkBeginCommandBuffer(get(), reinterpret_cast<VkCommandBufferBeginInfo*>(pBeginInfo));
+        constCommandBufferBeginInfo* pBeginInfo) {
+        return vkBeginCommandBuffer(get(), reinterpret_cast<const CommandBufferBeginInfo*>(pBeginInfo));
     }
     VkResult EndCommandBuffer() {
         return vkEndCommandBuffer(get());
     }
     VkResult ResetCommandBuffer(
         CommandBufferResetFlags flags) {
-        return vkResetCommandBuffer(get(), static_cast<VkCommandBufferResetFlags>(flags));
+        return vkResetCommandBuffer(get(), static_cast<CommandBufferResetFlags>(flags));
     }
     void CmdBindPipeline(
         PipelineBindPoint pipelineBindPoint,    
         Pipeline pipeline) {
-        return vkCmdBindPipeline(get(), static_cast<VkPipelineBindPoint>(pipelineBindPoint),pipeline.get());
+        return vkCmdBindPipeline(get(), static_cast<PipelineBindPoint>(pipelineBindPoint),pipeline.get());
     }
     void CmdSetViewport(
         uint32_t firstViewport,    
         uint32_t viewportCount,    
-        Viewport* pViewports) {
-        return vkCmdSetViewport(get(), static_cast<uint32_t>(firstViewport), static_cast<uint32_t>(viewportCount), reinterpret_cast<VkViewport*>(pViewports));
+        constViewport* pViewports) {
+        return vkCmdSetViewport(get(), static_cast<uint32_t>(firstViewport), static_cast<uint32_t>(viewportCount), reinterpret_cast<const Viewport*>(pViewports));
     }
     void CmdSetScissor(
         uint32_t firstScissor,    
         uint32_t scissorCount,    
-        Rect2D* pScissors) {
-        return vkCmdSetScissor(get(), static_cast<uint32_t>(firstScissor), static_cast<uint32_t>(scissorCount), reinterpret_cast<VkRect2D*>(pScissors));
+        constRect2D* pScissors) {
+        return vkCmdSetScissor(get(), static_cast<uint32_t>(firstScissor), static_cast<uint32_t>(scissorCount), reinterpret_cast<const Rect2D*>(pScissors));
     }
     void CmdSetLineWidth(
         float lineWidth) {
@@ -8364,8 +8364,8 @@ struct CommandBuffer {
         return vkCmdSetDepthBias(get(), static_cast<float>(depthBiasConstantFactor), static_cast<float>(depthBiasClamp), static_cast<float>(depthBiasSlopeFactor));
     }
     void CmdSetBlendConstants(
-        float blendConstants[4]) {
-        return vkCmdSetBlendConstants(get(), static_cast<float[4]>(blendConstants));
+        constfloat blendConstants[4]) {
+        return vkCmdSetBlendConstants(get(), static_cast<const float[4]>(blendConstants));
     }
     void CmdSetDepthBounds(
         float minDepthBounds,    
@@ -8375,40 +8375,40 @@ struct CommandBuffer {
     void CmdSetStencilCompareMask(
         StencilFaceFlags faceMask,    
         uint32_t compareMask) {
-        return vkCmdSetStencilCompareMask(get(), static_cast<VkStencilFaceFlags>(faceMask), static_cast<uint32_t>(compareMask));
+        return vkCmdSetStencilCompareMask(get(), static_cast<StencilFaceFlags>(faceMask), static_cast<uint32_t>(compareMask));
     }
     void CmdSetStencilWriteMask(
         StencilFaceFlags faceMask,    
         uint32_t writeMask) {
-        return vkCmdSetStencilWriteMask(get(), static_cast<VkStencilFaceFlags>(faceMask), static_cast<uint32_t>(writeMask));
+        return vkCmdSetStencilWriteMask(get(), static_cast<StencilFaceFlags>(faceMask), static_cast<uint32_t>(writeMask));
     }
     void CmdSetStencilReference(
         StencilFaceFlags faceMask,    
         uint32_t reference) {
-        return vkCmdSetStencilReference(get(), static_cast<VkStencilFaceFlags>(faceMask), static_cast<uint32_t>(reference));
+        return vkCmdSetStencilReference(get(), static_cast<StencilFaceFlags>(faceMask), static_cast<uint32_t>(reference));
     }
     void CmdBindDescriptorSets(
         PipelineBindPoint pipelineBindPoint,    
         PipelineLayout layout,    
         uint32_t firstSet,    
         uint32_t descriptorSetCount,    
-        DescriptorSet* pDescriptorSets,    
+        constDescriptorSet* pDescriptorSets,    
         uint32_t dynamicOffsetCount,    
-        uint32_t* pDynamicOffsets) {
-        return vkCmdBindDescriptorSets(get(), static_cast<VkPipelineBindPoint>(pipelineBindPoint),layout.get(), static_cast<uint32_t>(firstSet), static_cast<uint32_t>(descriptorSetCount), reinterpret_cast<VkDescriptorSet*>(pDescriptorSets), static_cast<uint32_t>(dynamicOffsetCount), reinterpret_cast<uint32_t*>(pDynamicOffsets));
+        constuint32_t* pDynamicOffsets) {
+        return vkCmdBindDescriptorSets(get(), static_cast<PipelineBindPoint>(pipelineBindPoint),layout.get(), static_cast<uint32_t>(firstSet), static_cast<uint32_t>(descriptorSetCount), reinterpret_cast<const DescriptorSet*>(pDescriptorSets), static_cast<uint32_t>(dynamicOffsetCount), reinterpret_cast<const uint32_t*>(pDynamicOffsets));
     }
     void CmdBindIndexBuffer(
         Buffer buffer,    
         DeviceSize offset,    
         IndexType indexType) {
-        return vkCmdBindIndexBuffer(get(),buffer.get(), static_cast<VkDeviceSize>(offset), static_cast<VkIndexType>(indexType));
+        return vkCmdBindIndexBuffer(get(),buffer.get(), static_cast<DeviceSize>(offset), static_cast<IndexType>(indexType));
     }
     void CmdBindVertexBuffers(
         uint32_t firstBinding,    
         uint32_t bindingCount,    
-        Buffer* pBuffers,    
-        DeviceSize* pOffsets) {
-        return vkCmdBindVertexBuffers(get(), static_cast<uint32_t>(firstBinding), static_cast<uint32_t>(bindingCount), reinterpret_cast<VkBuffer*>(pBuffers), reinterpret_cast<VkDeviceSize*>(pOffsets));
+        constBuffer* pBuffers,    
+        constDeviceSize* pOffsets) {
+        return vkCmdBindVertexBuffers(get(), static_cast<uint32_t>(firstBinding), static_cast<uint32_t>(bindingCount), reinterpret_cast<const Buffer*>(pBuffers), reinterpret_cast<const DeviceSize*>(pOffsets));
     }
     void CmdDraw(
         uint32_t vertexCount,    
@@ -8430,14 +8430,14 @@ struct CommandBuffer {
         DeviceSize offset,    
         uint32_t drawCount,    
         uint32_t stride) {
-        return vkCmdDrawIndirect(get(),buffer.get(), static_cast<VkDeviceSize>(offset), static_cast<uint32_t>(drawCount), static_cast<uint32_t>(stride));
+        return vkCmdDrawIndirect(get(),buffer.get(), static_cast<DeviceSize>(offset), static_cast<uint32_t>(drawCount), static_cast<uint32_t>(stride));
     }
     void CmdDrawIndexedIndirect(
         Buffer buffer,    
         DeviceSize offset,    
         uint32_t drawCount,    
         uint32_t stride) {
-        return vkCmdDrawIndexedIndirect(get(),buffer.get(), static_cast<VkDeviceSize>(offset), static_cast<uint32_t>(drawCount), static_cast<uint32_t>(stride));
+        return vkCmdDrawIndexedIndirect(get(),buffer.get(), static_cast<DeviceSize>(offset), static_cast<uint32_t>(drawCount), static_cast<uint32_t>(stride));
     }
     void CmdDispatch(
         uint32_t groupCountX,    
@@ -8448,14 +8448,14 @@ struct CommandBuffer {
     void CmdDispatchIndirect(
         Buffer buffer,    
         DeviceSize offset) {
-        return vkCmdDispatchIndirect(get(),buffer.get(), static_cast<VkDeviceSize>(offset));
+        return vkCmdDispatchIndirect(get(),buffer.get(), static_cast<DeviceSize>(offset));
     }
     void CmdCopyBuffer(
         Buffer srcBuffer,    
         Buffer dstBuffer,    
         uint32_t regionCount,    
-        BufferCopy* pRegions) {
-        return vkCmdCopyBuffer(get(),srcBuffer.get(),dstBuffer.get(), static_cast<uint32_t>(regionCount), reinterpret_cast<VkBufferCopy*>(pRegions));
+        constBufferCopy* pRegions) {
+        return vkCmdCopyBuffer(get(),srcBuffer.get(),dstBuffer.get(), static_cast<uint32_t>(regionCount), reinterpret_cast<const BufferCopy*>(pRegions));
     }
     void CmdCopyImage(
         Image srcImage,    
@@ -8463,8 +8463,8 @@ struct CommandBuffer {
         Image dstImage,    
         ImageLayout dstImageLayout,    
         uint32_t regionCount,    
-        ImageCopy* pRegions) {
-        return vkCmdCopyImage(get(),srcImage.get(), static_cast<VkImageLayout>(srcImageLayout),dstImage.get(), static_cast<VkImageLayout>(dstImageLayout), static_cast<uint32_t>(regionCount), reinterpret_cast<VkImageCopy*>(pRegions));
+        constImageCopy* pRegions) {
+        return vkCmdCopyImage(get(),srcImage.get(), static_cast<ImageLayout>(srcImageLayout),dstImage.get(), static_cast<ImageLayout>(dstImageLayout), static_cast<uint32_t>(regionCount), reinterpret_cast<const ImageCopy*>(pRegions));
     }
     void CmdBlitImage(
         Image srcImage,    
@@ -8472,62 +8472,62 @@ struct CommandBuffer {
         Image dstImage,    
         ImageLayout dstImageLayout,    
         uint32_t regionCount,    
-        ImageBlit* pRegions,    
+        constImageBlit* pRegions,    
         Filter filter) {
-        return vkCmdBlitImage(get(),srcImage.get(), static_cast<VkImageLayout>(srcImageLayout),dstImage.get(), static_cast<VkImageLayout>(dstImageLayout), static_cast<uint32_t>(regionCount), reinterpret_cast<VkImageBlit*>(pRegions), static_cast<VkFilter>(filter));
+        return vkCmdBlitImage(get(),srcImage.get(), static_cast<ImageLayout>(srcImageLayout),dstImage.get(), static_cast<ImageLayout>(dstImageLayout), static_cast<uint32_t>(regionCount), reinterpret_cast<const ImageBlit*>(pRegions), static_cast<Filter>(filter));
     }
     void CmdCopyBufferToImage(
         Buffer srcBuffer,    
         Image dstImage,    
         ImageLayout dstImageLayout,    
         uint32_t regionCount,    
-        BufferImageCopy* pRegions) {
-        return vkCmdCopyBufferToImage(get(),srcBuffer.get(),dstImage.get(), static_cast<VkImageLayout>(dstImageLayout), static_cast<uint32_t>(regionCount), reinterpret_cast<VkBufferImageCopy*>(pRegions));
+        constBufferImageCopy* pRegions) {
+        return vkCmdCopyBufferToImage(get(),srcBuffer.get(),dstImage.get(), static_cast<ImageLayout>(dstImageLayout), static_cast<uint32_t>(regionCount), reinterpret_cast<const BufferImageCopy*>(pRegions));
     }
     void CmdCopyImageToBuffer(
         Image srcImage,    
         ImageLayout srcImageLayout,    
         Buffer dstBuffer,    
         uint32_t regionCount,    
-        BufferImageCopy* pRegions) {
-        return vkCmdCopyImageToBuffer(get(),srcImage.get(), static_cast<VkImageLayout>(srcImageLayout),dstBuffer.get(), static_cast<uint32_t>(regionCount), reinterpret_cast<VkBufferImageCopy*>(pRegions));
+        constBufferImageCopy* pRegions) {
+        return vkCmdCopyImageToBuffer(get(),srcImage.get(), static_cast<ImageLayout>(srcImageLayout),dstBuffer.get(), static_cast<uint32_t>(regionCount), reinterpret_cast<const BufferImageCopy*>(pRegions));
     }
     void CmdUpdateBuffer(
         Buffer dstBuffer,    
         DeviceSize dstOffset,    
         DeviceSize dataSize,    
-        void* pData) {
-        return vkCmdUpdateBuffer(get(),dstBuffer.get(), static_cast<VkDeviceSize>(dstOffset), static_cast<VkDeviceSize>(dataSize), reinterpret_cast<void*>(pData));
+        constvoid* pData) {
+        return vkCmdUpdateBuffer(get(),dstBuffer.get(), static_cast<DeviceSize>(dstOffset), static_cast<DeviceSize>(dataSize), reinterpret_cast<const void*>(pData));
     }
     void CmdFillBuffer(
         Buffer dstBuffer,    
         DeviceSize dstOffset,    
         DeviceSize size,    
         uint32_t data) {
-        return vkCmdFillBuffer(get(),dstBuffer.get(), static_cast<VkDeviceSize>(dstOffset), static_cast<VkDeviceSize>(size), static_cast<uint32_t>(data));
+        return vkCmdFillBuffer(get(),dstBuffer.get(), static_cast<DeviceSize>(dstOffset), static_cast<DeviceSize>(size), static_cast<uint32_t>(data));
     }
     void CmdClearColorImage(
         Image image,    
         ImageLayout imageLayout,    
-        ClearColorValue* pColor,    
+        constClearColorValue* pColor,    
         uint32_t rangeCount,    
-        ImageSubresourceRange* pRanges) {
-        return vkCmdClearColorImage(get(),image.get(), static_cast<VkImageLayout>(imageLayout), reinterpret_cast<VkClearColorValue*>(pColor), static_cast<uint32_t>(rangeCount), reinterpret_cast<VkImageSubresourceRange*>(pRanges));
+        constImageSubresourceRange* pRanges) {
+        return vkCmdClearColorImage(get(),image.get(), static_cast<ImageLayout>(imageLayout), reinterpret_cast<const ClearColorValue*>(pColor), static_cast<uint32_t>(rangeCount), reinterpret_cast<const ImageSubresourceRange*>(pRanges));
     }
     void CmdClearDepthStencilImage(
         Image image,    
         ImageLayout imageLayout,    
-        ClearDepthStencilValue* pDepthStencil,    
+        constClearDepthStencilValue* pDepthStencil,    
         uint32_t rangeCount,    
-        ImageSubresourceRange* pRanges) {
-        return vkCmdClearDepthStencilImage(get(),image.get(), static_cast<VkImageLayout>(imageLayout), reinterpret_cast<VkClearDepthStencilValue*>(pDepthStencil), static_cast<uint32_t>(rangeCount), reinterpret_cast<VkImageSubresourceRange*>(pRanges));
+        constImageSubresourceRange* pRanges) {
+        return vkCmdClearDepthStencilImage(get(),image.get(), static_cast<ImageLayout>(imageLayout), reinterpret_cast<const ClearDepthStencilValue*>(pDepthStencil), static_cast<uint32_t>(rangeCount), reinterpret_cast<const ImageSubresourceRange*>(pRanges));
     }
     void CmdClearAttachments(
         uint32_t attachmentCount,    
-        ClearAttachment* pAttachments,    
+        constClearAttachment* pAttachments,    
         uint32_t rectCount,    
-        ClearRect* pRects) {
-        return vkCmdClearAttachments(get(), static_cast<uint32_t>(attachmentCount), reinterpret_cast<VkClearAttachment*>(pAttachments), static_cast<uint32_t>(rectCount), reinterpret_cast<VkClearRect*>(pRects));
+        constClearRect* pRects) {
+        return vkCmdClearAttachments(get(), static_cast<uint32_t>(attachmentCount), reinterpret_cast<const ClearAttachment*>(pAttachments), static_cast<uint32_t>(rectCount), reinterpret_cast<const ClearRect*>(pRects));
     }
     void CmdResolveImage(
         Image srcImage,    
@@ -8535,49 +8535,49 @@ struct CommandBuffer {
         Image dstImage,    
         ImageLayout dstImageLayout,    
         uint32_t regionCount,    
-        ImageResolve* pRegions) {
-        return vkCmdResolveImage(get(),srcImage.get(), static_cast<VkImageLayout>(srcImageLayout),dstImage.get(), static_cast<VkImageLayout>(dstImageLayout), static_cast<uint32_t>(regionCount), reinterpret_cast<VkImageResolve*>(pRegions));
+        constImageResolve* pRegions) {
+        return vkCmdResolveImage(get(),srcImage.get(), static_cast<ImageLayout>(srcImageLayout),dstImage.get(), static_cast<ImageLayout>(dstImageLayout), static_cast<uint32_t>(regionCount), reinterpret_cast<const ImageResolve*>(pRegions));
     }
     void CmdSetEvent(
         Event event,    
         PipelineStageFlags stageMask) {
-        return vkCmdSetEvent(get(),event.get(), static_cast<VkPipelineStageFlags>(stageMask));
+        return vkCmdSetEvent(get(),event.get(), static_cast<PipelineStageFlags>(stageMask));
     }
     void CmdResetEvent(
         Event event,    
         PipelineStageFlags stageMask) {
-        return vkCmdResetEvent(get(),event.get(), static_cast<VkPipelineStageFlags>(stageMask));
+        return vkCmdResetEvent(get(),event.get(), static_cast<PipelineStageFlags>(stageMask));
     }
     void CmdWaitEvents(
         uint32_t eventCount,    
-        Event* pEvents,    
+        constEvent* pEvents,    
         PipelineStageFlags srcStageMask,    
         PipelineStageFlags dstStageMask,    
         uint32_t memoryBarrierCount,    
-        MemoryBarrier* pMemoryBarriers,    
+        constMemoryBarrier* pMemoryBarriers,    
         uint32_t bufferMemoryBarrierCount,    
-        BufferMemoryBarrier* pBufferMemoryBarriers,    
+        constBufferMemoryBarrier* pBufferMemoryBarriers,    
         uint32_t imageMemoryBarrierCount,    
-        ImageMemoryBarrier* pImageMemoryBarriers) {
-        return vkCmdWaitEvents(get(), static_cast<uint32_t>(eventCount), reinterpret_cast<VkEvent*>(pEvents), static_cast<VkPipelineStageFlags>(srcStageMask), static_cast<VkPipelineStageFlags>(dstStageMask), static_cast<uint32_t>(memoryBarrierCount), reinterpret_cast<VkMemoryBarrier*>(pMemoryBarriers), static_cast<uint32_t>(bufferMemoryBarrierCount), reinterpret_cast<VkBufferMemoryBarrier*>(pBufferMemoryBarriers), static_cast<uint32_t>(imageMemoryBarrierCount), reinterpret_cast<VkImageMemoryBarrier*>(pImageMemoryBarriers));
+        constImageMemoryBarrier* pImageMemoryBarriers) {
+        return vkCmdWaitEvents(get(), static_cast<uint32_t>(eventCount), reinterpret_cast<const Event*>(pEvents), static_cast<PipelineStageFlags>(srcStageMask), static_cast<PipelineStageFlags>(dstStageMask), static_cast<uint32_t>(memoryBarrierCount), reinterpret_cast<const MemoryBarrier*>(pMemoryBarriers), static_cast<uint32_t>(bufferMemoryBarrierCount), reinterpret_cast<const BufferMemoryBarrier*>(pBufferMemoryBarriers), static_cast<uint32_t>(imageMemoryBarrierCount), reinterpret_cast<const ImageMemoryBarrier*>(pImageMemoryBarriers));
     }
     void CmdPipelineBarrier(
         PipelineStageFlags srcStageMask,    
         PipelineStageFlags dstStageMask,    
         DependencyFlags dependencyFlags,    
         uint32_t memoryBarrierCount,    
-        MemoryBarrier* pMemoryBarriers,    
+        constMemoryBarrier* pMemoryBarriers,    
         uint32_t bufferMemoryBarrierCount,    
-        BufferMemoryBarrier* pBufferMemoryBarriers,    
+        constBufferMemoryBarrier* pBufferMemoryBarriers,    
         uint32_t imageMemoryBarrierCount,    
-        ImageMemoryBarrier* pImageMemoryBarriers) {
-        return vkCmdPipelineBarrier(get(), static_cast<VkPipelineStageFlags>(srcStageMask), static_cast<VkPipelineStageFlags>(dstStageMask), static_cast<VkDependencyFlags>(dependencyFlags), static_cast<uint32_t>(memoryBarrierCount), reinterpret_cast<VkMemoryBarrier*>(pMemoryBarriers), static_cast<uint32_t>(bufferMemoryBarrierCount), reinterpret_cast<VkBufferMemoryBarrier*>(pBufferMemoryBarriers), static_cast<uint32_t>(imageMemoryBarrierCount), reinterpret_cast<VkImageMemoryBarrier*>(pImageMemoryBarriers));
+        constImageMemoryBarrier* pImageMemoryBarriers) {
+        return vkCmdPipelineBarrier(get(), static_cast<PipelineStageFlags>(srcStageMask), static_cast<PipelineStageFlags>(dstStageMask), static_cast<DependencyFlags>(dependencyFlags), static_cast<uint32_t>(memoryBarrierCount), reinterpret_cast<const MemoryBarrier*>(pMemoryBarriers), static_cast<uint32_t>(bufferMemoryBarrierCount), reinterpret_cast<const BufferMemoryBarrier*>(pBufferMemoryBarriers), static_cast<uint32_t>(imageMemoryBarrierCount), reinterpret_cast<const ImageMemoryBarrier*>(pImageMemoryBarriers));
     }
     void CmdBeginQuery(
         QueryPool queryPool,    
         uint32_t query,    
         QueryControlFlags flags) {
-        return vkCmdBeginQuery(get(),queryPool.get(), static_cast<uint32_t>(query), static_cast<VkQueryControlFlags>(flags));
+        return vkCmdBeginQuery(get(),queryPool.get(), static_cast<uint32_t>(query), static_cast<QueryControlFlags>(flags));
     }
     void CmdEndQuery(
         QueryPool queryPool,    
@@ -8585,8 +8585,8 @@ struct CommandBuffer {
         return vkCmdEndQuery(get(),queryPool.get(), static_cast<uint32_t>(query));
     }
     void CmdBeginConditionalRenderingEXT(
-        ConditionalRenderingBeginInfoEXT* pConditionalRenderingBegin) {
-        return vkCmdBeginConditionalRenderingEXT(get(), reinterpret_cast<VkConditionalRenderingBeginInfoEXT*>(pConditionalRenderingBegin));
+        constConditionalRenderingBeginInfoEXT* pConditionalRenderingBegin) {
+        return vkCmdBeginConditionalRenderingEXT(get(), reinterpret_cast<const ConditionalRenderingBeginInfoEXT*>(pConditionalRenderingBegin));
     }
     void CmdEndConditionalRenderingEXT() {
         return vkCmdEndConditionalRenderingEXT(get());
@@ -8601,7 +8601,7 @@ struct CommandBuffer {
         PipelineStageFlagBits pipelineStage,    
         QueryPool queryPool,    
         uint32_t query) {
-        return vkCmdWriteTimestamp(get(), static_cast<VkPipelineStageFlagBits>(pipelineStage),queryPool.get(), static_cast<uint32_t>(query));
+        return vkCmdWriteTimestamp(get(), static_cast<PipelineStageFlagBits>(pipelineStage),queryPool.get(), static_cast<uint32_t>(query));
     }
     void CmdCopyQueryPoolResults(
         QueryPool queryPool,    
@@ -8611,66 +8611,66 @@ struct CommandBuffer {
         DeviceSize dstOffset,    
         DeviceSize stride,    
         QueryResultFlags flags) {
-        return vkCmdCopyQueryPoolResults(get(),queryPool.get(), static_cast<uint32_t>(firstQuery), static_cast<uint32_t>(queryCount),dstBuffer.get(), static_cast<VkDeviceSize>(dstOffset), static_cast<VkDeviceSize>(stride), static_cast<VkQueryResultFlags>(flags));
+        return vkCmdCopyQueryPoolResults(get(),queryPool.get(), static_cast<uint32_t>(firstQuery), static_cast<uint32_t>(queryCount),dstBuffer.get(), static_cast<DeviceSize>(dstOffset), static_cast<DeviceSize>(stride), static_cast<QueryResultFlags>(flags));
     }
     void CmdPushConstants(
         PipelineLayout layout,    
         ShaderStageFlags stageFlags,    
         uint32_t offset,    
         uint32_t size,    
-        void* pValues) {
-        return vkCmdPushConstants(get(),layout.get(), static_cast<VkShaderStageFlags>(stageFlags), static_cast<uint32_t>(offset), static_cast<uint32_t>(size), reinterpret_cast<void*>(pValues));
+        constvoid* pValues) {
+        return vkCmdPushConstants(get(),layout.get(), static_cast<ShaderStageFlags>(stageFlags), static_cast<uint32_t>(offset), static_cast<uint32_t>(size), reinterpret_cast<const void*>(pValues));
     }
     void CmdBeginRenderPass(
-        RenderPassBeginInfo* pRenderPassBegin,    
+        constRenderPassBeginInfo* pRenderPassBegin,    
         SubpassContents contents) {
-        return vkCmdBeginRenderPass(get(), reinterpret_cast<VkRenderPassBeginInfo*>(pRenderPassBegin), static_cast<VkSubpassContents>(contents));
+        return vkCmdBeginRenderPass(get(), reinterpret_cast<const RenderPassBeginInfo*>(pRenderPassBegin), static_cast<SubpassContents>(contents));
     }
     void CmdNextSubpass(
         SubpassContents contents) {
-        return vkCmdNextSubpass(get(), static_cast<VkSubpassContents>(contents));
+        return vkCmdNextSubpass(get(), static_cast<SubpassContents>(contents));
     }
     void CmdEndRenderPass() {
         return vkCmdEndRenderPass(get());
     }
     void CmdExecuteCommands(
         uint32_t commandBufferCount,    
-        CommandBuffer* pCommandBuffers) {
-        return vkCmdExecuteCommands(get(), static_cast<uint32_t>(commandBufferCount), reinterpret_cast<VkCommandBuffer*>(pCommandBuffers));
+        constCommandBuffer* pCommandBuffers) {
+        return vkCmdExecuteCommands(get(), static_cast<uint32_t>(commandBufferCount), reinterpret_cast<const CommandBuffer*>(pCommandBuffers));
     }
     void CmdDebugMarkerBeginEXT(
-        DebugMarkerMarkerInfoEXT* pMarkerInfo) {
-        return vkCmdDebugMarkerBeginEXT(get(), reinterpret_cast<VkDebugMarkerMarkerInfoEXT*>(pMarkerInfo));
+        constDebugMarkerMarkerInfoEXT* pMarkerInfo) {
+        return vkCmdDebugMarkerBeginEXT(get(), reinterpret_cast<const DebugMarkerMarkerInfoEXT*>(pMarkerInfo));
     }
     void CmdDebugMarkerEndEXT() {
         return vkCmdDebugMarkerEndEXT(get());
     }
     void CmdDebugMarkerInsertEXT(
-        DebugMarkerMarkerInfoEXT* pMarkerInfo) {
-        return vkCmdDebugMarkerInsertEXT(get(), reinterpret_cast<VkDebugMarkerMarkerInfoEXT*>(pMarkerInfo));
+        constDebugMarkerMarkerInfoEXT* pMarkerInfo) {
+        return vkCmdDebugMarkerInsertEXT(get(), reinterpret_cast<const DebugMarkerMarkerInfoEXT*>(pMarkerInfo));
     }
     void CmdExecuteGeneratedCommandsNV(
         bool isPreprocessed,    
-        GeneratedCommandsInfoNV* pGeneratedCommandsInfo) {
-        return vkCmdExecuteGeneratedCommandsNV(get(), static_cast<VkBool32>(isPreprocessed), reinterpret_cast<VkGeneratedCommandsInfoNV*>(pGeneratedCommandsInfo));
+        constGeneratedCommandsInfoNV* pGeneratedCommandsInfo) {
+        return vkCmdExecuteGeneratedCommandsNV(get(), static_cast<bool>(isPreprocessed), reinterpret_cast<const GeneratedCommandsInfoNV*>(pGeneratedCommandsInfo));
     }
     void CmdPreprocessGeneratedCommandsNV(
-        GeneratedCommandsInfoNV* pGeneratedCommandsInfo) {
-        return vkCmdPreprocessGeneratedCommandsNV(get(), reinterpret_cast<VkGeneratedCommandsInfoNV*>(pGeneratedCommandsInfo));
+        constGeneratedCommandsInfoNV* pGeneratedCommandsInfo) {
+        return vkCmdPreprocessGeneratedCommandsNV(get(), reinterpret_cast<const GeneratedCommandsInfoNV*>(pGeneratedCommandsInfo));
     }
     void CmdBindPipelineShaderGroupNV(
         PipelineBindPoint pipelineBindPoint,    
         Pipeline pipeline,    
         uint32_t groupIndex) {
-        return vkCmdBindPipelineShaderGroupNV(get(), static_cast<VkPipelineBindPoint>(pipelineBindPoint),pipeline.get(), static_cast<uint32_t>(groupIndex));
+        return vkCmdBindPipelineShaderGroupNV(get(), static_cast<PipelineBindPoint>(pipelineBindPoint),pipeline.get(), static_cast<uint32_t>(groupIndex));
     }
     void CmdPushDescriptorSetKHR(
         PipelineBindPoint pipelineBindPoint,    
         PipelineLayout layout,    
         uint32_t set,    
         uint32_t descriptorWriteCount,    
-        WriteDescriptorSet* pDescriptorWrites) {
-        return vkCmdPushDescriptorSetKHR(get(), static_cast<VkPipelineBindPoint>(pipelineBindPoint),layout.get(), static_cast<uint32_t>(set), static_cast<uint32_t>(descriptorWriteCount), reinterpret_cast<VkWriteDescriptorSet*>(pDescriptorWrites));
+        constWriteDescriptorSet* pDescriptorWrites) {
+        return vkCmdPushDescriptorSetKHR(get(), static_cast<PipelineBindPoint>(pipelineBindPoint),layout.get(), static_cast<uint32_t>(set), static_cast<uint32_t>(descriptorWriteCount), reinterpret_cast<const WriteDescriptorSet*>(pDescriptorWrites));
     }
     void CmdSetDeviceMask(
         uint32_t deviceMask) {
@@ -8689,56 +8689,56 @@ struct CommandBuffer {
         DescriptorUpdateTemplate descriptorUpdateTemplate,    
         PipelineLayout layout,    
         uint32_t set,    
-        void* pData) {
-        return vkCmdPushDescriptorSetWithTemplateKHR(get(),descriptorUpdateTemplate.get(),layout.get(), static_cast<uint32_t>(set), reinterpret_cast<void*>(pData));
+        constvoid* pData) {
+        return vkCmdPushDescriptorSetWithTemplateKHR(get(),descriptorUpdateTemplate.get(),layout.get(), static_cast<uint32_t>(set), reinterpret_cast<const void*>(pData));
     }
     void CmdSetViewportWScalingNV(
         uint32_t firstViewport,    
         uint32_t viewportCount,    
-        ViewportWScalingNV* pViewportWScalings) {
-        return vkCmdSetViewportWScalingNV(get(), static_cast<uint32_t>(firstViewport), static_cast<uint32_t>(viewportCount), reinterpret_cast<VkViewportWScalingNV*>(pViewportWScalings));
+        constViewportWScalingNV* pViewportWScalings) {
+        return vkCmdSetViewportWScalingNV(get(), static_cast<uint32_t>(firstViewport), static_cast<uint32_t>(viewportCount), reinterpret_cast<const ViewportWScalingNV*>(pViewportWScalings));
     }
     void CmdSetDiscardRectangleEXT(
         uint32_t firstDiscardRectangle,    
         uint32_t discardRectangleCount,    
-        Rect2D* pDiscardRectangles) {
-        return vkCmdSetDiscardRectangleEXT(get(), static_cast<uint32_t>(firstDiscardRectangle), static_cast<uint32_t>(discardRectangleCount), reinterpret_cast<VkRect2D*>(pDiscardRectangles));
+        constRect2D* pDiscardRectangles) {
+        return vkCmdSetDiscardRectangleEXT(get(), static_cast<uint32_t>(firstDiscardRectangle), static_cast<uint32_t>(discardRectangleCount), reinterpret_cast<const Rect2D*>(pDiscardRectangles));
     }
     void CmdSetSampleLocationsEXT(
-        SampleLocationsInfoEXT* pSampleLocationsInfo) {
-        return vkCmdSetSampleLocationsEXT(get(), reinterpret_cast<VkSampleLocationsInfoEXT*>(pSampleLocationsInfo));
+        constSampleLocationsInfoEXT* pSampleLocationsInfo) {
+        return vkCmdSetSampleLocationsEXT(get(), reinterpret_cast<const SampleLocationsInfoEXT*>(pSampleLocationsInfo));
     }
     void CmdBeginDebugUtilsLabelEXT(
-        DebugUtilsLabelEXT* pLabelInfo) {
-        return vkCmdBeginDebugUtilsLabelEXT(get(), reinterpret_cast<VkDebugUtilsLabelEXT*>(pLabelInfo));
+        constDebugUtilsLabelEXT* pLabelInfo) {
+        return vkCmdBeginDebugUtilsLabelEXT(get(), reinterpret_cast<const DebugUtilsLabelEXT*>(pLabelInfo));
     }
     void CmdEndDebugUtilsLabelEXT() {
         return vkCmdEndDebugUtilsLabelEXT(get());
     }
     void CmdInsertDebugUtilsLabelEXT(
-        DebugUtilsLabelEXT* pLabelInfo) {
-        return vkCmdInsertDebugUtilsLabelEXT(get(), reinterpret_cast<VkDebugUtilsLabelEXT*>(pLabelInfo));
+        constDebugUtilsLabelEXT* pLabelInfo) {
+        return vkCmdInsertDebugUtilsLabelEXT(get(), reinterpret_cast<const DebugUtilsLabelEXT*>(pLabelInfo));
     }
     void CmdWriteBufferMarkerAMD(
         PipelineStageFlagBits pipelineStage,    
         Buffer dstBuffer,    
         DeviceSize dstOffset,    
         uint32_t marker) {
-        return vkCmdWriteBufferMarkerAMD(get(), static_cast<VkPipelineStageFlagBits>(pipelineStage),dstBuffer.get(), static_cast<VkDeviceSize>(dstOffset), static_cast<uint32_t>(marker));
+        return vkCmdWriteBufferMarkerAMD(get(), static_cast<PipelineStageFlagBits>(pipelineStage),dstBuffer.get(), static_cast<DeviceSize>(dstOffset), static_cast<uint32_t>(marker));
     }
     void CmdBeginRenderPass2(
-        RenderPassBeginInfo* pRenderPassBegin,    
-        SubpassBeginInfo* pSubpassBeginInfo) {
-        return vkCmdBeginRenderPass2(get(), reinterpret_cast<VkRenderPassBeginInfo*>(pRenderPassBegin), reinterpret_cast<VkSubpassBeginInfo*>(pSubpassBeginInfo));
+        constRenderPassBeginInfo* pRenderPassBegin,    
+        constSubpassBeginInfo* pSubpassBeginInfo) {
+        return vkCmdBeginRenderPass2(get(), reinterpret_cast<const RenderPassBeginInfo*>(pRenderPassBegin), reinterpret_cast<const SubpassBeginInfo*>(pSubpassBeginInfo));
     }
     void CmdNextSubpass2(
-        SubpassBeginInfo* pSubpassBeginInfo,    
-        SubpassEndInfo* pSubpassEndInfo) {
-        return vkCmdNextSubpass2(get(), reinterpret_cast<VkSubpassBeginInfo*>(pSubpassBeginInfo), reinterpret_cast<VkSubpassEndInfo*>(pSubpassEndInfo));
+        constSubpassBeginInfo* pSubpassBeginInfo,    
+        constSubpassEndInfo* pSubpassEndInfo) {
+        return vkCmdNextSubpass2(get(), reinterpret_cast<const SubpassBeginInfo*>(pSubpassBeginInfo), reinterpret_cast<const SubpassEndInfo*>(pSubpassEndInfo));
     }
     void CmdEndRenderPass2(
-        SubpassEndInfo* pSubpassEndInfo) {
-        return vkCmdEndRenderPass2(get(), reinterpret_cast<VkSubpassEndInfo*>(pSubpassEndInfo));
+        constSubpassEndInfo* pSubpassEndInfo) {
+        return vkCmdEndRenderPass2(get(), reinterpret_cast<const SubpassEndInfo*>(pSubpassEndInfo));
     }
     void CmdDrawIndirectCount(
         Buffer buffer,    
@@ -8747,7 +8747,7 @@ struct CommandBuffer {
         DeviceSize countBufferOffset,    
         uint32_t maxDrawCount,    
         uint32_t stride) {
-        return vkCmdDrawIndirectCount(get(),buffer.get(), static_cast<VkDeviceSize>(offset),countBuffer.get(), static_cast<VkDeviceSize>(countBufferOffset), static_cast<uint32_t>(maxDrawCount), static_cast<uint32_t>(stride));
+        return vkCmdDrawIndirectCount(get(),buffer.get(), static_cast<DeviceSize>(offset),countBuffer.get(), static_cast<DeviceSize>(countBufferOffset), static_cast<uint32_t>(maxDrawCount), static_cast<uint32_t>(stride));
     }
     void CmdDrawIndexedIndirectCount(
         Buffer buffer,    
@@ -8756,40 +8756,40 @@ struct CommandBuffer {
         DeviceSize countBufferOffset,    
         uint32_t maxDrawCount,    
         uint32_t stride) {
-        return vkCmdDrawIndexedIndirectCount(get(),buffer.get(), static_cast<VkDeviceSize>(offset),countBuffer.get(), static_cast<VkDeviceSize>(countBufferOffset), static_cast<uint32_t>(maxDrawCount), static_cast<uint32_t>(stride));
+        return vkCmdDrawIndexedIndirectCount(get(),buffer.get(), static_cast<DeviceSize>(offset),countBuffer.get(), static_cast<DeviceSize>(countBufferOffset), static_cast<uint32_t>(maxDrawCount), static_cast<uint32_t>(stride));
     }
     void CmdSetCheckpointNV(
-        void* pCheckpointMarker) {
-        return vkCmdSetCheckpointNV(get(), reinterpret_cast<void*>(pCheckpointMarker));
+        constvoid* pCheckpointMarker) {
+        return vkCmdSetCheckpointNV(get(), reinterpret_cast<const void*>(pCheckpointMarker));
     }
     void CmdBindTransformFeedbackBuffersEXT(
         uint32_t firstBinding,    
         uint32_t bindingCount,    
-        Buffer* pBuffers,    
-        DeviceSize* pOffsets,    
-        DeviceSize* pSizes) {
-        return vkCmdBindTransformFeedbackBuffersEXT(get(), static_cast<uint32_t>(firstBinding), static_cast<uint32_t>(bindingCount), reinterpret_cast<VkBuffer*>(pBuffers), reinterpret_cast<VkDeviceSize*>(pOffsets), reinterpret_cast<VkDeviceSize*>(pSizes));
+        constBuffer* pBuffers,    
+        constDeviceSize* pOffsets,    
+        constDeviceSize* pSizes) {
+        return vkCmdBindTransformFeedbackBuffersEXT(get(), static_cast<uint32_t>(firstBinding), static_cast<uint32_t>(bindingCount), reinterpret_cast<const Buffer*>(pBuffers), reinterpret_cast<const DeviceSize*>(pOffsets), reinterpret_cast<const DeviceSize*>(pSizes));
     }
     void CmdBeginTransformFeedbackEXT(
         uint32_t firstCounterBuffer,    
         uint32_t counterBufferCount,    
-        Buffer* pCounterBuffers,    
-        DeviceSize* pCounterBufferOffsets) {
-        return vkCmdBeginTransformFeedbackEXT(get(), static_cast<uint32_t>(firstCounterBuffer), static_cast<uint32_t>(counterBufferCount), reinterpret_cast<VkBuffer*>(pCounterBuffers), reinterpret_cast<VkDeviceSize*>(pCounterBufferOffsets));
+        constBuffer* pCounterBuffers,    
+        constDeviceSize* pCounterBufferOffsets) {
+        return vkCmdBeginTransformFeedbackEXT(get(), static_cast<uint32_t>(firstCounterBuffer), static_cast<uint32_t>(counterBufferCount), reinterpret_cast<const Buffer*>(pCounterBuffers), reinterpret_cast<const DeviceSize*>(pCounterBufferOffsets));
     }
     void CmdEndTransformFeedbackEXT(
         uint32_t firstCounterBuffer,    
         uint32_t counterBufferCount,    
-        Buffer* pCounterBuffers,    
-        DeviceSize* pCounterBufferOffsets) {
-        return vkCmdEndTransformFeedbackEXT(get(), static_cast<uint32_t>(firstCounterBuffer), static_cast<uint32_t>(counterBufferCount), reinterpret_cast<VkBuffer*>(pCounterBuffers), reinterpret_cast<VkDeviceSize*>(pCounterBufferOffsets));
+        constBuffer* pCounterBuffers,    
+        constDeviceSize* pCounterBufferOffsets) {
+        return vkCmdEndTransformFeedbackEXT(get(), static_cast<uint32_t>(firstCounterBuffer), static_cast<uint32_t>(counterBufferCount), reinterpret_cast<const Buffer*>(pCounterBuffers), reinterpret_cast<const DeviceSize*>(pCounterBufferOffsets));
     }
     void CmdBeginQueryIndexedEXT(
         QueryPool queryPool,    
         uint32_t query,    
         QueryControlFlags flags,    
         uint32_t index) {
-        return vkCmdBeginQueryIndexedEXT(get(),queryPool.get(), static_cast<uint32_t>(query), static_cast<VkQueryControlFlags>(flags), static_cast<uint32_t>(index));
+        return vkCmdBeginQueryIndexedEXT(get(),queryPool.get(), static_cast<uint32_t>(query), static_cast<QueryControlFlags>(flags), static_cast<uint32_t>(index));
     }
     void CmdEndQueryIndexedEXT(
         QueryPool queryPool,    
@@ -8804,30 +8804,30 @@ struct CommandBuffer {
         DeviceSize counterBufferOffset,    
         uint32_t counterOffset,    
         uint32_t vertexStride) {
-        return vkCmdDrawIndirectByteCountEXT(get(), static_cast<uint32_t>(instanceCount), static_cast<uint32_t>(firstInstance),counterBuffer.get(), static_cast<VkDeviceSize>(counterBufferOffset), static_cast<uint32_t>(counterOffset), static_cast<uint32_t>(vertexStride));
+        return vkCmdDrawIndirectByteCountEXT(get(), static_cast<uint32_t>(instanceCount), static_cast<uint32_t>(firstInstance),counterBuffer.get(), static_cast<DeviceSize>(counterBufferOffset), static_cast<uint32_t>(counterOffset), static_cast<uint32_t>(vertexStride));
     }
     void CmdSetExclusiveScissorNV(
         uint32_t firstExclusiveScissor,    
         uint32_t exclusiveScissorCount,    
-        Rect2D* pExclusiveScissors) {
-        return vkCmdSetExclusiveScissorNV(get(), static_cast<uint32_t>(firstExclusiveScissor), static_cast<uint32_t>(exclusiveScissorCount), reinterpret_cast<VkRect2D*>(pExclusiveScissors));
+        constRect2D* pExclusiveScissors) {
+        return vkCmdSetExclusiveScissorNV(get(), static_cast<uint32_t>(firstExclusiveScissor), static_cast<uint32_t>(exclusiveScissorCount), reinterpret_cast<const Rect2D*>(pExclusiveScissors));
     }
     void CmdBindShadingRateImageNV(
         ImageView imageView,    
         ImageLayout imageLayout) {
-        return vkCmdBindShadingRateImageNV(get(),imageView.get(), static_cast<VkImageLayout>(imageLayout));
+        return vkCmdBindShadingRateImageNV(get(),imageView.get(), static_cast<ImageLayout>(imageLayout));
     }
     void CmdSetViewportShadingRatePaletteNV(
         uint32_t firstViewport,    
         uint32_t viewportCount,    
-        ShadingRatePaletteNV* pShadingRatePalettes) {
-        return vkCmdSetViewportShadingRatePaletteNV(get(), static_cast<uint32_t>(firstViewport), static_cast<uint32_t>(viewportCount), reinterpret_cast<VkShadingRatePaletteNV*>(pShadingRatePalettes));
+        constShadingRatePaletteNV* pShadingRatePalettes) {
+        return vkCmdSetViewportShadingRatePaletteNV(get(), static_cast<uint32_t>(firstViewport), static_cast<uint32_t>(viewportCount), reinterpret_cast<const ShadingRatePaletteNV*>(pShadingRatePalettes));
     }
     void CmdSetCoarseSampleOrderNV(
         CoarseSampleOrderTypeNV sampleOrderType,    
         uint32_t customSampleOrderCount,    
-        CoarseSampleOrderCustomNV* pCustomSampleOrders) {
-        return vkCmdSetCoarseSampleOrderNV(get(), static_cast<VkCoarseSampleOrderTypeNV>(sampleOrderType), static_cast<uint32_t>(customSampleOrderCount), reinterpret_cast<VkCoarseSampleOrderCustomNV*>(pCustomSampleOrders));
+        constCoarseSampleOrderCustomNV* pCustomSampleOrders) {
+        return vkCmdSetCoarseSampleOrderNV(get(), static_cast<CoarseSampleOrderTypeNV>(sampleOrderType), static_cast<uint32_t>(customSampleOrderCount), reinterpret_cast<const CoarseSampleOrderCustomNV*>(pCustomSampleOrders));
     }
     void CmdDrawMeshTasksNV(
         uint32_t taskCount,    
@@ -8839,7 +8839,7 @@ struct CommandBuffer {
         DeviceSize offset,    
         uint32_t drawCount,    
         uint32_t stride) {
-        return vkCmdDrawMeshTasksIndirectNV(get(),buffer.get(), static_cast<VkDeviceSize>(offset), static_cast<uint32_t>(drawCount), static_cast<uint32_t>(stride));
+        return vkCmdDrawMeshTasksIndirectNV(get(),buffer.get(), static_cast<DeviceSize>(offset), static_cast<uint32_t>(drawCount), static_cast<uint32_t>(stride));
     }
     void CmdDrawMeshTasksIndirectCountNV(
         Buffer buffer,    
@@ -8848,44 +8848,44 @@ struct CommandBuffer {
         DeviceSize countBufferOffset,    
         uint32_t maxDrawCount,    
         uint32_t stride) {
-        return vkCmdDrawMeshTasksIndirectCountNV(get(),buffer.get(), static_cast<VkDeviceSize>(offset),countBuffer.get(), static_cast<VkDeviceSize>(countBufferOffset), static_cast<uint32_t>(maxDrawCount), static_cast<uint32_t>(stride));
+        return vkCmdDrawMeshTasksIndirectCountNV(get(),buffer.get(), static_cast<DeviceSize>(offset),countBuffer.get(), static_cast<DeviceSize>(countBufferOffset), static_cast<uint32_t>(maxDrawCount), static_cast<uint32_t>(stride));
     }
     void CmdCopyAccelerationStructureNV(
         AccelerationStructureKHR dst,    
         AccelerationStructureKHR src,    
         CopyAccelerationStructureModeKHR mode) {
-        return vkCmdCopyAccelerationStructureNV(get(),dst.get(),src.get(), static_cast<VkCopyAccelerationStructureModeKHR>(mode));
+        return vkCmdCopyAccelerationStructureNV(get(),dst.get(),src.get(), static_cast<CopyAccelerationStructureModeKHR>(mode));
     }
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
     void CmdCopyAccelerationStructureKHR(
-        CopyAccelerationStructureInfoKHR* pInfo) {
-        return vkCmdCopyAccelerationStructureKHR(get(), reinterpret_cast<VkCopyAccelerationStructureInfoKHR*>(pInfo));
+        constCopyAccelerationStructureInfoKHR* pInfo) {
+        return vkCmdCopyAccelerationStructureKHR(get(), reinterpret_cast<const CopyAccelerationStructureInfoKHR*>(pInfo));
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
     void CmdCopyAccelerationStructureToMemoryKHR(
-        CopyAccelerationStructureToMemoryInfoKHR* pInfo) {
-        return vkCmdCopyAccelerationStructureToMemoryKHR(get(), reinterpret_cast<VkCopyAccelerationStructureToMemoryInfoKHR*>(pInfo));
+        constCopyAccelerationStructureToMemoryInfoKHR* pInfo) {
+        return vkCmdCopyAccelerationStructureToMemoryKHR(get(), reinterpret_cast<const CopyAccelerationStructureToMemoryInfoKHR*>(pInfo));
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
     void CmdCopyMemoryToAccelerationStructureKHR(
-        CopyMemoryToAccelerationStructureInfoKHR* pInfo) {
-        return vkCmdCopyMemoryToAccelerationStructureKHR(get(), reinterpret_cast<VkCopyMemoryToAccelerationStructureInfoKHR*>(pInfo));
+        constCopyMemoryToAccelerationStructureInfoKHR* pInfo) {
+        return vkCmdCopyMemoryToAccelerationStructureKHR(get(), reinterpret_cast<const CopyMemoryToAccelerationStructureInfoKHR*>(pInfo));
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
     void CmdWriteAccelerationStructuresPropertiesKHR(
         uint32_t accelerationStructureCount,    
-        AccelerationStructureKHR* pAccelerationStructures,    
+        constAccelerationStructureKHR* pAccelerationStructures,    
         QueryType queryType,    
         QueryPool queryPool,    
         uint32_t firstQuery) {
-        return vkCmdWriteAccelerationStructuresPropertiesKHR(get(), static_cast<uint32_t>(accelerationStructureCount), reinterpret_cast<VkAccelerationStructureKHR*>(pAccelerationStructures), static_cast<VkQueryType>(queryType),queryPool.get(), static_cast<uint32_t>(firstQuery));
+        return vkCmdWriteAccelerationStructuresPropertiesKHR(get(), static_cast<uint32_t>(accelerationStructureCount), reinterpret_cast<const AccelerationStructureKHR*>(pAccelerationStructures), static_cast<QueryType>(queryType),queryPool.get(), static_cast<uint32_t>(firstQuery));
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
     void CmdBuildAccelerationStructureNV(
-        AccelerationStructureInfoNV* pInfo,    
+        constAccelerationStructureInfoNV* pInfo,    
         Buffer instanceData,    
         DeviceSize instanceOffset,    
         bool update,    
@@ -8893,18 +8893,18 @@ struct CommandBuffer {
         AccelerationStructureKHR src,    
         Buffer scratch,    
         DeviceSize scratchOffset) {
-        return vkCmdBuildAccelerationStructureNV(get(), reinterpret_cast<VkAccelerationStructureInfoNV*>(pInfo),instanceData.get(), static_cast<VkDeviceSize>(instanceOffset), static_cast<VkBool32>(update),dst.get(),src.get(),scratch.get(), static_cast<VkDeviceSize>(scratchOffset));
+        return vkCmdBuildAccelerationStructureNV(get(), reinterpret_cast<const AccelerationStructureInfoNV*>(pInfo),instanceData.get(), static_cast<DeviceSize>(instanceOffset), static_cast<bool>(update),dst.get(),src.get(),scratch.get(), static_cast<DeviceSize>(scratchOffset));
     }
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
     void CmdTraceRaysKHR(
-        StridedBufferRegionKHR* pRaygenShaderBindingTable,    
-        StridedBufferRegionKHR* pMissShaderBindingTable,    
-        StridedBufferRegionKHR* pHitShaderBindingTable,    
-        StridedBufferRegionKHR* pCallableShaderBindingTable,    
+        constStridedBufferRegionKHR* pRaygenShaderBindingTable,    
+        constStridedBufferRegionKHR* pMissShaderBindingTable,    
+        constStridedBufferRegionKHR* pHitShaderBindingTable,    
+        constStridedBufferRegionKHR* pCallableShaderBindingTable,    
         uint32_t width,    
         uint32_t height,    
         uint32_t depth) {
-        return vkCmdTraceRaysKHR(get(), reinterpret_cast<VkStridedBufferRegionKHR*>(pRaygenShaderBindingTable), reinterpret_cast<VkStridedBufferRegionKHR*>(pMissShaderBindingTable), reinterpret_cast<VkStridedBufferRegionKHR*>(pHitShaderBindingTable), reinterpret_cast<VkStridedBufferRegionKHR*>(pCallableShaderBindingTable), static_cast<uint32_t>(width), static_cast<uint32_t>(height), static_cast<uint32_t>(depth));
+        return vkCmdTraceRaysKHR(get(), reinterpret_cast<const StridedBufferRegionKHR*>(pRaygenShaderBindingTable), reinterpret_cast<const StridedBufferRegionKHR*>(pMissShaderBindingTable), reinterpret_cast<const StridedBufferRegionKHR*>(pHitShaderBindingTable), reinterpret_cast<const StridedBufferRegionKHR*>(pCallableShaderBindingTable), static_cast<uint32_t>(width), static_cast<uint32_t>(height), static_cast<uint32_t>(depth));
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
     void CmdTraceRaysNV(
@@ -8922,30 +8922,30 @@ struct CommandBuffer {
         uint32_t width,    
         uint32_t height,    
         uint32_t depth) {
-        return vkCmdTraceRaysNV(get(),raygenShaderBindingTableBuffer.get(), static_cast<VkDeviceSize>(raygenShaderBindingOffset),missShaderBindingTableBuffer.get(), static_cast<VkDeviceSize>(missShaderBindingOffset), static_cast<VkDeviceSize>(missShaderBindingStride),hitShaderBindingTableBuffer.get(), static_cast<VkDeviceSize>(hitShaderBindingOffset), static_cast<VkDeviceSize>(hitShaderBindingStride),callableShaderBindingTableBuffer.get(), static_cast<VkDeviceSize>(callableShaderBindingOffset), static_cast<VkDeviceSize>(callableShaderBindingStride), static_cast<uint32_t>(width), static_cast<uint32_t>(height), static_cast<uint32_t>(depth));
+        return vkCmdTraceRaysNV(get(),raygenShaderBindingTableBuffer.get(), static_cast<DeviceSize>(raygenShaderBindingOffset),missShaderBindingTableBuffer.get(), static_cast<DeviceSize>(missShaderBindingOffset), static_cast<DeviceSize>(missShaderBindingStride),hitShaderBindingTableBuffer.get(), static_cast<DeviceSize>(hitShaderBindingOffset), static_cast<DeviceSize>(hitShaderBindingStride),callableShaderBindingTableBuffer.get(), static_cast<DeviceSize>(callableShaderBindingOffset), static_cast<DeviceSize>(callableShaderBindingStride), static_cast<uint32_t>(width), static_cast<uint32_t>(height), static_cast<uint32_t>(depth));
     }
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
     void CmdTraceRaysIndirectKHR(
-        StridedBufferRegionKHR* pRaygenShaderBindingTable,    
-        StridedBufferRegionKHR* pMissShaderBindingTable,    
-        StridedBufferRegionKHR* pHitShaderBindingTable,    
-        StridedBufferRegionKHR* pCallableShaderBindingTable,    
+        constStridedBufferRegionKHR* pRaygenShaderBindingTable,    
+        constStridedBufferRegionKHR* pMissShaderBindingTable,    
+        constStridedBufferRegionKHR* pHitShaderBindingTable,    
+        constStridedBufferRegionKHR* pCallableShaderBindingTable,    
         Buffer buffer,    
         DeviceSize offset) {
-        return vkCmdTraceRaysIndirectKHR(get(), reinterpret_cast<VkStridedBufferRegionKHR*>(pRaygenShaderBindingTable), reinterpret_cast<VkStridedBufferRegionKHR*>(pMissShaderBindingTable), reinterpret_cast<VkStridedBufferRegionKHR*>(pHitShaderBindingTable), reinterpret_cast<VkStridedBufferRegionKHR*>(pCallableShaderBindingTable),buffer.get(), static_cast<VkDeviceSize>(offset));
+        return vkCmdTraceRaysIndirectKHR(get(), reinterpret_cast<const StridedBufferRegionKHR*>(pRaygenShaderBindingTable), reinterpret_cast<const StridedBufferRegionKHR*>(pMissShaderBindingTable), reinterpret_cast<const StridedBufferRegionKHR*>(pHitShaderBindingTable), reinterpret_cast<const StridedBufferRegionKHR*>(pCallableShaderBindingTable),buffer.get(), static_cast<DeviceSize>(offset));
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
     VkResult CmdSetPerformanceMarkerINTEL(
-        PerformanceMarkerInfoINTEL* pMarkerInfo) {
-        return vkCmdSetPerformanceMarkerINTEL(get(), reinterpret_cast<VkPerformanceMarkerInfoINTEL*>(pMarkerInfo));
+        constPerformanceMarkerInfoINTEL* pMarkerInfo) {
+        return vkCmdSetPerformanceMarkerINTEL(get(), reinterpret_cast<const PerformanceMarkerInfoINTEL*>(pMarkerInfo));
     }
     VkResult CmdSetPerformanceStreamMarkerINTEL(
-        PerformanceStreamMarkerInfoINTEL* pMarkerInfo) {
-        return vkCmdSetPerformanceStreamMarkerINTEL(get(), reinterpret_cast<VkPerformanceStreamMarkerInfoINTEL*>(pMarkerInfo));
+        constPerformanceStreamMarkerInfoINTEL* pMarkerInfo) {
+        return vkCmdSetPerformanceStreamMarkerINTEL(get(), reinterpret_cast<const PerformanceStreamMarkerInfoINTEL*>(pMarkerInfo));
     }
     VkResult CmdSetPerformanceOverrideINTEL(
-        PerformanceOverrideInfoINTEL* pOverrideInfo) {
-        return vkCmdSetPerformanceOverrideINTEL(get(), reinterpret_cast<VkPerformanceOverrideInfoINTEL*>(pOverrideInfo));
+        constPerformanceOverrideInfoINTEL* pOverrideInfo) {
+        return vkCmdSetPerformanceOverrideINTEL(get(), reinterpret_cast<const PerformanceOverrideInfoINTEL*>(pOverrideInfo));
     }
     void CmdSetLineStippleEXT(
         uint32_t lineStippleFactor,    
@@ -8955,18 +8955,18 @@ struct CommandBuffer {
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
     void CmdBuildAccelerationStructureKHR(
         uint32_t infoCount,    
-        AccelerationStructureBuildGeometryInfoKHR* pInfos,    
-        AccelerationStructureBuildOffsetInfoKHR* ppOffsetInfos) {
-        return vkCmdBuildAccelerationStructureKHR(get(), static_cast<uint32_t>(infoCount), reinterpret_cast<VkAccelerationStructureBuildGeometryInfoKHR*>(pInfos), reinterpret_cast<VkAccelerationStructureBuildOffsetInfoKHR*>(ppOffsetInfos));
+        constAccelerationStructureBuildGeometryInfoKHR* pInfos,    
+        constAccelerationStructureBuildOffsetInfoKHR*const* ppOffsetInfos) {
+        return vkCmdBuildAccelerationStructureKHR(get(), static_cast<uint32_t>(infoCount), reinterpret_cast<const AccelerationStructureBuildGeometryInfoKHR*>(pInfos), reinterpret_cast<const AccelerationStructureBuildOffsetInfoKHR*const*>(ppOffsetInfos));
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
     void CmdBuildAccelerationStructureIndirectKHR(
-        AccelerationStructureBuildGeometryInfoKHR* pInfo,    
+        constAccelerationStructureBuildGeometryInfoKHR* pInfo,    
         Buffer indirectBuffer,    
         DeviceSize indirectOffset,    
         uint32_t indirectStride) {
-        return vkCmdBuildAccelerationStructureIndirectKHR(get(), reinterpret_cast<VkAccelerationStructureBuildGeometryInfoKHR*>(pInfo),indirectBuffer.get(), static_cast<VkDeviceSize>(indirectOffset), static_cast<uint32_t>(indirectStride));
+        return vkCmdBuildAccelerationStructureIndirectKHR(get(), reinterpret_cast<const AccelerationStructureBuildGeometryInfoKHR*>(pInfo),indirectBuffer.get(), static_cast<DeviceSize>(indirectOffset), static_cast<uint32_t>(indirectStride));
     }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 };
