@@ -232,13 +232,18 @@ class NonDispatchHandle:
     def __init__(self, handle):
         self.vk_name = handle.vk_name
         self.name = handle.name
+        self.platform = None
 
-    def print(self, file):
+    def print(self, file, ext_types):
+        if self.vk_name in ext_types:
+            self.platform = ext_types[self.vk_name].platform_def
+        PlatformGuardHeader(file, self.platform)
         file.write('class ' + self.name + ' {\n')
         file.write('   ' + self.vk_name + ' handle = VK_NULL_HANDLE;\n')
         file.write('   public:\n')
         file.write('   ' + self.vk_name + ' get() { return handle; }\n')
         file.write('};\n')
+        PlatformGuardFooter(file, self.platform)
 
 
 class HandleAlias:
@@ -246,10 +251,15 @@ class HandleAlias:
         self.vk_name = handle.vk_name
         self.name = handle.name
         self.alias = handle.alias
+        self.platform = None
 
-    def print(self, file):
+    def print(self, file, ext_types):
+        if self.alias in ext_types:
+            self.platform = ext_types[self.alias].platform_def
+        PlatformGuardHeader(file, self.platform)
         file.write('using ' + self.name +
                    ' = ' + self.alias[2:] + ';\n')
+        PlatformGuardFooter(file, self.platform)
 
 
 class Variable:
@@ -265,7 +275,8 @@ class Variable:
         self.is_const = False
         self.is_ptr = False
         self.is_double_ptr = False
-        self.array_lengths = []  # multidimentional
+        self.is_const_double_ptr = False
+        self.array_lengths = []  # multi-dimentional
         self.default_value = None
 
         self.vk_base_type = node.find('type').text
@@ -293,8 +304,11 @@ class Variable:
         if type_list[cur] == '*':
             self.is_ptr = True
             cur += 1
-        if type_list[cur] == 'const*':
+        if type_list[cur] == '**':
             self.is_double_ptr = True
+            cur += 1
+        if type_list[cur] == 'const*':
+            self.is_const_double_ptr = True
             cur += 1
         if type_list[cur] == self.name:
             cur += 1
@@ -326,7 +340,7 @@ class Variable:
 
         self.is_handle = self.vk_base_type in handles
 
-    def get_base_type_decl(self):
+    def get_base_type(self):
         type_decl = ''
         if self.is_const:
             type_decl += 'const '
@@ -334,36 +348,44 @@ class Variable:
         if self.is_ptr:
             type_decl += '*'
         if self.is_double_ptr:
-            type_decl += 'const*'
+            type_decl += '**'
+        if self.is_const_double_ptr:
+            type_decl += ' const*'
+        return type_decl
+
+    def get_init(self):
+        init = ''
+        if self.is_ptr or self.is_double_ptr:
+            init += ' = nullptr'
+        elif self.default_value is not None:
+            if len(self.array_lengths) > 0:
+                init += ' = {}'
+            else:
+                init += ' = ' + self.default_value
+        return init
+
+    def get_base_type_only(self):
+        type_decl = self.get_base_type()
         for arr in self.array_lengths:
             type_decl += '[' + arr + ']'
         return type_decl
 
-    def get_decl(self, default_init):
-        type_decl = ''
-        if self.is_const:
-            type_decl += 'const '
-        type_decl += self.base_type
-        if self.is_ptr:
-            type_decl += '*'
-        if self.is_double_ptr:
-            type_decl += 'const*'
-        type_decl += ' ' + self.name
+    def get_full_type(self):
+        type_decl = self.get_base_type() + ' ' + self.name
         for arr in self.array_lengths:
             type_decl += '[' + arr + ']'
+        return type_decl
+
+    def get_parameter_decl(self, default_init):
+        type_decl = self.get_full_type()
         if default_init:
-            if self.is_ptr or self.is_double_ptr:
-                type_decl += ' = nullptr'
-            elif self.default_value is not None:
-                if len(self.array_lengths) > 0:
-                    type_decl += ' = {}'
-                else:
-                    type_decl += ' = ' + self.default_value
+            type_decl += self.get_init()
         return type_decl
 
-    def print_decl(self, file, default_init):
-        type_decl = self.get_decl(default_init)
-
+    def print_struct_decl(self, file, default_init):
+        type_decl = self.get_full_type()
+        if default_init:
+            type_decl += self.get_init()
         file.write('    ' + type_decl + ';\n')
 
 
@@ -383,7 +405,7 @@ class Union:
         PlatformGuardHeader(file, self.platform)
         file.write('union ' + self.name + ' {\n')
         for member in self.members:
-            member.print_decl(file, False)
+            member.print_struct_decl(file, False)
         file.write('};\n')
         PlatformGuardFooter(file, self.platform)
 
@@ -411,7 +433,7 @@ class Struct:
         else:
             file.write('struct ' + self.name + ' {\n')
             for member in self.members:
-                member.print_decl(file, True)
+                member.print_struct_decl(file, True)
             file.write('};\n')
         PlatformGuardFooter(file, self.platform)
 
@@ -457,7 +479,8 @@ class Function:
                     file.write(',' + indent)
                 else:
                     is_first = False
-                file.write('\n' + indent + '    ' + param.get_decl(False))
+                file.write('\n' + indent + '    ' +
+                           param.get_parameter_decl(False))
             file.write(') {\n')
             file.write(indent + '    return ' + self.vk_name + '(')
 
@@ -477,7 +500,7 @@ class Function:
                         file.write(' reinterpret_cast<')
                     else:
                         file.write(' static_cast<')
-                    file.write(param.get_base_type_decl() +
+                    file.write(param.get_base_type_only() +
                                '>(' + param.name + ')')
             file.write(');\n')
             file.write(indent + '}\n')
@@ -545,6 +568,26 @@ class Extension:
                 else:
                     self.constants[name] = value
 
+    def fill_enums(self, ext_enums):
+        for enum in self.enum_values:
+            if enum.extends not in ext_enums:
+                ext_enums[enum.extends] = []
+            ext_enums[enum.extends].append(enum)
+
+    def fill_bitmasks(self, ext_bitmasks):
+        for bitmask in self.bitmask_values:
+            if bitmask.extends not in ext_bitmasks:
+                ext_bitmasks[bitmask.extends] = []
+            ext_bitmasks[bitmask.extends].append(bitmask)
+
+    def fill_types(self, ext_types):
+        for item in self.types:
+            ext_types[item] = self
+
+    def fill_functions(self, ext_functions):
+        for item in self.functions:
+            ext_functions[item] = self
+
 
 class FuncPointer:
     def __init__(self, node):
@@ -595,6 +638,8 @@ class BindingGenerator:
         self.ext_functions = {}
 
         for platform in root.find('platforms'):
+            if platform.get('name') == 'provisional':
+                continue
             self.platforms[platform.get('name')] = platform.get('protect')
 
         for key, value in base_type_default_values.items():
@@ -604,25 +649,16 @@ class BindingGenerator:
             if ext.tag == 'extension':
                 extension = Extension(ext, self.platforms)
                 self.ext_list.append(extension)
-                for enum in extension.enum_values:
-                    if enum.extends not in self.ext_enums:
-                        self.ext_enums[enum.extends] = []
-                    self.ext_enums[enum.extends].append(enum)
-                for bitmask in extension.bitmask_values:
-                    if bitmask.extends not in self.ext_bitmasks:
-                        self.ext_bitmasks[bitmask.extends] = []
-                    self.ext_bitmasks[bitmask.extends].append(bitmask)
-                for item in extension.types:
-                    self.ext_types[item] = extension
-                for item in extension.functions:
-                    self.ext_functions[item] = extension
+                extension.fill_enums(self.ext_enums)
+                extension.fill_bitmasks(self.ext_bitmasks)
+                extension.fill_types(self.ext_types)
+                extension.fill_functions(self.ext_functions)
 
         for feature in root.findall('feature'):
             for require in feature.findall('require'):
                 for r_enum in require.findall('enum'):
                     name = r_enum.get('name')
                     extends = r_enum.get('extends')
-                    ext_num = r_enum.get('extnumber')
                     offset = r_enum.get('offset')
                     value = r_enum.get('value')
                     bitpos = r_enum.get('bitpos')
@@ -633,7 +669,7 @@ class BindingGenerator:
                             self.ext_enums[extends] = []
                         if offset is not None:
                             enum_value = EnumExtValue(
-                                int(ext_num), offset, r_enum.get('dir'))
+                                int(r_enum.get('extnumber')), offset, r_enum.get('dir'))
                             self.ext_enums[extends].append(
                                 ExtEnum(name, enum_value, extends))
                         elif value is not None:  # core enums
@@ -645,8 +681,8 @@ class BindingGenerator:
                             self.ext_bitmasks[extends].append(
                                 ExtBitmask(name, int(bitpos), extends))
                     else:
-                        api_constant = ApiConstant(r_enum)
-                        self.api_constants[api_constant.vk_name] = api_constant
+                        self.api_constants[r_enum.get(
+                            'name')] = ApiConstant(r_enum)
 
         for enum in root.findall("enums"):
             if enum.attrib.get('name') == "API Constants":
@@ -728,9 +764,9 @@ class BindingGenerator:
         for flags in self.flags_list:
             flags.print(file)
         for handle in self.non_dispatchable_handles.values():
-            handle.print(file)
+            handle.print(file, self.ext_types)
         for handle in self.alias_handle_list:
-            handle.print(file)
+            handle.print(file, self.ext_types)
         for union in self.union_list:
             union.print(file)
         for struct in self.struct_list:
@@ -755,6 +791,9 @@ def main():
     file.write('#pragma once\n')
     file.write('// clang-format off\n')
     file.write('#include <stdint.h>\n')
+    file.write('#include <string>\n')
+    file.write('#include <vector>\n')
+    file.write('#define VK_ENABLE_BETA_EXTENSIONS\n')
     file.write('#include <vulkan/vulkan.h>\n')
     file.write('namespace vk {\n')
     bindings.print(file)
