@@ -7,19 +7,21 @@ import re
 todo list
 
 handles are a thing, decide what to do
-make flags and flag bits separate // separate, but more scaffolding needed
-deal with aliases?
 member arrays (+ vk constants -> int's)
 bitfields...
-function pointers
+type safe enums/flags/bitmasks
+function pointers (PFN's)
 functions -- basic
 platform specific entities - done: struct, union, function
 dispatchable handles (instance, physdevice, device, queue, command buffer)
+fp dispatch table objects
+to_string for enums/flags/bitmasks
 
 Done: 
 extensions -- need to be gotten from 'features'
 enum/flags with members from extensions (need 'features' stuff)
 variables with double arrays eg [3][4]
+return types as vk::Result
 '''
 
 vendor_abbreviations = []
@@ -128,8 +130,8 @@ class Enum:
     def print(self, file):
         if len(self.values) == 0:
             return
-        file.write('enum class ' + self.name + ': ' +
-                       self.underlying_size + '{\n')
+        file.write('enum class ' + self.name + ' : ' +
+                       self.underlying_size + ' {\n')
         for elem in self.values:
             file.write("    e" + elem.name + ' = ' +
                        str(elem.value) + ",\n")
@@ -495,6 +497,7 @@ class Function:
             self.error_codes = node.get('errorcodes').split(',')
 
         self.alias = None
+        self.return_type = None
         proto = node.find('proto')
         if proto is not None:
             self.vk_name = proto.find('name').text
@@ -520,7 +523,10 @@ class Function:
             file.write('const auto ' + self.name +
                        ' = ' + self.alias[2:] + ';\n')
         else:
-            file.write(indent + self.return_type + ' ' + self.name + '(')
+            if self.return_type == 'VkResult':
+                file.write(indent + 'Result ' + self.name + '(')
+            else:
+                file.write(indent + self.return_type + ' ' + self.name + '(')
             is_first = True
             for param in self.parameters[1:] if handle is not None else self.parameters:
                 if not is_first:
@@ -529,7 +535,11 @@ class Function:
                     is_first = False
                     file.write('\n' + indent + '    ' + param.get_full_type(self.is_not_free_function))
             file.write(') {\n')
-            file.write(indent + '    return ' + self.vk_name + '(')
+
+            file.write(indent + '    return ')
+            if self.return_type == 'VkResult':
+                file.write('static_cast<Result>(')
+            file.write(self.vk_name + '(')
 
             is_first = True
             for param in self.parameters:
@@ -548,6 +558,8 @@ class Function:
                     file.write('static_cast<' + param.get_vk_base_type_only() + '>(' + param.name + ')')
                 else:
                     file.write(param.name)
+            if self.return_type == 'VkResult':
+                file.write(')')
             file.write(');\n')
             file.write(indent + '}\n')
 
@@ -659,6 +671,23 @@ class BaseType:
             file.write('using ' + self.name + ' = ' + self.type + ';\n')
 
 
+class VulkanFeatureLevel:
+    def __init__(self,node):
+        self.api = node.get('api')
+        self.name = node.get('name')
+        self.number = node.get('number')
+
+        self.commands = []
+        self.types = []
+
+        for require in node.findall('require'):
+            for f_type in require.findall('type'):
+                if f_type.get('name') is not None:
+                    self.types.append(f_type.get('name'))
+            for command in require.findall('command'):
+                if command.get('name') is not None:
+                    self.commands.append(command.get('name'))
+
 class BindingGenerator:
     def __init__(self, root):
 
@@ -680,6 +709,7 @@ class BindingGenerator:
         #self.struct_list = []
         self.functions = []
         self.free_functions = []
+        self.vk_feature_levels = []
         self.ext_list = []
         self.ext_enums = {}
         self.ext_bitmasks = {}
@@ -704,6 +734,7 @@ class BindingGenerator:
                 extension.fill_functions(self.ext_functions)
 
         for feature in root.findall('feature'):
+            self.vk_feature_levels.append(VulkanFeatureLevel(feature))
             for require in feature.findall('require'):
                 for r_enum in require.findall('enum'):
                     name = r_enum.get('name')
@@ -833,7 +864,12 @@ class BindingGenerator:
         [ handle.print(file, self.ext_types) for handle in self.non_dispatchable_handles.values() ]        
         [ handle.print(file,self.ext_types) for handle in self.alias_handle_list ]
         [ struct_or_union.print(file) for struct_or_union in self.struct_union_list ]
-        [ function.print(file) for function in self.functions ]
+        for feature in self.vk_feature_levels:  
+            if feature.number == "1.0":
+                base_vulkan_feature_level = feature
+        for function in self.functions:
+            if function.vk_name in base_vulkan_feature_level.commands:
+                function.print(file)
 
 
 def main():

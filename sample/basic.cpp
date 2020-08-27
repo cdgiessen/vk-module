@@ -1,5 +1,5 @@
-#include <vector>
 #include <iostream>
+#include <vector>
 #include "vkpp.h"
 
 int main() {
@@ -10,5 +10,12 @@ int main() {
     std::cout << "count " << count << "\n";
     for (auto &prop : props)
         std::cout << prop.layerName << "\n";
+
+    vk::InstanceCreateInfo info;
+    vk::Instance inst;
+    auto res = vk::CreateInstance(&info, nullptr, &inst);
+    if (res != vk::Result::eSuccess)
+        return static_cast<int>(res);
+
     return 0;
 }

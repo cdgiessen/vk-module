@@ -23,7 +23,7 @@ endif()
 add_custom_target(generate_source copy-xml)
 
 add_library(vkpp INTERFACE)
-target_include_directories(vkpp INTERFACE "${CMAKE_SOURCE_DIR}/include")
+target_include_directories(vkpp INTERFACE ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(vkpp INTERFACE Vulkan-Headers)
 
 add_subdirectory(sample)
