@@ -3,7 +3,7 @@
 #include "vkpp.h"
 
 int main() {
-    vk::FreeFunctions free_funcs(vkGetInstanceProcAddr);
+    vk::GlobalFunctions free_funcs(vkGetInstanceProcAddr);
 
     uint32_t count = 0;
     free_funcs.EnumerateInstanceLayerProperties(&count, nullptr);
@@ -22,13 +22,13 @@ int main() {
     vk::InstanceFunctions inst_funcs(vkGetInstanceProcAddr, inst);
 
     inst_funcs.EnumeratePhysicalDevices(inst, &count, nullptr);
-    std::vector<vk::PhysicalDevice> phys_devs(count);
-    inst_funcs.EnumeratePhysicalDevices(inst, &count, phys_devs.data());
+    std::vector<vk::PhysicalDevice> phys_devices(count);
+    inst_funcs.EnumeratePhysicalDevices(inst, &count, phys_devices.data());
 
     if (count == 0)
         return -100;
 
-    vk::PhysicalDevice phys_dev = phys_devs.at(0);
+    vk::PhysicalDevice phys_dev = phys_devices.at(0);
     vk::ImageFormatProperties image_props;
     auto flag_bits = vk::ImageUsageFlagBits::eTransferDst;
     // vk::GetPhysicalDeviceImageFormatProperties(phys_dev, vk::Format::eUndefined, vk::ImageType::e1D, vk::ImageTiling::eOptimal,

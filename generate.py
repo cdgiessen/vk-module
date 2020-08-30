@@ -10,16 +10,16 @@ handles are a thing, decide what to do
 member arrays (+ vk constants -> int's)
 bitfields...
 type safe enums/flags/bitmasks
-function definitions (PFN's)
 functions -- basic
 platform specific entities - done: struct, union, function
 dispatchable handles (instance, physdevice, device, queue, command buffer)
-fp dispatch table objects
+extension function tables
 
 In progress
 to_string for enums/flags/bitmasks
 
 Done: 
+fp dispatch table objects
 extensions -- need to be gotten from 'features'
 enum/flags with members from extensions (need 'features' stuff)
 variables with double arrays eg [3][4]
@@ -40,8 +40,7 @@ base_type_default_values = {
     'int': '0',
     'float': '0.f',
     'double': '0.0',
-    'size_t': '0',
-    'bool': 'false'
+    'size_t': '0'
 }
 
 
@@ -261,6 +260,10 @@ class DispatchHandle:
         file.write('    ' + self.vk_name + ' get() const { return handle; }\n')
         file.write('};\n')
 
+    def print_static_asserts(self, file):
+        file.write('static_assert( sizeof( ' + self.name + ') == sizeof( ' + self.vk_name + '), "Must maintain size between handles" );\n')
+
+
 def ForwardDeclareDispatchHandlePrint(file, handle):
         file.write('struct ' + handle.name + ';\n')
 
@@ -275,12 +278,18 @@ class NonDispatchHandle:
             self.platform = ext_types[self.vk_name].platform_def
         PlatformGuardHeader(file, self.platform)
         file.write('class ' + self.name + ' {\n')
-        file.write('   ' + self.vk_name + ' handle = VK_NULL_HANDLE;\n')
-        file.write('   public:\n')
-        file.write('   ' + self.vk_name + ' get() { return handle; }\n')
+        file.write('    ' + self.vk_name + ' handle = VK_NULL_HANDLE;\n')
+        file.write('    public:\n')
+        file.write('    ' + self.vk_name + ' get() { return handle; }\n')
+        file.write('    bool operator!() { return handle != VK_NULL_HANDLE; }\n')
+        file.write('    auto operator<=>(' + self.name + ' const& other) const = default;\n')    
         file.write('};\n')
         PlatformGuardFooter(file, self.platform)
 
+    def print_static_asserts(self, file):
+        PlatformGuardHeader(file, self.platform)
+        file.write('static_assert( sizeof( ' + self.name + ') == sizeof( ' + self.vk_name + '), "Must maintain size between handles" );\n')
+        PlatformGuardFooter(file, self.platform)
 
 
 class HandleAlias:
@@ -321,9 +330,6 @@ class Variable:
         self.base_type = self.vk_base_type
         if self.vk_base_type[:2] == 'Vk':
             self.base_type = self.base_type[2:]
-
-        if self.base_type == 'Bool32':
-            self.base_type = 'bool'
 
         if node.find('comment') is not None:
             node.remove(node.find('comment'))
@@ -466,9 +472,21 @@ class Union:
         file.write('union ' + self.name + ' {\n')
         for member in self.members:
             member.print_struct_decl(file, False)
+        file.write('    bool operator==(' + self.name + ' const& value) const {\n')
+        file.write('        return ')
+        is_first = True
+        for member in self.members:
+            if is_first:
+                is_first = False
+            else:
+                file.write('&& ')
+            file.write(member.name + ' == value.' + member.name + ' ')
+        file.write('    ;}\n')
         file.write('};\n')
         PlatformGuardFooter(file, self.platform)
-
+    
+    def print_static_asserts(self, file):
+        file.write('') # no checks yet
 
 class Struct:
     def __init__(self, node, constants, handles, default_values, ext_types):
@@ -495,12 +513,18 @@ class Struct:
             for member in self.members:
                 member.print_struct_decl(file, True)
 
+            file.write('    auto operator<=>(' + self.name + ' const& other) const = default;\n')    
             file.write('    operator ' + self.vk_name + ' const &() const noexcept {\n')
             file.write('        return *reinterpret_cast<const ' + self.vk_name +'*>(this);\n    }\n')
             file.write('    operator ' + self.vk_name + ' &() noexcept {\n')
             file.write('        return *reinterpret_cast<' + self.vk_name +'*>(this);\n    }\n')
-
             file.write('};\n')
+        PlatformGuardFooter(file, self.platform)
+        
+    def print_static_asserts(self, file):
+        PlatformGuardHeader(file, self.platform)
+        file.write('static_assert( sizeof( ' + self.name + ') == sizeof( ' + self.vk_name + '), "Must maintain size between types" );\n')
+        file.write('static_assert( std::is_standard_layout<' + self.name + '>::value, "Must be a standard layout type" );\n')
         PlatformGuardFooter(file, self.platform)
 
 
@@ -542,7 +566,7 @@ class Function:
             elif self.parameters[0].vk_base_type == 'VkInstance' or self.parameters[0].vk_base_type == 'VkPhysicalDevice':  
                 self.dispatch_type = "Instance" 
             elif self.free_function:
-                self.dispatch_type = "Free"
+                self.dispatch_type = "Global"
             else:
                 self.dispatch_type = "Device"
         if self.vk_name is not None:
@@ -762,7 +786,7 @@ def print_dispatch_table(file, dispatch_type, func_name, vk_feature_levels):
             file.write('#endif\n')
     #constructor
     file.write('    ' + func_name + '(')
-    if dispatch_type == "Free":
+    if dispatch_type == "Global":
         file.write('PFN_vkGetInstanceProcAddr get_instance_proc_addr){\n')
         gpa = "get_instance_proc_addr"
         gpa_val = 'nullptr'
@@ -960,8 +984,7 @@ class BindingGenerator:
         [ handle.print(file, self.ext_types) for handle in self.non_dispatchable_handles.values() ]        
         [ handle.print(file,self.ext_types) for handle in self.alias_handle_list ]
         [ struct_or_union.print(file) for struct_or_union in self.struct_union_list ]
-        #[ func.print(file) for func in self.func_pointers ]
-        print_dispatch_table(file, "Free", "FreeFunctions", self.vk_feature_levels)
+        print_dispatch_table(file, "Global", "GlobalFunctions", self.vk_feature_levels)
         print_dispatch_table(file, "Instance", "InstanceFunctions", self.vk_feature_levels)
         print_dispatch_table(file, "Device", "DeviceFunctions", self.vk_feature_levels)
 
@@ -969,6 +992,11 @@ class BindingGenerator:
         [ enum.print_string(file) for enum in self.enum_list ]
         [ bitmask.print_string(file) for bitmask in self.bitmask_list ]
         
+    def print_static_asserts(self, file):
+        [ struct_or_union.print_static_asserts(file) for struct_or_union in self.struct_union_list ]
+        [ dispatchable_handle.print_static_asserts(file) for dispatchable_handle in self.dispatchable_handles.values() ]
+        [ non_dispatchable_handle.print_static_asserts(file) for non_dispatchable_handle in self.non_dispatchable_handles.values() ]
+
 
 def main():
 
@@ -1001,6 +1029,15 @@ def main():
         string_helpers.write('} // namespace vk\n')
         string_helpers.write('// clang-format on\n')
     
+    with open('tests/static_asserts.h', 'w') as static_asserts:
+        static_asserts.write('#pragma once\n')
+        static_asserts.write('// clang-format off\n')
+        static_asserts.write('#include "vkpp.h"\n')
+        static_asserts.write('#include <type_traits>\n')
+        static_asserts.write('namespace vk {\n')
+        bindings.print_static_asserts(static_asserts)
+        static_asserts.write('} // namespace vk\n')
+        static_asserts.write('// clang-format on\n')
 
 
 if __name__ == "__main__":

@@ -1,0 +1,2 @@
+add_executable(static_tests static_test.cpp)
+target_link_libraries(static_tests vkpp)
