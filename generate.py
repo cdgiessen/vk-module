@@ -10,11 +10,13 @@ handles are a thing, decide what to do
 member arrays (+ vk constants -> int's)
 bitfields...
 type safe enums/flags/bitmasks
-function pointers (PFN's)
+function definitions (PFN's)
 functions -- basic
 platform specific entities - done: struct, union, function
 dispatchable handles (instance, physdevice, device, queue, command buffer)
 fp dispatch table objects
+
+In progress
 to_string for enums/flags/bitmasks
 
 Done: 
@@ -130,12 +132,21 @@ class Enum:
     def print(self, file):
         if len(self.values) == 0:
             return
-        file.write('enum class ' + self.name + ' : ' +
-                       self.underlying_size + ' {\n')
+        file.write('enum class ' + self.name + ' : ' + self.underlying_size + ' {\n')
         for elem in self.values:
             file.write("    e" + elem.name + ' = ' +
                        str(elem.value) + ",\n")
         file.write('};\n')
+    
+    def print_string(self, file):
+        if len(self.values) == 0:
+            return
+        file.write('const char * to_string(' + self.name + ' val) {\n')
+        file.write('    switch(val) {\n')
+        for elem in self.values:
+            file.write("        case(" + self.name + "::" + elem.name + "): return \"" + elem.name + "\";\n")
+        file.write('        default: return "UNKNOWN";\n    }\n}\n')
+
 
 class EnumAlias:
     def __init__(self, node):
@@ -179,6 +190,15 @@ class Bitmask:
         for bitpos, elem in self.values.items():
             file.write("    e" + elem.name + ' = ' + bitpos + ",\n")
         file.write('};\n')
+
+    def print_string(self, file):
+        if len(self.values) == 0:
+            return
+        file.write('const char * to_string(' + self.name + ' val) {\n')
+        file.write('    switch(val) {\n')
+        for bitpos, elem in self.values.items():
+            file.write("        case(" + self.name + "::" + elem.name + "): return \"" + elem.name + "\";\n")
+        file.write('        default: return "UNKNOWN";\n    }\n}\n')
 
 class Flags:
     def __init__(self, node):
@@ -234,14 +254,11 @@ class DispatchHandle:
     def __init__(self, handle):
         self.vk_name = handle.vk_name
         self.name = handle.name
-        self.functions = []
 
     def print(self, file):
         file.write('struct ' + self.name + ' {\n')
         file.write('    ' + self.vk_name + ' handle;\n')
         file.write('    ' + self.vk_name + ' get() const { return handle; }\n')
-        #for function in self.functions:
-        #    function.print(file, self, '    ')
         file.write('};\n')
 
 def ForwardDeclareDispatchHandlePrint(file, handle):
@@ -515,7 +532,21 @@ class Function:
         for param in node.findall('param'):
             self.parameters.append(
                 Variable(param, constants, handles, default_values))
-        self.is_not_free_function = len(self.parameters) > 0 and self.parameters[0].vk_base_type in dispatchable_handles
+        self.dispatch_type = None
+        if len(self.parameters) > 0:
+            self.free_function = self.parameters[0].vk_base_type not in dispatchable_handles
+            if self.vk_name == 'vkGetInstanceProcAddr':
+                self.dispatch_type = None
+            if self.vk_name == 'vkGetDeviceProcAddr':
+                self.dispatch_type = "Instance"
+            elif self.parameters[0].vk_base_type == 'VkInstance' or self.parameters[0].vk_base_type == 'VkPhysicalDevice':  
+                self.dispatch_type = "Instance" 
+            elif self.free_function:
+                self.dispatch_type = "Free"
+            else:
+                self.dispatch_type = "Device"
+        if self.vk_name is not None:
+            self.func_prototype = "PFN_" + self.vk_name;
 
     def print(self, file, handle=None, indent=''):
         PlatformGuardHeader(file, self.platform)
@@ -533,13 +564,13 @@ class Function:
                     file.write(',\n' + indent + '    ' + param.get_parameter_decl(False))
                 else:
                     is_first = False
-                    file.write('\n' + indent + '    ' + param.get_full_type(self.is_not_free_function))
+                    file.write('\n' + indent + '    ' + param.get_full_type(not self.free_function))
             file.write(') {\n')
 
             file.write(indent + '    return ')
             if self.return_type == 'VkResult':
                 file.write('static_cast<Result>(')
-            file.write(self.vk_name + '(')
+            file.write('pfn_' + self.name + '(')
 
             is_first = True
             for param in self.parameters:
@@ -564,6 +595,19 @@ class Function:
             file.write(indent + '}\n')
 
         PlatformGuardFooter(file, self.platform)
+
+    def print_function_def(self, file):
+        if self.alias is not None:
+            return
+        file.write("using VKFN_" + self.name + " = " + self.return_type + " (*) (")
+        first_param = True
+        for param in self.parameters:
+            if not first_param:
+                file.write(", ")
+            else:
+                first_param = False
+            file.write(param.get_vk_base_type())
+        file.write(");\n")
 
 
 class ExtEnum:
@@ -679,6 +723,7 @@ class VulkanFeatureLevel:
 
         self.commands = []
         self.types = []
+        self.functions = []
 
         for require in node.findall('require'):
             for f_type in require.findall('type'):
@@ -687,6 +732,64 @@ class VulkanFeatureLevel:
             for command in require.findall('command'):
                 if command.get('name') is not None:
                     self.commands.append(command.get('name'))
+
+def print_dispatch_table(file, dispatch_type, func_name, vk_feature_levels):
+    file.write('struct ' + func_name + ' {\n')
+    #function pointers
+    file.write('private:\n')
+    for feature in vk_feature_levels: 
+        has_element = False
+        for func in feature.functions:
+            if func.dispatch_type == dispatch_type:
+                if not has_element:
+                    file.write('#if defined(' + feature.name + ')\n')
+                    has_element = True
+                file.write('    ' + func.func_prototype + ' pfn_' + func.name + ';\n')
+        if has_element:
+            file.write('#endif\n')
+    
+    #functions
+    file.write('public:\n')
+    for feature in vk_feature_levels:
+        has_element = False
+        for func in feature.functions:
+            if func.dispatch_type == dispatch_type:
+                if not has_element:
+                    file.write('#if defined(' + feature.name + ')\n')
+                    has_element = True
+                func.print(file, indent='    ')
+        if has_element:
+            file.write('#endif\n')
+    #constructor
+    file.write('    ' + func_name + '(')
+    if dispatch_type == "Free":
+        file.write('PFN_vkGetInstanceProcAddr get_instance_proc_addr){\n')
+        gpa = "get_instance_proc_addr"
+        gpa_val = 'nullptr'
+    elif dispatch_type == "Instance":
+        file.write('PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance){\n')
+        file.write('        VkInstance inst = instance.get();\n')
+        gpa = "get_instance_proc_addr"
+        gpa_val = 'inst'
+    else:
+        file.write('PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device){\n')
+        file.write('        VkDevice dev = device.get();\n')
+        gpa = "get_device_proc_addr"
+        gpa_val = 'dev'
+    for feature in vk_feature_levels:  
+        has_element = False
+        for func in feature.functions:
+            if func.dispatch_type == dispatch_type:
+                if not has_element:
+                    file.write('#if defined(' + feature.name + ')\n')
+                    has_element = True
+                file.write('        pfn_' + func.name + ' = reinterpret_cast<' + func.func_prototype)
+                file.write('>(' + gpa + '(' + gpa_val + ',\"' + func.vk_name + '\"));\n')
+        if has_element:
+            file.write('#endif\n')
+    file.write('    };\n')
+
+    file.write('};\n')
 
 class BindingGenerator:
     def __init__(self, root):
@@ -706,9 +809,7 @@ class BindingGenerator:
         self.bitmask_list = []
         self.flags_list = []
         self.struct_union_list = []
-        #self.struct_list = []
         self.functions = []
-        self.free_functions = []
         self.vk_feature_levels = []
         self.ext_list = []
         self.ext_enums = {}
@@ -811,11 +912,9 @@ class BindingGenerator:
                 if handle.alias is not None:
                     self.alias_handle_list.append(HandleAlias(handle))
                 elif handle.dispatchable:
-                    self.dispatchable_handles[handle.vk_name] = DispatchHandle(
-                        handle)
+                    self.dispatchable_handles[handle.vk_name] = DispatchHandle(handle)
                 elif not handle.dispatchable:
-                    self.non_dispatchable_handles[handle.vk_name] = NonDispatchHandle(
-                        handle)
+                    self.non_dispatchable_handles[handle.vk_name] = NonDispatchHandle(handle)
             elif category == 'union':
                 self.struct_union_list.append(
                     Union(xml_type, self.api_constants, self.handles, self.default_values, self.ext_types))
@@ -828,13 +927,11 @@ class BindingGenerator:
                 self.functions.append(
                     Function(command, self.api_constants, self.handles, self.dispatchable_handles, self.default_values, self.ext_functions))
 
-        for func in self.functions:
-            if len(func.parameters) > 0 and func.parameters[0].vk_base_type in self.dispatchable_handles:
-                self.dispatchable_handles[func.parameters[0].vk_base_type].functions.append(
-                   func)
-            else:
-                self.free_functions.append(func)
-        
+        for feature in self.vk_feature_levels:  
+            for func in self.functions:
+                if func.vk_name in feature.commands:
+                    feature.functions.append(func)
+                    
         #fixup the list so that members using a type appear after that type is defined
         outer_counter = 0
         inner_counter = 0
@@ -854,7 +951,6 @@ class BindingGenerator:
         #[ macro.print(file) for macro in self.macro_defines ]
         [ constant.print(file) for constant in self.api_constants.values() ]
         [ base_type.print(file) for base_type in self.base_types ]
-        [ func_pointer.print(file) for func_pointer in self.func_pointers ]
         [ enum.print(file) for enum in self.enum_list ]
         [ bitmask.print(file) for bitmask in self.bitmask_list ]
         [ enum_alias.print(file) for enum_alias in self.enum_aliases ]
@@ -864,13 +960,15 @@ class BindingGenerator:
         [ handle.print(file, self.ext_types) for handle in self.non_dispatchable_handles.values() ]        
         [ handle.print(file,self.ext_types) for handle in self.alias_handle_list ]
         [ struct_or_union.print(file) for struct_or_union in self.struct_union_list ]
-        for feature in self.vk_feature_levels:  
-            if feature.number == "1.0":
-                base_vulkan_feature_level = feature
-        for function in self.functions:
-            if function.vk_name in base_vulkan_feature_level.commands:
-                function.print(file)
+        #[ func.print(file) for func in self.func_pointers ]
+        print_dispatch_table(file, "Free", "FreeFunctions", self.vk_feature_levels)
+        print_dispatch_table(file, "Instance", "InstanceFunctions", self.vk_feature_levels)
+        print_dispatch_table(file, "Device", "DeviceFunctions", self.vk_feature_levels)
 
+    def print_string(self, file):
+        [ enum.print_string(file) for enum in self.enum_list ]
+        [ bitmask.print_string(file) for bitmask in self.bitmask_list ]
+        
 
 def main():
 
@@ -882,20 +980,27 @@ def main():
 
     bindings = BindingGenerator(root)
 
-    file = open('include/vkpp.h', 'w')
-    file.write('#pragma once\n')
-    file.write('// clang-format off\n')
-    file.write('#include <stdint.h>\n')
-    file.write('#include <string>\n')
-    file.write('#include <vector>\n')
-    file.write('#include <span>\n')
-    file.write('#define VK_ENABLE_BETA_EXTENSIONS\n')
-    file.write('#include <vulkan/vulkan.h>\n')
-    file.write('namespace vk {\n')
-    bindings.print(file)
-    file.write('} // namespace vk\n')
-    file.write('// clang-format on\n')
-    file.close()
+    with open('include/vkpp.h', 'w') as main_file:
+        main_file.write('#pragma once\n')
+        main_file.write('// clang-format off\n')
+        main_file.write('#include <stdint.h>\n')
+        main_file.write('#include <span>\n')
+        main_file.write('#define VK_ENABLE_BETA_EXTENSIONS\n')
+        main_file.write('#include <vulkan/vulkan.h>\n')
+        main_file.write('namespace vk {\n')
+        bindings.print(main_file)
+        main_file.write('} // namespace vk\n')
+        main_file.write('// clang-format on\n')
+
+    with open('include/vkpp_string.h', 'w') as string_helpers:
+        string_helpers.write('#pragma once\n')
+        string_helpers.write('// clang-format off\n')
+        string_helpers.write('#include "vkpp.h"\n')
+        string_helpers.write('namespace vk {\n')
+        bindings.print_string(string_helpers)
+        string_helpers.write('} // namespace vk\n')
+        string_helpers.write('// clang-format on\n')
+    
 
 
 if __name__ == "__main__":
