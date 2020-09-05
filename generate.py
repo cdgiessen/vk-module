@@ -131,19 +131,18 @@ class Enum:
     def print(self, file):
         if len(self.values) == 0:
             return
-        file.write('enum class ' + self.name + ' : ' + self.underlying_size + ' {\n')
+        file.write(f"enum class {self.name} : {self.underlying_size} {{\n")
         for elem in self.values:
-            file.write("    e" + elem.name + ' = ' +
-                       str(elem.value) + ",\n")
+            file.write(f'    e{elem.name} = {str(elem.value)},\n')
         file.write('};\n')
     
     def print_string(self, file):
         if len(self.values) == 0:
             return
-        file.write('const char * to_string(' + self.name + ' val) {\n')
+        file.write(f'const char * to_string({self.name} val) ' + '{\n')
         file.write('    switch(val) {\n')
         for elem in self.values:
-            file.write("        case(" + self.name + "::" + elem.name + "): return \"" + elem.name + "\";\n")
+            file.write(f'        case({self.name}::{elem.name}): return \"{elem.name}\";\n')
         file.write('        default: return "UNKNOWN";\n    }\n}\n')
 
 
@@ -152,7 +151,7 @@ class EnumAlias:
         self.name = node.get('name')[2:]  # for output
         self.alias = node.get('alias')[2:]
     def print(self, file):
-        file.write('using ' + self.name + ' = ' + self.alias + ';\n')
+        file.write(f'using {self.name} = {self.alias};\n')
 
 class Bitmask:
     class Value:
@@ -196,7 +195,7 @@ class Bitmask:
         file.write('const char * to_string(' + self.name + ' val) {\n')
         file.write('    switch(val) {\n')
         for bitpos, elem in self.values.items():
-            file.write("        case(" + self.name + "::" + elem.name + "): return \"" + elem.name + "\";\n")
+            file.write(f'        case({self.name}::{elem.name}): return \"{elem.name}\";\n')
         file.write('        default: return "UNKNOWN";\n    }\n}\n')
 
 class Flags:
@@ -213,7 +212,7 @@ class Flags:
             self.alias = node.get('alias')[2:]
 
     def print(self, file):
-        file.write('using ' + self.name + ' = uint32_t;\n')
+        file.write(f'using {self.name} = uint32_t;\n')
 
 
 class ApiConstant:
@@ -225,11 +224,9 @@ class ApiConstant:
 
     def print(self, file):
         if self.value is not None:
-            file.write('constexpr size_t ' + self.name +
-                       ' = ' + self.value + ';\n')
+            file.write(f'constexpr size_t {self.name} = {self.value};\n')
         if self.alias is not None:
-            file.write('constexpr auto ' + self.name +
-                       ' = ' + self.alias[3:] + ';\n')
+            file.write(f'constexpr auto {self.name} = {self.alias[3:]};\n')
 
 
 class Handle:
@@ -255,17 +252,17 @@ class DispatchHandle:
         self.name = handle.name
 
     def print(self, file):
-        file.write('struct ' + self.name + ' {\n')
-        file.write('    ' + self.vk_name + ' handle;\n')
-        file.write('    ' + self.vk_name + ' get() const { return handle; }\n')
+        file.write(f'struct {self.name} {{\n')
+        file.write(f'    {self.vk_name} handle;\n')
+        file.write(f'    {self.vk_name} get() const {{ return handle; }}\n')
         file.write('};\n')
 
     def print_static_asserts(self, file):
-        file.write('static_assert( sizeof( ' + self.name + ') == sizeof( ' + self.vk_name + '), "Must maintain size between handles" );\n')
+        file.write(f'static_assert( sizeof( {self.name}) == sizeof({self.vk_name}   ), "Must maintain size between handles" );\n')
 
 
 def ForwardDeclareDispatchHandlePrint(file, handle):
-        file.write('struct ' + handle.name + ';\n')
+        file.write(f'struct {handle.name};\n')
 
 class NonDispatchHandle:
     def __init__(self, handle):
@@ -277,18 +274,18 @@ class NonDispatchHandle:
         if self.vk_name in ext_types:
             self.platform = ext_types[self.vk_name].platform_def
         PlatformGuardHeader(file, self.platform)
-        file.write('class ' + self.name + ' {\n')
-        file.write('    ' + self.vk_name + ' handle = VK_NULL_HANDLE;\n')
-        file.write('    public:\n')
-        file.write('    ' + self.vk_name + ' get() { return handle; }\n')
-        file.write('    bool operator!() { return handle != VK_NULL_HANDLE; }\n')
-        file.write('    auto operator<=>(' + self.name + ' const& other) const = default;\n')    
+        file.write(f'class {self.name} {{\n')
+        file.write(f'    {self.vk_name} handle = VK_NULL_HANDLE;\n')
+        file.write(f'    public:\n')
+        file.write(f'    {self.vk_name} get() {{ return handle; }}\n')
+        file.write(f'    bool operator!() {{ return handle != VK_NULL_HANDLE; }}\n')
+        file.write(f'    auto operator<=>({self.name} const& other) const = default;\n')
         file.write('};\n')
         PlatformGuardFooter(file, self.platform)
 
     def print_static_asserts(self, file):
         PlatformGuardHeader(file, self.platform)
-        file.write('static_assert( sizeof( ' + self.name + ') == sizeof( ' + self.vk_name + '), "Must maintain size between handles" );\n')
+        file.write(f'static_assert( sizeof({self.name}) == sizeof({self.vk_name}), "Must maintain size between handles" );\n')
         PlatformGuardFooter(file, self.platform)
 
 
@@ -303,8 +300,7 @@ class HandleAlias:
         if self.alias in ext_types:
             self.platform = ext_types[self.alias].platform_def
         PlatformGuardHeader(file, self.platform)
-        file.write('using ' + self.name +
-                   ' = ' + self.alias[2:] + ';\n')
+        file.write(f'using {self.name} = {self.alias[2:]};\n')
         PlatformGuardFooter(file, self.platform)
 
 
@@ -418,19 +414,19 @@ class Variable:
             if len(self.array_lengths) > 0:
                 init += ' = {}'
             else:
-                init += ' = ' + self.default_value
+                init += f' = {self.default_value}'
         return init
 
     def get_base_type_only(self):
         type_decl = self.get_base_type()
         for arr in self.array_lengths:
-            type_decl += '[' + arr + ']'
+            type_decl += f'[{arr}]'
         return type_decl
 
     def get_vk_base_type_only(self):
         type_decl = self.get_vk_base_type()
         for arr in self.array_lengths:
-            type_decl += '[' + arr + ']'
+            type_decl += f'[{arr}]'
         return type_decl
 
     def get_full_type(self, make_const_ref = False):
@@ -439,7 +435,7 @@ class Variable:
             type_decl += 'const& '
         type_decl += self.name
         for arr in self.array_lengths:
-            type_decl += '[' + arr + ']'
+            type_decl += f'[{arr}]'
         return type_decl
 
     def get_parameter_decl(self, default_init):
@@ -452,7 +448,7 @@ class Variable:
         type_decl = self.get_full_type()
         if default_init:
             type_decl += self.get_init()
-        file.write('    ' + type_decl + ';\n')
+        file.write(f'    {type_decl};\n')
 
 
 class Union:
@@ -472,7 +468,7 @@ class Union:
         file.write('union ' + self.name + ' {\n')
         for member in self.members:
             member.print_struct_decl(file, False)
-        file.write('    bool operator==(' + self.name + ' const& value) const {\n')
+        file.write(f'    bool operator==({self.name} const& value) const {{\n')
         file.write('        return ')
         is_first = True
         for member in self.members:
@@ -480,7 +476,7 @@ class Union:
                 is_first = False
             else:
                 file.write('&& ')
-            file.write(member.name + ' == value.' + member.name + ' ')
+            file.write(f'{member.name} == value.{member.name} ')
         file.write('    ;}\n')
         file.write('};\n')
         PlatformGuardFooter(file, self.platform)
@@ -507,24 +503,24 @@ class Struct:
     def print(self, file):
         PlatformGuardHeader(file, self.platform)
         if self.alias is not None:
-            file.write('using ' + self.name + ' = ' + self.alias[2:] + ';\n')
+            file.write(f'using {self.name} = {self.alias[2:]};\n')
         else:
-            file.write('struct ' + self.name + ' {\n')
+            file.write(f'struct {self.name} {{\n')
             for member in self.members:
                 member.print_struct_decl(file, True)
 
-            file.write('    auto operator<=>(' + self.name + ' const& other) const = default;\n')    
-            file.write('    operator ' + self.vk_name + ' const &() const noexcept {\n')
-            file.write('        return *reinterpret_cast<const ' + self.vk_name +'*>(this);\n    }\n')
-            file.write('    operator ' + self.vk_name + ' &() noexcept {\n')
-            file.write('        return *reinterpret_cast<' + self.vk_name +'*>(this);\n    }\n')
+            file.write(f'    auto operator<=>({self.name} const& other) const = default;\n')
+            file.write(f'    operator {self.vk_name} const &() const noexcept {{\n')
+            file.write(f'        return *reinterpret_cast<const {self.vk_name}*>(this);\n    }}\n')
+            file.write(f'    operator {self.vk_name} &() noexcept {{\n')
+            file.write(f'        return *reinterpret_cast<{self.vk_name}*>(this);\n    }}\n')
             file.write('};\n')
         PlatformGuardFooter(file, self.platform)
         
     def print_static_asserts(self, file):
         PlatformGuardHeader(file, self.platform)
-        file.write('static_assert( sizeof( ' + self.name + ') == sizeof( ' + self.vk_name + '), "Must maintain size between types" );\n')
-        file.write('static_assert( std::is_standard_layout<' + self.name + '>::value, "Must be a standard layout type" );\n')
+        file.write(f'static_assert( sizeof({self.name}) == sizeof({self.vk_name}), "Must maintain size between types" );\n')
+        file.write(f'static_assert( std::is_standard_layout<{self.name}>::value, "Must be a standard layout type" );\n')
         PlatformGuardFooter(file, self.platform)
 
 
@@ -575,31 +571,30 @@ class Function:
     def print(self, file, handle=None, indent=''):
         PlatformGuardHeader(file, self.platform)
         if self.alias is not None:
-            file.write('const auto ' + self.name +
-                       ' = ' + self.alias[2:] + ';\n')
+            file.write(f'const auto {self.name} = {self.alias[2:]};\n')
         else:
             if self.return_type == 'VkResult':
-                file.write(indent + 'Result ' + self.name + '(')
+                file.write(f'{indent}Result {self.name}(')
             else:
-                file.write(indent + self.return_type + ' ' + self.name + '(')
+                file.write(f'{indent}{self.return_type} {self.name}(')
             is_first = True
             for param in self.parameters[1:] if handle is not None else self.parameters:
                 if not is_first:
-                    file.write(',\n' + indent + '    ' + param.get_parameter_decl(False))
+                    file.write(f',\n{indent}    {param.get_parameter_decl(False)}')
                 else:
                     is_first = False
-                    file.write('\n' + indent + '    ' + param.get_full_type(not self.free_function))
+                    file.write(f'\n{indent}    {param.get_full_type(not self.free_function)}')
             file.write(') {\n')
 
-            file.write(indent + '    return ')
+            file.write(f'{indent}    return ')
             if self.return_type == 'VkResult':
                 file.write('static_cast<Result>(')
-            file.write('pfn_' + self.name + '(')
+            file.write(f'pfn_{self.name}(')
 
             is_first = True
             for param in self.parameters:
                 if not is_first:
-                    file.write(',\n'+ indent + '        ')
+                    file.write(f',\n{indent}        ')
                 else:
                     is_first = False
                     if handle is not None:
@@ -608,9 +603,9 @@ class Function:
                 if param.is_handle and not param.is_ptr:
                     file.write(param.name + '.get()')
                 elif param.is_ptr:
-                    file.write('reinterpret_cast<' + param.get_vk_base_type_only() + '>(' + param.name + ')')
+                    file.write(f'reinterpret_cast<{param.get_vk_base_type_only()}>({param.name})')
                 elif param.base_type not in base_type_default_values.keys():
-                    file.write('static_cast<' + param.get_vk_base_type_only() + '>(' + param.name + ')')
+                    file.write(f'static_cast<{param.get_vk_base_type_only()}>({param.name})')
                 else:
                     file.write(param.name)
             if self.return_type == 'VkResult':
@@ -623,7 +618,7 @@ class Function:
     def print_function_def(self, file):
         if self.alias is not None:
             return
-        file.write("using VKFN_" + self.name + " = " + self.return_type + " (*) (")
+        file.write(f'using VKFN_{self.name} = {self.return_type} (*) (')
         first_param = True
         for param in self.parameters:
             if not first_param:
@@ -736,7 +731,7 @@ class BaseType:
 
     def print(self, file):
         if self.type is not None:
-            file.write('using ' + self.name + ' = ' + self.type + ';\n')
+            file.write(f'using {self.name} = {self.type};\n')
 
 
 class VulkanFeatureLevel:
@@ -766,9 +761,9 @@ def print_dispatch_table(file, dispatch_type, func_name, vk_feature_levels):
         for func in feature.functions:
             if func.dispatch_type == dispatch_type:
                 if not has_element:
-                    file.write('#if defined(' + feature.name + ')\n')
+                    file.write(f'#if defined({feature.name})\n')
                     has_element = True
-                file.write('    ' + func.func_prototype + ' pfn_' + func.name + ';\n')
+                file.write(f'    {func.func_prototype} pfn_{func.name};\n')
         if has_element:
             file.write('#endif\n')
     
@@ -779,13 +774,13 @@ def print_dispatch_table(file, dispatch_type, func_name, vk_feature_levels):
         for func in feature.functions:
             if func.dispatch_type == dispatch_type:
                 if not has_element:
-                    file.write('#if defined(' + feature.name + ')\n')
+                    file.write(f'#if defined({feature.name})\n')
                     has_element = True
                 func.print(file, indent='    ')
         if has_element:
             file.write('#endif\n')
     #constructor
-    file.write('    ' + func_name + '(')
+    file.write(f'    {func_name}(')
     if dispatch_type == "Global":
         file.write('PFN_vkGetInstanceProcAddr get_instance_proc_addr){\n')
         gpa = "get_instance_proc_addr"
@@ -805,10 +800,9 @@ def print_dispatch_table(file, dispatch_type, func_name, vk_feature_levels):
         for func in feature.functions:
             if func.dispatch_type == dispatch_type:
                 if not has_element:
-                    file.write('#if defined(' + feature.name + ')\n')
+                    file.write(f'#if defined({feature.name})\n')
                     has_element = True
-                file.write('        pfn_' + func.name + ' = reinterpret_cast<' + func.func_prototype)
-                file.write('>(' + gpa + '(' + gpa_val + ',\"' + func.vk_name + '\"));\n')
+                file.write(f'        pfn_{func.name} = reinterpret_cast<{func.func_prototype}>({gpa}({gpa_val},\"{func.vk_name}\"));\n')
         if has_element:
             file.write('#endif\n')
     file.write('    };\n')
