@@ -1,0 +1,141 @@
+<!--ENUMS AND BITMASKS AND FLAGS, OH MY-->
+
+<types >
+    <!-- list of bitmask names-->
+    <comment>Bitmask types</comment>
+    <type 
+        requires="VkNameFlagBits" <!-- optional: missing means there are no bits -->
+        category="bitmask" 
+        >
+            typedef <type>VkFlags</type> 
+            <name>VkNameFlags</name>;
+    </type>
+    <!--aliases interspered with list of bitmask names-->
+    <type
+        category="bitmask"
+        name="VkNameFlags"
+        alias="VkNameOriginalFlags"
+    />
+    
+    <!--repeat of above but for WSI extensions-->
+    <comment>WSI extensions</comment>
+    <type .../>
+
+    <!--list of enum and bitmask names-->
+    <comment>Types generated from corresponding enums tags below</comment>
+    <type
+        name="VkNameFlag/FlagBits"
+        category="enum"
+    />
+
+    <!--aliases interspered with list of enum and bitmask names-->
+    <type
+        category="enum"
+        name="VkNameFlag/FlagBits"
+        alias="VkNameFlag/FlagBits"
+    />
+
+    <!--repeat of above but for Extensions-->
+    <comment>Extensions</comment>
+    <type .../>
+    
+    <!--repeat of above but for WSI extensions-->
+    <comment>WSI extensions</comment>
+    <type .../>
+</types> 
+
+<!--CONSTANTS-->
+<enums name="API CONSTANTS"?
+    <enum 
+        value="num|expression"<!-- expression ex. "(~0U-1)"-->
+        name="VK_CONSTANT_NAME"
+    />
+</enums>
+
+<!--the enum values, in a list-->
+<enums 
+    name="VkName"
+    type="enum"
+    <!--list of enums-->
+    <enum
+        value="num"
+        name="VK_BASE_NAME_FIELD_NAME"
+    />
+
+<!--now for the bitmasks values-->
+<comment>Flags</comment>
+<enums
+    name="VkNameFlagBits"
+    type="bitmask"
+    <enum
+        name="VK_BASE_NAME_FIELD_NAME"
+        value="num|hex"<!-- hex examples: 0x00000001, 0x7FFFFFFF-->
+        <!-- OR -->
+        bitpos="num"
+    />
+    <!-- may contain no <enum>'s -->
+
+<!--oh did I mention the <enums> are all mixed up?-->
+<!--yeah, bitmask and enums all intermixed together.-->
+
+<!--Now for the even more fun part: features and extensions!-->
+
+<!--'features': 1.0, 1.1, and 1.2-->
+<feature 
+    number="1.x"
+    <!--list of require blocks-->
+    <require>
+        <enum
+            extends="VkEnumName"
+            extnumber="num"
+            offset="num"
+            <!-- OR -->
+            bitpos="num"
+            name="VK_BASE_NAME_FIELD_NAME
+        />
+    </require>
+</feature>
+
+<extensions>
+    <!--list of 'extensions'-->
+    <extension>
+        <!--list of 'require' blocks-->
+        <require
+            feature="VK_VERSION_X_Y"<!-- optional: this is for promoted crap -->
+            
+            <!--list of <enum>-->
+            <!--several kinds of <enum> possible -->
+            <enum
+                value="num" <!-- extension number -->
+                name="VK_EXT_NAME_SPEC_VERSION" <!-- not an C-enum!-->
+            />
+            <enum
+                value="&quot;VK_EXT_NAME&quot;" <!-- extension "name" -->
+                name="VK_EXTENSION_NAME_STRING_HELPER" <!-- not an C-enum! -->
+            />
+            <!--Actual Enum-->
+            <enum
+                name="VK_BASE_NAME_FIELD_NAME"
+                extends="VkBaseEnumType"
+                offset="num"
+            />
+            <!--Alias enum-->
+            <enum
+                alias="VK_BASE_NAME_FIELD_NAME_ALIAS"
+                name="VK_BASE_NAME_FIELD_NAME"
+                extends="VkBaseEnumType"
+            />
+            <!--bitmask-->
+            <enum
+                name="VK_BASE_NAME_FIELD_NAME"
+                extends="VkBaseEnumType"
+                bitpos="num"
+            />
+            <!--alias bitmask-->
+            <enum
+                alias="VK_BASE_NAME_FIELD_NAME_ALIAS"
+                name="VK_BASE_NAME_FIELD_NAME"
+                extends="VkBaseEnumType"
+            />
+    </extension>
+</extensions>
