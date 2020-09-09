@@ -43,7 +43,27 @@ base_type_default_values = {
     'size_t': '0'
 }
 
+class BaseType:
+    def __init__(self, node):
+        self.name = node.find('name').text
+        self.type = None
+        if node.find('type') is not None:
+            self.type = node.find('type').text
+            self.default_value = base_type_default_values[self.type]
 
+    def print(self, file):
+        if self.type is not None:
+            file.write(f'using {self.name[2:]} = {self.type};\n')
+
+class FuncPointer:
+    def __init__(self, node):
+        self.name = node.find('name').text
+        self.text = ''
+        for t in node.itertext():
+            self.text += t
+
+    def print(self, file):
+        file.write(self.text + '\n')
 
 class MacroDefine:
     def __init__(self, node):
@@ -77,164 +97,283 @@ def PlatformGuardHeader(file, guard):
     if guard is not None:
         file.write('#if defined({})\n'.format(guard))
 
-
 def PlatformGuardFooter(file, guard):
     if guard is not None:
         file.write('#endif // {}\n'.format(guard))
 
-def IsAlias(node):
-    return node.get('alias') is not None
-
-def EnumExtValue(ext_num, offset, direction):
-    enum_value = 1000000000 + 1000 * (ext_num - 1) + offset
-    if direction == '-':
-        enum_value = -enum_value
-    return enum_value
-
-
 class Enum:
-    class Value:
-        def __init__(self, vk_name, enum_name_len, value):
-            self.vk_name = vk_name
-            self.name = MorphVkEnumName(vk_name, enum_name_len)
-            self.value = value
-
-    def __init__(self, node, ext_enums):
-        self.vk_name = node.get('name')  # for internal use
-        self.name = node.get('name')[2:]  # for output
-        self.underlying_size = 'uint32_t'  # for ABI
-        self.values = []
-        self.values_names = set()
+    def __init__(self, node):
+        self.name = node.get('name')
+        self.underlying_type = 'uint32_t'  # for ABI
+        self.values = {}
+        self.platform = None
+        self.alias = node.get('alias')
+        if self.alias is not None:
+            return
         
-        if node.tag == 'type':
-            return  # forward declaration
-
-        enum_name_len = len(re.findall('[A-Z][^A-Z]+', self.vk_name))
-        if self.vk_name == 'VkResult':
-            enum_name_len = 1
-            self.underlying_size = 'int32_t'
+        self.enum_name_len = len(re.findall('[A-Z][^A-Z]+', self.name))
+        if self.name == 'VkResult':
+            self.enum_name_len = 1
+            self.underlying_type = 'int32_t'
 
         for elem in node:
             if elem.get('name') is not None and elem.get('value') is not None:
-                self.values.append(Enum.Value(
-                    elem.get('name'), enum_name_len, elem.get('value')))
-                self.values_names.add(elem.get('name'))
-
-        if self.vk_name in ext_enums:
-            for ext_enum in ext_enums[self.vk_name]:
-                if ext_enum.name not in self.values_names:
-                    self.values.append(Enum.Value(
-                        ext_enum.name, enum_name_len, ext_enum.value))
-                    self.values_names.add(ext_enum.name)
-                    
+                self.values[elem.get('name')] = elem.get('value')
+                
+    def fill_ext_enums(self, enum_ext_list):
+        for ext_enum in enum_ext_list:
+            self.values[ext_enum.name] = ext_enum.value
+    
+    def check_platform(self, platform, ext_types):
+        if self.name in ext_types:
+            self.platform = platform
 
     def print(self, file):
-        if len(self.values) == 0:
-            return
-        file.write(f"enum class {self.name} : {self.underlying_size} {{\n")
-        for elem in self.values:
-            file.write(f'    e{elem.name} = {str(elem.value)},\n')
-        file.write('};\n')
+        PlatformGuardHeader(file, self.platform)
+        if self.alias is not None:
+            file.write(f'using {self.name[2:]} = {self.alias};\n')
+        else: 
+            file.write(f"enum class {self.name[2:]} : {self.underlying_type} {{\n")
+            for name, value in self.values.items():
+                file.write(f'    e{MorphVkEnumName(name, self.enum_name_len)} = {str(value)},\n')
+            file.write('};\n')
+        PlatformGuardFooter(file, self.platform)
     
     def print_string(self, file):
-        if len(self.values) == 0:
-            return
-        file.write(f'const char * to_string({self.name} val) ' + '{\n')
-        file.write('    switch(val) {\n')
-        for elem in self.values:
-            file.write(f'        case({self.name}::{elem.name}): return \"{elem.name}\";\n')
-        file.write('        default: return "UNKNOWN";\n    }\n}\n')
+        if self.alias is None:
+            PlatformGuardHeader(file, self.platform)
+            file.write(f'const char * to_string({self.name[2:]} val) ' + '{\n')
+            file.write('    switch(val) {\n')
+            for name, value in self.values.items():
+                out_name = MorphVkEnumName(name, self.enum_name_len)
+                file.write(f'        case({self.name[2:]}::e{out_name}): return \"e{out_name}\";\n')
+            file.write('        default: return "UNKNOWN";\n    }\n}\n')
+            PlatformGuardFooter(file, self.platform)
 
-
-class EnumAlias:
-    def __init__(self, node):
-        self.name = node.get('name')[2:]  # for output
-        self.alias = node.get('alias')[2:]
-    def print(self, file):
-        file.write(f'using {self.name} = {self.alias};\n')
 
 class Bitmask:
-    class Value:
-        def __init__(self, vk_name, bitmask_name_len):
-            self.vk_name = vk_name
-            self.name = MorphVkBitaskName(vk_name, bitmask_name_len)
-
-    def __init__(self, node, ext_bitmasks):
-        self.vk_name = node.get('name')
-        self.name = self.vk_name[2:]
+    def __init__(self, node):
+        self.name = node.get('name')
+        self.flags_name = self.name.replace('Bits', 's')
         self.values = {}
-        bitmask_name_len = len(re.findall('[A-Z]+[^A-Z]*', self.vk_name)) - 2
-        if self.vk_name[-4:] != "Bits": #ie an extension bitmask
-            bitmask_name_len = bitmask_name_len - 1
+        self.bitmask_name_len = len(re.findall('[A-Z]+[^A-Z]*', self.name)) - 2
+        if self.name[-4:] != "Bits": #ie an extension bitmask
+            self.bitmask_name_len = self.bitmask_name_len - 1
+
+        self.alias = node.get('alias')
+        if self.alias is not None:
+            self.alias = self.alias[2:]
+        self.platform = None
 
         for elem in node:
             value = elem.get('value')
             if elem.get('bitpos') is not None:
                 value = str(1 << int(elem.get('bitpos')))
             elif elem.get('alias') is not None:
+                if elem.get('name') == "VK_STENCIL_FRONT_AND_BACK":
+                    continue #ugly special case
                 value = 'e' + \
-                    MorphVkBitaskName(elem.get('alias'), bitmask_name_len)
-            self.values[value] = Bitmask.Value(
-                elem.get('name'), bitmask_name_len)
+                    MorphVkBitaskName(elem.get('alias'), self.bitmask_name_len)
+            self.values[value] = elem.get('name')
 
-        if self.vk_name in ext_bitmasks:
-            for ext_bitmask in ext_bitmasks[self.vk_name]:
+    def fill_ext_bitmasks(self, bitmask_ext_dict):
+        for ext_bit in bitmask_ext_dict:
+            self.values[str(1 << ext_bit.bitpos)] = ext_bit.name
 
-                self.values[str(1 << ext_bitmask.bitpos)] = Bitmask.Value(
-                    ext_bitmask.name, bitmask_name_len)
+    def check_platform(self, platform, ext_types):
+        if self.name in ext_types:
+            self.platform = platform
 
     def print(self, file):
-        file.write('enum class ' + self.name + ': uint32_t {\n')
-        for bitpos, elem in self.values.items():
-            file.write("    e" + elem.name + ' = ' + bitpos + ",\n")
-        file.write('};\n')
+        PlatformGuardHeader(file, self.platform)
+        if self.alias is not None:
+            file.write(f'using {self.name} = {self.alias};\n')
+        else:
+            file.write('enum class ' + self.name[2:] + ': uint32_t {\n')
+            for bitpos, name in self.values.items():
+                file.write(f"    e{MorphVkBitaskName(name, self.bitmask_name_len)} = {bitpos},\n")
+            file.write('};\n')
+        PlatformGuardFooter(file, self.platform)
 
     def print_string(self, file):
-        if len(self.values) == 0:
-            return
-        file.write('const char * to_string(' + self.name + ' val) {\n')
+        if self.alias is None:
+            PlatformGuardHeader(file, self.platform)
+            file.write('const char * to_string(' + self.name[2:] + ' val) {\n')
+            file.write('    switch(val) {\n')
+            for bitpos, name in self.values.items():
+                try:
+                    out_val = int(bitpos)
+                    out_name = MorphVkBitaskName(name, self.bitmask_name_len)
+                    file.write(f'        case({self.name[2:]}::e{out_name}): return \"e{out_name}\";\n')
+                except ValueError:
+                    pass
+            file.write('        default: return "UNKNOWN";\n    }\n}\n')
+            file.write(f'std::string to_string({self.flags_name[2:]} flag){{\n')
+            file.write(f'    if (flag.flags == 0) return \"None\";\n')
+            file.write(f'    std::string out;\n')
+            for bitpos, name in self.values.items():
+                try:
+                    out_val = int(bitpos)
+                    out_name = MorphVkBitaskName(name, self.bitmask_name_len)
+                    file.write(f'    if (flag & {self.name[2:]}::e{out_name}) out += \"e{out_name} | \";\n')
+                except ValueError:
+                    pass
+            file.write(f'    return out.substr(0, out.size() - 3);\n}};\n')
+            PlatformGuardFooter(file, self.platform)
+
+            
+
+class EmptyBitmask:
+    def __init__(self, name):
+        self.name = name
+        self.flags_name = self.name.replace('Bits', 's')
+        self.platform = None
+    
+    def fill_ext_bitmasks(self, bitmask_ext_dict):
+        pass
+    
+    def check_platform(self, platform, ext_types):
+        if self.name in ext_types or self.flags_name in ext_types:
+            self.platform = platform
+    
+    def print(self, file):
+        PlatformGuardHeader(file, self.platform)
+        file.write(f'enum class {self.name[2:]}: uint32_t {{ }};\n')
+        PlatformGuardFooter(file, self.platform)
+
+    def print_string(self, file):
+        PlatformGuardHeader(file, self.platform)
+        file.write(f'const char * to_string({self.name[2:]} val) {{\n')
         file.write('    switch(val) {\n')
-        for bitpos, elem in self.values.items():
-            file.write(f'        case({self.name}::{elem.name}): return \"{elem.name}\";\n')
         file.write('        default: return "UNKNOWN";\n    }\n}\n')
+        file.write(f'std::string to_string({self.flags_name[2:]} flag){{\n')
+        file.write(f'    if (flag.flags == 0) return \"None\";\n')
+        file.write(f'    return "Unknown";\n}};\n')
+        PlatformGuardFooter(file, self.platform)
+
+
+
+bitmask_flags_macro = '''
+#define DECLARE_ENUM_FLAG_OPERATORS(FLAG_TYPE, FLAG_BITS, BASE_NAME)                \\
+                                                                                    \\
+struct FLAG_TYPE {                                                                  \\
+    using base_type = typename std::underlying_type_t<FLAG_BITS>;                   \\
+    base_type flags = static_cast<base_type>(0);                                    \\
+                                                                                    \\
+    constexpr explicit FLAG_TYPE() noexcept = default;                              \\
+    constexpr explicit FLAG_TYPE(base_type in) noexcept: flags(in){ }               \\
+    constexpr FLAG_TYPE(FLAG_BITS in) noexcept: flags(static_cast<base_type>(in)){ }   \\
+    constexpr bool operator==(FLAG_TYPE const& right) const = default;              \\
+    constexpr explicit operator bool() const noexcept {                             \\
+      return flags != 0;                                                            \\
+    }                                                                               \\
+    constexpr explicit operator BASE_NAME() const noexcept {                        \\
+        return static_cast<BASE_NAME>(flags);                                       \\
+    }                                                                               \\
+    constexpr FLAG_TYPE operator|(FLAG_TYPE b) noexcept {                           \\
+        return static_cast<FLAG_TYPE>(flags | b.flags);                             \\
+    }                                                                               \\
+    constexpr FLAG_TYPE& operator|=(FLAG_TYPE b) noexcept {                         \\
+        flags = (flags | b.flags);                                                  \\
+        return *this;                                                               \\
+    }                                                                               \\
+    constexpr FLAG_TYPE operator&(FLAG_TYPE b) noexcept {                           \\
+        return static_cast<FLAG_TYPE>(flags & b.flags);                             \\
+    }                                                                               \\
+    constexpr FLAG_TYPE& operator&=(FLAG_TYPE b) noexcept {                         \\
+        flags = (flags & b.flags);                                                  \\
+        return *this;                                                               \\
+    }                                                                               \\
+    constexpr FLAG_TYPE operator~() noexcept {                                      \\
+        return static_cast<FLAG_TYPE>(~flags);                                      \\
+    }                                                                               \\
+    constexpr FLAG_TYPE operator^(FLAG_TYPE b) noexcept {                           \\
+        return static_cast<FLAG_TYPE>(flags ^ b.flags);                             \\
+    }                                                                               \\
+    constexpr FLAG_TYPE operator^=(FLAG_TYPE b) noexcept {                          \\
+        flags = (flags ^ b.flags);                                                  \\
+        return *this;                                                               \\
+    }                                                                               \\
+    constexpr FLAG_TYPE& operator^=(FLAG_BITS b) noexcept {                         \\
+        flags = (flags ^ static_cast<base_type>(b));                                \\
+        return *this;                                                               \\
+    }                                                                               \\
+};                                                                                  \\
+                                                                                    \\
+constexpr FLAG_TYPE operator|(FLAG_BITS a, FLAG_BITS b) noexcept {                  \\
+    using T = std::underlying_type_t<FLAG_BITS>;                                    \\
+    return static_cast<FLAG_TYPE>(static_cast<T>(a) | static_cast<T>(b));           \\
+}                                                                                   \\
+constexpr FLAG_TYPE operator|(FLAG_BITS a, FLAG_TYPE b) noexcept {                  \\
+    using T = std::underlying_type_t<FLAG_BITS>;                                    \\
+    return static_cast<FLAG_TYPE>(static_cast<T>(a) | b.flags);                     \\
+}                                                                                   \\
+constexpr FLAG_TYPE operator&(FLAG_BITS a, FLAG_BITS b) noexcept {                  \\
+    using T = std::underlying_type_t<FLAG_BITS>;                                    \\
+    return static_cast<FLAG_TYPE>(static_cast<T>(a) & static_cast<T>(b));           \\
+}                                                                                   \\
+constexpr FLAG_TYPE operator&(FLAG_BITS a, FLAG_TYPE b) noexcept {                  \\
+    using T = std::underlying_type_t<FLAG_BITS>;                                    \\
+    return static_cast<FLAG_TYPE>(static_cast<T>(a) & b.flags);                     \\
+}                                                                                   \\
+constexpr FLAG_TYPE operator~(FLAG_BITS key) noexcept {                             \\
+    using T = std::underlying_type_t<FLAG_BITS>;                                    \\
+    return static_cast<FLAG_TYPE>(~static_cast<T>(key));                            \\
+}                                                                                   \\
+constexpr FLAG_TYPE operator^(FLAG_BITS a, FLAG_BITS b) noexcept {                  \\
+    using T = std::underlying_type_t<FLAG_BITS>;                                    \\
+    return static_cast<FLAG_TYPE>(static_cast<T>(a) ^ static_cast<T>(b));           \\
+}                                                                                   \\
+constexpr FLAG_TYPE operator^(FLAG_BITS a, FLAG_TYPE b) noexcept {                  \\
+    using T = std::underlying_type_t<FLAG_BITS>;                                    \\
+    return static_cast<FLAG_TYPE>(static_cast<T>(a) ^ b.flags);                     \\
+}                                                                                   \\
+'''
 
 class Flags:
     def __init__(self, node):
-        self.vk_name = node.get('name')
-        self.name = None
-        self.values = []
-        self.alias = None
-
         if node.find('name') is not None:
-            self.name = node.find('name').text[2:]
+            self.name = node.find('name').text
+            self.alias = None
         else:
-            self.name = node.get('name')[2:]
+            self.name = node.get('name')
             self.alias = node.get('alias')[2:]
 
-    def print(self, file):
-        file.write(f'using {self.name} = uint32_t;\n')
+        self.flags_name = self.name.replace('Flags', 'FlagBits')
+        self.need_empty = False
+        if self.alias is None and node.get('requires') is None:
+            self.need_empty = True
+        self.platform = None
 
+    def check_platform(self, platform, ext_types):
+        if (self.alias is not None and self.alias in ext_types) or self.name in ext_types:
+            self.platform = platform
+
+    def print(self, file):
+        PlatformGuardHeader(file, self.platform)
+        if self.alias is None:
+            file.write(f'DECLARE_ENUM_FLAG_OPERATORS({self.name[2:]}, {self.flags_name[2:]}, {self.name})\n')
+        else:
+            file.write(f'using {self.name[2:]} = {self.alias};\n')
+        PlatformGuardFooter(file, self.platform)
 
 class ApiConstant:
     def __init__(self, node):
-        self.vk_name = node.get('name')
-        self.name = node.get('name')[3:]
+        self.name = node.get('name')
         self.value = node.get('value')
         self.alias = node.get('alias')
 
     def print(self, file):
-        if self.value is not None:
-            file.write(f'constexpr size_t {self.name} = {self.value};\n')
         if self.alias is not None:
-            file.write(f'constexpr auto {self.name} = {self.alias[3:]};\n')
-
+            file.write(f'constexpr auto {self.name[3:]} = {self.alias[3:]};\n')
+        elif self.value is not None:
+            file.write(f'constexpr size_t {self.name[3:]} = {self.value};\n')
 
 class Handle:
     def __init__(self, node):
         self.name = None
         if node.find('name') is not None:
-            self.vk_name = node.find('name').text
-            self.name = self.vk_name[2:]
+            self.name = node.find('name').text
             if node.find('type').text == 'VK_DEFINE_HANDLE':
                 self.dispatchable = True
             elif node.find('type').text == 'VK_DEFINE_NON_DISPATCHABLE_HANDLE':
@@ -242,66 +381,42 @@ class Handle:
             self.parent = node.get('parent')
         self.alias = node.get('alias')
         if self.alias is not None:
-            self.vk_name = node.get('name')
-            self.name = self.vk_name[2:]
-
-
-class DispatchHandle:
-    def __init__(self, handle):
-        self.vk_name = handle.vk_name
-        self.name = handle.name
+            self.name = node.get('name')
+        self.platform = None
+        
+    def check_platform(self, platform, ext_types):
+        if self.name in ext_types:
+            self.platform = platform
 
     def print(self, file):
-        file.write(f'struct {self.name} {{\n')
-        file.write(f'    {self.vk_name} handle;\n')
-        file.write(f'    {self.vk_name} get() const {{ return handle; }}\n')
-        file.write('};\n')
-
+        PlatformGuardHeader(file, self.platform)
+        if self.alias is not None:
+            file.write(f'using {self.name[2:]} = {self.alias[2:]};\n')
+        elif self.dispatchable:
+            file.write(f'struct {self.name[2:]} {{\n')
+            file.write(f'    {self.name} handle;\n')
+            file.write(f'    {self.name} get() const {{ return handle; }}\n')
+            file.write('};\n')
+        else:
+            file.write(f'class {self.name[2:]} {{\n')
+            file.write(f'    {self.name} handle = VK_NULL_HANDLE;\n')
+            file.write(f'    public:\n')
+            file.write(f'    {self.name} get() {{ return handle; }}\n')
+            file.write(f'    bool operator!() {{ return handle != VK_NULL_HANDLE; }}\n')
+            #file.write(f'    bool operator==({self.name[2:]} const& other) const = default;\n')
+            file.write('};\n')
+        PlatformGuardFooter(file, self.platform)
+    
     def print_static_asserts(self, file):
-        file.write(f'static_assert( sizeof( {self.name}) == sizeof({self.vk_name}   ), "Must maintain size between handles" );\n')
-
-
-def ForwardDeclareDispatchHandlePrint(file, handle):
-        file.write(f'struct {handle.name};\n')
-
-class NonDispatchHandle:
-    def __init__(self, handle):
-        self.vk_name = handle.vk_name
-        self.name = handle.name
-        self.platform = None
-
-    def print(self, file, ext_types):
-        if self.vk_name in ext_types:
-            self.platform = ext_types[self.vk_name].platform_def
-        PlatformGuardHeader(file, self.platform)
-        file.write(f'class {self.name} {{\n')
-        file.write(f'    {self.vk_name} handle = VK_NULL_HANDLE;\n')
-        file.write(f'    public:\n')
-        file.write(f'    {self.vk_name} get() {{ return handle; }}\n')
-        file.write(f'    bool operator!() {{ return handle != VK_NULL_HANDLE; }}\n')
-        file.write(f'    auto operator<=>({self.name} const& other) const = default;\n')
-        file.write('};\n')
-        PlatformGuardFooter(file, self.platform)
-
-    def print_static_asserts(self, file):
-        PlatformGuardHeader(file, self.platform)
-        file.write(f'static_assert( sizeof({self.name}) == sizeof({self.vk_name}), "Must maintain size between handles" );\n')
-        PlatformGuardFooter(file, self.platform)
-
-
-class HandleAlias:
-    def __init__(self, handle):
-        self.vk_name = handle.vk_name
-        self.name = handle.name
-        self.alias = handle.alias
-        self.platform = None
-
-    def print(self, file, ext_types):
-        if self.alias in ext_types:
-            self.platform = ext_types[self.alias].platform_def
-        PlatformGuardHeader(file, self.platform)
-        file.write(f'using {self.name} = {self.alias[2:]};\n')
-        PlatformGuardFooter(file, self.platform)
+        if self.alias is None:
+            PlatformGuardHeader(file, self.platform)
+            if self.dispatchable:
+                file.write(f'static_assert( sizeof({self.name[2:]}) == sizeof({self.name})')
+                file.write(f'"Must maintain size between handles");\n')
+            else:
+                file.write(f'static_assert( sizeof({self.name[2:]}) == sizeof({self.name}),')
+                file.write(f'"Must maintain size between handles");\n')
+            PlatformGuardFooter(file, self.platform)
 
 
 class Variable:
@@ -321,11 +436,12 @@ class Variable:
         self.is_const_double_ptr = False
         self.array_lengths = []  # multi-dimentional
         self.default_value = None
+        self.is_comparable = True
 
-        self.vk_base_type = node.find('type').text
-        self.base_type = self.vk_base_type
-        if self.vk_base_type[:2] == 'Vk':
-            self.base_type = self.base_type[2:]
+        self.base_type = node.find('type').text
+        self.base_type_out_str = self.base_type
+        if self.base_type_out_str[:2] == 'Vk':
+            self.base_type_out_str = self.base_type_out_str[2:]
 
         if node.find('comment') is not None:
             node.remove(node.find('comment'))
@@ -339,7 +455,7 @@ class Variable:
             cur += 1
         if type_list[cur] == 'struct':
             cur += 1
-        if type_list[cur] == self.vk_base_type:
+        if type_list[cur] == self.base_type:
             cur += 1
         if type_list[cur] == '*':
             self.is_ptr = True
@@ -375,16 +491,18 @@ class Variable:
         if self.base_type in default_values:
             self.default_value = default_values[self.base_type]
         if self.name == 'sType' and self.sType_values is not None:
-            self.default_value = 'StructureType::e' + \
-                MorphVkEnumName(self.sType_values, 3)
+            self.default_value = f'StructureType::e{MorphVkEnumName(self.sType_values, 3)}'
 
-        self.is_handle = self.vk_base_type in handles
+        self.is_handle = self.base_type in handles
+
+        if self.is_handle or self.is_ptr or self.is_double_ptr or self.is_const_double_ptr:
+            self.is_comparable = False
 
     def get_base_type(self):
         type_decl = ''
         if self.is_const:
             type_decl += 'const '
-        type_decl += self.base_type
+        type_decl += self.base_type_out_str
         if self.is_ptr:
             type_decl += '*'
         if self.is_double_ptr:
@@ -397,7 +515,7 @@ class Variable:
         type_decl = ''
         if self.is_const:
             type_decl += 'const '
-        type_decl += self.vk_base_type
+        type_decl += self.base_type
         if self.is_ptr:
             type_decl += '*'
         if self.is_double_ptr:
@@ -452,32 +570,49 @@ class Variable:
 
 
 class Union:
-    def __init__(self, node, constants, handles, default_values, ext_types):
-        self.vk_name = node.get('name')
-        self.name = node.get('name')[2:]
-        self.platform = None
-        if self.vk_name in ext_types:
-            self.platform = ext_types[self.vk_name].platform_def
+    def __init__(self, node, constants, handles, default_values):
+        self.name = node.get('name')
         self.members = []
+        self.platform = None
         for member in node.findall('member'):
-            self.members.append(
-                Variable(member, constants, handles, default_values))
+            self.members.append(Variable(member, constants, handles, default_values))
+        
+        self.is_comparable = True
+        for member in self.members:
+            if not member.is_comparable:
+                self.is_comparable = False
+                break
+
+    def check_platform(self, platform, ext_types):
+        if self.name in ext_types:
+            self.platform = platform
 
     def print(self, file):
         PlatformGuardHeader(file, self.platform)
-        file.write('union ' + self.name + ' {\n')
+        file.write('union ' + self.name[2:] + ' {\n')
         for member in self.members:
             member.print_struct_decl(file, False)
-        file.write(f'    bool operator==({self.name} const& value) const {{\n')
-        file.write('        return ')
-        is_first = True
-        for member in self.members:
-            if is_first:
-                is_first = False
-            else:
-                file.write('&& ')
-            file.write(f'{member.name} == value.{member.name} ')
-        file.write('    ;}\n')
+        if self.is_comparable:
+            file.write(f'    constexpr bool operator==({self.name[2:]} const& value) const {{\n')
+            file.write('        return ')
+            is_first = True
+            for member in self.members:
+                if is_first:
+                    is_first = False
+                else:
+                    file.write('&& ')
+                if len(member.array_lengths) > 0:
+                    str_out = ''
+                    for l in member.array_lengths:
+                        for i in range(0, int(l)):
+                            if i > 0 and int(l) > 1 and i < int(l):
+                                str_out += ' && '
+                            str_out += f'{member.name}[{str(i)}] == value.{member.name}[{str(i)}]'
+                        str_out += '\n        '
+                    file.write(str_out)
+                else:
+                    file.write(f'{member.name} == value.{member.name} ')
+            file.write(';}\n')
         file.write('};\n')
         PlatformGuardFooter(file, self.platform)
     
@@ -485,47 +620,52 @@ class Union:
         file.write('') # no checks yet
 
 class Struct:
-    def __init__(self, node, constants, handles, default_values, ext_types):
-        self.vk_name = node.get('name')
-        self.name = node.get('name')[2:]
+    def __init__(self, node, constants, handles, default_values):
+        self.name = node.get('name')
         self.alias = node.get('alias')
         self.members = []
         self.platform = None
-        if self.vk_name in ext_types and self.alias is None:
-            self.platform = ext_types[self.vk_name].platform_def
-        elif self.alias in ext_types:
-            self.platform = ext_types[self.alias].platform_def
 
         for member in node.findall('member'):
             self.members.append(
                 Variable(member, constants, handles, default_values))
 
+        self.is_comparable = True
+        for member in self.members:
+            if not member.is_comparable:
+                self.is_comparable = False
+    
+    def check_platform(self, platform, ext_types):
+        if self.name in ext_types or (self.alias is not None and self.alias in ext_types):
+            self.platform = platform
+
     def print(self, file):
         PlatformGuardHeader(file, self.platform)
         if self.alias is not None:
-            file.write(f'using {self.name} = {self.alias[2:]};\n')
+            file.write(f'using {self.name[2:]} = {self.alias[2:]};\n')
         else:
-            file.write(f'struct {self.name} {{\n')
+            file.write(f'struct {self.name[2:]} {{\n')
             for member in self.members:
                 member.print_struct_decl(file, True)
 
-            file.write(f'    auto operator<=>({self.name} const& other) const = default;\n')
-            file.write(f'    operator {self.vk_name} const &() const noexcept {{\n')
-            file.write(f'        return *reinterpret_cast<const {self.vk_name}*>(this);\n    }}\n')
-            file.write(f'    operator {self.vk_name} &() noexcept {{\n')
-            file.write(f'        return *reinterpret_cast<{self.vk_name}*>(this);\n    }}\n')
+            if self.is_comparable:
+                file.write(f'    constexpr bool operator==({self.name[2:]} const& other) const = default;\n')
+            file.write(f'    operator {self.name} const &() const noexcept {{\n')
+            file.write(f'        return *reinterpret_cast<const {self.name}*>(this);\n    }}\n')
+            file.write(f'    operator {self.name} &() noexcept {{\n')
+            file.write(f'        return *reinterpret_cast<{self.name}*>(this);\n    }}\n')
             file.write('};\n')
         PlatformGuardFooter(file, self.platform)
         
     def print_static_asserts(self, file):
         PlatformGuardHeader(file, self.platform)
-        file.write(f'static_assert( sizeof({self.name}) == sizeof({self.vk_name}), "Must maintain size between types" );\n')
-        file.write(f'static_assert( std::is_standard_layout<{self.name}>::value, "Must be a standard layout type" );\n')
+        file.write(f'static_assert( sizeof({self.name[2:]}) == sizeof({self.name}), "Must maintain size between types" );\n')
+        file.write(f'static_assert( std::is_standard_layout<{self.name[2:]}>::value, "Must be a standard layout type" );\n')
         PlatformGuardFooter(file, self.platform)
 
 
 class Function:
-    def __init__(self, node, constants, handles, dispatchable_handles, default_values, ext_functions):
+    def __init__(self, node, constants, handles, dispatchable_handles, default_values):
         self.success_codes = []
         self.error_codes = []
         if node.get('successcodes') is not None:
@@ -537,46 +677,45 @@ class Function:
         self.return_type = None
         proto = node.find('proto')
         if proto is not None:
-            self.vk_name = proto.find('name').text
-            self.name = proto.find('name').text[2:]
+            self.name = proto.find('name').text
             self.return_type = proto.find('type').text
         else:
-            self.vk_name = node.find('name')
-            self.name = node.get('name')[2:]
+            self.name = node.get('name')
             self.alias = node.get('alias')
         self.platform = None
-        if self.vk_name in ext_functions:
-            self.platform = ext_functions[self.vk_name].platform_def
-
+        
         self.parameters = []
         for param in node.findall('param'):
-            self.parameters.append(
-                Variable(param, constants, handles, default_values))
+            self.parameters.append( Variable(param, constants, handles, default_values))
         self.dispatch_type = None
         if len(self.parameters) > 0:
-            self.free_function = self.parameters[0].vk_base_type not in dispatchable_handles
-            if self.vk_name == 'vkGetInstanceProcAddr':
+            self.free_function = self.parameters[0].base_type not in dispatchable_handles
+            if self.name == 'vkGetInstanceProcAddr':
                 self.dispatch_type = None
-            if self.vk_name == 'vkGetDeviceProcAddr':
+            elif self.name == 'vkGetDeviceProcAddr':
                 self.dispatch_type = "Instance"
-            elif self.parameters[0].vk_base_type == 'VkInstance' or self.parameters[0].vk_base_type == 'VkPhysicalDevice':  
+            elif self.parameters[0].base_type == 'VkInstance' or self.parameters[0].base_type == 'VkPhysicalDevice':  
                 self.dispatch_type = "Instance" 
             elif self.free_function:
                 self.dispatch_type = "Global"
             else:
                 self.dispatch_type = "Device"
-        if self.vk_name is not None:
-            self.func_prototype = "PFN_" + self.vk_name;
+        if self.name is not None:
+            self.func_prototype = "PFN_" + self.name;
+
+    def check_platform(self, platform, ext_functions):
+        if self.name in ext_functions:
+            self.platform = platform
 
     def print(self, file, handle=None, indent=''):
         PlatformGuardHeader(file, self.platform)
         if self.alias is not None:
-            file.write(f'const auto {self.name} = {self.alias[2:]};\n')
+            file.write(f'const auto {self.name[2:]} = {self.alias[2:]};\n')
         else:
             if self.return_type == 'VkResult':
-                file.write(f'{indent}Result {self.name}(')
+                file.write(f'{indent}Result {self.name[2:]}(')
             else:
-                file.write(f'{indent}{self.return_type} {self.name}(')
+                file.write(f'{indent}{self.return_type} {self.name[2:]}(')
             is_first = True
             for param in self.parameters[1:] if handle is not None else self.parameters:
                 if not is_first:
@@ -589,7 +728,7 @@ class Function:
             file.write(f'{indent}    return ')
             if self.return_type == 'VkResult':
                 file.write('static_cast<Result>(')
-            file.write(f'pfn_{self.name}(')
+            file.write(f'pfn_{self.name[2:]}(')
 
             is_first = True
             for param in self.parameters:
@@ -618,7 +757,7 @@ class Function:
     def print_function_def(self, file):
         if self.alias is not None:
             return
-        file.write(f'using VKFN_{self.name} = {self.return_type} (*) (')
+        file.write(f'using VKFN_{self.name[2:]} = {self.return_type} (*) (')
         first_param = True
         for param in self.parameters:
             if not first_param:
@@ -628,110 +767,80 @@ class Function:
             file.write(param.get_vk_base_type())
         file.write(");\n")
 
-
 class ExtEnum:
-    def __init__(self, name, value, extends):
+    def __init__(self, name, value):
         self.name = name
         self.value = value
-        self.extends = extends
-
 
 class ExtBitmask:
-    def __init__(self, name, bitpos, extends):
+    def __init__(self, name, bitpos):
         self.name = name
         self.bitpos = bitpos
-        self.extends = extends
+
+def EnumExtValue(ext_num, offset, direction):
+    enum_value = 1000000000 + 1000 * (ext_num - 1) + offset
+    if direction == '-':
+        enum_value = -enum_value
+    return enum_value
+
+class Requires:
+    def __init__(self, node, ext_num = None):
+        self.feature = node.get('feature')
+        self.extension = node.get('extension')
+        self.enum_dict = {}
+        self.bitmask_dict = {}
+        self.types = []
+        self.functions = []
+       
+        for e_type in node.findall('type'):
+            self.types.append(e_type.get('name'))
+        for function in node.findall('command'):
+            self.functions.append(function.get('name'))
+
+        for enum in node.findall('enum'):
+            extends = enum.get('extends')
+            if extends is None:
+                continue
+            name = enum.get('name')
+            value = enum.get('value')
+            bitpos = enum.get('bitpos')
+            offset = enum.get('offset')
+            extnumber = enum.get('extnumber')
+
+            if offset is not None:
+                offset = int(offset)
+
+            if value is not None:  # core enums
+                if extends not in self.enum_dict:
+                    self.enum_dict[extends] = [] 
+                self.enum_dict[extends].append(ExtEnum(name, value))
+            elif offset is not None:
+                if extnumber is None and ext_num is not None:
+                    extnumber = ext_num
+                enum_value = EnumExtValue(int(extnumber), offset, enum.get('dir'))
+                if extends not in self.enum_dict:
+                    self.enum_dict[extends] = [] 
+                self.enum_dict[extends].append(ExtEnum(name, enum_value))
+            elif bitpos is not None:
+                if extends not in self.bitmask_dict:
+                    self.bitmask_dict[extends] = [] 
+                self.bitmask_dict[extends].append(ExtBitmask(name, int(bitpos)))
 
 
 class Extension:
+
     def __init__(self, node, platforms):
         self.name = node.get('name')
         self.ext_num = int(node.get('number'))
         self.ext_type = node.get('type')
         self.supported = node.get('supported')
-        self.requires = node.get('requires')
-        self.types = []
-        self.functions = []
-        self.constants = {}
-        self.enum_values = []
-        self.bitmask_values = []
-        self.platform_def = None
-        if node.get('platform') in platforms:
-            self.platform_def = platforms[node.get('platform')]
+        self.requires = []
+        self.platform = None
+        if node.get('platform') is not None:
+            self.platform = platforms[node.get('platform')]
 
         for requires in node.findall('require'):
-            for e_type in requires.findall('type'):
-                self.types.append(e_type.get('name'))
-            for function in requires.findall('command'):
-                self.functions.append(function.get('name'))
-
-            for enum in requires.findall('enum'):
-                extends = enum.get('extends')
-                name = enum.get('name')
-                value = enum.get('value')
-                bitpos = enum.get('bitpos')
-                offset = enum.get('offset')
-
-                if value is None and bitpos is not None:
-                    value = 1 << int(bitpos)
-
-                if offset is not None:
-                    offset = int(offset)
-                if extends is not None:
-                    if offset is not None:
-                        enum_value = EnumExtValue(
-                            self.ext_num, offset, enum.get('dir'))
-                        self.enum_values.append(
-                            ExtEnum(name, enum_value, extends))
-                    elif bitpos is not None:
-                        self.bitmask_values.append(
-                            ExtBitmask(name, int(bitpos), extends))
-                else:
-                    self.constants[name] = value
-
-    def fill_enums(self, ext_enums):
-        for enum in self.enum_values:
-            if enum.extends not in ext_enums:
-                ext_enums[enum.extends] = []
-            ext_enums[enum.extends].append(enum)
-
-    def fill_bitmasks(self, ext_bitmasks):
-        for bitmask in self.bitmask_values:
-            if bitmask.extends not in ext_bitmasks:
-                ext_bitmasks[bitmask.extends] = []
-            ext_bitmasks[bitmask.extends].append(bitmask)
-
-    def fill_types(self, ext_types):
-        for item in self.types:
-            ext_types[item] = self
-
-    def fill_functions(self, ext_functions):
-        for item in self.functions:
-            ext_functions[item] = self
-
-
-class FuncPointer:
-    def __init__(self, node):
-        self.name = node.find('name').text
-        self.text = ''
-        for t in node.itertext():
-            self.text += t
-
-    def print(self, file):
-        file.write(self.text + '\n')
-
-
-class BaseType:
-    def __init__(self, node):
-        self.name = node.find('name').text[2:]
-        self.type = None
-        if node.find('type') is not None:
-            self.type = node.find('type').text
-            self.default_value = base_type_default_values[self.type]
-
-    def print(self, file):
-        if self.type is not None:
-            file.write(f'using {self.name} = {self.type};\n')
+            self.requires.append(Requires(requires, self.ext_num))
 
 
 class VulkanFeatureLevel:
@@ -739,19 +848,14 @@ class VulkanFeatureLevel:
         self.api = node.get('api')
         self.name = node.get('name')
         self.number = node.get('number')
-
-        self.commands = []
-        self.types = []
+        self.requires = []
         self.functions = []
-
+        
         for require in node.findall('require'):
-            for f_type in require.findall('type'):
-                if f_type.get('name') is not None:
-                    self.types.append(f_type.get('name'))
-            for command in require.findall('command'):
-                if command.get('name') is not None:
-                    self.commands.append(command.get('name'))
+            self.requires.append(Requires(require))
 
+
+            
 def print_dispatch_table(file, dispatch_type, func_name, vk_feature_levels):
     file.write('struct ' + func_name + ' {\n')
     #function pointers
@@ -763,7 +867,7 @@ def print_dispatch_table(file, dispatch_type, func_name, vk_feature_levels):
                 if not has_element:
                     file.write(f'#if defined({feature.name})\n')
                     has_element = True
-                file.write(f'    {func.func_prototype} pfn_{func.name};\n')
+                file.write(f'    {func.func_prototype} pfn_{func.name[2:]};\n')
         if has_element:
             file.write('#endif\n')
     
@@ -802,7 +906,8 @@ def print_dispatch_table(file, dispatch_type, func_name, vk_feature_levels):
                 if not has_element:
                     file.write(f'#if defined({feature.name})\n')
                     has_element = True
-                file.write(f'        pfn_{func.name} = reinterpret_cast<{func.func_prototype}>({gpa}({gpa_val},\"{func.vk_name}\"));\n')
+                file.write(f'        pfn_{func.name[2:]} = ')
+                file.write(f'reinterpret_cast<{func.func_prototype}>({gpa}({gpa_val},\"{func.name}\"));\n')
         if has_element:
             file.write('#endif\n')
     file.write('    };\n')
@@ -818,91 +923,29 @@ class BindingGenerator:
         self.default_values = {}
         self.base_types = []
         self.func_pointers = []
-        self.handles = []
-        self.dispatchable_handles = {}
-        self.non_dispatchable_handles = {}
-        self.alias_handle_list = []
-        self.enum_list = []
-        self.enum_aliases = []
-        self.bitmask_list = []
-        self.flags_list = []
+        self.handles = {}
+        self.dispatchable_handles = []
+        self.enum_dict = {}
+        self.flags_dict = {}
+        self.bitmask_dict = {}
         self.struct_union_list = []
         self.functions = []
         self.vk_feature_levels = []
         self.ext_list = []
-        self.ext_enums = {}
-        self.ext_bitmasks = {}
-        self.ext_types = {}
-        self.ext_functions = {}
 
         for platform in root.find('platforms'):
-            if platform.get('name') == 'provisional':
-                continue
             self.platforms[platform.get('name')] = platform.get('protect')
 
         for key, value in base_type_default_values.items():
             self.default_values[key] = value
 
-        for ext in root.find('extensions'):
-            if ext.tag == 'extension':
-                extension = Extension(ext, self.platforms)
-                self.ext_list.append(extension)
-                extension.fill_enums(self.ext_enums)
-                extension.fill_bitmasks(self.ext_bitmasks)
-                extension.fill_types(self.ext_types)
-                extension.fill_functions(self.ext_functions)
-
-        for feature in root.findall('feature'):
-            self.vk_feature_levels.append(VulkanFeatureLevel(feature))
-            for require in feature.findall('require'):
-                for r_enum in require.findall('enum'):
-                    name = r_enum.get('name')
-                    extends = r_enum.get('extends')
-                    offset = r_enum.get('offset')
-                    value = r_enum.get('value')
-                    bitpos = r_enum.get('bitpos')
-                    if offset is not None:
-                        offset = int(offset)
-                    if extends is not None:
-                        if extends not in self.ext_enums:
-                            self.ext_enums[extends] = []
-                        if offset is not None:
-                            enum_value = EnumExtValue(
-                                int(r_enum.get('extnumber')), offset, r_enum.get('dir'))
-                            self.ext_enums[extends].append(
-                                ExtEnum(name, enum_value, extends))
-                        elif value is not None:  # core enums
-                            self.ext_enums[extends].append(
-                                ExtEnum(name, value, extends))
-                        elif bitpos is not None:
-                            if extends not in self.ext_bitmasks:
-                                self.ext_bitmasks[extends] = []
-                            self.ext_bitmasks[extends].append(
-                                ExtBitmask(name, int(bitpos), extends))
-                    else:
-                        self.api_constants[r_enum.get(
-                            'name')] = ApiConstant(r_enum)
-
         for enum in root.findall("enums"):
             if enum.attrib.get('name') == "API Constants":
                 for constant in enum.iter():
                     api_constant = ApiConstant(constant)
-                    if api_constant.vk_name not in ['VK_TRUE', 'VK_FALSE']:
-                        self.api_constants[api_constant.vk_name] = api_constant
-
-        for enum in root.findall("enums"):
-            if enum.get('type') == 'enum':
-                if IsAlias(enum):
-                    self.enum_aliases.append(EnumAlias(enum))
-                else:
-                    e = Enum(enum, self.ext_enums)
-                    self.enum_list.append(e)
-                    self.default_values[e.name] = str('static_cast<'+e.name+'>(0)')
-
-            elif enum.get('type') == 'bitmask':
-                b = Bitmask(enum, self.ext_bitmasks)
-                self.bitmask_list.append(b)
-                self.default_values[b.name] = str('static_cast<'+b.name+'>(0)')
+                    if api_constant.name not in ['VK_TRUE', 'VK_FALSE']:
+                        self.api_constants[api_constant.name] = api_constant
+                break
 
         for xml_type in root.find('types'):
             category = xml_type.get('category')
@@ -915,41 +958,23 @@ class BindingGenerator:
                     self.default_values[base_type.name] = base_type.default_value
             elif category == 'funcpointer':
                 self.func_pointers.append(FuncPointer(xml_type))
-            elif category == 'enum':
-                if IsAlias(xml_type):
-                    self.enum_aliases.append(EnumAlias(xml_type))
-                else:
-                    self.enum_list.append(Enum(xml_type, self.ext_enums))
             elif category == 'bitmask':
-                f = Flags(xml_type)
-                self.flags_list.append(f)
-                self.default_values[f.name] = str('static_cast<'+f.name+'>(0)')
+                flag = Flags(xml_type)
+                self.flags_dict[flag.name] = flag
+            elif category == 'enum':
+                enum = Enum(xml_type)
+                if enum.name.find('Flag') == -1 or enum.name.find('FlagBits') == -1:
+                    self.enum_dict[enum.name] = Enum(xml_type)
             elif category == 'handle':
                 handle = Handle(xml_type)
-                self.handles.append(handle.vk_name)
-                if handle.alias is not None:
-                    self.alias_handle_list.append(HandleAlias(handle))
-                elif handle.dispatchable:
-                    self.dispatchable_handles[handle.vk_name] = DispatchHandle(handle)
-                elif not handle.dispatchable:
-                    self.non_dispatchable_handles[handle.vk_name] = NonDispatchHandle(handle)
+                self.handles[handle.name] = handle
+                if handle.alias is None and handle.dispatchable:
+                    self.dispatchable_handles.append(handle.name)
             elif category == 'union':
-                self.struct_union_list.append(
-                    Union(xml_type, self.api_constants, self.handles, self.default_values, self.ext_types))
+                self.struct_union_list.append(Union(xml_type, self.api_constants, self.handles, self.default_values))
             elif category == 'struct':
-                self.struct_union_list.append(
-                    Struct(xml_type, self.api_constants, self.handles, self.default_values, self.ext_types))
+                self.struct_union_list.append(Struct(xml_type, self.api_constants, self.handles, self.default_values))
 
-        for commands in root.findall('commands'):
-            for command in commands.findall('command'):
-                self.functions.append(
-                    Function(command, self.api_constants, self.handles, self.dispatchable_handles, self.default_values, self.ext_functions))
-
-        for feature in self.vk_feature_levels:  
-            for func in self.functions:
-                if func.vk_name in feature.commands:
-                    feature.functions.append(func)
-                    
         #fixup the list so that members using a type appear after that type is defined
         outer_counter = 0
         inner_counter = 0
@@ -958,39 +983,108 @@ class BindingGenerator:
             for m in self.struct_union_list[outer_counter].members:
                 inner_counter = outer_counter
                 for t2 in self.struct_union_list[outer_counter:]:
-                    if m.vk_base_type == t2.vk_name and inner_counter > outer_counter:
+                    if m.base_type == t2.name and inner_counter > outer_counter:
                         self.struct_union_list.insert(outer_counter, self.struct_union_list.pop(inner_counter))
                         moved = True
                     inner_counter = inner_counter + 1
             if not moved:
                 outer_counter = outer_counter + 1
 
+        # determine which structs are comparable
+        for struct_or_union in self.struct_union_list:
+            if not struct_or_union.is_comparable:
+                continue
+            comparable = True
+            for member in struct_or_union.members:
+                for sub_type in self.struct_union_list:
+                    if member.base_type == sub_type.name:
+                        if not sub_type.is_comparable:
+                            comparable = False
+                            break
+            struct_or_union.is_comparable = comparable
+
+        for enum in root.findall("enums"):
+            if enum.get('type') == 'enum':
+                e = Enum(enum)
+                self.enum_dict[e.name] = e
+                self.default_values[e.name] = str('static_cast<'+e.name+'>(0)')
+
+            elif enum.get('type') == 'bitmask':
+                b = Bitmask(enum)
+                self.bitmask_dict[b.name] = b
+                self.default_values[b.name] = str('static_cast<'+b.name+'>(0)')
+
+        # add in flags which have no bitmask
+        for f in self.flags_dict.values():
+            if f.need_empty and f.flags_name not in self.bitmask_dict:
+                self.bitmask_dict[f.flags_name] = EmptyBitmask(f.flags_name)
+
+        for commands in root.findall('commands'):
+            for command in commands.findall('command'):
+                self.functions.append(
+                    Function(command, self.api_constants, self.handles, self.dispatchable_handles, self.default_values)) 
+
+        for ext in root.find('extensions'):
+            if ext.tag == 'extension':
+                self.ext_list.append(Extension(ext, self.platforms))
+        
+        for ext in self.ext_list:
+            for require in ext.requires:
+                for key in require.enum_dict.keys():
+                    self.enum_dict[key].fill_ext_enums(require.enum_dict[key])
+                for key in require.bitmask_dict.keys():
+                    self.bitmask_dict[key].fill_ext_bitmasks(require.bitmask_dict[key])
+                for struct in self.struct_union_list:
+                    struct.check_platform(ext.platform, require.types)
+                for function in self.functions:
+                    function.check_platform(ext.platform, require.functions)
+                for flag in self.flags_dict.values():
+                    flag.check_platform(ext.platform, require.types)
+                for enum in self.enum_dict.values():
+                    enum.check_platform(ext.platform, require.types)
+                for bitmask in self.bitmask_dict.values():
+                    bitmask.check_platform(ext.platform, require.types)
+                    
+        for feature in root.findall('feature'):
+            feat_level = VulkanFeatureLevel(feature)
+            self.vk_feature_levels.append(feat_level)
+
+        for feature in self.vk_feature_levels:
+            for require in feature.requires:
+                for key in require.enum_dict.keys():
+                    self.enum_dict[key].fill_ext_enums(require.enum_dict[key])
+                for bitmask in require.bitmask_dict.keys():
+                    self.bitmask_dict[bitmask].fill_ext_bitmasks(require.bitmask_dict[bitmask])
+                                
+        for feature in self.vk_feature_levels:  
+            for requires in feature.requires:
+                for func in self.functions:
+                    if func.name in requires.functions:
+                        feature.functions.append(func)   
+
     def print(self, file):
         #[ macro.print(file) for macro in self.macro_defines ]
         [ constant.print(file) for constant in self.api_constants.values() ]
         [ base_type.print(file) for base_type in self.base_types ]
-        [ enum.print(file) for enum in self.enum_list ]
-        [ bitmask.print(file) for bitmask in self.bitmask_list ]
-        [ enum_alias.print(file) for enum_alias in self.enum_aliases ]
-        [ flags.print(file) for flags in self.flags_list ]
-        [ ForwardDeclareDispatchHandlePrint(file, handle) for handle in self.dispatchable_handles.values()]
-        [ handle.print(file) for handle in self.dispatchable_handles.values() ]
-        [ handle.print(file, self.ext_types) for handle in self.non_dispatchable_handles.values() ]        
-        [ handle.print(file,self.ext_types) for handle in self.alias_handle_list ]
+        [ enum.print(file) for enum in self.enum_dict.values()]
+        [ bitmask.print(file) for bitmask in self.bitmask_dict.values()]
+        file.write(bitmask_flags_macro + '\n')
+        [ flag.print(file) for flag in self.flags_dict.values() ]
+        [ handle.print(file) for handle in self.handles.values() ]
         [ struct_or_union.print(file) for struct_or_union in self.struct_union_list ]
         print_dispatch_table(file, "Global", "GlobalFunctions", self.vk_feature_levels)
         print_dispatch_table(file, "Instance", "InstanceFunctions", self.vk_feature_levels)
         print_dispatch_table(file, "Device", "DeviceFunctions", self.vk_feature_levels)
 
     def print_string(self, file):
-        [ enum.print_string(file) for enum in self.enum_list ]
-        [ bitmask.print_string(file) for bitmask in self.bitmask_list ]
+        for enum in self.enum_dict.values():
+            enum.print_string(file)
+        for bitmask in self.bitmask_dict.values():
+            bitmask.print_string(file)
         
     def print_static_asserts(self, file):
         [ struct_or_union.print_static_asserts(file) for struct_or_union in self.struct_union_list ]
-        [ dispatchable_handle.print_static_asserts(file) for dispatchable_handle in self.dispatchable_handles.values() ]
-        [ non_dispatchable_handle.print_static_asserts(file) for non_dispatchable_handle in self.non_dispatchable_handles.values() ]
-
+        [ handle.print_static_asserts(file) for handle in self.handles.values() ]
 
 def main():
 

@@ -4,7 +4,7 @@
     <!-- list of bitmask names-->
     <comment>Bitmask types</comment>
     <type 
-        requires="VkNameFlagBits" <!-- optional: missing means there are no bits -->
+        requires="VkNameFlagBits" -- optional: missing means there are no bits
         category="bitmask" 
         >
             typedef <type>VkFlags</type> 
@@ -47,7 +47,7 @@
 <!--CONSTANTS-->
 <enums name="API CONSTANTS"?
     <enum 
-        value="num|expression"<!-- expression ex. "(~0U-1)"-->
+        value="num|expression" -- expression ex. "(~0U-1)"
         name="VK_CONSTANT_NAME"
     />
 </enums>
@@ -56,7 +56,8 @@
 <enums 
     name="VkName"
     type="enum"
-    <!--list of enums-->
+    -- list of enums
+    >
     <enum
         value="num"
         name="VK_BASE_NAME_FIELD_NAME"
@@ -67,10 +68,11 @@
 <enums
     name="VkNameFlagBits"
     type="bitmask"
+    >
     <enum
         name="VK_BASE_NAME_FIELD_NAME"
-        value="num|hex"<!-- hex examples: 0x00000001, 0x7FFFFFFF-->
-        <!-- OR -->
+        value="num|hex" -- hex examples: 0x00000001, 0x7FFFFFFF
+        -- OR --
         bitpos="num"
     />
     <!-- may contain no <enum>'s -->
@@ -83,15 +85,16 @@
 <!--'features': 1.0, 1.1, and 1.2-->
 <feature 
     number="1.x"
-    <!--list of require blocks-->
+    --list of require blocks
+    >
     <require>
         <enum
             extends="VkEnumName"
             extnumber="num"
             offset="num"
-            <!-- OR -->
+            -- OR --
             bitpos="num"
-            name="VK_BASE_NAME_FIELD_NAME
+            name="VK_BASE_NAME_FIELD_NAME"
         />
     </require>
 </feature>
@@ -101,17 +104,18 @@
     <extension>
         <!--list of 'require' blocks-->
         <require
-            feature="VK_VERSION_X_Y"<!-- optional: this is for promoted crap -->
+            feature="VK_VERSION_X_Y" -- optional: this is for promoted crap
             
-            <!--list of <enum>-->
+            --list of <enum--
+            >
             <!--several kinds of <enum> possible -->
             <enum
-                value="num" <!-- extension number -->
-                name="VK_EXT_NAME_SPEC_VERSION" <!-- not an C-enum!-->
+                value="num" -- extension number 
+                name="VK_EXT_NAME_SPEC_VERSION" -- not an C-enum!
             />
             <enum
-                value="&quot;VK_EXT_NAME&quot;" <!-- extension "name" -->
-                name="VK_EXTENSION_NAME_STRING_HELPER" <!-- not an C-enum! -->
+                value="&quot;VK_EXT_NAME&quot;" -- extension "name"
+                name="VK_EXTENSION_NAME_STRING_HELPER" -- not an C-enum!
             />
             <!--Actual Enum-->
             <enum

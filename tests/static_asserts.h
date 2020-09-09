@@ -1079,16 +1079,24 @@ static_assert( sizeof(DrawMeshTasksIndirectCommandNV) == sizeof(VkDrawMeshTasksI
 static_assert( std::is_standard_layout<DrawMeshTasksIndirectCommandNV>::value, "Must be a standard layout type" );
 static_assert( sizeof(RayTracingShaderGroupCreateInfoNV) == sizeof(VkRayTracingShaderGroupCreateInfoNV), "Must maintain size between types" );
 static_assert( std::is_standard_layout<RayTracingShaderGroupCreateInfoNV>::value, "Must be a standard layout type" );
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(RayTracingShaderGroupCreateInfoKHR) == sizeof(VkRayTracingShaderGroupCreateInfoKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<RayTracingShaderGroupCreateInfoKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
 static_assert( sizeof(RayTracingPipelineCreateInfoNV) == sizeof(VkRayTracingPipelineCreateInfoNV), "Must maintain size between types" );
 static_assert( std::is_standard_layout<RayTracingPipelineCreateInfoNV>::value, "Must be a standard layout type" );
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(RayTracingPipelineInterfaceCreateInfoKHR) == sizeof(VkRayTracingPipelineInterfaceCreateInfoKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<RayTracingPipelineInterfaceCreateInfoKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(PipelineLibraryCreateInfoKHR) == sizeof(VkPipelineLibraryCreateInfoKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<PipelineLibraryCreateInfoKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(RayTracingPipelineCreateInfoKHR) == sizeof(VkRayTracingPipelineCreateInfoKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<RayTracingPipelineCreateInfoKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
 static_assert( sizeof(GeometryTrianglesNV) == sizeof(VkGeometryTrianglesNV), "Must maintain size between types" );
 static_assert( std::is_standard_layout<GeometryTrianglesNV>::value, "Must be a standard layout type" );
 static_assert( sizeof(GeometryAABBNV) == sizeof(VkGeometryAABBNV), "Must maintain size between types" );
@@ -1101,28 +1109,42 @@ static_assert( sizeof(AccelerationStructureInfoNV) == sizeof(VkAccelerationStruc
 static_assert( std::is_standard_layout<AccelerationStructureInfoNV>::value, "Must be a standard layout type" );
 static_assert( sizeof(AccelerationStructureCreateInfoNV) == sizeof(VkAccelerationStructureCreateInfoNV), "Must maintain size between types" );
 static_assert( std::is_standard_layout<AccelerationStructureCreateInfoNV>::value, "Must be a standard layout type" );
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(BindAccelerationStructureMemoryInfoKHR) == sizeof(VkBindAccelerationStructureMemoryInfoKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<BindAccelerationStructureMemoryInfoKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
 static_assert( sizeof(BindAccelerationStructureMemoryInfoNV) == sizeof(VkBindAccelerationStructureMemoryInfoNV), "Must maintain size between types" );
 static_assert( std::is_standard_layout<BindAccelerationStructureMemoryInfoNV>::value, "Must be a standard layout type" );
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(WriteDescriptorSetAccelerationStructureKHR) == sizeof(VkWriteDescriptorSetAccelerationStructureKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<WriteDescriptorSetAccelerationStructureKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
 static_assert( sizeof(WriteDescriptorSetAccelerationStructureNV) == sizeof(VkWriteDescriptorSetAccelerationStructureNV), "Must maintain size between types" );
 static_assert( std::is_standard_layout<WriteDescriptorSetAccelerationStructureNV>::value, "Must be a standard layout type" );
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(AccelerationStructureMemoryRequirementsInfoKHR) == sizeof(VkAccelerationStructureMemoryRequirementsInfoKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<AccelerationStructureMemoryRequirementsInfoKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
 static_assert( sizeof(AccelerationStructureMemoryRequirementsInfoNV) == sizeof(VkAccelerationStructureMemoryRequirementsInfoNV), "Must maintain size between types" );
 static_assert( std::is_standard_layout<AccelerationStructureMemoryRequirementsInfoNV>::value, "Must be a standard layout type" );
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(PhysicalDeviceRayTracingFeaturesKHR) == sizeof(VkPhysicalDeviceRayTracingFeaturesKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<PhysicalDeviceRayTracingFeaturesKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(PhysicalDeviceRayTracingPropertiesKHR) == sizeof(VkPhysicalDeviceRayTracingPropertiesKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<PhysicalDeviceRayTracingPropertiesKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
 static_assert( sizeof(PhysicalDeviceRayTracingPropertiesNV) == sizeof(VkPhysicalDeviceRayTracingPropertiesNV), "Must maintain size between types" );
 static_assert( std::is_standard_layout<PhysicalDeviceRayTracingPropertiesNV>::value, "Must be a standard layout type" );
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(StridedBufferRegionKHR) == sizeof(VkStridedBufferRegionKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<StridedBufferRegionKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(TraceRaysIndirectCommandKHR) == sizeof(VkTraceRaysIndirectCommandKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<TraceRaysIndirectCommandKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
 static_assert( sizeof(DrmFormatModifierPropertiesEXT) == sizeof(VkDrmFormatModifierPropertiesEXT), "Must maintain size between types" );
 static_assert( std::is_standard_layout<DrmFormatModifierPropertiesEXT>::value, "Must be a standard layout type" );
 static_assert( sizeof(DrmFormatModifierPropertiesListEXT) == sizeof(VkDrmFormatModifierPropertiesListEXT), "Must maintain size between types" );
@@ -1367,46 +1389,80 @@ static_assert( sizeof(PhysicalDeviceCustomBorderColorPropertiesEXT) == sizeof(Vk
 static_assert( std::is_standard_layout<PhysicalDeviceCustomBorderColorPropertiesEXT>::value, "Must be a standard layout type" );
 static_assert( sizeof(PhysicalDeviceCustomBorderColorFeaturesEXT) == sizeof(VkPhysicalDeviceCustomBorderColorFeaturesEXT), "Must maintain size between types" );
 static_assert( std::is_standard_layout<PhysicalDeviceCustomBorderColorFeaturesEXT>::value, "Must be a standard layout type" );
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(AccelerationStructureGeometryTrianglesDataKHR) == sizeof(VkAccelerationStructureGeometryTrianglesDataKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<AccelerationStructureGeometryTrianglesDataKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(AccelerationStructureGeometryAabbsDataKHR) == sizeof(VkAccelerationStructureGeometryAabbsDataKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<AccelerationStructureGeometryAabbsDataKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(AccelerationStructureGeometryInstancesDataKHR) == sizeof(VkAccelerationStructureGeometryInstancesDataKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<AccelerationStructureGeometryInstancesDataKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(AccelerationStructureGeometryKHR) == sizeof(VkAccelerationStructureGeometryKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<AccelerationStructureGeometryKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(AccelerationStructureBuildGeometryInfoKHR) == sizeof(VkAccelerationStructureBuildGeometryInfoKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<AccelerationStructureBuildGeometryInfoKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(AccelerationStructureBuildOffsetInfoKHR) == sizeof(VkAccelerationStructureBuildOffsetInfoKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<AccelerationStructureBuildOffsetInfoKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(AccelerationStructureCreateGeometryTypeInfoKHR) == sizeof(VkAccelerationStructureCreateGeometryTypeInfoKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<AccelerationStructureCreateGeometryTypeInfoKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(AccelerationStructureCreateInfoKHR) == sizeof(VkAccelerationStructureCreateInfoKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<AccelerationStructureCreateInfoKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(AabbPositionsKHR) == sizeof(VkAabbPositionsKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<AabbPositionsKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
 static_assert( sizeof(AabbPositionsNV) == sizeof(VkAabbPositionsNV), "Must maintain size between types" );
 static_assert( std::is_standard_layout<AabbPositionsNV>::value, "Must be a standard layout type" );
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(TransformMatrixKHR) == sizeof(VkTransformMatrixKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<TransformMatrixKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
 static_assert( sizeof(TransformMatrixNV) == sizeof(VkTransformMatrixNV), "Must maintain size between types" );
 static_assert( std::is_standard_layout<TransformMatrixNV>::value, "Must be a standard layout type" );
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(AccelerationStructureInstanceKHR) == sizeof(VkAccelerationStructureInstanceKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<AccelerationStructureInstanceKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
 static_assert( sizeof(AccelerationStructureInstanceNV) == sizeof(VkAccelerationStructureInstanceNV), "Must maintain size between types" );
 static_assert( std::is_standard_layout<AccelerationStructureInstanceNV>::value, "Must be a standard layout type" );
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(AccelerationStructureDeviceAddressInfoKHR) == sizeof(VkAccelerationStructureDeviceAddressInfoKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<AccelerationStructureDeviceAddressInfoKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(AccelerationStructureVersionKHR) == sizeof(VkAccelerationStructureVersionKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<AccelerationStructureVersionKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(CopyAccelerationStructureInfoKHR) == sizeof(VkCopyAccelerationStructureInfoKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<CopyAccelerationStructureInfoKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(CopyAccelerationStructureToMemoryInfoKHR) == sizeof(VkCopyAccelerationStructureToMemoryInfoKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<CopyAccelerationStructureToMemoryInfoKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(CopyMemoryToAccelerationStructureInfoKHR) == sizeof(VkCopyMemoryToAccelerationStructureInfoKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<CopyMemoryToAccelerationStructureInfoKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(DeferredOperationInfoKHR) == sizeof(VkDeferredOperationInfoKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<DeferredOperationInfoKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
 static_assert( sizeof(PhysicalDeviceExtendedDynamicStateFeaturesEXT) == sizeof(VkPhysicalDeviceExtendedDynamicStateFeaturesEXT), "Must maintain size between types" );
 static_assert( std::is_standard_layout<PhysicalDeviceExtendedDynamicStateFeaturesEXT>::value, "Must be a standard layout type" );
 static_assert( sizeof(RenderPassTransformBeginInfoQCOM) == sizeof(VkRenderPassTransformBeginInfoQCOM), "Must maintain size between types" );
@@ -1425,44 +1481,44 @@ static_assert( sizeof(PhysicalDeviceImageRobustnessFeaturesEXT) == sizeof(VkPhys
 static_assert( std::is_standard_layout<PhysicalDeviceImageRobustnessFeaturesEXT>::value, "Must be a standard layout type" );
 static_assert( sizeof(PhysicalDevice4444FormatsFeaturesEXT) == sizeof(VkPhysicalDevice4444FormatsFeaturesEXT), "Must maintain size between types" );
 static_assert( std::is_standard_layout<PhysicalDevice4444FormatsFeaturesEXT>::value, "Must be a standard layout type" );
-static_assert( sizeof( Instance) == sizeof(VkInstance   ), "Must maintain size between handles" );
-static_assert( sizeof( PhysicalDevice) == sizeof(VkPhysicalDevice   ), "Must maintain size between handles" );
-static_assert( sizeof( Device) == sizeof(VkDevice   ), "Must maintain size between handles" );
-static_assert( sizeof( Queue) == sizeof(VkQueue   ), "Must maintain size between handles" );
-static_assert( sizeof( CommandBuffer) == sizeof(VkCommandBuffer   ), "Must maintain size between handles" );
-static_assert( sizeof(DeviceMemory) == sizeof(VkDeviceMemory), "Must maintain size between handles" );
-static_assert( sizeof(CommandPool) == sizeof(VkCommandPool), "Must maintain size between handles" );
-static_assert( sizeof(Buffer) == sizeof(VkBuffer), "Must maintain size between handles" );
-static_assert( sizeof(BufferView) == sizeof(VkBufferView), "Must maintain size between handles" );
-static_assert( sizeof(Image) == sizeof(VkImage), "Must maintain size between handles" );
-static_assert( sizeof(ImageView) == sizeof(VkImageView), "Must maintain size between handles" );
-static_assert( sizeof(ShaderModule) == sizeof(VkShaderModule), "Must maintain size between handles" );
-static_assert( sizeof(Pipeline) == sizeof(VkPipeline), "Must maintain size between handles" );
-static_assert( sizeof(PipelineLayout) == sizeof(VkPipelineLayout), "Must maintain size between handles" );
-static_assert( sizeof(Sampler) == sizeof(VkSampler), "Must maintain size between handles" );
-static_assert( sizeof(DescriptorSet) == sizeof(VkDescriptorSet), "Must maintain size between handles" );
-static_assert( sizeof(DescriptorSetLayout) == sizeof(VkDescriptorSetLayout), "Must maintain size between handles" );
-static_assert( sizeof(DescriptorPool) == sizeof(VkDescriptorPool), "Must maintain size between handles" );
-static_assert( sizeof(Fence) == sizeof(VkFence), "Must maintain size between handles" );
-static_assert( sizeof(Semaphore) == sizeof(VkSemaphore), "Must maintain size between handles" );
-static_assert( sizeof(Event) == sizeof(VkEvent), "Must maintain size between handles" );
-static_assert( sizeof(QueryPool) == sizeof(VkQueryPool), "Must maintain size between handles" );
-static_assert( sizeof(Framebuffer) == sizeof(VkFramebuffer), "Must maintain size between handles" );
-static_assert( sizeof(RenderPass) == sizeof(VkRenderPass), "Must maintain size between handles" );
-static_assert( sizeof(PipelineCache) == sizeof(VkPipelineCache), "Must maintain size between handles" );
-static_assert( sizeof(IndirectCommandsLayoutNV) == sizeof(VkIndirectCommandsLayoutNV), "Must maintain size between handles" );
-static_assert( sizeof(DescriptorUpdateTemplate) == sizeof(VkDescriptorUpdateTemplate), "Must maintain size between handles" );
-static_assert( sizeof(SamplerYcbcrConversion) == sizeof(VkSamplerYcbcrConversion), "Must maintain size between handles" );
-static_assert( sizeof(ValidationCacheEXT) == sizeof(VkValidationCacheEXT), "Must maintain size between handles" );
-static_assert( sizeof(AccelerationStructureKHR) == sizeof(VkAccelerationStructureKHR), "Must maintain size between handles" );
-static_assert( sizeof(PerformanceConfigurationINTEL) == sizeof(VkPerformanceConfigurationINTEL), "Must maintain size between handles" );
-static_assert( sizeof(DeferredOperationKHR) == sizeof(VkDeferredOperationKHR), "Must maintain size between handles" );
-static_assert( sizeof(PrivateDataSlotEXT) == sizeof(VkPrivateDataSlotEXT), "Must maintain size between handles" );
-static_assert( sizeof(DisplayKHR) == sizeof(VkDisplayKHR), "Must maintain size between handles" );
-static_assert( sizeof(DisplayModeKHR) == sizeof(VkDisplayModeKHR), "Must maintain size between handles" );
-static_assert( sizeof(SurfaceKHR) == sizeof(VkSurfaceKHR), "Must maintain size between handles" );
-static_assert( sizeof(SwapchainKHR) == sizeof(VkSwapchainKHR), "Must maintain size between handles" );
-static_assert( sizeof(DebugReportCallbackEXT) == sizeof(VkDebugReportCallbackEXT), "Must maintain size between handles" );
-static_assert( sizeof(DebugUtilsMessengerEXT) == sizeof(VkDebugUtilsMessengerEXT), "Must maintain size between handles" );
+static_assert( sizeof(Instance) == sizeof(VkInstance)"Must maintain size between handles");
+static_assert( sizeof(PhysicalDevice) == sizeof(VkPhysicalDevice)"Must maintain size between handles");
+static_assert( sizeof(Device) == sizeof(VkDevice)"Must maintain size between handles");
+static_assert( sizeof(Queue) == sizeof(VkQueue)"Must maintain size between handles");
+static_assert( sizeof(CommandBuffer) == sizeof(VkCommandBuffer)"Must maintain size between handles");
+static_assert( sizeof(DeviceMemory) == sizeof(VkDeviceMemory),"Must maintain size between handles");
+static_assert( sizeof(CommandPool) == sizeof(VkCommandPool),"Must maintain size between handles");
+static_assert( sizeof(Buffer) == sizeof(VkBuffer),"Must maintain size between handles");
+static_assert( sizeof(BufferView) == sizeof(VkBufferView),"Must maintain size between handles");
+static_assert( sizeof(Image) == sizeof(VkImage),"Must maintain size between handles");
+static_assert( sizeof(ImageView) == sizeof(VkImageView),"Must maintain size between handles");
+static_assert( sizeof(ShaderModule) == sizeof(VkShaderModule),"Must maintain size between handles");
+static_assert( sizeof(Pipeline) == sizeof(VkPipeline),"Must maintain size between handles");
+static_assert( sizeof(PipelineLayout) == sizeof(VkPipelineLayout),"Must maintain size between handles");
+static_assert( sizeof(Sampler) == sizeof(VkSampler),"Must maintain size between handles");
+static_assert( sizeof(DescriptorSet) == sizeof(VkDescriptorSet),"Must maintain size between handles");
+static_assert( sizeof(DescriptorSetLayout) == sizeof(VkDescriptorSetLayout),"Must maintain size between handles");
+static_assert( sizeof(DescriptorPool) == sizeof(VkDescriptorPool),"Must maintain size between handles");
+static_assert( sizeof(Fence) == sizeof(VkFence),"Must maintain size between handles");
+static_assert( sizeof(Semaphore) == sizeof(VkSemaphore),"Must maintain size between handles");
+static_assert( sizeof(Event) == sizeof(VkEvent),"Must maintain size between handles");
+static_assert( sizeof(QueryPool) == sizeof(VkQueryPool),"Must maintain size between handles");
+static_assert( sizeof(Framebuffer) == sizeof(VkFramebuffer),"Must maintain size between handles");
+static_assert( sizeof(RenderPass) == sizeof(VkRenderPass),"Must maintain size between handles");
+static_assert( sizeof(PipelineCache) == sizeof(VkPipelineCache),"Must maintain size between handles");
+static_assert( sizeof(IndirectCommandsLayoutNV) == sizeof(VkIndirectCommandsLayoutNV),"Must maintain size between handles");
+static_assert( sizeof(DescriptorUpdateTemplate) == sizeof(VkDescriptorUpdateTemplate),"Must maintain size between handles");
+static_assert( sizeof(SamplerYcbcrConversion) == sizeof(VkSamplerYcbcrConversion),"Must maintain size between handles");
+static_assert( sizeof(ValidationCacheEXT) == sizeof(VkValidationCacheEXT),"Must maintain size between handles");
+static_assert( sizeof(AccelerationStructureKHR) == sizeof(VkAccelerationStructureKHR),"Must maintain size between handles");
+static_assert( sizeof(PerformanceConfigurationINTEL) == sizeof(VkPerformanceConfigurationINTEL),"Must maintain size between handles");
+static_assert( sizeof(DeferredOperationKHR) == sizeof(VkDeferredOperationKHR),"Must maintain size between handles");
+static_assert( sizeof(PrivateDataSlotEXT) == sizeof(VkPrivateDataSlotEXT),"Must maintain size between handles");
+static_assert( sizeof(DisplayKHR) == sizeof(VkDisplayKHR),"Must maintain size between handles");
+static_assert( sizeof(DisplayModeKHR) == sizeof(VkDisplayModeKHR),"Must maintain size between handles");
+static_assert( sizeof(SurfaceKHR) == sizeof(VkSurfaceKHR),"Must maintain size between handles");
+static_assert( sizeof(SwapchainKHR) == sizeof(VkSwapchainKHR),"Must maintain size between handles");
+static_assert( sizeof(DebugReportCallbackEXT) == sizeof(VkDebugReportCallbackEXT),"Must maintain size between handles");
+static_assert( sizeof(DebugUtilsMessengerEXT) == sizeof(VkDebugUtilsMessengerEXT),"Must maintain size between handles");
 } // namespace vk
 // clang-format on

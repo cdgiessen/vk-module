@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "vkpp.h"
+#include "vkpp_string.h"
 
 int main() {
     vk::GlobalFunctions free_funcs(vkGetInstanceProcAddr);
@@ -30,9 +31,38 @@ int main() {
 
     vk::PhysicalDevice phys_dev = phys_devices.at(0);
     vk::ImageFormatProperties image_props;
-    auto flag_bits = vk::ImageUsageFlagBits::eTransferDst;
-    // vk::GetPhysicalDeviceImageFormatProperties(phys_dev, vk::Format::eUndefined, vk::ImageType::e1D, vk::ImageTiling::eOptimal,
-    //                                           flag_bits, vk::ImageCreateFlagBits::eSparseBinding, &image_props);
+    vk::BufferCreateFlags flags;
+    flags = vk::BufferCreateFlagBits::eSparseBinding | vk::BufferCreateFlagBits::eSparseResidency;
+    std::cout << flags.flags << " " << vk::to_string(flags) << "\n"; // 3
+    flags = flags & vk::BufferCreateFlagBits::eSparseResidency;
+    std::cout << flags.flags << " " << vk::to_string(flags) << "\n"; // 2
+    flags |= vk::BufferCreateFlagBits::eSparseBinding;
+    std::cout << flags.flags << " " << vk::to_string(flags) << "\n"; // 3
+    flags &= vk::BufferCreateFlagBits::eSparseBinding;
+    std::cout << flags.flags << " " << vk::to_string(flags) << "\n"; // 1
+    flags = ~vk::BufferCreateFlagBits::eSparseBinding;
+    std::cout << flags.flags << " " << vk::to_string(flags) << "\n"; // 4294967294
+    flags = vk::BufferCreateFlagBits::eSparseBinding ^ vk::BufferCreateFlagBits::eSparseResidency;
+    std::cout << flags.flags << " " << vk::to_string(flags) << "\n"; // 3
+    flags ^= vk::BufferCreateFlagBits::eSparseAliased;
+    std::cout << flags.flags << " " << vk::to_string(flags) << "\n"; // 7
+
+    flags = flags | vk::BufferCreateFlagBits::eSparseBinding;
+    flags = flags & vk::BufferCreateFlagBits::eSparseBinding;
+    flags = vk::BufferCreateFlagBits::eSparseBinding | flags;
+    flags |= flags;
+    flags = vk::BufferCreateFlagBits::eSparseBinding & flags;
+    flags &= flags;
+    flags = ~flags;
+    flags = vk::BufferCreateFlagBits::eSparseBinding ^ flags;
+    flags = flags ^ vk::BufferCreateFlagBits::eSparseBinding;
+    flags ^= flags;
+
+    vk::ImageCreateFlags img_flags = vk::ImageCreateFlagBits::eSparseBinding;
+
+    inst_funcs.GetPhysicalDeviceImageFormatProperties(phys_dev, vk::Format::eUndefined, vk::ImageType::e1D,
+                                                      vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eTransferDst, img_flags,
+                                                      &image_props);
 
     return 0;
 }
