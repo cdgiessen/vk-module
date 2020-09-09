@@ -20,12 +20,16 @@ int main() {
     if (res != vk::Result::eSuccess)
         return static_cast<int>(res);
 
+    if (inst && !(!inst))
+        std::cout << "should print this\n";
+    else
+        std::cout << "shouldn't print this\n";
+
     vk::InstanceFunctions inst_funcs(vkGetInstanceProcAddr, inst);
 
     inst_funcs.EnumeratePhysicalDevices(inst, &count, nullptr);
     std::vector<vk::PhysicalDevice> phys_devices(count);
     inst_funcs.EnumeratePhysicalDevices(inst, &count, phys_devices.data());
-
     if (count == 0)
         return -100;
 
@@ -63,6 +67,13 @@ int main() {
     inst_funcs.GetPhysicalDeviceImageFormatProperties(phys_dev, vk::Format::eUndefined, vk::ImageType::e1D,
                                                       vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eTransferDst, img_flags,
                                                       &image_props);
+    vk::SwapchainCreateInfoKHR swap_info;
+    swap_info.preTransform = vk::SurfaceTransformFlagBitsKHR::eIdentityBitKHR;
+    /*
+     Should not compile.
+     vk::SurfaceTransformFlagsKHR transform_flags;
+     swap_info.preTransform = transform_flags;
+    */
 
     return 0;
 }

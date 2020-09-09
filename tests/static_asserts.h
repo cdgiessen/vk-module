@@ -1481,11 +1481,11 @@ static_assert( sizeof(PhysicalDeviceImageRobustnessFeaturesEXT) == sizeof(VkPhys
 static_assert( std::is_standard_layout<PhysicalDeviceImageRobustnessFeaturesEXT>::value, "Must be a standard layout type" );
 static_assert( sizeof(PhysicalDevice4444FormatsFeaturesEXT) == sizeof(VkPhysicalDevice4444FormatsFeaturesEXT), "Must maintain size between types" );
 static_assert( std::is_standard_layout<PhysicalDevice4444FormatsFeaturesEXT>::value, "Must be a standard layout type" );
-static_assert( sizeof(Instance) == sizeof(VkInstance)"Must maintain size between handles");
-static_assert( sizeof(PhysicalDevice) == sizeof(VkPhysicalDevice)"Must maintain size between handles");
-static_assert( sizeof(Device) == sizeof(VkDevice)"Must maintain size between handles");
-static_assert( sizeof(Queue) == sizeof(VkQueue)"Must maintain size between handles");
-static_assert( sizeof(CommandBuffer) == sizeof(VkCommandBuffer)"Must maintain size between handles");
+static_assert( sizeof(Instance) == sizeof(VkInstance),"Must maintain size between handles");
+static_assert( sizeof(PhysicalDevice) == sizeof(VkPhysicalDevice),"Must maintain size between handles");
+static_assert( sizeof(Device) == sizeof(VkDevice),"Must maintain size between handles");
+static_assert( sizeof(Queue) == sizeof(VkQueue),"Must maintain size between handles");
+static_assert( sizeof(CommandBuffer) == sizeof(VkCommandBuffer),"Must maintain size between handles");
 static_assert( sizeof(DeviceMemory) == sizeof(VkDeviceMemory),"Must maintain size between handles");
 static_assert( sizeof(CommandPool) == sizeof(VkCommandPool),"Must maintain size between handles");
 static_assert( sizeof(Buffer) == sizeof(VkBuffer),"Must maintain size between handles");

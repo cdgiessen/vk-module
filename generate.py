@@ -8,17 +8,19 @@ todo list
 
 handles are a thing, decide what to do
 member arrays (+ vk constants -> int's)
-bitfields...
-type safe enums/flags/bitmasks
 functions -- basic
-platform specific entities - done: struct, union, function
 dispatchable handles (instance, physdevice, device, queue, command buffer)
 extension function tables
+move platform entities together to reduce the #if-def bloat
+create separate versions for C++20 and C++14  
 
 In progress
-to_string for enums/flags/bitmasks
 
 Done: 
+bitfields...
+platform specific entities
+to_string for enums/flags/bitmasks
+type safe enums/flags/bitmasks
 fp dispatch table objects
 extensions -- need to be gotten from 'features'
 enum/flags with members from extensions (need 'features' stuff)
@@ -393,17 +395,20 @@ class Handle:
         if self.alias is not None:
             file.write(f'using {self.name[2:]} = {self.alias[2:]};\n')
         elif self.dispatchable:
-            file.write(f'struct {self.name[2:]} {{\n')
-            file.write(f'    {self.name} handle;\n')
+            file.write(f'class {self.name[2:]} {{\n')
+            file.write(f'    {self.name} handle = VK_NULL_HANDLE;\n')
+            file.write(f'    public:\n')
             file.write(f'    {self.name} get() const {{ return handle; }}\n')
+            file.write(f'    explicit operator bool() const {{return handle != VK_NULL_HANDLE;}};\n')
+            file.write(f'    bool operator!() {{ return handle == VK_NULL_HANDLE; }}\n')
             file.write('};\n')
         else:
             file.write(f'class {self.name[2:]} {{\n')
             file.write(f'    {self.name} handle = VK_NULL_HANDLE;\n')
             file.write(f'    public:\n')
             file.write(f'    {self.name} get() {{ return handle; }}\n')
-            file.write(f'    bool operator!() {{ return handle != VK_NULL_HANDLE; }}\n')
-            #file.write(f'    bool operator==({self.name[2:]} const& other) const = default;\n')
+            file.write(f'    explicit operator bool() const {{return handle != VK_NULL_HANDLE;}};\n')
+            file.write(f'    bool operator!() {{ return handle == VK_NULL_HANDLE; }}\n')
             file.write('};\n')
         PlatformGuardFooter(file, self.platform)
     
@@ -411,7 +416,7 @@ class Handle:
         if self.alias is None:
             PlatformGuardHeader(file, self.platform)
             if self.dispatchable:
-                file.write(f'static_assert( sizeof({self.name[2:]}) == sizeof({self.name})')
+                file.write(f'static_assert( sizeof({self.name[2:]}) == sizeof({self.name}),')
                 file.write(f'"Must maintain size between handles");\n')
             else:
                 file.write(f'static_assert( sizeof({self.name[2:]}) == sizeof({self.name}),')
@@ -423,11 +428,10 @@ class Variable:
     def __init__(self, node, constants, handles, default_values):
         self.name = node.find('name').text
         self.sType_values = node.get('values')
+
         # attributes
         self.optional = node.get('optional')
         self.len_attrib = node.get('len')
-        self.noautovalidity = node.get('noautovalidity')
-        self.externsync = node.get('externsync')
 
         # type characteristics
         self.is_const = False
@@ -574,9 +578,10 @@ class Union:
         self.name = node.get('name')
         self.members = []
         self.platform = None
+        self.returnedonly = node.get('returnedonly') is not None
         for member in node.findall('member'):
             self.members.append(Variable(member, constants, handles, default_values))
-        
+
         self.is_comparable = True
         for member in self.members:
             if not member.is_comparable:
@@ -625,6 +630,8 @@ class Struct:
         self.alias = node.get('alias')
         self.members = []
         self.platform = None
+        self.returnedonly = node.get('returnedonly') is not None
+        self.structextends = node.get('structextends')
 
         for member in node.findall('member'):
             self.members.append(

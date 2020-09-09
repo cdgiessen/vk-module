@@ -2470,232 +2470,281 @@ DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationDepthClipStateCreateFlagsEXT, P
 DECLARE_ENUM_FLAG_OPERATORS(SwapchainImageUsageFlagsANDROID, SwapchainImageUsageFlagBitsANDROID, VkSwapchainImageUsageFlagsANDROID)
 #endif // VK_USE_PLATFORM_ANDROID_KHR
 DECLARE_ENUM_FLAG_OPERATORS(ToolPurposeFlagsEXT, ToolPurposeFlagBitsEXT, VkToolPurposeFlagsEXT)
-struct Instance {
-    VkInstance handle;
+class Instance {
+    VkInstance handle = VK_NULL_HANDLE;
+    public:
     VkInstance get() const { return handle; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
-struct PhysicalDevice {
-    VkPhysicalDevice handle;
+class PhysicalDevice {
+    VkPhysicalDevice handle = VK_NULL_HANDLE;
+    public:
     VkPhysicalDevice get() const { return handle; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
-struct Device {
-    VkDevice handle;
+class Device {
+    VkDevice handle = VK_NULL_HANDLE;
+    public:
     VkDevice get() const { return handle; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
-struct Queue {
-    VkQueue handle;
+class Queue {
+    VkQueue handle = VK_NULL_HANDLE;
+    public:
     VkQueue get() const { return handle; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
-struct CommandBuffer {
-    VkCommandBuffer handle;
+class CommandBuffer {
+    VkCommandBuffer handle = VK_NULL_HANDLE;
+    public:
     VkCommandBuffer get() const { return handle; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class DeviceMemory {
     VkDeviceMemory handle = VK_NULL_HANDLE;
     public:
     VkDeviceMemory get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class CommandPool {
     VkCommandPool handle = VK_NULL_HANDLE;
     public:
     VkCommandPool get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class Buffer {
     VkBuffer handle = VK_NULL_HANDLE;
     public:
     VkBuffer get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class BufferView {
     VkBufferView handle = VK_NULL_HANDLE;
     public:
     VkBufferView get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class Image {
     VkImage handle = VK_NULL_HANDLE;
     public:
     VkImage get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class ImageView {
     VkImageView handle = VK_NULL_HANDLE;
     public:
     VkImageView get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class ShaderModule {
     VkShaderModule handle = VK_NULL_HANDLE;
     public:
     VkShaderModule get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class Pipeline {
     VkPipeline handle = VK_NULL_HANDLE;
     public:
     VkPipeline get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class PipelineLayout {
     VkPipelineLayout handle = VK_NULL_HANDLE;
     public:
     VkPipelineLayout get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class Sampler {
     VkSampler handle = VK_NULL_HANDLE;
     public:
     VkSampler get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class DescriptorSet {
     VkDescriptorSet handle = VK_NULL_HANDLE;
     public:
     VkDescriptorSet get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class DescriptorSetLayout {
     VkDescriptorSetLayout handle = VK_NULL_HANDLE;
     public:
     VkDescriptorSetLayout get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class DescriptorPool {
     VkDescriptorPool handle = VK_NULL_HANDLE;
     public:
     VkDescriptorPool get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class Fence {
     VkFence handle = VK_NULL_HANDLE;
     public:
     VkFence get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class Semaphore {
     VkSemaphore handle = VK_NULL_HANDLE;
     public:
     VkSemaphore get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class Event {
     VkEvent handle = VK_NULL_HANDLE;
     public:
     VkEvent get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class QueryPool {
     VkQueryPool handle = VK_NULL_HANDLE;
     public:
     VkQueryPool get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class Framebuffer {
     VkFramebuffer handle = VK_NULL_HANDLE;
     public:
     VkFramebuffer get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class RenderPass {
     VkRenderPass handle = VK_NULL_HANDLE;
     public:
     VkRenderPass get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class PipelineCache {
     VkPipelineCache handle = VK_NULL_HANDLE;
     public:
     VkPipelineCache get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class IndirectCommandsLayoutNV {
     VkIndirectCommandsLayoutNV handle = VK_NULL_HANDLE;
     public:
     VkIndirectCommandsLayoutNV get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class DescriptorUpdateTemplate {
     VkDescriptorUpdateTemplate handle = VK_NULL_HANDLE;
     public:
     VkDescriptorUpdateTemplate get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 using DescriptorUpdateTemplateKHR = DescriptorUpdateTemplate;
 class SamplerYcbcrConversion {
     VkSamplerYcbcrConversion handle = VK_NULL_HANDLE;
     public:
     VkSamplerYcbcrConversion get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 using SamplerYcbcrConversionKHR = SamplerYcbcrConversion;
 class ValidationCacheEXT {
     VkValidationCacheEXT handle = VK_NULL_HANDLE;
     public:
     VkValidationCacheEXT get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class AccelerationStructureKHR {
     VkAccelerationStructureKHR handle = VK_NULL_HANDLE;
     public:
     VkAccelerationStructureKHR get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 using AccelerationStructureNV = AccelerationStructureKHR;
 class PerformanceConfigurationINTEL {
     VkPerformanceConfigurationINTEL handle = VK_NULL_HANDLE;
     public:
     VkPerformanceConfigurationINTEL get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class DeferredOperationKHR {
     VkDeferredOperationKHR handle = VK_NULL_HANDLE;
     public:
     VkDeferredOperationKHR get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class PrivateDataSlotEXT {
     VkPrivateDataSlotEXT handle = VK_NULL_HANDLE;
     public:
     VkPrivateDataSlotEXT get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class DisplayKHR {
     VkDisplayKHR handle = VK_NULL_HANDLE;
     public:
     VkDisplayKHR get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class DisplayModeKHR {
     VkDisplayModeKHR handle = VK_NULL_HANDLE;
     public:
     VkDisplayModeKHR get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class SurfaceKHR {
     VkSurfaceKHR handle = VK_NULL_HANDLE;
     public:
     VkSurfaceKHR get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class SwapchainKHR {
     VkSwapchainKHR handle = VK_NULL_HANDLE;
     public:
     VkSwapchainKHR get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class DebugReportCallbackEXT {
     VkDebugReportCallbackEXT handle = VK_NULL_HANDLE;
     public:
     VkDebugReportCallbackEXT get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 class DebugUtilsMessengerEXT {
     VkDebugUtilsMessengerEXT handle = VK_NULL_HANDLE;
     public:
     VkDebugUtilsMessengerEXT get() { return handle; }
-    bool operator!() { return handle != VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
+    bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 struct BaseOutStructure {
     StructureType sType;
