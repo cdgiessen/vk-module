@@ -8,15 +8,17 @@ todo list
 
 handles are a thing, decide what to do
 member arrays (+ vk constants -> int's)
-functions -- basic
 dispatchable handles (instance, physdevice, device, queue, command buffer)
-extension function tables
-move platform entities together to reduce the #if-def bloat
 create separate versions for C++20 and C++14  
+generate test code for flags
+create dll/so vulkan loader
+
 
 In progress
+move platform entities together to reduce the #if-def bloat
 
 Done: 
+functions
 bitfields...
 platform specific entities
 to_string for enums/flags/bitmasks
@@ -26,6 +28,8 @@ extensions -- need to be gotten from 'features'
 enum/flags with members from extensions (need 'features' stuff)
 variables with double arrays eg [3][4]
 return types as vk::Result
+extension function tables
+remove disabled extension types
 '''
 
 vendor_abbreviations = []
@@ -133,7 +137,7 @@ class Enum:
     def print(self, file):
         PlatformGuardHeader(file, self.platform)
         if self.alias is not None:
-            file.write(f'using {self.name[2:]} = {self.alias};\n')
+            file.write(f'using {self.name[2:]} = {self.alias[2:]};\n')
         else: 
             file.write(f"enum class {self.name[2:]} : {self.underlying_type} {{\n")
             for name, value in self.values.items():
@@ -163,8 +167,6 @@ class Bitmask:
             self.bitmask_name_len = self.bitmask_name_len - 1
 
         self.alias = node.get('alias')
-        if self.alias is not None:
-            self.alias = self.alias[2:]
         self.platform = None
 
         for elem in node:
@@ -189,7 +191,7 @@ class Bitmask:
     def print(self, file):
         PlatformGuardHeader(file, self.platform)
         if self.alias is not None:
-            file.write(f'using {self.name} = {self.alias};\n')
+            file.write(f'using {self.name} = {self.alias[2:]};\n')
         else:
             file.write('enum class ' + self.name[2:] + ': uint32_t {\n')
             for bitpos, name in self.values.items():
@@ -339,11 +341,12 @@ class Flags:
             self.alias = None
         else:
             self.name = node.get('name')
-            self.alias = node.get('alias')[2:]
+            self.alias = node.get('alias')
 
         self.flags_name = self.name.replace('Flags', 'FlagBits')
+        self.requires = node.get('requires')
         self.need_empty = False
-        if self.alias is None and node.get('requires') is None:
+        if self.alias is None and self.requires is None:
             self.need_empty = True
         self.platform = None
 
@@ -356,7 +359,7 @@ class Flags:
         if self.alias is None:
             file.write(f'DECLARE_ENUM_FLAG_OPERATORS({self.name[2:]}, {self.flags_name[2:]}, {self.name})\n')
         else:
-            file.write(f'using {self.name[2:]} = {self.alias};\n')
+            file.write(f'using {self.name[2:]} = {self.alias[2:]};\n')
         PlatformGuardFooter(file, self.platform)
 
 class ApiConstant:
@@ -443,9 +446,9 @@ class Variable:
         self.is_comparable = True
 
         self.base_type = node.find('type').text
-        self.base_type_out_str = self.base_type
-        if self.base_type_out_str[:2] == 'Vk':
-            self.base_type_out_str = self.base_type_out_str[2:]
+        self.base_type_modified = self.base_type
+        if self.base_type_modified[:2] == 'Vk':
+            self.base_type_modified = self.base_type_modified[2:]
 
         if node.find('comment') is not None:
             node.remove(node.find('comment'))
@@ -506,7 +509,7 @@ class Variable:
         type_decl = ''
         if self.is_const:
             type_decl += 'const '
-        type_decl += self.base_type_out_str
+        type_decl += self.base_type_modified
         if self.is_ptr:
             type_decl += '*'
         if self.is_double_ptr:
@@ -682,6 +685,7 @@ class Function:
 
         self.alias = None
         self.return_type = None
+        self.platform = None
         proto = node.find('proto')
         if proto is not None:
             self.name = proto.find('name').text
@@ -689,7 +693,6 @@ class Function:
         else:
             self.name = node.get('name')
             self.alias = node.get('alias')
-        self.platform = None
         
         self.parameters = []
         for param in node.findall('param'):
@@ -700,13 +703,13 @@ class Function:
             if self.name == 'vkGetInstanceProcAddr':
                 self.dispatch_type = None
             elif self.name == 'vkGetDeviceProcAddr':
-                self.dispatch_type = "Instance"
+                self.dispatch_type = "instance"
             elif self.parameters[0].base_type == 'VkInstance' or self.parameters[0].base_type == 'VkPhysicalDevice':  
-                self.dispatch_type = "Instance" 
+                self.dispatch_type = "instance"
             elif self.free_function:
-                self.dispatch_type = "Global"
+                self.dispatch_type = "global"
             else:
-                self.dispatch_type = "Device"
+                self.dispatch_type = "device"
         if self.name is not None:
             self.func_prototype = "PFN_" + self.name;
 
@@ -790,19 +793,24 @@ def EnumExtValue(ext_num, offset, direction):
         enum_value = -enum_value
     return enum_value
 
+def AppendToDictOfLists(dict, key, val):
+    if key not in dict:
+        dict[key] = [] 
+    dict[key].append(val)
 class Requires:
     def __init__(self, node, ext_num = None):
         self.feature = node.get('feature')
         self.extension = node.get('extension')
         self.enum_dict = {}
         self.bitmask_dict = {}
-        self.types = []
+        self.types = set()
+        self.commands = set()
         self.functions = []
        
         for e_type in node.findall('type'):
-            self.types.append(e_type.get('name'))
-        for function in node.findall('command'):
-            self.functions.append(function.get('name'))
+            self.types.add(e_type.get('name'))
+        for command in node.findall('command'):
+            self.commands.add(command.get('name'))
 
         for enum in node.findall('enum'):
             extends = enum.get('extends')
@@ -818,20 +826,32 @@ class Requires:
                 offset = int(offset)
 
             if value is not None:  # core enums
-                if extends not in self.enum_dict:
-                    self.enum_dict[extends] = [] 
-                self.enum_dict[extends].append(ExtEnum(name, value))
+                AppendToDictOfLists(self.enum_dict, extends, ExtEnum(name, value))
             elif offset is not None:
                 if extnumber is None and ext_num is not None:
                     extnumber = ext_num
                 enum_value = EnumExtValue(int(extnumber), offset, enum.get('dir'))
-                if extends not in self.enum_dict:
-                    self.enum_dict[extends] = [] 
-                self.enum_dict[extends].append(ExtEnum(name, enum_value))
+                AppendToDictOfLists(self.enum_dict, extends, ExtEnum(name, enum_value))
             elif bitpos is not None:
-                if extends not in self.bitmask_dict:
-                    self.bitmask_dict[extends] = [] 
-                self.bitmask_dict[extends].append(ExtBitmask(name, int(bitpos)))
+                AppendToDictOfLists(self.bitmask_dict, extends, ExtBitmask(name, int(bitpos)))
+
+    def fill_functions(self, functions):
+        self.functions.extend([func for func in functions if func.name in self.commands])
+
+    def fill_enums(self, enum_dict):
+        for key in self.enum_dict.keys():
+            enum_dict[key].fill_ext_enums(self.enum_dict[key])
+
+    def fill_bitmasks(self, bitmask_dict):
+        for key in self.bitmask_dict.keys():
+            bitmask_dict[key].fill_ext_bitmasks(self.bitmask_dict[key])
+    
+    def check_platform(self, platform, enum_dict, flags_dict, bitmask_dict, structures, functions):
+        [enum.check_platform(platform, self.types) for enum in enum_dict.values()]
+        [flag.check_platform(platform, self.types) for flag in flags_dict.values()]
+        [bitmask.check_platform(platform, self.types) for bitmask in bitmask_dict.values()]
+        [struct.check_platform(platform, self.types) for struct in structures]
+        [function.check_platform(platform, self.commands) for function in functions]
 
 
 class Extension:
@@ -841,14 +861,12 @@ class Extension:
         self.ext_num = int(node.get('number'))
         self.ext_type = node.get('type')
         self.supported = node.get('supported')
-        self.requires = []
         self.platform = None
         if node.get('platform') is not None:
             self.platform = platforms[node.get('platform')]
-
+        self.requires = []
         for requires in node.findall('require'):
             self.requires.append(Requires(requires, self.ext_num))
-
 
 class VulkanFeatureLevel:
     def __init__(self,node):
@@ -856,70 +874,98 @@ class VulkanFeatureLevel:
         self.name = node.get('name')
         self.number = node.get('number')
         self.requires = []
-        self.functions = []
-        
         for require in node.findall('require'):
             self.requires.append(Requires(require))
+        
+def StartPlatformDefBlock(file, name, is_started):
+    if not is_started:
+        file.write(f'#if defined({name})\n')
+        is_started = True
+    return is_started
 
+def EndPlatformDefBlock(file, name, is_started):
+    if is_started:
+        file.write(f'#endif //{name}\n')
 
-            
-def print_dispatch_table(file, dispatch_type, func_name, vk_feature_levels):
-    file.write('struct ' + func_name + ' {\n')
-    #function pointers
-    file.write('private:\n')
-    for feature in vk_feature_levels: 
-        has_element = False
-        for func in feature.functions:
-            if func.dispatch_type == dispatch_type:
-                if not has_element:
-                    file.write(f'#if defined({feature.name})\n')
-                    has_element = True
-                file.write(f'    {func.func_prototype} pfn_{func.name[2:]};\n')
-        if has_element:
-            file.write('#endif\n')
-    
-    #functions
-    file.write('public:\n')
-    for feature in vk_feature_levels:
-        has_element = False
-        for func in feature.functions:
-            if func.dispatch_type == dispatch_type:
-                if not has_element:
-                    file.write(f'#if defined({feature.name})\n')
-                    has_element = True
-                func.print(file, indent='    ')
-        if has_element:
-            file.write('#endif\n')
-    #constructor
-    file.write(f'    {func_name}(')
-    if dispatch_type == "Global":
-        file.write('PFN_vkGetInstanceProcAddr get_instance_proc_addr){\n')
-        gpa = "get_instance_proc_addr"
-        gpa_val = 'nullptr'
-    elif dispatch_type == "Instance":
-        file.write('PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance){\n')
-        file.write('        VkInstance inst = instance.get();\n')
-        gpa = "get_instance_proc_addr"
-        gpa_val = 'inst'
-    else:
-        file.write('PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device){\n')
-        file.write('        VkDevice dev = device.get();\n')
-        gpa = "get_device_proc_addr"
-        gpa_val = 'dev'
-    for feature in vk_feature_levels:  
-        has_element = False
-        for func in feature.functions:
-            if func.dispatch_type == dispatch_type:
-                if not has_element:
-                    file.write(f'#if defined({feature.name})\n')
-                    has_element = True
+class DispatchTable:
+    def __init__(self, dispatch_type, name, ext_or_feature_list):
+        self.name = name
+        self.function_dict = {}
+        for ext_or_feature in ext_or_feature_list:
+            for require in ext_or_feature.requires: 
+                func_dict = {}
+                for func in require.functions:
+                    if func.dispatch_type == dispatch_type:
+                        func_dict[func.name] = func
+                if len(func_dict) > 0:
+                    if ext_or_feature.name not in self.function_dict:
+                        self.function_dict[ext_or_feature.name] = {}
+                    self.function_dict[ext_or_feature.name].update(func_dict) 
+        
+        if dispatch_type == "global":
+            self.init_func_sig = 'PFN_vkGetInstanceProcAddr get_instance_proc_addr'
+            self.dispatch_handle = ''
+            self.gpa = "get_instance_proc_addr"
+            self.gpa_val = 'nullptr'
+        elif dispatch_type == "instance":
+            self.init_func_sig = 'PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance'
+            self.dispatch_handle = '        VkInstance inst = instance.get();\n'
+            self.gpa = "get_instance_proc_addr"
+            self.gpa_val = 'inst'
+        elif dispatch_type == "device":
+            self.init_func_sig = 'PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device'
+            self.dispatch_handle = '        VkDevice dev = device.get();\n'
+            self.gpa = "get_device_proc_addr"
+            self.gpa_val = 'dev'
+
+    def print(self, file):
+        if len(self.function_dict.keys()) == 0:
+            return
+        if len(self.function_dict.keys()) == 1:
+            guard = list(self.function_dict.keys())[0]
+            func_list = list(self.function_dict.values())[0]
+            PlatformGuardHeader(file, guard)
+            file.write('struct ' + self.name + ' {\n')
+            file.write('private:\n')
+            [ file.write(f'    {func.func_prototype} pfn_{func.name[2:]};\n') for func in func_list.values()]
+            file.write('public:\n')
+            [ func.print(file, indent='    ') for func in func_list.values()]
+            file.write(f'    {self.name}({self.init_func_sig}) {{\n')
+            file.write(self.dispatch_handle)
+            for func in func_list.values():
                 file.write(f'        pfn_{func.name[2:]} = ')
-                file.write(f'reinterpret_cast<{func.func_prototype}>({gpa}({gpa_val},\"{func.name}\"));\n')
-        if has_element:
-            file.write('#endif\n')
-    file.write('    };\n')
-
-    file.write('};\n')
+                file.write(f'reinterpret_cast<{func.func_prototype}>({self.gpa}({self.gpa_val},\"{func.name}\"));\n')
+            file.write('    };\n};\n')  
+            PlatformGuardFooter(file, guard)  
+            return
+        file.write('struct ' + self.name + ' {\n')
+        #function pointers
+        file.write('private:\n')
+        for feature_name, functions in self.function_dict.items():
+            has_element = False
+            for func in functions.values():
+                has_element = StartPlatformDefBlock(file, feature_name, has_element)
+                file.write(f'    {func.func_prototype} pfn_{func.name[2:]};\n')
+            EndPlatformDefBlock(file, feature_name, has_element)
+        #functions
+        file.write('public:\n')
+        for feature_name, functions in self.function_dict.items():
+            has_element = False
+            for func in functions.values():
+                has_element = StartPlatformDefBlock(file, feature_name, has_element)
+                func.print(file, indent='    ')
+            EndPlatformDefBlock(file, feature_name, has_element)
+        #constructor
+        file.write(f'    {self.name}({self.init_func_sig}) {{\n')
+        file.write(self.dispatch_handle)
+        for feature_name, functions in self.function_dict.items():
+            has_element = False
+            for func in functions.values():
+                has_element = StartPlatformDefBlock(file, feature_name, has_element)
+                file.write(f'        pfn_{func.name[2:]} = ')
+                file.write(f'reinterpret_cast<{func.func_prototype}>({self.gpa}({self.gpa_val},\"{func.name}\"));\n')
+            EndPlatformDefBlock(file, feature_name, has_element)
+        file.write('    };\n};\n')
 
 class BindingGenerator:
     def __init__(self, root):
@@ -939,7 +985,8 @@ class BindingGenerator:
         self.functions = []
         self.vk_feature_levels = []
         self.ext_list = []
-
+        self.dispatch_tables = []
+        
         for platform in root.find('platforms'):
             self.platforms[platform.get('name')] = platform.get('protect')
 
@@ -972,6 +1019,7 @@ class BindingGenerator:
                 enum = Enum(xml_type)
                 if enum.name.find('Flag') == -1 or enum.name.find('FlagBits') == -1:
                     self.enum_dict[enum.name] = Enum(xml_type)
+                self.default_values[enum.name] = f'static_cast<{enum.name[2:]}>(0)'
             elif category == 'handle':
                 handle = Handle(xml_type)
                 self.handles[handle.name] = handle
@@ -997,7 +1045,7 @@ class BindingGenerator:
             if not moved:
                 outer_counter = outer_counter + 1
 
-        # determine which structs are comparable
+        # determine which structures are comparable
         for struct_or_union in self.struct_union_list:
             if not struct_or_union.is_comparable:
                 continue
@@ -1012,14 +1060,9 @@ class BindingGenerator:
 
         for enum in root.findall("enums"):
             if enum.get('type') == 'enum':
-                e = Enum(enum)
-                self.enum_dict[e.name] = e
-                self.default_values[e.name] = str('static_cast<'+e.name+'>(0)')
-
+                self.enum_dict[enum.get('name')] = Enum(enum)
             elif enum.get('type') == 'bitmask':
-                b = Bitmask(enum)
-                self.bitmask_dict[b.name] = b
-                self.default_values[b.name] = str('static_cast<'+b.name+'>(0)')
+                self.bitmask_dict[enum.get('name')] = Bitmask(enum)
 
         # add in flags which have no bitmask
         for f in self.flags_dict.values():
@@ -1033,44 +1076,45 @@ class BindingGenerator:
 
         for ext in root.find('extensions'):
             if ext.tag == 'extension':
-                self.ext_list.append(Extension(ext, self.platforms))
-        
-        for ext in self.ext_list:
-            for require in ext.requires:
-                for key in require.enum_dict.keys():
-                    self.enum_dict[key].fill_ext_enums(require.enum_dict[key])
-                for key in require.bitmask_dict.keys():
-                    self.bitmask_dict[key].fill_ext_bitmasks(require.bitmask_dict[key])
-                for struct in self.struct_union_list:
-                    struct.check_platform(ext.platform, require.types)
-                for function in self.functions:
-                    function.check_platform(ext.platform, require.functions)
-                for flag in self.flags_dict.values():
-                    flag.check_platform(ext.platform, require.types)
-                for enum in self.enum_dict.values():
-                    enum.check_platform(ext.platform, require.types)
-                for bitmask in self.bitmask_dict.values():
-                    bitmask.check_platform(ext.platform, require.types)
-                    
+                new_ext = Extension(ext, self.platforms)
+                if new_ext.supported == 'vulkan':
+                    for require in new_ext.requires:
+                        require.check_platform(new_ext.platform, self.enum_dict, self.flags_dict, self.bitmask_dict, 
+                            self.struct_union_list, self.functions)
+                        require.fill_enums(self.enum_dict)
+                        require.fill_bitmasks(self.bitmask_dict)
+                        require.fill_functions(self.functions)
+                    self.ext_list.append(new_ext)
+                elif new_ext.supported == 'disabled':
+                    for require in new_ext.requires:
+                        for req_type in require.types:
+                            if req_type in self.enum_dict:
+                                self.enum_dict.pop(req_type)
+                            if req_type in self.bitmask_dict:
+                                self.bitmask_dict.pop(req_type)
+                            if req_type in self.flags_dict:
+                                self.flags_dict.pop(req_type) 
+                            for struct_or_union in self.struct_union_list:
+                                if struct_or_union.name == req_type:
+                                    self.struct_union_list.remove(struct_or_union)
+
+    
         for feature in root.findall('feature'):
             feat_level = VulkanFeatureLevel(feature)
+            for require in feat_level.requires:
+                require.fill_enums(self.enum_dict)
+                require.fill_bitmasks(self.bitmask_dict)
+                require.fill_functions(self.functions)
             self.vk_feature_levels.append(feat_level)
 
-        for feature in self.vk_feature_levels:
-            for require in feature.requires:
-                for key in require.enum_dict.keys():
-                    self.enum_dict[key].fill_ext_enums(require.enum_dict[key])
-                for bitmask in require.bitmask_dict.keys():
-                    self.bitmask_dict[bitmask].fill_ext_bitmasks(require.bitmask_dict[bitmask])
-                                
-        for feature in self.vk_feature_levels:  
-            for requires in feature.requires:
-                for func in self.functions:
-                    if func.name in requires.functions:
-                        feature.functions.append(func)   
+        self.dispatch_tables.append(DispatchTable("global", "GlobalFunctions", self.vk_feature_levels))
+        self.dispatch_tables.append(DispatchTable("instance", "InstanceFunctions", self.vk_feature_levels))
+        self.dispatch_tables.append(DispatchTable("device", "DeviceFunctions", self.vk_feature_levels))
+
+        for ext in self.ext_list:
+            self.dispatch_tables.append(DispatchTable(ext.ext_type, f'{ext.name}_dispatch_table', [ext]))
 
     def print(self, file):
-        #[ macro.print(file) for macro in self.macro_defines ]
         [ constant.print(file) for constant in self.api_constants.values() ]
         [ base_type.print(file) for base_type in self.base_types ]
         [ enum.print(file) for enum in self.enum_dict.values()]
@@ -1079,15 +1123,11 @@ class BindingGenerator:
         [ flag.print(file) for flag in self.flags_dict.values() ]
         [ handle.print(file) for handle in self.handles.values() ]
         [ struct_or_union.print(file) for struct_or_union in self.struct_union_list ]
-        print_dispatch_table(file, "Global", "GlobalFunctions", self.vk_feature_levels)
-        print_dispatch_table(file, "Instance", "InstanceFunctions", self.vk_feature_levels)
-        print_dispatch_table(file, "Device", "DeviceFunctions", self.vk_feature_levels)
-
+        [ dispatch_table.print(file) for dispatch_table in self.dispatch_tables ]
+ 
     def print_string(self, file):
-        for enum in self.enum_dict.values():
-            enum.print_string(file)
-        for bitmask in self.bitmask_dict.values():
-            bitmask.print_string(file)
+        [ enum.print_string(file) for enum in self.enum_dict.values()]
+        [ bitmask.print_string(file) for bitmask in self.bitmask_dict.values()]
         
     def print_static_asserts(self, file):
         [ struct_or_union.print_static_asserts(file) for struct_or_union in self.struct_union_list ]

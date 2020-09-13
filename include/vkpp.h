@@ -415,36 +415,6 @@ enum class Format : uint32_t {
     eAstc10X10SfloatBlockEXT = 1000066011,
     eAstc12X10SfloatBlockEXT = 1000066012,
     eAstc12X12SfloatBlockEXT = 1000066013,
-    eAstc3X3X3UnormBlockEXT = 1000288000,
-    eAstc3X3X3SrgbBlockEXT = 1000288001,
-    eAstc3X3X3SfloatBlockEXT = 1000288002,
-    eAstc4X3X3UnormBlockEXT = 1000288003,
-    eAstc4X3X3SrgbBlockEXT = 1000288004,
-    eAstc4X3X3SfloatBlockEXT = 1000288005,
-    eAstc4X4X3UnormBlockEXT = 1000288006,
-    eAstc4X4X3SrgbBlockEXT = 1000288007,
-    eAstc4X4X3SfloatBlockEXT = 1000288008,
-    eAstc4X4X4UnormBlockEXT = 1000288009,
-    eAstc4X4X4SrgbBlockEXT = 1000288010,
-    eAstc4X4X4SfloatBlockEXT = 1000288011,
-    eAstc5X4X4UnormBlockEXT = 1000288012,
-    eAstc5X4X4SrgbBlockEXT = 1000288013,
-    eAstc5X4X4SfloatBlockEXT = 1000288014,
-    eAstc5X5X4UnormBlockEXT = 1000288015,
-    eAstc5X5X4SrgbBlockEXT = 1000288016,
-    eAstc5X5X4SfloatBlockEXT = 1000288017,
-    eAstc5X5X5UnormBlockEXT = 1000288018,
-    eAstc5X5X5SrgbBlockEXT = 1000288019,
-    eAstc5X5X5SfloatBlockEXT = 1000288020,
-    eAstc6X5X5UnormBlockEXT = 1000288021,
-    eAstc6X5X5SrgbBlockEXT = 1000288022,
-    eAstc6X5X5SfloatBlockEXT = 1000288023,
-    eAstc6X6X5UnormBlockEXT = 1000288024,
-    eAstc6X6X5SrgbBlockEXT = 1000288025,
-    eAstc6X6X5SfloatBlockEXT = 1000288026,
-    eAstc6X6X6UnormBlockEXT = 1000288027,
-    eAstc6X6X6SrgbBlockEXT = 1000288028,
-    eAstc6X6X6SfloatBlockEXT = 1000288029,
     eA4R4G4B4UnormPack16EXT = 1000340000,
     eA4B4G4R4UnormPack16EXT = 1000340001,
     eG8B8G8R8422Unorm = 1000156000,
@@ -583,8 +553,6 @@ enum class QueryType : uint32_t {
     eOcclusion = 0,
     ePipelineStatistics = 1,
     eTimestamp = 2,
-    eReserved8 = 1000023008,
-    eReserved4 = 1000024004,
     eTransformFeedbackStreamEXT = 1000028004,
     ePerformanceQueryKHR = 1000116000,
     eAccelerationStructureCompactedSizeKHR = 1000165000,
@@ -712,9 +680,6 @@ enum class StructureType : uint32_t {
     eWaylandSurfaceCreateInfoKHR = 1000006000,
     eAndroidSurfaceCreateInfoKHR = 1000008000,
     eWin32SurfaceCreateInfoKHR = 1000009000,
-    eNativeBufferANDROID = 1000010000,
-    eSwapchainImageCreateInfoANDROID = 1000010001,
-    ePhysicalDevicePresentationPropertiesANDROID = 1000010002,
     eDebugReportCallbackCreateInfoEXT = 1000011000,
     ePipelineRasterizationStateRasterizationOrderAMD = 1000018000,
     eDebugMarkerObjectNameInfoEXT = 1000022000,
@@ -973,7 +938,6 @@ enum class StructureType : uint32_t {
     ePhysicalDevicePipelineCreationCacheControlFeaturesEXT = 1000297000,
     ePhysicalDeviceDiagnosticsConfigFeaturesNV = 1000300000,
     eDeviceDiagnosticsConfigCreateInfoNV = 1000300001,
-    eReservedQCOM = 1000309000,
     ePhysicalDeviceFragmentDensityMap2FeaturesEXT = 1000332000,
     ePhysicalDeviceFragmentDensityMap2PropertiesEXT = 1000332001,
     ePhysicalDeviceImageRobustnessFeaturesEXT = 1000335000,
@@ -1181,7 +1145,7 @@ enum class DescriptorUpdateTemplateType : uint32_t {
     eDescriptorSet = 0,
     ePushDescriptorsKHR = 1,
 };
-using DescriptorUpdateTemplateTypeKHR = VkDescriptorUpdateTemplateType;
+using DescriptorUpdateTemplateTypeKHR = DescriptorUpdateTemplateType;
 enum class ViewportCoordinateSwizzleNV : uint32_t {
     ePositiveXNV = 0,
     eNegativeXNV = 1,
@@ -1200,7 +1164,7 @@ enum class PointClippingBehavior : uint32_t {
     eAllClipPlanes = 0,
     eUserClipPlanesOnly = 1,
 };
-using PointClippingBehaviorKHR = VkPointClippingBehavior;
+using PointClippingBehaviorKHR = PointClippingBehavior;
 enum class CoverageModulationModeNV : uint32_t {
     eNoneNV = 0,
     eRgbNV = 1,
@@ -1240,7 +1204,7 @@ enum class SemaphoreType : uint32_t {
     eBinary = 0,
     eTimeline = 1,
 };
-using SemaphoreTypeKHR = VkSemaphoreType;
+using SemaphoreTypeKHR = SemaphoreType;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 enum class CopyAccelerationStructureModeKHR : uint32_t {
     eCloneKHR = 0,
@@ -1249,14 +1213,14 @@ enum class CopyAccelerationStructureModeKHR : uint32_t {
     eDeserializeKHR = 3,
 };
 #endif // VK_ENABLE_BETA_EXTENSIONS
-using CopyAccelerationStructureModeNV = VkCopyAccelerationStructureModeKHR;
+using CopyAccelerationStructureModeNV = CopyAccelerationStructureModeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 enum class AccelerationStructureTypeKHR : uint32_t {
     eTopLevelKHR = 0,
     eBottomLevelKHR = 1,
 };
 #endif // VK_ENABLE_BETA_EXTENSIONS
-using AccelerationStructureTypeNV = VkAccelerationStructureTypeKHR;
+using AccelerationStructureTypeNV = AccelerationStructureTypeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 enum class GeometryTypeKHR : uint32_t {
     eTrianglesKHR = 0,
@@ -1264,7 +1228,7 @@ enum class GeometryTypeKHR : uint32_t {
     eInstancesKHR = 1000150000,
 };
 #endif // VK_ENABLE_BETA_EXTENSIONS
-using GeometryTypeNV = VkGeometryTypeKHR;
+using GeometryTypeNV = GeometryTypeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 enum class RayTracingShaderGroupTypeKHR : uint32_t {
     eGeneralKHR = 0,
@@ -1272,7 +1236,7 @@ enum class RayTracingShaderGroupTypeKHR : uint32_t {
     eProceduralHitGroupKHR = 2,
 };
 #endif // VK_ENABLE_BETA_EXTENSIONS
-using RayTracingShaderGroupTypeNV = VkRayTracingShaderGroupTypeKHR;
+using RayTracingShaderGroupTypeNV = RayTracingShaderGroupTypeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 enum class AccelerationStructureMemoryRequirementsTypeKHR : uint32_t {
     eObjectKHR = 0,
@@ -1280,7 +1244,7 @@ enum class AccelerationStructureMemoryRequirementsTypeKHR : uint32_t {
     eUpdateScratchKHR = 2,
 };
 #endif // VK_ENABLE_BETA_EXTENSIONS
-using AccelerationStructureMemoryRequirementsTypeNV = VkAccelerationStructureMemoryRequirementsTypeKHR;
+using AccelerationStructureMemoryRequirementsTypeNV = AccelerationStructureMemoryRequirementsTypeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 enum class AccelerationStructureBuildTypeKHR : uint32_t {
     eHostKHR = 0,
@@ -1467,7 +1431,7 @@ enum class TessellationDomainOrigin : uint32_t {
     eUpperLeft = 0,
     eLowerLeft = 1,
 };
-using TessellationDomainOriginKHR = VkTessellationDomainOrigin;
+using TessellationDomainOriginKHR = TessellationDomainOrigin;
 enum class SamplerYcbcrModelConversion : uint32_t {
     eRgbIdentity = 0,
     eYcbcrIdentity = 1,
@@ -1475,23 +1439,23 @@ enum class SamplerYcbcrModelConversion : uint32_t {
     eYcbcr601 = 3,
     eYcbcr2020 = 4,
 };
-using SamplerYcbcrModelConversionKHR = VkSamplerYcbcrModelConversion;
+using SamplerYcbcrModelConversionKHR = SamplerYcbcrModelConversion;
 enum class SamplerYcbcrRange : uint32_t {
     eItuFull = 0,
     eItuNarrow = 1,
 };
-using SamplerYcbcrRangeKHR = VkSamplerYcbcrRange;
+using SamplerYcbcrRangeKHR = SamplerYcbcrRange;
 enum class ChromaLocation : uint32_t {
     eCositedEven = 0,
     eMidpoint = 1,
 };
-using ChromaLocationKHR = VkChromaLocation;
+using ChromaLocationKHR = ChromaLocation;
 enum class SamplerReductionMode : uint32_t {
     eWeightedAverage = 0,
     eMin = 1,
     eMax = 2,
 };
-using SamplerReductionModeEXT = VkSamplerReductionMode;
+using SamplerReductionModeEXT = SamplerReductionMode;
 enum class BlendOverlapEXT : uint32_t {
     eUncorrelatedEXT = 0,
     eDisjointEXT = 1,
@@ -1510,7 +1474,7 @@ enum class ShaderFloatControlsIndependence : uint32_t {
     eAll = 1,
     eNone = 2,
 };
-using ShaderFloatControlsIndependenceKHR = VkShaderFloatControlsIndependence;
+using ShaderFloatControlsIndependenceKHR = ShaderFloatControlsIndependence;
 enum class VendorId : uint32_t {
     eVIV = 0x10001,
     eVSI = 0x10002,
@@ -1534,7 +1498,7 @@ enum class DriverId : uint32_t {
     eMesaLlvmpipe = 13,
     eMoltenvk = 14,
 };
-using DriverIdKHR = VkDriverId;
+using DriverIdKHR = DriverId;
 enum class ShadingRatePaletteEntryNV : uint32_t {
     eNoInvocationsNV = 0,
     e16InvocationsPerPixelNV = 1,
@@ -1575,12 +1539,9 @@ enum class QueueFlagBits: uint32_t {
     eCompute = 2,
     eTransfer = 4,
     eSparseBinding = 8,
-    eReserved6BitKHR = 64,
-    eReserved5BitKHR = 32,
     eProtected = 16,
 };
 enum class RenderPassCreateFlagBits: uint32_t {
-    eReserved0BitKHR = 1,
     eTransformBitQCOM = 2,
 };
 enum class DeviceQueueCreateFlagBits: uint32_t {
@@ -1598,7 +1559,6 @@ enum class MemoryPropertyFlagBits: uint32_t {
 };
 enum class MemoryHeapFlagBits: uint32_t {
     eDeviceLocal = 1,
-    eReserved2BitKHR = 4,
     eMultiInstance = 2,
 };
 enum class AccessFlagBits: uint32_t {
@@ -1619,9 +1579,6 @@ enum class AccessFlagBits: uint32_t {
     eHostWrite = 16384,
     eMemoryRead = 32768,
     eMemoryWrite = 65536,
-    eReserved30BitKHR = 1073741824,
-    eReserved28BitKHR = 268435456,
-    eReserved29BitKHR = 536870912,
     eTransformFeedbackWriteBitEXT = 33554432,
     eTransformFeedbackCounterReadBitEXT = 67108864,
     eTransformFeedbackCounterWriteBitEXT = 134217728,
@@ -1644,17 +1601,10 @@ enum class BufferUsageFlagBits: uint32_t {
     eIndexBuffer = 64,
     eVertexBuffer = 128,
     eIndirectBuffer = 256,
-    eReserved15BitKHR = 32768,
-    eReserved16BitKHR = 65536,
-    eReserved13BitKHR = 8192,
-    eReserved14BitKHR = 16384,
     eTransformFeedbackBufferBitEXT = 2048,
     eTransformFeedbackCounterBufferBitEXT = 4096,
     eConditionalRenderingBitEXT = 512,
     eRayTracingBitKHR = 1024,
-    eReserved19BitKHR = 524288,
-    eReserved20BitKHR = 1048576,
-    eReserved18BitQCOM = 262144,
     eShaderDeviceAddress = 131072,
 };
 enum class BufferCreateFlagBits: uint32_t {
@@ -1691,15 +1641,7 @@ enum class ImageUsageFlagBits: uint32_t {
     eDepthStencilAttachment = 32,
     eTransientAttachment = 64,
     eInputAttachment = 128,
-    eReserved13BitKHR = 8192,
-    eReserved14BitKHR = 16384,
-    eReserved15BitKHR = 32768,
-    eReserved10BitKHR = 1024,
-    eReserved11BitKHR = 2048,
-    eReserved12BitKHR = 4096,
     eShadingRateImageBitNV = 256,
-    eReserved16BitQCOM = 65536,
-    eReserved17BitQCOM = 131072,
     eFragmentDensityMapBitEXT = 512,
 };
 enum class ImageCreateFlagBits: uint32_t {
@@ -1738,7 +1680,6 @@ enum class PipelineCreateFlagBits: uint32_t {
     eRayTracingSkipTrianglesBitKHR = 4096,
     eRayTracingSkipAabbsBitKHR = 8192,
     eDeferCompileBitNV = 32,
-    eReserved19BitKHR = 524288,
     eCaptureStatisticsBitKHR = 64,
     eCaptureInternalRepresentationsBitKHR = 128,
     eIndirectBindableBitNV = 262144,
@@ -1749,10 +1690,8 @@ enum class PipelineCreateFlagBits: uint32_t {
     eDispatchBase = 16,
 };
 enum class PipelineShaderStageCreateFlagBits: uint32_t {
-    eReserved2BitNV = 4,
     eAllowVaryingSubgroupSizeBitEXT = 1,
     eRequireFullSubgroupsBitEXT = 2,
-    eReserved3BitKHR = 8,
 };
 enum class ColorComponentFlagBits: uint32_t {
     eR = 1,
@@ -1780,13 +1719,8 @@ enum class FormatFeatureFlagBits: uint32_t {
     eBlitDst = 2048,
     eSampledImageFilterLinear = 4096,
     eSampledImageFilterCubicBitIMG = 8192,
-    eReserved27BitKHR = 134217728,
-    eReserved28BitKHR = 268435456,
-    eReserved25BitKHR = 33554432,
-    eReserved26BitKHR = 67108864,
     eAccelerationStructureVertexBufferBitKHR = 536870912,
     eFragmentDensityMapBitEXT = 16777216,
-    eAmdReserved30 = 1073741824,
     eTransferSrc = 16384,
     eTransferDst = 32768,
     eMidpointChromaSamples = 131072,
@@ -1864,8 +1798,6 @@ enum class PipelineStageFlagBits: uint32_t {
     eHost = 16384,
     eAllGraphics = 32768,
     eAllCommands = 65536,
-    eReserved27BitKHR = 134217728,
-    eReserved26BitKHR = 67108864,
     eTransformFeedbackBitEXT = 16777216,
     eConditionalRenderingBitEXT = 262144,
     eRayTracingShaderBitKHR = 2097152,
@@ -1939,11 +1871,6 @@ enum class SurfaceTransformFlagBitsKHR: uint32_t {
     eHorizontalMirrorRotate270BitKHR = 128,
     eInheritBitKHR = 256,
 };
-#if defined(VK_USE_PLATFORM_ANDROID_KHR)
-enum class SwapchainImageUsageFlagBitsANDROID: uint32_t {
-    eSharedBitANDROID = 1,
-};
-#endif // VK_USE_PLATFORM_ANDROID_KHR
 enum class DebugReportFlagBitsEXT: uint32_t {
     eInformationBitEXT = 1,
     eWarningBitEXT = 2,
@@ -2136,7 +2063,6 @@ enum class AcquireProfilingLockFlagBitsKHR: uint32_t {
 enum class ShaderCorePropertiesFlagBitsAMD: uint32_t {
 };
 enum class ShaderModuleCreateFlagBits: uint32_t {
-    eReserved0BitNV = 1,
 };
 enum class PipelineCompilerControlFlagBitsAMD: uint32_t {
 };
@@ -2466,9 +2392,6 @@ DECLARE_ENUM_FLAG_OPERATORS(ResolveModeFlags, ResolveModeFlagBits, VkResolveMode
 using ResolveModeFlagsKHR = ResolveModeFlags;
 DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationStateStreamCreateFlagsEXT, PipelineRasterizationStateStreamCreateFlagBitsEXT, VkPipelineRasterizationStateStreamCreateFlagsEXT)
 DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationDepthClipStateCreateFlagsEXT, PipelineRasterizationDepthClipStateCreateFlagBitsEXT, VkPipelineRasterizationDepthClipStateCreateFlagsEXT)
-#if defined(VK_USE_PLATFORM_ANDROID_KHR)
-DECLARE_ENUM_FLAG_OPERATORS(SwapchainImageUsageFlagsANDROID, SwapchainImageUsageFlagBitsANDROID, VkSwapchainImageUsageFlagsANDROID)
-#endif // VK_USE_PLATFORM_ANDROID_KHR
 DECLARE_ENUM_FLAG_OPERATORS(ToolPurposeFlagsEXT, ToolPurposeFlagBitsEXT, VkToolPurposeFlagsEXT)
 class Instance {
     VkInstance handle = VK_NULL_HANDLE;
@@ -2747,7 +2670,7 @@ class DebugUtilsMessengerEXT {
     bool operator!() { return handle == VK_NULL_HANDLE; }
 };
 struct BaseOutStructure {
-    StructureType sType;
+    StructureType sType = static_cast<StructureType>(0);
     BaseOutStructure* pNext = nullptr;
     operator VkBaseOutStructure const &() const noexcept {
         return *reinterpret_cast<const VkBaseOutStructure*>(this);
@@ -2757,7 +2680,7 @@ struct BaseOutStructure {
     }
 };
 struct BaseInStructure {
-    StructureType sType;
+    StructureType sType = static_cast<StructureType>(0);
     const BaseInStructure* pNext = nullptr;
     operator VkBaseInStructure const &() const noexcept {
         return *reinterpret_cast<const VkBaseInStructure*>(this);
@@ -2851,10 +2774,10 @@ struct ClearRect {
     }
 };
 struct ComponentMapping {
-    ComponentSwizzle r;
-    ComponentSwizzle g;
-    ComponentSwizzle b;
-    ComponentSwizzle a;
+    ComponentSwizzle r = static_cast<ComponentSwizzle>(0);
+    ComponentSwizzle g = static_cast<ComponentSwizzle>(0);
+    ComponentSwizzle b = static_cast<ComponentSwizzle>(0);
+    ComponentSwizzle a = static_cast<ComponentSwizzle>(0);
     constexpr bool operator==(ComponentMapping const& other) const = default;
     operator VkComponentMapping const &() const noexcept {
         return *reinterpret_cast<const VkComponentMapping*>(this);
@@ -2997,7 +2920,7 @@ struct PhysicalDeviceProperties {
     uint32_t driverVersion = 0;
     uint32_t vendorID = 0;
     uint32_t deviceID = 0;
-    PhysicalDeviceType deviceType;
+    PhysicalDeviceType deviceType = static_cast<PhysicalDeviceType>(0);
     char deviceName[MAX_PHYSICAL_DEVICE_NAME_SIZE] = {};
     uint8_t pipelineCacheUUID[UUID_SIZE] = {};
     PhysicalDeviceLimits limits;
@@ -3326,7 +3249,7 @@ struct DescriptorBufferInfo {
 struct DescriptorImageInfo {
     Sampler sampler;
     ImageView imageView;
-    ImageLayout imageLayout;
+    ImageLayout imageLayout = static_cast<ImageLayout>(0);
     operator VkDescriptorImageInfo const &() const noexcept {
         return *reinterpret_cast<const VkDescriptorImageInfo*>(this);
     }
@@ -3341,7 +3264,7 @@ struct WriteDescriptorSet {
     uint32_t dstBinding = 0;
     uint32_t dstArrayElement = 0;
     uint32_t descriptorCount = 0;
-    DescriptorType descriptorType;
+    DescriptorType descriptorType = static_cast<DescriptorType>(0);
     const DescriptorImageInfo* pImageInfo = nullptr;
     const DescriptorBufferInfo* pBufferInfo = nullptr;
     const BufferView* pTexelBufferView = nullptr;
@@ -3375,7 +3298,7 @@ struct BufferCreateInfo {
     BufferCreateFlags flags;
     DeviceSize size = 0;
     BufferUsageFlags usage;
-    SharingMode sharingMode;
+    SharingMode sharingMode = static_cast<SharingMode>(0);
     uint32_t queueFamilyIndexCount = 0;
     const uint32_t* pQueueFamilyIndices = nullptr;
     operator VkBufferCreateInfo const &() const noexcept {
@@ -3390,7 +3313,7 @@ struct BufferViewCreateInfo {
     const void* pNext = nullptr;
     BufferViewCreateFlags flags;
     Buffer buffer;
-    Format format;
+    Format format = static_cast<Format>(0);
     DeviceSize offset = 0;
     DeviceSize range = 0;
     operator VkBufferViewCreateInfo const &() const noexcept {
@@ -3473,8 +3396,8 @@ struct ImageMemoryBarrier {
     const void* pNext = nullptr;
     AccessFlags srcAccessMask;
     AccessFlags dstAccessMask;
-    ImageLayout oldLayout;
-    ImageLayout newLayout;
+    ImageLayout oldLayout = static_cast<ImageLayout>(0);
+    ImageLayout newLayout = static_cast<ImageLayout>(0);
     uint32_t srcQueueFamilyIndex = 0;
     uint32_t dstQueueFamilyIndex = 0;
     Image image;
@@ -3490,18 +3413,18 @@ struct ImageCreateInfo {
     StructureType sType = StructureType::eImageCreateInfo;
     const void* pNext = nullptr;
     ImageCreateFlags flags;
-    ImageType imageType;
-    Format format;
+    ImageType imageType = static_cast<ImageType>(0);
+    Format format = static_cast<Format>(0);
     Extent3D extent;
     uint32_t mipLevels = 0;
     uint32_t arrayLayers = 0;
-    SampleCountFlagBits samples;
-    ImageTiling tiling;
+    SampleCountFlagBits samples = static_cast<SampleCountFlagBits>(0);
+    ImageTiling tiling = static_cast<ImageTiling>(0);
     ImageUsageFlags usage;
-    SharingMode sharingMode;
+    SharingMode sharingMode = static_cast<SharingMode>(0);
     uint32_t queueFamilyIndexCount = 0;
     const uint32_t* pQueueFamilyIndices = nullptr;
-    ImageLayout initialLayout;
+    ImageLayout initialLayout = static_cast<ImageLayout>(0);
     operator VkImageCreateInfo const &() const noexcept {
         return *reinterpret_cast<const VkImageCreateInfo*>(this);
     }
@@ -3528,8 +3451,8 @@ struct ImageViewCreateInfo {
     const void* pNext = nullptr;
     ImageViewCreateFlags flags;
     Image image;
-    ImageViewType viewType;
-    Format format;
+    ImageViewType viewType = static_cast<ImageViewType>(0);
+    Format format = static_cast<Format>(0);
     ComponentMapping components;
     ImageSubresourceRange subresourceRange;
     operator VkImageViewCreateInfo const &() const noexcept {
@@ -3702,7 +3625,7 @@ struct ShaderModuleCreateInfo {
 };
 struct DescriptorSetLayoutBinding {
     uint32_t binding = 0;
-    DescriptorType descriptorType;
+    DescriptorType descriptorType = static_cast<DescriptorType>(0);
     uint32_t descriptorCount = 0;
     ShaderStageFlags stageFlags;
     const Sampler* pImmutableSamplers = nullptr;
@@ -3727,7 +3650,7 @@ struct DescriptorSetLayoutCreateInfo {
     }
 };
 struct DescriptorPoolSize {
-    DescriptorType type;
+    DescriptorType type = static_cast<DescriptorType>(0);
     uint32_t descriptorCount = 0;
     constexpr bool operator==(DescriptorPoolSize const& other) const = default;
     operator VkDescriptorPoolSize const &() const noexcept {
@@ -3792,7 +3715,7 @@ struct PipelineShaderStageCreateInfo {
     StructureType sType = StructureType::ePipelineShaderStageCreateInfo;
     const void* pNext = nullptr;
     PipelineShaderStageCreateFlags flags;
-    ShaderStageFlagBits stage;
+    ShaderStageFlagBits stage = static_cast<ShaderStageFlagBits>(0);
     ShaderModule module;
     const char* pName = nullptr;
     const SpecializationInfo* pSpecializationInfo = nullptr;
@@ -3821,7 +3744,7 @@ struct ComputePipelineCreateInfo {
 struct VertexInputBindingDescription {
     uint32_t binding = 0;
     uint32_t stride = 0;
-    VertexInputRate inputRate;
+    VertexInputRate inputRate = static_cast<VertexInputRate>(0);
     constexpr bool operator==(VertexInputBindingDescription const& other) const = default;
     operator VkVertexInputBindingDescription const &() const noexcept {
         return *reinterpret_cast<const VkVertexInputBindingDescription*>(this);
@@ -3833,7 +3756,7 @@ struct VertexInputBindingDescription {
 struct VertexInputAttributeDescription {
     uint32_t location = 0;
     uint32_t binding = 0;
-    Format format;
+    Format format = static_cast<Format>(0);
     uint32_t offset = 0;
     constexpr bool operator==(VertexInputAttributeDescription const& other) const = default;
     operator VkVertexInputAttributeDescription const &() const noexcept {
@@ -3862,7 +3785,7 @@ struct PipelineInputAssemblyStateCreateInfo {
     StructureType sType = StructureType::ePipelineInputAssemblyStateCreateInfo;
     const void* pNext = nullptr;
     PipelineInputAssemblyStateCreateFlags flags;
-    PrimitiveTopology topology;
+    PrimitiveTopology topology = static_cast<PrimitiveTopology>(0);
     Bool32 primitiveRestartEnable = 0;
     operator VkPipelineInputAssemblyStateCreateInfo const &() const noexcept {
         return *reinterpret_cast<const VkPipelineInputAssemblyStateCreateInfo*>(this);
@@ -3904,9 +3827,9 @@ struct PipelineRasterizationStateCreateInfo {
     PipelineRasterizationStateCreateFlags flags;
     Bool32 depthClampEnable = 0;
     Bool32 rasterizerDiscardEnable = 0;
-    PolygonMode polygonMode;
+    PolygonMode polygonMode = static_cast<PolygonMode>(0);
     CullModeFlags cullMode;
-    FrontFace frontFace;
+    FrontFace frontFace = static_cast<FrontFace>(0);
     Bool32 depthBiasEnable = 0;
     float depthBiasConstantFactor = 0.f;
     float depthBiasClamp = 0.f;
@@ -3923,7 +3846,7 @@ struct PipelineMultisampleStateCreateInfo {
     StructureType sType = StructureType::ePipelineMultisampleStateCreateInfo;
     const void* pNext = nullptr;
     PipelineMultisampleStateCreateFlags flags;
-    SampleCountFlagBits rasterizationSamples;
+    SampleCountFlagBits rasterizationSamples = static_cast<SampleCountFlagBits>(0);
     Bool32 sampleShadingEnable = 0;
     float minSampleShading = 0.f;
     const SampleMask* pSampleMask = nullptr;
@@ -3938,12 +3861,12 @@ struct PipelineMultisampleStateCreateInfo {
 };
 struct PipelineColorBlendAttachmentState {
     Bool32 blendEnable = 0;
-    BlendFactor srcColorBlendFactor;
-    BlendFactor dstColorBlendFactor;
-    BlendOp colorBlendOp;
-    BlendFactor srcAlphaBlendFactor;
-    BlendFactor dstAlphaBlendFactor;
-    BlendOp alphaBlendOp;
+    BlendFactor srcColorBlendFactor = static_cast<BlendFactor>(0);
+    BlendFactor dstColorBlendFactor = static_cast<BlendFactor>(0);
+    BlendOp colorBlendOp = static_cast<BlendOp>(0);
+    BlendFactor srcAlphaBlendFactor = static_cast<BlendFactor>(0);
+    BlendFactor dstAlphaBlendFactor = static_cast<BlendFactor>(0);
+    BlendOp alphaBlendOp = static_cast<BlendOp>(0);
     ColorComponentFlags colorWriteMask;
     constexpr bool operator==(PipelineColorBlendAttachmentState const& other) const = default;
     operator VkPipelineColorBlendAttachmentState const &() const noexcept {
@@ -3958,7 +3881,7 @@ struct PipelineColorBlendStateCreateInfo {
     const void* pNext = nullptr;
     PipelineColorBlendStateCreateFlags flags;
     Bool32 logicOpEnable = 0;
-    LogicOp logicOp;
+    LogicOp logicOp = static_cast<LogicOp>(0);
     uint32_t attachmentCount = 0;
     const PipelineColorBlendAttachmentState* pAttachments = nullptr;
     float blendConstants[4] = {};
@@ -3983,10 +3906,10 @@ struct PipelineDynamicStateCreateInfo {
     }
 };
 struct StencilOpState {
-    StencilOp failOp;
-    StencilOp passOp;
-    StencilOp depthFailOp;
-    CompareOp compareOp;
+    StencilOp failOp = static_cast<StencilOp>(0);
+    StencilOp passOp = static_cast<StencilOp>(0);
+    StencilOp depthFailOp = static_cast<StencilOp>(0);
+    CompareOp compareOp = static_cast<CompareOp>(0);
     uint32_t compareMask = 0;
     uint32_t writeMask = 0;
     uint32_t reference = 0;
@@ -4004,7 +3927,7 @@ struct PipelineDepthStencilStateCreateInfo {
     PipelineDepthStencilStateCreateFlags flags;
     Bool32 depthTestEnable = 0;
     Bool32 depthWriteEnable = 0;
-    CompareOp depthCompareOp;
+    CompareOp depthCompareOp = static_cast<CompareOp>(0);
     Bool32 depthBoundsTestEnable = 0;
     Bool32 stencilTestEnable = 0;
     StencilOpState front;
@@ -4089,20 +4012,20 @@ struct SamplerCreateInfo {
     StructureType sType = StructureType::eSamplerCreateInfo;
     const void* pNext = nullptr;
     SamplerCreateFlags flags;
-    Filter magFilter;
-    Filter minFilter;
-    SamplerMipmapMode mipmapMode;
-    SamplerAddressMode addressModeU;
-    SamplerAddressMode addressModeV;
-    SamplerAddressMode addressModeW;
+    Filter magFilter = static_cast<Filter>(0);
+    Filter minFilter = static_cast<Filter>(0);
+    SamplerMipmapMode mipmapMode = static_cast<SamplerMipmapMode>(0);
+    SamplerAddressMode addressModeU = static_cast<SamplerAddressMode>(0);
+    SamplerAddressMode addressModeV = static_cast<SamplerAddressMode>(0);
+    SamplerAddressMode addressModeW = static_cast<SamplerAddressMode>(0);
     float mipLodBias = 0.f;
     Bool32 anisotropyEnable = 0;
     float maxAnisotropy = 0.f;
     Bool32 compareEnable = 0;
-    CompareOp compareOp;
+    CompareOp compareOp = static_cast<CompareOp>(0);
     float minLod = 0.f;
     float maxLod = 0.f;
-    BorderColor borderColor;
+    BorderColor borderColor = static_cast<BorderColor>(0);
     Bool32 unnormalizedCoordinates = 0;
     operator VkSamplerCreateInfo const &() const noexcept {
         return *reinterpret_cast<const VkSamplerCreateInfo*>(this);
@@ -4127,7 +4050,7 @@ struct CommandBufferAllocateInfo {
     StructureType sType = StructureType::eCommandBufferAllocateInfo;
     const void* pNext = nullptr;
     CommandPool commandPool;
-    CommandBufferLevel level;
+    CommandBufferLevel level = static_cast<CommandBufferLevel>(0);
     uint32_t commandBufferCount = 0;
     operator VkCommandBufferAllocateInfo const &() const noexcept {
         return *reinterpret_cast<const VkCommandBufferAllocateInfo*>(this);
@@ -4220,14 +4143,14 @@ struct ClearAttachment {
 };
 struct AttachmentDescription {
     AttachmentDescriptionFlags flags;
-    Format format;
-    SampleCountFlagBits samples;
-    AttachmentLoadOp loadOp;
-    AttachmentStoreOp storeOp;
-    AttachmentLoadOp stencilLoadOp;
-    AttachmentStoreOp stencilStoreOp;
-    ImageLayout initialLayout;
-    ImageLayout finalLayout;
+    Format format = static_cast<Format>(0);
+    SampleCountFlagBits samples = static_cast<SampleCountFlagBits>(0);
+    AttachmentLoadOp loadOp = static_cast<AttachmentLoadOp>(0);
+    AttachmentStoreOp storeOp = static_cast<AttachmentStoreOp>(0);
+    AttachmentLoadOp stencilLoadOp = static_cast<AttachmentLoadOp>(0);
+    AttachmentStoreOp stencilStoreOp = static_cast<AttachmentStoreOp>(0);
+    ImageLayout initialLayout = static_cast<ImageLayout>(0);
+    ImageLayout finalLayout = static_cast<ImageLayout>(0);
     constexpr bool operator==(AttachmentDescription const& other) const = default;
     operator VkAttachmentDescription const &() const noexcept {
         return *reinterpret_cast<const VkAttachmentDescription*>(this);
@@ -4238,7 +4161,7 @@ struct AttachmentDescription {
 };
 struct AttachmentReference {
     uint32_t attachment = 0;
-    ImageLayout layout;
+    ImageLayout layout = static_cast<ImageLayout>(0);
     constexpr bool operator==(AttachmentReference const& other) const = default;
     operator VkAttachmentReference const &() const noexcept {
         return *reinterpret_cast<const VkAttachmentReference*>(this);
@@ -4249,7 +4172,7 @@ struct AttachmentReference {
 };
 struct SubpassDescription {
     SubpassDescriptionFlags flags;
-    PipelineBindPoint pipelineBindPoint;
+    PipelineBindPoint pipelineBindPoint = static_cast<PipelineBindPoint>(0);
     uint32_t inputAttachmentCount = 0;
     const AttachmentReference* pInputAttachments = nullptr;
     uint32_t colorAttachmentCount = 0;
@@ -4335,7 +4258,7 @@ struct QueryPoolCreateInfo {
     StructureType sType = StructureType::eQueryPoolCreateInfo;
     const void* pNext = nullptr;
     QueryPoolCreateFlags flags;
-    QueryType queryType;
+    QueryType queryType = static_cast<QueryType>(0);
     uint32_t queryCount = 0;
     QueryPipelineStatisticFlags pipelineStatistics;
     operator VkQueryPoolCreateInfo const &() const noexcept {
@@ -4501,9 +4424,9 @@ struct DisplaySurfaceCreateInfoKHR {
     DisplayModeKHR displayMode;
     uint32_t planeIndex = 0;
     uint32_t planeStackIndex = 0;
-    SurfaceTransformFlagBitsKHR transform;
+    SurfaceTransformFlagBitsKHR transform = static_cast<SurfaceTransformFlagBitsKHR>(0);
     float globalAlpha = 0.f;
-    DisplayPlaneAlphaFlagBitsKHR alphaMode;
+    DisplayPlaneAlphaFlagBitsKHR alphaMode = static_cast<DisplayPlaneAlphaFlagBitsKHR>(0);
     Extent2D imageExtent;
     operator VkDisplaySurfaceCreateInfoKHR const &() const noexcept {
         return *reinterpret_cast<const VkDisplaySurfaceCreateInfoKHR*>(this);
@@ -4533,7 +4456,7 @@ struct SurfaceCapabilitiesKHR {
     Extent2D maxImageExtent;
     uint32_t maxImageArrayLayers = 0;
     SurfaceTransformFlagsKHR supportedTransforms;
-    SurfaceTransformFlagBitsKHR currentTransform;
+    SurfaceTransformFlagBitsKHR currentTransform = static_cast<SurfaceTransformFlagBitsKHR>(0);
     CompositeAlphaFlagsKHR supportedCompositeAlpha;
     ImageUsageFlags supportedUsageFlags;
     constexpr bool operator==(SurfaceCapabilitiesKHR const& other) const = default;
@@ -4676,8 +4599,8 @@ struct StreamDescriptorSurfaceCreateInfoGGP {
 };
 #endif // VK_USE_PLATFORM_GGP
 struct SurfaceFormatKHR {
-    Format format;
-    ColorSpaceKHR colorSpace;
+    Format format = static_cast<Format>(0);
+    ColorSpaceKHR colorSpace = static_cast<ColorSpaceKHR>(0);
     constexpr bool operator==(SurfaceFormatKHR const& other) const = default;
     operator VkSurfaceFormatKHR const &() const noexcept {
         return *reinterpret_cast<const VkSurfaceFormatKHR*>(this);
@@ -4692,17 +4615,17 @@ struct SwapchainCreateInfoKHR {
     SwapchainCreateFlagsKHR flags;
     SurfaceKHR surface;
     uint32_t minImageCount = 0;
-    Format imageFormat;
-    ColorSpaceKHR imageColorSpace;
+    Format imageFormat = static_cast<Format>(0);
+    ColorSpaceKHR imageColorSpace = static_cast<ColorSpaceKHR>(0);
     Extent2D imageExtent;
     uint32_t imageArrayLayers = 0;
     ImageUsageFlags imageUsage;
-    SharingMode imageSharingMode;
+    SharingMode imageSharingMode = static_cast<SharingMode>(0);
     uint32_t queueFamilyIndexCount = 0;
     const uint32_t* pQueueFamilyIndices = nullptr;
-    SurfaceTransformFlagBitsKHR preTransform;
-    CompositeAlphaFlagBitsKHR compositeAlpha;
-    PresentModeKHR presentMode;
+    SurfaceTransformFlagBitsKHR preTransform = static_cast<SurfaceTransformFlagBitsKHR>(0);
+    CompositeAlphaFlagBitsKHR compositeAlpha = static_cast<CompositeAlphaFlagBitsKHR>(0);
+    PresentModeKHR presentMode = static_cast<PresentModeKHR>(0);
     Bool32 clipped = 0;
     SwapchainKHR oldSwapchain;
     operator VkSwapchainCreateInfoKHR const &() const noexcept {
@@ -4770,7 +4693,7 @@ struct ValidationFeaturesEXT {
 struct PipelineRasterizationStateRasterizationOrderAMD {
     StructureType sType = StructureType::ePipelineRasterizationStateRasterizationOrderAMD;
     const void* pNext = nullptr;
-    RasterizationOrderAMD rasterizationOrder;
+    RasterizationOrderAMD rasterizationOrder = static_cast<RasterizationOrderAMD>(0);
     operator VkPipelineRasterizationStateRasterizationOrderAMD const &() const noexcept {
         return *reinterpret_cast<const VkPipelineRasterizationStateRasterizationOrderAMD*>(this);
     }
@@ -4781,7 +4704,7 @@ struct PipelineRasterizationStateRasterizationOrderAMD {
 struct DebugMarkerObjectNameInfoEXT {
     StructureType sType = StructureType::eDebugMarkerObjectNameInfoEXT;
     const void* pNext = nullptr;
-    DebugReportObjectTypeEXT objectType;
+    DebugReportObjectTypeEXT objectType = static_cast<DebugReportObjectTypeEXT>(0);
     uint64_t object = 0;
     const char* pObjectName = nullptr;
     operator VkDebugMarkerObjectNameInfoEXT const &() const noexcept {
@@ -4794,7 +4717,7 @@ struct DebugMarkerObjectNameInfoEXT {
 struct DebugMarkerObjectTagInfoEXT {
     StructureType sType = StructureType::eDebugMarkerObjectTagInfoEXT;
     const void* pNext = nullptr;
-    DebugReportObjectTypeEXT objectType;
+    DebugReportObjectTypeEXT objectType = static_cast<DebugReportObjectTypeEXT>(0);
     uint64_t object = 0;
     uint64_t tagName = 0;
     size_t tagSize = 0;
@@ -5038,7 +4961,7 @@ struct BindShaderGroupIndirectCommandNV {
 struct BindIndexBufferIndirectCommandNV {
     DeviceAddress bufferAddress = 0;
     uint32_t size = 0;
-    IndexType indexType;
+    IndexType indexType = static_cast<IndexType>(0);
     constexpr bool operator==(BindIndexBufferIndirectCommandNV const& other) const = default;
     operator VkBindIndexBufferIndirectCommandNV const &() const noexcept {
         return *reinterpret_cast<const VkBindIndexBufferIndirectCommandNV*>(this);
@@ -5082,7 +5005,7 @@ struct IndirectCommandsStreamNV {
 struct IndirectCommandsLayoutTokenNV {
     StructureType sType = StructureType::eIndirectCommandsLayoutTokenNV;
     const void* pNext = nullptr;
-    IndirectCommandsTokenTypeNV tokenType;
+    IndirectCommandsTokenTypeNV tokenType = static_cast<IndirectCommandsTokenTypeNV>(0);
     uint32_t stream = 0;
     uint32_t offset = 0;
     uint32_t vertexBindingUnit = 0;
@@ -5106,7 +5029,7 @@ struct IndirectCommandsLayoutCreateInfoNV {
     StructureType sType = StructureType::eIndirectCommandsLayoutCreateInfoNV;
     const void* pNext = nullptr;
     IndirectCommandsLayoutUsageFlagsNV flags;
-    PipelineBindPoint pipelineBindPoint;
+    PipelineBindPoint pipelineBindPoint = static_cast<PipelineBindPoint>(0);
     uint32_t tokenCount = 0;
     const IndirectCommandsLayoutTokenNV* pTokens = nullptr;
     uint32_t streamCount = 0;
@@ -5121,7 +5044,7 @@ struct IndirectCommandsLayoutCreateInfoNV {
 struct GeneratedCommandsInfoNV {
     StructureType sType = StructureType::eGeneratedCommandsInfoNV;
     const void* pNext = nullptr;
-    PipelineBindPoint pipelineBindPoint;
+    PipelineBindPoint pipelineBindPoint = static_cast<PipelineBindPoint>(0);
     Pipeline pipeline;
     IndirectCommandsLayoutNV indirectCommandsLayout;
     uint32_t streamCount = 0;
@@ -5144,7 +5067,7 @@ struct GeneratedCommandsInfoNV {
 struct GeneratedCommandsMemoryRequirementsInfoNV {
     StructureType sType = StructureType::eGeneratedCommandsMemoryRequirementsInfoNV;
     const void* pNext = nullptr;
-    PipelineBindPoint pipelineBindPoint;
+    PipelineBindPoint pipelineBindPoint = static_cast<PipelineBindPoint>(0);
     Pipeline pipeline;
     IndirectCommandsLayoutNV indirectCommandsLayout;
     uint32_t maxSequencesCount = 0;
@@ -5206,9 +5129,9 @@ using ImageFormatProperties2KHR = ImageFormatProperties2;
 struct PhysicalDeviceImageFormatInfo2 {
     StructureType sType = StructureType::ePhysicalDeviceImageFormatInfo2;
     const void* pNext = nullptr;
-    Format format;
-    ImageType type;
-    ImageTiling tiling;
+    Format format = static_cast<Format>(0);
+    ImageType type = static_cast<ImageType>(0);
+    ImageTiling tiling = static_cast<ImageTiling>(0);
     ImageUsageFlags usage;
     ImageCreateFlags flags;
     operator VkPhysicalDeviceImageFormatInfo2 const &() const noexcept {
@@ -5258,11 +5181,11 @@ using SparseImageFormatProperties2KHR = SparseImageFormatProperties2;
 struct PhysicalDeviceSparseImageFormatInfo2 {
     StructureType sType = StructureType::ePhysicalDeviceSparseImageFormatInfo2;
     const void* pNext = nullptr;
-    Format format;
-    ImageType type;
-    SampleCountFlagBits samples;
+    Format format = static_cast<Format>(0);
+    ImageType type = static_cast<ImageType>(0);
+    SampleCountFlagBits samples = static_cast<SampleCountFlagBits>(0);
     ImageUsageFlags usage;
-    ImageTiling tiling;
+    ImageTiling tiling = static_cast<ImageTiling>(0);
     operator VkPhysicalDeviceSparseImageFormatInfo2 const &() const noexcept {
         return *reinterpret_cast<const VkPhysicalDeviceSparseImageFormatInfo2*>(this);
     }
@@ -5299,7 +5222,7 @@ using ConformanceVersionKHR = ConformanceVersion;
 struct PhysicalDeviceDriverProperties {
     StructureType sType = StructureType::ePhysicalDeviceDriverProperties;
     void* pNext = nullptr;
-    DriverId driverID;
+    DriverId driverID = static_cast<DriverId>(0);
     char driverName[MAX_DRIVER_NAME_SIZE] = {};
     char driverInfo[MAX_DRIVER_INFO_SIZE] = {};
     ConformanceVersion conformanceVersion;
@@ -5376,7 +5299,7 @@ using ExternalMemoryPropertiesKHR = ExternalMemoryProperties;
 struct PhysicalDeviceExternalImageFormatInfo {
     StructureType sType = StructureType::ePhysicalDeviceExternalImageFormatInfo;
     const void* pNext = nullptr;
-    ExternalMemoryHandleTypeFlagBits handleType;
+    ExternalMemoryHandleTypeFlagBits handleType = static_cast<ExternalMemoryHandleTypeFlagBits>(0);
     operator VkPhysicalDeviceExternalImageFormatInfo const &() const noexcept {
         return *reinterpret_cast<const VkPhysicalDeviceExternalImageFormatInfo*>(this);
     }
@@ -5402,7 +5325,7 @@ struct PhysicalDeviceExternalBufferInfo {
     const void* pNext = nullptr;
     BufferCreateFlags flags;
     BufferUsageFlags usage;
-    ExternalMemoryHandleTypeFlagBits handleType;
+    ExternalMemoryHandleTypeFlagBits handleType = static_cast<ExternalMemoryHandleTypeFlagBits>(0);
     operator VkPhysicalDeviceExternalBufferInfo const &() const noexcept {
         return *reinterpret_cast<const VkPhysicalDeviceExternalBufferInfo*>(this);
     }
@@ -5479,7 +5402,7 @@ using ExportMemoryAllocateInfoKHR = ExportMemoryAllocateInfo;
 struct ImportMemoryWin32HandleInfoKHR {
     StructureType sType = StructureType::eImportMemoryWin32HandleInfoKHR;
     const void* pNext = nullptr;
-    ExternalMemoryHandleTypeFlagBits handleType;
+    ExternalMemoryHandleTypeFlagBits handleType = static_cast<ExternalMemoryHandleTypeFlagBits>(0);
     HANDLE handle;
     LPCWSTR name;
     operator VkImportMemoryWin32HandleInfoKHR const &() const noexcept {
@@ -5523,7 +5446,7 @@ struct MemoryGetWin32HandleInfoKHR {
     StructureType sType = StructureType::eMemoryGetWin32HandleInfoKHR;
     const void* pNext = nullptr;
     DeviceMemory memory;
-    ExternalMemoryHandleTypeFlagBits handleType;
+    ExternalMemoryHandleTypeFlagBits handleType = static_cast<ExternalMemoryHandleTypeFlagBits>(0);
     operator VkMemoryGetWin32HandleInfoKHR const &() const noexcept {
         return *reinterpret_cast<const VkMemoryGetWin32HandleInfoKHR*>(this);
     }
@@ -5535,7 +5458,7 @@ struct MemoryGetWin32HandleInfoKHR {
 struct ImportMemoryFdInfoKHR {
     StructureType sType = StructureType::eImportMemoryFdInfoKHR;
     const void* pNext = nullptr;
-    ExternalMemoryHandleTypeFlagBits handleType;
+    ExternalMemoryHandleTypeFlagBits handleType = static_cast<ExternalMemoryHandleTypeFlagBits>(0);
     int fd = 0;
     operator VkImportMemoryFdInfoKHR const &() const noexcept {
         return *reinterpret_cast<const VkImportMemoryFdInfoKHR*>(this);
@@ -5559,7 +5482,7 @@ struct MemoryGetFdInfoKHR {
     StructureType sType = StructureType::eMemoryGetFdInfoKHR;
     const void* pNext = nullptr;
     DeviceMemory memory;
-    ExternalMemoryHandleTypeFlagBits handleType;
+    ExternalMemoryHandleTypeFlagBits handleType = static_cast<ExternalMemoryHandleTypeFlagBits>(0);
     operator VkMemoryGetFdInfoKHR const &() const noexcept {
         return *reinterpret_cast<const VkMemoryGetFdInfoKHR*>(this);
     }
@@ -5589,7 +5512,7 @@ struct Win32KeyedMutexAcquireReleaseInfoKHR {
 struct PhysicalDeviceExternalSemaphoreInfo {
     StructureType sType = StructureType::ePhysicalDeviceExternalSemaphoreInfo;
     const void* pNext = nullptr;
-    ExternalSemaphoreHandleTypeFlagBits handleType;
+    ExternalSemaphoreHandleTypeFlagBits handleType = static_cast<ExternalSemaphoreHandleTypeFlagBits>(0);
     operator VkPhysicalDeviceExternalSemaphoreInfo const &() const noexcept {
         return *reinterpret_cast<const VkPhysicalDeviceExternalSemaphoreInfo*>(this);
     }
@@ -5630,7 +5553,7 @@ struct ImportSemaphoreWin32HandleInfoKHR {
     const void* pNext = nullptr;
     Semaphore semaphore;
     SemaphoreImportFlags flags;
-    ExternalSemaphoreHandleTypeFlagBits handleType;
+    ExternalSemaphoreHandleTypeFlagBits handleType = static_cast<ExternalSemaphoreHandleTypeFlagBits>(0);
     HANDLE handle;
     LPCWSTR name;
     operator VkImportSemaphoreWin32HandleInfoKHR const &() const noexcept {
@@ -5677,7 +5600,7 @@ struct SemaphoreGetWin32HandleInfoKHR {
     StructureType sType = StructureType::eSemaphoreGetWin32HandleInfoKHR;
     const void* pNext = nullptr;
     Semaphore semaphore;
-    ExternalSemaphoreHandleTypeFlagBits handleType;
+    ExternalSemaphoreHandleTypeFlagBits handleType = static_cast<ExternalSemaphoreHandleTypeFlagBits>(0);
     operator VkSemaphoreGetWin32HandleInfoKHR const &() const noexcept {
         return *reinterpret_cast<const VkSemaphoreGetWin32HandleInfoKHR*>(this);
     }
@@ -5691,7 +5614,7 @@ struct ImportSemaphoreFdInfoKHR {
     const void* pNext = nullptr;
     Semaphore semaphore;
     SemaphoreImportFlags flags;
-    ExternalSemaphoreHandleTypeFlagBits handleType;
+    ExternalSemaphoreHandleTypeFlagBits handleType = static_cast<ExternalSemaphoreHandleTypeFlagBits>(0);
     int fd = 0;
     operator VkImportSemaphoreFdInfoKHR const &() const noexcept {
         return *reinterpret_cast<const VkImportSemaphoreFdInfoKHR*>(this);
@@ -5704,7 +5627,7 @@ struct SemaphoreGetFdInfoKHR {
     StructureType sType = StructureType::eSemaphoreGetFdInfoKHR;
     const void* pNext = nullptr;
     Semaphore semaphore;
-    ExternalSemaphoreHandleTypeFlagBits handleType;
+    ExternalSemaphoreHandleTypeFlagBits handleType = static_cast<ExternalSemaphoreHandleTypeFlagBits>(0);
     operator VkSemaphoreGetFdInfoKHR const &() const noexcept {
         return *reinterpret_cast<const VkSemaphoreGetFdInfoKHR*>(this);
     }
@@ -5715,7 +5638,7 @@ struct SemaphoreGetFdInfoKHR {
 struct PhysicalDeviceExternalFenceInfo {
     StructureType sType = StructureType::ePhysicalDeviceExternalFenceInfo;
     const void* pNext = nullptr;
-    ExternalFenceHandleTypeFlagBits handleType;
+    ExternalFenceHandleTypeFlagBits handleType = static_cast<ExternalFenceHandleTypeFlagBits>(0);
     operator VkPhysicalDeviceExternalFenceInfo const &() const noexcept {
         return *reinterpret_cast<const VkPhysicalDeviceExternalFenceInfo*>(this);
     }
@@ -5756,7 +5679,7 @@ struct ImportFenceWin32HandleInfoKHR {
     const void* pNext = nullptr;
     Fence fence;
     FenceImportFlags flags;
-    ExternalFenceHandleTypeFlagBits handleType;
+    ExternalFenceHandleTypeFlagBits handleType = static_cast<ExternalFenceHandleTypeFlagBits>(0);
     HANDLE handle;
     LPCWSTR name;
     operator VkImportFenceWin32HandleInfoKHR const &() const noexcept {
@@ -5787,7 +5710,7 @@ struct FenceGetWin32HandleInfoKHR {
     StructureType sType = StructureType::eFenceGetWin32HandleInfoKHR;
     const void* pNext = nullptr;
     Fence fence;
-    ExternalFenceHandleTypeFlagBits handleType;
+    ExternalFenceHandleTypeFlagBits handleType = static_cast<ExternalFenceHandleTypeFlagBits>(0);
     operator VkFenceGetWin32HandleInfoKHR const &() const noexcept {
         return *reinterpret_cast<const VkFenceGetWin32HandleInfoKHR*>(this);
     }
@@ -5801,7 +5724,7 @@ struct ImportFenceFdInfoKHR {
     const void* pNext = nullptr;
     Fence fence;
     FenceImportFlags flags;
-    ExternalFenceHandleTypeFlagBits handleType;
+    ExternalFenceHandleTypeFlagBits handleType = static_cast<ExternalFenceHandleTypeFlagBits>(0);
     int fd = 0;
     operator VkImportFenceFdInfoKHR const &() const noexcept {
         return *reinterpret_cast<const VkImportFenceFdInfoKHR*>(this);
@@ -5814,7 +5737,7 @@ struct FenceGetFdInfoKHR {
     StructureType sType = StructureType::eFenceGetFdInfoKHR;
     const void* pNext = nullptr;
     Fence fence;
-    ExternalFenceHandleTypeFlagBits handleType;
+    ExternalFenceHandleTypeFlagBits handleType = static_cast<ExternalFenceHandleTypeFlagBits>(0);
     operator VkFenceGetFdInfoKHR const &() const noexcept {
         return *reinterpret_cast<const VkFenceGetFdInfoKHR*>(this);
     }
@@ -5876,7 +5799,7 @@ struct SurfaceCapabilities2EXT {
     Extent2D maxImageExtent;
     uint32_t maxImageArrayLayers = 0;
     SurfaceTransformFlagsKHR supportedTransforms;
-    SurfaceTransformFlagBitsKHR currentTransform;
+    SurfaceTransformFlagBitsKHR currentTransform = static_cast<SurfaceTransformFlagBitsKHR>(0);
     CompositeAlphaFlagsKHR supportedCompositeAlpha;
     ImageUsageFlags supportedUsageFlags;
     SurfaceCounterFlagsEXT supportedSurfaceCounters;
@@ -5890,7 +5813,7 @@ struct SurfaceCapabilities2EXT {
 struct DisplayPowerInfoEXT {
     StructureType sType = StructureType::eDisplayPowerInfoEXT;
     const void* pNext = nullptr;
-    DisplayPowerStateEXT powerState;
+    DisplayPowerStateEXT powerState = static_cast<DisplayPowerStateEXT>(0);
     operator VkDisplayPowerInfoEXT const &() const noexcept {
         return *reinterpret_cast<const VkDisplayPowerInfoEXT*>(this);
     }
@@ -5901,7 +5824,7 @@ struct DisplayPowerInfoEXT {
 struct DeviceEventInfoEXT {
     StructureType sType = StructureType::eDeviceEventInfoEXT;
     const void* pNext = nullptr;
-    DeviceEventTypeEXT deviceEvent;
+    DeviceEventTypeEXT deviceEvent = static_cast<DeviceEventTypeEXT>(0);
     operator VkDeviceEventInfoEXT const &() const noexcept {
         return *reinterpret_cast<const VkDeviceEventInfoEXT*>(this);
     }
@@ -5912,7 +5835,7 @@ struct DeviceEventInfoEXT {
 struct DisplayEventInfoEXT {
     StructureType sType = StructureType::eDisplayEventInfoEXT;
     const void* pNext = nullptr;
-    DisplayEventTypeEXT displayEvent;
+    DisplayEventTypeEXT displayEvent = static_cast<DisplayEventTypeEXT>(0);
     operator VkDisplayEventInfoEXT const &() const noexcept {
         return *reinterpret_cast<const VkDisplayEventInfoEXT*>(this);
     }
@@ -6125,7 +6048,7 @@ struct DeviceGroupPresentInfoKHR {
     const void* pNext = nullptr;
     uint32_t swapchainCount = 0;
     const uint32_t* pDeviceMasks = nullptr;
-    DeviceGroupPresentModeFlagBitsKHR mode;
+    DeviceGroupPresentModeFlagBitsKHR mode = static_cast<DeviceGroupPresentModeFlagBitsKHR>(0);
     operator VkDeviceGroupPresentInfoKHR const &() const noexcept {
         return *reinterpret_cast<const VkDeviceGroupPresentInfoKHR*>(this);
     }
@@ -6161,7 +6084,7 @@ struct DescriptorUpdateTemplateEntry {
     uint32_t dstBinding = 0;
     uint32_t dstArrayElement = 0;
     uint32_t descriptorCount = 0;
-    DescriptorType descriptorType;
+    DescriptorType descriptorType = static_cast<DescriptorType>(0);
     size_t offset = 0;
     size_t stride = 0;
     constexpr bool operator==(DescriptorUpdateTemplateEntry const& other) const = default;
@@ -6179,9 +6102,9 @@ struct DescriptorUpdateTemplateCreateInfo {
     DescriptorUpdateTemplateCreateFlags flags;
     uint32_t descriptorUpdateEntryCount = 0;
     const DescriptorUpdateTemplateEntry* pDescriptorUpdateEntries = nullptr;
-    DescriptorUpdateTemplateType templateType;
+    DescriptorUpdateTemplateType templateType = static_cast<DescriptorUpdateTemplateType>(0);
     DescriptorSetLayout descriptorSetLayout;
-    PipelineBindPoint pipelineBindPoint;
+    PipelineBindPoint pipelineBindPoint = static_cast<PipelineBindPoint>(0);
     PipelineLayout pipelineLayout;
     uint32_t set = 0;
     operator VkDescriptorUpdateTemplateCreateInfo const &() const noexcept {
@@ -6357,10 +6280,10 @@ struct PipelineViewportWScalingStateCreateInfoNV {
     }
 };
 struct ViewportSwizzleNV {
-    ViewportCoordinateSwizzleNV x;
-    ViewportCoordinateSwizzleNV y;
-    ViewportCoordinateSwizzleNV z;
-    ViewportCoordinateSwizzleNV w;
+    ViewportCoordinateSwizzleNV x = static_cast<ViewportCoordinateSwizzleNV>(0);
+    ViewportCoordinateSwizzleNV y = static_cast<ViewportCoordinateSwizzleNV>(0);
+    ViewportCoordinateSwizzleNV z = static_cast<ViewportCoordinateSwizzleNV>(0);
+    ViewportCoordinateSwizzleNV w = static_cast<ViewportCoordinateSwizzleNV>(0);
     constexpr bool operator==(ViewportSwizzleNV const& other) const = default;
     operator VkViewportSwizzleNV const &() const noexcept {
         return *reinterpret_cast<const VkViewportSwizzleNV*>(this);
@@ -6397,7 +6320,7 @@ struct PipelineDiscardRectangleStateCreateInfoEXT {
     StructureType sType = StructureType::ePipelineDiscardRectangleStateCreateInfoEXT;
     const void* pNext = nullptr;
     PipelineDiscardRectangleStateCreateFlagsEXT flags;
-    DiscardRectangleModeEXT discardRectangleMode;
+    DiscardRectangleModeEXT discardRectangleMode = static_cast<DiscardRectangleModeEXT>(0);
     uint32_t discardRectangleCount = 0;
     const Rect2D* pDiscardRectangles = nullptr;
     operator VkPipelineDiscardRectangleStateCreateInfoEXT const &() const noexcept {
@@ -6648,7 +6571,7 @@ using SparseImageMemoryRequirements2KHR = SparseImageMemoryRequirements2;
 struct PhysicalDevicePointClippingProperties {
     StructureType sType = StructureType::ePhysicalDevicePointClippingProperties;
     void* pNext = nullptr;
-    PointClippingBehavior pointClippingBehavior;
+    PointClippingBehavior pointClippingBehavior = static_cast<PointClippingBehavior>(0);
     operator VkPhysicalDevicePointClippingProperties const &() const noexcept {
         return *reinterpret_cast<const VkPhysicalDevicePointClippingProperties*>(this);
     }
@@ -6698,7 +6621,7 @@ using ImageViewUsageCreateInfoKHR = ImageViewUsageCreateInfo;
 struct PipelineTessellationDomainOriginStateCreateInfo {
     StructureType sType = StructureType::ePipelineTessellationDomainOriginStateCreateInfo;
     const void* pNext = nullptr;
-    TessellationDomainOrigin domainOrigin;
+    TessellationDomainOrigin domainOrigin = static_cast<TessellationDomainOrigin>(0);
     operator VkPipelineTessellationDomainOriginStateCreateInfo const &() const noexcept {
         return *reinterpret_cast<const VkPipelineTessellationDomainOriginStateCreateInfo*>(this);
     }
@@ -6722,13 +6645,13 @@ using SamplerYcbcrConversionInfoKHR = SamplerYcbcrConversionInfo;
 struct SamplerYcbcrConversionCreateInfo {
     StructureType sType = StructureType::eSamplerYcbcrConversionCreateInfo;
     const void* pNext = nullptr;
-    Format format;
-    SamplerYcbcrModelConversion ycbcrModel;
-    SamplerYcbcrRange ycbcrRange;
+    Format format = static_cast<Format>(0);
+    SamplerYcbcrModelConversion ycbcrModel = static_cast<SamplerYcbcrModelConversion>(0);
+    SamplerYcbcrRange ycbcrRange = static_cast<SamplerYcbcrRange>(0);
     ComponentMapping components;
-    ChromaLocation xChromaOffset;
-    ChromaLocation yChromaOffset;
-    Filter chromaFilter;
+    ChromaLocation xChromaOffset = static_cast<ChromaLocation>(0);
+    ChromaLocation yChromaOffset = static_cast<ChromaLocation>(0);
+    Filter chromaFilter = static_cast<Filter>(0);
     Bool32 forceExplicitReconstruction = 0;
     operator VkSamplerYcbcrConversionCreateInfo const &() const noexcept {
         return *reinterpret_cast<const VkSamplerYcbcrConversionCreateInfo*>(this);
@@ -6741,7 +6664,7 @@ using SamplerYcbcrConversionCreateInfoKHR = SamplerYcbcrConversionCreateInfo;
 struct BindImagePlaneMemoryInfo {
     StructureType sType = StructureType::eBindImagePlaneMemoryInfo;
     const void* pNext = nullptr;
-    ImageAspectFlagBits planeAspect;
+    ImageAspectFlagBits planeAspect = static_cast<ImageAspectFlagBits>(0);
     operator VkBindImagePlaneMemoryInfo const &() const noexcept {
         return *reinterpret_cast<const VkBindImagePlaneMemoryInfo*>(this);
     }
@@ -6753,7 +6676,7 @@ using BindImagePlaneMemoryInfoKHR = BindImagePlaneMemoryInfo;
 struct ImagePlaneMemoryRequirementsInfo {
     StructureType sType = StructureType::eImagePlaneMemoryRequirementsInfo;
     const void* pNext = nullptr;
-    ImageAspectFlagBits planeAspect;
+    ImageAspectFlagBits planeAspect = static_cast<ImageAspectFlagBits>(0);
     operator VkImagePlaneMemoryRequirementsInfo const &() const noexcept {
         return *reinterpret_cast<const VkImagePlaneMemoryRequirementsInfo*>(this);
     }
@@ -6896,7 +6819,7 @@ struct SampleLocationEXT {
 struct SampleLocationsInfoEXT {
     StructureType sType = StructureType::eSampleLocationsInfoEXT;
     const void* pNext = nullptr;
-    SampleCountFlagBits sampleLocationsPerPixel;
+    SampleCountFlagBits sampleLocationsPerPixel = static_cast<SampleCountFlagBits>(0);
     Extent2D sampleLocationGridSize;
     uint32_t sampleLocationsCount = 0;
     const SampleLocationEXT* pSampleLocations = nullptr;
@@ -6982,7 +6905,7 @@ struct MultisamplePropertiesEXT {
 struct SamplerReductionModeCreateInfo {
     StructureType sType = StructureType::eSamplerReductionModeCreateInfo;
     const void* pNext = nullptr;
-    SamplerReductionMode reductionMode;
+    SamplerReductionMode reductionMode = static_cast<SamplerReductionMode>(0);
     operator VkSamplerReductionModeCreateInfo const &() const noexcept {
         return *reinterpret_cast<const VkSamplerReductionModeCreateInfo*>(this);
     }
@@ -7023,7 +6946,7 @@ struct PipelineColorBlendAdvancedStateCreateInfoEXT {
     const void* pNext = nullptr;
     Bool32 srcPremultiplied = 0;
     Bool32 dstPremultiplied = 0;
-    BlendOverlapEXT blendOverlap;
+    BlendOverlapEXT blendOverlap = static_cast<BlendOverlapEXT>(0);
     operator VkPipelineColorBlendAdvancedStateCreateInfoEXT const &() const noexcept {
         return *reinterpret_cast<const VkPipelineColorBlendAdvancedStateCreateInfoEXT*>(this);
     }
@@ -7085,7 +7008,7 @@ struct PipelineCoverageModulationStateCreateInfoNV {
     StructureType sType = StructureType::ePipelineCoverageModulationStateCreateInfoNV;
     const void* pNext = nullptr;
     PipelineCoverageModulationStateCreateFlagsNV flags;
-    CoverageModulationModeNV coverageModulationMode;
+    CoverageModulationModeNV coverageModulationMode = static_cast<CoverageModulationModeNV>(0);
     Bool32 coverageModulationTableEnable = 0;
     uint32_t coverageModulationTableCount = 0;
     const float* pCoverageModulationTable = nullptr;
@@ -7187,8 +7110,8 @@ using PhysicalDeviceFloat16Int8FeaturesKHR = PhysicalDeviceShaderFloat16Int8Feat
 struct PhysicalDeviceFloatControlsProperties {
     StructureType sType = StructureType::ePhysicalDeviceFloatControlsProperties;
     void* pNext = nullptr;
-    ShaderFloatControlsIndependence denormBehaviorIndependence;
-    ShaderFloatControlsIndependence roundingModeIndependence;
+    ShaderFloatControlsIndependence denormBehaviorIndependence = static_cast<ShaderFloatControlsIndependence>(0);
+    ShaderFloatControlsIndependence roundingModeIndependence = static_cast<ShaderFloatControlsIndependence>(0);
     Bool32 shaderSignedZeroInfNanPreserveFloat16 = 0;
     Bool32 shaderSignedZeroInfNanPreserveFloat32 = 0;
     Bool32 shaderSignedZeroInfNanPreserveFloat64 = 0;
@@ -7224,62 +7147,6 @@ struct PhysicalDeviceHostQueryResetFeatures {
     }
 };
 using PhysicalDeviceHostQueryResetFeaturesEXT = PhysicalDeviceHostQueryResetFeatures;
-#if defined(VK_USE_PLATFORM_ANDROID_KHR)
-struct NativeBufferUsage2ANDROID {
-    uint64_t consumer = 0;
-    uint64_t producer = 0;
-    constexpr bool operator==(NativeBufferUsage2ANDROID const& other) const = default;
-    operator VkNativeBufferUsage2ANDROID const &() const noexcept {
-        return *reinterpret_cast<const VkNativeBufferUsage2ANDROID*>(this);
-    }
-    operator VkNativeBufferUsage2ANDROID &() noexcept {
-        return *reinterpret_cast<VkNativeBufferUsage2ANDROID*>(this);
-    }
-};
-#endif // VK_USE_PLATFORM_ANDROID_KHR
-#if defined(VK_USE_PLATFORM_ANDROID_KHR)
-struct NativeBufferANDROID {
-    StructureType sType = StructureType::eNativeBufferANDROID;
-    const void* pNext = nullptr;
-    const void* handle = nullptr;
-    int stride = 0;
-    int format = 0;
-    int usage = 0;
-    NativeBufferUsage2ANDROID usage2;
-    operator VkNativeBufferANDROID const &() const noexcept {
-        return *reinterpret_cast<const VkNativeBufferANDROID*>(this);
-    }
-    operator VkNativeBufferANDROID &() noexcept {
-        return *reinterpret_cast<VkNativeBufferANDROID*>(this);
-    }
-};
-#endif // VK_USE_PLATFORM_ANDROID_KHR
-#if defined(VK_USE_PLATFORM_ANDROID_KHR)
-struct SwapchainImageCreateInfoANDROID {
-    StructureType sType = StructureType::eSwapchainImageCreateInfoANDROID;
-    const void* pNext = nullptr;
-    SwapchainImageUsageFlagsANDROID usage;
-    operator VkSwapchainImageCreateInfoANDROID const &() const noexcept {
-        return *reinterpret_cast<const VkSwapchainImageCreateInfoANDROID*>(this);
-    }
-    operator VkSwapchainImageCreateInfoANDROID &() noexcept {
-        return *reinterpret_cast<VkSwapchainImageCreateInfoANDROID*>(this);
-    }
-};
-#endif // VK_USE_PLATFORM_ANDROID_KHR
-#if defined(VK_USE_PLATFORM_ANDROID_KHR)
-struct PhysicalDevicePresentationPropertiesANDROID {
-    StructureType sType = StructureType::ePhysicalDevicePresentationPropertiesANDROID;
-    const void* pNext = nullptr;
-    Bool32 sharedImage = 0;
-    operator VkPhysicalDevicePresentationPropertiesANDROID const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDevicePresentationPropertiesANDROID*>(this);
-    }
-    operator VkPhysicalDevicePresentationPropertiesANDROID &() noexcept {
-        return *reinterpret_cast<VkPhysicalDevicePresentationPropertiesANDROID*>(this);
-    }
-};
-#endif // VK_USE_PLATFORM_ANDROID_KHR
 struct ShaderResourceUsageAMD {
     uint32_t numUsedVgprs = 0;
     uint32_t numUsedSgprs = 0;
@@ -7313,7 +7180,7 @@ struct ShaderStatisticsInfoAMD {
 struct DeviceQueueGlobalPriorityCreateInfoEXT {
     StructureType sType = StructureType::eDeviceQueueGlobalPriorityCreateInfoEXT;
     const void* pNext = nullptr;
-    QueueGlobalPriorityEXT globalPriority;
+    QueueGlobalPriorityEXT globalPriority = static_cast<QueueGlobalPriorityEXT>(0);
     operator VkDeviceQueueGlobalPriorityCreateInfoEXT const &() const noexcept {
         return *reinterpret_cast<const VkDeviceQueueGlobalPriorityCreateInfoEXT*>(this);
     }
@@ -7324,7 +7191,7 @@ struct DeviceQueueGlobalPriorityCreateInfoEXT {
 struct DebugUtilsObjectNameInfoEXT {
     StructureType sType = StructureType::eDebugUtilsObjectNameInfoEXT;
     const void* pNext = nullptr;
-    ObjectType objectType;
+    ObjectType objectType = static_cast<ObjectType>(0);
     uint64_t objectHandle = 0;
     const char* pObjectName = nullptr;
     operator VkDebugUtilsObjectNameInfoEXT const &() const noexcept {
@@ -7337,7 +7204,7 @@ struct DebugUtilsObjectNameInfoEXT {
 struct DebugUtilsObjectTagInfoEXT {
     StructureType sType = StructureType::eDebugUtilsObjectTagInfoEXT;
     const void* pNext = nullptr;
-    ObjectType objectType;
+    ObjectType objectType = static_cast<ObjectType>(0);
     uint64_t objectHandle = 0;
     uint64_t tagName = 0;
     size_t tagSize = 0;
@@ -7399,7 +7266,7 @@ struct DebugUtilsMessengerCallbackDataEXT {
 struct ImportMemoryHostPointerInfoEXT {
     StructureType sType = StructureType::eImportMemoryHostPointerInfoEXT;
     const void* pNext = nullptr;
-    ExternalMemoryHandleTypeFlagBits handleType;
+    ExternalMemoryHandleTypeFlagBits handleType = static_cast<ExternalMemoryHandleTypeFlagBits>(0);
     void* pHostPointer = nullptr;
     operator VkImportMemoryHostPointerInfoEXT const &() const noexcept {
         return *reinterpret_cast<const VkImportMemoryHostPointerInfoEXT*>(this);
@@ -7452,7 +7319,7 @@ struct PhysicalDeviceConservativeRasterizationPropertiesEXT {
 struct CalibratedTimestampInfoEXT {
     StructureType sType = StructureType::eCalibratedTimestampInfoEXT;
     const void* pNext = nullptr;
-    TimeDomainEXT timeDomain;
+    TimeDomainEXT timeDomain = static_cast<TimeDomainEXT>(0);
     operator VkCalibratedTimestampInfoEXT const &() const noexcept {
         return *reinterpret_cast<const VkCalibratedTimestampInfoEXT*>(this);
     }
@@ -7500,7 +7367,7 @@ struct PipelineRasterizationConservativeStateCreateInfoEXT {
     StructureType sType = StructureType::ePipelineRasterizationConservativeStateCreateInfoEXT;
     const void* pNext = nullptr;
     PipelineRasterizationConservativeStateCreateFlagsEXT flags;
-    ConservativeRasterizationModeEXT conservativeRasterizationMode;
+    ConservativeRasterizationModeEXT conservativeRasterizationMode = static_cast<ConservativeRasterizationModeEXT>(0);
     float extraPrimitiveOverestimationSize = 0.f;
     operator VkPipelineRasterizationConservativeStateCreateInfoEXT const &() const noexcept {
         return *reinterpret_cast<const VkPipelineRasterizationConservativeStateCreateInfoEXT*>(this);
@@ -7616,14 +7483,14 @@ struct AttachmentDescription2 {
     StructureType sType = StructureType::eAttachmentDescription2;
     const void* pNext = nullptr;
     AttachmentDescriptionFlags flags;
-    Format format;
-    SampleCountFlagBits samples;
-    AttachmentLoadOp loadOp;
-    AttachmentStoreOp storeOp;
-    AttachmentLoadOp stencilLoadOp;
-    AttachmentStoreOp stencilStoreOp;
-    ImageLayout initialLayout;
-    ImageLayout finalLayout;
+    Format format = static_cast<Format>(0);
+    SampleCountFlagBits samples = static_cast<SampleCountFlagBits>(0);
+    AttachmentLoadOp loadOp = static_cast<AttachmentLoadOp>(0);
+    AttachmentStoreOp storeOp = static_cast<AttachmentStoreOp>(0);
+    AttachmentLoadOp stencilLoadOp = static_cast<AttachmentLoadOp>(0);
+    AttachmentStoreOp stencilStoreOp = static_cast<AttachmentStoreOp>(0);
+    ImageLayout initialLayout = static_cast<ImageLayout>(0);
+    ImageLayout finalLayout = static_cast<ImageLayout>(0);
     operator VkAttachmentDescription2 const &() const noexcept {
         return *reinterpret_cast<const VkAttachmentDescription2*>(this);
     }
@@ -7636,7 +7503,7 @@ struct AttachmentReference2 {
     StructureType sType = StructureType::eAttachmentReference2;
     const void* pNext = nullptr;
     uint32_t attachment = 0;
-    ImageLayout layout;
+    ImageLayout layout = static_cast<ImageLayout>(0);
     ImageAspectFlags aspectMask;
     operator VkAttachmentReference2 const &() const noexcept {
         return *reinterpret_cast<const VkAttachmentReference2*>(this);
@@ -7650,7 +7517,7 @@ struct SubpassDescription2 {
     StructureType sType = StructureType::eSubpassDescription2;
     const void* pNext = nullptr;
     SubpassDescriptionFlags flags;
-    PipelineBindPoint pipelineBindPoint;
+    PipelineBindPoint pipelineBindPoint = static_cast<PipelineBindPoint>(0);
     uint32_t viewMask = 0;
     uint32_t inputAttachmentCount = 0;
     const AttachmentReference2* pInputAttachments = nullptr;
@@ -7710,7 +7577,7 @@ using RenderPassCreateInfo2KHR = RenderPassCreateInfo2;
 struct SubpassBeginInfo {
     StructureType sType = StructureType::eSubpassBeginInfo;
     const void* pNext = nullptr;
-    SubpassContents contents;
+    SubpassContents contents = static_cast<SubpassContents>(0);
     operator VkSubpassBeginInfo const &() const noexcept {
         return *reinterpret_cast<const VkSubpassBeginInfo*>(this);
     }
@@ -7757,7 +7624,7 @@ using PhysicalDeviceTimelineSemaphorePropertiesKHR = PhysicalDeviceTimelineSemap
 struct SemaphoreTypeCreateInfo {
     StructureType sType = StructureType::eSemaphoreTypeCreateInfo;
     const void* pNext = nullptr;
-    SemaphoreType semaphoreType;
+    SemaphoreType semaphoreType = static_cast<SemaphoreType>(0);
     uint64_t initialValue = 0;
     operator VkSemaphoreTypeCreateInfo const &() const noexcept {
         return *reinterpret_cast<const VkSemaphoreTypeCreateInfo*>(this);
@@ -7915,14 +7782,14 @@ struct MemoryGetAndroidHardwareBufferInfoANDROID {
 struct AndroidHardwareBufferFormatPropertiesANDROID {
     StructureType sType = StructureType::eAndroidHardwareBufferFormatPropertiesANDROID;
     void* pNext = nullptr;
-    Format format;
+    Format format = static_cast<Format>(0);
     uint64_t externalFormat = 0;
     FormatFeatureFlags formatFeatures;
     ComponentMapping samplerYcbcrConversionComponents;
-    SamplerYcbcrModelConversion suggestedYcbcrModel;
-    SamplerYcbcrRange suggestedYcbcrRange;
-    ChromaLocation suggestedXChromaOffset;
-    ChromaLocation suggestedYChromaOffset;
+    SamplerYcbcrModelConversion suggestedYcbcrModel = static_cast<SamplerYcbcrModelConversion>(0);
+    SamplerYcbcrRange suggestedYcbcrRange = static_cast<SamplerYcbcrRange>(0);
+    ChromaLocation suggestedXChromaOffset = static_cast<ChromaLocation>(0);
+    ChromaLocation suggestedYChromaOffset = static_cast<ChromaLocation>(0);
     operator VkAndroidHardwareBufferFormatPropertiesANDROID const &() const noexcept {
         return *reinterpret_cast<const VkAndroidHardwareBufferFormatPropertiesANDROID*>(this);
     }
@@ -8056,7 +7923,7 @@ struct QueueFamilyCheckpointPropertiesNV {
 struct CheckpointDataNV {
     StructureType sType = StructureType::eCheckpointDataNV;
     void* pNext = nullptr;
-    PipelineStageFlagBits stage;
+    PipelineStageFlagBits stage = static_cast<PipelineStageFlagBits>(0);
     void* pCheckpointMarker = nullptr;
     operator VkCheckpointDataNV const &() const noexcept {
         return *reinterpret_cast<const VkCheckpointDataNV*>(this);
@@ -8083,8 +7950,8 @@ using PhysicalDeviceDepthStencilResolvePropertiesKHR = PhysicalDeviceDepthStenci
 struct SubpassDescriptionDepthStencilResolve {
     StructureType sType = StructureType::eSubpassDescriptionDepthStencilResolve;
     const void* pNext = nullptr;
-    ResolveModeFlagBits depthResolveMode;
-    ResolveModeFlagBits stencilResolveMode;
+    ResolveModeFlagBits depthResolveMode = static_cast<ResolveModeFlagBits>(0);
+    ResolveModeFlagBits stencilResolveMode = static_cast<ResolveModeFlagBits>(0);
     const AttachmentReference2* pDepthStencilResolveAttachment = nullptr;
     operator VkSubpassDescriptionDepthStencilResolve const &() const noexcept {
         return *reinterpret_cast<const VkSubpassDescriptionDepthStencilResolve*>(this);
@@ -8097,7 +7964,7 @@ using SubpassDescriptionDepthStencilResolveKHR = SubpassDescriptionDepthStencilR
 struct ImageViewASTCDecodeModeEXT {
     StructureType sType = StructureType::eImageViewAstcDecodeModeEXT;
     const void* pNext = nullptr;
-    Format decodeMode;
+    Format decodeMode = static_cast<Format>(0);
     operator VkImageViewASTCDecodeModeEXT const &() const noexcept {
         return *reinterpret_cast<const VkImageViewASTCDecodeModeEXT*>(this);
     }
@@ -8322,7 +8189,7 @@ struct CoarseSampleLocationNV {
     }
 };
 struct CoarseSampleOrderCustomNV {
-    ShadingRatePaletteEntryNV shadingRate;
+    ShadingRatePaletteEntryNV shadingRate = static_cast<ShadingRatePaletteEntryNV>(0);
     uint32_t sampleCount = 0;
     uint32_t sampleLocationCount = 0;
     const CoarseSampleLocationNV* pSampleLocations = nullptr;
@@ -8336,7 +8203,7 @@ struct CoarseSampleOrderCustomNV {
 struct PipelineViewportCoarseSampleOrderStateCreateInfoNV {
     StructureType sType = StructureType::ePipelineViewportCoarseSampleOrderStateCreateInfoNV;
     const void* pNext = nullptr;
-    CoarseSampleOrderTypeNV sampleOrderType;
+    CoarseSampleOrderTypeNV sampleOrderType = static_cast<CoarseSampleOrderTypeNV>(0);
     uint32_t customSampleOrderCount = 0;
     const CoarseSampleOrderCustomNV* pCustomSampleOrders = nullptr;
     operator VkPipelineViewportCoarseSampleOrderStateCreateInfoNV const &() const noexcept {
@@ -8395,7 +8262,7 @@ struct DrawMeshTasksIndirectCommandNV {
 struct RayTracingShaderGroupCreateInfoNV {
     StructureType sType = StructureType::eRayTracingShaderGroupCreateInfoNV;
     const void* pNext = nullptr;
-    RayTracingShaderGroupTypeKHR type;
+    RayTracingShaderGroupTypeKHR type = static_cast<RayTracingShaderGroupTypeKHR>(0);
     uint32_t generalShader = 0;
     uint32_t closestHitShader = 0;
     uint32_t anyHitShader = 0;
@@ -8411,7 +8278,7 @@ struct RayTracingShaderGroupCreateInfoNV {
 struct RayTracingShaderGroupCreateInfoKHR {
     StructureType sType = StructureType::eRayTracingShaderGroupCreateInfoKHR;
     const void* pNext = nullptr;
-    RayTracingShaderGroupTypeKHR type;
+    RayTracingShaderGroupTypeKHR type = static_cast<RayTracingShaderGroupTypeKHR>(0);
     uint32_t generalShader = 0;
     uint32_t closestHitShader = 0;
     uint32_t anyHitShader = 0;
@@ -8503,11 +8370,11 @@ struct GeometryTrianglesNV {
     DeviceSize vertexOffset = 0;
     uint32_t vertexCount = 0;
     DeviceSize vertexStride = 0;
-    Format vertexFormat;
+    Format vertexFormat = static_cast<Format>(0);
     Buffer indexData;
     DeviceSize indexOffset = 0;
     uint32_t indexCount = 0;
-    IndexType indexType;
+    IndexType indexType = static_cast<IndexType>(0);
     Buffer transformData;
     DeviceSize transformOffset = 0;
     operator VkGeometryTrianglesNV const &() const noexcept {
@@ -8544,7 +8411,7 @@ struct GeometryDataNV {
 struct GeometryNV {
     StructureType sType = StructureType::eGeometryNV;
     const void* pNext = nullptr;
-    GeometryTypeKHR geometryType;
+    GeometryTypeKHR geometryType = static_cast<GeometryTypeKHR>(0);
     GeometryDataNV geometry;
     GeometryFlagsKHR flags;
     operator VkGeometryNV const &() const noexcept {
@@ -8557,7 +8424,7 @@ struct GeometryNV {
 struct AccelerationStructureInfoNV {
     StructureType sType = StructureType::eAccelerationStructureInfoNV;
     const void* pNext = nullptr;
-    AccelerationStructureTypeNV type;
+    AccelerationStructureTypeNV type = static_cast<AccelerationStructureTypeNV>(0);
     BuildAccelerationStructureFlagsNV flags;
     uint32_t instanceCount = 0;
     uint32_t geometryCount = 0;
@@ -8618,8 +8485,8 @@ using WriteDescriptorSetAccelerationStructureNV = WriteDescriptorSetAcceleration
 struct AccelerationStructureMemoryRequirementsInfoKHR {
     StructureType sType = StructureType::eAccelerationStructureMemoryRequirementsInfoKHR;
     const void* pNext = nullptr;
-    AccelerationStructureMemoryRequirementsTypeKHR type;
-    AccelerationStructureBuildTypeKHR buildType;
+    AccelerationStructureMemoryRequirementsTypeKHR type = static_cast<AccelerationStructureMemoryRequirementsTypeKHR>(0);
+    AccelerationStructureBuildTypeKHR buildType = static_cast<AccelerationStructureBuildTypeKHR>(0);
     AccelerationStructureKHR accelerationStructure;
     operator VkAccelerationStructureMemoryRequirementsInfoKHR const &() const noexcept {
         return *reinterpret_cast<const VkAccelerationStructureMemoryRequirementsInfoKHR*>(this);
@@ -8632,7 +8499,7 @@ struct AccelerationStructureMemoryRequirementsInfoKHR {
 struct AccelerationStructureMemoryRequirementsInfoNV {
     StructureType sType = StructureType::eAccelerationStructureMemoryRequirementsInfoNV;
     const void* pNext = nullptr;
-    AccelerationStructureMemoryRequirementsTypeNV type;
+    AccelerationStructureMemoryRequirementsTypeNV type = static_cast<AccelerationStructureMemoryRequirementsTypeNV>(0);
     AccelerationStructureNV accelerationStructure;
     operator VkAccelerationStructureMemoryRequirementsInfoNV const &() const noexcept {
         return *reinterpret_cast<const VkAccelerationStructureMemoryRequirementsInfoNV*>(this);
@@ -8757,7 +8624,7 @@ struct PhysicalDeviceImageDrmFormatModifierInfoEXT {
     StructureType sType = StructureType::ePhysicalDeviceImageDrmFormatModifierInfoEXT;
     const void* pNext = nullptr;
     uint64_t drmFormatModifier = 0;
-    SharingMode sharingMode;
+    SharingMode sharingMode = static_cast<SharingMode>(0);
     uint32_t queueFamilyIndexCount = 0;
     const uint32_t* pQueueFamilyIndices = nullptr;
     operator VkPhysicalDeviceImageDrmFormatModifierInfoEXT const &() const noexcept {
@@ -8818,7 +8685,7 @@ using ImageStencilUsageCreateInfoEXT = ImageStencilUsageCreateInfo;
 struct DeviceMemoryOverallocationCreateInfoAMD {
     StructureType sType = StructureType::eDeviceMemoryOverallocationCreateInfoAMD;
     const void* pNext = nullptr;
-    MemoryOverallocationBehaviorAMD overallocationBehavior;
+    MemoryOverallocationBehaviorAMD overallocationBehavior = static_cast<MemoryOverallocationBehaviorAMD>(0);
     operator VkDeviceMemoryOverallocationCreateInfoAMD const &() const noexcept {
         return *reinterpret_cast<const VkDeviceMemoryOverallocationCreateInfoAMD*>(this);
     }
@@ -9047,7 +8914,7 @@ struct BufferDeviceAddressCreateInfoEXT {
 struct PhysicalDeviceImageViewImageFormatInfoEXT {
     StructureType sType = StructureType::ePhysicalDeviceImageViewImageFormatInfoEXT;
     void* pNext = nullptr;
-    ImageViewType imageViewType;
+    ImageViewType imageViewType = static_cast<ImageViewType>(0);
     operator VkPhysicalDeviceImageViewImageFormatInfoEXT const &() const noexcept {
         return *reinterpret_cast<const VkPhysicalDeviceImageViewImageFormatInfoEXT*>(this);
     }
@@ -9163,11 +9030,11 @@ struct CooperativeMatrixPropertiesNV {
     uint32_t MSize = 0;
     uint32_t NSize = 0;
     uint32_t KSize = 0;
-    ComponentTypeNV AType;
-    ComponentTypeNV BType;
-    ComponentTypeNV CType;
-    ComponentTypeNV DType;
-    ScopeNV scope;
+    ComponentTypeNV AType = static_cast<ComponentTypeNV>(0);
+    ComponentTypeNV BType = static_cast<ComponentTypeNV>(0);
+    ComponentTypeNV CType = static_cast<ComponentTypeNV>(0);
+    ComponentTypeNV DType = static_cast<ComponentTypeNV>(0);
+    ScopeNV scope = static_cast<ScopeNV>(0);
     operator VkCooperativeMatrixPropertiesNV const &() const noexcept {
         return *reinterpret_cast<const VkCooperativeMatrixPropertiesNV*>(this);
     }
@@ -9190,7 +9057,7 @@ struct ImageViewHandleInfoNVX {
     StructureType sType = StructureType::eImageViewHandleInfoNVX;
     const void* pNext = nullptr;
     ImageView imageView;
-    DescriptorType descriptorType;
+    DescriptorType descriptorType = static_cast<DescriptorType>(0);
     Sampler sampler;
     operator VkImageViewHandleInfoNVX const &() const noexcept {
         return *reinterpret_cast<const VkImageViewHandleInfoNVX*>(this);
@@ -9252,7 +9119,7 @@ struct PipelineCreationFeedbackCreateInfoEXT {
 struct SurfaceFullScreenExclusiveInfoEXT {
     StructureType sType = StructureType::eSurfaceFullScreenExclusiveInfoEXT;
     void* pNext = nullptr;
-    FullScreenExclusiveEXT fullScreenExclusive;
+    FullScreenExclusiveEXT fullScreenExclusive = static_cast<FullScreenExclusiveEXT>(0);
     operator VkSurfaceFullScreenExclusiveInfoEXT const &() const noexcept {
         return *reinterpret_cast<const VkSurfaceFullScreenExclusiveInfoEXT*>(this);
     }
@@ -9313,9 +9180,9 @@ struct PhysicalDevicePerformanceQueryPropertiesKHR {
 struct PerformanceCounterKHR {
     StructureType sType = StructureType::ePerformanceCounterKHR;
     const void* pNext = nullptr;
-    PerformanceCounterUnitKHR unit;
-    PerformanceCounterScopeKHR scope;
-    PerformanceCounterStorageKHR storage;
+    PerformanceCounterUnitKHR unit = static_cast<PerformanceCounterUnitKHR>(0);
+    PerformanceCounterScopeKHR scope = static_cast<PerformanceCounterScopeKHR>(0);
+    PerformanceCounterStorageKHR storage = static_cast<PerformanceCounterStorageKHR>(0);
     uint8_t uuid[UUID_SIZE] = {};
     operator VkPerformanceCounterKHR const &() const noexcept {
         return *reinterpret_cast<const VkPerformanceCounterKHR*>(this);
@@ -9410,7 +9277,7 @@ struct PipelineCoverageReductionStateCreateInfoNV {
     StructureType sType = StructureType::ePipelineCoverageReductionStateCreateInfoNV;
     const void* pNext = nullptr;
     PipelineCoverageReductionStateCreateFlagsNV flags;
-    CoverageReductionModeNV coverageReductionMode;
+    CoverageReductionModeNV coverageReductionMode = static_cast<CoverageReductionModeNV>(0);
     operator VkPipelineCoverageReductionStateCreateInfoNV const &() const noexcept {
         return *reinterpret_cast<const VkPipelineCoverageReductionStateCreateInfoNV*>(this);
     }
@@ -9421,8 +9288,8 @@ struct PipelineCoverageReductionStateCreateInfoNV {
 struct FramebufferMixedSamplesCombinationNV {
     StructureType sType = StructureType::eFramebufferMixedSamplesCombinationNV;
     void* pNext = nullptr;
-    CoverageReductionModeNV coverageReductionMode;
-    SampleCountFlagBits rasterizationSamples;
+    CoverageReductionModeNV coverageReductionMode = static_cast<CoverageReductionModeNV>(0);
+    SampleCountFlagBits rasterizationSamples = static_cast<SampleCountFlagBits>(0);
     SampleCountFlags depthStencilSamples;
     SampleCountFlags colorSamples;
     operator VkFramebufferMixedSamplesCombinationNV const &() const noexcept {
@@ -9451,7 +9318,7 @@ union PerformanceValueDataINTEL {
     const char* valueString;
 };
 struct PerformanceValueINTEL {
-    PerformanceValueTypeINTEL type;
+    PerformanceValueTypeINTEL type = static_cast<PerformanceValueTypeINTEL>(0);
     PerformanceValueDataINTEL data;
     operator VkPerformanceValueINTEL const &() const noexcept {
         return *reinterpret_cast<const VkPerformanceValueINTEL*>(this);
@@ -9474,7 +9341,7 @@ struct InitializePerformanceApiInfoINTEL {
 struct QueryPoolPerformanceQueryCreateInfoINTEL {
     StructureType sType = StructureType::eQueryPoolPerformanceQueryCreateInfoINTEL;
     const void* pNext = nullptr;
-    QueryPoolSamplingModeINTEL performanceCountersSampling;
+    QueryPoolSamplingModeINTEL performanceCountersSampling = static_cast<QueryPoolSamplingModeINTEL>(0);
     operator VkQueryPoolPerformanceQueryCreateInfoINTEL const &() const noexcept {
         return *reinterpret_cast<const VkQueryPoolPerformanceQueryCreateInfoINTEL*>(this);
     }
@@ -9508,7 +9375,7 @@ struct PerformanceStreamMarkerInfoINTEL {
 struct PerformanceOverrideInfoINTEL {
     StructureType sType = StructureType::ePerformanceOverrideInfoINTEL;
     const void* pNext = nullptr;
-    PerformanceOverrideTypeINTEL type;
+    PerformanceOverrideTypeINTEL type = static_cast<PerformanceOverrideTypeINTEL>(0);
     Bool32 enable = 0;
     uint64_t parameter = 0;
     operator VkPerformanceOverrideInfoINTEL const &() const noexcept {
@@ -9521,7 +9388,7 @@ struct PerformanceOverrideInfoINTEL {
 struct PerformanceConfigurationAcquireInfoINTEL {
     StructureType sType = StructureType::ePerformanceConfigurationAcquireInfoINTEL;
     const void* pNext = nullptr;
-    PerformanceConfigurationTypeINTEL type;
+    PerformanceConfigurationTypeINTEL type = static_cast<PerformanceConfigurationTypeINTEL>(0);
     operator VkPerformanceConfigurationAcquireInfoINTEL const &() const noexcept {
         return *reinterpret_cast<const VkPerformanceConfigurationAcquireInfoINTEL*>(this);
     }
@@ -9603,7 +9470,7 @@ using PhysicalDeviceSeparateDepthStencilLayoutsFeaturesKHR = PhysicalDeviceSepar
 struct AttachmentReferenceStencilLayout {
     StructureType sType = StructureType::eAttachmentReferenceStencilLayout;
     void* pNext = nullptr;
-    ImageLayout stencilLayout;
+    ImageLayout stencilLayout = static_cast<ImageLayout>(0);
     operator VkAttachmentReferenceStencilLayout const &() const noexcept {
         return *reinterpret_cast<const VkAttachmentReferenceStencilLayout*>(this);
     }
@@ -9615,8 +9482,8 @@ using AttachmentReferenceStencilLayoutKHR = AttachmentReferenceStencilLayout;
 struct AttachmentDescriptionStencilLayout {
     StructureType sType = StructureType::eAttachmentDescriptionStencilLayout;
     void* pNext = nullptr;
-    ImageLayout stencilInitialLayout;
-    ImageLayout stencilFinalLayout;
+    ImageLayout stencilInitialLayout = static_cast<ImageLayout>(0);
+    ImageLayout stencilFinalLayout = static_cast<ImageLayout>(0);
     operator VkAttachmentDescriptionStencilLayout const &() const noexcept {
         return *reinterpret_cast<const VkAttachmentDescriptionStencilLayout*>(this);
     }
@@ -9686,7 +9553,7 @@ struct PipelineExecutableStatisticKHR {
     void* pNext = nullptr;
     char name[MAX_DESCRIPTION_SIZE] = {};
     char description[MAX_DESCRIPTION_SIZE] = {};
-    PipelineExecutableStatisticFormatKHR format;
+    PipelineExecutableStatisticFormatKHR format = static_cast<PipelineExecutableStatisticFormatKHR>(0);
     PipelineExecutableStatisticValueKHR value;
     operator VkPipelineExecutableStatisticKHR const &() const noexcept {
         return *reinterpret_cast<const VkPipelineExecutableStatisticKHR*>(this);
@@ -9837,7 +9704,7 @@ struct PhysicalDeviceLineRasterizationPropertiesEXT {
 struct PipelineRasterizationLineStateCreateInfoEXT {
     StructureType sType = StructureType::ePipelineRasterizationLineStateCreateInfoEXT;
     const void* pNext = nullptr;
-    LineRasterizationModeEXT lineRasterizationMode;
+    LineRasterizationModeEXT lineRasterizationMode = static_cast<LineRasterizationModeEXT>(0);
     Bool32 stippledLineEnable = 0;
     uint32_t lineStippleFactor = 0;
     uint16_t lineStipplePattern = 0;
@@ -9893,7 +9760,7 @@ struct PhysicalDeviceVulkan11Properties {
     ShaderStageFlags subgroupSupportedStages;
     SubgroupFeatureFlags subgroupSupportedOperations;
     Bool32 subgroupQuadOperationsInAllStages = 0;
-    PointClippingBehavior pointClippingBehavior;
+    PointClippingBehavior pointClippingBehavior = static_cast<PointClippingBehavior>(0);
     uint32_t maxMultiviewViewCount = 0;
     uint32_t maxMultiviewInstanceIndex = 0;
     Bool32 protectedNoFault = 0;
@@ -9966,12 +9833,12 @@ struct PhysicalDeviceVulkan12Features {
 struct PhysicalDeviceVulkan12Properties {
     StructureType sType = StructureType::ePhysicalDeviceVulkan12Properties;
     void* pNext = nullptr;
-    DriverId driverID;
+    DriverId driverID = static_cast<DriverId>(0);
     char driverName[MAX_DRIVER_NAME_SIZE] = {};
     char driverInfo[MAX_DRIVER_INFO_SIZE] = {};
     ConformanceVersion conformanceVersion;
-    ShaderFloatControlsIndependence denormBehaviorIndependence;
-    ShaderFloatControlsIndependence roundingModeIndependence;
+    ShaderFloatControlsIndependence denormBehaviorIndependence = static_cast<ShaderFloatControlsIndependence>(0);
+    ShaderFloatControlsIndependence roundingModeIndependence = static_cast<ShaderFloatControlsIndependence>(0);
     Bool32 shaderSignedZeroInfNanPreserveFloat16 = 0;
     Bool32 shaderSignedZeroInfNanPreserveFloat32 = 0;
     Bool32 shaderSignedZeroInfNanPreserveFloat64 = 0;
@@ -10066,7 +9933,7 @@ struct SamplerCustomBorderColorCreateInfoEXT {
     StructureType sType = StructureType::eSamplerCustomBorderColorCreateInfoEXT;
     const void* pNext = nullptr;
     ClearColorValue customBorderColor;
-    Format format;
+    Format format = static_cast<Format>(0);
     operator VkSamplerCustomBorderColorCreateInfoEXT const &() const noexcept {
         return *reinterpret_cast<const VkSamplerCustomBorderColorCreateInfoEXT*>(this);
     }
@@ -10113,10 +9980,10 @@ union DeviceOrHostAddressConstKHR {
 struct AccelerationStructureGeometryTrianglesDataKHR {
     StructureType sType = StructureType::eAccelerationStructureGeometryTrianglesDataKHR;
     const void* pNext = nullptr;
-    Format vertexFormat;
+    Format vertexFormat = static_cast<Format>(0);
     DeviceOrHostAddressConstKHR vertexData;
     DeviceSize vertexStride = 0;
-    IndexType indexType;
+    IndexType indexType = static_cast<IndexType>(0);
     DeviceOrHostAddressConstKHR indexData;
     DeviceOrHostAddressConstKHR transformData;
     operator VkAccelerationStructureGeometryTrianglesDataKHR const &() const noexcept {
@@ -10166,7 +10033,7 @@ union AccelerationStructureGeometryDataKHR {
 struct AccelerationStructureGeometryKHR {
     StructureType sType = StructureType::eAccelerationStructureGeometryKHR;
     const void* pNext = nullptr;
-    GeometryTypeKHR geometryType;
+    GeometryTypeKHR geometryType = static_cast<GeometryTypeKHR>(0);
     AccelerationStructureGeometryDataKHR geometry;
     GeometryFlagsKHR flags;
     operator VkAccelerationStructureGeometryKHR const &() const noexcept {
@@ -10181,7 +10048,7 @@ struct AccelerationStructureGeometryKHR {
 struct AccelerationStructureBuildGeometryInfoKHR {
     StructureType sType = StructureType::eAccelerationStructureBuildGeometryInfoKHR;
     const void* pNext = nullptr;
-    AccelerationStructureTypeKHR type;
+    AccelerationStructureTypeKHR type = static_cast<AccelerationStructureTypeKHR>(0);
     BuildAccelerationStructureFlagsKHR flags;
     Bool32 update = 0;
     AccelerationStructureKHR srcAccelerationStructure;
@@ -10217,11 +10084,11 @@ struct AccelerationStructureBuildOffsetInfoKHR {
 struct AccelerationStructureCreateGeometryTypeInfoKHR {
     StructureType sType = StructureType::eAccelerationStructureCreateGeometryTypeInfoKHR;
     const void* pNext = nullptr;
-    GeometryTypeKHR geometryType;
+    GeometryTypeKHR geometryType = static_cast<GeometryTypeKHR>(0);
     uint32_t maxPrimitiveCount = 0;
-    IndexType indexType;
+    IndexType indexType = static_cast<IndexType>(0);
     uint32_t maxVertexCount = 0;
-    Format vertexFormat;
+    Format vertexFormat = static_cast<Format>(0);
     Bool32 allowsTransforms = 0;
     operator VkAccelerationStructureCreateGeometryTypeInfoKHR const &() const noexcept {
         return *reinterpret_cast<const VkAccelerationStructureCreateGeometryTypeInfoKHR*>(this);
@@ -10236,7 +10103,7 @@ struct AccelerationStructureCreateInfoKHR {
     StructureType sType = StructureType::eAccelerationStructureCreateInfoKHR;
     const void* pNext = nullptr;
     DeviceSize compactedSize = 0;
-    AccelerationStructureTypeKHR type;
+    AccelerationStructureTypeKHR type = static_cast<AccelerationStructureTypeKHR>(0);
     BuildAccelerationStructureFlagsKHR flags;
     uint32_t maxGeometryCount = 0;
     const AccelerationStructureCreateGeometryTypeInfoKHR* pGeometryInfos = nullptr;
@@ -10330,7 +10197,7 @@ struct CopyAccelerationStructureInfoKHR {
     const void* pNext = nullptr;
     AccelerationStructureKHR src;
     AccelerationStructureKHR dst;
-    CopyAccelerationStructureModeKHR mode;
+    CopyAccelerationStructureModeKHR mode = static_cast<CopyAccelerationStructureModeKHR>(0);
     operator VkCopyAccelerationStructureInfoKHR const &() const noexcept {
         return *reinterpret_cast<const VkCopyAccelerationStructureInfoKHR*>(this);
     }
@@ -10345,7 +10212,7 @@ struct CopyAccelerationStructureToMemoryInfoKHR {
     const void* pNext = nullptr;
     AccelerationStructureKHR src;
     DeviceOrHostAddressKHR dst;
-    CopyAccelerationStructureModeKHR mode;
+    CopyAccelerationStructureModeKHR mode = static_cast<CopyAccelerationStructureModeKHR>(0);
     operator VkCopyAccelerationStructureToMemoryInfoKHR const &() const noexcept {
         return *reinterpret_cast<const VkCopyAccelerationStructureToMemoryInfoKHR*>(this);
     }
@@ -10360,7 +10227,7 @@ struct CopyMemoryToAccelerationStructureInfoKHR {
     const void* pNext = nullptr;
     DeviceOrHostAddressConstKHR src;
     AccelerationStructureKHR dst;
-    CopyAccelerationStructureModeKHR mode;
+    CopyAccelerationStructureModeKHR mode = static_cast<CopyAccelerationStructureModeKHR>(0);
     operator VkCopyMemoryToAccelerationStructureInfoKHR const &() const noexcept {
         return *reinterpret_cast<const VkCopyMemoryToAccelerationStructureInfoKHR*>(this);
     }
@@ -10396,7 +10263,7 @@ struct PhysicalDeviceExtendedDynamicStateFeaturesEXT {
 struct RenderPassTransformBeginInfoQCOM {
     StructureType sType = StructureType::eRenderPassTransformBeginInfoQCOM;
     void* pNext = nullptr;
-    SurfaceTransformFlagBitsKHR transform;
+    SurfaceTransformFlagBitsKHR transform = static_cast<SurfaceTransformFlagBitsKHR>(0);
     operator VkRenderPassTransformBeginInfoQCOM const &() const noexcept {
         return *reinterpret_cast<const VkRenderPassTransformBeginInfoQCOM*>(this);
     }
@@ -10407,7 +10274,7 @@ struct RenderPassTransformBeginInfoQCOM {
 struct CommandBufferInheritanceRenderPassTransformInfoQCOM {
     StructureType sType = StructureType::eCommandBufferInheritanceRenderPassTransformInfoQCOM;
     void* pNext = nullptr;
-    SurfaceTransformFlagBitsKHR transform;
+    SurfaceTransformFlagBitsKHR transform = static_cast<SurfaceTransformFlagBitsKHR>(0);
     Rect2D renderArea;
     operator VkCommandBufferInheritanceRenderPassTransformInfoQCOM const &() const noexcept {
         return *reinterpret_cast<const VkCommandBufferInheritanceRenderPassTransformInfoQCOM*>(this);
@@ -10492,10 +10359,10 @@ private:
     PFN_vkCreateInstance pfn_CreateInstance;
     PFN_vkEnumerateInstanceExtensionProperties pfn_EnumerateInstanceExtensionProperties;
     PFN_vkEnumerateInstanceLayerProperties pfn_EnumerateInstanceLayerProperties;
-#endif
+#endif //VK_VERSION_1_0
 #if defined(VK_VERSION_1_1)
     PFN_vkEnumerateInstanceVersion pfn_EnumerateInstanceVersion;
-#endif
+#endif //VK_VERSION_1_1
 public:
 #if defined(VK_VERSION_1_0)
     Result CreateInstance(
@@ -10520,22 +10387,22 @@ public:
         return static_cast<Result>(pfn_EnumerateInstanceLayerProperties(reinterpret_cast<uint32_t*>(pPropertyCount),
             reinterpret_cast<VkLayerProperties*>(pProperties)));
     }
-#endif
+#endif //VK_VERSION_1_0
 #if defined(VK_VERSION_1_1)
     Result EnumerateInstanceVersion(
         uint32_t* pApiVersion) {
         return static_cast<Result>(pfn_EnumerateInstanceVersion(reinterpret_cast<uint32_t*>(pApiVersion)));
     }
-#endif
-    GlobalFunctions(PFN_vkGetInstanceProcAddr get_instance_proc_addr){
+#endif //VK_VERSION_1_1
+    GlobalFunctions(PFN_vkGetInstanceProcAddr get_instance_proc_addr) {
 #if defined(VK_VERSION_1_0)
         pfn_CreateInstance = reinterpret_cast<PFN_vkCreateInstance>(get_instance_proc_addr(nullptr,"vkCreateInstance"));
         pfn_EnumerateInstanceExtensionProperties = reinterpret_cast<PFN_vkEnumerateInstanceExtensionProperties>(get_instance_proc_addr(nullptr,"vkEnumerateInstanceExtensionProperties"));
         pfn_EnumerateInstanceLayerProperties = reinterpret_cast<PFN_vkEnumerateInstanceLayerProperties>(get_instance_proc_addr(nullptr,"vkEnumerateInstanceLayerProperties"));
-#endif
+#endif //VK_VERSION_1_0
 #if defined(VK_VERSION_1_1)
         pfn_EnumerateInstanceVersion = reinterpret_cast<PFN_vkEnumerateInstanceVersion>(get_instance_proc_addr(nullptr,"vkEnumerateInstanceVersion"));
-#endif
+#endif //VK_VERSION_1_1
     };
 };
 struct InstanceFunctions {
@@ -10554,7 +10421,7 @@ private:
     PFN_vkEnumerateDeviceExtensionProperties pfn_EnumerateDeviceExtensionProperties;
     PFN_vkEnumerateDeviceLayerProperties pfn_EnumerateDeviceLayerProperties;
     PFN_vkGetPhysicalDeviceSparseImageFormatProperties pfn_GetPhysicalDeviceSparseImageFormatProperties;
-#endif
+#endif //VK_VERSION_1_0
 #if defined(VK_VERSION_1_1)
     PFN_vkEnumeratePhysicalDeviceGroups pfn_EnumeratePhysicalDeviceGroups;
     PFN_vkGetPhysicalDeviceFeatures2 pfn_GetPhysicalDeviceFeatures2;
@@ -10567,7 +10434,7 @@ private:
     PFN_vkGetPhysicalDeviceExternalBufferProperties pfn_GetPhysicalDeviceExternalBufferProperties;
     PFN_vkGetPhysicalDeviceExternalFenceProperties pfn_GetPhysicalDeviceExternalFenceProperties;
     PFN_vkGetPhysicalDeviceExternalSemaphoreProperties pfn_GetPhysicalDeviceExternalSemaphoreProperties;
-#endif
+#endif //VK_VERSION_1_1
 public:
 #if defined(VK_VERSION_1_0)
     void DestroyInstance(
@@ -10686,7 +10553,7 @@ public:
             reinterpret_cast<uint32_t*>(pPropertyCount),
             reinterpret_cast<VkSparseImageFormatProperties*>(pProperties));
     }
-#endif
+#endif //VK_VERSION_1_0
 #if defined(VK_VERSION_1_1)
     Result EnumeratePhysicalDeviceGroups(
         Instance const& instance,
@@ -10772,8 +10639,8 @@ public:
             reinterpret_cast<const VkPhysicalDeviceExternalSemaphoreInfo*>(pExternalSemaphoreInfo),
             reinterpret_cast<VkExternalSemaphoreProperties*>(pExternalSemaphoreProperties));
     }
-#endif
-    InstanceFunctions(PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance){
+#endif //VK_VERSION_1_1
+    InstanceFunctions(PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance) {
         VkInstance inst = instance.get();
 #if defined(VK_VERSION_1_0)
         pfn_DestroyInstance = reinterpret_cast<PFN_vkDestroyInstance>(get_instance_proc_addr(inst,"vkDestroyInstance"));
@@ -10789,7 +10656,7 @@ public:
         pfn_EnumerateDeviceExtensionProperties = reinterpret_cast<PFN_vkEnumerateDeviceExtensionProperties>(get_instance_proc_addr(inst,"vkEnumerateDeviceExtensionProperties"));
         pfn_EnumerateDeviceLayerProperties = reinterpret_cast<PFN_vkEnumerateDeviceLayerProperties>(get_instance_proc_addr(inst,"vkEnumerateDeviceLayerProperties"));
         pfn_GetPhysicalDeviceSparseImageFormatProperties = reinterpret_cast<PFN_vkGetPhysicalDeviceSparseImageFormatProperties>(get_instance_proc_addr(inst,"vkGetPhysicalDeviceSparseImageFormatProperties"));
-#endif
+#endif //VK_VERSION_1_0
 #if defined(VK_VERSION_1_1)
         pfn_EnumeratePhysicalDeviceGroups = reinterpret_cast<PFN_vkEnumeratePhysicalDeviceGroups>(get_instance_proc_addr(inst,"vkEnumeratePhysicalDeviceGroups"));
         pfn_GetPhysicalDeviceFeatures2 = reinterpret_cast<PFN_vkGetPhysicalDeviceFeatures2>(get_instance_proc_addr(inst,"vkGetPhysicalDeviceFeatures2"));
@@ -10802,7 +10669,7 @@ public:
         pfn_GetPhysicalDeviceExternalBufferProperties = reinterpret_cast<PFN_vkGetPhysicalDeviceExternalBufferProperties>(get_instance_proc_addr(inst,"vkGetPhysicalDeviceExternalBufferProperties"));
         pfn_GetPhysicalDeviceExternalFenceProperties = reinterpret_cast<PFN_vkGetPhysicalDeviceExternalFenceProperties>(get_instance_proc_addr(inst,"vkGetPhysicalDeviceExternalFenceProperties"));
         pfn_GetPhysicalDeviceExternalSemaphoreProperties = reinterpret_cast<PFN_vkGetPhysicalDeviceExternalSemaphoreProperties>(get_instance_proc_addr(inst,"vkGetPhysicalDeviceExternalSemaphoreProperties"));
-#endif
+#endif //VK_VERSION_1_1
     };
 };
 struct DeviceFunctions {
@@ -10928,7 +10795,7 @@ private:
     PFN_vkCmdNextSubpass pfn_CmdNextSubpass;
     PFN_vkCmdEndRenderPass pfn_CmdEndRenderPass;
     PFN_vkCmdExecuteCommands pfn_CmdExecuteCommands;
-#endif
+#endif //VK_VERSION_1_0
 #if defined(VK_VERSION_1_1)
     PFN_vkBindBufferMemory2 pfn_BindBufferMemory2;
     PFN_vkBindImageMemory2 pfn_BindImageMemory2;
@@ -10946,7 +10813,7 @@ private:
     PFN_vkDestroyDescriptorUpdateTemplate pfn_DestroyDescriptorUpdateTemplate;
     PFN_vkUpdateDescriptorSetWithTemplate pfn_UpdateDescriptorSetWithTemplate;
     PFN_vkGetDescriptorSetLayoutSupport pfn_GetDescriptorSetLayoutSupport;
-#endif
+#endif //VK_VERSION_1_1
 #if defined(VK_VERSION_1_2)
     PFN_vkCmdDrawIndirectCount pfn_CmdDrawIndirectCount;
     PFN_vkCmdDrawIndexedIndirectCount pfn_CmdDrawIndexedIndirectCount;
@@ -10961,7 +10828,7 @@ private:
     PFN_vkGetBufferOpaqueCaptureAddress pfn_GetBufferOpaqueCaptureAddress;
     PFN_vkGetBufferDeviceAddress pfn_GetBufferDeviceAddress;
     PFN_vkGetDeviceMemoryOpaqueCaptureAddress pfn_GetDeviceMemoryOpaqueCaptureAddress;
-#endif
+#endif //VK_VERSION_1_2
 public:
 #if defined(VK_VERSION_1_0)
     void DestroyDevice(
@@ -12140,7 +12007,7 @@ public:
             commandBufferCount,
             reinterpret_cast<const VkCommandBuffer*>(pCommandBuffers));
     }
-#endif
+#endif //VK_VERSION_1_0
 #if defined(VK_VERSION_1_1)
     Result BindBufferMemory2(
         Device const& device,
@@ -12288,7 +12155,7 @@ public:
             reinterpret_cast<const VkDescriptorSetLayoutCreateInfo*>(pCreateInfo),
             reinterpret_cast<VkDescriptorSetLayoutSupport*>(pSupport));
     }
-#endif
+#endif //VK_VERSION_1_1
 #if defined(VK_VERSION_1_2)
     void CmdDrawIndirectCount(
         CommandBuffer const& commandBuffer,
@@ -12404,8 +12271,8 @@ public:
         return pfn_GetDeviceMemoryOpaqueCaptureAddress(device.get(),
             reinterpret_cast<const VkDeviceMemoryOpaqueCaptureAddressInfo*>(pInfo));
     }
-#endif
-    DeviceFunctions(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device){
+#endif //VK_VERSION_1_2
+    DeviceFunctions(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
         VkDevice dev = device.get();
 #if defined(VK_VERSION_1_0)
         pfn_DestroyDevice = reinterpret_cast<PFN_vkDestroyDevice>(get_device_proc_addr(dev,"vkDestroyDevice"));
@@ -12528,7 +12395,7 @@ public:
         pfn_CmdNextSubpass = reinterpret_cast<PFN_vkCmdNextSubpass>(get_device_proc_addr(dev,"vkCmdNextSubpass"));
         pfn_CmdEndRenderPass = reinterpret_cast<PFN_vkCmdEndRenderPass>(get_device_proc_addr(dev,"vkCmdEndRenderPass"));
         pfn_CmdExecuteCommands = reinterpret_cast<PFN_vkCmdExecuteCommands>(get_device_proc_addr(dev,"vkCmdExecuteCommands"));
-#endif
+#endif //VK_VERSION_1_0
 #if defined(VK_VERSION_1_1)
         pfn_BindBufferMemory2 = reinterpret_cast<PFN_vkBindBufferMemory2>(get_device_proc_addr(dev,"vkBindBufferMemory2"));
         pfn_BindImageMemory2 = reinterpret_cast<PFN_vkBindImageMemory2>(get_device_proc_addr(dev,"vkBindImageMemory2"));
@@ -12546,7 +12413,7 @@ public:
         pfn_DestroyDescriptorUpdateTemplate = reinterpret_cast<PFN_vkDestroyDescriptorUpdateTemplate>(get_device_proc_addr(dev,"vkDestroyDescriptorUpdateTemplate"));
         pfn_UpdateDescriptorSetWithTemplate = reinterpret_cast<PFN_vkUpdateDescriptorSetWithTemplate>(get_device_proc_addr(dev,"vkUpdateDescriptorSetWithTemplate"));
         pfn_GetDescriptorSetLayoutSupport = reinterpret_cast<PFN_vkGetDescriptorSetLayoutSupport>(get_device_proc_addr(dev,"vkGetDescriptorSetLayoutSupport"));
-#endif
+#endif //VK_VERSION_1_1
 #if defined(VK_VERSION_1_2)
         pfn_CmdDrawIndirectCount = reinterpret_cast<PFN_vkCmdDrawIndirectCount>(get_device_proc_addr(dev,"vkCmdDrawIndirectCount"));
         pfn_CmdDrawIndexedIndirectCount = reinterpret_cast<PFN_vkCmdDrawIndexedIndirectCount>(get_device_proc_addr(dev,"vkCmdDrawIndexedIndirectCount"));
@@ -12561,8 +12428,2945 @@ public:
         pfn_GetBufferOpaqueCaptureAddress = reinterpret_cast<PFN_vkGetBufferOpaqueCaptureAddress>(get_device_proc_addr(dev,"vkGetBufferOpaqueCaptureAddress"));
         pfn_GetBufferDeviceAddress = reinterpret_cast<PFN_vkGetBufferDeviceAddress>(get_device_proc_addr(dev,"vkGetBufferDeviceAddress"));
         pfn_GetDeviceMemoryOpaqueCaptureAddress = reinterpret_cast<PFN_vkGetDeviceMemoryOpaqueCaptureAddress>(get_device_proc_addr(dev,"vkGetDeviceMemoryOpaqueCaptureAddress"));
-#endif
+#endif //VK_VERSION_1_2
     };
 };
+#if defined(VK_KHR_surface)
+struct VK_KHR_surface_dispatch_table {
+private:
+    PFN_vkDestroySurfaceKHR pfn_DestroySurfaceKHR;
+    PFN_vkGetPhysicalDeviceSurfaceSupportKHR pfn_GetPhysicalDeviceSurfaceSupportKHR;
+    PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR pfn_GetPhysicalDeviceSurfaceCapabilitiesKHR;
+    PFN_vkGetPhysicalDeviceSurfaceFormatsKHR pfn_GetPhysicalDeviceSurfaceFormatsKHR;
+    PFN_vkGetPhysicalDeviceSurfacePresentModesKHR pfn_GetPhysicalDeviceSurfacePresentModesKHR;
+public:
+    void DestroySurfaceKHR(
+        Instance const& instance,
+        SurfaceKHR surface,
+        const AllocationCallbacks* pAllocator) {
+        return pfn_DestroySurfaceKHR(instance.get(),
+            surface.get(),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
+    }
+    Result GetPhysicalDeviceSurfaceSupportKHR(
+        PhysicalDevice const& physicalDevice,
+        uint32_t queueFamilyIndex,
+        SurfaceKHR surface,
+        Bool32* pSupported) {
+        return static_cast<Result>(pfn_GetPhysicalDeviceSurfaceSupportKHR(physicalDevice.get(),
+            queueFamilyIndex,
+            surface.get(),
+            reinterpret_cast<VkBool32*>(pSupported)));
+    }
+    Result GetPhysicalDeviceSurfaceCapabilitiesKHR(
+        PhysicalDevice const& physicalDevice,
+        SurfaceKHR surface,
+        SurfaceCapabilitiesKHR* pSurfaceCapabilities) {
+        return static_cast<Result>(pfn_GetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice.get(),
+            surface.get(),
+            reinterpret_cast<VkSurfaceCapabilitiesKHR*>(pSurfaceCapabilities)));
+    }
+    Result GetPhysicalDeviceSurfaceFormatsKHR(
+        PhysicalDevice const& physicalDevice,
+        SurfaceKHR surface,
+        uint32_t* pSurfaceFormatCount,
+        SurfaceFormatKHR* pSurfaceFormats) {
+        return static_cast<Result>(pfn_GetPhysicalDeviceSurfaceFormatsKHR(physicalDevice.get(),
+            surface.get(),
+            reinterpret_cast<uint32_t*>(pSurfaceFormatCount),
+            reinterpret_cast<VkSurfaceFormatKHR*>(pSurfaceFormats)));
+    }
+    Result GetPhysicalDeviceSurfacePresentModesKHR(
+        PhysicalDevice const& physicalDevice,
+        SurfaceKHR surface,
+        uint32_t* pPresentModeCount,
+        PresentModeKHR* pPresentModes) {
+        return static_cast<Result>(pfn_GetPhysicalDeviceSurfacePresentModesKHR(physicalDevice.get(),
+            surface.get(),
+            reinterpret_cast<uint32_t*>(pPresentModeCount),
+            reinterpret_cast<VkPresentModeKHR*>(pPresentModes)));
+    }
+    VK_KHR_surface_dispatch_table(PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance) {
+        VkInstance inst = instance.get();
+        pfn_DestroySurfaceKHR = reinterpret_cast<PFN_vkDestroySurfaceKHR>(get_instance_proc_addr(inst,"vkDestroySurfaceKHR"));
+        pfn_GetPhysicalDeviceSurfaceSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceSupportKHR>(get_instance_proc_addr(inst,"vkGetPhysicalDeviceSurfaceSupportKHR"));
+        pfn_GetPhysicalDeviceSurfaceCapabilitiesKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR>(get_instance_proc_addr(inst,"vkGetPhysicalDeviceSurfaceCapabilitiesKHR"));
+        pfn_GetPhysicalDeviceSurfaceFormatsKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceFormatsKHR>(get_instance_proc_addr(inst,"vkGetPhysicalDeviceSurfaceFormatsKHR"));
+        pfn_GetPhysicalDeviceSurfacePresentModesKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfacePresentModesKHR>(get_instance_proc_addr(inst,"vkGetPhysicalDeviceSurfacePresentModesKHR"));
+    };
+};
+#endif // VK_KHR_surface
+#if defined(VK_KHR_swapchain)
+struct VK_KHR_swapchain_dispatch_table {
+private:
+    PFN_vkCreateSwapchainKHR pfn_CreateSwapchainKHR;
+    PFN_vkDestroySwapchainKHR pfn_DestroySwapchainKHR;
+    PFN_vkGetSwapchainImagesKHR pfn_GetSwapchainImagesKHR;
+    PFN_vkAcquireNextImageKHR pfn_AcquireNextImageKHR;
+    PFN_vkQueuePresentKHR pfn_QueuePresentKHR;
+    PFN_vkGetDeviceGroupPresentCapabilitiesKHR pfn_GetDeviceGroupPresentCapabilitiesKHR;
+    PFN_vkGetDeviceGroupSurfacePresentModesKHR pfn_GetDeviceGroupSurfacePresentModesKHR;
+    PFN_vkAcquireNextImage2KHR pfn_AcquireNextImage2KHR;
+public:
+    Result CreateSwapchainKHR(
+        Device const& device,
+        const SwapchainCreateInfoKHR* pCreateInfo,
+        const AllocationCallbacks* pAllocator,
+        SwapchainKHR* pSwapchain) {
+        return static_cast<Result>(pfn_CreateSwapchainKHR(device.get(),
+            reinterpret_cast<const VkSwapchainCreateInfoKHR*>(pCreateInfo),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkSwapchainKHR*>(pSwapchain)));
+    }
+    void DestroySwapchainKHR(
+        Device const& device,
+        SwapchainKHR swapchain,
+        const AllocationCallbacks* pAllocator) {
+        return pfn_DestroySwapchainKHR(device.get(),
+            swapchain.get(),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
+    }
+    Result GetSwapchainImagesKHR(
+        Device const& device,
+        SwapchainKHR swapchain,
+        uint32_t* pSwapchainImageCount,
+        Image* pSwapchainImages) {
+        return static_cast<Result>(pfn_GetSwapchainImagesKHR(device.get(),
+            swapchain.get(),
+            reinterpret_cast<uint32_t*>(pSwapchainImageCount),
+            reinterpret_cast<VkImage*>(pSwapchainImages)));
+    }
+    Result AcquireNextImageKHR(
+        Device const& device,
+        SwapchainKHR swapchain,
+        uint64_t timeout,
+        Semaphore semaphore,
+        Fence fence,
+        uint32_t* pImageIndex) {
+        return static_cast<Result>(pfn_AcquireNextImageKHR(device.get(),
+            swapchain.get(),
+            timeout,
+            semaphore.get(),
+            fence.get(),
+            reinterpret_cast<uint32_t*>(pImageIndex)));
+    }
+    Result QueuePresentKHR(
+        Queue const& queue,
+        const PresentInfoKHR* pPresentInfo) {
+        return static_cast<Result>(pfn_QueuePresentKHR(queue.get(),
+            reinterpret_cast<const VkPresentInfoKHR*>(pPresentInfo)));
+    }
+    Result GetDeviceGroupPresentCapabilitiesKHR(
+        Device const& device,
+        DeviceGroupPresentCapabilitiesKHR* pDeviceGroupPresentCapabilities) {
+        return static_cast<Result>(pfn_GetDeviceGroupPresentCapabilitiesKHR(device.get(),
+            reinterpret_cast<VkDeviceGroupPresentCapabilitiesKHR*>(pDeviceGroupPresentCapabilities)));
+    }
+    Result GetDeviceGroupSurfacePresentModesKHR(
+        Device const& device,
+        SurfaceKHR surface,
+        DeviceGroupPresentModeFlagsKHR* pModes) {
+        return static_cast<Result>(pfn_GetDeviceGroupSurfacePresentModesKHR(device.get(),
+            surface.get(),
+            reinterpret_cast<VkDeviceGroupPresentModeFlagsKHR*>(pModes)));
+    }
+    Result AcquireNextImage2KHR(
+        Device const& device,
+        const AcquireNextImageInfoKHR* pAcquireInfo,
+        uint32_t* pImageIndex) {
+        return static_cast<Result>(pfn_AcquireNextImage2KHR(device.get(),
+            reinterpret_cast<const VkAcquireNextImageInfoKHR*>(pAcquireInfo),
+            reinterpret_cast<uint32_t*>(pImageIndex)));
+    }
+    VK_KHR_swapchain_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_CreateSwapchainKHR = reinterpret_cast<PFN_vkCreateSwapchainKHR>(get_device_proc_addr(dev,"vkCreateSwapchainKHR"));
+        pfn_DestroySwapchainKHR = reinterpret_cast<PFN_vkDestroySwapchainKHR>(get_device_proc_addr(dev,"vkDestroySwapchainKHR"));
+        pfn_GetSwapchainImagesKHR = reinterpret_cast<PFN_vkGetSwapchainImagesKHR>(get_device_proc_addr(dev,"vkGetSwapchainImagesKHR"));
+        pfn_AcquireNextImageKHR = reinterpret_cast<PFN_vkAcquireNextImageKHR>(get_device_proc_addr(dev,"vkAcquireNextImageKHR"));
+        pfn_QueuePresentKHR = reinterpret_cast<PFN_vkQueuePresentKHR>(get_device_proc_addr(dev,"vkQueuePresentKHR"));
+        pfn_GetDeviceGroupPresentCapabilitiesKHR = reinterpret_cast<PFN_vkGetDeviceGroupPresentCapabilitiesKHR>(get_device_proc_addr(dev,"vkGetDeviceGroupPresentCapabilitiesKHR"));
+        pfn_GetDeviceGroupSurfacePresentModesKHR = reinterpret_cast<PFN_vkGetDeviceGroupSurfacePresentModesKHR>(get_device_proc_addr(dev,"vkGetDeviceGroupSurfacePresentModesKHR"));
+        pfn_AcquireNextImage2KHR = reinterpret_cast<PFN_vkAcquireNextImage2KHR>(get_device_proc_addr(dev,"vkAcquireNextImage2KHR"));
+    };
+};
+#endif // VK_KHR_swapchain
+#if defined(VK_KHR_display)
+struct VK_KHR_display_dispatch_table {
+private:
+    PFN_vkGetPhysicalDeviceDisplayPropertiesKHR pfn_GetPhysicalDeviceDisplayPropertiesKHR;
+    PFN_vkGetPhysicalDeviceDisplayPlanePropertiesKHR pfn_GetPhysicalDeviceDisplayPlanePropertiesKHR;
+    PFN_vkGetDisplayPlaneSupportedDisplaysKHR pfn_GetDisplayPlaneSupportedDisplaysKHR;
+    PFN_vkGetDisplayModePropertiesKHR pfn_GetDisplayModePropertiesKHR;
+    PFN_vkCreateDisplayModeKHR pfn_CreateDisplayModeKHR;
+    PFN_vkGetDisplayPlaneCapabilitiesKHR pfn_GetDisplayPlaneCapabilitiesKHR;
+    PFN_vkCreateDisplayPlaneSurfaceKHR pfn_CreateDisplayPlaneSurfaceKHR;
+public:
+    Result GetPhysicalDeviceDisplayPropertiesKHR(
+        PhysicalDevice const& physicalDevice,
+        uint32_t* pPropertyCount,
+        DisplayPropertiesKHR* pProperties) {
+        return static_cast<Result>(pfn_GetPhysicalDeviceDisplayPropertiesKHR(physicalDevice.get(),
+            reinterpret_cast<uint32_t*>(pPropertyCount),
+            reinterpret_cast<VkDisplayPropertiesKHR*>(pProperties)));
+    }
+    Result GetPhysicalDeviceDisplayPlanePropertiesKHR(
+        PhysicalDevice const& physicalDevice,
+        uint32_t* pPropertyCount,
+        DisplayPlanePropertiesKHR* pProperties) {
+        return static_cast<Result>(pfn_GetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice.get(),
+            reinterpret_cast<uint32_t*>(pPropertyCount),
+            reinterpret_cast<VkDisplayPlanePropertiesKHR*>(pProperties)));
+    }
+    Result GetDisplayPlaneSupportedDisplaysKHR(
+        PhysicalDevice const& physicalDevice,
+        uint32_t planeIndex,
+        uint32_t* pDisplayCount,
+        DisplayKHR* pDisplays) {
+        return static_cast<Result>(pfn_GetDisplayPlaneSupportedDisplaysKHR(physicalDevice.get(),
+            planeIndex,
+            reinterpret_cast<uint32_t*>(pDisplayCount),
+            reinterpret_cast<VkDisplayKHR*>(pDisplays)));
+    }
+    Result GetDisplayModePropertiesKHR(
+        PhysicalDevice const& physicalDevice,
+        DisplayKHR display,
+        uint32_t* pPropertyCount,
+        DisplayModePropertiesKHR* pProperties) {
+        return static_cast<Result>(pfn_GetDisplayModePropertiesKHR(physicalDevice.get(),
+            display.get(),
+            reinterpret_cast<uint32_t*>(pPropertyCount),
+            reinterpret_cast<VkDisplayModePropertiesKHR*>(pProperties)));
+    }
+    Result CreateDisplayModeKHR(
+        PhysicalDevice const& physicalDevice,
+        DisplayKHR display,
+        const DisplayModeCreateInfoKHR* pCreateInfo,
+        const AllocationCallbacks* pAllocator,
+        DisplayModeKHR* pMode) {
+        return static_cast<Result>(pfn_CreateDisplayModeKHR(physicalDevice.get(),
+            display.get(),
+            reinterpret_cast<const VkDisplayModeCreateInfoKHR*>(pCreateInfo),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkDisplayModeKHR*>(pMode)));
+    }
+    Result GetDisplayPlaneCapabilitiesKHR(
+        PhysicalDevice const& physicalDevice,
+        DisplayModeKHR mode,
+        uint32_t planeIndex,
+        DisplayPlaneCapabilitiesKHR* pCapabilities) {
+        return static_cast<Result>(pfn_GetDisplayPlaneCapabilitiesKHR(physicalDevice.get(),
+            mode.get(),
+            planeIndex,
+            reinterpret_cast<VkDisplayPlaneCapabilitiesKHR*>(pCapabilities)));
+    }
+    Result CreateDisplayPlaneSurfaceKHR(
+        Instance const& instance,
+        const DisplaySurfaceCreateInfoKHR* pCreateInfo,
+        const AllocationCallbacks* pAllocator,
+        SurfaceKHR* pSurface) {
+        return static_cast<Result>(pfn_CreateDisplayPlaneSurfaceKHR(instance.get(),
+            reinterpret_cast<const VkDisplaySurfaceCreateInfoKHR*>(pCreateInfo),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkSurfaceKHR*>(pSurface)));
+    }
+    VK_KHR_display_dispatch_table(PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance) {
+        VkInstance inst = instance.get();
+        pfn_GetPhysicalDeviceDisplayPropertiesKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceDisplayPropertiesKHR>(get_instance_proc_addr(inst,"vkGetPhysicalDeviceDisplayPropertiesKHR"));
+        pfn_GetPhysicalDeviceDisplayPlanePropertiesKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceDisplayPlanePropertiesKHR>(get_instance_proc_addr(inst,"vkGetPhysicalDeviceDisplayPlanePropertiesKHR"));
+        pfn_GetDisplayPlaneSupportedDisplaysKHR = reinterpret_cast<PFN_vkGetDisplayPlaneSupportedDisplaysKHR>(get_instance_proc_addr(inst,"vkGetDisplayPlaneSupportedDisplaysKHR"));
+        pfn_GetDisplayModePropertiesKHR = reinterpret_cast<PFN_vkGetDisplayModePropertiesKHR>(get_instance_proc_addr(inst,"vkGetDisplayModePropertiesKHR"));
+        pfn_CreateDisplayModeKHR = reinterpret_cast<PFN_vkCreateDisplayModeKHR>(get_instance_proc_addr(inst,"vkCreateDisplayModeKHR"));
+        pfn_GetDisplayPlaneCapabilitiesKHR = reinterpret_cast<PFN_vkGetDisplayPlaneCapabilitiesKHR>(get_instance_proc_addr(inst,"vkGetDisplayPlaneCapabilitiesKHR"));
+        pfn_CreateDisplayPlaneSurfaceKHR = reinterpret_cast<PFN_vkCreateDisplayPlaneSurfaceKHR>(get_instance_proc_addr(inst,"vkCreateDisplayPlaneSurfaceKHR"));
+    };
+};
+#endif // VK_KHR_display
+#if defined(VK_KHR_display_swapchain)
+struct VK_KHR_display_swapchain_dispatch_table {
+private:
+    PFN_vkCreateSharedSwapchainsKHR pfn_CreateSharedSwapchainsKHR;
+public:
+    Result CreateSharedSwapchainsKHR(
+        Device const& device,
+        uint32_t swapchainCount,
+        const SwapchainCreateInfoKHR* pCreateInfos,
+        const AllocationCallbacks* pAllocator,
+        SwapchainKHR* pSwapchains) {
+        return static_cast<Result>(pfn_CreateSharedSwapchainsKHR(device.get(),
+            swapchainCount,
+            reinterpret_cast<const VkSwapchainCreateInfoKHR*>(pCreateInfos),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkSwapchainKHR*>(pSwapchains)));
+    }
+    VK_KHR_display_swapchain_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_CreateSharedSwapchainsKHR = reinterpret_cast<PFN_vkCreateSharedSwapchainsKHR>(get_device_proc_addr(dev,"vkCreateSharedSwapchainsKHR"));
+    };
+};
+#endif // VK_KHR_display_swapchain
+#if defined(VK_KHR_xlib_surface)
+struct VK_KHR_xlib_surface_dispatch_table {
+private:
+    PFN_vkCreateXlibSurfaceKHR pfn_CreateXlibSurfaceKHR;
+    PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR pfn_GetPhysicalDeviceXlibPresentationSupportKHR;
+public:
+#if defined(VK_USE_PLATFORM_XLIB_KHR)
+    Result CreateXlibSurfaceKHR(
+        Instance const& instance,
+        const XlibSurfaceCreateInfoKHR* pCreateInfo,
+        const AllocationCallbacks* pAllocator,
+        SurfaceKHR* pSurface) {
+        return static_cast<Result>(pfn_CreateXlibSurfaceKHR(instance.get(),
+            reinterpret_cast<const VkXlibSurfaceCreateInfoKHR*>(pCreateInfo),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkSurfaceKHR*>(pSurface)));
+    }
+#endif // VK_USE_PLATFORM_XLIB_KHR
+#if defined(VK_USE_PLATFORM_XLIB_KHR)
+    VkBool32 GetPhysicalDeviceXlibPresentationSupportKHR(
+        PhysicalDevice const& physicalDevice,
+        uint32_t queueFamilyIndex,
+        Display* dpy,
+        VisualID visualID) {
+        return pfn_GetPhysicalDeviceXlibPresentationSupportKHR(physicalDevice.get(),
+            queueFamilyIndex,
+            reinterpret_cast<Display*>(dpy),
+            static_cast<VisualID>(visualID));
+    }
+#endif // VK_USE_PLATFORM_XLIB_KHR
+    VK_KHR_xlib_surface_dispatch_table(PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance) {
+        VkInstance inst = instance.get();
+        pfn_CreateXlibSurfaceKHR = reinterpret_cast<PFN_vkCreateXlibSurfaceKHR>(get_instance_proc_addr(inst,"vkCreateXlibSurfaceKHR"));
+        pfn_GetPhysicalDeviceXlibPresentationSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR>(get_instance_proc_addr(inst,"vkGetPhysicalDeviceXlibPresentationSupportKHR"));
+    };
+};
+#endif // VK_KHR_xlib_surface
+#if defined(VK_KHR_xcb_surface)
+struct VK_KHR_xcb_surface_dispatch_table {
+private:
+    PFN_vkCreateXcbSurfaceKHR pfn_CreateXcbSurfaceKHR;
+    PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR pfn_GetPhysicalDeviceXcbPresentationSupportKHR;
+public:
+#if defined(VK_USE_PLATFORM_XCB_KHR)
+    Result CreateXcbSurfaceKHR(
+        Instance const& instance,
+        const XcbSurfaceCreateInfoKHR* pCreateInfo,
+        const AllocationCallbacks* pAllocator,
+        SurfaceKHR* pSurface) {
+        return static_cast<Result>(pfn_CreateXcbSurfaceKHR(instance.get(),
+            reinterpret_cast<const VkXcbSurfaceCreateInfoKHR*>(pCreateInfo),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkSurfaceKHR*>(pSurface)));
+    }
+#endif // VK_USE_PLATFORM_XCB_KHR
+#if defined(VK_USE_PLATFORM_XCB_KHR)
+    VkBool32 GetPhysicalDeviceXcbPresentationSupportKHR(
+        PhysicalDevice const& physicalDevice,
+        uint32_t queueFamilyIndex,
+        xcb_connection_t* connection,
+        xcb_visualid_t visual_id) {
+        return pfn_GetPhysicalDeviceXcbPresentationSupportKHR(physicalDevice.get(),
+            queueFamilyIndex,
+            reinterpret_cast<xcb_connection_t*>(connection),
+            static_cast<xcb_visualid_t>(visual_id));
+    }
+#endif // VK_USE_PLATFORM_XCB_KHR
+    VK_KHR_xcb_surface_dispatch_table(PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance) {
+        VkInstance inst = instance.get();
+        pfn_CreateXcbSurfaceKHR = reinterpret_cast<PFN_vkCreateXcbSurfaceKHR>(get_instance_proc_addr(inst,"vkCreateXcbSurfaceKHR"));
+        pfn_GetPhysicalDeviceXcbPresentationSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR>(get_instance_proc_addr(inst,"vkGetPhysicalDeviceXcbPresentationSupportKHR"));
+    };
+};
+#endif // VK_KHR_xcb_surface
+#if defined(VK_KHR_wayland_surface)
+struct VK_KHR_wayland_surface_dispatch_table {
+private:
+    PFN_vkCreateWaylandSurfaceKHR pfn_CreateWaylandSurfaceKHR;
+    PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR pfn_GetPhysicalDeviceWaylandPresentationSupportKHR;
+public:
+#if defined(VK_USE_PLATFORM_WAYLAND_KHR)
+    Result CreateWaylandSurfaceKHR(
+        Instance const& instance,
+        const WaylandSurfaceCreateInfoKHR* pCreateInfo,
+        const AllocationCallbacks* pAllocator,
+        SurfaceKHR* pSurface) {
+        return static_cast<Result>(pfn_CreateWaylandSurfaceKHR(instance.get(),
+            reinterpret_cast<const VkWaylandSurfaceCreateInfoKHR*>(pCreateInfo),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkSurfaceKHR*>(pSurface)));
+    }
+#endif // VK_USE_PLATFORM_WAYLAND_KHR
+#if defined(VK_USE_PLATFORM_WAYLAND_KHR)
+    VkBool32 GetPhysicalDeviceWaylandPresentationSupportKHR(
+        PhysicalDevice const& physicalDevice,
+        uint32_t queueFamilyIndex,
+        wl_display* display) {
+        return pfn_GetPhysicalDeviceWaylandPresentationSupportKHR(physicalDevice.get(),
+            queueFamilyIndex,
+            reinterpret_cast<wl_display*>(display));
+    }
+#endif // VK_USE_PLATFORM_WAYLAND_KHR
+    VK_KHR_wayland_surface_dispatch_table(PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance) {
+        VkInstance inst = instance.get();
+        pfn_CreateWaylandSurfaceKHR = reinterpret_cast<PFN_vkCreateWaylandSurfaceKHR>(get_instance_proc_addr(inst,"vkCreateWaylandSurfaceKHR"));
+        pfn_GetPhysicalDeviceWaylandPresentationSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR>(get_instance_proc_addr(inst,"vkGetPhysicalDeviceWaylandPresentationSupportKHR"));
+    };
+};
+#endif // VK_KHR_wayland_surface
+#if defined(VK_KHR_android_surface)
+struct VK_KHR_android_surface_dispatch_table {
+private:
+    PFN_vkCreateAndroidSurfaceKHR pfn_CreateAndroidSurfaceKHR;
+public:
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
+    Result CreateAndroidSurfaceKHR(
+        Instance const& instance,
+        const AndroidSurfaceCreateInfoKHR* pCreateInfo,
+        const AllocationCallbacks* pAllocator,
+        SurfaceKHR* pSurface) {
+        return static_cast<Result>(pfn_CreateAndroidSurfaceKHR(instance.get(),
+            reinterpret_cast<const VkAndroidSurfaceCreateInfoKHR*>(pCreateInfo),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkSurfaceKHR*>(pSurface)));
+    }
+#endif // VK_USE_PLATFORM_ANDROID_KHR
+    VK_KHR_android_surface_dispatch_table(PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance) {
+        VkInstance inst = instance.get();
+        pfn_CreateAndroidSurfaceKHR = reinterpret_cast<PFN_vkCreateAndroidSurfaceKHR>(get_instance_proc_addr(inst,"vkCreateAndroidSurfaceKHR"));
+    };
+};
+#endif // VK_KHR_android_surface
+#if defined(VK_KHR_win32_surface)
+struct VK_KHR_win32_surface_dispatch_table {
+private:
+    PFN_vkCreateWin32SurfaceKHR pfn_CreateWin32SurfaceKHR;
+    PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR pfn_GetPhysicalDeviceWin32PresentationSupportKHR;
+public:
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    Result CreateWin32SurfaceKHR(
+        Instance const& instance,
+        const Win32SurfaceCreateInfoKHR* pCreateInfo,
+        const AllocationCallbacks* pAllocator,
+        SurfaceKHR* pSurface) {
+        return static_cast<Result>(pfn_CreateWin32SurfaceKHR(instance.get(),
+            reinterpret_cast<const VkWin32SurfaceCreateInfoKHR*>(pCreateInfo),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkSurfaceKHR*>(pSurface)));
+    }
+#endif // VK_USE_PLATFORM_WIN32_KHR
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    VkBool32 GetPhysicalDeviceWin32PresentationSupportKHR(
+        PhysicalDevice const& physicalDevice,
+        uint32_t queueFamilyIndex) {
+        return pfn_GetPhysicalDeviceWin32PresentationSupportKHR(physicalDevice.get(),
+            queueFamilyIndex);
+    }
+#endif // VK_USE_PLATFORM_WIN32_KHR
+    VK_KHR_win32_surface_dispatch_table(PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance) {
+        VkInstance inst = instance.get();
+        pfn_CreateWin32SurfaceKHR = reinterpret_cast<PFN_vkCreateWin32SurfaceKHR>(get_instance_proc_addr(inst,"vkCreateWin32SurfaceKHR"));
+        pfn_GetPhysicalDeviceWin32PresentationSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR>(get_instance_proc_addr(inst,"vkGetPhysicalDeviceWin32PresentationSupportKHR"));
+    };
+};
+#endif // VK_KHR_win32_surface
+#if defined(VK_EXT_debug_report)
+struct VK_EXT_debug_report_dispatch_table {
+private:
+    PFN_vkCreateDebugReportCallbackEXT pfn_CreateDebugReportCallbackEXT;
+    PFN_vkDestroyDebugReportCallbackEXT pfn_DestroyDebugReportCallbackEXT;
+    PFN_vkDebugReportMessageEXT pfn_DebugReportMessageEXT;
+public:
+    Result CreateDebugReportCallbackEXT(
+        Instance const& instance,
+        const DebugReportCallbackCreateInfoEXT* pCreateInfo,
+        const AllocationCallbacks* pAllocator,
+        DebugReportCallbackEXT* pCallback) {
+        return static_cast<Result>(pfn_CreateDebugReportCallbackEXT(instance.get(),
+            reinterpret_cast<const VkDebugReportCallbackCreateInfoEXT*>(pCreateInfo),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkDebugReportCallbackEXT*>(pCallback)));
+    }
+    void DestroyDebugReportCallbackEXT(
+        Instance const& instance,
+        DebugReportCallbackEXT callback,
+        const AllocationCallbacks* pAllocator) {
+        return pfn_DestroyDebugReportCallbackEXT(instance.get(),
+            callback.get(),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
+    }
+    void DebugReportMessageEXT(
+        Instance const& instance,
+        DebugReportFlagsEXT flags,
+        DebugReportObjectTypeEXT objectType,
+        uint64_t object,
+        size_t location,
+        int32_t messageCode,
+        const char* pLayerPrefix,
+        const char* pMessage) {
+        return pfn_DebugReportMessageEXT(instance.get(),
+            static_cast<VkDebugReportFlagsEXT>(flags),
+            static_cast<VkDebugReportObjectTypeEXT>(objectType),
+            object,
+            location,
+            messageCode,
+            reinterpret_cast<const char*>(pLayerPrefix),
+            reinterpret_cast<const char*>(pMessage));
+    }
+    VK_EXT_debug_report_dispatch_table(PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance) {
+        VkInstance inst = instance.get();
+        pfn_CreateDebugReportCallbackEXT = reinterpret_cast<PFN_vkCreateDebugReportCallbackEXT>(get_instance_proc_addr(inst,"vkCreateDebugReportCallbackEXT"));
+        pfn_DestroyDebugReportCallbackEXT = reinterpret_cast<PFN_vkDestroyDebugReportCallbackEXT>(get_instance_proc_addr(inst,"vkDestroyDebugReportCallbackEXT"));
+        pfn_DebugReportMessageEXT = reinterpret_cast<PFN_vkDebugReportMessageEXT>(get_instance_proc_addr(inst,"vkDebugReportMessageEXT"));
+    };
+};
+#endif // VK_EXT_debug_report
+#if defined(VK_EXT_debug_marker)
+struct VK_EXT_debug_marker_dispatch_table {
+private:
+    PFN_vkDebugMarkerSetObjectNameEXT pfn_DebugMarkerSetObjectNameEXT;
+    PFN_vkDebugMarkerSetObjectTagEXT pfn_DebugMarkerSetObjectTagEXT;
+    PFN_vkCmdDebugMarkerBeginEXT pfn_CmdDebugMarkerBeginEXT;
+    PFN_vkCmdDebugMarkerEndEXT pfn_CmdDebugMarkerEndEXT;
+    PFN_vkCmdDebugMarkerInsertEXT pfn_CmdDebugMarkerInsertEXT;
+public:
+    Result DebugMarkerSetObjectNameEXT(
+        Device const& device,
+        const DebugMarkerObjectNameInfoEXT* pNameInfo) {
+        return static_cast<Result>(pfn_DebugMarkerSetObjectNameEXT(device.get(),
+            reinterpret_cast<const VkDebugMarkerObjectNameInfoEXT*>(pNameInfo)));
+    }
+    Result DebugMarkerSetObjectTagEXT(
+        Device const& device,
+        const DebugMarkerObjectTagInfoEXT* pTagInfo) {
+        return static_cast<Result>(pfn_DebugMarkerSetObjectTagEXT(device.get(),
+            reinterpret_cast<const VkDebugMarkerObjectTagInfoEXT*>(pTagInfo)));
+    }
+    void CmdDebugMarkerBeginEXT(
+        CommandBuffer const& commandBuffer,
+        const DebugMarkerMarkerInfoEXT* pMarkerInfo) {
+        return pfn_CmdDebugMarkerBeginEXT(commandBuffer.get(),
+            reinterpret_cast<const VkDebugMarkerMarkerInfoEXT*>(pMarkerInfo));
+    }
+    void CmdDebugMarkerEndEXT(
+        CommandBuffer const& commandBuffer) {
+        return pfn_CmdDebugMarkerEndEXT(commandBuffer.get());
+    }
+    void CmdDebugMarkerInsertEXT(
+        CommandBuffer const& commandBuffer,
+        const DebugMarkerMarkerInfoEXT* pMarkerInfo) {
+        return pfn_CmdDebugMarkerInsertEXT(commandBuffer.get(),
+            reinterpret_cast<const VkDebugMarkerMarkerInfoEXT*>(pMarkerInfo));
+    }
+    VK_EXT_debug_marker_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_DebugMarkerSetObjectNameEXT = reinterpret_cast<PFN_vkDebugMarkerSetObjectNameEXT>(get_device_proc_addr(dev,"vkDebugMarkerSetObjectNameEXT"));
+        pfn_DebugMarkerSetObjectTagEXT = reinterpret_cast<PFN_vkDebugMarkerSetObjectTagEXT>(get_device_proc_addr(dev,"vkDebugMarkerSetObjectTagEXT"));
+        pfn_CmdDebugMarkerBeginEXT = reinterpret_cast<PFN_vkCmdDebugMarkerBeginEXT>(get_device_proc_addr(dev,"vkCmdDebugMarkerBeginEXT"));
+        pfn_CmdDebugMarkerEndEXT = reinterpret_cast<PFN_vkCmdDebugMarkerEndEXT>(get_device_proc_addr(dev,"vkCmdDebugMarkerEndEXT"));
+        pfn_CmdDebugMarkerInsertEXT = reinterpret_cast<PFN_vkCmdDebugMarkerInsertEXT>(get_device_proc_addr(dev,"vkCmdDebugMarkerInsertEXT"));
+    };
+};
+#endif // VK_EXT_debug_marker
+#if defined(VK_EXT_transform_feedback)
+struct VK_EXT_transform_feedback_dispatch_table {
+private:
+    PFN_vkCmdBindTransformFeedbackBuffersEXT pfn_CmdBindTransformFeedbackBuffersEXT;
+    PFN_vkCmdBeginTransformFeedbackEXT pfn_CmdBeginTransformFeedbackEXT;
+    PFN_vkCmdEndTransformFeedbackEXT pfn_CmdEndTransformFeedbackEXT;
+    PFN_vkCmdBeginQueryIndexedEXT pfn_CmdBeginQueryIndexedEXT;
+    PFN_vkCmdEndQueryIndexedEXT pfn_CmdEndQueryIndexedEXT;
+    PFN_vkCmdDrawIndirectByteCountEXT pfn_CmdDrawIndirectByteCountEXT;
+public:
+    void CmdBindTransformFeedbackBuffersEXT(
+        CommandBuffer const& commandBuffer,
+        uint32_t firstBinding,
+        uint32_t bindingCount,
+        const Buffer* pBuffers,
+        const DeviceSize* pOffsets,
+        const DeviceSize* pSizes) {
+        return pfn_CmdBindTransformFeedbackBuffersEXT(commandBuffer.get(),
+            firstBinding,
+            bindingCount,
+            reinterpret_cast<const VkBuffer*>(pBuffers),
+            reinterpret_cast<const VkDeviceSize*>(pOffsets),
+            reinterpret_cast<const VkDeviceSize*>(pSizes));
+    }
+    void CmdBeginTransformFeedbackEXT(
+        CommandBuffer const& commandBuffer,
+        uint32_t firstCounterBuffer,
+        uint32_t counterBufferCount,
+        const Buffer* pCounterBuffers,
+        const DeviceSize* pCounterBufferOffsets) {
+        return pfn_CmdBeginTransformFeedbackEXT(commandBuffer.get(),
+            firstCounterBuffer,
+            counterBufferCount,
+            reinterpret_cast<const VkBuffer*>(pCounterBuffers),
+            reinterpret_cast<const VkDeviceSize*>(pCounterBufferOffsets));
+    }
+    void CmdEndTransformFeedbackEXT(
+        CommandBuffer const& commandBuffer,
+        uint32_t firstCounterBuffer,
+        uint32_t counterBufferCount,
+        const Buffer* pCounterBuffers,
+        const DeviceSize* pCounterBufferOffsets) {
+        return pfn_CmdEndTransformFeedbackEXT(commandBuffer.get(),
+            firstCounterBuffer,
+            counterBufferCount,
+            reinterpret_cast<const VkBuffer*>(pCounterBuffers),
+            reinterpret_cast<const VkDeviceSize*>(pCounterBufferOffsets));
+    }
+    void CmdBeginQueryIndexedEXT(
+        CommandBuffer const& commandBuffer,
+        QueryPool queryPool,
+        uint32_t query,
+        QueryControlFlags flags,
+        uint32_t index) {
+        return pfn_CmdBeginQueryIndexedEXT(commandBuffer.get(),
+            queryPool.get(),
+            query,
+            static_cast<VkQueryControlFlags>(flags),
+            index);
+    }
+    void CmdEndQueryIndexedEXT(
+        CommandBuffer const& commandBuffer,
+        QueryPool queryPool,
+        uint32_t query,
+        uint32_t index) {
+        return pfn_CmdEndQueryIndexedEXT(commandBuffer.get(),
+            queryPool.get(),
+            query,
+            index);
+    }
+    void CmdDrawIndirectByteCountEXT(
+        CommandBuffer const& commandBuffer,
+        uint32_t instanceCount,
+        uint32_t firstInstance,
+        Buffer counterBuffer,
+        DeviceSize counterBufferOffset,
+        uint32_t counterOffset,
+        uint32_t vertexStride) {
+        return pfn_CmdDrawIndirectByteCountEXT(commandBuffer.get(),
+            instanceCount,
+            firstInstance,
+            counterBuffer.get(),
+            static_cast<VkDeviceSize>(counterBufferOffset),
+            counterOffset,
+            vertexStride);
+    }
+    VK_EXT_transform_feedback_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_CmdBindTransformFeedbackBuffersEXT = reinterpret_cast<PFN_vkCmdBindTransformFeedbackBuffersEXT>(get_device_proc_addr(dev,"vkCmdBindTransformFeedbackBuffersEXT"));
+        pfn_CmdBeginTransformFeedbackEXT = reinterpret_cast<PFN_vkCmdBeginTransformFeedbackEXT>(get_device_proc_addr(dev,"vkCmdBeginTransformFeedbackEXT"));
+        pfn_CmdEndTransformFeedbackEXT = reinterpret_cast<PFN_vkCmdEndTransformFeedbackEXT>(get_device_proc_addr(dev,"vkCmdEndTransformFeedbackEXT"));
+        pfn_CmdBeginQueryIndexedEXT = reinterpret_cast<PFN_vkCmdBeginQueryIndexedEXT>(get_device_proc_addr(dev,"vkCmdBeginQueryIndexedEXT"));
+        pfn_CmdEndQueryIndexedEXT = reinterpret_cast<PFN_vkCmdEndQueryIndexedEXT>(get_device_proc_addr(dev,"vkCmdEndQueryIndexedEXT"));
+        pfn_CmdDrawIndirectByteCountEXT = reinterpret_cast<PFN_vkCmdDrawIndirectByteCountEXT>(get_device_proc_addr(dev,"vkCmdDrawIndirectByteCountEXT"));
+    };
+};
+#endif // VK_EXT_transform_feedback
+#if defined(VK_NVX_image_view_handle)
+struct VK_NVX_image_view_handle_dispatch_table {
+private:
+    PFN_vkGetImageViewHandleNVX pfn_GetImageViewHandleNVX;
+    PFN_vkGetImageViewAddressNVX pfn_GetImageViewAddressNVX;
+public:
+    uint32_t GetImageViewHandleNVX(
+        Device const& device,
+        const ImageViewHandleInfoNVX* pInfo) {
+        return pfn_GetImageViewHandleNVX(device.get(),
+            reinterpret_cast<const VkImageViewHandleInfoNVX*>(pInfo));
+    }
+    Result GetImageViewAddressNVX(
+        Device const& device,
+        ImageView imageView,
+        ImageViewAddressPropertiesNVX* pProperties) {
+        return static_cast<Result>(pfn_GetImageViewAddressNVX(device.get(),
+            imageView.get(),
+            reinterpret_cast<VkImageViewAddressPropertiesNVX*>(pProperties)));
+    }
+    VK_NVX_image_view_handle_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_GetImageViewHandleNVX = reinterpret_cast<PFN_vkGetImageViewHandleNVX>(get_device_proc_addr(dev,"vkGetImageViewHandleNVX"));
+        pfn_GetImageViewAddressNVX = reinterpret_cast<PFN_vkGetImageViewAddressNVX>(get_device_proc_addr(dev,"vkGetImageViewAddressNVX"));
+    };
+};
+#endif // VK_NVX_image_view_handle
+#if defined(VK_AMD_shader_info)
+struct VK_AMD_shader_info_dispatch_table {
+private:
+    PFN_vkGetShaderInfoAMD pfn_GetShaderInfoAMD;
+public:
+    Result GetShaderInfoAMD(
+        Device const& device,
+        Pipeline pipeline,
+        ShaderStageFlagBits shaderStage,
+        ShaderInfoTypeAMD infoType,
+        size_t* pInfoSize,
+        void* pInfo) {
+        return static_cast<Result>(pfn_GetShaderInfoAMD(device.get(),
+            pipeline.get(),
+            static_cast<VkShaderStageFlagBits>(shaderStage),
+            static_cast<VkShaderInfoTypeAMD>(infoType),
+            reinterpret_cast<size_t*>(pInfoSize),
+            reinterpret_cast<void*>(pInfo)));
+    }
+    VK_AMD_shader_info_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_GetShaderInfoAMD = reinterpret_cast<PFN_vkGetShaderInfoAMD>(get_device_proc_addr(dev,"vkGetShaderInfoAMD"));
+    };
+};
+#endif // VK_AMD_shader_info
+#if defined(VK_GGP_stream_descriptor_surface)
+struct VK_GGP_stream_descriptor_surface_dispatch_table {
+private:
+    PFN_vkCreateStreamDescriptorSurfaceGGP pfn_CreateStreamDescriptorSurfaceGGP;
+public:
+#if defined(VK_USE_PLATFORM_GGP)
+    Result CreateStreamDescriptorSurfaceGGP(
+        Instance const& instance,
+        const StreamDescriptorSurfaceCreateInfoGGP* pCreateInfo,
+        const AllocationCallbacks* pAllocator,
+        SurfaceKHR* pSurface) {
+        return static_cast<Result>(pfn_CreateStreamDescriptorSurfaceGGP(instance.get(),
+            reinterpret_cast<const VkStreamDescriptorSurfaceCreateInfoGGP*>(pCreateInfo),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkSurfaceKHR*>(pSurface)));
+    }
+#endif // VK_USE_PLATFORM_GGP
+    VK_GGP_stream_descriptor_surface_dispatch_table(PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance) {
+        VkInstance inst = instance.get();
+        pfn_CreateStreamDescriptorSurfaceGGP = reinterpret_cast<PFN_vkCreateStreamDescriptorSurfaceGGP>(get_instance_proc_addr(inst,"vkCreateStreamDescriptorSurfaceGGP"));
+    };
+};
+#endif // VK_GGP_stream_descriptor_surface
+#if defined(VK_NV_external_memory_capabilities)
+struct VK_NV_external_memory_capabilities_dispatch_table {
+private:
+    PFN_vkGetPhysicalDeviceExternalImageFormatPropertiesNV pfn_GetPhysicalDeviceExternalImageFormatPropertiesNV;
+public:
+    Result GetPhysicalDeviceExternalImageFormatPropertiesNV(
+        PhysicalDevice const& physicalDevice,
+        Format format,
+        ImageType type,
+        ImageTiling tiling,
+        ImageUsageFlags usage,
+        ImageCreateFlags flags,
+        ExternalMemoryHandleTypeFlagsNV externalHandleType,
+        ExternalImageFormatPropertiesNV* pExternalImageFormatProperties) {
+        return static_cast<Result>(pfn_GetPhysicalDeviceExternalImageFormatPropertiesNV(physicalDevice.get(),
+            static_cast<VkFormat>(format),
+            static_cast<VkImageType>(type),
+            static_cast<VkImageTiling>(tiling),
+            static_cast<VkImageUsageFlags>(usage),
+            static_cast<VkImageCreateFlags>(flags),
+            static_cast<VkExternalMemoryHandleTypeFlagsNV>(externalHandleType),
+            reinterpret_cast<VkExternalImageFormatPropertiesNV*>(pExternalImageFormatProperties)));
+    }
+    VK_NV_external_memory_capabilities_dispatch_table(PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance) {
+        VkInstance inst = instance.get();
+        pfn_GetPhysicalDeviceExternalImageFormatPropertiesNV = reinterpret_cast<PFN_vkGetPhysicalDeviceExternalImageFormatPropertiesNV>(get_instance_proc_addr(inst,"vkGetPhysicalDeviceExternalImageFormatPropertiesNV"));
+    };
+};
+#endif // VK_NV_external_memory_capabilities
+#if defined(VK_NV_external_memory_win32)
+struct VK_NV_external_memory_win32_dispatch_table {
+private:
+    PFN_vkGetMemoryWin32HandleNV pfn_GetMemoryWin32HandleNV;
+public:
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    Result GetMemoryWin32HandleNV(
+        Device const& device,
+        DeviceMemory memory,
+        ExternalMemoryHandleTypeFlagsNV handleType,
+        HANDLE* pHandle) {
+        return static_cast<Result>(pfn_GetMemoryWin32HandleNV(device.get(),
+            memory.get(),
+            static_cast<VkExternalMemoryHandleTypeFlagsNV>(handleType),
+            reinterpret_cast<HANDLE*>(pHandle)));
+    }
+#endif // VK_USE_PLATFORM_WIN32_KHR
+    VK_NV_external_memory_win32_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_GetMemoryWin32HandleNV = reinterpret_cast<PFN_vkGetMemoryWin32HandleNV>(get_device_proc_addr(dev,"vkGetMemoryWin32HandleNV"));
+    };
+};
+#endif // VK_NV_external_memory_win32
+#if defined(VK_KHR_device_group)
+struct VK_KHR_device_group_dispatch_table {
+private:
+    PFN_vkGetDeviceGroupPresentCapabilitiesKHR pfn_GetDeviceGroupPresentCapabilitiesKHR;
+    PFN_vkGetDeviceGroupSurfacePresentModesKHR pfn_GetDeviceGroupSurfacePresentModesKHR;
+    PFN_vkAcquireNextImage2KHR pfn_AcquireNextImage2KHR;
+public:
+    Result GetDeviceGroupPresentCapabilitiesKHR(
+        Device const& device,
+        DeviceGroupPresentCapabilitiesKHR* pDeviceGroupPresentCapabilities) {
+        return static_cast<Result>(pfn_GetDeviceGroupPresentCapabilitiesKHR(device.get(),
+            reinterpret_cast<VkDeviceGroupPresentCapabilitiesKHR*>(pDeviceGroupPresentCapabilities)));
+    }
+    Result GetDeviceGroupSurfacePresentModesKHR(
+        Device const& device,
+        SurfaceKHR surface,
+        DeviceGroupPresentModeFlagsKHR* pModes) {
+        return static_cast<Result>(pfn_GetDeviceGroupSurfacePresentModesKHR(device.get(),
+            surface.get(),
+            reinterpret_cast<VkDeviceGroupPresentModeFlagsKHR*>(pModes)));
+    }
+    Result AcquireNextImage2KHR(
+        Device const& device,
+        const AcquireNextImageInfoKHR* pAcquireInfo,
+        uint32_t* pImageIndex) {
+        return static_cast<Result>(pfn_AcquireNextImage2KHR(device.get(),
+            reinterpret_cast<const VkAcquireNextImageInfoKHR*>(pAcquireInfo),
+            reinterpret_cast<uint32_t*>(pImageIndex)));
+    }
+    VK_KHR_device_group_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_GetDeviceGroupPresentCapabilitiesKHR = reinterpret_cast<PFN_vkGetDeviceGroupPresentCapabilitiesKHR>(get_device_proc_addr(dev,"vkGetDeviceGroupPresentCapabilitiesKHR"));
+        pfn_GetDeviceGroupSurfacePresentModesKHR = reinterpret_cast<PFN_vkGetDeviceGroupSurfacePresentModesKHR>(get_device_proc_addr(dev,"vkGetDeviceGroupSurfacePresentModesKHR"));
+        pfn_AcquireNextImage2KHR = reinterpret_cast<PFN_vkAcquireNextImage2KHR>(get_device_proc_addr(dev,"vkAcquireNextImage2KHR"));
+    };
+};
+#endif // VK_KHR_device_group
+#if defined(VK_NN_vi_surface)
+struct VK_NN_vi_surface_dispatch_table {
+private:
+    PFN_vkCreateViSurfaceNN pfn_CreateViSurfaceNN;
+public:
+#if defined(VK_USE_PLATFORM_VI_NN)
+    Result CreateViSurfaceNN(
+        Instance const& instance,
+        const ViSurfaceCreateInfoNN* pCreateInfo,
+        const AllocationCallbacks* pAllocator,
+        SurfaceKHR* pSurface) {
+        return static_cast<Result>(pfn_CreateViSurfaceNN(instance.get(),
+            reinterpret_cast<const VkViSurfaceCreateInfoNN*>(pCreateInfo),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkSurfaceKHR*>(pSurface)));
+    }
+#endif // VK_USE_PLATFORM_VI_NN
+    VK_NN_vi_surface_dispatch_table(PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance) {
+        VkInstance inst = instance.get();
+        pfn_CreateViSurfaceNN = reinterpret_cast<PFN_vkCreateViSurfaceNN>(get_instance_proc_addr(inst,"vkCreateViSurfaceNN"));
+    };
+};
+#endif // VK_NN_vi_surface
+#if defined(VK_KHR_external_memory_win32)
+struct VK_KHR_external_memory_win32_dispatch_table {
+private:
+    PFN_vkGetMemoryWin32HandleKHR pfn_GetMemoryWin32HandleKHR;
+    PFN_vkGetMemoryWin32HandlePropertiesKHR pfn_GetMemoryWin32HandlePropertiesKHR;
+public:
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    Result GetMemoryWin32HandleKHR(
+        Device const& device,
+        const MemoryGetWin32HandleInfoKHR* pGetWin32HandleInfo,
+        HANDLE* pHandle) {
+        return static_cast<Result>(pfn_GetMemoryWin32HandleKHR(device.get(),
+            reinterpret_cast<const VkMemoryGetWin32HandleInfoKHR*>(pGetWin32HandleInfo),
+            reinterpret_cast<HANDLE*>(pHandle)));
+    }
+#endif // VK_USE_PLATFORM_WIN32_KHR
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    Result GetMemoryWin32HandlePropertiesKHR(
+        Device const& device,
+        ExternalMemoryHandleTypeFlagBits handleType,
+        HANDLE handle,
+        MemoryWin32HandlePropertiesKHR* pMemoryWin32HandleProperties) {
+        return static_cast<Result>(pfn_GetMemoryWin32HandlePropertiesKHR(device.get(),
+            static_cast<VkExternalMemoryHandleTypeFlagBits>(handleType),
+            static_cast<HANDLE>(handle),
+            reinterpret_cast<VkMemoryWin32HandlePropertiesKHR*>(pMemoryWin32HandleProperties)));
+    }
+#endif // VK_USE_PLATFORM_WIN32_KHR
+    VK_KHR_external_memory_win32_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_GetMemoryWin32HandleKHR = reinterpret_cast<PFN_vkGetMemoryWin32HandleKHR>(get_device_proc_addr(dev,"vkGetMemoryWin32HandleKHR"));
+        pfn_GetMemoryWin32HandlePropertiesKHR = reinterpret_cast<PFN_vkGetMemoryWin32HandlePropertiesKHR>(get_device_proc_addr(dev,"vkGetMemoryWin32HandlePropertiesKHR"));
+    };
+};
+#endif // VK_KHR_external_memory_win32
+#if defined(VK_KHR_external_memory_fd)
+struct VK_KHR_external_memory_fd_dispatch_table {
+private:
+    PFN_vkGetMemoryFdKHR pfn_GetMemoryFdKHR;
+    PFN_vkGetMemoryFdPropertiesKHR pfn_GetMemoryFdPropertiesKHR;
+public:
+    Result GetMemoryFdKHR(
+        Device const& device,
+        const MemoryGetFdInfoKHR* pGetFdInfo,
+        int* pFd) {
+        return static_cast<Result>(pfn_GetMemoryFdKHR(device.get(),
+            reinterpret_cast<const VkMemoryGetFdInfoKHR*>(pGetFdInfo),
+            reinterpret_cast<int*>(pFd)));
+    }
+    Result GetMemoryFdPropertiesKHR(
+        Device const& device,
+        ExternalMemoryHandleTypeFlagBits handleType,
+        int fd,
+        MemoryFdPropertiesKHR* pMemoryFdProperties) {
+        return static_cast<Result>(pfn_GetMemoryFdPropertiesKHR(device.get(),
+            static_cast<VkExternalMemoryHandleTypeFlagBits>(handleType),
+            fd,
+            reinterpret_cast<VkMemoryFdPropertiesKHR*>(pMemoryFdProperties)));
+    }
+    VK_KHR_external_memory_fd_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_GetMemoryFdKHR = reinterpret_cast<PFN_vkGetMemoryFdKHR>(get_device_proc_addr(dev,"vkGetMemoryFdKHR"));
+        pfn_GetMemoryFdPropertiesKHR = reinterpret_cast<PFN_vkGetMemoryFdPropertiesKHR>(get_device_proc_addr(dev,"vkGetMemoryFdPropertiesKHR"));
+    };
+};
+#endif // VK_KHR_external_memory_fd
+#if defined(VK_KHR_external_semaphore_win32)
+struct VK_KHR_external_semaphore_win32_dispatch_table {
+private:
+    PFN_vkGetSemaphoreWin32HandleKHR pfn_GetSemaphoreWin32HandleKHR;
+    PFN_vkImportSemaphoreWin32HandleKHR pfn_ImportSemaphoreWin32HandleKHR;
+public:
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    Result GetSemaphoreWin32HandleKHR(
+        Device const& device,
+        const SemaphoreGetWin32HandleInfoKHR* pGetWin32HandleInfo,
+        HANDLE* pHandle) {
+        return static_cast<Result>(pfn_GetSemaphoreWin32HandleKHR(device.get(),
+            reinterpret_cast<const VkSemaphoreGetWin32HandleInfoKHR*>(pGetWin32HandleInfo),
+            reinterpret_cast<HANDLE*>(pHandle)));
+    }
+#endif // VK_USE_PLATFORM_WIN32_KHR
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    Result ImportSemaphoreWin32HandleKHR(
+        Device const& device,
+        const ImportSemaphoreWin32HandleInfoKHR* pImportSemaphoreWin32HandleInfo) {
+        return static_cast<Result>(pfn_ImportSemaphoreWin32HandleKHR(device.get(),
+            reinterpret_cast<const VkImportSemaphoreWin32HandleInfoKHR*>(pImportSemaphoreWin32HandleInfo)));
+    }
+#endif // VK_USE_PLATFORM_WIN32_KHR
+    VK_KHR_external_semaphore_win32_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_GetSemaphoreWin32HandleKHR = reinterpret_cast<PFN_vkGetSemaphoreWin32HandleKHR>(get_device_proc_addr(dev,"vkGetSemaphoreWin32HandleKHR"));
+        pfn_ImportSemaphoreWin32HandleKHR = reinterpret_cast<PFN_vkImportSemaphoreWin32HandleKHR>(get_device_proc_addr(dev,"vkImportSemaphoreWin32HandleKHR"));
+    };
+};
+#endif // VK_KHR_external_semaphore_win32
+#if defined(VK_KHR_external_semaphore_fd)
+struct VK_KHR_external_semaphore_fd_dispatch_table {
+private:
+    PFN_vkGetSemaphoreFdKHR pfn_GetSemaphoreFdKHR;
+    PFN_vkImportSemaphoreFdKHR pfn_ImportSemaphoreFdKHR;
+public:
+    Result GetSemaphoreFdKHR(
+        Device const& device,
+        const SemaphoreGetFdInfoKHR* pGetFdInfo,
+        int* pFd) {
+        return static_cast<Result>(pfn_GetSemaphoreFdKHR(device.get(),
+            reinterpret_cast<const VkSemaphoreGetFdInfoKHR*>(pGetFdInfo),
+            reinterpret_cast<int*>(pFd)));
+    }
+    Result ImportSemaphoreFdKHR(
+        Device const& device,
+        const ImportSemaphoreFdInfoKHR* pImportSemaphoreFdInfo) {
+        return static_cast<Result>(pfn_ImportSemaphoreFdKHR(device.get(),
+            reinterpret_cast<const VkImportSemaphoreFdInfoKHR*>(pImportSemaphoreFdInfo)));
+    }
+    VK_KHR_external_semaphore_fd_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_GetSemaphoreFdKHR = reinterpret_cast<PFN_vkGetSemaphoreFdKHR>(get_device_proc_addr(dev,"vkGetSemaphoreFdKHR"));
+        pfn_ImportSemaphoreFdKHR = reinterpret_cast<PFN_vkImportSemaphoreFdKHR>(get_device_proc_addr(dev,"vkImportSemaphoreFdKHR"));
+    };
+};
+#endif // VK_KHR_external_semaphore_fd
+#if defined(VK_KHR_push_descriptor)
+struct VK_KHR_push_descriptor_dispatch_table {
+private:
+    PFN_vkCmdPushDescriptorSetKHR pfn_CmdPushDescriptorSetKHR;
+    PFN_vkCmdPushDescriptorSetWithTemplateKHR pfn_CmdPushDescriptorSetWithTemplateKHR;
+public:
+    void CmdPushDescriptorSetKHR(
+        CommandBuffer const& commandBuffer,
+        PipelineBindPoint pipelineBindPoint,
+        PipelineLayout layout,
+        uint32_t set,
+        uint32_t descriptorWriteCount,
+        const WriteDescriptorSet* pDescriptorWrites) {
+        return pfn_CmdPushDescriptorSetKHR(commandBuffer.get(),
+            static_cast<VkPipelineBindPoint>(pipelineBindPoint),
+            layout.get(),
+            set,
+            descriptorWriteCount,
+            reinterpret_cast<const VkWriteDescriptorSet*>(pDescriptorWrites));
+    }
+    void CmdPushDescriptorSetWithTemplateKHR(
+        CommandBuffer const& commandBuffer,
+        DescriptorUpdateTemplate descriptorUpdateTemplate,
+        PipelineLayout layout,
+        uint32_t set,
+        const void* pData) {
+        return pfn_CmdPushDescriptorSetWithTemplateKHR(commandBuffer.get(),
+            descriptorUpdateTemplate.get(),
+            layout.get(),
+            set,
+            reinterpret_cast<const void*>(pData));
+    }
+    VK_KHR_push_descriptor_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_CmdPushDescriptorSetKHR = reinterpret_cast<PFN_vkCmdPushDescriptorSetKHR>(get_device_proc_addr(dev,"vkCmdPushDescriptorSetKHR"));
+        pfn_CmdPushDescriptorSetWithTemplateKHR = reinterpret_cast<PFN_vkCmdPushDescriptorSetWithTemplateKHR>(get_device_proc_addr(dev,"vkCmdPushDescriptorSetWithTemplateKHR"));
+    };
+};
+#endif // VK_KHR_push_descriptor
+#if defined(VK_EXT_conditional_rendering)
+struct VK_EXT_conditional_rendering_dispatch_table {
+private:
+    PFN_vkCmdBeginConditionalRenderingEXT pfn_CmdBeginConditionalRenderingEXT;
+    PFN_vkCmdEndConditionalRenderingEXT pfn_CmdEndConditionalRenderingEXT;
+public:
+    void CmdBeginConditionalRenderingEXT(
+        CommandBuffer const& commandBuffer,
+        const ConditionalRenderingBeginInfoEXT* pConditionalRenderingBegin) {
+        return pfn_CmdBeginConditionalRenderingEXT(commandBuffer.get(),
+            reinterpret_cast<const VkConditionalRenderingBeginInfoEXT*>(pConditionalRenderingBegin));
+    }
+    void CmdEndConditionalRenderingEXT(
+        CommandBuffer const& commandBuffer) {
+        return pfn_CmdEndConditionalRenderingEXT(commandBuffer.get());
+    }
+    VK_EXT_conditional_rendering_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_CmdBeginConditionalRenderingEXT = reinterpret_cast<PFN_vkCmdBeginConditionalRenderingEXT>(get_device_proc_addr(dev,"vkCmdBeginConditionalRenderingEXT"));
+        pfn_CmdEndConditionalRenderingEXT = reinterpret_cast<PFN_vkCmdEndConditionalRenderingEXT>(get_device_proc_addr(dev,"vkCmdEndConditionalRenderingEXT"));
+    };
+};
+#endif // VK_EXT_conditional_rendering
+#if defined(VK_KHR_descriptor_update_template)
+struct VK_KHR_descriptor_update_template_dispatch_table {
+private:
+    PFN_vkCmdPushDescriptorSetWithTemplateKHR pfn_CmdPushDescriptorSetWithTemplateKHR;
+public:
+    void CmdPushDescriptorSetWithTemplateKHR(
+        CommandBuffer const& commandBuffer,
+        DescriptorUpdateTemplate descriptorUpdateTemplate,
+        PipelineLayout layout,
+        uint32_t set,
+        const void* pData) {
+        return pfn_CmdPushDescriptorSetWithTemplateKHR(commandBuffer.get(),
+            descriptorUpdateTemplate.get(),
+            layout.get(),
+            set,
+            reinterpret_cast<const void*>(pData));
+    }
+    VK_KHR_descriptor_update_template_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_CmdPushDescriptorSetWithTemplateKHR = reinterpret_cast<PFN_vkCmdPushDescriptorSetWithTemplateKHR>(get_device_proc_addr(dev,"vkCmdPushDescriptorSetWithTemplateKHR"));
+    };
+};
+#endif // VK_KHR_descriptor_update_template
+#if defined(VK_NV_clip_space_w_scaling)
+struct VK_NV_clip_space_w_scaling_dispatch_table {
+private:
+    PFN_vkCmdSetViewportWScalingNV pfn_CmdSetViewportWScalingNV;
+public:
+    void CmdSetViewportWScalingNV(
+        CommandBuffer const& commandBuffer,
+        uint32_t firstViewport,
+        uint32_t viewportCount,
+        const ViewportWScalingNV* pViewportWScalings) {
+        return pfn_CmdSetViewportWScalingNV(commandBuffer.get(),
+            firstViewport,
+            viewportCount,
+            reinterpret_cast<const VkViewportWScalingNV*>(pViewportWScalings));
+    }
+    VK_NV_clip_space_w_scaling_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_CmdSetViewportWScalingNV = reinterpret_cast<PFN_vkCmdSetViewportWScalingNV>(get_device_proc_addr(dev,"vkCmdSetViewportWScalingNV"));
+    };
+};
+#endif // VK_NV_clip_space_w_scaling
+#if defined(VK_EXT_direct_mode_display)
+struct VK_EXT_direct_mode_display_dispatch_table {
+private:
+    PFN_vkReleaseDisplayEXT pfn_ReleaseDisplayEXT;
+public:
+    Result ReleaseDisplayEXT(
+        PhysicalDevice const& physicalDevice,
+        DisplayKHR display) {
+        return static_cast<Result>(pfn_ReleaseDisplayEXT(physicalDevice.get(),
+            display.get()));
+    }
+    VK_EXT_direct_mode_display_dispatch_table(PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance) {
+        VkInstance inst = instance.get();
+        pfn_ReleaseDisplayEXT = reinterpret_cast<PFN_vkReleaseDisplayEXT>(get_instance_proc_addr(inst,"vkReleaseDisplayEXT"));
+    };
+};
+#endif // VK_EXT_direct_mode_display
+#if defined(VK_EXT_acquire_xlib_display)
+struct VK_EXT_acquire_xlib_display_dispatch_table {
+private:
+    PFN_vkAcquireXlibDisplayEXT pfn_AcquireXlibDisplayEXT;
+    PFN_vkGetRandROutputDisplayEXT pfn_GetRandROutputDisplayEXT;
+public:
+#if defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT)
+    Result AcquireXlibDisplayEXT(
+        PhysicalDevice const& physicalDevice,
+        Display* dpy,
+        DisplayKHR display) {
+        return static_cast<Result>(pfn_AcquireXlibDisplayEXT(physicalDevice.get(),
+            reinterpret_cast<Display*>(dpy),
+            display.get()));
+    }
+#endif // VK_USE_PLATFORM_XLIB_XRANDR_EXT
+#if defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT)
+    Result GetRandROutputDisplayEXT(
+        PhysicalDevice const& physicalDevice,
+        Display* dpy,
+        RROutput rrOutput,
+        DisplayKHR* pDisplay) {
+        return static_cast<Result>(pfn_GetRandROutputDisplayEXT(physicalDevice.get(),
+            reinterpret_cast<Display*>(dpy),
+            static_cast<RROutput>(rrOutput),
+            reinterpret_cast<VkDisplayKHR*>(pDisplay)));
+    }
+#endif // VK_USE_PLATFORM_XLIB_XRANDR_EXT
+    VK_EXT_acquire_xlib_display_dispatch_table(PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance) {
+        VkInstance inst = instance.get();
+        pfn_AcquireXlibDisplayEXT = reinterpret_cast<PFN_vkAcquireXlibDisplayEXT>(get_instance_proc_addr(inst,"vkAcquireXlibDisplayEXT"));
+        pfn_GetRandROutputDisplayEXT = reinterpret_cast<PFN_vkGetRandROutputDisplayEXT>(get_instance_proc_addr(inst,"vkGetRandROutputDisplayEXT"));
+    };
+};
+#endif // VK_EXT_acquire_xlib_display
+#if defined(VK_EXT_display_surface_counter)
+struct VK_EXT_display_surface_counter_dispatch_table {
+private:
+    PFN_vkGetPhysicalDeviceSurfaceCapabilities2EXT pfn_GetPhysicalDeviceSurfaceCapabilities2EXT;
+public:
+    Result GetPhysicalDeviceSurfaceCapabilities2EXT(
+        PhysicalDevice const& physicalDevice,
+        SurfaceKHR surface,
+        SurfaceCapabilities2EXT* pSurfaceCapabilities) {
+        return static_cast<Result>(pfn_GetPhysicalDeviceSurfaceCapabilities2EXT(physicalDevice.get(),
+            surface.get(),
+            reinterpret_cast<VkSurfaceCapabilities2EXT*>(pSurfaceCapabilities)));
+    }
+    VK_EXT_display_surface_counter_dispatch_table(PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance) {
+        VkInstance inst = instance.get();
+        pfn_GetPhysicalDeviceSurfaceCapabilities2EXT = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceCapabilities2EXT>(get_instance_proc_addr(inst,"vkGetPhysicalDeviceSurfaceCapabilities2EXT"));
+    };
+};
+#endif // VK_EXT_display_surface_counter
+#if defined(VK_EXT_display_control)
+struct VK_EXT_display_control_dispatch_table {
+private:
+    PFN_vkDisplayPowerControlEXT pfn_DisplayPowerControlEXT;
+    PFN_vkRegisterDeviceEventEXT pfn_RegisterDeviceEventEXT;
+    PFN_vkRegisterDisplayEventEXT pfn_RegisterDisplayEventEXT;
+    PFN_vkGetSwapchainCounterEXT pfn_GetSwapchainCounterEXT;
+public:
+    Result DisplayPowerControlEXT(
+        Device const& device,
+        DisplayKHR display,
+        const DisplayPowerInfoEXT* pDisplayPowerInfo) {
+        return static_cast<Result>(pfn_DisplayPowerControlEXT(device.get(),
+            display.get(),
+            reinterpret_cast<const VkDisplayPowerInfoEXT*>(pDisplayPowerInfo)));
+    }
+    Result RegisterDeviceEventEXT(
+        Device const& device,
+        const DeviceEventInfoEXT* pDeviceEventInfo,
+        const AllocationCallbacks* pAllocator,
+        Fence* pFence) {
+        return static_cast<Result>(pfn_RegisterDeviceEventEXT(device.get(),
+            reinterpret_cast<const VkDeviceEventInfoEXT*>(pDeviceEventInfo),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkFence*>(pFence)));
+    }
+    Result RegisterDisplayEventEXT(
+        Device const& device,
+        DisplayKHR display,
+        const DisplayEventInfoEXT* pDisplayEventInfo,
+        const AllocationCallbacks* pAllocator,
+        Fence* pFence) {
+        return static_cast<Result>(pfn_RegisterDisplayEventEXT(device.get(),
+            display.get(),
+            reinterpret_cast<const VkDisplayEventInfoEXT*>(pDisplayEventInfo),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkFence*>(pFence)));
+    }
+    Result GetSwapchainCounterEXT(
+        Device const& device,
+        SwapchainKHR swapchain,
+        SurfaceCounterFlagBitsEXT counter,
+        uint64_t* pCounterValue) {
+        return static_cast<Result>(pfn_GetSwapchainCounterEXT(device.get(),
+            swapchain.get(),
+            static_cast<VkSurfaceCounterFlagBitsEXT>(counter),
+            reinterpret_cast<uint64_t*>(pCounterValue)));
+    }
+    VK_EXT_display_control_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_DisplayPowerControlEXT = reinterpret_cast<PFN_vkDisplayPowerControlEXT>(get_device_proc_addr(dev,"vkDisplayPowerControlEXT"));
+        pfn_RegisterDeviceEventEXT = reinterpret_cast<PFN_vkRegisterDeviceEventEXT>(get_device_proc_addr(dev,"vkRegisterDeviceEventEXT"));
+        pfn_RegisterDisplayEventEXT = reinterpret_cast<PFN_vkRegisterDisplayEventEXT>(get_device_proc_addr(dev,"vkRegisterDisplayEventEXT"));
+        pfn_GetSwapchainCounterEXT = reinterpret_cast<PFN_vkGetSwapchainCounterEXT>(get_device_proc_addr(dev,"vkGetSwapchainCounterEXT"));
+    };
+};
+#endif // VK_EXT_display_control
+#if defined(VK_GOOGLE_display_timing)
+struct VK_GOOGLE_display_timing_dispatch_table {
+private:
+    PFN_vkGetRefreshCycleDurationGOOGLE pfn_GetRefreshCycleDurationGOOGLE;
+    PFN_vkGetPastPresentationTimingGOOGLE pfn_GetPastPresentationTimingGOOGLE;
+public:
+    Result GetRefreshCycleDurationGOOGLE(
+        Device const& device,
+        SwapchainKHR swapchain,
+        RefreshCycleDurationGOOGLE* pDisplayTimingProperties) {
+        return static_cast<Result>(pfn_GetRefreshCycleDurationGOOGLE(device.get(),
+            swapchain.get(),
+            reinterpret_cast<VkRefreshCycleDurationGOOGLE*>(pDisplayTimingProperties)));
+    }
+    Result GetPastPresentationTimingGOOGLE(
+        Device const& device,
+        SwapchainKHR swapchain,
+        uint32_t* pPresentationTimingCount,
+        PastPresentationTimingGOOGLE* pPresentationTimings) {
+        return static_cast<Result>(pfn_GetPastPresentationTimingGOOGLE(device.get(),
+            swapchain.get(),
+            reinterpret_cast<uint32_t*>(pPresentationTimingCount),
+            reinterpret_cast<VkPastPresentationTimingGOOGLE*>(pPresentationTimings)));
+    }
+    VK_GOOGLE_display_timing_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_GetRefreshCycleDurationGOOGLE = reinterpret_cast<PFN_vkGetRefreshCycleDurationGOOGLE>(get_device_proc_addr(dev,"vkGetRefreshCycleDurationGOOGLE"));
+        pfn_GetPastPresentationTimingGOOGLE = reinterpret_cast<PFN_vkGetPastPresentationTimingGOOGLE>(get_device_proc_addr(dev,"vkGetPastPresentationTimingGOOGLE"));
+    };
+};
+#endif // VK_GOOGLE_display_timing
+#if defined(VK_EXT_discard_rectangles)
+struct VK_EXT_discard_rectangles_dispatch_table {
+private:
+    PFN_vkCmdSetDiscardRectangleEXT pfn_CmdSetDiscardRectangleEXT;
+public:
+    void CmdSetDiscardRectangleEXT(
+        CommandBuffer const& commandBuffer,
+        uint32_t firstDiscardRectangle,
+        uint32_t discardRectangleCount,
+        const Rect2D* pDiscardRectangles) {
+        return pfn_CmdSetDiscardRectangleEXT(commandBuffer.get(),
+            firstDiscardRectangle,
+            discardRectangleCount,
+            reinterpret_cast<const VkRect2D*>(pDiscardRectangles));
+    }
+    VK_EXT_discard_rectangles_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_CmdSetDiscardRectangleEXT = reinterpret_cast<PFN_vkCmdSetDiscardRectangleEXT>(get_device_proc_addr(dev,"vkCmdSetDiscardRectangleEXT"));
+    };
+};
+#endif // VK_EXT_discard_rectangles
+#if defined(VK_EXT_hdr_metadata)
+struct VK_EXT_hdr_metadata_dispatch_table {
+private:
+    PFN_vkSetHdrMetadataEXT pfn_SetHdrMetadataEXT;
+public:
+    void SetHdrMetadataEXT(
+        Device const& device,
+        uint32_t swapchainCount,
+        const SwapchainKHR* pSwapchains,
+        const HdrMetadataEXT* pMetadata) {
+        return pfn_SetHdrMetadataEXT(device.get(),
+            swapchainCount,
+            reinterpret_cast<const VkSwapchainKHR*>(pSwapchains),
+            reinterpret_cast<const VkHdrMetadataEXT*>(pMetadata));
+    }
+    VK_EXT_hdr_metadata_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_SetHdrMetadataEXT = reinterpret_cast<PFN_vkSetHdrMetadataEXT>(get_device_proc_addr(dev,"vkSetHdrMetadataEXT"));
+    };
+};
+#endif // VK_EXT_hdr_metadata
+#if defined(VK_KHR_shared_presentable_image)
+struct VK_KHR_shared_presentable_image_dispatch_table {
+private:
+    PFN_vkGetSwapchainStatusKHR pfn_GetSwapchainStatusKHR;
+public:
+    Result GetSwapchainStatusKHR(
+        Device const& device,
+        SwapchainKHR swapchain) {
+        return static_cast<Result>(pfn_GetSwapchainStatusKHR(device.get(),
+            swapchain.get()));
+    }
+    VK_KHR_shared_presentable_image_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_GetSwapchainStatusKHR = reinterpret_cast<PFN_vkGetSwapchainStatusKHR>(get_device_proc_addr(dev,"vkGetSwapchainStatusKHR"));
+    };
+};
+#endif // VK_KHR_shared_presentable_image
+#if defined(VK_KHR_external_fence_win32)
+struct VK_KHR_external_fence_win32_dispatch_table {
+private:
+    PFN_vkGetFenceWin32HandleKHR pfn_GetFenceWin32HandleKHR;
+    PFN_vkImportFenceWin32HandleKHR pfn_ImportFenceWin32HandleKHR;
+public:
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    Result GetFenceWin32HandleKHR(
+        Device const& device,
+        const FenceGetWin32HandleInfoKHR* pGetWin32HandleInfo,
+        HANDLE* pHandle) {
+        return static_cast<Result>(pfn_GetFenceWin32HandleKHR(device.get(),
+            reinterpret_cast<const VkFenceGetWin32HandleInfoKHR*>(pGetWin32HandleInfo),
+            reinterpret_cast<HANDLE*>(pHandle)));
+    }
+#endif // VK_USE_PLATFORM_WIN32_KHR
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    Result ImportFenceWin32HandleKHR(
+        Device const& device,
+        const ImportFenceWin32HandleInfoKHR* pImportFenceWin32HandleInfo) {
+        return static_cast<Result>(pfn_ImportFenceWin32HandleKHR(device.get(),
+            reinterpret_cast<const VkImportFenceWin32HandleInfoKHR*>(pImportFenceWin32HandleInfo)));
+    }
+#endif // VK_USE_PLATFORM_WIN32_KHR
+    VK_KHR_external_fence_win32_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_GetFenceWin32HandleKHR = reinterpret_cast<PFN_vkGetFenceWin32HandleKHR>(get_device_proc_addr(dev,"vkGetFenceWin32HandleKHR"));
+        pfn_ImportFenceWin32HandleKHR = reinterpret_cast<PFN_vkImportFenceWin32HandleKHR>(get_device_proc_addr(dev,"vkImportFenceWin32HandleKHR"));
+    };
+};
+#endif // VK_KHR_external_fence_win32
+#if defined(VK_KHR_external_fence_fd)
+struct VK_KHR_external_fence_fd_dispatch_table {
+private:
+    PFN_vkGetFenceFdKHR pfn_GetFenceFdKHR;
+    PFN_vkImportFenceFdKHR pfn_ImportFenceFdKHR;
+public:
+    Result GetFenceFdKHR(
+        Device const& device,
+        const FenceGetFdInfoKHR* pGetFdInfo,
+        int* pFd) {
+        return static_cast<Result>(pfn_GetFenceFdKHR(device.get(),
+            reinterpret_cast<const VkFenceGetFdInfoKHR*>(pGetFdInfo),
+            reinterpret_cast<int*>(pFd)));
+    }
+    Result ImportFenceFdKHR(
+        Device const& device,
+        const ImportFenceFdInfoKHR* pImportFenceFdInfo) {
+        return static_cast<Result>(pfn_ImportFenceFdKHR(device.get(),
+            reinterpret_cast<const VkImportFenceFdInfoKHR*>(pImportFenceFdInfo)));
+    }
+    VK_KHR_external_fence_fd_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_GetFenceFdKHR = reinterpret_cast<PFN_vkGetFenceFdKHR>(get_device_proc_addr(dev,"vkGetFenceFdKHR"));
+        pfn_ImportFenceFdKHR = reinterpret_cast<PFN_vkImportFenceFdKHR>(get_device_proc_addr(dev,"vkImportFenceFdKHR"));
+    };
+};
+#endif // VK_KHR_external_fence_fd
+#if defined(VK_KHR_performance_query)
+struct VK_KHR_performance_query_dispatch_table {
+private:
+    PFN_vkAcquireProfilingLockKHR pfn_AcquireProfilingLockKHR;
+    PFN_vkReleaseProfilingLockKHR pfn_ReleaseProfilingLockKHR;
+public:
+    Result AcquireProfilingLockKHR(
+        Device const& device,
+        const AcquireProfilingLockInfoKHR* pInfo) {
+        return static_cast<Result>(pfn_AcquireProfilingLockKHR(device.get(),
+            reinterpret_cast<const VkAcquireProfilingLockInfoKHR*>(pInfo)));
+    }
+    void ReleaseProfilingLockKHR(
+        Device const& device) {
+        return pfn_ReleaseProfilingLockKHR(device.get());
+    }
+    VK_KHR_performance_query_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_AcquireProfilingLockKHR = reinterpret_cast<PFN_vkAcquireProfilingLockKHR>(get_device_proc_addr(dev,"vkAcquireProfilingLockKHR"));
+        pfn_ReleaseProfilingLockKHR = reinterpret_cast<PFN_vkReleaseProfilingLockKHR>(get_device_proc_addr(dev,"vkReleaseProfilingLockKHR"));
+    };
+};
+#endif // VK_KHR_performance_query
+#if defined(VK_KHR_get_surface_capabilities2)
+struct VK_KHR_get_surface_capabilities2_dispatch_table {
+private:
+    PFN_vkGetPhysicalDeviceSurfaceCapabilities2KHR pfn_GetPhysicalDeviceSurfaceCapabilities2KHR;
+    PFN_vkGetPhysicalDeviceSurfaceFormats2KHR pfn_GetPhysicalDeviceSurfaceFormats2KHR;
+public:
+    Result GetPhysicalDeviceSurfaceCapabilities2KHR(
+        PhysicalDevice const& physicalDevice,
+        const PhysicalDeviceSurfaceInfo2KHR* pSurfaceInfo,
+        SurfaceCapabilities2KHR* pSurfaceCapabilities) {
+        return static_cast<Result>(pfn_GetPhysicalDeviceSurfaceCapabilities2KHR(physicalDevice.get(),
+            reinterpret_cast<const VkPhysicalDeviceSurfaceInfo2KHR*>(pSurfaceInfo),
+            reinterpret_cast<VkSurfaceCapabilities2KHR*>(pSurfaceCapabilities)));
+    }
+    Result GetPhysicalDeviceSurfaceFormats2KHR(
+        PhysicalDevice const& physicalDevice,
+        const PhysicalDeviceSurfaceInfo2KHR* pSurfaceInfo,
+        uint32_t* pSurfaceFormatCount,
+        SurfaceFormat2KHR* pSurfaceFormats) {
+        return static_cast<Result>(pfn_GetPhysicalDeviceSurfaceFormats2KHR(physicalDevice.get(),
+            reinterpret_cast<const VkPhysicalDeviceSurfaceInfo2KHR*>(pSurfaceInfo),
+            reinterpret_cast<uint32_t*>(pSurfaceFormatCount),
+            reinterpret_cast<VkSurfaceFormat2KHR*>(pSurfaceFormats)));
+    }
+    VK_KHR_get_surface_capabilities2_dispatch_table(PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance) {
+        VkInstance inst = instance.get();
+        pfn_GetPhysicalDeviceSurfaceCapabilities2KHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceCapabilities2KHR>(get_instance_proc_addr(inst,"vkGetPhysicalDeviceSurfaceCapabilities2KHR"));
+        pfn_GetPhysicalDeviceSurfaceFormats2KHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceFormats2KHR>(get_instance_proc_addr(inst,"vkGetPhysicalDeviceSurfaceFormats2KHR"));
+    };
+};
+#endif // VK_KHR_get_surface_capabilities2
+#if defined(VK_KHR_get_display_properties2)
+struct VK_KHR_get_display_properties2_dispatch_table {
+private:
+    PFN_vkGetPhysicalDeviceDisplayProperties2KHR pfn_GetPhysicalDeviceDisplayProperties2KHR;
+    PFN_vkGetPhysicalDeviceDisplayPlaneProperties2KHR pfn_GetPhysicalDeviceDisplayPlaneProperties2KHR;
+    PFN_vkGetDisplayModeProperties2KHR pfn_GetDisplayModeProperties2KHR;
+    PFN_vkGetDisplayPlaneCapabilities2KHR pfn_GetDisplayPlaneCapabilities2KHR;
+public:
+    Result GetPhysicalDeviceDisplayProperties2KHR(
+        PhysicalDevice const& physicalDevice,
+        uint32_t* pPropertyCount,
+        DisplayProperties2KHR* pProperties) {
+        return static_cast<Result>(pfn_GetPhysicalDeviceDisplayProperties2KHR(physicalDevice.get(),
+            reinterpret_cast<uint32_t*>(pPropertyCount),
+            reinterpret_cast<VkDisplayProperties2KHR*>(pProperties)));
+    }
+    Result GetPhysicalDeviceDisplayPlaneProperties2KHR(
+        PhysicalDevice const& physicalDevice,
+        uint32_t* pPropertyCount,
+        DisplayPlaneProperties2KHR* pProperties) {
+        return static_cast<Result>(pfn_GetPhysicalDeviceDisplayPlaneProperties2KHR(physicalDevice.get(),
+            reinterpret_cast<uint32_t*>(pPropertyCount),
+            reinterpret_cast<VkDisplayPlaneProperties2KHR*>(pProperties)));
+    }
+    Result GetDisplayModeProperties2KHR(
+        PhysicalDevice const& physicalDevice,
+        DisplayKHR display,
+        uint32_t* pPropertyCount,
+        DisplayModeProperties2KHR* pProperties) {
+        return static_cast<Result>(pfn_GetDisplayModeProperties2KHR(physicalDevice.get(),
+            display.get(),
+            reinterpret_cast<uint32_t*>(pPropertyCount),
+            reinterpret_cast<VkDisplayModeProperties2KHR*>(pProperties)));
+    }
+    Result GetDisplayPlaneCapabilities2KHR(
+        PhysicalDevice const& physicalDevice,
+        const DisplayPlaneInfo2KHR* pDisplayPlaneInfo,
+        DisplayPlaneCapabilities2KHR* pCapabilities) {
+        return static_cast<Result>(pfn_GetDisplayPlaneCapabilities2KHR(physicalDevice.get(),
+            reinterpret_cast<const VkDisplayPlaneInfo2KHR*>(pDisplayPlaneInfo),
+            reinterpret_cast<VkDisplayPlaneCapabilities2KHR*>(pCapabilities)));
+    }
+    VK_KHR_get_display_properties2_dispatch_table(PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance) {
+        VkInstance inst = instance.get();
+        pfn_GetPhysicalDeviceDisplayProperties2KHR = reinterpret_cast<PFN_vkGetPhysicalDeviceDisplayProperties2KHR>(get_instance_proc_addr(inst,"vkGetPhysicalDeviceDisplayProperties2KHR"));
+        pfn_GetPhysicalDeviceDisplayPlaneProperties2KHR = reinterpret_cast<PFN_vkGetPhysicalDeviceDisplayPlaneProperties2KHR>(get_instance_proc_addr(inst,"vkGetPhysicalDeviceDisplayPlaneProperties2KHR"));
+        pfn_GetDisplayModeProperties2KHR = reinterpret_cast<PFN_vkGetDisplayModeProperties2KHR>(get_instance_proc_addr(inst,"vkGetDisplayModeProperties2KHR"));
+        pfn_GetDisplayPlaneCapabilities2KHR = reinterpret_cast<PFN_vkGetDisplayPlaneCapabilities2KHR>(get_instance_proc_addr(inst,"vkGetDisplayPlaneCapabilities2KHR"));
+    };
+};
+#endif // VK_KHR_get_display_properties2
+#if defined(VK_MVK_ios_surface)
+struct VK_MVK_ios_surface_dispatch_table {
+private:
+    PFN_vkCreateIOSSurfaceMVK pfn_CreateIOSSurfaceMVK;
+public:
+#if defined(VK_USE_PLATFORM_IOS_MVK)
+    Result CreateIOSSurfaceMVK(
+        Instance const& instance,
+        const IOSSurfaceCreateInfoMVK* pCreateInfo,
+        const AllocationCallbacks* pAllocator,
+        SurfaceKHR* pSurface) {
+        return static_cast<Result>(pfn_CreateIOSSurfaceMVK(instance.get(),
+            reinterpret_cast<const VkIOSSurfaceCreateInfoMVK*>(pCreateInfo),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkSurfaceKHR*>(pSurface)));
+    }
+#endif // VK_USE_PLATFORM_IOS_MVK
+    VK_MVK_ios_surface_dispatch_table(PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance) {
+        VkInstance inst = instance.get();
+        pfn_CreateIOSSurfaceMVK = reinterpret_cast<PFN_vkCreateIOSSurfaceMVK>(get_instance_proc_addr(inst,"vkCreateIOSSurfaceMVK"));
+    };
+};
+#endif // VK_MVK_ios_surface
+#if defined(VK_MVK_macos_surface)
+struct VK_MVK_macos_surface_dispatch_table {
+private:
+    PFN_vkCreateMacOSSurfaceMVK pfn_CreateMacOSSurfaceMVK;
+public:
+#if defined(VK_USE_PLATFORM_MACOS_MVK)
+    Result CreateMacOSSurfaceMVK(
+        Instance const& instance,
+        const MacOSSurfaceCreateInfoMVK* pCreateInfo,
+        const AllocationCallbacks* pAllocator,
+        SurfaceKHR* pSurface) {
+        return static_cast<Result>(pfn_CreateMacOSSurfaceMVK(instance.get(),
+            reinterpret_cast<const VkMacOSSurfaceCreateInfoMVK*>(pCreateInfo),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkSurfaceKHR*>(pSurface)));
+    }
+#endif // VK_USE_PLATFORM_MACOS_MVK
+    VK_MVK_macos_surface_dispatch_table(PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance) {
+        VkInstance inst = instance.get();
+        pfn_CreateMacOSSurfaceMVK = reinterpret_cast<PFN_vkCreateMacOSSurfaceMVK>(get_instance_proc_addr(inst,"vkCreateMacOSSurfaceMVK"));
+    };
+};
+#endif // VK_MVK_macos_surface
+#if defined(VK_EXT_debug_utils)
+struct VK_EXT_debug_utils_dispatch_table {
+private:
+    PFN_vkCreateDebugUtilsMessengerEXT pfn_CreateDebugUtilsMessengerEXT;
+    PFN_vkDestroyDebugUtilsMessengerEXT pfn_DestroyDebugUtilsMessengerEXT;
+    PFN_vkSubmitDebugUtilsMessageEXT pfn_SubmitDebugUtilsMessageEXT;
+public:
+    Result CreateDebugUtilsMessengerEXT(
+        Instance const& instance,
+        const DebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+        const AllocationCallbacks* pAllocator,
+        DebugUtilsMessengerEXT* pMessenger) {
+        return static_cast<Result>(pfn_CreateDebugUtilsMessengerEXT(instance.get(),
+            reinterpret_cast<const VkDebugUtilsMessengerCreateInfoEXT*>(pCreateInfo),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkDebugUtilsMessengerEXT*>(pMessenger)));
+    }
+    void DestroyDebugUtilsMessengerEXT(
+        Instance const& instance,
+        DebugUtilsMessengerEXT messenger,
+        const AllocationCallbacks* pAllocator) {
+        return pfn_DestroyDebugUtilsMessengerEXT(instance.get(),
+            messenger.get(),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
+    }
+    void SubmitDebugUtilsMessageEXT(
+        Instance const& instance,
+        DebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+        DebugUtilsMessageTypeFlagsEXT messageTypes,
+        const DebugUtilsMessengerCallbackDataEXT* pCallbackData) {
+        return pfn_SubmitDebugUtilsMessageEXT(instance.get(),
+            static_cast<VkDebugUtilsMessageSeverityFlagBitsEXT>(messageSeverity),
+            static_cast<VkDebugUtilsMessageTypeFlagsEXT>(messageTypes),
+            reinterpret_cast<const VkDebugUtilsMessengerCallbackDataEXT*>(pCallbackData));
+    }
+    VK_EXT_debug_utils_dispatch_table(PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance) {
+        VkInstance inst = instance.get();
+        pfn_CreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(get_instance_proc_addr(inst,"vkCreateDebugUtilsMessengerEXT"));
+        pfn_DestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(get_instance_proc_addr(inst,"vkDestroyDebugUtilsMessengerEXT"));
+        pfn_SubmitDebugUtilsMessageEXT = reinterpret_cast<PFN_vkSubmitDebugUtilsMessageEXT>(get_instance_proc_addr(inst,"vkSubmitDebugUtilsMessageEXT"));
+    };
+};
+#endif // VK_EXT_debug_utils
+#if defined(VK_ANDROID_external_memory_android_hardware_buffer)
+struct VK_ANDROID_external_memory_android_hardware_buffer_dispatch_table {
+private:
+    PFN_vkGetAndroidHardwareBufferPropertiesANDROID pfn_GetAndroidHardwareBufferPropertiesANDROID;
+    PFN_vkGetMemoryAndroidHardwareBufferANDROID pfn_GetMemoryAndroidHardwareBufferANDROID;
+public:
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
+    Result GetAndroidHardwareBufferPropertiesANDROID(
+        Device const& device,
+        const AHardwareBuffer* buffer,
+        AndroidHardwareBufferPropertiesANDROID* pProperties) {
+        return static_cast<Result>(pfn_GetAndroidHardwareBufferPropertiesANDROID(device.get(),
+            reinterpret_cast<const AHardwareBuffer*>(buffer),
+            reinterpret_cast<VkAndroidHardwareBufferPropertiesANDROID*>(pProperties)));
+    }
+#endif // VK_USE_PLATFORM_ANDROID_KHR
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
+    Result GetMemoryAndroidHardwareBufferANDROID(
+        Device const& device,
+        const MemoryGetAndroidHardwareBufferInfoANDROID* pInfo,
+        AHardwareBuffer** pBuffer) {
+        return static_cast<Result>(pfn_GetMemoryAndroidHardwareBufferANDROID(device.get(),
+            reinterpret_cast<const VkMemoryGetAndroidHardwareBufferInfoANDROID*>(pInfo),
+            static_cast<AHardwareBuffer**>(pBuffer)));
+    }
+#endif // VK_USE_PLATFORM_ANDROID_KHR
+    VK_ANDROID_external_memory_android_hardware_buffer_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_GetAndroidHardwareBufferPropertiesANDROID = reinterpret_cast<PFN_vkGetAndroidHardwareBufferPropertiesANDROID>(get_device_proc_addr(dev,"vkGetAndroidHardwareBufferPropertiesANDROID"));
+        pfn_GetMemoryAndroidHardwareBufferANDROID = reinterpret_cast<PFN_vkGetMemoryAndroidHardwareBufferANDROID>(get_device_proc_addr(dev,"vkGetMemoryAndroidHardwareBufferANDROID"));
+    };
+};
+#endif // VK_ANDROID_external_memory_android_hardware_buffer
+#if defined(VK_EXT_sample_locations)
+struct VK_EXT_sample_locations_dispatch_table {
+private:
+    PFN_vkCmdSetSampleLocationsEXT pfn_CmdSetSampleLocationsEXT;
+public:
+    void CmdSetSampleLocationsEXT(
+        CommandBuffer const& commandBuffer,
+        const SampleLocationsInfoEXT* pSampleLocationsInfo) {
+        return pfn_CmdSetSampleLocationsEXT(commandBuffer.get(),
+            reinterpret_cast<const VkSampleLocationsInfoEXT*>(pSampleLocationsInfo));
+    }
+    VK_EXT_sample_locations_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_CmdSetSampleLocationsEXT = reinterpret_cast<PFN_vkCmdSetSampleLocationsEXT>(get_device_proc_addr(dev,"vkCmdSetSampleLocationsEXT"));
+    };
+};
+#endif // VK_EXT_sample_locations
+#if defined(VK_KHR_ray_tracing)
+struct VK_KHR_ray_tracing_dispatch_table {
+private:
+    PFN_vkDestroyAccelerationStructureKHR pfn_DestroyAccelerationStructureKHR;
+    PFN_vkGetAccelerationStructureMemoryRequirementsKHR pfn_GetAccelerationStructureMemoryRequirementsKHR;
+    PFN_vkBindAccelerationStructureMemoryKHR pfn_BindAccelerationStructureMemoryKHR;
+    PFN_vkCmdCopyAccelerationStructureKHR pfn_CmdCopyAccelerationStructureKHR;
+    PFN_vkCopyAccelerationStructureKHR pfn_CopyAccelerationStructureKHR;
+    PFN_vkCmdCopyAccelerationStructureToMemoryKHR pfn_CmdCopyAccelerationStructureToMemoryKHR;
+    PFN_vkCopyAccelerationStructureToMemoryKHR pfn_CopyAccelerationStructureToMemoryKHR;
+    PFN_vkCmdCopyMemoryToAccelerationStructureKHR pfn_CmdCopyMemoryToAccelerationStructureKHR;
+    PFN_vkCopyMemoryToAccelerationStructureKHR pfn_CopyMemoryToAccelerationStructureKHR;
+    PFN_vkCmdWriteAccelerationStructuresPropertiesKHR pfn_CmdWriteAccelerationStructuresPropertiesKHR;
+    PFN_vkWriteAccelerationStructuresPropertiesKHR pfn_WriteAccelerationStructuresPropertiesKHR;
+    PFN_vkCmdTraceRaysKHR pfn_CmdTraceRaysKHR;
+    PFN_vkGetRayTracingShaderGroupHandlesKHR pfn_GetRayTracingShaderGroupHandlesKHR;
+    PFN_vkGetRayTracingCaptureReplayShaderGroupHandlesKHR pfn_GetRayTracingCaptureReplayShaderGroupHandlesKHR;
+    PFN_vkCreateRayTracingPipelinesKHR pfn_CreateRayTracingPipelinesKHR;
+    PFN_vkCmdTraceRaysIndirectKHR pfn_CmdTraceRaysIndirectKHR;
+    PFN_vkGetDeviceAccelerationStructureCompatibilityKHR pfn_GetDeviceAccelerationStructureCompatibilityKHR;
+    PFN_vkCreateAccelerationStructureKHR pfn_CreateAccelerationStructureKHR;
+    PFN_vkCmdBuildAccelerationStructureKHR pfn_CmdBuildAccelerationStructureKHR;
+    PFN_vkCmdBuildAccelerationStructureIndirectKHR pfn_CmdBuildAccelerationStructureIndirectKHR;
+    PFN_vkBuildAccelerationStructureKHR pfn_BuildAccelerationStructureKHR;
+    PFN_vkGetAccelerationStructureDeviceAddressKHR pfn_GetAccelerationStructureDeviceAddressKHR;
+public:
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    void DestroyAccelerationStructureKHR(
+        Device const& device,
+        AccelerationStructureKHR accelerationStructure,
+        const AllocationCallbacks* pAllocator) {
+        return pfn_DestroyAccelerationStructureKHR(device.get(),
+            accelerationStructure.get(),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
+    }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    void GetAccelerationStructureMemoryRequirementsKHR(
+        Device const& device,
+        const AccelerationStructureMemoryRequirementsInfoKHR* pInfo,
+        MemoryRequirements2* pMemoryRequirements) {
+        return pfn_GetAccelerationStructureMemoryRequirementsKHR(device.get(),
+            reinterpret_cast<const VkAccelerationStructureMemoryRequirementsInfoKHR*>(pInfo),
+            reinterpret_cast<VkMemoryRequirements2*>(pMemoryRequirements));
+    }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    Result BindAccelerationStructureMemoryKHR(
+        Device const& device,
+        uint32_t bindInfoCount,
+        const BindAccelerationStructureMemoryInfoKHR* pBindInfos) {
+        return static_cast<Result>(pfn_BindAccelerationStructureMemoryKHR(device.get(),
+            bindInfoCount,
+            reinterpret_cast<const VkBindAccelerationStructureMemoryInfoKHR*>(pBindInfos)));
+    }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    void CmdCopyAccelerationStructureKHR(
+        CommandBuffer const& commandBuffer,
+        const CopyAccelerationStructureInfoKHR* pInfo) {
+        return pfn_CmdCopyAccelerationStructureKHR(commandBuffer.get(),
+            reinterpret_cast<const VkCopyAccelerationStructureInfoKHR*>(pInfo));
+    }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    Result CopyAccelerationStructureKHR(
+        Device const& device,
+        const CopyAccelerationStructureInfoKHR* pInfo) {
+        return static_cast<Result>(pfn_CopyAccelerationStructureKHR(device.get(),
+            reinterpret_cast<const VkCopyAccelerationStructureInfoKHR*>(pInfo)));
+    }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    void CmdCopyAccelerationStructureToMemoryKHR(
+        CommandBuffer const& commandBuffer,
+        const CopyAccelerationStructureToMemoryInfoKHR* pInfo) {
+        return pfn_CmdCopyAccelerationStructureToMemoryKHR(commandBuffer.get(),
+            reinterpret_cast<const VkCopyAccelerationStructureToMemoryInfoKHR*>(pInfo));
+    }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    Result CopyAccelerationStructureToMemoryKHR(
+        Device const& device,
+        const CopyAccelerationStructureToMemoryInfoKHR* pInfo) {
+        return static_cast<Result>(pfn_CopyAccelerationStructureToMemoryKHR(device.get(),
+            reinterpret_cast<const VkCopyAccelerationStructureToMemoryInfoKHR*>(pInfo)));
+    }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    void CmdCopyMemoryToAccelerationStructureKHR(
+        CommandBuffer const& commandBuffer,
+        const CopyMemoryToAccelerationStructureInfoKHR* pInfo) {
+        return pfn_CmdCopyMemoryToAccelerationStructureKHR(commandBuffer.get(),
+            reinterpret_cast<const VkCopyMemoryToAccelerationStructureInfoKHR*>(pInfo));
+    }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    Result CopyMemoryToAccelerationStructureKHR(
+        Device const& device,
+        const CopyMemoryToAccelerationStructureInfoKHR* pInfo) {
+        return static_cast<Result>(pfn_CopyMemoryToAccelerationStructureKHR(device.get(),
+            reinterpret_cast<const VkCopyMemoryToAccelerationStructureInfoKHR*>(pInfo)));
+    }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    void CmdWriteAccelerationStructuresPropertiesKHR(
+        CommandBuffer const& commandBuffer,
+        uint32_t accelerationStructureCount,
+        const AccelerationStructureKHR* pAccelerationStructures,
+        QueryType queryType,
+        QueryPool queryPool,
+        uint32_t firstQuery) {
+        return pfn_CmdWriteAccelerationStructuresPropertiesKHR(commandBuffer.get(),
+            accelerationStructureCount,
+            reinterpret_cast<const VkAccelerationStructureKHR*>(pAccelerationStructures),
+            static_cast<VkQueryType>(queryType),
+            queryPool.get(),
+            firstQuery);
+    }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    Result WriteAccelerationStructuresPropertiesKHR(
+        Device const& device,
+        uint32_t accelerationStructureCount,
+        const AccelerationStructureKHR* pAccelerationStructures,
+        QueryType queryType,
+        size_t dataSize,
+        void* pData,
+        size_t stride) {
+        return static_cast<Result>(pfn_WriteAccelerationStructuresPropertiesKHR(device.get(),
+            accelerationStructureCount,
+            reinterpret_cast<const VkAccelerationStructureKHR*>(pAccelerationStructures),
+            static_cast<VkQueryType>(queryType),
+            dataSize,
+            reinterpret_cast<void*>(pData),
+            stride));
+    }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    void CmdTraceRaysKHR(
+        CommandBuffer const& commandBuffer,
+        const StridedBufferRegionKHR* pRaygenShaderBindingTable,
+        const StridedBufferRegionKHR* pMissShaderBindingTable,
+        const StridedBufferRegionKHR* pHitShaderBindingTable,
+        const StridedBufferRegionKHR* pCallableShaderBindingTable,
+        uint32_t width,
+        uint32_t height,
+        uint32_t depth) {
+        return pfn_CmdTraceRaysKHR(commandBuffer.get(),
+            reinterpret_cast<const VkStridedBufferRegionKHR*>(pRaygenShaderBindingTable),
+            reinterpret_cast<const VkStridedBufferRegionKHR*>(pMissShaderBindingTable),
+            reinterpret_cast<const VkStridedBufferRegionKHR*>(pHitShaderBindingTable),
+            reinterpret_cast<const VkStridedBufferRegionKHR*>(pCallableShaderBindingTable),
+            width,
+            height,
+            depth);
+    }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    Result GetRayTracingShaderGroupHandlesKHR(
+        Device const& device,
+        Pipeline pipeline,
+        uint32_t firstGroup,
+        uint32_t groupCount,
+        size_t dataSize,
+        void* pData) {
+        return static_cast<Result>(pfn_GetRayTracingShaderGroupHandlesKHR(device.get(),
+            pipeline.get(),
+            firstGroup,
+            groupCount,
+            dataSize,
+            reinterpret_cast<void*>(pData)));
+    }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    Result GetRayTracingCaptureReplayShaderGroupHandlesKHR(
+        Device const& device,
+        Pipeline pipeline,
+        uint32_t firstGroup,
+        uint32_t groupCount,
+        size_t dataSize,
+        void* pData) {
+        return static_cast<Result>(pfn_GetRayTracingCaptureReplayShaderGroupHandlesKHR(device.get(),
+            pipeline.get(),
+            firstGroup,
+            groupCount,
+            dataSize,
+            reinterpret_cast<void*>(pData)));
+    }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    Result CreateRayTracingPipelinesKHR(
+        Device const& device,
+        PipelineCache pipelineCache,
+        uint32_t createInfoCount,
+        const RayTracingPipelineCreateInfoKHR* pCreateInfos,
+        const AllocationCallbacks* pAllocator,
+        Pipeline* pPipelines) {
+        return static_cast<Result>(pfn_CreateRayTracingPipelinesKHR(device.get(),
+            pipelineCache.get(),
+            createInfoCount,
+            reinterpret_cast<const VkRayTracingPipelineCreateInfoKHR*>(pCreateInfos),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkPipeline*>(pPipelines)));
+    }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    void CmdTraceRaysIndirectKHR(
+        CommandBuffer const& commandBuffer,
+        const StridedBufferRegionKHR* pRaygenShaderBindingTable,
+        const StridedBufferRegionKHR* pMissShaderBindingTable,
+        const StridedBufferRegionKHR* pHitShaderBindingTable,
+        const StridedBufferRegionKHR* pCallableShaderBindingTable,
+        Buffer buffer,
+        DeviceSize offset) {
+        return pfn_CmdTraceRaysIndirectKHR(commandBuffer.get(),
+            reinterpret_cast<const VkStridedBufferRegionKHR*>(pRaygenShaderBindingTable),
+            reinterpret_cast<const VkStridedBufferRegionKHR*>(pMissShaderBindingTable),
+            reinterpret_cast<const VkStridedBufferRegionKHR*>(pHitShaderBindingTable),
+            reinterpret_cast<const VkStridedBufferRegionKHR*>(pCallableShaderBindingTable),
+            buffer.get(),
+            static_cast<VkDeviceSize>(offset));
+    }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    Result GetDeviceAccelerationStructureCompatibilityKHR(
+        Device const& device,
+        const AccelerationStructureVersionKHR* version) {
+        return static_cast<Result>(pfn_GetDeviceAccelerationStructureCompatibilityKHR(device.get(),
+            reinterpret_cast<const VkAccelerationStructureVersionKHR*>(version)));
+    }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    Result CreateAccelerationStructureKHR(
+        Device const& device,
+        const AccelerationStructureCreateInfoKHR* pCreateInfo,
+        const AllocationCallbacks* pAllocator,
+        AccelerationStructureKHR* pAccelerationStructure) {
+        return static_cast<Result>(pfn_CreateAccelerationStructureKHR(device.get(),
+            reinterpret_cast<const VkAccelerationStructureCreateInfoKHR*>(pCreateInfo),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkAccelerationStructureKHR*>(pAccelerationStructure)));
+    }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    void CmdBuildAccelerationStructureKHR(
+        CommandBuffer const& commandBuffer,
+        uint32_t infoCount,
+        const AccelerationStructureBuildGeometryInfoKHR* pInfos,
+        const AccelerationStructureBuildOffsetInfoKHR* const* ppOffsetInfos) {
+        return pfn_CmdBuildAccelerationStructureKHR(commandBuffer.get(),
+            infoCount,
+            reinterpret_cast<const VkAccelerationStructureBuildGeometryInfoKHR*>(pInfos),
+            reinterpret_cast<const VkAccelerationStructureBuildOffsetInfoKHR* const*>(ppOffsetInfos));
+    }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    void CmdBuildAccelerationStructureIndirectKHR(
+        CommandBuffer const& commandBuffer,
+        const AccelerationStructureBuildGeometryInfoKHR* pInfo,
+        Buffer indirectBuffer,
+        DeviceSize indirectOffset,
+        uint32_t indirectStride) {
+        return pfn_CmdBuildAccelerationStructureIndirectKHR(commandBuffer.get(),
+            reinterpret_cast<const VkAccelerationStructureBuildGeometryInfoKHR*>(pInfo),
+            indirectBuffer.get(),
+            static_cast<VkDeviceSize>(indirectOffset),
+            indirectStride);
+    }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    Result BuildAccelerationStructureKHR(
+        Device const& device,
+        uint32_t infoCount,
+        const AccelerationStructureBuildGeometryInfoKHR* pInfos,
+        const AccelerationStructureBuildOffsetInfoKHR* const* ppOffsetInfos) {
+        return static_cast<Result>(pfn_BuildAccelerationStructureKHR(device.get(),
+            infoCount,
+            reinterpret_cast<const VkAccelerationStructureBuildGeometryInfoKHR*>(pInfos),
+            reinterpret_cast<const VkAccelerationStructureBuildOffsetInfoKHR* const*>(ppOffsetInfos)));
+    }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    VkDeviceAddress GetAccelerationStructureDeviceAddressKHR(
+        Device const& device,
+        const AccelerationStructureDeviceAddressInfoKHR* pInfo) {
+        return pfn_GetAccelerationStructureDeviceAddressKHR(device.get(),
+            reinterpret_cast<const VkAccelerationStructureDeviceAddressInfoKHR*>(pInfo));
+    }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+    VK_KHR_ray_tracing_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_DestroyAccelerationStructureKHR = reinterpret_cast<PFN_vkDestroyAccelerationStructureKHR>(get_device_proc_addr(dev,"vkDestroyAccelerationStructureKHR"));
+        pfn_GetAccelerationStructureMemoryRequirementsKHR = reinterpret_cast<PFN_vkGetAccelerationStructureMemoryRequirementsKHR>(get_device_proc_addr(dev,"vkGetAccelerationStructureMemoryRequirementsKHR"));
+        pfn_BindAccelerationStructureMemoryKHR = reinterpret_cast<PFN_vkBindAccelerationStructureMemoryKHR>(get_device_proc_addr(dev,"vkBindAccelerationStructureMemoryKHR"));
+        pfn_CmdCopyAccelerationStructureKHR = reinterpret_cast<PFN_vkCmdCopyAccelerationStructureKHR>(get_device_proc_addr(dev,"vkCmdCopyAccelerationStructureKHR"));
+        pfn_CopyAccelerationStructureKHR = reinterpret_cast<PFN_vkCopyAccelerationStructureKHR>(get_device_proc_addr(dev,"vkCopyAccelerationStructureKHR"));
+        pfn_CmdCopyAccelerationStructureToMemoryKHR = reinterpret_cast<PFN_vkCmdCopyAccelerationStructureToMemoryKHR>(get_device_proc_addr(dev,"vkCmdCopyAccelerationStructureToMemoryKHR"));
+        pfn_CopyAccelerationStructureToMemoryKHR = reinterpret_cast<PFN_vkCopyAccelerationStructureToMemoryKHR>(get_device_proc_addr(dev,"vkCopyAccelerationStructureToMemoryKHR"));
+        pfn_CmdCopyMemoryToAccelerationStructureKHR = reinterpret_cast<PFN_vkCmdCopyMemoryToAccelerationStructureKHR>(get_device_proc_addr(dev,"vkCmdCopyMemoryToAccelerationStructureKHR"));
+        pfn_CopyMemoryToAccelerationStructureKHR = reinterpret_cast<PFN_vkCopyMemoryToAccelerationStructureKHR>(get_device_proc_addr(dev,"vkCopyMemoryToAccelerationStructureKHR"));
+        pfn_CmdWriteAccelerationStructuresPropertiesKHR = reinterpret_cast<PFN_vkCmdWriteAccelerationStructuresPropertiesKHR>(get_device_proc_addr(dev,"vkCmdWriteAccelerationStructuresPropertiesKHR"));
+        pfn_WriteAccelerationStructuresPropertiesKHR = reinterpret_cast<PFN_vkWriteAccelerationStructuresPropertiesKHR>(get_device_proc_addr(dev,"vkWriteAccelerationStructuresPropertiesKHR"));
+        pfn_CmdTraceRaysKHR = reinterpret_cast<PFN_vkCmdTraceRaysKHR>(get_device_proc_addr(dev,"vkCmdTraceRaysKHR"));
+        pfn_GetRayTracingShaderGroupHandlesKHR = reinterpret_cast<PFN_vkGetRayTracingShaderGroupHandlesKHR>(get_device_proc_addr(dev,"vkGetRayTracingShaderGroupHandlesKHR"));
+        pfn_GetRayTracingCaptureReplayShaderGroupHandlesKHR = reinterpret_cast<PFN_vkGetRayTracingCaptureReplayShaderGroupHandlesKHR>(get_device_proc_addr(dev,"vkGetRayTracingCaptureReplayShaderGroupHandlesKHR"));
+        pfn_CreateRayTracingPipelinesKHR = reinterpret_cast<PFN_vkCreateRayTracingPipelinesKHR>(get_device_proc_addr(dev,"vkCreateRayTracingPipelinesKHR"));
+        pfn_CmdTraceRaysIndirectKHR = reinterpret_cast<PFN_vkCmdTraceRaysIndirectKHR>(get_device_proc_addr(dev,"vkCmdTraceRaysIndirectKHR"));
+        pfn_GetDeviceAccelerationStructureCompatibilityKHR = reinterpret_cast<PFN_vkGetDeviceAccelerationStructureCompatibilityKHR>(get_device_proc_addr(dev,"vkGetDeviceAccelerationStructureCompatibilityKHR"));
+        pfn_CreateAccelerationStructureKHR = reinterpret_cast<PFN_vkCreateAccelerationStructureKHR>(get_device_proc_addr(dev,"vkCreateAccelerationStructureKHR"));
+        pfn_CmdBuildAccelerationStructureKHR = reinterpret_cast<PFN_vkCmdBuildAccelerationStructureKHR>(get_device_proc_addr(dev,"vkCmdBuildAccelerationStructureKHR"));
+        pfn_CmdBuildAccelerationStructureIndirectKHR = reinterpret_cast<PFN_vkCmdBuildAccelerationStructureIndirectKHR>(get_device_proc_addr(dev,"vkCmdBuildAccelerationStructureIndirectKHR"));
+        pfn_BuildAccelerationStructureKHR = reinterpret_cast<PFN_vkBuildAccelerationStructureKHR>(get_device_proc_addr(dev,"vkBuildAccelerationStructureKHR"));
+        pfn_GetAccelerationStructureDeviceAddressKHR = reinterpret_cast<PFN_vkGetAccelerationStructureDeviceAddressKHR>(get_device_proc_addr(dev,"vkGetAccelerationStructureDeviceAddressKHR"));
+    };
+};
+#endif // VK_KHR_ray_tracing
+#if defined(VK_EXT_image_drm_format_modifier)
+struct VK_EXT_image_drm_format_modifier_dispatch_table {
+private:
+    PFN_vkGetImageDrmFormatModifierPropertiesEXT pfn_GetImageDrmFormatModifierPropertiesEXT;
+public:
+    Result GetImageDrmFormatModifierPropertiesEXT(
+        Device const& device,
+        Image image,
+        ImageDrmFormatModifierPropertiesEXT* pProperties) {
+        return static_cast<Result>(pfn_GetImageDrmFormatModifierPropertiesEXT(device.get(),
+            image.get(),
+            reinterpret_cast<VkImageDrmFormatModifierPropertiesEXT*>(pProperties)));
+    }
+    VK_EXT_image_drm_format_modifier_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_GetImageDrmFormatModifierPropertiesEXT = reinterpret_cast<PFN_vkGetImageDrmFormatModifierPropertiesEXT>(get_device_proc_addr(dev,"vkGetImageDrmFormatModifierPropertiesEXT"));
+    };
+};
+#endif // VK_EXT_image_drm_format_modifier
+#if defined(VK_EXT_validation_cache)
+struct VK_EXT_validation_cache_dispatch_table {
+private:
+    PFN_vkCreateValidationCacheEXT pfn_CreateValidationCacheEXT;
+    PFN_vkDestroyValidationCacheEXT pfn_DestroyValidationCacheEXT;
+    PFN_vkGetValidationCacheDataEXT pfn_GetValidationCacheDataEXT;
+    PFN_vkMergeValidationCachesEXT pfn_MergeValidationCachesEXT;
+public:
+    Result CreateValidationCacheEXT(
+        Device const& device,
+        const ValidationCacheCreateInfoEXT* pCreateInfo,
+        const AllocationCallbacks* pAllocator,
+        ValidationCacheEXT* pValidationCache) {
+        return static_cast<Result>(pfn_CreateValidationCacheEXT(device.get(),
+            reinterpret_cast<const VkValidationCacheCreateInfoEXT*>(pCreateInfo),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkValidationCacheEXT*>(pValidationCache)));
+    }
+    void DestroyValidationCacheEXT(
+        Device const& device,
+        ValidationCacheEXT validationCache,
+        const AllocationCallbacks* pAllocator) {
+        return pfn_DestroyValidationCacheEXT(device.get(),
+            validationCache.get(),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
+    }
+    Result GetValidationCacheDataEXT(
+        Device const& device,
+        ValidationCacheEXT validationCache,
+        size_t* pDataSize,
+        void* pData) {
+        return static_cast<Result>(pfn_GetValidationCacheDataEXT(device.get(),
+            validationCache.get(),
+            reinterpret_cast<size_t*>(pDataSize),
+            reinterpret_cast<void*>(pData)));
+    }
+    Result MergeValidationCachesEXT(
+        Device const& device,
+        ValidationCacheEXT dstCache,
+        uint32_t srcCacheCount,
+        const ValidationCacheEXT* pSrcCaches) {
+        return static_cast<Result>(pfn_MergeValidationCachesEXT(device.get(),
+            dstCache.get(),
+            srcCacheCount,
+            reinterpret_cast<const VkValidationCacheEXT*>(pSrcCaches)));
+    }
+    VK_EXT_validation_cache_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_CreateValidationCacheEXT = reinterpret_cast<PFN_vkCreateValidationCacheEXT>(get_device_proc_addr(dev,"vkCreateValidationCacheEXT"));
+        pfn_DestroyValidationCacheEXT = reinterpret_cast<PFN_vkDestroyValidationCacheEXT>(get_device_proc_addr(dev,"vkDestroyValidationCacheEXT"));
+        pfn_GetValidationCacheDataEXT = reinterpret_cast<PFN_vkGetValidationCacheDataEXT>(get_device_proc_addr(dev,"vkGetValidationCacheDataEXT"));
+        pfn_MergeValidationCachesEXT = reinterpret_cast<PFN_vkMergeValidationCachesEXT>(get_device_proc_addr(dev,"vkMergeValidationCachesEXT"));
+    };
+};
+#endif // VK_EXT_validation_cache
+#if defined(VK_NV_shading_rate_image)
+struct VK_NV_shading_rate_image_dispatch_table {
+private:
+    PFN_vkCmdBindShadingRateImageNV pfn_CmdBindShadingRateImageNV;
+    PFN_vkCmdSetViewportShadingRatePaletteNV pfn_CmdSetViewportShadingRatePaletteNV;
+    PFN_vkCmdSetCoarseSampleOrderNV pfn_CmdSetCoarseSampleOrderNV;
+public:
+    void CmdBindShadingRateImageNV(
+        CommandBuffer const& commandBuffer,
+        ImageView imageView,
+        ImageLayout imageLayout) {
+        return pfn_CmdBindShadingRateImageNV(commandBuffer.get(),
+            imageView.get(),
+            static_cast<VkImageLayout>(imageLayout));
+    }
+    void CmdSetViewportShadingRatePaletteNV(
+        CommandBuffer const& commandBuffer,
+        uint32_t firstViewport,
+        uint32_t viewportCount,
+        const ShadingRatePaletteNV* pShadingRatePalettes) {
+        return pfn_CmdSetViewportShadingRatePaletteNV(commandBuffer.get(),
+            firstViewport,
+            viewportCount,
+            reinterpret_cast<const VkShadingRatePaletteNV*>(pShadingRatePalettes));
+    }
+    void CmdSetCoarseSampleOrderNV(
+        CommandBuffer const& commandBuffer,
+        CoarseSampleOrderTypeNV sampleOrderType,
+        uint32_t customSampleOrderCount,
+        const CoarseSampleOrderCustomNV* pCustomSampleOrders) {
+        return pfn_CmdSetCoarseSampleOrderNV(commandBuffer.get(),
+            static_cast<VkCoarseSampleOrderTypeNV>(sampleOrderType),
+            customSampleOrderCount,
+            reinterpret_cast<const VkCoarseSampleOrderCustomNV*>(pCustomSampleOrders));
+    }
+    VK_NV_shading_rate_image_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_CmdBindShadingRateImageNV = reinterpret_cast<PFN_vkCmdBindShadingRateImageNV>(get_device_proc_addr(dev,"vkCmdBindShadingRateImageNV"));
+        pfn_CmdSetViewportShadingRatePaletteNV = reinterpret_cast<PFN_vkCmdSetViewportShadingRatePaletteNV>(get_device_proc_addr(dev,"vkCmdSetViewportShadingRatePaletteNV"));
+        pfn_CmdSetCoarseSampleOrderNV = reinterpret_cast<PFN_vkCmdSetCoarseSampleOrderNV>(get_device_proc_addr(dev,"vkCmdSetCoarseSampleOrderNV"));
+    };
+};
+#endif // VK_NV_shading_rate_image
+#if defined(VK_NV_ray_tracing)
+struct VK_NV_ray_tracing_dispatch_table {
+private:
+    PFN_vkCompileDeferredNV pfn_CompileDeferredNV;
+    PFN_vkCreateAccelerationStructureNV pfn_CreateAccelerationStructureNV;
+    PFN_vkGetAccelerationStructureMemoryRequirementsNV pfn_GetAccelerationStructureMemoryRequirementsNV;
+    PFN_vkCmdCopyAccelerationStructureNV pfn_CmdCopyAccelerationStructureNV;
+    PFN_vkCmdBuildAccelerationStructureNV pfn_CmdBuildAccelerationStructureNV;
+    PFN_vkCmdTraceRaysNV pfn_CmdTraceRaysNV;
+    PFN_vkGetAccelerationStructureHandleNV pfn_GetAccelerationStructureHandleNV;
+    PFN_vkCreateRayTracingPipelinesNV pfn_CreateRayTracingPipelinesNV;
+public:
+    Result CompileDeferredNV(
+        Device const& device,
+        Pipeline pipeline,
+        uint32_t shader) {
+        return static_cast<Result>(pfn_CompileDeferredNV(device.get(),
+            pipeline.get(),
+            shader));
+    }
+    Result CreateAccelerationStructureNV(
+        Device const& device,
+        const AccelerationStructureCreateInfoNV* pCreateInfo,
+        const AllocationCallbacks* pAllocator,
+        AccelerationStructureNV* pAccelerationStructure) {
+        return static_cast<Result>(pfn_CreateAccelerationStructureNV(device.get(),
+            reinterpret_cast<const VkAccelerationStructureCreateInfoNV*>(pCreateInfo),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkAccelerationStructureNV*>(pAccelerationStructure)));
+    }
+    void GetAccelerationStructureMemoryRequirementsNV(
+        Device const& device,
+        const AccelerationStructureMemoryRequirementsInfoNV* pInfo,
+        MemoryRequirements2KHR* pMemoryRequirements) {
+        return pfn_GetAccelerationStructureMemoryRequirementsNV(device.get(),
+            reinterpret_cast<const VkAccelerationStructureMemoryRequirementsInfoNV*>(pInfo),
+            reinterpret_cast<VkMemoryRequirements2KHR*>(pMemoryRequirements));
+    }
+    void CmdCopyAccelerationStructureNV(
+        CommandBuffer const& commandBuffer,
+        AccelerationStructureKHR dst,
+        AccelerationStructureKHR src,
+        CopyAccelerationStructureModeKHR mode) {
+        return pfn_CmdCopyAccelerationStructureNV(commandBuffer.get(),
+            dst.get(),
+            src.get(),
+            static_cast<VkCopyAccelerationStructureModeKHR>(mode));
+    }
+    void CmdBuildAccelerationStructureNV(
+        CommandBuffer const& commandBuffer,
+        const AccelerationStructureInfoNV* pInfo,
+        Buffer instanceData,
+        DeviceSize instanceOffset,
+        Bool32 update,
+        AccelerationStructureKHR dst,
+        AccelerationStructureKHR src,
+        Buffer scratch,
+        DeviceSize scratchOffset) {
+        return pfn_CmdBuildAccelerationStructureNV(commandBuffer.get(),
+            reinterpret_cast<const VkAccelerationStructureInfoNV*>(pInfo),
+            instanceData.get(),
+            static_cast<VkDeviceSize>(instanceOffset),
+            static_cast<VkBool32>(update),
+            dst.get(),
+            src.get(),
+            scratch.get(),
+            static_cast<VkDeviceSize>(scratchOffset));
+    }
+    void CmdTraceRaysNV(
+        CommandBuffer const& commandBuffer,
+        Buffer raygenShaderBindingTableBuffer,
+        DeviceSize raygenShaderBindingOffset,
+        Buffer missShaderBindingTableBuffer,
+        DeviceSize missShaderBindingOffset,
+        DeviceSize missShaderBindingStride,
+        Buffer hitShaderBindingTableBuffer,
+        DeviceSize hitShaderBindingOffset,
+        DeviceSize hitShaderBindingStride,
+        Buffer callableShaderBindingTableBuffer,
+        DeviceSize callableShaderBindingOffset,
+        DeviceSize callableShaderBindingStride,
+        uint32_t width,
+        uint32_t height,
+        uint32_t depth) {
+        return pfn_CmdTraceRaysNV(commandBuffer.get(),
+            raygenShaderBindingTableBuffer.get(),
+            static_cast<VkDeviceSize>(raygenShaderBindingOffset),
+            missShaderBindingTableBuffer.get(),
+            static_cast<VkDeviceSize>(missShaderBindingOffset),
+            static_cast<VkDeviceSize>(missShaderBindingStride),
+            hitShaderBindingTableBuffer.get(),
+            static_cast<VkDeviceSize>(hitShaderBindingOffset),
+            static_cast<VkDeviceSize>(hitShaderBindingStride),
+            callableShaderBindingTableBuffer.get(),
+            static_cast<VkDeviceSize>(callableShaderBindingOffset),
+            static_cast<VkDeviceSize>(callableShaderBindingStride),
+            width,
+            height,
+            depth);
+    }
+    Result GetAccelerationStructureHandleNV(
+        Device const& device,
+        AccelerationStructureKHR accelerationStructure,
+        size_t dataSize,
+        void* pData) {
+        return static_cast<Result>(pfn_GetAccelerationStructureHandleNV(device.get(),
+            accelerationStructure.get(),
+            dataSize,
+            reinterpret_cast<void*>(pData)));
+    }
+    Result CreateRayTracingPipelinesNV(
+        Device const& device,
+        PipelineCache pipelineCache,
+        uint32_t createInfoCount,
+        const RayTracingPipelineCreateInfoNV* pCreateInfos,
+        const AllocationCallbacks* pAllocator,
+        Pipeline* pPipelines) {
+        return static_cast<Result>(pfn_CreateRayTracingPipelinesNV(device.get(),
+            pipelineCache.get(),
+            createInfoCount,
+            reinterpret_cast<const VkRayTracingPipelineCreateInfoNV*>(pCreateInfos),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkPipeline*>(pPipelines)));
+    }
+    VK_NV_ray_tracing_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_CompileDeferredNV = reinterpret_cast<PFN_vkCompileDeferredNV>(get_device_proc_addr(dev,"vkCompileDeferredNV"));
+        pfn_CreateAccelerationStructureNV = reinterpret_cast<PFN_vkCreateAccelerationStructureNV>(get_device_proc_addr(dev,"vkCreateAccelerationStructureNV"));
+        pfn_GetAccelerationStructureMemoryRequirementsNV = reinterpret_cast<PFN_vkGetAccelerationStructureMemoryRequirementsNV>(get_device_proc_addr(dev,"vkGetAccelerationStructureMemoryRequirementsNV"));
+        pfn_CmdCopyAccelerationStructureNV = reinterpret_cast<PFN_vkCmdCopyAccelerationStructureNV>(get_device_proc_addr(dev,"vkCmdCopyAccelerationStructureNV"));
+        pfn_CmdBuildAccelerationStructureNV = reinterpret_cast<PFN_vkCmdBuildAccelerationStructureNV>(get_device_proc_addr(dev,"vkCmdBuildAccelerationStructureNV"));
+        pfn_CmdTraceRaysNV = reinterpret_cast<PFN_vkCmdTraceRaysNV>(get_device_proc_addr(dev,"vkCmdTraceRaysNV"));
+        pfn_GetAccelerationStructureHandleNV = reinterpret_cast<PFN_vkGetAccelerationStructureHandleNV>(get_device_proc_addr(dev,"vkGetAccelerationStructureHandleNV"));
+        pfn_CreateRayTracingPipelinesNV = reinterpret_cast<PFN_vkCreateRayTracingPipelinesNV>(get_device_proc_addr(dev,"vkCreateRayTracingPipelinesNV"));
+    };
+};
+#endif // VK_NV_ray_tracing
+#if defined(VK_EXT_external_memory_host)
+struct VK_EXT_external_memory_host_dispatch_table {
+private:
+    PFN_vkGetMemoryHostPointerPropertiesEXT pfn_GetMemoryHostPointerPropertiesEXT;
+public:
+    Result GetMemoryHostPointerPropertiesEXT(
+        Device const& device,
+        ExternalMemoryHandleTypeFlagBits handleType,
+        const void* pHostPointer,
+        MemoryHostPointerPropertiesEXT* pMemoryHostPointerProperties) {
+        return static_cast<Result>(pfn_GetMemoryHostPointerPropertiesEXT(device.get(),
+            static_cast<VkExternalMemoryHandleTypeFlagBits>(handleType),
+            reinterpret_cast<const void*>(pHostPointer),
+            reinterpret_cast<VkMemoryHostPointerPropertiesEXT*>(pMemoryHostPointerProperties)));
+    }
+    VK_EXT_external_memory_host_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_GetMemoryHostPointerPropertiesEXT = reinterpret_cast<PFN_vkGetMemoryHostPointerPropertiesEXT>(get_device_proc_addr(dev,"vkGetMemoryHostPointerPropertiesEXT"));
+    };
+};
+#endif // VK_EXT_external_memory_host
+#if defined(VK_AMD_buffer_marker)
+struct VK_AMD_buffer_marker_dispatch_table {
+private:
+    PFN_vkCmdWriteBufferMarkerAMD pfn_CmdWriteBufferMarkerAMD;
+public:
+    void CmdWriteBufferMarkerAMD(
+        CommandBuffer const& commandBuffer,
+        PipelineStageFlagBits pipelineStage,
+        Buffer dstBuffer,
+        DeviceSize dstOffset,
+        uint32_t marker) {
+        return pfn_CmdWriteBufferMarkerAMD(commandBuffer.get(),
+            static_cast<VkPipelineStageFlagBits>(pipelineStage),
+            dstBuffer.get(),
+            static_cast<VkDeviceSize>(dstOffset),
+            marker);
+    }
+    VK_AMD_buffer_marker_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_CmdWriteBufferMarkerAMD = reinterpret_cast<PFN_vkCmdWriteBufferMarkerAMD>(get_device_proc_addr(dev,"vkCmdWriteBufferMarkerAMD"));
+    };
+};
+#endif // VK_AMD_buffer_marker
+#if defined(VK_EXT_calibrated_timestamps)
+struct VK_EXT_calibrated_timestamps_dispatch_table {
+private:
+    PFN_vkGetCalibratedTimestampsEXT pfn_GetCalibratedTimestampsEXT;
+public:
+    Result GetCalibratedTimestampsEXT(
+        Device const& device,
+        uint32_t timestampCount,
+        const CalibratedTimestampInfoEXT* pTimestampInfos,
+        uint64_t* pTimestamps,
+        uint64_t* pMaxDeviation) {
+        return static_cast<Result>(pfn_GetCalibratedTimestampsEXT(device.get(),
+            timestampCount,
+            reinterpret_cast<const VkCalibratedTimestampInfoEXT*>(pTimestampInfos),
+            reinterpret_cast<uint64_t*>(pTimestamps),
+            reinterpret_cast<uint64_t*>(pMaxDeviation)));
+    }
+    VK_EXT_calibrated_timestamps_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_GetCalibratedTimestampsEXT = reinterpret_cast<PFN_vkGetCalibratedTimestampsEXT>(get_device_proc_addr(dev,"vkGetCalibratedTimestampsEXT"));
+    };
+};
+#endif // VK_EXT_calibrated_timestamps
+#if defined(VK_NV_mesh_shader)
+struct VK_NV_mesh_shader_dispatch_table {
+private:
+    PFN_vkCmdDrawMeshTasksNV pfn_CmdDrawMeshTasksNV;
+    PFN_vkCmdDrawMeshTasksIndirectNV pfn_CmdDrawMeshTasksIndirectNV;
+    PFN_vkCmdDrawMeshTasksIndirectCountNV pfn_CmdDrawMeshTasksIndirectCountNV;
+public:
+    void CmdDrawMeshTasksNV(
+        CommandBuffer const& commandBuffer,
+        uint32_t taskCount,
+        uint32_t firstTask) {
+        return pfn_CmdDrawMeshTasksNV(commandBuffer.get(),
+            taskCount,
+            firstTask);
+    }
+    void CmdDrawMeshTasksIndirectNV(
+        CommandBuffer const& commandBuffer,
+        Buffer buffer,
+        DeviceSize offset,
+        uint32_t drawCount,
+        uint32_t stride) {
+        return pfn_CmdDrawMeshTasksIndirectNV(commandBuffer.get(),
+            buffer.get(),
+            static_cast<VkDeviceSize>(offset),
+            drawCount,
+            stride);
+    }
+    void CmdDrawMeshTasksIndirectCountNV(
+        CommandBuffer const& commandBuffer,
+        Buffer buffer,
+        DeviceSize offset,
+        Buffer countBuffer,
+        DeviceSize countBufferOffset,
+        uint32_t maxDrawCount,
+        uint32_t stride) {
+        return pfn_CmdDrawMeshTasksIndirectCountNV(commandBuffer.get(),
+            buffer.get(),
+            static_cast<VkDeviceSize>(offset),
+            countBuffer.get(),
+            static_cast<VkDeviceSize>(countBufferOffset),
+            maxDrawCount,
+            stride);
+    }
+    VK_NV_mesh_shader_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_CmdDrawMeshTasksNV = reinterpret_cast<PFN_vkCmdDrawMeshTasksNV>(get_device_proc_addr(dev,"vkCmdDrawMeshTasksNV"));
+        pfn_CmdDrawMeshTasksIndirectNV = reinterpret_cast<PFN_vkCmdDrawMeshTasksIndirectNV>(get_device_proc_addr(dev,"vkCmdDrawMeshTasksIndirectNV"));
+        pfn_CmdDrawMeshTasksIndirectCountNV = reinterpret_cast<PFN_vkCmdDrawMeshTasksIndirectCountNV>(get_device_proc_addr(dev,"vkCmdDrawMeshTasksIndirectCountNV"));
+    };
+};
+#endif // VK_NV_mesh_shader
+#if defined(VK_NV_scissor_exclusive)
+struct VK_NV_scissor_exclusive_dispatch_table {
+private:
+    PFN_vkCmdSetExclusiveScissorNV pfn_CmdSetExclusiveScissorNV;
+public:
+    void CmdSetExclusiveScissorNV(
+        CommandBuffer const& commandBuffer,
+        uint32_t firstExclusiveScissor,
+        uint32_t exclusiveScissorCount,
+        const Rect2D* pExclusiveScissors) {
+        return pfn_CmdSetExclusiveScissorNV(commandBuffer.get(),
+            firstExclusiveScissor,
+            exclusiveScissorCount,
+            reinterpret_cast<const VkRect2D*>(pExclusiveScissors));
+    }
+    VK_NV_scissor_exclusive_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_CmdSetExclusiveScissorNV = reinterpret_cast<PFN_vkCmdSetExclusiveScissorNV>(get_device_proc_addr(dev,"vkCmdSetExclusiveScissorNV"));
+    };
+};
+#endif // VK_NV_scissor_exclusive
+#if defined(VK_NV_device_diagnostic_checkpoints)
+struct VK_NV_device_diagnostic_checkpoints_dispatch_table {
+private:
+    PFN_vkCmdSetCheckpointNV pfn_CmdSetCheckpointNV;
+    PFN_vkGetQueueCheckpointDataNV pfn_GetQueueCheckpointDataNV;
+public:
+    void CmdSetCheckpointNV(
+        CommandBuffer const& commandBuffer,
+        const void* pCheckpointMarker) {
+        return pfn_CmdSetCheckpointNV(commandBuffer.get(),
+            reinterpret_cast<const void*>(pCheckpointMarker));
+    }
+    void GetQueueCheckpointDataNV(
+        Queue const& queue,
+        uint32_t* pCheckpointDataCount,
+        CheckpointDataNV* pCheckpointData) {
+        return pfn_GetQueueCheckpointDataNV(queue.get(),
+            reinterpret_cast<uint32_t*>(pCheckpointDataCount),
+            reinterpret_cast<VkCheckpointDataNV*>(pCheckpointData));
+    }
+    VK_NV_device_diagnostic_checkpoints_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_CmdSetCheckpointNV = reinterpret_cast<PFN_vkCmdSetCheckpointNV>(get_device_proc_addr(dev,"vkCmdSetCheckpointNV"));
+        pfn_GetQueueCheckpointDataNV = reinterpret_cast<PFN_vkGetQueueCheckpointDataNV>(get_device_proc_addr(dev,"vkGetQueueCheckpointDataNV"));
+    };
+};
+#endif // VK_NV_device_diagnostic_checkpoints
+#if defined(VK_INTEL_performance_query)
+struct VK_INTEL_performance_query_dispatch_table {
+private:
+    PFN_vkInitializePerformanceApiINTEL pfn_InitializePerformanceApiINTEL;
+    PFN_vkUninitializePerformanceApiINTEL pfn_UninitializePerformanceApiINTEL;
+    PFN_vkCmdSetPerformanceMarkerINTEL pfn_CmdSetPerformanceMarkerINTEL;
+    PFN_vkCmdSetPerformanceStreamMarkerINTEL pfn_CmdSetPerformanceStreamMarkerINTEL;
+    PFN_vkCmdSetPerformanceOverrideINTEL pfn_CmdSetPerformanceOverrideINTEL;
+    PFN_vkAcquirePerformanceConfigurationINTEL pfn_AcquirePerformanceConfigurationINTEL;
+    PFN_vkReleasePerformanceConfigurationINTEL pfn_ReleasePerformanceConfigurationINTEL;
+    PFN_vkQueueSetPerformanceConfigurationINTEL pfn_QueueSetPerformanceConfigurationINTEL;
+    PFN_vkGetPerformanceParameterINTEL pfn_GetPerformanceParameterINTEL;
+public:
+    Result InitializePerformanceApiINTEL(
+        Device const& device,
+        const InitializePerformanceApiInfoINTEL* pInitializeInfo) {
+        return static_cast<Result>(pfn_InitializePerformanceApiINTEL(device.get(),
+            reinterpret_cast<const VkInitializePerformanceApiInfoINTEL*>(pInitializeInfo)));
+    }
+    void UninitializePerformanceApiINTEL(
+        Device const& device) {
+        return pfn_UninitializePerformanceApiINTEL(device.get());
+    }
+    Result CmdSetPerformanceMarkerINTEL(
+        CommandBuffer const& commandBuffer,
+        const PerformanceMarkerInfoINTEL* pMarkerInfo) {
+        return static_cast<Result>(pfn_CmdSetPerformanceMarkerINTEL(commandBuffer.get(),
+            reinterpret_cast<const VkPerformanceMarkerInfoINTEL*>(pMarkerInfo)));
+    }
+    Result CmdSetPerformanceStreamMarkerINTEL(
+        CommandBuffer const& commandBuffer,
+        const PerformanceStreamMarkerInfoINTEL* pMarkerInfo) {
+        return static_cast<Result>(pfn_CmdSetPerformanceStreamMarkerINTEL(commandBuffer.get(),
+            reinterpret_cast<const VkPerformanceStreamMarkerInfoINTEL*>(pMarkerInfo)));
+    }
+    Result CmdSetPerformanceOverrideINTEL(
+        CommandBuffer const& commandBuffer,
+        const PerformanceOverrideInfoINTEL* pOverrideInfo) {
+        return static_cast<Result>(pfn_CmdSetPerformanceOverrideINTEL(commandBuffer.get(),
+            reinterpret_cast<const VkPerformanceOverrideInfoINTEL*>(pOverrideInfo)));
+    }
+    Result AcquirePerformanceConfigurationINTEL(
+        Device const& device,
+        const PerformanceConfigurationAcquireInfoINTEL* pAcquireInfo,
+        PerformanceConfigurationINTEL* pConfiguration) {
+        return static_cast<Result>(pfn_AcquirePerformanceConfigurationINTEL(device.get(),
+            reinterpret_cast<const VkPerformanceConfigurationAcquireInfoINTEL*>(pAcquireInfo),
+            reinterpret_cast<VkPerformanceConfigurationINTEL*>(pConfiguration)));
+    }
+    Result ReleasePerformanceConfigurationINTEL(
+        Device const& device,
+        PerformanceConfigurationINTEL configuration) {
+        return static_cast<Result>(pfn_ReleasePerformanceConfigurationINTEL(device.get(),
+            configuration.get()));
+    }
+    Result QueueSetPerformanceConfigurationINTEL(
+        Queue const& queue,
+        PerformanceConfigurationINTEL configuration) {
+        return static_cast<Result>(pfn_QueueSetPerformanceConfigurationINTEL(queue.get(),
+            configuration.get()));
+    }
+    Result GetPerformanceParameterINTEL(
+        Device const& device,
+        PerformanceParameterTypeINTEL parameter,
+        PerformanceValueINTEL* pValue) {
+        return static_cast<Result>(pfn_GetPerformanceParameterINTEL(device.get(),
+            static_cast<VkPerformanceParameterTypeINTEL>(parameter),
+            reinterpret_cast<VkPerformanceValueINTEL*>(pValue)));
+    }
+    VK_INTEL_performance_query_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_InitializePerformanceApiINTEL = reinterpret_cast<PFN_vkInitializePerformanceApiINTEL>(get_device_proc_addr(dev,"vkInitializePerformanceApiINTEL"));
+        pfn_UninitializePerformanceApiINTEL = reinterpret_cast<PFN_vkUninitializePerformanceApiINTEL>(get_device_proc_addr(dev,"vkUninitializePerformanceApiINTEL"));
+        pfn_CmdSetPerformanceMarkerINTEL = reinterpret_cast<PFN_vkCmdSetPerformanceMarkerINTEL>(get_device_proc_addr(dev,"vkCmdSetPerformanceMarkerINTEL"));
+        pfn_CmdSetPerformanceStreamMarkerINTEL = reinterpret_cast<PFN_vkCmdSetPerformanceStreamMarkerINTEL>(get_device_proc_addr(dev,"vkCmdSetPerformanceStreamMarkerINTEL"));
+        pfn_CmdSetPerformanceOverrideINTEL = reinterpret_cast<PFN_vkCmdSetPerformanceOverrideINTEL>(get_device_proc_addr(dev,"vkCmdSetPerformanceOverrideINTEL"));
+        pfn_AcquirePerformanceConfigurationINTEL = reinterpret_cast<PFN_vkAcquirePerformanceConfigurationINTEL>(get_device_proc_addr(dev,"vkAcquirePerformanceConfigurationINTEL"));
+        pfn_ReleasePerformanceConfigurationINTEL = reinterpret_cast<PFN_vkReleasePerformanceConfigurationINTEL>(get_device_proc_addr(dev,"vkReleasePerformanceConfigurationINTEL"));
+        pfn_QueueSetPerformanceConfigurationINTEL = reinterpret_cast<PFN_vkQueueSetPerformanceConfigurationINTEL>(get_device_proc_addr(dev,"vkQueueSetPerformanceConfigurationINTEL"));
+        pfn_GetPerformanceParameterINTEL = reinterpret_cast<PFN_vkGetPerformanceParameterINTEL>(get_device_proc_addr(dev,"vkGetPerformanceParameterINTEL"));
+    };
+};
+#endif // VK_INTEL_performance_query
+#if defined(VK_AMD_display_native_hdr)
+struct VK_AMD_display_native_hdr_dispatch_table {
+private:
+    PFN_vkSetLocalDimmingAMD pfn_SetLocalDimmingAMD;
+public:
+    void SetLocalDimmingAMD(
+        Device const& device,
+        SwapchainKHR swapChain,
+        Bool32 localDimmingEnable) {
+        return pfn_SetLocalDimmingAMD(device.get(),
+            swapChain.get(),
+            static_cast<VkBool32>(localDimmingEnable));
+    }
+    VK_AMD_display_native_hdr_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_SetLocalDimmingAMD = reinterpret_cast<PFN_vkSetLocalDimmingAMD>(get_device_proc_addr(dev,"vkSetLocalDimmingAMD"));
+    };
+};
+#endif // VK_AMD_display_native_hdr
+#if defined(VK_FUCHSIA_imagepipe_surface)
+struct VK_FUCHSIA_imagepipe_surface_dispatch_table {
+private:
+    PFN_vkCreateImagePipeSurfaceFUCHSIA pfn_CreateImagePipeSurfaceFUCHSIA;
+public:
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+    Result CreateImagePipeSurfaceFUCHSIA(
+        Instance const& instance,
+        const ImagePipeSurfaceCreateInfoFUCHSIA* pCreateInfo,
+        const AllocationCallbacks* pAllocator,
+        SurfaceKHR* pSurface) {
+        return static_cast<Result>(pfn_CreateImagePipeSurfaceFUCHSIA(instance.get(),
+            reinterpret_cast<const VkImagePipeSurfaceCreateInfoFUCHSIA*>(pCreateInfo),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkSurfaceKHR*>(pSurface)));
+    }
+#endif // VK_USE_PLATFORM_FUCHSIA
+    VK_FUCHSIA_imagepipe_surface_dispatch_table(PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance) {
+        VkInstance inst = instance.get();
+        pfn_CreateImagePipeSurfaceFUCHSIA = reinterpret_cast<PFN_vkCreateImagePipeSurfaceFUCHSIA>(get_instance_proc_addr(inst,"vkCreateImagePipeSurfaceFUCHSIA"));
+    };
+};
+#endif // VK_FUCHSIA_imagepipe_surface
+#if defined(VK_EXT_metal_surface)
+struct VK_EXT_metal_surface_dispatch_table {
+private:
+    PFN_vkCreateMetalSurfaceEXT pfn_CreateMetalSurfaceEXT;
+public:
+#if defined(VK_USE_PLATFORM_METAL_EXT)
+    Result CreateMetalSurfaceEXT(
+        Instance const& instance,
+        const MetalSurfaceCreateInfoEXT* pCreateInfo,
+        const AllocationCallbacks* pAllocator,
+        SurfaceKHR* pSurface) {
+        return static_cast<Result>(pfn_CreateMetalSurfaceEXT(instance.get(),
+            reinterpret_cast<const VkMetalSurfaceCreateInfoEXT*>(pCreateInfo),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkSurfaceKHR*>(pSurface)));
+    }
+#endif // VK_USE_PLATFORM_METAL_EXT
+    VK_EXT_metal_surface_dispatch_table(PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance) {
+        VkInstance inst = instance.get();
+        pfn_CreateMetalSurfaceEXT = reinterpret_cast<PFN_vkCreateMetalSurfaceEXT>(get_instance_proc_addr(inst,"vkCreateMetalSurfaceEXT"));
+    };
+};
+#endif // VK_EXT_metal_surface
+#if defined(VK_EXT_full_screen_exclusive)
+struct VK_EXT_full_screen_exclusive_dispatch_table {
+private:
+    PFN_vkAcquireFullScreenExclusiveModeEXT pfn_AcquireFullScreenExclusiveModeEXT;
+    PFN_vkReleaseFullScreenExclusiveModeEXT pfn_ReleaseFullScreenExclusiveModeEXT;
+    PFN_vkGetDeviceGroupSurfacePresentModes2EXT pfn_GetDeviceGroupSurfacePresentModes2EXT;
+public:
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    Result AcquireFullScreenExclusiveModeEXT(
+        Device const& device,
+        SwapchainKHR swapchain) {
+        return static_cast<Result>(pfn_AcquireFullScreenExclusiveModeEXT(device.get(),
+            swapchain.get()));
+    }
+#endif // VK_USE_PLATFORM_WIN32_KHR
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    Result ReleaseFullScreenExclusiveModeEXT(
+        Device const& device,
+        SwapchainKHR swapchain) {
+        return static_cast<Result>(pfn_ReleaseFullScreenExclusiveModeEXT(device.get(),
+            swapchain.get()));
+    }
+#endif // VK_USE_PLATFORM_WIN32_KHR
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    Result GetDeviceGroupSurfacePresentModes2EXT(
+        Device const& device,
+        const PhysicalDeviceSurfaceInfo2KHR* pSurfaceInfo,
+        DeviceGroupPresentModeFlagsKHR* pModes) {
+        return static_cast<Result>(pfn_GetDeviceGroupSurfacePresentModes2EXT(device.get(),
+            reinterpret_cast<const VkPhysicalDeviceSurfaceInfo2KHR*>(pSurfaceInfo),
+            reinterpret_cast<VkDeviceGroupPresentModeFlagsKHR*>(pModes)));
+    }
+#endif // VK_USE_PLATFORM_WIN32_KHR
+    VK_EXT_full_screen_exclusive_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_AcquireFullScreenExclusiveModeEXT = reinterpret_cast<PFN_vkAcquireFullScreenExclusiveModeEXT>(get_device_proc_addr(dev,"vkAcquireFullScreenExclusiveModeEXT"));
+        pfn_ReleaseFullScreenExclusiveModeEXT = reinterpret_cast<PFN_vkReleaseFullScreenExclusiveModeEXT>(get_device_proc_addr(dev,"vkReleaseFullScreenExclusiveModeEXT"));
+        pfn_GetDeviceGroupSurfacePresentModes2EXT = reinterpret_cast<PFN_vkGetDeviceGroupSurfacePresentModes2EXT>(get_device_proc_addr(dev,"vkGetDeviceGroupSurfacePresentModes2EXT"));
+    };
+};
+#endif // VK_EXT_full_screen_exclusive
+#if defined(VK_EXT_headless_surface)
+struct VK_EXT_headless_surface_dispatch_table {
+private:
+    PFN_vkCreateHeadlessSurfaceEXT pfn_CreateHeadlessSurfaceEXT;
+public:
+    Result CreateHeadlessSurfaceEXT(
+        Instance const& instance,
+        const HeadlessSurfaceCreateInfoEXT* pCreateInfo,
+        const AllocationCallbacks* pAllocator,
+        SurfaceKHR* pSurface) {
+        return static_cast<Result>(pfn_CreateHeadlessSurfaceEXT(instance.get(),
+            reinterpret_cast<const VkHeadlessSurfaceCreateInfoEXT*>(pCreateInfo),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkSurfaceKHR*>(pSurface)));
+    }
+    VK_EXT_headless_surface_dispatch_table(PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance) {
+        VkInstance inst = instance.get();
+        pfn_CreateHeadlessSurfaceEXT = reinterpret_cast<PFN_vkCreateHeadlessSurfaceEXT>(get_instance_proc_addr(inst,"vkCreateHeadlessSurfaceEXT"));
+    };
+};
+#endif // VK_EXT_headless_surface
+#if defined(VK_EXT_line_rasterization)
+struct VK_EXT_line_rasterization_dispatch_table {
+private:
+    PFN_vkCmdSetLineStippleEXT pfn_CmdSetLineStippleEXT;
+public:
+    void CmdSetLineStippleEXT(
+        CommandBuffer const& commandBuffer,
+        uint32_t lineStippleFactor,
+        uint16_t lineStipplePattern) {
+        return pfn_CmdSetLineStippleEXT(commandBuffer.get(),
+            lineStippleFactor,
+            lineStipplePattern);
+    }
+    VK_EXT_line_rasterization_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_CmdSetLineStippleEXT = reinterpret_cast<PFN_vkCmdSetLineStippleEXT>(get_device_proc_addr(dev,"vkCmdSetLineStippleEXT"));
+    };
+};
+#endif // VK_EXT_line_rasterization
+#if defined(VK_EXT_extended_dynamic_state)
+struct VK_EXT_extended_dynamic_state_dispatch_table {
+private:
+    PFN_vkCmdSetCullModeEXT pfn_CmdSetCullModeEXT;
+    PFN_vkCmdSetFrontFaceEXT pfn_CmdSetFrontFaceEXT;
+    PFN_vkCmdSetPrimitiveTopologyEXT pfn_CmdSetPrimitiveTopologyEXT;
+    PFN_vkCmdSetViewportWithCountEXT pfn_CmdSetViewportWithCountEXT;
+    PFN_vkCmdSetScissorWithCountEXT pfn_CmdSetScissorWithCountEXT;
+    PFN_vkCmdBindVertexBuffers2EXT pfn_CmdBindVertexBuffers2EXT;
+    PFN_vkCmdSetDepthTestEnableEXT pfn_CmdSetDepthTestEnableEXT;
+    PFN_vkCmdSetDepthWriteEnableEXT pfn_CmdSetDepthWriteEnableEXT;
+    PFN_vkCmdSetDepthCompareOpEXT pfn_CmdSetDepthCompareOpEXT;
+    PFN_vkCmdSetDepthBoundsTestEnableEXT pfn_CmdSetDepthBoundsTestEnableEXT;
+    PFN_vkCmdSetStencilTestEnableEXT pfn_CmdSetStencilTestEnableEXT;
+    PFN_vkCmdSetStencilOpEXT pfn_CmdSetStencilOpEXT;
+public:
+    void CmdSetCullModeEXT(
+        CommandBuffer const& commandBuffer,
+        CullModeFlags cullMode) {
+        return pfn_CmdSetCullModeEXT(commandBuffer.get(),
+            static_cast<VkCullModeFlags>(cullMode));
+    }
+    void CmdSetFrontFaceEXT(
+        CommandBuffer const& commandBuffer,
+        FrontFace frontFace) {
+        return pfn_CmdSetFrontFaceEXT(commandBuffer.get(),
+            static_cast<VkFrontFace>(frontFace));
+    }
+    void CmdSetPrimitiveTopologyEXT(
+        CommandBuffer const& commandBuffer,
+        PrimitiveTopology primitiveTopology) {
+        return pfn_CmdSetPrimitiveTopologyEXT(commandBuffer.get(),
+            static_cast<VkPrimitiveTopology>(primitiveTopology));
+    }
+    void CmdSetViewportWithCountEXT(
+        CommandBuffer const& commandBuffer,
+        uint32_t viewportCount,
+        const Viewport* pViewports) {
+        return pfn_CmdSetViewportWithCountEXT(commandBuffer.get(),
+            viewportCount,
+            reinterpret_cast<const VkViewport*>(pViewports));
+    }
+    void CmdSetScissorWithCountEXT(
+        CommandBuffer const& commandBuffer,
+        uint32_t scissorCount,
+        const Rect2D* pScissors) {
+        return pfn_CmdSetScissorWithCountEXT(commandBuffer.get(),
+            scissorCount,
+            reinterpret_cast<const VkRect2D*>(pScissors));
+    }
+    void CmdBindVertexBuffers2EXT(
+        CommandBuffer const& commandBuffer,
+        uint32_t firstBinding,
+        uint32_t bindingCount,
+        const Buffer* pBuffers,
+        const DeviceSize* pOffsets,
+        const DeviceSize* pSizes,
+        const DeviceSize* pStrides) {
+        return pfn_CmdBindVertexBuffers2EXT(commandBuffer.get(),
+            firstBinding,
+            bindingCount,
+            reinterpret_cast<const VkBuffer*>(pBuffers),
+            reinterpret_cast<const VkDeviceSize*>(pOffsets),
+            reinterpret_cast<const VkDeviceSize*>(pSizes),
+            reinterpret_cast<const VkDeviceSize*>(pStrides));
+    }
+    void CmdSetDepthTestEnableEXT(
+        CommandBuffer const& commandBuffer,
+        Bool32 depthTestEnable) {
+        return pfn_CmdSetDepthTestEnableEXT(commandBuffer.get(),
+            static_cast<VkBool32>(depthTestEnable));
+    }
+    void CmdSetDepthWriteEnableEXT(
+        CommandBuffer const& commandBuffer,
+        Bool32 depthWriteEnable) {
+        return pfn_CmdSetDepthWriteEnableEXT(commandBuffer.get(),
+            static_cast<VkBool32>(depthWriteEnable));
+    }
+    void CmdSetDepthCompareOpEXT(
+        CommandBuffer const& commandBuffer,
+        CompareOp depthCompareOp) {
+        return pfn_CmdSetDepthCompareOpEXT(commandBuffer.get(),
+            static_cast<VkCompareOp>(depthCompareOp));
+    }
+    void CmdSetDepthBoundsTestEnableEXT(
+        CommandBuffer const& commandBuffer,
+        Bool32 depthBoundsTestEnable) {
+        return pfn_CmdSetDepthBoundsTestEnableEXT(commandBuffer.get(),
+            static_cast<VkBool32>(depthBoundsTestEnable));
+    }
+    void CmdSetStencilTestEnableEXT(
+        CommandBuffer const& commandBuffer,
+        Bool32 stencilTestEnable) {
+        return pfn_CmdSetStencilTestEnableEXT(commandBuffer.get(),
+            static_cast<VkBool32>(stencilTestEnable));
+    }
+    void CmdSetStencilOpEXT(
+        CommandBuffer const& commandBuffer,
+        StencilFaceFlags faceMask,
+        StencilOp failOp,
+        StencilOp passOp,
+        StencilOp depthFailOp,
+        CompareOp compareOp) {
+        return pfn_CmdSetStencilOpEXT(commandBuffer.get(),
+            static_cast<VkStencilFaceFlags>(faceMask),
+            static_cast<VkStencilOp>(failOp),
+            static_cast<VkStencilOp>(passOp),
+            static_cast<VkStencilOp>(depthFailOp),
+            static_cast<VkCompareOp>(compareOp));
+    }
+    VK_EXT_extended_dynamic_state_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_CmdSetCullModeEXT = reinterpret_cast<PFN_vkCmdSetCullModeEXT>(get_device_proc_addr(dev,"vkCmdSetCullModeEXT"));
+        pfn_CmdSetFrontFaceEXT = reinterpret_cast<PFN_vkCmdSetFrontFaceEXT>(get_device_proc_addr(dev,"vkCmdSetFrontFaceEXT"));
+        pfn_CmdSetPrimitiveTopologyEXT = reinterpret_cast<PFN_vkCmdSetPrimitiveTopologyEXT>(get_device_proc_addr(dev,"vkCmdSetPrimitiveTopologyEXT"));
+        pfn_CmdSetViewportWithCountEXT = reinterpret_cast<PFN_vkCmdSetViewportWithCountEXT>(get_device_proc_addr(dev,"vkCmdSetViewportWithCountEXT"));
+        pfn_CmdSetScissorWithCountEXT = reinterpret_cast<PFN_vkCmdSetScissorWithCountEXT>(get_device_proc_addr(dev,"vkCmdSetScissorWithCountEXT"));
+        pfn_CmdBindVertexBuffers2EXT = reinterpret_cast<PFN_vkCmdBindVertexBuffers2EXT>(get_device_proc_addr(dev,"vkCmdBindVertexBuffers2EXT"));
+        pfn_CmdSetDepthTestEnableEXT = reinterpret_cast<PFN_vkCmdSetDepthTestEnableEXT>(get_device_proc_addr(dev,"vkCmdSetDepthTestEnableEXT"));
+        pfn_CmdSetDepthWriteEnableEXT = reinterpret_cast<PFN_vkCmdSetDepthWriteEnableEXT>(get_device_proc_addr(dev,"vkCmdSetDepthWriteEnableEXT"));
+        pfn_CmdSetDepthCompareOpEXT = reinterpret_cast<PFN_vkCmdSetDepthCompareOpEXT>(get_device_proc_addr(dev,"vkCmdSetDepthCompareOpEXT"));
+        pfn_CmdSetDepthBoundsTestEnableEXT = reinterpret_cast<PFN_vkCmdSetDepthBoundsTestEnableEXT>(get_device_proc_addr(dev,"vkCmdSetDepthBoundsTestEnableEXT"));
+        pfn_CmdSetStencilTestEnableEXT = reinterpret_cast<PFN_vkCmdSetStencilTestEnableEXT>(get_device_proc_addr(dev,"vkCmdSetStencilTestEnableEXT"));
+        pfn_CmdSetStencilOpEXT = reinterpret_cast<PFN_vkCmdSetStencilOpEXT>(get_device_proc_addr(dev,"vkCmdSetStencilOpEXT"));
+    };
+};
+#endif // VK_EXT_extended_dynamic_state
+#if defined(VK_KHR_deferred_host_operations)
+struct VK_KHR_deferred_host_operations_dispatch_table {
+private:
+    PFN_vkCreateDeferredOperationKHR pfn_CreateDeferredOperationKHR;
+    PFN_vkDestroyDeferredOperationKHR pfn_DestroyDeferredOperationKHR;
+    PFN_vkGetDeferredOperationMaxConcurrencyKHR pfn_GetDeferredOperationMaxConcurrencyKHR;
+    PFN_vkGetDeferredOperationResultKHR pfn_GetDeferredOperationResultKHR;
+    PFN_vkDeferredOperationJoinKHR pfn_DeferredOperationJoinKHR;
+public:
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    Result CreateDeferredOperationKHR(
+        Device const& device,
+        const AllocationCallbacks* pAllocator,
+        DeferredOperationKHR* pDeferredOperation) {
+        return static_cast<Result>(pfn_CreateDeferredOperationKHR(device.get(),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkDeferredOperationKHR*>(pDeferredOperation)));
+    }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    void DestroyDeferredOperationKHR(
+        Device const& device,
+        DeferredOperationKHR operation,
+        const AllocationCallbacks* pAllocator) {
+        return pfn_DestroyDeferredOperationKHR(device.get(),
+            operation.get(),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
+    }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    uint32_t GetDeferredOperationMaxConcurrencyKHR(
+        Device const& device,
+        DeferredOperationKHR operation) {
+        return pfn_GetDeferredOperationMaxConcurrencyKHR(device.get(),
+            operation.get());
+    }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    Result GetDeferredOperationResultKHR(
+        Device const& device,
+        DeferredOperationKHR operation) {
+        return static_cast<Result>(pfn_GetDeferredOperationResultKHR(device.get(),
+            operation.get()));
+    }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    Result DeferredOperationJoinKHR(
+        Device const& device,
+        DeferredOperationKHR operation) {
+        return static_cast<Result>(pfn_DeferredOperationJoinKHR(device.get(),
+            operation.get()));
+    }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+    VK_KHR_deferred_host_operations_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_CreateDeferredOperationKHR = reinterpret_cast<PFN_vkCreateDeferredOperationKHR>(get_device_proc_addr(dev,"vkCreateDeferredOperationKHR"));
+        pfn_DestroyDeferredOperationKHR = reinterpret_cast<PFN_vkDestroyDeferredOperationKHR>(get_device_proc_addr(dev,"vkDestroyDeferredOperationKHR"));
+        pfn_GetDeferredOperationMaxConcurrencyKHR = reinterpret_cast<PFN_vkGetDeferredOperationMaxConcurrencyKHR>(get_device_proc_addr(dev,"vkGetDeferredOperationMaxConcurrencyKHR"));
+        pfn_GetDeferredOperationResultKHR = reinterpret_cast<PFN_vkGetDeferredOperationResultKHR>(get_device_proc_addr(dev,"vkGetDeferredOperationResultKHR"));
+        pfn_DeferredOperationJoinKHR = reinterpret_cast<PFN_vkDeferredOperationJoinKHR>(get_device_proc_addr(dev,"vkDeferredOperationJoinKHR"));
+    };
+};
+#endif // VK_KHR_deferred_host_operations
+#if defined(VK_KHR_pipeline_executable_properties)
+struct VK_KHR_pipeline_executable_properties_dispatch_table {
+private:
+    PFN_vkGetPipelineExecutablePropertiesKHR pfn_GetPipelineExecutablePropertiesKHR;
+    PFN_vkGetPipelineExecutableStatisticsKHR pfn_GetPipelineExecutableStatisticsKHR;
+    PFN_vkGetPipelineExecutableInternalRepresentationsKHR pfn_GetPipelineExecutableInternalRepresentationsKHR;
+public:
+    Result GetPipelineExecutablePropertiesKHR(
+        Device const& device,
+        const PipelineInfoKHR* pPipelineInfo,
+        uint32_t* pExecutableCount,
+        PipelineExecutablePropertiesKHR* pProperties) {
+        return static_cast<Result>(pfn_GetPipelineExecutablePropertiesKHR(device.get(),
+            reinterpret_cast<const VkPipelineInfoKHR*>(pPipelineInfo),
+            reinterpret_cast<uint32_t*>(pExecutableCount),
+            reinterpret_cast<VkPipelineExecutablePropertiesKHR*>(pProperties)));
+    }
+    Result GetPipelineExecutableStatisticsKHR(
+        Device const& device,
+        const PipelineExecutableInfoKHR* pExecutableInfo,
+        uint32_t* pStatisticCount,
+        PipelineExecutableStatisticKHR* pStatistics) {
+        return static_cast<Result>(pfn_GetPipelineExecutableStatisticsKHR(device.get(),
+            reinterpret_cast<const VkPipelineExecutableInfoKHR*>(pExecutableInfo),
+            reinterpret_cast<uint32_t*>(pStatisticCount),
+            reinterpret_cast<VkPipelineExecutableStatisticKHR*>(pStatistics)));
+    }
+    Result GetPipelineExecutableInternalRepresentationsKHR(
+        Device const& device,
+        const PipelineExecutableInfoKHR* pExecutableInfo,
+        uint32_t* pInternalRepresentationCount,
+        PipelineExecutableInternalRepresentationKHR* pInternalRepresentations) {
+        return static_cast<Result>(pfn_GetPipelineExecutableInternalRepresentationsKHR(device.get(),
+            reinterpret_cast<const VkPipelineExecutableInfoKHR*>(pExecutableInfo),
+            reinterpret_cast<uint32_t*>(pInternalRepresentationCount),
+            reinterpret_cast<VkPipelineExecutableInternalRepresentationKHR*>(pInternalRepresentations)));
+    }
+    VK_KHR_pipeline_executable_properties_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_GetPipelineExecutablePropertiesKHR = reinterpret_cast<PFN_vkGetPipelineExecutablePropertiesKHR>(get_device_proc_addr(dev,"vkGetPipelineExecutablePropertiesKHR"));
+        pfn_GetPipelineExecutableStatisticsKHR = reinterpret_cast<PFN_vkGetPipelineExecutableStatisticsKHR>(get_device_proc_addr(dev,"vkGetPipelineExecutableStatisticsKHR"));
+        pfn_GetPipelineExecutableInternalRepresentationsKHR = reinterpret_cast<PFN_vkGetPipelineExecutableInternalRepresentationsKHR>(get_device_proc_addr(dev,"vkGetPipelineExecutableInternalRepresentationsKHR"));
+    };
+};
+#endif // VK_KHR_pipeline_executable_properties
+#if defined(VK_NV_device_generated_commands)
+struct VK_NV_device_generated_commands_dispatch_table {
+private:
+    PFN_vkCmdExecuteGeneratedCommandsNV pfn_CmdExecuteGeneratedCommandsNV;
+    PFN_vkCmdPreprocessGeneratedCommandsNV pfn_CmdPreprocessGeneratedCommandsNV;
+    PFN_vkCmdBindPipelineShaderGroupNV pfn_CmdBindPipelineShaderGroupNV;
+    PFN_vkGetGeneratedCommandsMemoryRequirementsNV pfn_GetGeneratedCommandsMemoryRequirementsNV;
+    PFN_vkCreateIndirectCommandsLayoutNV pfn_CreateIndirectCommandsLayoutNV;
+    PFN_vkDestroyIndirectCommandsLayoutNV pfn_DestroyIndirectCommandsLayoutNV;
+public:
+    void CmdExecuteGeneratedCommandsNV(
+        CommandBuffer const& commandBuffer,
+        Bool32 isPreprocessed,
+        const GeneratedCommandsInfoNV* pGeneratedCommandsInfo) {
+        return pfn_CmdExecuteGeneratedCommandsNV(commandBuffer.get(),
+            static_cast<VkBool32>(isPreprocessed),
+            reinterpret_cast<const VkGeneratedCommandsInfoNV*>(pGeneratedCommandsInfo));
+    }
+    void CmdPreprocessGeneratedCommandsNV(
+        CommandBuffer const& commandBuffer,
+        const GeneratedCommandsInfoNV* pGeneratedCommandsInfo) {
+        return pfn_CmdPreprocessGeneratedCommandsNV(commandBuffer.get(),
+            reinterpret_cast<const VkGeneratedCommandsInfoNV*>(pGeneratedCommandsInfo));
+    }
+    void CmdBindPipelineShaderGroupNV(
+        CommandBuffer const& commandBuffer,
+        PipelineBindPoint pipelineBindPoint,
+        Pipeline pipeline,
+        uint32_t groupIndex) {
+        return pfn_CmdBindPipelineShaderGroupNV(commandBuffer.get(),
+            static_cast<VkPipelineBindPoint>(pipelineBindPoint),
+            pipeline.get(),
+            groupIndex);
+    }
+    void GetGeneratedCommandsMemoryRequirementsNV(
+        Device const& device,
+        const GeneratedCommandsMemoryRequirementsInfoNV* pInfo,
+        MemoryRequirements2* pMemoryRequirements) {
+        return pfn_GetGeneratedCommandsMemoryRequirementsNV(device.get(),
+            reinterpret_cast<const VkGeneratedCommandsMemoryRequirementsInfoNV*>(pInfo),
+            reinterpret_cast<VkMemoryRequirements2*>(pMemoryRequirements));
+    }
+    Result CreateIndirectCommandsLayoutNV(
+        Device const& device,
+        const IndirectCommandsLayoutCreateInfoNV* pCreateInfo,
+        const AllocationCallbacks* pAllocator,
+        IndirectCommandsLayoutNV* pIndirectCommandsLayout) {
+        return static_cast<Result>(pfn_CreateIndirectCommandsLayoutNV(device.get(),
+            reinterpret_cast<const VkIndirectCommandsLayoutCreateInfoNV*>(pCreateInfo),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkIndirectCommandsLayoutNV*>(pIndirectCommandsLayout)));
+    }
+    void DestroyIndirectCommandsLayoutNV(
+        Device const& device,
+        IndirectCommandsLayoutNV indirectCommandsLayout,
+        const AllocationCallbacks* pAllocator) {
+        return pfn_DestroyIndirectCommandsLayoutNV(device.get(),
+            indirectCommandsLayout.get(),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
+    }
+    VK_NV_device_generated_commands_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_CmdExecuteGeneratedCommandsNV = reinterpret_cast<PFN_vkCmdExecuteGeneratedCommandsNV>(get_device_proc_addr(dev,"vkCmdExecuteGeneratedCommandsNV"));
+        pfn_CmdPreprocessGeneratedCommandsNV = reinterpret_cast<PFN_vkCmdPreprocessGeneratedCommandsNV>(get_device_proc_addr(dev,"vkCmdPreprocessGeneratedCommandsNV"));
+        pfn_CmdBindPipelineShaderGroupNV = reinterpret_cast<PFN_vkCmdBindPipelineShaderGroupNV>(get_device_proc_addr(dev,"vkCmdBindPipelineShaderGroupNV"));
+        pfn_GetGeneratedCommandsMemoryRequirementsNV = reinterpret_cast<PFN_vkGetGeneratedCommandsMemoryRequirementsNV>(get_device_proc_addr(dev,"vkGetGeneratedCommandsMemoryRequirementsNV"));
+        pfn_CreateIndirectCommandsLayoutNV = reinterpret_cast<PFN_vkCreateIndirectCommandsLayoutNV>(get_device_proc_addr(dev,"vkCreateIndirectCommandsLayoutNV"));
+        pfn_DestroyIndirectCommandsLayoutNV = reinterpret_cast<PFN_vkDestroyIndirectCommandsLayoutNV>(get_device_proc_addr(dev,"vkDestroyIndirectCommandsLayoutNV"));
+    };
+};
+#endif // VK_NV_device_generated_commands
+#if defined(VK_EXT_private_data)
+struct VK_EXT_private_data_dispatch_table {
+private:
+    PFN_vkCreatePrivateDataSlotEXT pfn_CreatePrivateDataSlotEXT;
+    PFN_vkDestroyPrivateDataSlotEXT pfn_DestroyPrivateDataSlotEXT;
+    PFN_vkSetPrivateDataEXT pfn_SetPrivateDataEXT;
+    PFN_vkGetPrivateDataEXT pfn_GetPrivateDataEXT;
+public:
+    Result CreatePrivateDataSlotEXT(
+        Device const& device,
+        const PrivateDataSlotCreateInfoEXT* pCreateInfo,
+        const AllocationCallbacks* pAllocator,
+        PrivateDataSlotEXT* pPrivateDataSlot) {
+        return static_cast<Result>(pfn_CreatePrivateDataSlotEXT(device.get(),
+            reinterpret_cast<const VkPrivateDataSlotCreateInfoEXT*>(pCreateInfo),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkPrivateDataSlotEXT*>(pPrivateDataSlot)));
+    }
+    void DestroyPrivateDataSlotEXT(
+        Device const& device,
+        PrivateDataSlotEXT privateDataSlot,
+        const AllocationCallbacks* pAllocator) {
+        return pfn_DestroyPrivateDataSlotEXT(device.get(),
+            privateDataSlot.get(),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
+    }
+    Result SetPrivateDataEXT(
+        Device const& device,
+        ObjectType objectType,
+        uint64_t objectHandle,
+        PrivateDataSlotEXT privateDataSlot,
+        uint64_t data) {
+        return static_cast<Result>(pfn_SetPrivateDataEXT(device.get(),
+            static_cast<VkObjectType>(objectType),
+            objectHandle,
+            privateDataSlot.get(),
+            data));
+    }
+    void GetPrivateDataEXT(
+        Device const& device,
+        ObjectType objectType,
+        uint64_t objectHandle,
+        PrivateDataSlotEXT privateDataSlot,
+        uint64_t* pData) {
+        return pfn_GetPrivateDataEXT(device.get(),
+            static_cast<VkObjectType>(objectType),
+            objectHandle,
+            privateDataSlot.get(),
+            reinterpret_cast<uint64_t*>(pData));
+    }
+    VK_EXT_private_data_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device) {
+        VkDevice dev = device.get();
+        pfn_CreatePrivateDataSlotEXT = reinterpret_cast<PFN_vkCreatePrivateDataSlotEXT>(get_device_proc_addr(dev,"vkCreatePrivateDataSlotEXT"));
+        pfn_DestroyPrivateDataSlotEXT = reinterpret_cast<PFN_vkDestroyPrivateDataSlotEXT>(get_device_proc_addr(dev,"vkDestroyPrivateDataSlotEXT"));
+        pfn_SetPrivateDataEXT = reinterpret_cast<PFN_vkSetPrivateDataEXT>(get_device_proc_addr(dev,"vkSetPrivateDataEXT"));
+        pfn_GetPrivateDataEXT = reinterpret_cast<PFN_vkGetPrivateDataEXT>(get_device_proc_addr(dev,"vkGetPrivateDataEXT"));
+    };
+};
+#endif // VK_EXT_private_data
+#if defined(VK_EXT_directfb_surface)
+struct VK_EXT_directfb_surface_dispatch_table {
+private:
+    PFN_vkCreateDirectFBSurfaceEXT pfn_CreateDirectFBSurfaceEXT;
+    PFN_vkGetPhysicalDeviceDirectFBPresentationSupportEXT pfn_GetPhysicalDeviceDirectFBPresentationSupportEXT;
+public:
+#if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
+    Result CreateDirectFBSurfaceEXT(
+        Instance const& instance,
+        const DirectFBSurfaceCreateInfoEXT* pCreateInfo,
+        const AllocationCallbacks* pAllocator,
+        SurfaceKHR* pSurface) {
+        return static_cast<Result>(pfn_CreateDirectFBSurfaceEXT(instance.get(),
+            reinterpret_cast<const VkDirectFBSurfaceCreateInfoEXT*>(pCreateInfo),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkSurfaceKHR*>(pSurface)));
+    }
+#endif // VK_USE_PLATFORM_DIRECTFB_EXT
+#if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
+    VkBool32 GetPhysicalDeviceDirectFBPresentationSupportEXT(
+        PhysicalDevice const& physicalDevice,
+        uint32_t queueFamilyIndex,
+        IDirectFB* dfb) {
+        return pfn_GetPhysicalDeviceDirectFBPresentationSupportEXT(physicalDevice.get(),
+            queueFamilyIndex,
+            reinterpret_cast<IDirectFB*>(dfb));
+    }
+#endif // VK_USE_PLATFORM_DIRECTFB_EXT
+    VK_EXT_directfb_surface_dispatch_table(PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance) {
+        VkInstance inst = instance.get();
+        pfn_CreateDirectFBSurfaceEXT = reinterpret_cast<PFN_vkCreateDirectFBSurfaceEXT>(get_instance_proc_addr(inst,"vkCreateDirectFBSurfaceEXT"));
+        pfn_GetPhysicalDeviceDirectFBPresentationSupportEXT = reinterpret_cast<PFN_vkGetPhysicalDeviceDirectFBPresentationSupportEXT>(get_instance_proc_addr(inst,"vkGetPhysicalDeviceDirectFBPresentationSupportEXT"));
+    };
+};
+#endif // VK_EXT_directfb_surface
 } // namespace vk
 // clang-format on

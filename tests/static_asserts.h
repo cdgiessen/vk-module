@@ -845,22 +845,6 @@ static_assert( sizeof(PhysicalDeviceHostQueryResetFeatures) == sizeof(VkPhysical
 static_assert( std::is_standard_layout<PhysicalDeviceHostQueryResetFeatures>::value, "Must be a standard layout type" );
 static_assert( sizeof(PhysicalDeviceHostQueryResetFeaturesEXT) == sizeof(VkPhysicalDeviceHostQueryResetFeaturesEXT), "Must maintain size between types" );
 static_assert( std::is_standard_layout<PhysicalDeviceHostQueryResetFeaturesEXT>::value, "Must be a standard layout type" );
-#if defined(VK_USE_PLATFORM_ANDROID_KHR)
-static_assert( sizeof(NativeBufferUsage2ANDROID) == sizeof(VkNativeBufferUsage2ANDROID), "Must maintain size between types" );
-static_assert( std::is_standard_layout<NativeBufferUsage2ANDROID>::value, "Must be a standard layout type" );
-#endif // VK_USE_PLATFORM_ANDROID_KHR
-#if defined(VK_USE_PLATFORM_ANDROID_KHR)
-static_assert( sizeof(NativeBufferANDROID) == sizeof(VkNativeBufferANDROID), "Must maintain size between types" );
-static_assert( std::is_standard_layout<NativeBufferANDROID>::value, "Must be a standard layout type" );
-#endif // VK_USE_PLATFORM_ANDROID_KHR
-#if defined(VK_USE_PLATFORM_ANDROID_KHR)
-static_assert( sizeof(SwapchainImageCreateInfoANDROID) == sizeof(VkSwapchainImageCreateInfoANDROID), "Must maintain size between types" );
-static_assert( std::is_standard_layout<SwapchainImageCreateInfoANDROID>::value, "Must be a standard layout type" );
-#endif // VK_USE_PLATFORM_ANDROID_KHR
-#if defined(VK_USE_PLATFORM_ANDROID_KHR)
-static_assert( sizeof(PhysicalDevicePresentationPropertiesANDROID) == sizeof(VkPhysicalDevicePresentationPropertiesANDROID), "Must maintain size between types" );
-static_assert( std::is_standard_layout<PhysicalDevicePresentationPropertiesANDROID>::value, "Must be a standard layout type" );
-#endif // VK_USE_PLATFORM_ANDROID_KHR
 static_assert( sizeof(ShaderResourceUsageAMD) == sizeof(VkShaderResourceUsageAMD), "Must maintain size between types" );
 static_assert( std::is_standard_layout<ShaderResourceUsageAMD>::value, "Must be a standard layout type" );
 static_assert( sizeof(ShaderStatisticsInfoAMD) == sizeof(VkShaderStatisticsInfoAMD), "Must maintain size between types" );

@@ -418,36 +418,6 @@ const char * to_string(Format val) {
         case(Format::eAstc10X10SfloatBlockEXT): return "eAstc10X10SfloatBlockEXT";
         case(Format::eAstc12X10SfloatBlockEXT): return "eAstc12X10SfloatBlockEXT";
         case(Format::eAstc12X12SfloatBlockEXT): return "eAstc12X12SfloatBlockEXT";
-        case(Format::eAstc3X3X3UnormBlockEXT): return "eAstc3X3X3UnormBlockEXT";
-        case(Format::eAstc3X3X3SrgbBlockEXT): return "eAstc3X3X3SrgbBlockEXT";
-        case(Format::eAstc3X3X3SfloatBlockEXT): return "eAstc3X3X3SfloatBlockEXT";
-        case(Format::eAstc4X3X3UnormBlockEXT): return "eAstc4X3X3UnormBlockEXT";
-        case(Format::eAstc4X3X3SrgbBlockEXT): return "eAstc4X3X3SrgbBlockEXT";
-        case(Format::eAstc4X3X3SfloatBlockEXT): return "eAstc4X3X3SfloatBlockEXT";
-        case(Format::eAstc4X4X3UnormBlockEXT): return "eAstc4X4X3UnormBlockEXT";
-        case(Format::eAstc4X4X3SrgbBlockEXT): return "eAstc4X4X3SrgbBlockEXT";
-        case(Format::eAstc4X4X3SfloatBlockEXT): return "eAstc4X4X3SfloatBlockEXT";
-        case(Format::eAstc4X4X4UnormBlockEXT): return "eAstc4X4X4UnormBlockEXT";
-        case(Format::eAstc4X4X4SrgbBlockEXT): return "eAstc4X4X4SrgbBlockEXT";
-        case(Format::eAstc4X4X4SfloatBlockEXT): return "eAstc4X4X4SfloatBlockEXT";
-        case(Format::eAstc5X4X4UnormBlockEXT): return "eAstc5X4X4UnormBlockEXT";
-        case(Format::eAstc5X4X4SrgbBlockEXT): return "eAstc5X4X4SrgbBlockEXT";
-        case(Format::eAstc5X4X4SfloatBlockEXT): return "eAstc5X4X4SfloatBlockEXT";
-        case(Format::eAstc5X5X4UnormBlockEXT): return "eAstc5X5X4UnormBlockEXT";
-        case(Format::eAstc5X5X4SrgbBlockEXT): return "eAstc5X5X4SrgbBlockEXT";
-        case(Format::eAstc5X5X4SfloatBlockEXT): return "eAstc5X5X4SfloatBlockEXT";
-        case(Format::eAstc5X5X5UnormBlockEXT): return "eAstc5X5X5UnormBlockEXT";
-        case(Format::eAstc5X5X5SrgbBlockEXT): return "eAstc5X5X5SrgbBlockEXT";
-        case(Format::eAstc5X5X5SfloatBlockEXT): return "eAstc5X5X5SfloatBlockEXT";
-        case(Format::eAstc6X5X5UnormBlockEXT): return "eAstc6X5X5UnormBlockEXT";
-        case(Format::eAstc6X5X5SrgbBlockEXT): return "eAstc6X5X5SrgbBlockEXT";
-        case(Format::eAstc6X5X5SfloatBlockEXT): return "eAstc6X5X5SfloatBlockEXT";
-        case(Format::eAstc6X6X5UnormBlockEXT): return "eAstc6X6X5UnormBlockEXT";
-        case(Format::eAstc6X6X5SrgbBlockEXT): return "eAstc6X6X5SrgbBlockEXT";
-        case(Format::eAstc6X6X5SfloatBlockEXT): return "eAstc6X6X5SfloatBlockEXT";
-        case(Format::eAstc6X6X6UnormBlockEXT): return "eAstc6X6X6UnormBlockEXT";
-        case(Format::eAstc6X6X6SrgbBlockEXT): return "eAstc6X6X6SrgbBlockEXT";
-        case(Format::eAstc6X6X6SfloatBlockEXT): return "eAstc6X6X6SfloatBlockEXT";
         case(Format::eA4R4G4B4UnormPack16EXT): return "eA4R4G4B4UnormPack16EXT";
         case(Format::eA4B4G4R4UnormPack16EXT): return "eA4B4G4R4UnormPack16EXT";
         case(Format::eG8B8G8R8422Unorm): return "eG8B8G8R8422Unorm";
@@ -622,8 +592,6 @@ const char * to_string(QueryType val) {
         case(QueryType::eOcclusion): return "eOcclusion";
         case(QueryType::ePipelineStatistics): return "ePipelineStatistics";
         case(QueryType::eTimestamp): return "eTimestamp";
-        case(QueryType::eReserved8): return "eReserved8";
-        case(QueryType::eReserved4): return "eReserved4";
         case(QueryType::eTransformFeedbackStreamEXT): return "eTransformFeedbackStreamEXT";
         case(QueryType::ePerformanceQueryKHR): return "ePerformanceQueryKHR";
         case(QueryType::eAccelerationStructureCompactedSizeKHR): return "eAccelerationStructureCompactedSizeKHR";
@@ -763,9 +731,6 @@ const char * to_string(StructureType val) {
         case(StructureType::eWaylandSurfaceCreateInfoKHR): return "eWaylandSurfaceCreateInfoKHR";
         case(StructureType::eAndroidSurfaceCreateInfoKHR): return "eAndroidSurfaceCreateInfoKHR";
         case(StructureType::eWin32SurfaceCreateInfoKHR): return "eWin32SurfaceCreateInfoKHR";
-        case(StructureType::eNativeBufferANDROID): return "eNativeBufferANDROID";
-        case(StructureType::eSwapchainImageCreateInfoANDROID): return "eSwapchainImageCreateInfoANDROID";
-        case(StructureType::ePhysicalDevicePresentationPropertiesANDROID): return "ePhysicalDevicePresentationPropertiesANDROID";
         case(StructureType::eDebugReportCallbackCreateInfoEXT): return "eDebugReportCallbackCreateInfoEXT";
         case(StructureType::ePipelineRasterizationStateRasterizationOrderAMD): return "ePipelineRasterizationStateRasterizationOrderAMD";
         case(StructureType::eDebugMarkerObjectNameInfoEXT): return "eDebugMarkerObjectNameInfoEXT";
@@ -1024,7 +989,6 @@ const char * to_string(StructureType val) {
         case(StructureType::ePhysicalDevicePipelineCreationCacheControlFeaturesEXT): return "ePhysicalDevicePipelineCreationCacheControlFeaturesEXT";
         case(StructureType::ePhysicalDeviceDiagnosticsConfigFeaturesNV): return "ePhysicalDeviceDiagnosticsConfigFeaturesNV";
         case(StructureType::eDeviceDiagnosticsConfigCreateInfoNV): return "eDeviceDiagnosticsConfigCreateInfoNV";
-        case(StructureType::eReservedQCOM): return "eReservedQCOM";
         case(StructureType::ePhysicalDeviceFragmentDensityMap2FeaturesEXT): return "ePhysicalDeviceFragmentDensityMap2FeaturesEXT";
         case(StructureType::ePhysicalDeviceFragmentDensityMap2PropertiesEXT): return "ePhysicalDeviceFragmentDensityMap2PropertiesEXT";
         case(StructureType::ePhysicalDeviceImageRobustnessFeaturesEXT): return "ePhysicalDeviceImageRobustnessFeaturesEXT";
@@ -1816,8 +1780,6 @@ const char * to_string(QueueFlagBits val) {
         case(QueueFlagBits::eCompute): return "eCompute";
         case(QueueFlagBits::eTransfer): return "eTransfer";
         case(QueueFlagBits::eSparseBinding): return "eSparseBinding";
-        case(QueueFlagBits::eReserved6BitKHR): return "eReserved6BitKHR";
-        case(QueueFlagBits::eReserved5BitKHR): return "eReserved5BitKHR";
         case(QueueFlagBits::eProtected): return "eProtected";
         default: return "UNKNOWN";
     }
@@ -1829,14 +1791,11 @@ std::string to_string(QueueFlags flag){
     if (flag & QueueFlagBits::eCompute) out += "eCompute | ";
     if (flag & QueueFlagBits::eTransfer) out += "eTransfer | ";
     if (flag & QueueFlagBits::eSparseBinding) out += "eSparseBinding | ";
-    if (flag & QueueFlagBits::eReserved6BitKHR) out += "eReserved6BitKHR | ";
-    if (flag & QueueFlagBits::eReserved5BitKHR) out += "eReserved5BitKHR | ";
     if (flag & QueueFlagBits::eProtected) out += "eProtected | ";
     return out.substr(0, out.size() - 3);
 };
 const char * to_string(RenderPassCreateFlagBits val) {
     switch(val) {
-        case(RenderPassCreateFlagBits::eReserved0BitKHR): return "eReserved0BitKHR";
         case(RenderPassCreateFlagBits::eTransformBitQCOM): return "eTransformBitQCOM";
         default: return "UNKNOWN";
     }
@@ -1844,7 +1803,6 @@ const char * to_string(RenderPassCreateFlagBits val) {
 std::string to_string(RenderPassCreateFlags flag){
     if (flag.flags == 0) return "None";
     std::string out;
-    if (flag & RenderPassCreateFlagBits::eReserved0BitKHR) out += "eReserved0BitKHR | ";
     if (flag & RenderPassCreateFlagBits::eTransformBitQCOM) out += "eTransformBitQCOM | ";
     return out.substr(0, out.size() - 3);
 };
@@ -1889,7 +1847,6 @@ std::string to_string(MemoryPropertyFlags flag){
 const char * to_string(MemoryHeapFlagBits val) {
     switch(val) {
         case(MemoryHeapFlagBits::eDeviceLocal): return "eDeviceLocal";
-        case(MemoryHeapFlagBits::eReserved2BitKHR): return "eReserved2BitKHR";
         case(MemoryHeapFlagBits::eMultiInstance): return "eMultiInstance";
         default: return "UNKNOWN";
     }
@@ -1898,7 +1855,6 @@ std::string to_string(MemoryHeapFlags flag){
     if (flag.flags == 0) return "None";
     std::string out;
     if (flag & MemoryHeapFlagBits::eDeviceLocal) out += "eDeviceLocal | ";
-    if (flag & MemoryHeapFlagBits::eReserved2BitKHR) out += "eReserved2BitKHR | ";
     if (flag & MemoryHeapFlagBits::eMultiInstance) out += "eMultiInstance | ";
     return out.substr(0, out.size() - 3);
 };
@@ -1921,9 +1877,6 @@ const char * to_string(AccessFlagBits val) {
         case(AccessFlagBits::eHostWrite): return "eHostWrite";
         case(AccessFlagBits::eMemoryRead): return "eMemoryRead";
         case(AccessFlagBits::eMemoryWrite): return "eMemoryWrite";
-        case(AccessFlagBits::eReserved30BitKHR): return "eReserved30BitKHR";
-        case(AccessFlagBits::eReserved28BitKHR): return "eReserved28BitKHR";
-        case(AccessFlagBits::eReserved29BitKHR): return "eReserved29BitKHR";
         case(AccessFlagBits::eTransformFeedbackWriteBitEXT): return "eTransformFeedbackWriteBitEXT";
         case(AccessFlagBits::eTransformFeedbackCounterReadBitEXT): return "eTransformFeedbackCounterReadBitEXT";
         case(AccessFlagBits::eTransformFeedbackCounterWriteBitEXT): return "eTransformFeedbackCounterWriteBitEXT";
@@ -1958,9 +1911,6 @@ std::string to_string(AccessFlags flag){
     if (flag & AccessFlagBits::eHostWrite) out += "eHostWrite | ";
     if (flag & AccessFlagBits::eMemoryRead) out += "eMemoryRead | ";
     if (flag & AccessFlagBits::eMemoryWrite) out += "eMemoryWrite | ";
-    if (flag & AccessFlagBits::eReserved30BitKHR) out += "eReserved30BitKHR | ";
-    if (flag & AccessFlagBits::eReserved28BitKHR) out += "eReserved28BitKHR | ";
-    if (flag & AccessFlagBits::eReserved29BitKHR) out += "eReserved29BitKHR | ";
     if (flag & AccessFlagBits::eTransformFeedbackWriteBitEXT) out += "eTransformFeedbackWriteBitEXT | ";
     if (flag & AccessFlagBits::eTransformFeedbackCounterReadBitEXT) out += "eTransformFeedbackCounterReadBitEXT | ";
     if (flag & AccessFlagBits::eTransformFeedbackCounterWriteBitEXT) out += "eTransformFeedbackCounterWriteBitEXT | ";
@@ -1985,17 +1935,10 @@ const char * to_string(BufferUsageFlagBits val) {
         case(BufferUsageFlagBits::eIndexBuffer): return "eIndexBuffer";
         case(BufferUsageFlagBits::eVertexBuffer): return "eVertexBuffer";
         case(BufferUsageFlagBits::eIndirectBuffer): return "eIndirectBuffer";
-        case(BufferUsageFlagBits::eReserved15BitKHR): return "eReserved15BitKHR";
-        case(BufferUsageFlagBits::eReserved16BitKHR): return "eReserved16BitKHR";
-        case(BufferUsageFlagBits::eReserved13BitKHR): return "eReserved13BitKHR";
-        case(BufferUsageFlagBits::eReserved14BitKHR): return "eReserved14BitKHR";
         case(BufferUsageFlagBits::eTransformFeedbackBufferBitEXT): return "eTransformFeedbackBufferBitEXT";
         case(BufferUsageFlagBits::eTransformFeedbackCounterBufferBitEXT): return "eTransformFeedbackCounterBufferBitEXT";
         case(BufferUsageFlagBits::eConditionalRenderingBitEXT): return "eConditionalRenderingBitEXT";
         case(BufferUsageFlagBits::eRayTracingBitKHR): return "eRayTracingBitKHR";
-        case(BufferUsageFlagBits::eReserved19BitKHR): return "eReserved19BitKHR";
-        case(BufferUsageFlagBits::eReserved20BitKHR): return "eReserved20BitKHR";
-        case(BufferUsageFlagBits::eReserved18BitQCOM): return "eReserved18BitQCOM";
         case(BufferUsageFlagBits::eShaderDeviceAddress): return "eShaderDeviceAddress";
         default: return "UNKNOWN";
     }
@@ -2012,17 +1955,10 @@ std::string to_string(BufferUsageFlags flag){
     if (flag & BufferUsageFlagBits::eIndexBuffer) out += "eIndexBuffer | ";
     if (flag & BufferUsageFlagBits::eVertexBuffer) out += "eVertexBuffer | ";
     if (flag & BufferUsageFlagBits::eIndirectBuffer) out += "eIndirectBuffer | ";
-    if (flag & BufferUsageFlagBits::eReserved15BitKHR) out += "eReserved15BitKHR | ";
-    if (flag & BufferUsageFlagBits::eReserved16BitKHR) out += "eReserved16BitKHR | ";
-    if (flag & BufferUsageFlagBits::eReserved13BitKHR) out += "eReserved13BitKHR | ";
-    if (flag & BufferUsageFlagBits::eReserved14BitKHR) out += "eReserved14BitKHR | ";
     if (flag & BufferUsageFlagBits::eTransformFeedbackBufferBitEXT) out += "eTransformFeedbackBufferBitEXT | ";
     if (flag & BufferUsageFlagBits::eTransformFeedbackCounterBufferBitEXT) out += "eTransformFeedbackCounterBufferBitEXT | ";
     if (flag & BufferUsageFlagBits::eConditionalRenderingBitEXT) out += "eConditionalRenderingBitEXT | ";
     if (flag & BufferUsageFlagBits::eRayTracingBitKHR) out += "eRayTracingBitKHR | ";
-    if (flag & BufferUsageFlagBits::eReserved19BitKHR) out += "eReserved19BitKHR | ";
-    if (flag & BufferUsageFlagBits::eReserved20BitKHR) out += "eReserved20BitKHR | ";
-    if (flag & BufferUsageFlagBits::eReserved18BitQCOM) out += "eReserved18BitQCOM | ";
     if (flag & BufferUsageFlagBits::eShaderDeviceAddress) out += "eShaderDeviceAddress | ";
     return out.substr(0, out.size() - 3);
 };
@@ -2094,15 +2030,7 @@ const char * to_string(ImageUsageFlagBits val) {
         case(ImageUsageFlagBits::eDepthStencilAttachment): return "eDepthStencilAttachment";
         case(ImageUsageFlagBits::eTransientAttachment): return "eTransientAttachment";
         case(ImageUsageFlagBits::eInputAttachment): return "eInputAttachment";
-        case(ImageUsageFlagBits::eReserved13BitKHR): return "eReserved13BitKHR";
-        case(ImageUsageFlagBits::eReserved14BitKHR): return "eReserved14BitKHR";
-        case(ImageUsageFlagBits::eReserved15BitKHR): return "eReserved15BitKHR";
-        case(ImageUsageFlagBits::eReserved10BitKHR): return "eReserved10BitKHR";
-        case(ImageUsageFlagBits::eReserved11BitKHR): return "eReserved11BitKHR";
-        case(ImageUsageFlagBits::eReserved12BitKHR): return "eReserved12BitKHR";
         case(ImageUsageFlagBits::eShadingRateImageBitNV): return "eShadingRateImageBitNV";
-        case(ImageUsageFlagBits::eReserved16BitQCOM): return "eReserved16BitQCOM";
-        case(ImageUsageFlagBits::eReserved17BitQCOM): return "eReserved17BitQCOM";
         case(ImageUsageFlagBits::eFragmentDensityMapBitEXT): return "eFragmentDensityMapBitEXT";
         default: return "UNKNOWN";
     }
@@ -2118,15 +2046,7 @@ std::string to_string(ImageUsageFlags flag){
     if (flag & ImageUsageFlagBits::eDepthStencilAttachment) out += "eDepthStencilAttachment | ";
     if (flag & ImageUsageFlagBits::eTransientAttachment) out += "eTransientAttachment | ";
     if (flag & ImageUsageFlagBits::eInputAttachment) out += "eInputAttachment | ";
-    if (flag & ImageUsageFlagBits::eReserved13BitKHR) out += "eReserved13BitKHR | ";
-    if (flag & ImageUsageFlagBits::eReserved14BitKHR) out += "eReserved14BitKHR | ";
-    if (flag & ImageUsageFlagBits::eReserved15BitKHR) out += "eReserved15BitKHR | ";
-    if (flag & ImageUsageFlagBits::eReserved10BitKHR) out += "eReserved10BitKHR | ";
-    if (flag & ImageUsageFlagBits::eReserved11BitKHR) out += "eReserved11BitKHR | ";
-    if (flag & ImageUsageFlagBits::eReserved12BitKHR) out += "eReserved12BitKHR | ";
     if (flag & ImageUsageFlagBits::eShadingRateImageBitNV) out += "eShadingRateImageBitNV | ";
-    if (flag & ImageUsageFlagBits::eReserved16BitQCOM) out += "eReserved16BitQCOM | ";
-    if (flag & ImageUsageFlagBits::eReserved17BitQCOM) out += "eReserved17BitQCOM | ";
     if (flag & ImageUsageFlagBits::eFragmentDensityMapBitEXT) out += "eFragmentDensityMapBitEXT | ";
     return out.substr(0, out.size() - 3);
 };
@@ -2210,7 +2130,6 @@ const char * to_string(PipelineCreateFlagBits val) {
         case(PipelineCreateFlagBits::eRayTracingSkipTrianglesBitKHR): return "eRayTracingSkipTrianglesBitKHR";
         case(PipelineCreateFlagBits::eRayTracingSkipAabbsBitKHR): return "eRayTracingSkipAabbsBitKHR";
         case(PipelineCreateFlagBits::eDeferCompileBitNV): return "eDeferCompileBitNV";
-        case(PipelineCreateFlagBits::eReserved19BitKHR): return "eReserved19BitKHR";
         case(PipelineCreateFlagBits::eCaptureStatisticsBitKHR): return "eCaptureStatisticsBitKHR";
         case(PipelineCreateFlagBits::eCaptureInternalRepresentationsBitKHR): return "eCaptureInternalRepresentationsBitKHR";
         case(PipelineCreateFlagBits::eIndirectBindableBitNV): return "eIndirectBindableBitNV";
@@ -2235,7 +2154,6 @@ std::string to_string(PipelineCreateFlags flag){
     if (flag & PipelineCreateFlagBits::eRayTracingSkipTrianglesBitKHR) out += "eRayTracingSkipTrianglesBitKHR | ";
     if (flag & PipelineCreateFlagBits::eRayTracingSkipAabbsBitKHR) out += "eRayTracingSkipAabbsBitKHR | ";
     if (flag & PipelineCreateFlagBits::eDeferCompileBitNV) out += "eDeferCompileBitNV | ";
-    if (flag & PipelineCreateFlagBits::eReserved19BitKHR) out += "eReserved19BitKHR | ";
     if (flag & PipelineCreateFlagBits::eCaptureStatisticsBitKHR) out += "eCaptureStatisticsBitKHR | ";
     if (flag & PipelineCreateFlagBits::eCaptureInternalRepresentationsBitKHR) out += "eCaptureInternalRepresentationsBitKHR | ";
     if (flag & PipelineCreateFlagBits::eIndirectBindableBitNV) out += "eIndirectBindableBitNV | ";
@@ -2248,20 +2166,16 @@ std::string to_string(PipelineCreateFlags flag){
 };
 const char * to_string(PipelineShaderStageCreateFlagBits val) {
     switch(val) {
-        case(PipelineShaderStageCreateFlagBits::eReserved2BitNV): return "eReserved2BitNV";
         case(PipelineShaderStageCreateFlagBits::eAllowVaryingSubgroupSizeBitEXT): return "eAllowVaryingSubgroupSizeBitEXT";
         case(PipelineShaderStageCreateFlagBits::eRequireFullSubgroupsBitEXT): return "eRequireFullSubgroupsBitEXT";
-        case(PipelineShaderStageCreateFlagBits::eReserved3BitKHR): return "eReserved3BitKHR";
         default: return "UNKNOWN";
     }
 }
 std::string to_string(PipelineShaderStageCreateFlags flag){
     if (flag.flags == 0) return "None";
     std::string out;
-    if (flag & PipelineShaderStageCreateFlagBits::eReserved2BitNV) out += "eReserved2BitNV | ";
     if (flag & PipelineShaderStageCreateFlagBits::eAllowVaryingSubgroupSizeBitEXT) out += "eAllowVaryingSubgroupSizeBitEXT | ";
     if (flag & PipelineShaderStageCreateFlagBits::eRequireFullSubgroupsBitEXT) out += "eRequireFullSubgroupsBitEXT | ";
-    if (flag & PipelineShaderStageCreateFlagBits::eReserved3BitKHR) out += "eReserved3BitKHR | ";
     return out.substr(0, out.size() - 3);
 };
 const char * to_string(ColorComponentFlagBits val) {
@@ -2320,13 +2234,8 @@ const char * to_string(FormatFeatureFlagBits val) {
         case(FormatFeatureFlagBits::eBlitDst): return "eBlitDst";
         case(FormatFeatureFlagBits::eSampledImageFilterLinear): return "eSampledImageFilterLinear";
         case(FormatFeatureFlagBits::eSampledImageFilterCubicBitIMG): return "eSampledImageFilterCubicBitIMG";
-        case(FormatFeatureFlagBits::eReserved27BitKHR): return "eReserved27BitKHR";
-        case(FormatFeatureFlagBits::eReserved28BitKHR): return "eReserved28BitKHR";
-        case(FormatFeatureFlagBits::eReserved25BitKHR): return "eReserved25BitKHR";
-        case(FormatFeatureFlagBits::eReserved26BitKHR): return "eReserved26BitKHR";
         case(FormatFeatureFlagBits::eAccelerationStructureVertexBufferBitKHR): return "eAccelerationStructureVertexBufferBitKHR";
         case(FormatFeatureFlagBits::eFragmentDensityMapBitEXT): return "eFragmentDensityMapBitEXT";
-        case(FormatFeatureFlagBits::eAmdReserved30): return "eAmdReserved30";
         case(FormatFeatureFlagBits::eTransferSrc): return "eTransferSrc";
         case(FormatFeatureFlagBits::eTransferDst): return "eTransferDst";
         case(FormatFeatureFlagBits::eMidpointChromaSamples): return "eMidpointChromaSamples";
@@ -2357,13 +2266,8 @@ std::string to_string(FormatFeatureFlags flag){
     if (flag & FormatFeatureFlagBits::eBlitDst) out += "eBlitDst | ";
     if (flag & FormatFeatureFlagBits::eSampledImageFilterLinear) out += "eSampledImageFilterLinear | ";
     if (flag & FormatFeatureFlagBits::eSampledImageFilterCubicBitIMG) out += "eSampledImageFilterCubicBitIMG | ";
-    if (flag & FormatFeatureFlagBits::eReserved27BitKHR) out += "eReserved27BitKHR | ";
-    if (flag & FormatFeatureFlagBits::eReserved28BitKHR) out += "eReserved28BitKHR | ";
-    if (flag & FormatFeatureFlagBits::eReserved25BitKHR) out += "eReserved25BitKHR | ";
-    if (flag & FormatFeatureFlagBits::eReserved26BitKHR) out += "eReserved26BitKHR | ";
     if (flag & FormatFeatureFlagBits::eAccelerationStructureVertexBufferBitKHR) out += "eAccelerationStructureVertexBufferBitKHR | ";
     if (flag & FormatFeatureFlagBits::eFragmentDensityMapBitEXT) out += "eFragmentDensityMapBitEXT | ";
-    if (flag & FormatFeatureFlagBits::eAmdReserved30) out += "eAmdReserved30 | ";
     if (flag & FormatFeatureFlagBits::eTransferSrc) out += "eTransferSrc | ";
     if (flag & FormatFeatureFlagBits::eTransferDst) out += "eTransferDst | ";
     if (flag & FormatFeatureFlagBits::eMidpointChromaSamples) out += "eMidpointChromaSamples | ";
@@ -2533,8 +2437,6 @@ const char * to_string(PipelineStageFlagBits val) {
         case(PipelineStageFlagBits::eHost): return "eHost";
         case(PipelineStageFlagBits::eAllGraphics): return "eAllGraphics";
         case(PipelineStageFlagBits::eAllCommands): return "eAllCommands";
-        case(PipelineStageFlagBits::eReserved27BitKHR): return "eReserved27BitKHR";
-        case(PipelineStageFlagBits::eReserved26BitKHR): return "eReserved26BitKHR";
         case(PipelineStageFlagBits::eTransformFeedbackBitEXT): return "eTransformFeedbackBitEXT";
         case(PipelineStageFlagBits::eConditionalRenderingBitEXT): return "eConditionalRenderingBitEXT";
         case(PipelineStageFlagBits::eRayTracingShaderBitKHR): return "eRayTracingShaderBitKHR";
@@ -2567,8 +2469,6 @@ std::string to_string(PipelineStageFlags flag){
     if (flag & PipelineStageFlagBits::eHost) out += "eHost | ";
     if (flag & PipelineStageFlagBits::eAllGraphics) out += "eAllGraphics | ";
     if (flag & PipelineStageFlagBits::eAllCommands) out += "eAllCommands | ";
-    if (flag & PipelineStageFlagBits::eReserved27BitKHR) out += "eReserved27BitKHR | ";
-    if (flag & PipelineStageFlagBits::eReserved26BitKHR) out += "eReserved26BitKHR | ";
     if (flag & PipelineStageFlagBits::eTransformFeedbackBitEXT) out += "eTransformFeedbackBitEXT | ";
     if (flag & PipelineStageFlagBits::eConditionalRenderingBitEXT) out += "eConditionalRenderingBitEXT | ";
     if (flag & PipelineStageFlagBits::eRayTracingShaderBitKHR) out += "eRayTracingShaderBitKHR | ";
@@ -2776,20 +2676,6 @@ std::string to_string(SurfaceTransformFlagsKHR flag){
     if (flag & SurfaceTransformFlagBitsKHR::eInheritBitKHR) out += "eInheritBitKHR | ";
     return out.substr(0, out.size() - 3);
 };
-#if defined(VK_USE_PLATFORM_ANDROID_KHR)
-const char * to_string(SwapchainImageUsageFlagBitsANDROID val) {
-    switch(val) {
-        case(SwapchainImageUsageFlagBitsANDROID::eSharedBitANDROID): return "eSharedBitANDROID";
-        default: return "UNKNOWN";
-    }
-}
-std::string to_string(SwapchainImageUsageFlagsANDROID flag){
-    if (flag.flags == 0) return "None";
-    std::string out;
-    if (flag & SwapchainImageUsageFlagBitsANDROID::eSharedBitANDROID) out += "eSharedBitANDROID | ";
-    return out.substr(0, out.size() - 3);
-};
-#endif // VK_USE_PLATFORM_ANDROID_KHR
 const char * to_string(DebugReportFlagBitsEXT val) {
     switch(val) {
         case(DebugReportFlagBitsEXT::eInformationBitEXT): return "eInformationBitEXT";
@@ -3382,14 +3268,12 @@ std::string to_string(ShaderCorePropertiesFlagsAMD flag){
 };
 const char * to_string(ShaderModuleCreateFlagBits val) {
     switch(val) {
-        case(ShaderModuleCreateFlagBits::eReserved0BitNV): return "eReserved0BitNV";
         default: return "UNKNOWN";
     }
 }
 std::string to_string(ShaderModuleCreateFlags flag){
     if (flag.flags == 0) return "None";
     std::string out;
-    if (flag & ShaderModuleCreateFlagBits::eReserved0BitNV) out += "eReserved0BitNV | ";
     return out.substr(0, out.size() - 3);
 };
 const char * to_string(PipelineCompilerControlFlagBitsAMD val) {
