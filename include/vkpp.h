@@ -1212,14 +1212,14 @@ enum class CopyAccelerationStructureModeKHR : uint32_t {
     eSerializeKHR = 2,
     eDeserializeKHR = 3,
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using CopyAccelerationStructureModeNV = CopyAccelerationStructureModeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 enum class AccelerationStructureTypeKHR : uint32_t {
     eTopLevelKHR = 0,
     eBottomLevelKHR = 1,
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using AccelerationStructureTypeNV = AccelerationStructureTypeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 enum class GeometryTypeKHR : uint32_t {
@@ -1227,7 +1227,7 @@ enum class GeometryTypeKHR : uint32_t {
     eAabbsKHR = 1,
     eInstancesKHR = 1000150000,
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using GeometryTypeNV = GeometryTypeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 enum class RayTracingShaderGroupTypeKHR : uint32_t {
@@ -1235,7 +1235,7 @@ enum class RayTracingShaderGroupTypeKHR : uint32_t {
     eTrianglesHitGroupKHR = 1,
     eProceduralHitGroupKHR = 2,
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using RayTracingShaderGroupTypeNV = RayTracingShaderGroupTypeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 enum class AccelerationStructureMemoryRequirementsTypeKHR : uint32_t {
@@ -1243,7 +1243,7 @@ enum class AccelerationStructureMemoryRequirementsTypeKHR : uint32_t {
     eBuildScratchKHR = 1,
     eUpdateScratchKHR = 2,
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using AccelerationStructureMemoryRequirementsTypeNV = AccelerationStructureMemoryRequirementsTypeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 enum class AccelerationStructureBuildTypeKHR : uint32_t {
@@ -1251,7 +1251,7 @@ enum class AccelerationStructureBuildTypeKHR : uint32_t {
     eDeviceKHR = 1,
     eHostOrDeviceKHR = 2,
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 enum class MemoryOverallocationBehaviorAMD : uint32_t {
     eDefaultAMD = 0,
     eAllowedAMD = 1,
@@ -1468,7 +1468,7 @@ enum class FullScreenExclusiveEXT : uint32_t {
     eDisallowedEXT = 2,
     eApplicationControlledEXT = 3,
 };
-#endif // VK_USE_PLATFORM_WIN32_KHR
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 enum class ShaderFloatControlsIndependence : uint32_t {
     e32BitOnly = 0,
     eAll = 1,
@@ -2025,14 +2025,10 @@ enum class GeometryInstanceFlagBitsKHR: uint32_t {
     eForceOpaqueBitKHR = 4,
     eForceNoOpaqueBitKHR = 8,
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
 enum class GeometryFlagBitsKHR: uint32_t {
     eOpaqueBitKHR = 1,
     eNoDuplicateAnyHitInvocationBitKHR = 2,
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
 enum class BuildAccelerationStructureFlagBitsKHR: uint32_t {
     eAllowUpdateBitKHR = 1,
     eAllowCompactionBitKHR = 2,
@@ -2040,7 +2036,7 @@ enum class BuildAccelerationStructureFlagBitsKHR: uint32_t {
     ePreferFastBuildBitKHR = 8,
     eLowMemoryBitKHR = 16,
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 enum class FramebufferCreateFlagBits: uint32_t {
     eImageless = 1,
 };
@@ -2097,40 +2093,40 @@ enum class DisplayModeCreateFlagBitsKHR: uint32_t { };
 enum class DisplaySurfaceCreateFlagBitsKHR: uint32_t { };
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 enum class AndroidSurfaceCreateFlagBitsKHR: uint32_t { };
-#endif // VK_USE_PLATFORM_ANDROID_KHR
+#endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
 #if defined(VK_USE_PLATFORM_VI_NN)
 enum class ViSurfaceCreateFlagBitsNN: uint32_t { };
-#endif // VK_USE_PLATFORM_VI_NN
+#endif // defined(VK_USE_PLATFORM_VI_NN)
 #if defined(VK_USE_PLATFORM_WAYLAND_KHR)
 enum class WaylandSurfaceCreateFlagBitsKHR: uint32_t { };
-#endif // VK_USE_PLATFORM_WAYLAND_KHR
+#endif // defined(VK_USE_PLATFORM_WAYLAND_KHR)
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 enum class Win32SurfaceCreateFlagBitsKHR: uint32_t { };
-#endif // VK_USE_PLATFORM_WIN32_KHR
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 #if defined(VK_USE_PLATFORM_XLIB_KHR)
 enum class XlibSurfaceCreateFlagBitsKHR: uint32_t { };
-#endif // VK_USE_PLATFORM_XLIB_KHR
+#endif // defined(VK_USE_PLATFORM_XLIB_KHR)
 #if defined(VK_USE_PLATFORM_XCB_KHR)
 enum class XcbSurfaceCreateFlagBitsKHR: uint32_t { };
-#endif // VK_USE_PLATFORM_XCB_KHR
+#endif // defined(VK_USE_PLATFORM_XCB_KHR)
 #if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
 enum class DirectFBSurfaceCreateFlagBitsEXT: uint32_t { };
-#endif // VK_USE_PLATFORM_DIRECTFB_EXT
+#endif // defined(VK_USE_PLATFORM_DIRECTFB_EXT)
 #if defined(VK_USE_PLATFORM_IOS_MVK)
 enum class IOSSurfaceCreateFlagBitsMVK: uint32_t { };
-#endif // VK_USE_PLATFORM_IOS_MVK
+#endif // defined(VK_USE_PLATFORM_IOS_MVK)
 #if defined(VK_USE_PLATFORM_MACOS_MVK)
 enum class MacOSSurfaceCreateFlagBitsMVK: uint32_t { };
-#endif // VK_USE_PLATFORM_MACOS_MVK
+#endif // defined(VK_USE_PLATFORM_MACOS_MVK)
 #if defined(VK_USE_PLATFORM_METAL_EXT)
 enum class MetalSurfaceCreateFlagBitsEXT: uint32_t { };
-#endif // VK_USE_PLATFORM_METAL_EXT
+#endif // defined(VK_USE_PLATFORM_METAL_EXT)
 #if defined(VK_USE_PLATFORM_FUCHSIA)
 enum class ImagePipeSurfaceCreateFlagBitsFUCHSIA: uint32_t { };
-#endif // VK_USE_PLATFORM_FUCHSIA
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
 #if defined(VK_USE_PLATFORM_GGP)
 enum class StreamDescriptorSurfaceCreateFlagBitsGGP: uint32_t { };
-#endif // VK_USE_PLATFORM_GGP
+#endif // defined(VK_USE_PLATFORM_GGP)
 enum class HeadlessSurfaceCreateFlagBitsEXT: uint32_t { };
 enum class CommandPoolTrimFlagBits: uint32_t { };
 enum class PipelineViewportSwizzleStateCreateFlagBitsNV: uint32_t { };
@@ -2283,15 +2279,15 @@ DECLARE_ENUM_FLAG_OPERATORS(IndirectCommandsLayoutUsageFlagsNV, IndirectCommands
 DECLARE_ENUM_FLAG_OPERATORS(IndirectStateFlagsNV, IndirectStateFlagBitsNV, VkIndirectStateFlagsNV)
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 DECLARE_ENUM_FLAG_OPERATORS(GeometryFlagsKHR, GeometryFlagBitsKHR, VkGeometryFlagsKHR)
-#endif // VK_ENABLE_BETA_EXTENSIONS
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using GeometryFlagsNV = GeometryFlagsKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 DECLARE_ENUM_FLAG_OPERATORS(GeometryInstanceFlagsKHR, GeometryInstanceFlagBitsKHR, VkGeometryInstanceFlagsKHR)
-#endif // VK_ENABLE_BETA_EXTENSIONS
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using GeometryInstanceFlagsNV = GeometryInstanceFlagsKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 DECLARE_ENUM_FLAG_OPERATORS(BuildAccelerationStructureFlagsKHR, BuildAccelerationStructureFlagBitsKHR, VkBuildAccelerationStructureFlagsKHR)
-#endif // VK_ENABLE_BETA_EXTENSIONS
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using BuildAccelerationStructureFlagsNV = BuildAccelerationStructureFlagsKHR;
 DECLARE_ENUM_FLAG_OPERATORS(PrivateDataSlotCreateFlagsEXT, PrivateDataSlotCreateFlagBitsEXT, VkPrivateDataSlotCreateFlagsEXT)
 DECLARE_ENUM_FLAG_OPERATORS(DescriptorUpdateTemplateCreateFlags, DescriptorUpdateTemplateCreateFlagBits, VkDescriptorUpdateTemplateCreateFlags)
@@ -2312,40 +2308,40 @@ DECLARE_ENUM_FLAG_OPERATORS(DisplayModeCreateFlagsKHR, DisplayModeCreateFlagBits
 DECLARE_ENUM_FLAG_OPERATORS(DisplaySurfaceCreateFlagsKHR, DisplaySurfaceCreateFlagBitsKHR, VkDisplaySurfaceCreateFlagsKHR)
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 DECLARE_ENUM_FLAG_OPERATORS(AndroidSurfaceCreateFlagsKHR, AndroidSurfaceCreateFlagBitsKHR, VkAndroidSurfaceCreateFlagsKHR)
-#endif // VK_USE_PLATFORM_ANDROID_KHR
+#endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
 #if defined(VK_USE_PLATFORM_VI_NN)
 DECLARE_ENUM_FLAG_OPERATORS(ViSurfaceCreateFlagsNN, ViSurfaceCreateFlagBitsNN, VkViSurfaceCreateFlagsNN)
-#endif // VK_USE_PLATFORM_VI_NN
+#endif // defined(VK_USE_PLATFORM_VI_NN)
 #if defined(VK_USE_PLATFORM_WAYLAND_KHR)
 DECLARE_ENUM_FLAG_OPERATORS(WaylandSurfaceCreateFlagsKHR, WaylandSurfaceCreateFlagBitsKHR, VkWaylandSurfaceCreateFlagsKHR)
-#endif // VK_USE_PLATFORM_WAYLAND_KHR
+#endif // defined(VK_USE_PLATFORM_WAYLAND_KHR)
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 DECLARE_ENUM_FLAG_OPERATORS(Win32SurfaceCreateFlagsKHR, Win32SurfaceCreateFlagBitsKHR, VkWin32SurfaceCreateFlagsKHR)
-#endif // VK_USE_PLATFORM_WIN32_KHR
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 #if defined(VK_USE_PLATFORM_XLIB_KHR)
 DECLARE_ENUM_FLAG_OPERATORS(XlibSurfaceCreateFlagsKHR, XlibSurfaceCreateFlagBitsKHR, VkXlibSurfaceCreateFlagsKHR)
-#endif // VK_USE_PLATFORM_XLIB_KHR
+#endif // defined(VK_USE_PLATFORM_XLIB_KHR)
 #if defined(VK_USE_PLATFORM_XCB_KHR)
 DECLARE_ENUM_FLAG_OPERATORS(XcbSurfaceCreateFlagsKHR, XcbSurfaceCreateFlagBitsKHR, VkXcbSurfaceCreateFlagsKHR)
-#endif // VK_USE_PLATFORM_XCB_KHR
+#endif // defined(VK_USE_PLATFORM_XCB_KHR)
 #if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
 DECLARE_ENUM_FLAG_OPERATORS(DirectFBSurfaceCreateFlagsEXT, DirectFBSurfaceCreateFlagBitsEXT, VkDirectFBSurfaceCreateFlagsEXT)
-#endif // VK_USE_PLATFORM_DIRECTFB_EXT
+#endif // defined(VK_USE_PLATFORM_DIRECTFB_EXT)
 #if defined(VK_USE_PLATFORM_IOS_MVK)
 DECLARE_ENUM_FLAG_OPERATORS(IOSSurfaceCreateFlagsMVK, IOSSurfaceCreateFlagBitsMVK, VkIOSSurfaceCreateFlagsMVK)
-#endif // VK_USE_PLATFORM_IOS_MVK
+#endif // defined(VK_USE_PLATFORM_IOS_MVK)
 #if defined(VK_USE_PLATFORM_MACOS_MVK)
 DECLARE_ENUM_FLAG_OPERATORS(MacOSSurfaceCreateFlagsMVK, MacOSSurfaceCreateFlagBitsMVK, VkMacOSSurfaceCreateFlagsMVK)
-#endif // VK_USE_PLATFORM_MACOS_MVK
+#endif // defined(VK_USE_PLATFORM_MACOS_MVK)
 #if defined(VK_USE_PLATFORM_METAL_EXT)
 DECLARE_ENUM_FLAG_OPERATORS(MetalSurfaceCreateFlagsEXT, MetalSurfaceCreateFlagBitsEXT, VkMetalSurfaceCreateFlagsEXT)
-#endif // VK_USE_PLATFORM_METAL_EXT
+#endif // defined(VK_USE_PLATFORM_METAL_EXT)
 #if defined(VK_USE_PLATFORM_FUCHSIA)
 DECLARE_ENUM_FLAG_OPERATORS(ImagePipeSurfaceCreateFlagsFUCHSIA, ImagePipeSurfaceCreateFlagBitsFUCHSIA, VkImagePipeSurfaceCreateFlagsFUCHSIA)
-#endif // VK_USE_PLATFORM_FUCHSIA
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
 #if defined(VK_USE_PLATFORM_GGP)
 DECLARE_ENUM_FLAG_OPERATORS(StreamDescriptorSurfaceCreateFlagsGGP, StreamDescriptorSurfaceCreateFlagBitsGGP, VkStreamDescriptorSurfaceCreateFlagsGGP)
-#endif // VK_USE_PLATFORM_GGP
+#endif // defined(VK_USE_PLATFORM_GGP)
 DECLARE_ENUM_FLAG_OPERATORS(HeadlessSurfaceCreateFlagsEXT, HeadlessSurfaceCreateFlagBitsEXT, VkHeadlessSurfaceCreateFlagsEXT)
 DECLARE_ENUM_FLAG_OPERATORS(PeerMemoryFeatureFlags, PeerMemoryFeatureFlagBits, VkPeerMemoryFeatureFlags)
 using PeerMemoryFeatureFlagsKHR = PeerMemoryFeatureFlags;
@@ -4480,7 +4476,7 @@ struct AndroidSurfaceCreateInfoKHR {
         return *reinterpret_cast<VkAndroidSurfaceCreateInfoKHR*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_ANDROID_KHR
+#endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
 #if defined(VK_USE_PLATFORM_VI_NN)
 struct ViSurfaceCreateInfoNN {
     StructureType sType = StructureType::eViSurfaceCreateInfoNN;
@@ -4494,7 +4490,7 @@ struct ViSurfaceCreateInfoNN {
         return *reinterpret_cast<VkViSurfaceCreateInfoNN*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_VI_NN
+#endif // defined(VK_USE_PLATFORM_VI_NN)
 #if defined(VK_USE_PLATFORM_WAYLAND_KHR)
 struct WaylandSurfaceCreateInfoKHR {
     StructureType sType = StructureType::eWaylandSurfaceCreateInfoKHR;
@@ -4509,7 +4505,7 @@ struct WaylandSurfaceCreateInfoKHR {
         return *reinterpret_cast<VkWaylandSurfaceCreateInfoKHR*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_WAYLAND_KHR
+#endif // defined(VK_USE_PLATFORM_WAYLAND_KHR)
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct Win32SurfaceCreateInfoKHR {
     StructureType sType = StructureType::eWin32SurfaceCreateInfoKHR;
@@ -4524,7 +4520,7 @@ struct Win32SurfaceCreateInfoKHR {
         return *reinterpret_cast<VkWin32SurfaceCreateInfoKHR*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_WIN32_KHR
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 #if defined(VK_USE_PLATFORM_XLIB_KHR)
 struct XlibSurfaceCreateInfoKHR {
     StructureType sType = StructureType::eXlibSurfaceCreateInfoKHR;
@@ -4539,7 +4535,7 @@ struct XlibSurfaceCreateInfoKHR {
         return *reinterpret_cast<VkXlibSurfaceCreateInfoKHR*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_XLIB_KHR
+#endif // defined(VK_USE_PLATFORM_XLIB_KHR)
 #if defined(VK_USE_PLATFORM_XCB_KHR)
 struct XcbSurfaceCreateInfoKHR {
     StructureType sType = StructureType::eXcbSurfaceCreateInfoKHR;
@@ -4554,7 +4550,7 @@ struct XcbSurfaceCreateInfoKHR {
         return *reinterpret_cast<VkXcbSurfaceCreateInfoKHR*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_XCB_KHR
+#endif // defined(VK_USE_PLATFORM_XCB_KHR)
 #if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
 struct DirectFBSurfaceCreateInfoEXT {
     StructureType sType = StructureType::eDirectfbSurfaceCreateInfoEXT;
@@ -4569,7 +4565,7 @@ struct DirectFBSurfaceCreateInfoEXT {
         return *reinterpret_cast<VkDirectFBSurfaceCreateInfoEXT*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_DIRECTFB_EXT
+#endif // defined(VK_USE_PLATFORM_DIRECTFB_EXT)
 #if defined(VK_USE_PLATFORM_FUCHSIA)
 struct ImagePipeSurfaceCreateInfoFUCHSIA {
     StructureType sType = StructureType::eImagepipeSurfaceCreateInfoFUCHSIA;
@@ -4583,7 +4579,7 @@ struct ImagePipeSurfaceCreateInfoFUCHSIA {
         return *reinterpret_cast<VkImagePipeSurfaceCreateInfoFUCHSIA*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_FUCHSIA
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
 #if defined(VK_USE_PLATFORM_GGP)
 struct StreamDescriptorSurfaceCreateInfoGGP {
     StructureType sType = StructureType::eStreamDescriptorSurfaceCreateInfoGGP;
@@ -4597,7 +4593,7 @@ struct StreamDescriptorSurfaceCreateInfoGGP {
         return *reinterpret_cast<VkStreamDescriptorSurfaceCreateInfoGGP*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_GGP
+#endif // defined(VK_USE_PLATFORM_GGP)
 struct SurfaceFormatKHR {
     Format format = static_cast<Format>(0);
     ColorSpaceKHR colorSpace = static_cast<ColorSpaceKHR>(0);
@@ -4823,8 +4819,6 @@ struct ImportMemoryWin32HandleInfoNV {
         return *reinterpret_cast<VkImportMemoryWin32HandleInfoNV*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_WIN32_KHR
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ExportMemoryWin32HandleInfoNV {
     StructureType sType = StructureType::eExportMemoryWin32HandleInfoNV;
     const void* pNext = nullptr;
@@ -4837,8 +4831,6 @@ struct ExportMemoryWin32HandleInfoNV {
         return *reinterpret_cast<VkExportMemoryWin32HandleInfoNV*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_WIN32_KHR
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct Win32KeyedMutexAcquireReleaseInfoNV {
     StructureType sType = StructureType::eWin32KeyedMutexAcquireReleaseInfoNV;
     const void* pNext = nullptr;
@@ -4856,7 +4848,7 @@ struct Win32KeyedMutexAcquireReleaseInfoNV {
         return *reinterpret_cast<VkWin32KeyedMutexAcquireReleaseInfoNV*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_WIN32_KHR
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 struct PhysicalDeviceDeviceGeneratedCommandsFeaturesNV {
     StructureType sType = StructureType::ePhysicalDeviceDeviceGeneratedCommandsFeaturesNV;
     void* pNext = nullptr;
@@ -5412,8 +5404,6 @@ struct ImportMemoryWin32HandleInfoKHR {
         return *reinterpret_cast<VkImportMemoryWin32HandleInfoKHR*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_WIN32_KHR
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ExportMemoryWin32HandleInfoKHR {
     StructureType sType = StructureType::eExportMemoryWin32HandleInfoKHR;
     const void* pNext = nullptr;
@@ -5427,8 +5417,6 @@ struct ExportMemoryWin32HandleInfoKHR {
         return *reinterpret_cast<VkExportMemoryWin32HandleInfoKHR*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_WIN32_KHR
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct MemoryWin32HandlePropertiesKHR {
     StructureType sType = StructureType::eMemoryWin32HandlePropertiesKHR;
     void* pNext = nullptr;
@@ -5440,8 +5428,6 @@ struct MemoryWin32HandlePropertiesKHR {
         return *reinterpret_cast<VkMemoryWin32HandlePropertiesKHR*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_WIN32_KHR
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct MemoryGetWin32HandleInfoKHR {
     StructureType sType = StructureType::eMemoryGetWin32HandleInfoKHR;
     const void* pNext = nullptr;
@@ -5454,7 +5440,7 @@ struct MemoryGetWin32HandleInfoKHR {
         return *reinterpret_cast<VkMemoryGetWin32HandleInfoKHR*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_WIN32_KHR
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ImportMemoryFdInfoKHR {
     StructureType sType = StructureType::eImportMemoryFdInfoKHR;
     const void* pNext = nullptr;
@@ -5508,7 +5494,7 @@ struct Win32KeyedMutexAcquireReleaseInfoKHR {
         return *reinterpret_cast<VkWin32KeyedMutexAcquireReleaseInfoKHR*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_WIN32_KHR
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 struct PhysicalDeviceExternalSemaphoreInfo {
     StructureType sType = StructureType::ePhysicalDeviceExternalSemaphoreInfo;
     const void* pNext = nullptr;
@@ -5563,8 +5549,6 @@ struct ImportSemaphoreWin32HandleInfoKHR {
         return *reinterpret_cast<VkImportSemaphoreWin32HandleInfoKHR*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_WIN32_KHR
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ExportSemaphoreWin32HandleInfoKHR {
     StructureType sType = StructureType::eExportSemaphoreWin32HandleInfoKHR;
     const void* pNext = nullptr;
@@ -5578,8 +5562,6 @@ struct ExportSemaphoreWin32HandleInfoKHR {
         return *reinterpret_cast<VkExportSemaphoreWin32HandleInfoKHR*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_WIN32_KHR
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct D3D12FenceSubmitInfoKHR {
     StructureType sType = StructureType::eD3D12FenceSubmitInfoKHR;
     const void* pNext = nullptr;
@@ -5594,8 +5576,6 @@ struct D3D12FenceSubmitInfoKHR {
         return *reinterpret_cast<VkD3D12FenceSubmitInfoKHR*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_WIN32_KHR
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct SemaphoreGetWin32HandleInfoKHR {
     StructureType sType = StructureType::eSemaphoreGetWin32HandleInfoKHR;
     const void* pNext = nullptr;
@@ -5608,7 +5588,7 @@ struct SemaphoreGetWin32HandleInfoKHR {
         return *reinterpret_cast<VkSemaphoreGetWin32HandleInfoKHR*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_WIN32_KHR
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ImportSemaphoreFdInfoKHR {
     StructureType sType = StructureType::eImportSemaphoreFdInfoKHR;
     const void* pNext = nullptr;
@@ -5689,8 +5669,6 @@ struct ImportFenceWin32HandleInfoKHR {
         return *reinterpret_cast<VkImportFenceWin32HandleInfoKHR*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_WIN32_KHR
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ExportFenceWin32HandleInfoKHR {
     StructureType sType = StructureType::eExportFenceWin32HandleInfoKHR;
     const void* pNext = nullptr;
@@ -5704,8 +5682,6 @@ struct ExportFenceWin32HandleInfoKHR {
         return *reinterpret_cast<VkExportFenceWin32HandleInfoKHR*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_WIN32_KHR
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct FenceGetWin32HandleInfoKHR {
     StructureType sType = StructureType::eFenceGetWin32HandleInfoKHR;
     const void* pNext = nullptr;
@@ -5718,7 +5694,7 @@ struct FenceGetWin32HandleInfoKHR {
         return *reinterpret_cast<VkFenceGetWin32HandleInfoKHR*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_WIN32_KHR
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ImportFenceFdInfoKHR {
     StructureType sType = StructureType::eImportFenceFdInfoKHR;
     const void* pNext = nullptr;
@@ -6226,7 +6202,7 @@ struct IOSSurfaceCreateInfoMVK {
         return *reinterpret_cast<VkIOSSurfaceCreateInfoMVK*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_IOS_MVK
+#endif // defined(VK_USE_PLATFORM_IOS_MVK)
 #if defined(VK_USE_PLATFORM_MACOS_MVK)
 struct MacOSSurfaceCreateInfoMVK {
     StructureType sType = StructureType::eMacosSurfaceCreateInfoMVK;
@@ -6240,7 +6216,7 @@ struct MacOSSurfaceCreateInfoMVK {
         return *reinterpret_cast<VkMacOSSurfaceCreateInfoMVK*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_MACOS_MVK
+#endif // defined(VK_USE_PLATFORM_MACOS_MVK)
 #if defined(VK_USE_PLATFORM_METAL_EXT)
 struct MetalSurfaceCreateInfoEXT {
     StructureType sType = StructureType::eMetalSurfaceCreateInfoEXT;
@@ -6254,7 +6230,7 @@ struct MetalSurfaceCreateInfoEXT {
         return *reinterpret_cast<VkMetalSurfaceCreateInfoEXT*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_METAL_EXT
+#endif // defined(VK_USE_PLATFORM_METAL_EXT)
 struct ViewportWScalingNV {
     float xcoeff = 0.f;
     float ycoeff = 0.f;
@@ -7737,8 +7713,6 @@ struct ImportAndroidHardwareBufferInfoANDROID {
         return *reinterpret_cast<VkImportAndroidHardwareBufferInfoANDROID*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_ANDROID_KHR
-#if defined(VK_USE_PLATFORM_ANDROID_KHR)
 struct AndroidHardwareBufferUsageANDROID {
     StructureType sType = StructureType::eAndroidHardwareBufferUsageANDROID;
     void* pNext = nullptr;
@@ -7750,8 +7724,6 @@ struct AndroidHardwareBufferUsageANDROID {
         return *reinterpret_cast<VkAndroidHardwareBufferUsageANDROID*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_ANDROID_KHR
-#if defined(VK_USE_PLATFORM_ANDROID_KHR)
 struct AndroidHardwareBufferPropertiesANDROID {
     StructureType sType = StructureType::eAndroidHardwareBufferPropertiesANDROID;
     void* pNext = nullptr;
@@ -7764,8 +7736,6 @@ struct AndroidHardwareBufferPropertiesANDROID {
         return *reinterpret_cast<VkAndroidHardwareBufferPropertiesANDROID*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_ANDROID_KHR
-#if defined(VK_USE_PLATFORM_ANDROID_KHR)
 struct MemoryGetAndroidHardwareBufferInfoANDROID {
     StructureType sType = StructureType::eMemoryGetAndroidHardwareBufferInfoANDROID;
     const void* pNext = nullptr;
@@ -7777,8 +7747,6 @@ struct MemoryGetAndroidHardwareBufferInfoANDROID {
         return *reinterpret_cast<VkMemoryGetAndroidHardwareBufferInfoANDROID*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_ANDROID_KHR
-#if defined(VK_USE_PLATFORM_ANDROID_KHR)
 struct AndroidHardwareBufferFormatPropertiesANDROID {
     StructureType sType = StructureType::eAndroidHardwareBufferFormatPropertiesANDROID;
     void* pNext = nullptr;
@@ -7797,7 +7765,7 @@ struct AndroidHardwareBufferFormatPropertiesANDROID {
         return *reinterpret_cast<VkAndroidHardwareBufferFormatPropertiesANDROID*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_ANDROID_KHR
+#endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
 struct CommandBufferInheritanceConditionalRenderingInfoEXT {
     StructureType sType = StructureType::eCommandBufferInheritanceConditionalRenderingInfoEXT;
     const void* pNext = nullptr;
@@ -7821,7 +7789,7 @@ struct ExternalFormatANDROID {
         return *reinterpret_cast<VkExternalFormatANDROID*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_ANDROID_KHR
+#endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
 struct PhysicalDevice8BitStorageFeatures {
     StructureType sType = StructureType::ePhysicalDevice8BitStorageFeatures;
     void* pNext = nullptr;
@@ -8291,7 +8259,7 @@ struct RayTracingShaderGroupCreateInfoKHR {
         return *reinterpret_cast<VkRayTracingShaderGroupCreateInfoKHR*>(this);
     }
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 struct RayTracingPipelineCreateInfoNV {
     StructureType sType = StructureType::eRayTracingPipelineCreateInfoNV;
     const void* pNext = nullptr;
@@ -8325,8 +8293,6 @@ struct RayTracingPipelineInterfaceCreateInfoKHR {
         return *reinterpret_cast<VkRayTracingPipelineInterfaceCreateInfoKHR*>(this);
     }
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct PipelineLibraryCreateInfoKHR {
     StructureType sType = StructureType::ePipelineLibraryCreateInfoKHR;
     const void* pNext = nullptr;
@@ -8339,8 +8305,6 @@ struct PipelineLibraryCreateInfoKHR {
         return *reinterpret_cast<VkPipelineLibraryCreateInfoKHR*>(this);
     }
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct RayTracingPipelineCreateInfoKHR {
     StructureType sType = StructureType::eRayTracingPipelineCreateInfoKHR;
     const void* pNext = nullptr;
@@ -8362,7 +8326,7 @@ struct RayTracingPipelineCreateInfoKHR {
         return *reinterpret_cast<VkRayTracingPipelineCreateInfoKHR*>(this);
     }
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 struct GeometryTrianglesNV {
     StructureType sType = StructureType::eGeometryTrianglesNV;
     const void* pNext = nullptr;
@@ -8464,7 +8428,7 @@ struct BindAccelerationStructureMemoryInfoKHR {
         return *reinterpret_cast<VkBindAccelerationStructureMemoryInfoKHR*>(this);
     }
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using BindAccelerationStructureMemoryInfoNV = BindAccelerationStructureMemoryInfoKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct WriteDescriptorSetAccelerationStructureKHR {
@@ -8479,7 +8443,7 @@ struct WriteDescriptorSetAccelerationStructureKHR {
         return *reinterpret_cast<VkWriteDescriptorSetAccelerationStructureKHR*>(this);
     }
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using WriteDescriptorSetAccelerationStructureNV = WriteDescriptorSetAccelerationStructureKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureMemoryRequirementsInfoKHR {
@@ -8495,7 +8459,7 @@ struct AccelerationStructureMemoryRequirementsInfoKHR {
         return *reinterpret_cast<VkAccelerationStructureMemoryRequirementsInfoKHR*>(this);
     }
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureMemoryRequirementsInfoNV {
     StructureType sType = StructureType::eAccelerationStructureMemoryRequirementsInfoNV;
     const void* pNext = nullptr;
@@ -8528,8 +8492,6 @@ struct PhysicalDeviceRayTracingFeaturesKHR {
         return *reinterpret_cast<VkPhysicalDeviceRayTracingFeaturesKHR*>(this);
     }
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct PhysicalDeviceRayTracingPropertiesKHR {
     StructureType sType = StructureType::ePhysicalDeviceRayTracingPropertiesKHR;
     void* pNext = nullptr;
@@ -8549,7 +8511,7 @@ struct PhysicalDeviceRayTracingPropertiesKHR {
         return *reinterpret_cast<VkPhysicalDeviceRayTracingPropertiesKHR*>(this);
     }
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 struct PhysicalDeviceRayTracingPropertiesNV {
     StructureType sType = StructureType::ePhysicalDeviceRayTracingPropertiesNV;
     void* pNext = nullptr;
@@ -8581,8 +8543,6 @@ struct StridedBufferRegionKHR {
         return *reinterpret_cast<VkStridedBufferRegionKHR*>(this);
     }
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct TraceRaysIndirectCommandKHR {
     uint32_t width = 0;
     uint32_t height = 0;
@@ -8595,7 +8555,7 @@ struct TraceRaysIndirectCommandKHR {
         return *reinterpret_cast<VkTraceRaysIndirectCommandKHR*>(this);
     }
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 struct DrmFormatModifierPropertiesEXT {
     uint64_t drmFormatModifier = 0;
     uint32_t drmFormatModifierPlaneCount = 0;
@@ -9090,7 +9050,7 @@ struct PresentFrameTokenGGP {
         return *reinterpret_cast<VkPresentFrameTokenGGP*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_GGP
+#endif // defined(VK_USE_PLATFORM_GGP)
 struct PipelineCreationFeedbackEXT {
     PipelineCreationFeedbackFlagsEXT flags;
     uint64_t duration = 0;
@@ -9127,8 +9087,6 @@ struct SurfaceFullScreenExclusiveInfoEXT {
         return *reinterpret_cast<VkSurfaceFullScreenExclusiveInfoEXT*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_WIN32_KHR
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct SurfaceFullScreenExclusiveWin32InfoEXT {
     StructureType sType = StructureType::eSurfaceFullScreenExclusiveWin32InfoEXT;
     const void* pNext = nullptr;
@@ -9140,8 +9098,6 @@ struct SurfaceFullScreenExclusiveWin32InfoEXT {
         return *reinterpret_cast<VkSurfaceFullScreenExclusiveWin32InfoEXT*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_WIN32_KHR
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct SurfaceCapabilitiesFullScreenExclusiveEXT {
     StructureType sType = StructureType::eSurfaceCapabilitiesFullScreenExclusiveEXT;
     void* pNext = nullptr;
@@ -9153,7 +9109,7 @@ struct SurfaceCapabilitiesFullScreenExclusiveEXT {
         return *reinterpret_cast<VkSurfaceCapabilitiesFullScreenExclusiveEXT*>(this);
     }
 };
-#endif // VK_USE_PLATFORM_WIN32_KHR
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 struct PhysicalDevicePerformanceQueryFeaturesKHR {
     StructureType sType = StructureType::ePhysicalDevicePerformanceQueryFeaturesKHR;
     void* pNext = nullptr;
@@ -9969,14 +9925,10 @@ union DeviceOrHostAddressKHR {
     DeviceAddress deviceAddress;
     void* hostAddress;
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
 union DeviceOrHostAddressConstKHR {
     DeviceAddress deviceAddress;
     const void* hostAddress;
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureGeometryTrianglesDataKHR {
     StructureType sType = StructureType::eAccelerationStructureGeometryTrianglesDataKHR;
     const void* pNext = nullptr;
@@ -9993,8 +9945,6 @@ struct AccelerationStructureGeometryTrianglesDataKHR {
         return *reinterpret_cast<VkAccelerationStructureGeometryTrianglesDataKHR*>(this);
     }
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureGeometryAabbsDataKHR {
     StructureType sType = StructureType::eAccelerationStructureGeometryAabbsDataKHR;
     const void* pNext = nullptr;
@@ -10007,8 +9957,6 @@ struct AccelerationStructureGeometryAabbsDataKHR {
         return *reinterpret_cast<VkAccelerationStructureGeometryAabbsDataKHR*>(this);
     }
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureGeometryInstancesDataKHR {
     StructureType sType = StructureType::eAccelerationStructureGeometryInstancesDataKHR;
     const void* pNext = nullptr;
@@ -10021,15 +9969,11 @@ struct AccelerationStructureGeometryInstancesDataKHR {
         return *reinterpret_cast<VkAccelerationStructureGeometryInstancesDataKHR*>(this);
     }
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
 union AccelerationStructureGeometryDataKHR {
     AccelerationStructureGeometryTrianglesDataKHR triangles;
     AccelerationStructureGeometryAabbsDataKHR aabbs;
     AccelerationStructureGeometryInstancesDataKHR instances;
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureGeometryKHR {
     StructureType sType = StructureType::eAccelerationStructureGeometryKHR;
     const void* pNext = nullptr;
@@ -10043,8 +9987,6 @@ struct AccelerationStructureGeometryKHR {
         return *reinterpret_cast<VkAccelerationStructureGeometryKHR*>(this);
     }
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureBuildGeometryInfoKHR {
     StructureType sType = StructureType::eAccelerationStructureBuildGeometryInfoKHR;
     const void* pNext = nullptr;
@@ -10064,8 +10006,6 @@ struct AccelerationStructureBuildGeometryInfoKHR {
         return *reinterpret_cast<VkAccelerationStructureBuildGeometryInfoKHR*>(this);
     }
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureBuildOffsetInfoKHR {
     uint32_t primitiveCount = 0;
     uint32_t primitiveOffset = 0;
@@ -10079,8 +10019,6 @@ struct AccelerationStructureBuildOffsetInfoKHR {
         return *reinterpret_cast<VkAccelerationStructureBuildOffsetInfoKHR*>(this);
     }
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureCreateGeometryTypeInfoKHR {
     StructureType sType = StructureType::eAccelerationStructureCreateGeometryTypeInfoKHR;
     const void* pNext = nullptr;
@@ -10097,8 +10035,6 @@ struct AccelerationStructureCreateGeometryTypeInfoKHR {
         return *reinterpret_cast<VkAccelerationStructureCreateGeometryTypeInfoKHR*>(this);
     }
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureCreateInfoKHR {
     StructureType sType = StructureType::eAccelerationStructureCreateInfoKHR;
     const void* pNext = nullptr;
@@ -10115,8 +10051,6 @@ struct AccelerationStructureCreateInfoKHR {
         return *reinterpret_cast<VkAccelerationStructureCreateInfoKHR*>(this);
     }
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AabbPositionsKHR {
     float minX = 0.f;
     float minY = 0.f;
@@ -10132,7 +10066,7 @@ struct AabbPositionsKHR {
         return *reinterpret_cast<VkAabbPositionsKHR*>(this);
     }
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using AabbPositionsNV = AabbPositionsKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct TransformMatrixKHR {
@@ -10145,7 +10079,7 @@ struct TransformMatrixKHR {
         return *reinterpret_cast<VkTransformMatrixKHR*>(this);
     }
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using TransformMatrixNV = TransformMatrixKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureInstanceKHR {
@@ -10163,7 +10097,7 @@ struct AccelerationStructureInstanceKHR {
         return *reinterpret_cast<VkAccelerationStructureInstanceKHR*>(this);
     }
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using AccelerationStructureInstanceNV = AccelerationStructureInstanceKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureDeviceAddressInfoKHR {
@@ -10177,8 +10111,6 @@ struct AccelerationStructureDeviceAddressInfoKHR {
         return *reinterpret_cast<VkAccelerationStructureDeviceAddressInfoKHR*>(this);
     }
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureVersionKHR {
     StructureType sType = StructureType::eAccelerationStructureVersionKHR;
     const void* pNext = nullptr;
@@ -10190,8 +10122,6 @@ struct AccelerationStructureVersionKHR {
         return *reinterpret_cast<VkAccelerationStructureVersionKHR*>(this);
     }
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct CopyAccelerationStructureInfoKHR {
     StructureType sType = StructureType::eCopyAccelerationStructureInfoKHR;
     const void* pNext = nullptr;
@@ -10205,8 +10135,6 @@ struct CopyAccelerationStructureInfoKHR {
         return *reinterpret_cast<VkCopyAccelerationStructureInfoKHR*>(this);
     }
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct CopyAccelerationStructureToMemoryInfoKHR {
     StructureType sType = StructureType::eCopyAccelerationStructureToMemoryInfoKHR;
     const void* pNext = nullptr;
@@ -10220,8 +10148,6 @@ struct CopyAccelerationStructureToMemoryInfoKHR {
         return *reinterpret_cast<VkCopyAccelerationStructureToMemoryInfoKHR*>(this);
     }
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct CopyMemoryToAccelerationStructureInfoKHR {
     StructureType sType = StructureType::eCopyMemoryToAccelerationStructureInfoKHR;
     const void* pNext = nullptr;
@@ -10235,8 +10161,6 @@ struct CopyMemoryToAccelerationStructureInfoKHR {
         return *reinterpret_cast<VkCopyMemoryToAccelerationStructureInfoKHR*>(this);
     }
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct DeferredOperationInfoKHR {
     StructureType sType = StructureType::eDeferredOperationInfoKHR;
     const void* pNext = nullptr;
@@ -10248,7 +10172,7 @@ struct DeferredOperationInfoKHR {
         return *reinterpret_cast<VkDeferredOperationInfoKHR*>(this);
     }
 };
-#endif // VK_ENABLE_BETA_EXTENSIONS
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 struct PhysicalDeviceExtendedDynamicStateFeaturesEXT {
     StructureType sType = StructureType::ePhysicalDeviceExtendedDynamicStateFeaturesEXT;
     void* pNext = nullptr;

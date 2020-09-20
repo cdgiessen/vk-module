@@ -139,7 +139,6 @@ class Enum:
             self.platform = platform
 
     def print(self, file):
-        PlatformGuardHeader(file, self.platform)
         if self.alias is not None:
             file.write(f'using {self.name[2:]} = {self.alias[2:]};\n')
         else: 
@@ -147,7 +146,6 @@ class Enum:
             for name, value in self.values.items():
                 file.write(f'    e{MorphVkEnumName(name, self.enum_name_len)} = {str(value)},\n')
             file.write('};\n')
-        PlatformGuardFooter(file, self.platform)
     
     def print_string(self, file):
         if self.alias is None:
@@ -193,7 +191,6 @@ class Bitmask:
             self.platform = platform
 
     def print(self, file):
-        PlatformGuardHeader(file, self.platform)
         if self.alias is not None:
             file.write(f'using {self.name} = {self.alias[2:]};\n')
         else:
@@ -201,7 +198,6 @@ class Bitmask:
             for bitpos, name in self.values.items():
                 file.write(f"    e{MorphVkBitaskName(name, self.bitmask_name_len)} = {bitpos},\n")
             file.write('};\n')
-        PlatformGuardFooter(file, self.platform)
 
     def print_string(self, file):
         if self.alias is None:
@@ -245,9 +241,7 @@ class EmptyBitmask:
             self.platform = platform
     
     def print(self, file):
-        PlatformGuardHeader(file, self.platform)
         file.write(f'enum class {self.name[2:]}: uint32_t {{ }};\n')
-        PlatformGuardFooter(file, self.platform)
 
     def print_string(self, file):
         PlatformGuardHeader(file, self.platform)
@@ -359,12 +353,10 @@ class Flags:
             self.platform = platform
 
     def print(self, file):
-        PlatformGuardHeader(file, self.platform)
         if self.alias is None:
             file.write(f'DECLARE_ENUM_FLAG_OPERATORS({self.name[2:]}, {self.flags_name[2:]}, {self.name})\n')
         else:
             file.write(f'using {self.name[2:]} = {self.alias[2:]};\n')
-        PlatformGuardFooter(file, self.platform)
 
 class ApiConstant:
     def __init__(self, node):
@@ -398,7 +390,6 @@ class Handle:
             self.platform = platform
 
     def print(self, file):
-        PlatformGuardHeader(file, self.platform)
         if self.alias is not None:
             file.write(f'using {self.name[2:]} = {self.alias[2:]};\n')
         elif self.dispatchable:
@@ -417,7 +408,6 @@ class Handle:
             file.write(f'    explicit operator bool() const {{return handle != VK_NULL_HANDLE;}};\n')
             file.write(f'    bool operator!() {{ return handle == VK_NULL_HANDLE; }}\n')
             file.write('};\n')
-        PlatformGuardFooter(file, self.platform)
     
     def print_static_asserts(self, file):
         if self.alias is None:
@@ -607,7 +597,6 @@ class Union:
             self.platform = platform
 
     def print(self, file):
-        PlatformGuardHeader(file, self.platform)
         file.write('union ' + self.name[2:] + ' {\n')
         for member in self.members:
             member.print_struct_decl(file, False)
@@ -633,7 +622,6 @@ class Union:
                     file.write(f'{member.name} == value.{member.name} ')
             file.write(';}\n')
         file.write('};\n')
-        PlatformGuardFooter(file, self.platform)
     
     def print_static_asserts(self, file):
         file.write('') # no checks yet
@@ -661,7 +649,6 @@ class Struct:
             self.platform = platform
 
     def print(self, file):
-        PlatformGuardHeader(file, self.platform)
         if self.alias is not None:
             file.write(f'using {self.name[2:]} = {self.alias[2:]};\n')
         else:
@@ -676,7 +663,6 @@ class Struct:
             file.write(f'    operator {self.name} &() noexcept {{\n')
             file.write(f'        return *reinterpret_cast<{self.name}*>(this);\n    }}\n')
             file.write('};\n')
-        PlatformGuardFooter(file, self.platform)
         
     def print_static_asserts(self, file):
         PlatformGuardHeader(file, self.platform)
@@ -1037,6 +1023,20 @@ class DispatchableHandleDispatchTable:
         if prev_platform is not None:
             file.write(f'#endif // defined({prev_platform})\n')
         file.write('};\n')
+
+def PrintConsecutivePlatforms(file, in_list):
+    prev_platform = None
+    for item in in_list:
+        if prev_platform != item.platform:
+            if prev_platform is not None:
+                file.write(f'#endif // defined({prev_platform})\n')
+            if item.platform is not None:
+                file.write(f'#if defined({item.platform})\n')
+        prev_platform = item.platform
+        item.print(file)
+    if prev_platform is not None:
+        file.write(f'#endif // defined({prev_platform})\n')
+        
 class BindingGenerator:
     def __init__(self, root):
 
@@ -1201,12 +1201,12 @@ class BindingGenerator:
     def print(self, file):
         [ constant.print(file) for constant in self.api_constants.values() ]
         [ base_type.print(file) for base_type in self.base_types ]
-        [ enum.print(file) for enum in self.enum_dict.values()]
-        [ bitmask.print(file) for bitmask in self.bitmask_dict.values()]
+        PrintConsecutivePlatforms(file, self.enum_dict.values())
+        PrintConsecutivePlatforms(file, self.bitmask_dict.values())
         file.write(bitmask_flags_macro + '\n')
-        [ flag.print(file) for flag in self.flags_dict.values() ]
-        [ handle.print(file) for handle in self.handles.values() ]
-        [ struct_or_union.print(file) for struct_or_union in self.struct_union_list ]
+        PrintConsecutivePlatforms(file, self.flags_dict.values())
+        PrintConsecutivePlatforms(file, self.handles.values())
+        PrintConsecutivePlatforms(file, self.struct_union_list)
         [ dispatch_table.print(file) for dispatch_table in self.dispatch_tables ]
         [ table.print(file) for table in self.dispatchable_handle_tables ]
  
