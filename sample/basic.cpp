@@ -25,11 +25,11 @@ int main() {
     else
         std::cout << "shouldn't print this\n";
 
-    vk::InstanceFunctions inst_funcs(vkGetInstanceProcAddr, inst);
-
-    inst_funcs.EnumeratePhysicalDevices(inst, &count, nullptr);
+    vk::InstanceFunctions inst_functions(vkGetInstanceProcAddr, inst);
+    vk::InstanceDispatchTable inst_funcs(inst, inst_functions);
+    inst_funcs.EnumeratePhysicalDevices(&count, nullptr);
     std::vector<vk::PhysicalDevice> phys_devices(count);
-    inst_funcs.EnumeratePhysicalDevices(inst, &count, phys_devices.data());
+    inst_funcs.EnumeratePhysicalDevices(&count, phys_devices.data());
     if (count == 0)
         return -100;
 
@@ -64,9 +64,10 @@ int main() {
 
     vk::ImageCreateFlags img_flags = vk::ImageCreateFlagBits::eSparseBinding;
 
-    inst_funcs.GetPhysicalDeviceImageFormatProperties(phys_dev, vk::Format::eUndefined, vk::ImageType::e1D,
-                                                      vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eTransferDst, img_flags,
-                                                      &image_props);
+    vk::PhysicalDeviceDispatchTable phys_dev_funcs(phys_dev, inst_functions);
+
+    phys_dev_funcs.GetImageFormatProperties(vk::Format::eUndefined, vk::ImageType::e1D, vk::ImageTiling::eOptimal,
+                                            vk::ImageUsageFlagBits::eTransferDst, img_flags, &image_props);
     vk::SwapchainCreateInfoKHR swap_info;
     swap_info.preTransform = vk::SurfaceTransformFlagBitsKHR::eIdentityBitKHR;
     /*
