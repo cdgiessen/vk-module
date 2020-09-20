@@ -25,8 +25,7 @@ int main() {
     else
         std::cout << "shouldn't print this\n";
 
-    vk::InstanceFunctions inst_functions(vkGetInstanceProcAddr, inst);
-    vk::InstanceDispatchTable inst_funcs(inst, inst_functions);
+    vk::InstanceFunctions inst_funcs(vkGetInstanceProcAddr, inst);
     inst_funcs.EnumeratePhysicalDevices(&count, nullptr);
     std::vector<vk::PhysicalDevice> phys_devices(count);
     inst_funcs.EnumeratePhysicalDevices(&count, phys_devices.data());
@@ -64,7 +63,7 @@ int main() {
 
     vk::ImageCreateFlags img_flags = vk::ImageCreateFlagBits::eSparseBinding;
 
-    vk::PhysicalDeviceDispatchTable phys_dev_funcs(phys_dev, inst_functions);
+    vk::PhysicalDeviceDispatchTable phys_dev_funcs(phys_dev, inst_funcs);
 
     phys_dev_funcs.GetImageFormatProperties(vk::Format::eUndefined, vk::ImageType::e1D, vk::ImageTiling::eOptimal,
                                             vk::ImageUsageFlagBits::eTransferDst, img_flags, &image_props);

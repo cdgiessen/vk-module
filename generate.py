@@ -13,10 +13,10 @@ generate test code for flags
 create dll/so vulkan loader
 builder pattern for creation functions
 allow combinatorial defines (x && y || z && w) for ex: AcquireNextImage2KHR
-fix AccelerationStructureInstanceKHR's VkGeometryInstanceFlagsKHR being a bitmask.
- 
+
 In progress
 move platform entities together to reduce the #if-def bloat
+fix AccelerationStructureInstanceKHR's VkGeometryInstanceFlagsKHR being a bitmask. - worked around 
 
 Done: 
 functions
@@ -50,6 +50,8 @@ base_type_default_values = {
     'double': '0.0',
     'size_t': '0'
 }
+
+base_type_implicit_conversions = {}
 
 class BaseType:
     def __init__(self, node):
@@ -101,12 +103,12 @@ def MorphVkBitaskName(name, bitmask_name_len):
         n_part[-1] = n_part[-1].upper()
     return ''.join(n_part)
 
-def PlatformGuardHeader(file, guard):
-    if guard is not None:
+def PlatformGuardHeader(file, guard, should_print=True):
+    if should_print and guard is not None:
         file.write(f'#if defined({guard})\n')
 
-def PlatformGuardFooter(file, guard):
-    if guard is not None:
+def PlatformGuardFooter(file, guard, should_print=True):
+    if should_print and guard is not None:
         file.write(f'#endif // {guard}\n')
 
 class Enum:
@@ -452,6 +454,8 @@ class Variable:
         self.base_type_modified = self.base_type
         if self.base_type_modified[:2] == 'Vk':
             self.base_type_modified = self.base_type_modified[2:]
+        if self.base_type_modified == 'GeometryInstanceFlagsKHR':
+            self.base_type_modified = 'VkGeometryInstanceFlagsKHR'
 
         if node.find('comment') is not None:
             node.remove(node.find('comment'))
@@ -727,8 +731,8 @@ class Function:
         if self.name in ext_functions:
             self.platform = platform
 
-    def print(self, file, handle=None, indent='', replace_dict=None, pfn_source=None):
-        PlatformGuardHeader(file, self.platform)
+    def print(self, file, dispatch_handle = None, dispatch_handle_name = None, indent='', replace_dict=None, pfn_source=None, guard=True):
+        PlatformGuardHeader(file, self.platform, guard)
         if self.alias is not None:
             file.write(f'const auto {self.name[2:]} = {self.alias[2:]};\n')
         else:
@@ -742,13 +746,18 @@ class Function:
                 file.write(f'{indent}Result {print_function_name}(')
             else:
                 file.write(f'{indent}{self.return_type} {print_function_name}(')
+            parameter_list = self.parameters
+            dispatch_matches_handle = False
+            if dispatch_handle is not None and f'{dispatch_handle}' == self.dispatch_handle:
+                parameter_list = self.parameters[1:]
+                dispatch_matches_handle = True
             is_first = True
-            for param in self.parameters[1:] if handle is not None else self.parameters:
+            for param in parameter_list:
                 if not is_first:
                     file.write(f',\n{indent}    ')
                 else:
                     is_first = False
-                file.write(f'{param.get_full_type(not self.free_function)}')
+                file.write(f'{param.get_full_type()}')
             file.write(') {\n')
 
             file.write(f'{indent}    return ')
@@ -764,14 +773,14 @@ class Function:
                     file.write(f',\n{indent}        ')
                 else:
                     is_first = False
-                    if handle is not None:
-                        file.write(f'{handle}.get()')
+                    if dispatch_matches_handle:
+                        file.write(f'{dispatch_handle_name}.get()')
                         continue
                 if param.is_handle and not param.is_ptr:
                     file.write(param.name + '.get()')
                 elif param.is_ptr:
                     file.write(f'reinterpret_cast<{param.get_vk_base_type_only()}>({param.name})')
-                elif param.base_type not in base_type_default_values.keys():
+                elif param.base_type not in base_type_default_values.keys() and param.base_type not in base_type_implicit_conversions:
                     file.write(f'static_cast<{param.get_vk_base_type_only()}>({param.name})')
                 else:
                     file.write(param.name)
@@ -780,7 +789,7 @@ class Function:
             file.write(');\n')
             file.write(indent + '}\n')
 
-        PlatformGuardFooter(file, self.platform)
+        PlatformGuardFooter(file, self.platform, guard)
 
     def print_function_def(self, file):
         if self.alias is not None:
@@ -910,8 +919,10 @@ class DispatchTable:
         
         self.guarded_functions = {}
         for func, guards in dispatch_functions.items():
-            is_first = True
             guard_str = ''
+            if func.platform is not None:
+                guard_str += f'defined({func.platform}) && '
+            is_first = True
             for guard in guards:
                 if is_first:
                     is_first = False
@@ -925,19 +936,18 @@ class DispatchTable:
 
         if dispatch_type == "global":
             self.init_func_sig = 'PFN_vkGetInstanceProcAddr get_instance_proc_addr'
-            self.dispatch_handle = ''
             self.gpa = "get_instance_proc_addr"
             self.gpa_val = 'nullptr'
         elif dispatch_type == "instance":
             self.init_func_sig = 'PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance'
-            self.dispatch_handle = '        VkInstance inst = instance.get();\n'
             self.gpa = "get_instance_proc_addr"
-            self.gpa_val = 'inst'
+            self.gpa_val = 'instance.get()'
+            self.dispatch_handle = 'VkInstance'
         elif dispatch_type == "device":
             self.init_func_sig = 'PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device'
-            self.dispatch_handle = '        VkDevice dev = device.get();\n'
             self.gpa = "get_device_proc_addr"
-            self.gpa_val = 'dev'
+            self.gpa_val = 'device.get()'
+            self.dispatch_handle = 'VkDevice'
 
     def print(self, file):
         if len(self.guarded_functions.keys()) == 0:
@@ -947,12 +957,10 @@ class DispatchTable:
             func_list = list(self.guarded_functions.values())[0]
             file.write(f'#if {guard}\n')
             file.write('struct ' + self.name + ' {\n')
-            file.write('private:\n')
             [ file.write(f'    {func.func_prototype} pfn_{func.name[2:]};\n') for func in func_list]
             file.write('public:\n')
-            [ func.print(file, indent='    ') for func in func_list]
+            [ func.print(file, indent='    ', guard=False) for func in func_list]
             file.write(f'    {self.name}({self.init_func_sig}) {{\n')
-            file.write(self.dispatch_handle)
             for func in func_list:
                 file.write(f'        pfn_{func.name[2:]} = ')
                 file.write(f'reinterpret_cast<{func.func_prototype}>({self.gpa}({self.gpa_val},\"{func.name}\"));\n')
@@ -961,21 +969,26 @@ class DispatchTable:
             return
         file.write('struct ' + self.name + ' {\n')
         #function pointers
+        if self.dispatch_type != 'global':
+            file.write(f'    {self.dispatch_type.title()} const {self.dispatch_type};\n')
         for guard, functions in self.guarded_functions.items():
             file.write(f'#if {guard}\n')
             for function in functions:
                 file.write(f'    {function.func_prototype} pfn_{function.name[2:]};\n')
             file.write(f'#endif //{guard}\n')
-        #functions (only for globals)
-        if self.dispatch_type == 'global':
-            for guard, functions in self.guarded_functions.items():
-                file.write(f'#if {guard}\n')
-                for func in functions:
-                    func.print(file, indent='    ')
-                file.write(f'#endif //{guard}\n')
+        #functions
+        for guard, functions in self.guarded_functions.items():
+            file.write(f'#if {guard}\n')
+            for func in functions:
+                if self.dispatch_type == 'global':
+                    func.print(file, indent='    ', guard=False)
+                else:
+                    func.print(file, dispatch_handle=self.dispatch_handle, \
+                        dispatch_handle_name=self.dispatch_type, indent='    ', guard=False)
+            file.write(f'#endif //{guard}\n')
+             
         #constructor
         file.write(f'    {self.name}({self.init_func_sig}) {{\n')
-        file.write(self.dispatch_handle)
         for guard, functions in self.guarded_functions.items():
             file.write(f'#if {guard}\n')
             for function in functions:
@@ -997,37 +1010,48 @@ class DispatchableHandleDispatchTable:
                 self.functions.append(function)
 
     def print(self, file):
-        file.write(f'struct {self.name[2:]}DispatchTable {{\n')
         if self.dispatch_type == 'instance':
             param_type = 'InstanceFunctions'
             param_name = 'instance_functions'
         else:
             param_type = 'DeviceFunctions'
             param_name = 'device_functions'
-        lower_case_name = self.name[2:].lower()
-        file.write(f'    {self.name[2:]} const {lower_case_name};\n')
+        type_name = self.name[2:]
+        var_name = self.name[2:].lower()
+        file.write(f'struct {type_name}DispatchTable {{\n')
+        file.write(f'    {type_name} const {var_name};\n')
         file.write(f'    {param_type} const* {param_name};\n')
-        file.write(f'    {self.name[2:]}DispatchTable({self.name[2:]} {lower_case_name}, {param_type} const& {param_name})')
-        file.write(f':{lower_case_name}({lower_case_name}), {param_name}(&{param_name}){{}}\n')
+        file.write(f'    {type_name}DispatchTable({type_name} {var_name}, {param_type} const& {param_name})')
+        file.write(f':{var_name}({var_name}), {param_name}(&{param_name}){{}}\n')
         
+        prev_platform = None
         for func in self.functions:
-            func.print(file, handle=lower_case_name, indent='    ', replace_dict=self.replace_dict, pfn_source=param_name)
+            if prev_platform != func.platform:
+                if prev_platform is not None:
+                    file.write(f'#endif // defined({prev_platform})\n')
+                if func.platform is not None:
+                    file.write(f'#if defined({func.platform})\n')
+            prev_platform = func.platform
+            func.print(file, dispatch_handle=self.name, dispatch_handle_name=var_name, indent='    ', \
+                replace_dict=self.replace_dict, pfn_source=param_name, guard=False)
+        if prev_platform is not None:
+            file.write(f'#endif // defined({prev_platform})\n')
         file.write('};\n')
 class BindingGenerator:
     def __init__(self, root):
 
         self.platforms = {}
-        self.macro_defines = []
-        self.api_constants = {}
         self.default_values = {}
+        self.api_constants = {}
+        self.macro_defines = []
         self.base_types = []
         self.func_pointers = []
+        self.flags_dict = {}
+        self.enum_dict = {}
         self.handles = {}
         self.dispatchable_handles = []
-        self.enum_dict = {}
-        self.flags_dict = {}
-        self.bitmask_dict = {}
         self.struct_union_list = []
+        self.bitmask_dict = {}
         self.functions = []
         self.vk_feature_levels = []
         self.ext_list = []
@@ -1057,6 +1081,8 @@ class BindingGenerator:
                 self.base_types.append(base_type)
                 if base_type.type is not None:
                     self.default_values[base_type.name] = base_type.default_value
+                if base_type.name not in base_type_implicit_conversions:
+                    base_type_implicit_conversions[base_type.name] = base_type.type
             elif category == 'funcpointer':
                 self.func_pointers.append(FuncPointer(xml_type))
             elif category == 'bitmask':
@@ -1161,19 +1187,17 @@ class BindingGenerator:
         features_and_exts = self.vk_feature_levels
         features_and_exts.extend(self.ext_list)
 
-        self.dispatch_tables.append(DispatchTable("GlobalFunctions", "global", self.vk_feature_levels))
-        self.dispatch_tables.append(DispatchTable("InstanceFunctions", "instance", self.vk_feature_levels))
-        self.dispatch_tables.append(DispatchTable("DeviceFunctions", "device", self.vk_feature_levels))
+        self.dispatch_tables.append(DispatchTable("GlobalFunctions", "global", features_and_exts))
+        self.dispatch_tables.append(DispatchTable("InstanceFunctions", "instance", features_and_exts))
+        self.dispatch_tables.append(DispatchTable("DeviceFunctions", "device", features_and_exts))
 
         for ext in self.ext_list:
             self.dispatch_tables.append(DispatchTable(f'{ext.name}_dispatch_table', ext.ext_type, [ext]))
-        
-        self.dispatchable_handle_tables.append(DispatchableHandleDispatchTable('VkInstance', 'instance', None, self.functions))
+
         self.dispatchable_handle_tables.append(DispatchableHandleDispatchTable('VkPhysicalDevice', 'instance',{'GetPhysicalDevice': 'Get'}, self.functions))
-        self.dispatchable_handle_tables.append(DispatchableHandleDispatchTable('VkDevice', 'device', None, self.functions))
         self.dispatchable_handle_tables.append(DispatchableHandleDispatchTable('VkQueue', 'device',{'Queue': ''}, self.functions))
         self.dispatchable_handle_tables.append(DispatchableHandleDispatchTable('VkCommandBuffer', 'device',{'Cmd': '', 'CommandBuffer':''}, self.functions))
-
+        
     def print(self, file):
         [ constant.print(file) for constant in self.api_constants.values() ]
         [ base_type.print(file) for base_type in self.base_types ]
