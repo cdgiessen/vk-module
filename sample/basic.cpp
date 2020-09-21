@@ -17,8 +17,10 @@ int main() {
     vk::InstanceCreateInfo info;
     vk::Instance inst;
     auto res = free_funcs.CreateInstance(&info, nullptr, &inst);
-    if (res != vk::Result::eSuccess)
+    if (res != vk::Result::eSuccess) {
+        std::cout << "failed to create instance\n";
         return static_cast<int>(res);
+    }
 
     if (inst && !(!inst))
         std::cout << "should print this\n";
@@ -27,10 +29,14 @@ int main() {
 
     vk::InstanceFunctions inst_funcs(vkGetInstanceProcAddr, inst);
     inst_funcs.EnumeratePhysicalDevices(&count, nullptr);
+
     std::vector<vk::PhysicalDevice> phys_devices(count);
     inst_funcs.EnumeratePhysicalDevices(&count, phys_devices.data());
-    if (count == 0)
+
+    if (count == 0) {
+        std::cout << "failed to get phys devs\n";
         return -100;
+    }
 
     vk::PhysicalDevice phys_dev = phys_devices.at(0);
     vk::ImageFormatProperties image_props;
@@ -62,7 +68,6 @@ int main() {
     flags ^= flags;
 
     vk::ImageCreateFlags img_flags = vk::ImageCreateFlagBits::eSparseBinding;
-
     vk::PhysicalDeviceDispatchTable phys_dev_funcs(phys_dev, inst_funcs);
 
     phys_dev_funcs.GetImageFormatProperties(vk::Format::eUndefined, vk::ImageType::e1D, vk::ImageTiling::eOptimal,

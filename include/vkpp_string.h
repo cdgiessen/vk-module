@@ -2,7 +2,7 @@
 // clang-format off
 #include "vkpp.h"
 namespace vk {
-const char * to_string(AttachmentLoadOp val) {
+inline const char * to_string(AttachmentLoadOp val) {
     switch(val) {
         case(AttachmentLoadOp::eLoad): return "eLoad";
         case(AttachmentLoadOp::eClear): return "eClear";
@@ -10,7 +10,7 @@ const char * to_string(AttachmentLoadOp val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(AttachmentStoreOp val) {
+inline const char * to_string(AttachmentStoreOp val) {
     switch(val) {
         case(AttachmentStoreOp::eStore): return "eStore";
         case(AttachmentStoreOp::eDontCare): return "eDontCare";
@@ -18,7 +18,7 @@ const char * to_string(AttachmentStoreOp val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(BlendFactor val) {
+inline const char * to_string(BlendFactor val) {
     switch(val) {
         case(BlendFactor::eZero): return "eZero";
         case(BlendFactor::eOne): return "eOne";
@@ -42,7 +42,7 @@ const char * to_string(BlendFactor val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(BlendOp val) {
+inline const char * to_string(BlendOp val) {
     switch(val) {
         case(BlendOp::eAdd): return "eAdd";
         case(BlendOp::eSubtract): return "eSubtract";
@@ -98,7 +98,7 @@ const char * to_string(BlendOp val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(BorderColor val) {
+inline const char * to_string(BorderColor val) {
     switch(val) {
         case(BorderColor::eFloatTransparentBlack): return "eFloatTransparentBlack";
         case(BorderColor::eIntTransparentBlack): return "eIntTransparentBlack";
@@ -111,13 +111,13 @@ const char * to_string(BorderColor val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(PipelineCacheHeaderVersion val) {
+inline const char * to_string(PipelineCacheHeaderVersion val) {
     switch(val) {
         case(PipelineCacheHeaderVersion::eOne): return "eOne";
         default: return "UNKNOWN";
     }
 }
-const char * to_string(ComponentSwizzle val) {
+inline const char * to_string(ComponentSwizzle val) {
     switch(val) {
         case(ComponentSwizzle::eIdentity): return "eIdentity";
         case(ComponentSwizzle::eZero): return "eZero";
@@ -129,14 +129,14 @@ const char * to_string(ComponentSwizzle val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(CommandBufferLevel val) {
+inline const char * to_string(CommandBufferLevel val) {
     switch(val) {
         case(CommandBufferLevel::ePrimary): return "ePrimary";
         case(CommandBufferLevel::eSecondary): return "eSecondary";
         default: return "UNKNOWN";
     }
 }
-const char * to_string(CompareOp val) {
+inline const char * to_string(CompareOp val) {
     switch(val) {
         case(CompareOp::eNever): return "eNever";
         case(CompareOp::eLess): return "eLess";
@@ -149,7 +149,7 @@ const char * to_string(CompareOp val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(DescriptorType val) {
+inline const char * to_string(DescriptorType val) {
     switch(val) {
         case(DescriptorType::eSampler): return "eSampler";
         case(DescriptorType::eCombinedImageSampler): return "eCombinedImageSampler";
@@ -167,7 +167,7 @@ const char * to_string(DescriptorType val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(DynamicState val) {
+inline const char * to_string(DynamicState val) {
     switch(val) {
         case(DynamicState::eViewport): return "eViewport";
         case(DynamicState::eScissor): return "eScissor";
@@ -200,7 +200,7 @@ const char * to_string(DynamicState val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(PolygonMode val) {
+inline const char * to_string(PolygonMode val) {
     switch(val) {
         case(PolygonMode::eFill): return "eFill";
         case(PolygonMode::eLine): return "eLine";
@@ -209,7 +209,7 @@ const char * to_string(PolygonMode val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(Format val) {
+inline const char * to_string(Format val) {
     switch(val) {
         case(Format::eUndefined): return "eUndefined";
         case(Format::eR4G4UnormPack8): return "eR4G4UnormPack8";
@@ -457,14 +457,14 @@ const char * to_string(Format val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(FrontFace val) {
+inline const char * to_string(FrontFace val) {
     switch(val) {
         case(FrontFace::eCounterClockwise): return "eCounterClockwise";
         case(FrontFace::eClockwise): return "eClockwise";
         default: return "UNKNOWN";
     }
 }
-const char * to_string(ImageLayout val) {
+inline const char * to_string(ImageLayout val) {
     switch(val) {
         case(ImageLayout::eUndefined): return "eUndefined";
         case(ImageLayout::eGeneral): return "eGeneral";
@@ -488,7 +488,7 @@ const char * to_string(ImageLayout val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(ImageTiling val) {
+inline const char * to_string(ImageTiling val) {
     switch(val) {
         case(ImageTiling::eOptimal): return "eOptimal";
         case(ImageTiling::eLinear): return "eLinear";
@@ -496,7 +496,7 @@ const char * to_string(ImageTiling val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(ImageType val) {
+inline const char * to_string(ImageType val) {
     switch(val) {
         case(ImageType::e1D): return "e1D";
         case(ImageType::e2D): return "e2D";
@@ -504,7 +504,7 @@ const char * to_string(ImageType val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(ImageViewType val) {
+inline const char * to_string(ImageViewType val) {
     switch(val) {
         case(ImageViewType::e1D): return "e1D";
         case(ImageViewType::e2D): return "e2D";
@@ -516,14 +516,14 @@ const char * to_string(ImageViewType val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(SharingMode val) {
+inline const char * to_string(SharingMode val) {
     switch(val) {
         case(SharingMode::eExclusive): return "eExclusive";
         case(SharingMode::eConcurrent): return "eConcurrent";
         default: return "UNKNOWN";
     }
 }
-const char * to_string(IndexType val) {
+inline const char * to_string(IndexType val) {
     switch(val) {
         case(IndexType::eUint16): return "eUint16";
         case(IndexType::eUint32): return "eUint32";
@@ -532,7 +532,7 @@ const char * to_string(IndexType val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(LogicOp val) {
+inline const char * to_string(LogicOp val) {
     switch(val) {
         case(LogicOp::eClear): return "eClear";
         case(LogicOp::eAnd): return "eAnd";
@@ -553,7 +553,7 @@ const char * to_string(LogicOp val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(PhysicalDeviceType val) {
+inline const char * to_string(PhysicalDeviceType val) {
     switch(val) {
         case(PhysicalDeviceType::eOther): return "eOther";
         case(PhysicalDeviceType::eIntegratedGpu): return "eIntegratedGpu";
@@ -563,7 +563,7 @@ const char * to_string(PhysicalDeviceType val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(PipelineBindPoint val) {
+inline const char * to_string(PipelineBindPoint val) {
     switch(val) {
         case(PipelineBindPoint::eGraphics): return "eGraphics";
         case(PipelineBindPoint::eCompute): return "eCompute";
@@ -571,7 +571,7 @@ const char * to_string(PipelineBindPoint val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(PrimitiveTopology val) {
+inline const char * to_string(PrimitiveTopology val) {
     switch(val) {
         case(PrimitiveTopology::ePointList): return "ePointList";
         case(PrimitiveTopology::eLineList): return "eLineList";
@@ -587,7 +587,7 @@ const char * to_string(PrimitiveTopology val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(QueryType val) {
+inline const char * to_string(QueryType val) {
     switch(val) {
         case(QueryType::eOcclusion): return "eOcclusion";
         case(QueryType::ePipelineStatistics): return "ePipelineStatistics";
@@ -600,14 +600,14 @@ const char * to_string(QueryType val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(SubpassContents val) {
+inline const char * to_string(SubpassContents val) {
     switch(val) {
         case(SubpassContents::eInline): return "eInline";
         case(SubpassContents::eSecondaryCommandBuffers): return "eSecondaryCommandBuffers";
         default: return "UNKNOWN";
     }
 }
-const char * to_string(Result val) {
+inline const char * to_string(Result val) {
     switch(val) {
         case(Result::eSuccess): return "eSuccess";
         case(Result::eNotReady): return "eNotReady";
@@ -651,7 +651,7 @@ const char * to_string(Result val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(StencilOp val) {
+inline const char * to_string(StencilOp val) {
     switch(val) {
         case(StencilOp::eKeep): return "eKeep";
         case(StencilOp::eZero): return "eZero";
@@ -664,7 +664,7 @@ const char * to_string(StencilOp val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(StructureType val) {
+inline const char * to_string(StructureType val) {
     switch(val) {
         case(StructureType::eApplicationInfo): return "eApplicationInfo";
         case(StructureType::eInstanceCreateInfo): return "eInstanceCreateInfo";
@@ -1112,7 +1112,7 @@ const char * to_string(StructureType val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(SystemAllocationScope val) {
+inline const char * to_string(SystemAllocationScope val) {
     switch(val) {
         case(SystemAllocationScope::eCommand): return "eCommand";
         case(SystemAllocationScope::eObject): return "eObject";
@@ -1122,13 +1122,13 @@ const char * to_string(SystemAllocationScope val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(InternalAllocationType val) {
+inline const char * to_string(InternalAllocationType val) {
     switch(val) {
         case(InternalAllocationType::eExecutable): return "eExecutable";
         default: return "UNKNOWN";
     }
 }
-const char * to_string(SamplerAddressMode val) {
+inline const char * to_string(SamplerAddressMode val) {
     switch(val) {
         case(SamplerAddressMode::eRepeat): return "eRepeat";
         case(SamplerAddressMode::eMirroredRepeat): return "eMirroredRepeat";
@@ -1138,7 +1138,7 @@ const char * to_string(SamplerAddressMode val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(Filter val) {
+inline const char * to_string(Filter val) {
     switch(val) {
         case(Filter::eNearest): return "eNearest";
         case(Filter::eLinear): return "eLinear";
@@ -1146,21 +1146,21 @@ const char * to_string(Filter val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(SamplerMipmapMode val) {
+inline const char * to_string(SamplerMipmapMode val) {
     switch(val) {
         case(SamplerMipmapMode::eNearest): return "eNearest";
         case(SamplerMipmapMode::eLinear): return "eLinear";
         default: return "UNKNOWN";
     }
 }
-const char * to_string(VertexInputRate val) {
+inline const char * to_string(VertexInputRate val) {
     switch(val) {
         case(VertexInputRate::eVertex): return "eVertex";
         case(VertexInputRate::eInstance): return "eInstance";
         default: return "UNKNOWN";
     }
 }
-const char * to_string(ObjectType val) {
+inline const char * to_string(ObjectType val) {
     switch(val) {
         case(ObjectType::eUnknown): return "eUnknown";
         case(ObjectType::eInstance): return "eInstance";
@@ -1205,7 +1205,7 @@ const char * to_string(ObjectType val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(IndirectCommandsTokenTypeNV val) {
+inline const char * to_string(IndirectCommandsTokenTypeNV val) {
     switch(val) {
         case(IndirectCommandsTokenTypeNV::eShaderGroupNV): return "eShaderGroupNV";
         case(IndirectCommandsTokenTypeNV::eStateFlagsNV): return "eStateFlagsNV";
@@ -1218,14 +1218,14 @@ const char * to_string(IndirectCommandsTokenTypeNV val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(DescriptorUpdateTemplateType val) {
+inline const char * to_string(DescriptorUpdateTemplateType val) {
     switch(val) {
         case(DescriptorUpdateTemplateType::eDescriptorSet): return "eDescriptorSet";
         case(DescriptorUpdateTemplateType::ePushDescriptorsKHR): return "ePushDescriptorsKHR";
         default: return "UNKNOWN";
     }
 }
-const char * to_string(ViewportCoordinateSwizzleNV val) {
+inline const char * to_string(ViewportCoordinateSwizzleNV val) {
     switch(val) {
         case(ViewportCoordinateSwizzleNV::ePositiveXNV): return "ePositiveXNV";
         case(ViewportCoordinateSwizzleNV::eNegativeXNV): return "eNegativeXNV";
@@ -1238,21 +1238,21 @@ const char * to_string(ViewportCoordinateSwizzleNV val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(DiscardRectangleModeEXT val) {
+inline const char * to_string(DiscardRectangleModeEXT val) {
     switch(val) {
         case(DiscardRectangleModeEXT::eInclusiveEXT): return "eInclusiveEXT";
         case(DiscardRectangleModeEXT::eExclusiveEXT): return "eExclusiveEXT";
         default: return "UNKNOWN";
     }
 }
-const char * to_string(PointClippingBehavior val) {
+inline const char * to_string(PointClippingBehavior val) {
     switch(val) {
         case(PointClippingBehavior::eAllClipPlanes): return "eAllClipPlanes";
         case(PointClippingBehavior::eUserClipPlanesOnly): return "eUserClipPlanesOnly";
         default: return "UNKNOWN";
     }
 }
-const char * to_string(CoverageModulationModeNV val) {
+inline const char * to_string(CoverageModulationModeNV val) {
     switch(val) {
         case(CoverageModulationModeNV::eNoneNV): return "eNoneNV";
         case(CoverageModulationModeNV::eRgbNV): return "eRgbNV";
@@ -1261,20 +1261,20 @@ const char * to_string(CoverageModulationModeNV val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(CoverageReductionModeNV val) {
+inline const char * to_string(CoverageReductionModeNV val) {
     switch(val) {
         case(CoverageReductionModeNV::eMergeNV): return "eMergeNV";
         case(CoverageReductionModeNV::eTruncateNV): return "eTruncateNV";
         default: return "UNKNOWN";
     }
 }
-const char * to_string(ValidationCacheHeaderVersionEXT val) {
+inline const char * to_string(ValidationCacheHeaderVersionEXT val) {
     switch(val) {
         case(ValidationCacheHeaderVersionEXT::eOneEXT): return "eOneEXT";
         default: return "UNKNOWN";
     }
 }
-const char * to_string(ShaderInfoTypeAMD val) {
+inline const char * to_string(ShaderInfoTypeAMD val) {
     switch(val) {
         case(ShaderInfoTypeAMD::eStatisticsAMD): return "eStatisticsAMD";
         case(ShaderInfoTypeAMD::eBinaryAMD): return "eBinaryAMD";
@@ -1282,7 +1282,7 @@ const char * to_string(ShaderInfoTypeAMD val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(QueueGlobalPriorityEXT val) {
+inline const char * to_string(QueueGlobalPriorityEXT val) {
     switch(val) {
         case(QueueGlobalPriorityEXT::eLowEXT): return "eLowEXT";
         case(QueueGlobalPriorityEXT::eMediumEXT): return "eMediumEXT";
@@ -1291,7 +1291,7 @@ const char * to_string(QueueGlobalPriorityEXT val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(TimeDomainEXT val) {
+inline const char * to_string(TimeDomainEXT val) {
     switch(val) {
         case(TimeDomainEXT::eDeviceEXT): return "eDeviceEXT";
         case(TimeDomainEXT::eClockMonotonicEXT): return "eClockMonotonicEXT";
@@ -1300,7 +1300,7 @@ const char * to_string(TimeDomainEXT val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(ConservativeRasterizationModeEXT val) {
+inline const char * to_string(ConservativeRasterizationModeEXT val) {
     switch(val) {
         case(ConservativeRasterizationModeEXT::eDisabledEXT): return "eDisabledEXT";
         case(ConservativeRasterizationModeEXT::eOverestimateEXT): return "eOverestimateEXT";
@@ -1308,7 +1308,7 @@ const char * to_string(ConservativeRasterizationModeEXT val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(SemaphoreType val) {
+inline const char * to_string(SemaphoreType val) {
     switch(val) {
         case(SemaphoreType::eBinary): return "eBinary";
         case(SemaphoreType::eTimeline): return "eTimeline";
@@ -1316,7 +1316,7 @@ const char * to_string(SemaphoreType val) {
     }
 }
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-const char * to_string(CopyAccelerationStructureModeKHR val) {
+inline const char * to_string(CopyAccelerationStructureModeKHR val) {
     switch(val) {
         case(CopyAccelerationStructureModeKHR::eCloneKHR): return "eCloneKHR";
         case(CopyAccelerationStructureModeKHR::eCompactKHR): return "eCompactKHR";
@@ -1327,7 +1327,7 @@ const char * to_string(CopyAccelerationStructureModeKHR val) {
 }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-const char * to_string(AccelerationStructureTypeKHR val) {
+inline const char * to_string(AccelerationStructureTypeKHR val) {
     switch(val) {
         case(AccelerationStructureTypeKHR::eTopLevelKHR): return "eTopLevelKHR";
         case(AccelerationStructureTypeKHR::eBottomLevelKHR): return "eBottomLevelKHR";
@@ -1336,7 +1336,7 @@ const char * to_string(AccelerationStructureTypeKHR val) {
 }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-const char * to_string(GeometryTypeKHR val) {
+inline const char * to_string(GeometryTypeKHR val) {
     switch(val) {
         case(GeometryTypeKHR::eTrianglesKHR): return "eTrianglesKHR";
         case(GeometryTypeKHR::eAabbsKHR): return "eAabbsKHR";
@@ -1346,7 +1346,7 @@ const char * to_string(GeometryTypeKHR val) {
 }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-const char * to_string(RayTracingShaderGroupTypeKHR val) {
+inline const char * to_string(RayTracingShaderGroupTypeKHR val) {
     switch(val) {
         case(RayTracingShaderGroupTypeKHR::eGeneralKHR): return "eGeneralKHR";
         case(RayTracingShaderGroupTypeKHR::eTrianglesHitGroupKHR): return "eTrianglesHitGroupKHR";
@@ -1356,7 +1356,7 @@ const char * to_string(RayTracingShaderGroupTypeKHR val) {
 }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-const char * to_string(AccelerationStructureMemoryRequirementsTypeKHR val) {
+inline const char * to_string(AccelerationStructureMemoryRequirementsTypeKHR val) {
     switch(val) {
         case(AccelerationStructureMemoryRequirementsTypeKHR::eObjectKHR): return "eObjectKHR";
         case(AccelerationStructureMemoryRequirementsTypeKHR::eBuildScratchKHR): return "eBuildScratchKHR";
@@ -1366,7 +1366,7 @@ const char * to_string(AccelerationStructureMemoryRequirementsTypeKHR val) {
 }
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-const char * to_string(AccelerationStructureBuildTypeKHR val) {
+inline const char * to_string(AccelerationStructureBuildTypeKHR val) {
     switch(val) {
         case(AccelerationStructureBuildTypeKHR::eHostKHR): return "eHostKHR";
         case(AccelerationStructureBuildTypeKHR::eDeviceKHR): return "eDeviceKHR";
@@ -1375,7 +1375,7 @@ const char * to_string(AccelerationStructureBuildTypeKHR val) {
     }
 }
 #endif // VK_ENABLE_BETA_EXTENSIONS
-const char * to_string(MemoryOverallocationBehaviorAMD val) {
+inline const char * to_string(MemoryOverallocationBehaviorAMD val) {
     switch(val) {
         case(MemoryOverallocationBehaviorAMD::eDefaultAMD): return "eDefaultAMD";
         case(MemoryOverallocationBehaviorAMD::eAllowedAMD): return "eAllowedAMD";
@@ -1383,7 +1383,7 @@ const char * to_string(MemoryOverallocationBehaviorAMD val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(ScopeNV val) {
+inline const char * to_string(ScopeNV val) {
     switch(val) {
         case(ScopeNV::eDeviceNV): return "eDeviceNV";
         case(ScopeNV::eWorkgroupNV): return "eWorkgroupNV";
@@ -1392,7 +1392,7 @@ const char * to_string(ScopeNV val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(ComponentTypeNV val) {
+inline const char * to_string(ComponentTypeNV val) {
     switch(val) {
         case(ComponentTypeNV::eFloat16NV): return "eFloat16NV";
         case(ComponentTypeNV::eFloat32NV): return "eFloat32NV";
@@ -1408,7 +1408,7 @@ const char * to_string(ComponentTypeNV val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(PerformanceCounterScopeKHR val) {
+inline const char * to_string(PerformanceCounterScopeKHR val) {
     switch(val) {
         case(PerformanceCounterScopeKHR::eCommandBufferKHR): return "eCommandBufferKHR";
         case(PerformanceCounterScopeKHR::eRenderPassKHR): return "eRenderPassKHR";
@@ -1416,7 +1416,7 @@ const char * to_string(PerformanceCounterScopeKHR val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(PerformanceCounterUnitKHR val) {
+inline const char * to_string(PerformanceCounterUnitKHR val) {
     switch(val) {
         case(PerformanceCounterUnitKHR::eGenericKHR): return "eGenericKHR";
         case(PerformanceCounterUnitKHR::ePercentageKHR): return "ePercentageKHR";
@@ -1432,7 +1432,7 @@ const char * to_string(PerformanceCounterUnitKHR val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(PerformanceCounterStorageKHR val) {
+inline const char * to_string(PerformanceCounterStorageKHR val) {
     switch(val) {
         case(PerformanceCounterStorageKHR::eInt32KHR): return "eInt32KHR";
         case(PerformanceCounterStorageKHR::eInt64KHR): return "eInt64KHR";
@@ -1443,33 +1443,33 @@ const char * to_string(PerformanceCounterStorageKHR val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(PerformanceConfigurationTypeINTEL val) {
+inline const char * to_string(PerformanceConfigurationTypeINTEL val) {
     switch(val) {
         case(PerformanceConfigurationTypeINTEL::eCommandQueueMetricsDiscoveryActivatedINTEL): return "eCommandQueueMetricsDiscoveryActivatedINTEL";
         default: return "UNKNOWN";
     }
 }
-const char * to_string(QueryPoolSamplingModeINTEL val) {
+inline const char * to_string(QueryPoolSamplingModeINTEL val) {
     switch(val) {
         case(QueryPoolSamplingModeINTEL::eManualINTEL): return "eManualINTEL";
         default: return "UNKNOWN";
     }
 }
-const char * to_string(PerformanceOverrideTypeINTEL val) {
+inline const char * to_string(PerformanceOverrideTypeINTEL val) {
     switch(val) {
         case(PerformanceOverrideTypeINTEL::eNullHardwareINTEL): return "eNullHardwareINTEL";
         case(PerformanceOverrideTypeINTEL::eFlushGpuCachesINTEL): return "eFlushGpuCachesINTEL";
         default: return "UNKNOWN";
     }
 }
-const char * to_string(PerformanceParameterTypeINTEL val) {
+inline const char * to_string(PerformanceParameterTypeINTEL val) {
     switch(val) {
         case(PerformanceParameterTypeINTEL::eHwCountersSupportedINTEL): return "eHwCountersSupportedINTEL";
         case(PerformanceParameterTypeINTEL::eStreamMarkerValidBitsINTEL): return "eStreamMarkerValidBitsINTEL";
         default: return "UNKNOWN";
     }
 }
-const char * to_string(PerformanceValueTypeINTEL val) {
+inline const char * to_string(PerformanceValueTypeINTEL val) {
     switch(val) {
         case(PerformanceValueTypeINTEL::eUint32INTEL): return "eUint32INTEL";
         case(PerformanceValueTypeINTEL::eUint64INTEL): return "eUint64INTEL";
@@ -1479,7 +1479,7 @@ const char * to_string(PerformanceValueTypeINTEL val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(LineRasterizationModeEXT val) {
+inline const char * to_string(LineRasterizationModeEXT val) {
     switch(val) {
         case(LineRasterizationModeEXT::eDefaultEXT): return "eDefaultEXT";
         case(LineRasterizationModeEXT::eRectangularEXT): return "eRectangularEXT";
@@ -1488,7 +1488,7 @@ const char * to_string(LineRasterizationModeEXT val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(ColorSpaceKHR val) {
+inline const char * to_string(ColorSpaceKHR val) {
     switch(val) {
         case(ColorSpaceKHR::eSrgbNonlinearKHR): return "eSrgbNonlinearKHR";
         case(ColorSpaceKHR::eDisplayP3NonlinearEXT): return "eDisplayP3NonlinearEXT";
@@ -1509,7 +1509,7 @@ const char * to_string(ColorSpaceKHR val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(PresentModeKHR val) {
+inline const char * to_string(PresentModeKHR val) {
     switch(val) {
         case(PresentModeKHR::eImmediateKHR): return "eImmediateKHR";
         case(PresentModeKHR::eMailboxKHR): return "eMailboxKHR";
@@ -1520,7 +1520,7 @@ const char * to_string(PresentModeKHR val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(DebugReportObjectTypeEXT val) {
+inline const char * to_string(DebugReportObjectTypeEXT val) {
     switch(val) {
         case(DebugReportObjectTypeEXT::eUnknownEXT): return "eUnknownEXT";
         case(DebugReportObjectTypeEXT::eInstanceEXT): return "eInstanceEXT";
@@ -1560,21 +1560,21 @@ const char * to_string(DebugReportObjectTypeEXT val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(RasterizationOrderAMD val) {
+inline const char * to_string(RasterizationOrderAMD val) {
     switch(val) {
         case(RasterizationOrderAMD::eStrictAMD): return "eStrictAMD";
         case(RasterizationOrderAMD::eRelaxedAMD): return "eRelaxedAMD";
         default: return "UNKNOWN";
     }
 }
-const char * to_string(ValidationCheckEXT val) {
+inline const char * to_string(ValidationCheckEXT val) {
     switch(val) {
         case(ValidationCheckEXT::eAllEXT): return "eAllEXT";
         case(ValidationCheckEXT::eShadersEXT): return "eShadersEXT";
         default: return "UNKNOWN";
     }
 }
-const char * to_string(ValidationFeatureEnableEXT val) {
+inline const char * to_string(ValidationFeatureEnableEXT val) {
     switch(val) {
         case(ValidationFeatureEnableEXT::eGpuAssistedEXT): return "eGpuAssistedEXT";
         case(ValidationFeatureEnableEXT::eGpuAssistedReserveBindingSlotEXT): return "eGpuAssistedReserveBindingSlotEXT";
@@ -1584,7 +1584,7 @@ const char * to_string(ValidationFeatureEnableEXT val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(ValidationFeatureDisableEXT val) {
+inline const char * to_string(ValidationFeatureDisableEXT val) {
     switch(val) {
         case(ValidationFeatureDisableEXT::eAllEXT): return "eAllEXT";
         case(ValidationFeatureDisableEXT::eShadersEXT): return "eShadersEXT";
@@ -1596,7 +1596,7 @@ const char * to_string(ValidationFeatureDisableEXT val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(DisplayPowerStateEXT val) {
+inline const char * to_string(DisplayPowerStateEXT val) {
     switch(val) {
         case(DisplayPowerStateEXT::eOffEXT): return "eOffEXT";
         case(DisplayPowerStateEXT::eSuspendEXT): return "eSuspendEXT";
@@ -1604,26 +1604,26 @@ const char * to_string(DisplayPowerStateEXT val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(DeviceEventTypeEXT val) {
+inline const char * to_string(DeviceEventTypeEXT val) {
     switch(val) {
         case(DeviceEventTypeEXT::eDisplayHotplugEXT): return "eDisplayHotplugEXT";
         default: return "UNKNOWN";
     }
 }
-const char * to_string(DisplayEventTypeEXT val) {
+inline const char * to_string(DisplayEventTypeEXT val) {
     switch(val) {
         case(DisplayEventTypeEXT::eFirstPixelOutEXT): return "eFirstPixelOutEXT";
         default: return "UNKNOWN";
     }
 }
-const char * to_string(TessellationDomainOrigin val) {
+inline const char * to_string(TessellationDomainOrigin val) {
     switch(val) {
         case(TessellationDomainOrigin::eUpperLeft): return "eUpperLeft";
         case(TessellationDomainOrigin::eLowerLeft): return "eLowerLeft";
         default: return "UNKNOWN";
     }
 }
-const char * to_string(SamplerYcbcrModelConversion val) {
+inline const char * to_string(SamplerYcbcrModelConversion val) {
     switch(val) {
         case(SamplerYcbcrModelConversion::eRgbIdentity): return "eRgbIdentity";
         case(SamplerYcbcrModelConversion::eYcbcrIdentity): return "eYcbcrIdentity";
@@ -1633,21 +1633,21 @@ const char * to_string(SamplerYcbcrModelConversion val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(SamplerYcbcrRange val) {
+inline const char * to_string(SamplerYcbcrRange val) {
     switch(val) {
         case(SamplerYcbcrRange::eItuFull): return "eItuFull";
         case(SamplerYcbcrRange::eItuNarrow): return "eItuNarrow";
         default: return "UNKNOWN";
     }
 }
-const char * to_string(ChromaLocation val) {
+inline const char * to_string(ChromaLocation val) {
     switch(val) {
         case(ChromaLocation::eCositedEven): return "eCositedEven";
         case(ChromaLocation::eMidpoint): return "eMidpoint";
         default: return "UNKNOWN";
     }
 }
-const char * to_string(SamplerReductionMode val) {
+inline const char * to_string(SamplerReductionMode val) {
     switch(val) {
         case(SamplerReductionMode::eWeightedAverage): return "eWeightedAverage";
         case(SamplerReductionMode::eMin): return "eMin";
@@ -1655,7 +1655,7 @@ const char * to_string(SamplerReductionMode val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(BlendOverlapEXT val) {
+inline const char * to_string(BlendOverlapEXT val) {
     switch(val) {
         case(BlendOverlapEXT::eUncorrelatedEXT): return "eUncorrelatedEXT";
         case(BlendOverlapEXT::eDisjointEXT): return "eDisjointEXT";
@@ -1664,7 +1664,7 @@ const char * to_string(BlendOverlapEXT val) {
     }
 }
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
-const char * to_string(FullScreenExclusiveEXT val) {
+inline const char * to_string(FullScreenExclusiveEXT val) {
     switch(val) {
         case(FullScreenExclusiveEXT::eDefaultEXT): return "eDefaultEXT";
         case(FullScreenExclusiveEXT::eAllowedEXT): return "eAllowedEXT";
@@ -1674,7 +1674,7 @@ const char * to_string(FullScreenExclusiveEXT val) {
     }
 }
 #endif // VK_USE_PLATFORM_WIN32_KHR
-const char * to_string(ShaderFloatControlsIndependence val) {
+inline const char * to_string(ShaderFloatControlsIndependence val) {
     switch(val) {
         case(ShaderFloatControlsIndependence::e32BitOnly): return "e32BitOnly";
         case(ShaderFloatControlsIndependence::eAll): return "eAll";
@@ -1682,7 +1682,7 @@ const char * to_string(ShaderFloatControlsIndependence val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(VendorId val) {
+inline const char * to_string(VendorId val) {
     switch(val) {
         case(VendorId::eVIV): return "eVIV";
         case(VendorId::eVSI): return "eVSI";
@@ -1692,7 +1692,7 @@ const char * to_string(VendorId val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(DriverId val) {
+inline const char * to_string(DriverId val) {
     switch(val) {
         case(DriverId::eAmdProprietary): return "eAmdProprietary";
         case(DriverId::eAmdOpenSource): return "eAmdOpenSource";
@@ -1711,7 +1711,7 @@ const char * to_string(DriverId val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(ShadingRatePaletteEntryNV val) {
+inline const char * to_string(ShadingRatePaletteEntryNV val) {
     switch(val) {
         case(ShadingRatePaletteEntryNV::eNoInvocationsNV): return "eNoInvocationsNV";
         case(ShadingRatePaletteEntryNV::e16InvocationsPerPixelNV): return "e16InvocationsPerPixelNV";
@@ -1728,7 +1728,7 @@ const char * to_string(ShadingRatePaletteEntryNV val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(CoarseSampleOrderTypeNV val) {
+inline const char * to_string(CoarseSampleOrderTypeNV val) {
     switch(val) {
         case(CoarseSampleOrderTypeNV::eDefaultNV): return "eDefaultNV";
         case(CoarseSampleOrderTypeNV::eCustomNV): return "eCustomNV";
@@ -1737,7 +1737,7 @@ const char * to_string(CoarseSampleOrderTypeNV val) {
         default: return "UNKNOWN";
     }
 }
-const char * to_string(PipelineExecutableStatisticFormatKHR val) {
+inline const char * to_string(PipelineExecutableStatisticFormatKHR val) {
     switch(val) {
         case(PipelineExecutableStatisticFormatKHR::eBool32KHR): return "eBool32KHR";
         case(PipelineExecutableStatisticFormatKHR::eInt64KHR): return "eInt64KHR";

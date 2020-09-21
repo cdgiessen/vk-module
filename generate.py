@@ -150,7 +150,7 @@ class Enum:
     def print_string(self, file):
         if self.alias is None:
             PlatformGuardHeader(file, self.platform)
-            file.write(f'const char * to_string({self.name[2:]} val) ' + '{\n')
+            file.write(f'inline const char * to_string({self.name[2:]} val) ' + '{\n')
             file.write('    switch(val) {\n')
             for name, value in self.values.items():
                 out_name = MorphVkEnumName(name, self.enum_name_len)
@@ -435,7 +435,7 @@ class Variable:
         self.is_ptr = False
         self.is_double_ptr = False
         self.is_const_double_ptr = False
-        self.array_lengths = []  # multi-dimentional
+        self.array_lengths = []  # multi-dimensional
         self.default_value = None
         self.is_comparable = True
         self.bitfield = None
@@ -444,6 +444,7 @@ class Variable:
         self.base_type_modified = self.base_type
         if self.base_type_modified[:2] == 'Vk':
             self.base_type_modified = self.base_type_modified[2:]
+        # special case cause of bitfields
         if self.base_type_modified == 'GeometryInstanceFlagsKHR':
             self.base_type_modified = 'VkGeometryInstanceFlagsKHR'
 
@@ -504,24 +505,14 @@ class Variable:
         if self.is_handle or self.is_ptr or self.is_double_ptr or self.is_const_double_ptr:
             self.is_comparable = False
 
-    def get_base_type(self):
+    def get_base_type(self, use_vk_type=True):
         type_decl = ''
         if self.is_const:
             type_decl += 'const '
-        type_decl += self.base_type_modified
-        if self.is_ptr:
-            type_decl += '*'
-        if self.is_double_ptr:
-            type_decl += '**'
-        if self.is_const_double_ptr:
-            type_decl += ' const*'
-        return type_decl
-    
-    def get_vk_base_type(self):
-        type_decl = ''
-        if self.is_const:
-            type_decl += 'const '
-        type_decl += self.base_type
+        if use_vk_type:
+            type_decl += self.base_type_modified
+        else:
+            type_decl += self.base_type
         if self.is_ptr:
             type_decl += '*'
         if self.is_double_ptr:
@@ -531,24 +522,18 @@ class Variable:
         return type_decl
 
     def get_init(self):
-        init = ''
-        if self.is_ptr or self.is_double_ptr:
-            init += ' = nullptr'
+        if self.is_ptr or self.is_double_ptr or self.is_const_double_ptr:
+            return ' = nullptr'
         elif self.default_value is not None:
             if len(self.array_lengths) > 0:
-                init += ' = {}'
+                return ' = {}'
             else:
-                init += f' = {self.default_value}'
-        return init
+                return f' = {self.default_value}'
+        else:
+            return ''        
 
     def get_base_type_only(self):
-        type_decl = self.get_base_type()
-        for arr in self.array_lengths:
-            type_decl += f'[{arr}]'
-        return type_decl
-
-    def get_vk_base_type_only(self):
-        type_decl = self.get_vk_base_type()
+        type_decl = self.get_base_type(False)
         for arr in self.array_lengths:
             type_decl += f'[{arr}]'
         return type_decl
@@ -566,23 +551,43 @@ class Variable:
 
     def get_parameter_decl(self, default_init):
         type_decl = self.get_full_type()
-        if default_init:
+        if default_init and self.bitfield is None:
             type_decl += self.get_init()
         return type_decl
 
-    def print_struct_decl(self, file, default_init):
-        type_decl = self.get_full_type()
-        if default_init and self.bitfield is None:
-            type_decl += self.get_init()
-        file.write(f'    {type_decl};\n')
+def print_custom_comparator(file, member_list, name):
+    file.write(f'    constexpr bool operator==({name} const& value) const {{\n')
+    file.write('        return ')
+    is_first = True
+    for member in member_list:
+        if is_first:
+            is_first = False
+        else:
+            file.write('&& ')
+        if len(member.array_lengths) > 0:
+            str_out = ''
+            for l in member.array_lengths:
+                for i in range(0, int(l)):
+                    if i > 0 and int(l) > 1 and i < int(l):
+                        str_out += ' && '
+                    str_out += f'{member.name}[{str(i)}] == value.{member.name}[{str(i)}]'
+                str_out += '\n        '
+            file.write(str_out)
+        else:
+            file.write(f'{member.name} == value.{member.name} ')
+    file.write(';}\n')
 
-
-class Union:
+# Contains both structs and unions
+class Structure:
     def __init__(self, node, constants, handles, default_values):
         self.name = node.get('name')
+        self.alias = node.get('alias')
+        self.category = node.get('category') # struct or union
         self.members = []
         self.platform = None
         self.returnedonly = node.get('returnedonly') is not None
+        self.structextends = node.get('structextends')
+
         for member in node.findall('member'):
             self.members.append(Variable(member, constants, handles, default_values))
 
@@ -591,58 +596,6 @@ class Union:
             if not member.is_comparable:
                 self.is_comparable = False
                 break
-
-    def check_platform(self, platform, ext_types):
-        if self.name in ext_types:
-            self.platform = platform
-
-    def print(self, file):
-        file.write('union ' + self.name[2:] + ' {\n')
-        for member in self.members:
-            member.print_struct_decl(file, False)
-        if self.is_comparable:
-            file.write(f'    constexpr bool operator==({self.name[2:]} const& value) const {{\n')
-            file.write('        return ')
-            is_first = True
-            for member in self.members:
-                if is_first:
-                    is_first = False
-                else:
-                    file.write('&& ')
-                if len(member.array_lengths) > 0:
-                    str_out = ''
-                    for l in member.array_lengths:
-                        for i in range(0, int(l)):
-                            if i > 0 and int(l) > 1 and i < int(l):
-                                str_out += ' && '
-                            str_out += f'{member.name}[{str(i)}] == value.{member.name}[{str(i)}]'
-                        str_out += '\n        '
-                    file.write(str_out)
-                else:
-                    file.write(f'{member.name} == value.{member.name} ')
-            file.write(';}\n')
-        file.write('};\n')
-    
-    def print_static_asserts(self, file):
-        file.write('') # no checks yet
-
-class Struct:
-    def __init__(self, node, constants, handles, default_values):
-        self.name = node.get('name')
-        self.alias = node.get('alias')
-        self.members = []
-        self.platform = None
-        self.returnedonly = node.get('returnedonly') is not None
-        self.structextends = node.get('structextends')
-
-        for member in node.findall('member'):
-            self.members.append(
-                Variable(member, constants, handles, default_values))
-
-        self.is_comparable = True
-        for member in self.members:
-            if not member.is_comparable:
-                self.is_comparable = False
     
     def check_platform(self, platform, ext_types):
         if self.name in ext_types or (self.alias is not None and self.alias in ext_types):
@@ -652,24 +605,32 @@ class Struct:
         if self.alias is not None:
             file.write(f'using {self.name[2:]} = {self.alias[2:]};\n')
         else:
-            file.write(f'struct {self.name[2:]} {{\n')
-            for member in self.members:
-                member.print_struct_decl(file, True)
+            if self.category == 'struct':
+                file.write(f'struct {self.name[2:]} {{\n')
+                for member in self.members:
+                    file.write(f'    {member.get_parameter_decl(True)};\n')
 
-            if self.is_comparable:
-                file.write(f'    constexpr bool operator==({self.name[2:]} const& other) const = default;\n')
-            file.write(f'    operator {self.name} const &() const noexcept {{\n')
-            file.write(f'        return *reinterpret_cast<const {self.name}*>(this);\n    }}\n')
-            file.write(f'    operator {self.name} &() noexcept {{\n')
-            file.write(f'        return *reinterpret_cast<{self.name}*>(this);\n    }}\n')
-            file.write('};\n')
-        
+                if self.is_comparable:
+                    file.write(f'    constexpr bool operator==({self.name[2:]} const& other) const = default;\n')
+                file.write(f'    operator {self.name} const &() const noexcept {{\n')
+                file.write(f'        return *reinterpret_cast<const {self.name}*>(this);\n    }}\n')
+                file.write(f'    operator {self.name} &() noexcept {{\n')
+                file.write(f'        return *reinterpret_cast<{self.name}*>(this);\n    }}\n')
+                file.write('};\n')
+            elif self.category == 'union':
+                file.write('union ' + self.name[2:] + ' {\n')
+                for member in self.members:
+                    file.write(f'    {member.get_parameter_decl(False)};\n')
+                if self.is_comparable:
+                    print_custom_comparator(file, self.members, self.name[2:])
+                file.write('};\n')
+
     def print_static_asserts(self, file):
-        PlatformGuardHeader(file, self.platform)
-        file.write(f'static_assert( sizeof({self.name[2:]}) == sizeof({self.name}), "Must maintain size between types" );\n')
-        file.write(f'static_assert( std::is_standard_layout<{self.name[2:]}>::value, "Must be a standard layout type" );\n')
-        PlatformGuardFooter(file, self.platform)
-
+        if self.category == 'struct':
+            PlatformGuardHeader(file, self.platform)
+            file.write(f'static_assert( sizeof({self.name[2:]}) == sizeof({self.name}), "Must maintain size between types" );\n')
+            file.write(f'static_assert( std::is_standard_layout<{self.name[2:]}>::value, "Must be a standard layout type" );\n')
+            PlatformGuardFooter(file, self.platform)
 
 class Function:
     def __init__(self, node, constants, handles, dispatchable_handles, default_values):
@@ -764,10 +725,11 @@ class Function:
                         continue
                 if param.is_handle and not param.is_ptr:
                     file.write(param.name + '.get()')
-                elif param.is_ptr:
-                    file.write(f'reinterpret_cast<{param.get_vk_base_type_only()}>({param.name})')
                 elif param.base_type not in base_type_default_values.keys() and param.base_type not in base_type_implicit_conversions:
-                    file.write(f'static_cast<{param.get_vk_base_type_only()}>({param.name})')
+                    if param.is_ptr:
+                        file.write(f'reinterpret_cast<{param.get_base_type_only()}>({param.name})')
+                    else:
+                        file.write(f'static_cast<{param.get_base_type_only()}>({param.name})')
                 else:
                     file.write(param.name)
             if self.return_type == 'VkResult':
@@ -810,6 +772,7 @@ def AppendToDictOfLists(dict, key, val):
     if key not in dict:
         dict[key] = [] 
     dict[key].append(val)
+
 class Requires:
     def __init__(self, node, ext_num = None):
         self.feature = node.get('feature')
@@ -920,24 +883,22 @@ class DispatchTable:
             else:
                 self.guarded_functions[guard_str].append(func)
 
-        if dispatch_type == "global":
-            self.init_func_sig = 'PFN_vkGetInstanceProcAddr get_instance_proc_addr'
-            self.gpa = "get_instance_proc_addr"
-            self.gpa_val = 'nullptr'
-        elif dispatch_type == "instance":
-            self.init_func_sig = 'PFN_vkGetInstanceProcAddr get_instance_proc_addr, Instance const& instance'
-            self.gpa = "get_instance_proc_addr"
-            self.gpa_val = 'instance.get()'
-            self.dispatch_handle = 'VkInstance'
-        elif dispatch_type == "device":
-            self.init_func_sig = 'PFN_vkGetDeviceProcAddr get_device_proc_addr, Device const& device'
-            self.gpa = "get_device_proc_addr"
-            self.gpa_val = 'device.get()'
-            self.dispatch_handle = 'VkDevice'
-
     def print(self, file):
         if len(self.guarded_functions.keys()) == 0:
             return
+
+        gpa_type = 'PFN_vkGetInstanceProcAddr'
+        gpa_name = "get_instance_proc_addr"
+        if self.dispatch_type == "device":
+            gpa_type = 'PFN_vkGetDeviceProcAddr'
+            gpa_name = "get_device_proc_addr"
+            dispatch_handle = None
+        gpa_val = f'{self.dispatch_type}.get()'
+        dispatch_handle = f'Vk{self.dispatch_type.title()}'
+        if self.dispatch_type == "global":
+            gpa_val = 'nullptr'
+        
+        #extension function dispatch tables
         if len(self.guarded_functions.keys()) == 1:
             guard = list(self.guarded_functions.keys())[0]
             func_list = list(self.guarded_functions.values())[0]
@@ -946,14 +907,14 @@ class DispatchTable:
             [ file.write(f'    {func.func_prototype} pfn_{func.name[2:]};\n') for func in func_list]
             file.write('public:\n')
             [ func.print(file, indent='    ', guard=False) for func in func_list]
-            file.write(f'    {self.name}({self.init_func_sig}) {{\n')
+            file.write(f'    {self.name}({gpa_type} {gpa_name}, {self.dispatch_type.title()} {self.dispatch_type}) {{\n')
             for func in func_list:
                 file.write(f'        pfn_{func.name[2:]} = ')
-                file.write(f'reinterpret_cast<{func.func_prototype}>({self.gpa}({self.gpa_val},\"{func.name}\"));\n')
+                file.write(f'reinterpret_cast<{func.func_prototype}>({gpa_name}({gpa_val},\"{func.name}\"));\n')
             file.write('    };\n};\n')  
             file.write(f'#endif //{guard}\n')
             return
-        file.write('struct ' + self.name + ' {\n')
+        file.write(f'struct {self.name}Functions {{\n')
         #function pointers
         if self.dispatch_type != 'global':
             file.write(f'    {self.dispatch_type.title()} const {self.dispatch_type};\n')
@@ -965,21 +926,22 @@ class DispatchTable:
         #functions
         for guard, functions in self.guarded_functions.items():
             file.write(f'#if {guard}\n')
-            for func in functions:
-                if self.dispatch_type == 'global':
-                    func.print(file, indent='    ', guard=False)
-                else:
-                    func.print(file, dispatch_handle=self.dispatch_handle, \
-                        dispatch_handle_name=self.dispatch_type, indent='    ', guard=False)
+            for func in functions:               
+                func.print(file, dispatch_handle=dispatch_handle, dispatch_handle_name=self.dispatch_type,\
+                    indent='    ', guard=False)
             file.write(f'#endif //{guard}\n')
              
         #constructor
-        file.write(f'    {self.name}({self.init_func_sig}) {{\n')
+        if self.dispatch_type == 'global':
+            file.write(f'    {self.name}Functions({gpa_type} {gpa_name}) {{\n')
+        else:
+            file.write(f'    {self.name}Functions({gpa_type} {gpa_name}, {self.dispatch_type.title()} {self.dispatch_type})')
+            file.write(f':{self.dispatch_type}({self.dispatch_type}) {{ \n')
         for guard, functions in self.guarded_functions.items():
             file.write(f'#if {guard}\n')
             for function in functions:
                 file.write(f'        pfn_{function.name[2:]} = ')
-                file.write(f'reinterpret_cast<{function.func_prototype}>({self.gpa}({self.gpa_val},\"{function.name}\"));\n')
+                file.write(f'reinterpret_cast<{function.func_prototype}>({gpa_name}({gpa_val},\"{function.name}\"));\n')
             file.write(f'#endif //{guard}\n')
         file.write('    };\n};\n')
 
@@ -1050,7 +1012,7 @@ class BindingGenerator:
         self.enum_dict = {}
         self.handles = {}
         self.dispatchable_handles = []
-        self.struct_union_list = []
+        self.structures = []
         self.bitmask_dict = {}
         self.functions = []
         self.vk_feature_levels = []
@@ -1098,38 +1060,36 @@ class BindingGenerator:
                 self.handles[handle.name] = handle
                 if handle.alias is None and handle.dispatchable:
                     self.dispatchable_handles.append(handle.name)
-            elif category == 'union':
-                self.struct_union_list.append(Union(xml_type, self.api_constants, self.handles, self.default_values))
-            elif category == 'struct':
-                self.struct_union_list.append(Struct(xml_type, self.api_constants, self.handles, self.default_values))
+            elif category == 'union' or category == 'struct':
+                self.structures.append(Structure(xml_type, self.api_constants, self.handles, self.default_values))
 
         #fixup the list so that members using a type appear after that type is defined
         outer_counter = 0
         inner_counter = 0
-        while outer_counter < len(self.struct_union_list):
+        while outer_counter < len(self.structures):
             moved = False
-            for m in self.struct_union_list[outer_counter].members:
+            for m in self.structures[outer_counter].members:
                 inner_counter = outer_counter
-                for t2 in self.struct_union_list[outer_counter:]:
+                for t2 in self.structures[outer_counter:]:
                     if m.base_type == t2.name and inner_counter > outer_counter:
-                        self.struct_union_list.insert(outer_counter, self.struct_union_list.pop(inner_counter))
+                        self.structures.insert(outer_counter, self.structures.pop(inner_counter))
                         moved = True
                     inner_counter = inner_counter + 1
             if not moved:
                 outer_counter = outer_counter + 1
 
         # determine which structures are comparable
-        for struct_or_union in self.struct_union_list:
-            if not struct_or_union.is_comparable:
+        for structure in self.structures:
+            if not structure.is_comparable:
                 continue
             comparable = True
-            for member in struct_or_union.members:
-                for sub_type in self.struct_union_list:
+            for member in structure.members:
+                for sub_type in self.structures:
                     if member.base_type == sub_type.name:
                         if not sub_type.is_comparable:
                             comparable = False
                             break
-            struct_or_union.is_comparable = comparable
+            structure.is_comparable = comparable
 
         for enum in root.findall("enums"):
             if enum.get('type') == 'enum':
@@ -1153,7 +1113,7 @@ class BindingGenerator:
                 if new_ext.supported == 'vulkan':
                     for require in new_ext.requires:
                         require.check_platform(new_ext.platform, self.enum_dict, self.flags_dict, self.bitmask_dict, 
-                            self.struct_union_list, self.functions)
+                            self.structures, self.functions)
                         require.fill_enums(self.enum_dict)
                         require.fill_bitmasks(self.bitmask_dict)
                         require.fill_functions(self.functions)
@@ -1167,9 +1127,9 @@ class BindingGenerator:
                                 self.bitmask_dict.pop(req_type)
                             if req_type in self.flags_dict:
                                 self.flags_dict.pop(req_type) 
-                            for struct_or_union in self.struct_union_list:
-                                if struct_or_union.name == req_type:
-                                    self.struct_union_list.remove(struct_or_union)
+                            for structure in self.structures:
+                                if structure.name == req_type:
+                                    self.structures.remove(structure)
                         for command in require.commands:
                             for function in self.functions:
                                 if function.name == command:
@@ -1184,12 +1144,12 @@ class BindingGenerator:
                 require.fill_functions(self.functions)
             self.vk_feature_levels.append(feat_level)
         
-        features_and_exts = self.vk_feature_levels
-        features_and_exts.extend(self.ext_list)
+        features_and_extensions = self.vk_feature_levels
+        features_and_extensions.extend(self.ext_list)
 
-        self.dispatch_tables.append(DispatchTable("GlobalFunctions", "global", features_and_exts))
-        self.dispatch_tables.append(DispatchTable("InstanceFunctions", "instance", features_and_exts))
-        self.dispatch_tables.append(DispatchTable("DeviceFunctions", "device", features_and_exts))
+        self.dispatch_tables.append(DispatchTable("Global", "global", features_and_extensions))
+        self.dispatch_tables.append(DispatchTable("Instance", "instance", features_and_extensions))
+        self.dispatch_tables.append(DispatchTable("Device", "device", features_and_extensions))
 
         for ext in self.ext_list:
             self.dispatch_tables.append(DispatchTable(f'{ext.name}_dispatch_table', ext.ext_type, [ext]))
@@ -1206,7 +1166,7 @@ class BindingGenerator:
         file.write(bitmask_flags_macro + '\n')
         PrintConsecutivePlatforms(file, self.flags_dict.values())
         PrintConsecutivePlatforms(file, self.handles.values())
-        PrintConsecutivePlatforms(file, self.struct_union_list)
+        PrintConsecutivePlatforms(file, self.structures)
         [ dispatch_table.print(file) for dispatch_table in self.dispatch_tables ]
         [ table.print(file) for table in self.dispatchable_handle_tables ]
  
@@ -1215,7 +1175,7 @@ class BindingGenerator:
         [ bitmask.print_string(file) for bitmask in self.bitmask_dict.values()]
         
     def print_static_asserts(self, file):
-        [ struct_or_union.print_static_asserts(file) for struct_or_union in self.struct_union_list ]
+        [ structure.print_static_asserts(file) for structure in self.structures ]
         [ handle.print_static_asserts(file) for handle in self.handles.values() ]
 
 def main():
