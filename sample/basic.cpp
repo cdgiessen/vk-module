@@ -45,13 +45,13 @@ int main() {
     std::cout << flags.flags << " " << vk::to_string(flags) << "\n"; // 3
     flags = flags & vk::BufferCreateFlagBits::eSparseResidency;
     std::cout << flags.flags << " " << vk::to_string(flags) << "\n"; // 2
-    flags |= vk::BufferCreateFlagBits::eSparseBinding;
-    std::cout << flags.flags << " " << vk::to_string(flags) << "\n"; // 3
-    flags &= vk::BufferCreateFlagBits::eSparseBinding;
-    std::cout << flags.flags << " " << vk::to_string(flags) << "\n"; // 1
-    flags = ~vk::BufferCreateFlagBits::eSparseBinding;
-    std::cout << flags.flags << " " << vk::to_string(flags) << "\n"; // 4294967294
     flags = vk::BufferCreateFlagBits::eSparseBinding ^ vk::BufferCreateFlagBits::eSparseResidency;
+    std::cout << flags.flags << " " << vk::to_string(flags) << "\n"; // 3
+    flags = ~vk::BufferCreateFlagBits::eSparseBinding;
+    std::cout << flags.flags << " " << vk::to_string(flags) << "\n"; // 1
+    flags |= vk::BufferCreateFlagBits::eSparseBinding;
+    std::cout << flags.flags << " " << vk::to_string(flags) << "\n"; // 4294967294
+    flags &= vk::BufferCreateFlagBits::eSparseBinding;
     std::cout << flags.flags << " " << vk::to_string(flags) << "\n"; // 3
     flags ^= vk::BufferCreateFlagBits::eSparseAliased;
     std::cout << flags.flags << " " << vk::to_string(flags) << "\n"; // 7

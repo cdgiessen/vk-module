@@ -2149,7 +2149,7 @@ struct FLAG_TYPE {                                                              
                                                                                     \
     constexpr explicit FLAG_TYPE() noexcept = default;                              \
     constexpr explicit FLAG_TYPE(base_type in) noexcept: flags(in){ }               \
-    constexpr FLAG_TYPE(FLAG_BITS in) noexcept: flags(static_cast<base_type>(in)){ }   \
+    constexpr FLAG_TYPE(FLAG_BITS in) noexcept: flags(static_cast<base_type>(in)){ }\
     constexpr bool operator==(FLAG_TYPE const& right) const = default;              \
     constexpr explicit operator bool() const noexcept {                             \
       return flags != 0;                                                            \
@@ -2157,63 +2157,46 @@ struct FLAG_TYPE {                                                              
     constexpr explicit operator BASE_NAME() const noexcept {                        \
         return static_cast<BASE_NAME>(flags);                                       \
     }                                                                               \
-    constexpr FLAG_TYPE operator|(FLAG_TYPE b) noexcept {                           \
-        return static_cast<FLAG_TYPE>(flags | b.flags);                             \
-    }                                                                               \
-    constexpr FLAG_TYPE& operator|=(FLAG_TYPE b) noexcept {                         \
-        flags = (flags | b.flags);                                                  \
-        return *this;                                                               \
-    }                                                                               \
-    constexpr FLAG_TYPE operator&(FLAG_TYPE b) noexcept {                           \
-        return static_cast<FLAG_TYPE>(flags & b.flags);                             \
-    }                                                                               \
-    constexpr FLAG_TYPE& operator&=(FLAG_TYPE b) noexcept {                         \
-        flags = (flags & b.flags);                                                  \
-        return *this;                                                               \
-    }                                                                               \
-    constexpr FLAG_TYPE operator~() noexcept {                                      \
-        return static_cast<FLAG_TYPE>(~flags);                                      \
-    }                                                                               \
-    constexpr FLAG_TYPE operator^(FLAG_TYPE b) noexcept {                           \
-        return static_cast<FLAG_TYPE>(flags ^ b.flags);                             \
-    }                                                                               \
-    constexpr FLAG_TYPE operator^=(FLAG_TYPE b) noexcept {                          \
-        flags = (flags ^ b.flags);                                                  \
-        return *this;                                                               \
-    }                                                                               \
-    constexpr FLAG_TYPE& operator^=(FLAG_BITS b) noexcept {                         \
-        flags = (flags ^ static_cast<base_type>(b));                                \
-        return *this;                                                               \
-    }                                                                               \
 };                                                                                  \
-                                                                                    \
+constexpr FLAG_TYPE operator|(FLAG_TYPE a, FLAG_TYPE b) noexcept {                  \
+    return static_cast<FLAG_TYPE>(a.flags | b.flags);                               \
+}                                                                                   \
+constexpr FLAG_TYPE operator&(FLAG_TYPE a, FLAG_TYPE b) noexcept {                  \
+    return static_cast<FLAG_TYPE>(a.flags & b.flags);                               \
+}                                                                                   \
+constexpr FLAG_TYPE operator^(FLAG_TYPE a, FLAG_TYPE b) noexcept {                  \
+    return static_cast<FLAG_TYPE>(a.flags ^ b.flags);                               \
+}                                                                                   \
+constexpr FLAG_TYPE operator~(FLAG_TYPE a) noexcept {                               \
+    return static_cast<FLAG_TYPE>(~a.flags);                                        \
+}                                                                                   \
+constexpr FLAG_TYPE& operator|=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {               \
+    a.flags = (a.flags | b.flags);                                                  \
+    return a;                                                                       \
+}                                                                                   \
+constexpr FLAG_TYPE& operator&=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {               \
+    a.flags = (a.flags & b.flags);                                                  \
+    return a;                                                                       \
+}                                                                                   \
+constexpr FLAG_TYPE operator^=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {                \
+    a.flags = (a.flags ^ b.flags);                                                  \
+    return a;                                                                       \
+}                                                                                   \
 constexpr FLAG_TYPE operator|(FLAG_BITS a, FLAG_BITS b) noexcept {                  \
-    using T = std::underlying_type_t<FLAG_BITS>;                                    \
+    using T = FLAG_TYPE::base_type;                                                 \
     return static_cast<FLAG_TYPE>(static_cast<T>(a) | static_cast<T>(b));           \
 }                                                                                   \
-constexpr FLAG_TYPE operator|(FLAG_BITS a, FLAG_TYPE b) noexcept {                  \
-    using T = std::underlying_type_t<FLAG_BITS>;                                    \
-    return static_cast<FLAG_TYPE>(static_cast<T>(a) | b.flags);                     \
-}                                                                                   \
 constexpr FLAG_TYPE operator&(FLAG_BITS a, FLAG_BITS b) noexcept {                  \
-    using T = std::underlying_type_t<FLAG_BITS>;                                    \
+    using T = FLAG_TYPE::base_type;                                                 \
     return static_cast<FLAG_TYPE>(static_cast<T>(a) & static_cast<T>(b));           \
 }                                                                                   \
-constexpr FLAG_TYPE operator&(FLAG_BITS a, FLAG_TYPE b) noexcept {                  \
-    using T = std::underlying_type_t<FLAG_BITS>;                                    \
-    return static_cast<FLAG_TYPE>(static_cast<T>(a) & b.flags);                     \
-}                                                                                   \
 constexpr FLAG_TYPE operator~(FLAG_BITS key) noexcept {                             \
-    using T = std::underlying_type_t<FLAG_BITS>;                                    \
+    using T = FLAG_TYPE::base_type;                                                 \
     return static_cast<FLAG_TYPE>(~static_cast<T>(key));                            \
 }                                                                                   \
 constexpr FLAG_TYPE operator^(FLAG_BITS a, FLAG_BITS b) noexcept {                  \
-    using T = std::underlying_type_t<FLAG_BITS>;                                    \
+    using T = FLAG_TYPE::base_type;                                                 \
     return static_cast<FLAG_TYPE>(static_cast<T>(a) ^ static_cast<T>(b));           \
-}                                                                                   \
-constexpr FLAG_TYPE operator^(FLAG_BITS a, FLAG_TYPE b) noexcept {                  \
-    using T = std::underlying_type_t<FLAG_BITS>;                                    \
-    return static_cast<FLAG_TYPE>(static_cast<T>(a) ^ b.flags);                     \
 }                                                                                   \
 
 DECLARE_ENUM_FLAG_OPERATORS(FramebufferCreateFlags, FramebufferCreateFlagBits, VkFramebufferCreateFlags)
