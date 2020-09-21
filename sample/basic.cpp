@@ -72,6 +72,7 @@ int main() {
 
     phys_dev_funcs.GetImageFormatProperties(vk::Format::eUndefined, vk::ImageType::e1D, vk::ImageTiling::eOptimal,
                                             vk::ImageUsageFlagBits::eTransferDst, img_flags, &image_props);
+    VkImageUsageFlagBits test_usage_flag_bits = +vk::ImageUsageFlagBits::eTransferDst;                                        
     vk::SwapchainCreateInfoKHR swap_info;
     swap_info.preTransform = vk::SurfaceTransformFlagBitsKHR::eIdentityBitKHR;
     /*

@@ -17,7 +17,7 @@ int main() {
         std::cout << "failed to create instance\n";
         return static_cast<int>(res);
     }
-    vk::DispatchLoaderDynamic dldi(inst);
+    vk::DispatchLoaderDynamic dldi(vkGetInstanceProcAddr);
 
     if (inst && !(!inst))
         std::cout << "should print this\n";

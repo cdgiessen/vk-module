@@ -1,6 +1,6 @@
 #pragma once
 // clang-format off
-#include "vkpp.h"
+#include "vkpp_core.h"
 #include <type_traits>
 namespace vk {
 static_assert( sizeof(BaseOutStructure) == sizeof(VkBaseOutStructure), "Must maintain size between types" );
