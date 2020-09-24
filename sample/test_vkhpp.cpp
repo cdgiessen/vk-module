@@ -17,16 +17,16 @@ int main() {
         std::cout << "failed to create instance\n";
         return static_cast<int>(res);
     }
-    vk::DispatchLoaderDynamic dldi(vkGetInstanceProcAddr);
+    vk::DispatchLoaderDynamic instance_dispatcher(vkGetInstanceProcAddr);
 
     if (inst && !(!inst))
         std::cout << "should print this\n";
     else
         std::cout << "shouldn't print this\n";
 
-    auto phys_devices = inst.enumeratePhysicalDevices(dldi);
+    auto phys_devices = inst.enumeratePhysicalDevices(instance_dispatcher);
     if (phys_devices.size() == 0) {
-        std::cout << "failed to get phys devs\n";
+        std::cout << "failed to get phys devices\n";
         return -100;
     }
     vk::PhysicalDevice phys_dev = phys_devices.at(0);
@@ -60,8 +60,11 @@ int main() {
 
     vk::ImageCreateFlags img_flags = vk::ImageCreateFlagBits::eSparseBinding;
 
-    phys_dev.getImageFormatProperties(vk::Format::eUndefined, vk::ImageType::e1D, vk::ImageTiling::eOptimal,
-                                      vk::ImageUsageFlagBits::eTransferDst, img_flags, &image_props, dldi);
+    auto result =
+        phys_dev.getImageFormatProperties(vk::Format::eUndefined, vk::ImageType::e1D, vk::ImageTiling::eOptimal,
+                                          vk::ImageUsageFlagBits::eTransferDst, img_flags, &image_props, instance_dispatcher);
+    if (result != vk::Result::eSuccess)
+        return -1;
     vk::SwapchainCreateInfoKHR swap_info;
     swap_info.preTransform = vk::SurfaceTransformFlagBitsKHR::eIdentity;
     /*

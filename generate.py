@@ -6,17 +6,17 @@ import re
 '''
 todo list
 
-handles are a thing, decide what to do
 member arrays (+ vk constants -> int's)
 create separate versions for C++20 and C++14/17? 
 generate test code for flags
-create dll/so vulkan loader
+2 call function helpers (enumerateXYZ)
 builder pattern for creation functions
 allow combinatorial defines (x && y || z && w) for ex: AcquireNextImage2KHR
+make output values references;
 
 In progress
 move platform entities together to reduce the #if-def bloat
-fix AccelerationStructureInstanceKHR's VkGeometryInstanceFlagsKHR being a bitmask. - worked around 
+fix AccelerationStructureInstanceKHRs VkGeometryInstanceFlagsKHR being a bitmask. - worked around 
 
 Done: 
 functions
@@ -32,6 +32,8 @@ return types as vk::Result
 extension function tables
 remove disabled extension types
 dispatchable handles (instance, physdevice, device, queue, command buffer)
+handles are a thing, decide what to do - have simple handles that are neat little wrappers and nothing more.
+create dll/so vulkan loader
 '''
 
 vendor_abbreviations = []
@@ -144,7 +146,10 @@ class Enum:
         else: 
             file.write(f"enum class {self.name[2:]} : {self.underlying_type} {{\n")
             for name, value in self.values.items():
-                file.write(f'    e{MorphVkEnumName(name, self.enum_name_len)} = {str(value)},\n')
+                out_name = MorphVkEnumName(name, self.enum_name_len)
+                if out_name[0].isnumeric():
+                    out_name = f'e{out_name}'
+                file.write(f'    {out_name} = {str(value)},\n')
             file.write('};\n')
             file.write(f'inline {self.name} operator+({self.name[2:]} val) {{ return static_cast<{self.name}>(val);}}\n')
     
@@ -159,12 +164,21 @@ class Enum:
             PlatformGuardHeader(file, self.platform)
             file.write(f'const char * to_string({self.name[2:]} val) {{\n')
             file.write('    switch(val) {\n')
-            for name, value in self.values.items():
+            for name in self.values.keys():
                 out_name = MorphVkEnumName(name, self.enum_name_len)
-                file.write(f'        case({self.name[2:]}::e{out_name}): return \"e{out_name}\";\n')
+                if out_name[0].isnumeric():
+                    out_name = f'e{out_name}'
+                file.write(f'        case({self.name[2:]}::{out_name}): return \"{out_name}\";\n')
             file.write('        default: return "UNKNOWN";\n    }\n}\n')
             PlatformGuardFooter(file, self.platform)
 
+def RepresentsIntOrHex(s):
+    try: 
+        int(s)
+        int(s, 16)
+        return True
+    except ValueError:
+        return False
 
 class Bitmask:
     def __init__(self, node):
@@ -185,7 +199,10 @@ class Bitmask:
             elif elem.get('alias') is not None:
                 if elem.get('name') == "VK_STENCIL_FRONT_AND_BACK":
                     continue #ugly special case
-                value = f'e{MorphVkBitaskName(elem.get("alias"), self.bitmask_name_len)}'
+                out_name = MorphVkBitaskName(elem.get("alias"), self.bitmask_name_len)
+                if out_name[0].isnumeric():
+                    out_name = f'e{out_name}'
+                value = out_name
             self.values[value] = elem.get('name')
 
     def fill_ext_bitmasks(self, bitmask_ext_dict):
@@ -202,7 +219,10 @@ class Bitmask:
         else:
             file.write(f'enum class {self.name[2:]}: uint32_t {{\n')
             for bitpos, name in self.values.items():
-                file.write(f"    e{MorphVkBitaskName(name, self.bitmask_name_len)} = {bitpos},\n")
+                out_name = MorphVkBitaskName(name, self.bitmask_name_len)
+                if out_name[0].isnumeric():
+                    out_name = f'e{out_name}'
+                file.write(f"    {out_name} = {bitpos},\n")
             file.write('};\n')
             if len(self.values) > 0:
                 file.write(f'inline {self.name} operator+({self.name[2:]} val) {{ return static_cast<{self.name}>(val);}}\n')
@@ -220,23 +240,25 @@ class Bitmask:
             file.write(f'const char * to_string({self.name[2:]} val) {{\n')
             file.write('    switch(val) {\n')
             for bitpos, name in self.values.items():
-                try:
-                    out_val = int(bitpos)
-                    out_name = MorphVkBitaskName(name, self.bitmask_name_len)
-                    file.write(f'        case({self.name[2:]}::e{out_name}): return \"e{out_name}\";\n')
-                except ValueError:
-                    pass
+                if not RepresentsIntOrHex(bitpos):
+                    continue
+                out_name = MorphVkBitaskName(name, self.bitmask_name_len)
+                if out_name[0].isnumeric():
+                    out_name = f'e{out_name}'
+                file.write(f'        case({self.name[2:]}::{out_name}): return \"{out_name}\";\n')
+
             file.write('        default: return "UNKNOWN";\n    }\n}\n')
             file.write(f'std::string to_string({self.flags_name[2:]} flag){{\n')
             file.write(f'    if (flag.flags == 0) return \"None\";\n')
             file.write(f'    std::string out;\n')
             for bitpos, name in self.values.items():
-                try:
-                    out_val = int(bitpos)
-                    out_name = MorphVkBitaskName(name, self.bitmask_name_len)
-                    file.write(f'    if (flag & {self.name[2:]}::e{out_name}) out += \"e{out_name} | \";\n')
-                except ValueError:
-                    pass
+                if not RepresentsIntOrHex(bitpos):
+                    continue
+                out_name = MorphVkBitaskName(name, self.bitmask_name_len)
+                if out_name[0].isnumeric():
+                    out_name = f'e{out_name}'
+                file.write(f'    if (flag & {self.name[2:]}::{out_name}) out += \"{out_name} | \";\n')
+                
             file.write(f'    return out.substr(0, out.size() - 3);\n}};\n')
             PlatformGuardFooter(file, self.platform)
 
@@ -285,7 +307,8 @@ struct FLAG_TYPE {                                                              
     constexpr explicit FLAG_TYPE() noexcept = default;                              \\
     constexpr explicit FLAG_TYPE(base_type in) noexcept: flags(in){ }               \\
     constexpr FLAG_TYPE(FLAG_BITS in) noexcept: flags(static_cast<base_type>(in)){ }\\
-    constexpr bool operator==(FLAG_TYPE const& right) const = default;              \\
+    constexpr bool operator==(FLAG_TYPE const& right) const { return flags == right.flags;}\\
+    constexpr bool operator!=(FLAG_TYPE const& right) const { return flags != right.flags;}\\
     constexpr explicit operator bool() const noexcept {                             \\
       return flags != 0;                                                            \\
     }                                                                               \\
@@ -371,7 +394,7 @@ class ApiConstant:
         if self.alias is not None:
             file.write(f'constexpr auto {self.name[3:]} = {self.alias[3:]};\n')
         elif self.value is not None:
-            file.write(f'constexpr size_t {self.name[3:]} = {self.value};\n')
+            file.write(f'constexpr auto {self.name[3:]} = {self.value};\n')
 
 class Handle:
     def __init__(self, node):
@@ -495,7 +518,10 @@ class Variable:
         if self.base_type in default_values:
             self.default_value = default_values[self.base_type]
         if self.name == 'sType' and self.sType_values is not None:
-            self.default_value = f'StructureType::e{MorphVkEnumName(self.sType_values, 3)}'
+            out_name = MorphVkEnumName(self.sType_values, 3)
+            if out_name[0].isnumeric():
+                out_name = f'e{out_name}'
+            self.default_value = f'StructureType::{out_name}'
 
         self.is_handle = self.base_type in handles
 
@@ -629,6 +655,112 @@ class Structure:
             file.write(f'static_assert( std::is_standard_layout<{self.name[2:]}>::value, "Must be a standard layout type" );\n')
             PlatformGuardFooter(file, self.platform)
 
+vulkan_loader_text = '''
+#if !defined(VULKAN_CUSTOM_ASSERT)
+#include <cassert>
+#define VULKAN_CUSTOM_ASSERT assert
+#endif
+
+#if defined(WIN32)
+    #define VC_EXTRALEAN
+    #define WIN32_LEAN_AND_MEAN
+    #include <windows.h>
+    #if defined(MemoryBarrier)
+        #undef MemoryBarrier
+    #endif
+#elif defined(__linux__) || defined(__APPLE__)
+    #include <dlfcn.h>
+#endif
+namespace vk {
+class Loader {
+    public:
+    Loader(bool init_at_construction = false) noexcept {
+        if(init_at_construction){
+            init();
+        }
+    }
+    Loader(PFN_vkGetInstanceProcAddr get_instance_proc_addr) noexcept : 
+        get_instance_proc_addr(get_instance_proc_addr) { }
+    ~Loader() noexcept {
+        close();
+    }
+    Loader(Loader const& other) = delete;
+    Loader& operator=(Loader const& other) = delete;
+    Loader(Loader && other) noexcept: library(other.library), get_instance_proc_addr(other.get_instance_proc_addr) {
+        other.get_instance_proc_addr = 0;
+        other.library = 0;
+    }
+    Loader& operator=(Loader && other) noexcept {
+        if (this != &other)
+        {
+            close();
+            library = other.library; 
+            get_instance_proc_addr = other.get_instance_proc_addr;
+            other.get_instance_proc_addr = 0;
+            other.library = 0;
+        }
+    }
+
+    vk::Result init(PFN_vkGetInstanceProcAddr get_instance_proc_addr = nullptr) noexcept {
+        if (get_instance_proc_addr != nullptr) {
+            this->get_instance_proc_addr = get_instance_proc_addr;
+            return vk::Result::Success;
+        }
+#if defined(__linux__)
+        library = dlopen("libvulkan.so", RTLD_NOW | RTLD_LOCAL);
+        if (!library) library = dlopen("libvulkan.so.1", RTLD_NOW | RTLD_LOCAL);
+#elif defined(__APPLE__)
+        library = dlopen("libvulkan.dylib", RTLD_NOW | RTLD_LOCAL);
+#elif defined(_WIN32)
+        library = LoadLibrary(TEXT("vulkan-1.dll"));
+#endif
+        if (library == 0) return vk::Result::ErrorInitializationFailed;
+        Load(this->get_instance_proc_addr, "vkGetInstanceProcAddr");
+        if (this->get_instance_proc_addr == nullptr) return vk::Result::ErrorInitializationFailed;
+        return vk::Result::Success;
+    }
+    void close() noexcept {
+        if (library != nullptr) {
+#if defined(__linux__) || defined(__APPLE__)
+            dlclose(library);
+#elif defined(_WIN32)
+            FreeLibrary(library);
+#endif
+        library = 0;
+        }
+    }
+
+    // Check if vulkan is loaded and ready for use
+    [[nodiscard]] bool is_init() const noexcept { return get_instance_proc_addr != 0; }
+
+    // Get `vkGetInstanceProcAddr` if it was loaded, 0 if not
+    [[nodiscard]] PFN_vkGetInstanceProcAddr get() const noexcept {
+        assert(get_instance_proc_addr != nullptr && "Must call init() before use");
+        return get_instance_proc_addr;
+    }
+
+private:
+    
+    template <typename T>
+    void Load(T &func_dest, const char *func_name) {
+#if defined(__linux__) || defined(__APPLE__)
+        func_dest = reinterpret_cast<T>(dlsym(library, func_name));
+#elif defined(_WIN32)
+        func_dest = reinterpret_cast<T>(GetProcAddress(library, func_name));
+#endif
+    }
+
+#if defined(__linux__) || defined(__APPLE__)
+    void *library = nullptr;
+#elif defined(_WIN32)
+    HMODULE library = nullptr;
+#endif
+
+    PFN_vkGetInstanceProcAddr get_instance_proc_addr = nullptr;
+    
+};
+'''
+
 class Function:
     def __init__(self, node, constants, handles, dispatchable_handles, default_values):
         self.success_codes = []
@@ -659,7 +791,7 @@ class Function:
             if self.name == 'vkGetInstanceProcAddr':
                 self.dispatch_type = None
             elif self.name == 'vkGetDeviceProcAddr':
-                self.dispatch_type = "device"
+                self.dispatch_type = "instance"
             elif self.parameters[0].base_type == 'VkInstance' or self.parameters[0].base_type == 'VkPhysicalDevice':  
                 self.dispatch_type = "instance"
             elif self.free_function:
@@ -669,7 +801,7 @@ class Function:
             if self.parameters[0].base_type in dispatchable_handles:
                 self.dispatch_handle = self.parameters[0].base_type
         if self.name is not None:
-            self.func_prototype = f'PFN_{self.name}';
+            self.func_prototype = f'PFN_{self.name}'
 
     def check_platform(self, platform, ext_functions):
         if self.name in ext_functions:
@@ -685,11 +817,14 @@ class Function:
                 for str_from, str_to in replace_dict.items():
                     if print_function_name.find(str_from) != -1:
                         print_function_name = print_function_name.replace(str_from, str_to)
-                
+            file.write(f'{indent}')
+            if self.return_type != 'void': 
+                file.write('[[nodiscard]] ')
+
             if self.return_type == 'VkResult':
-                file.write(f'{indent}Result {print_function_name}(')
+                file.write(f'Result {print_function_name}(')
             else:
-                file.write(f'{indent}{self.return_type} {print_function_name}(')
+                file.write(f'{self.return_type} {print_function_name}(')
             parameter_list = self.parameters
             dispatch_matches_handle = False
             if dispatch_handle is not None and f'{dispatch_handle}' == self.dispatch_handle:
@@ -930,10 +1065,15 @@ class DispatchTable:
              
         #constructor
         if self.dispatch_type == 'global':
-            file.write(f'    {self.name}Functions({gpa_type} {gpa_name}) {{\n')
-        else:
-            file.write(f'    {self.name}Functions({gpa_type} {gpa_name}, {self.dispatch_type.title()} {self.dispatch_type})')
+            file.write(f'    {self.name}Functions(Loader const& loader) {{\n')
+            file.write(f'    {gpa_type} {gpa_name} = loader.get();\n')
+        elif self.dispatch_type == 'instance':
+            file.write(f'    {self.name}Functions(Loader const& loader, {self.dispatch_type.title()} {self.dispatch_type})')
             file.write(f':{self.dispatch_type}({self.dispatch_type}) {{ \n')
+            file.write(f'    {gpa_type} {gpa_name} = loader.get();\n')
+        elif self.dispatch_type == 'device':
+            file.write(f'    {self.name}Functions(InstanceFunctions const& instance_functions, {self.dispatch_type.title()} {self.dispatch_type}){{\n')
+            file.write(f'    {gpa_type} {gpa_name} = instance_functions.pfn_GetDeviceProcAddr;\n')
         for guard, functions in self.guarded_functions.items():
             file.write(f'#if {guard}\n')
             for function in functions:
@@ -1154,35 +1294,10 @@ class BindingGenerator:
         self.dispatchable_handle_tables.append(DispatchableHandleDispatchTable('VkPhysicalDevice', 'instance',{'GetPhysicalDevice': 'Get'}, self.functions))
         self.dispatchable_handle_tables.append(DispatchableHandleDispatchTable('VkQueue', 'device',{'Queue': ''}, self.functions))
         self.dispatchable_handle_tables.append(DispatchableHandleDispatchTable('VkCommandBuffer', 'device',{'Cmd': '', 'CommandBuffer':''}, self.functions))
-        
-    def print_core(self, file):
-        [ constant.print(file) for constant in self.api_constants.values() ]
-        [ base_type.print(file) for base_type in self.base_types ]
-        PrintConsecutivePlatforms(file, self.enum_dict.values())
-        PrintConsecutivePlatforms(file, self.bitmask_dict.values())
-        file.write(bitmask_flags_macro + '\n')
-        PrintConsecutivePlatforms(file, self.flags_dict.values())
-        PrintConsecutivePlatforms(file, self.handles.values())
-        PrintConsecutivePlatforms(file, self.structures)
- 
-    def print_functions(self, file):
-        [ dispatch_table.print(file) for dispatch_table in self.dispatch_tables ]
-        [ table.print(file) for table in self.dispatchable_handle_tables ]
 
-    def print_string(self, file):
-        [ enum.print_string(file) for enum in self.enum_dict.values()]
-        [ bitmask.print_string(file) for bitmask in self.bitmask_dict.values()]
 
-    def print_string_defs(self, file):
-        [ enum.print_string_defs(file) for enum in self.enum_dict.values()]
-        [ bitmask.print_string_defs(file) for bitmask in self.bitmask_dict.values()]
-
-    def print_static_asserts(self, file):
-        [ structure.print_static_asserts(file) for structure in self.structures ]
-        [ handle.print_static_asserts(file) for handle in self.handles.values() ]
-
+  
 def main():
-
     tree = xml.etree.ElementTree.parse('registry/vk.xml')
     root = tree.getroot()
 
@@ -1192,63 +1307,66 @@ def main():
     bindings = BindingGenerator(root)
 
     with open('include/vkpp.h', 'w') as vkpp:
-        vkpp.write('#pragma once\n')
+        vkpp.write('#pragma once\n// clang-format off\n')
         vkpp.write('#include "vkpp_core.h"\n')
         vkpp.write('#include "vkpp_functions.h"\n')
         vkpp.write('#include "vkpp_string.h"\n')
+        vkpp.write('// clang-format on\n')
 
     with open('include/vkpp_core.h', 'w') as vkpp_core:
-        vkpp_core.write('#pragma once\n')
-        vkpp_core.write('// clang-format off\n')
+        vkpp_core.write('#pragma once\n// clang-format off\n')
         vkpp_core.write('#include <stdint.h>\n')
         vkpp_core.write('#include <type_traits>\n')
         vkpp_core.write('#define VK_ENABLE_BETA_EXTENSIONS\n')
         vkpp_core.write('#include <vulkan/vulkan.h>\n')
         vkpp_core.write('namespace vk {\n')
-        bindings.print_core(vkpp_core)
-        vkpp_core.write('} // namespace vk\n')
-        vkpp_core.write('// clang-format on\n')
+        [ constant.print(vkpp_core) for constant in bindings.api_constants.values() ]
+        [ base_type.print(vkpp_core) for base_type in bindings.base_types ]
+        PrintConsecutivePlatforms(vkpp_core, bindings.enum_dict.values())
+        PrintConsecutivePlatforms(vkpp_core, bindings.bitmask_dict.values())
+        vkpp_core.write(bitmask_flags_macro + '\n')
+        PrintConsecutivePlatforms(vkpp_core, bindings.flags_dict.values())
+        PrintConsecutivePlatforms(vkpp_core, bindings.handles.values())
+        PrintConsecutivePlatforms(vkpp_core, bindings.structures)
+        vkpp_core.write('} // namespace vk\n// clang-format on\n')
 
     with open('include/vkpp_functions.h', 'w') as vkpp_functions:
-        vkpp_functions.write('#pragma once\n')
-        vkpp_functions.write('// clang-format off\n')
-        vkpp_functions.write('#include <stdint.h>\n')
-        vkpp_functions.write('#include <type_traits>\n')
-        vkpp_functions.write('#define VK_ENABLE_BETA_EXTENSIONS\n')
-        vkpp_functions.write('#include <vulkan/vulkan.h>\n')
-        vkpp_functions.write('namespace vk {\n')
-        bindings.print_functions(vkpp_functions)
-        vkpp_functions.write('} // namespace vk\n')
-        vkpp_functions.write('// clang-format on\n')
+        vkpp_functions.write('#pragma once\n// clang-format off\n')
+        vkpp_functions.write('#include "vkpp_core.h"\n')
+        vkpp_functions.write(vulkan_loader_text + '\n') #defines namespace vk here
+        [ dispatch_table.print(vkpp_functions) for dispatch_table in bindings.dispatch_tables ]
+        [ table.print(vkpp_functions) for table in bindings.dispatchable_handle_tables ]
+        vkpp_functions.write('} // namespace vk\n// clang-format on\n')
 
     with open('include/vkpp_string.h', 'w') as string_helpers:
-        string_helpers.write('#pragma once\n')
-        string_helpers.write('// clang-format off\n')
-        string_helpers.write('#include <string>\n')
+        string_helpers.write('#pragma once\n// clang-format off\n')
         string_helpers.write('#include "vkpp_core.h"\n')
+        string_helpers.write('#include <string>\n')
         string_helpers.write('namespace vk {\n')
-        bindings.print_string(string_helpers)
-        string_helpers.write('} // namespace vk\n')
-        string_helpers.write('// clang-format on\n')
+        [ enum.print_string(string_helpers) for enum in bindings.enum_dict.values()]
+        [ bitmask.print_string(string_helpers) for bitmask in bindings.bitmask_dict.values()]
+        string_helpers.write('} // namespace vk\n// clang-format on\n')
 
     with open('include/vkpp_string.cpp', 'w') as string_helpers_defs:
         string_helpers_defs.write('// clang-format off\n')
         string_helpers_defs.write('#include "vkpp_string.h"\n')
         string_helpers_defs.write('namespace vk {\n')
-        bindings.print_string_defs(string_helpers_defs)
-        string_helpers_defs.write('} // namespace vk\n')
-        string_helpers_defs.write('// clang-format on\n')
+        string_helpers_defs.write('#if defined(WIN32)\n')
+        string_helpers_defs.write('#pragma warning( disable : 4065 )\n')
+        string_helpers_defs.write('#endif //defined(WIN32)\n')
+        [ enum.print_string_defs(string_helpers_defs) for enum in bindings.enum_dict.values()]
+        [ bitmask.print_string_defs(string_helpers_defs) for bitmask in bindings.bitmask_dict.values()]
+        string_helpers_defs.write('} // namespace vk\n// clang-format on\n')
     
     with open('tests/static_asserts.h', 'w') as static_asserts:
         static_asserts.write('#pragma once\n')
         static_asserts.write('// clang-format off\n')
         static_asserts.write('#include "vkpp_core.h"\n')
-        static_asserts.write('#include <type_traits>\n')
         static_asserts.write('namespace vk {\n')
-        bindings.print_static_asserts(static_asserts)
+        [ structure.print_static_asserts(static_asserts) for structure in bindings.structures ]
+        [ handle.print_static_asserts(static_asserts) for handle in bindings.handles.values() ]
         static_asserts.write('} // namespace vk\n')
         static_asserts.write('// clang-format on\n')
-
 
 if __name__ == "__main__":
     main()
