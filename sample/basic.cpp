@@ -12,16 +12,16 @@ int main() {
     vk::GlobalFunctions free_funcs(loader);
 
     uint32_t count = 0;
-    res = free_funcs.EnumerateInstanceLayerProperties(&count, nullptr);
+    res = free_funcs.EnumerateInstanceLayerProperties(count, nullptr);
     std::vector<vk::LayerProperties> props(count);
-    res = free_funcs.EnumerateInstanceLayerProperties(&count, props.data());
+    res = free_funcs.EnumerateInstanceLayerProperties(count, props.data());
     std::cout << "count " << count << "\n";
     for (auto &prop : props)
         std::cout << prop.layerName << "\n";
 
     vk::InstanceCreateInfo info;
     vk::Instance inst;
-    res = free_funcs.CreateInstance(&info, nullptr, &inst);
+    res = free_funcs.CreateInstance(info, nullptr, inst);
     if (res != vk::Result::Success) {
         std::cout << "failed to create instance\n";
         return static_cast<int>(res);
@@ -33,10 +33,10 @@ int main() {
         std::cout << "shouldn't print this\n";
 
     vk::InstanceFunctions inst_funcs(loader, inst);
-    res = inst_funcs.EnumeratePhysicalDevices(&count, nullptr);
+    res = inst_funcs.EnumeratePhysicalDevices(count, nullptr);
 
     std::vector<vk::PhysicalDevice> phys_devices(count);
-    res = inst_funcs.EnumeratePhysicalDevices(&count, phys_devices.data());
+    res = inst_funcs.EnumeratePhysicalDevices(count, phys_devices.data());
 
     if (count == 0) {
         std::cout << "failed to get phys devices\n";
@@ -73,10 +73,10 @@ int main() {
     flags ^= flags;
 
     vk::ImageCreateFlags img_flags = vk::ImageCreateFlagBits::SparseBinding;
-    vk::PhysicalDeviceDispatchTable phys_dev_funcs(phys_dev, inst_funcs);
+    vk::PhysicalDeviceFunctions phys_dev_funcs(inst_funcs, phys_dev);
 
     res = phys_dev_funcs.GetImageFormatProperties(vk::Format::Undefined, vk::ImageType::e1D, vk::ImageTiling::Optimal,
-                                                  vk::ImageUsageFlagBits::TransferDst, img_flags, &image_props);
+                                                  vk::ImageUsageFlagBits::TransferDst, img_flags, image_props);
     VkImageUsageFlagBits test_usage_flag_bits = +vk::ImageUsageFlagBits::TransferDst;
     vk::SwapchainCreateInfoKHR swap_info;
     swap_info.preTransform = vk::SurfaceTransformFlagBitsKHR::IdentityBitKHR;
@@ -94,11 +94,20 @@ int main() {
     vk::DeviceCreateInfo dev_create_info;
     dev_create_info.queueCreateInfoCount = 1;
     dev_create_info.pQueueCreateInfos = &queue_info;
-    res = inst_funcs.CreateDevice(phys_dev, &dev_create_info, nullptr, &device);
+    res = inst_funcs.CreateDevice(phys_dev, dev_create_info, nullptr, device);
     if (res != vk::Result::Success)
         return -1;
+    vk::DeviceFunctions device_functions(inst_funcs, device);
 
-    vk::DeviceFunctions(inst_funcs, device);
-
+    uint32_t queue_indices = 0;
+    vk::BufferCreateInfo buffer_info{.size = 100,
+                                     .usage = vk::BufferUsageFlagBits::IndexBuffer,
+                                     .sharingMode = vk::SharingMode::Exclusive,
+                                     .queueFamilyIndexCount = 1,
+                                     .pQueueFamilyIndices = &queue_indices};
+    vk::Buffer buffer;
+    res = device_functions.CreateBuffer(buffer_info, nullptr, buffer);
+    if (res != vk::Result::Success)
+        return -1;
     return 0;
 }

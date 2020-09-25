@@ -12,7 +12,6 @@ generate test code for flags
 2 call function helpers (enumerateXYZ)
 builder pattern for creation functions
 allow combinatorial defines (x && y || z && w) for ex: AcquireNextImage2KHR
-make output values references;
 
 In progress
 move platform entities together to reduce the #if-def bloat
@@ -34,6 +33,7 @@ remove disabled extension types
 dispatchable handles (instance, physdevice, device, queue, command buffer)
 handles are a thing, decide what to do - have simple handles that are neat little wrappers and nothing more.
 create dll/so vulkan loader
+make output values references;
 '''
 
 vendor_abbreviations = []
@@ -452,13 +452,14 @@ class Variable:
 
         # type characteristics
         self.is_const = False
-        self.is_ptr = False
+        self.is_single_ptr = False
         self.is_double_ptr = False
         self.is_const_double_ptr = False
         self.array_lengths = []  # multi-dimensional
         self.default_value = None
         self.is_comparable = True
         self.bitfield = None
+        self.is_ref_eligible = False
 
         self.base_type = node.find('type').text
         self.base_type_modified = self.base_type
@@ -483,13 +484,14 @@ class Variable:
         if type_list[cur] == self.base_type:
             cur += 1
         if type_list[cur] == '*':
-            self.is_ptr = True
+            self.is_single_ptr = True
             cur += 1
         if type_list[cur] == '**':
             self.is_double_ptr = True
             cur += 1
         if type_list[cur] == 'const*':
             self.is_const_double_ptr = True
+            self.is_single_ptr = False
             cur += 1
         if type_list[cur] == self.name:
             cur += 1
@@ -525,10 +527,17 @@ class Variable:
 
         self.is_handle = self.base_type in handles
 
-        if self.is_handle or self.is_ptr or self.is_double_ptr or self.is_const_double_ptr:
+        if self.is_handle or self.is_ptr():
             self.is_comparable = False
 
-    def get_base_type(self, use_vk_type=True):
+        if (not self.optional or self.optional != 'true') and (self.len_attrib is None) \
+            and self.is_single_ptr and (self.base_type != "void"):
+            self.is_ref_eligible = True
+
+    def is_ptr(self):
+        return self.is_single_ptr or self.is_double_ptr or self.is_const_double_ptr
+
+    def get_base_type(self, use_vk_type=True, use_references=False):
         type_decl = ''
         if self.is_const:
             type_decl += 'const '
@@ -536,35 +545,37 @@ class Variable:
             type_decl += self.base_type_modified
         else:
             type_decl += self.base_type
-        if self.is_ptr:
+        if use_references and self.is_ref_eligible:
+            type_decl += '& '
+        elif self.is_single_ptr:
             type_decl += '*'
-        if self.is_double_ptr:
+        elif self.is_double_ptr:
             type_decl += '**'
-        if self.is_const_double_ptr:
-            type_decl += ' const*'
+        elif self.is_const_double_ptr:
+            type_decl += '* const*'
+
         return type_decl
 
     def get_init(self):
-        if self.is_ptr or self.is_double_ptr or self.is_const_double_ptr:
+        if self.is_ptr():
             return ' = nullptr'
         elif self.default_value is not None:
             if len(self.array_lengths) > 0:
-                return ' = {}'
+                return '{}'
             else:
-                return f' = {self.default_value}'
+                return f'{{{self.default_value}}}'
         else:
-            return ''        
+            return '{}'
 
     def get_base_type_only(self):
-        type_decl = self.get_base_type(False)
+        type_decl = self.get_base_type(use_vk_type=False)
         for arr in self.array_lengths:
             type_decl += f'[{arr}]'
         return type_decl
 
-    def get_full_type(self, make_const_ref = False):
-        type_decl = self.get_base_type() + ' '
-        if make_const_ref and len(self.array_lengths) == 0:
-            type_decl += 'const& '
+    def get_full_type(self, use_references = False):
+        local_use_refs = use_references
+        type_decl = f'{self.get_base_type(use_references=local_use_refs)} '
         type_decl += self.name
         if self.bitfield is not None:
             type_decl += f':{self.bitfield}'
@@ -631,7 +642,7 @@ class Structure:
             if self.category == 'struct':
                 file.write(f'struct {self.name[2:]} {{\n')
                 for member in self.members:
-                    file.write(f'    {member.get_parameter_decl(True)};\n')
+                    file.write(f'    {member.get_parameter_decl(default_init=True)};\n')
 
                 if self.is_comparable:
                     file.write(f'    constexpr bool operator==({self.name[2:]} const& other) const = default;\n')
@@ -643,7 +654,7 @@ class Structure:
             elif self.category == 'union':
                 file.write(f'union {self.name[2:]} {{\n')
                 for member in self.members:
-                    file.write(f'    {member.get_parameter_decl(False)};\n')
+                    file.write(f'    {member.get_parameter_decl(default_init=False)};\n')
                 if self.is_comparable:
                     print_custom_comparator(file, self.members, self.name[2:])
                 file.write('};\n')
@@ -825,6 +836,7 @@ class Function:
                 file.write(f'Result {print_function_name}(')
             else:
                 file.write(f'{self.return_type} {print_function_name}(')
+
             parameter_list = self.parameters
             dispatch_matches_handle = False
             if dispatch_handle is not None and f'{dispatch_handle}' == self.dispatch_handle:
@@ -836,7 +848,7 @@ class Function:
                     file.write(f',\n{indent}    ')
                 else:
                     is_first = False
-                file.write(f'{param.get_full_type()}')
+                file.write(f'{param.get_full_type(use_references=True)}')
             file.write(') {\n')
 
             file.write(f'{indent}    return ')
@@ -855,14 +867,19 @@ class Function:
                     if dispatch_matches_handle:
                         file.write(f'{dispatch_handle_name}.get()')
                         continue
-                if param.is_handle and not param.is_ptr:
+                if param.is_handle and not param.is_ptr():
                     file.write(param.name + '.get()')
                 elif param.base_type not in base_type_default_values.keys() and param.base_type not in base_type_implicit_conversions:
-                    if param.is_ptr:
-                        file.write(f'reinterpret_cast<{param.get_base_type_only()}>({param.name})')
+                    if param.is_ptr():
+                        file.write(f'reinterpret_cast<{param.get_base_type_only()}>(')
+                        if param.is_ref_eligible:
+                            file.write('&')
+                        file.write(f'{param.name})')
                     else:
                         file.write(f'static_cast<{param.get_base_type_only()}>({param.name})')
                 else:
+                    if param.is_ref_eligible:
+                        file.write('&')
                     file.write(param.name)
             if self.return_type == 'VkResult':
                 file.write(')')
@@ -963,7 +980,6 @@ class Requires:
 
 
 class Extension:
-
     def __init__(self, node, platforms):
         self.name = node.get('name')
         self.ext_num = int(node.get('number'))
@@ -1095,20 +1111,15 @@ class DispatchableHandleDispatchTable:
                 self.functions.append(function)
 
     def print(self, file):
-        if self.dispatch_type == 'instance':
-            param_type = 'InstanceFunctions'
-            param_name = 'instance_functions'
-        else:
-            param_type = 'DeviceFunctions'
-            param_name = 'device_functions'
+        functions_type = f'{self.dispatch_type.title()}Functions'
+        functions_name = f'{self.dispatch_type}_functions'
         type_name = self.name[2:]
         var_name = self.name[2:].lower()
-        file.write(f'struct {type_name}DispatchTable {{\n')
-        file.write(f'    {type_name} const {var_name};\n')
-        file.write(f'    {param_type} const* {param_name};\n')
-        file.write(f'    {type_name}DispatchTable({type_name} {var_name}, {param_type} const& {param_name})')
-        file.write(f':{var_name}({var_name}), {param_name}(&{param_name}){{}}\n')
-        
+        file.write(f'struct {type_name}Functions {{\n')
+        file.write(f'    {functions_type} const* {functions_name};\n')
+        file.write(f'    {type_name} const {var_name};\n')      
+        file.write(f'    {type_name}Functions({functions_type} const& {functions_name}, {type_name} const {var_name})\n')
+        file.write(f'        :{functions_name}(&{functions_name}), {var_name}({var_name}){{}}\n')
         prev_platform = None
         for func in self.functions:
             if prev_platform != func.platform:
@@ -1118,7 +1129,7 @@ class DispatchableHandleDispatchTable:
                     file.write(f'#if defined({func.platform})\n')
             prev_platform = func.platform
             func.print(file, dispatch_handle=self.name, dispatch_handle_name=var_name, indent='    ', \
-                replace_dict=self.replace_dict, pfn_source=param_name, guard=False)
+                replace_dict=self.replace_dict, pfn_source=functions_name, guard=False)
         if prev_platform is not None:
             file.write(f'#endif // defined({prev_platform})\n')
         file.write('};\n')
@@ -1294,8 +1305,6 @@ class BindingGenerator:
         self.dispatchable_handle_tables.append(DispatchableHandleDispatchTable('VkPhysicalDevice', 'instance',{'GetPhysicalDevice': 'Get'}, self.functions))
         self.dispatchable_handle_tables.append(DispatchableHandleDispatchTable('VkQueue', 'device',{'Queue': ''}, self.functions))
         self.dispatchable_handle_tables.append(DispatchableHandleDispatchTable('VkCommandBuffer', 'device',{'Cmd': '', 'CommandBuffer':''}, self.functions))
-
-
   
 def main():
     tree = xml.etree.ElementTree.parse('registry/vk.xml')
