@@ -72,14 +72,29 @@ int main() {
     vk::DeviceFunctions device_functions(inst_funcs, device);
 
     uint32_t queue_indices = 0;
-    vk::BufferCreateInfo buffer_info{.size = 100,
-                                     .usage = vk::BufferUsageFlagBits::IndexBuffer,
-                                     .sharingMode = vk::SharingMode::Exclusive,
-                                     .queueFamilyIndexCount = 1,
-                                     .pQueueFamilyIndices = &queue_indices};
+    // vk::BufferCreateInfo buffer_info{.size = 100,
+    //                                  .usage = vk::BufferUsageFlagBits::IndexBuffer,
+    //                                  .sharingMode = vk::SharingMode::Exclusive,
+    //                                  .queueFamilyIndexCount = 1,
+    //                                  .pQueueFamilyIndices = &queue_indices};
+    vk::BufferCreateInfo buffer_info;
+    buffer_info.size = 100;
+    buffer_info.usage = vk::BufferUsageFlagBits::IndexBuffer;
+    buffer_info.sharingMode = vk::SharingMode::Exclusive;
+    buffer_info.queueFamilyIndexCount = 1;
+    buffer_info.pQueueFamilyIndices = &queue_indices;
     vk::Buffer buffer;
     res = device_functions.CreateBuffer(buffer_info, nullptr, buffer);
     if (res != vk::Result::Success)
         return -1;
+
+    vk::ClearColorValue x, y;
+    x.float32[0] = 1.f;
+    y.uint32[0] = 1;
+    bool equal = x == y;
+    bool not_equal = x != y;
+
+    vk::Extent2D extent = {100, 200};
+
     return 0;
 }

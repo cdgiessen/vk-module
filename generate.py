@@ -55,6 +55,20 @@ base_type_default_values = {
 
 base_type_implicit_conversions = {}
 
+class ApiConstant:
+    def __init__(self, node):
+        self.name = node.get('name')
+        self.value = node.get('value')
+        self.alias = node.get('alias')
+
+    def print_base(self, file):
+        if self.alias is not None:
+            file.write(f'constexpr auto {self.name[3:]} = {self.alias[3:]};\n')
+        elif self.value is not None:
+            file.write(f'constexpr auto {self.name[3:]} = {self.value};\n')
+
+api_constants = {}
+
 class BaseType:
     def __init__(self, node):
         self.name = node.find('name').text
@@ -384,18 +398,6 @@ class Flags:
         else:
             file.write(f'using {self.name[2:]} = {self.alias[2:]};\n')
 
-class ApiConstant:
-    def __init__(self, node):
-        self.name = node.get('name')
-        self.value = node.get('value')
-        self.alias = node.get('alias')
-
-    def print_base(self, file):
-        if self.alias is not None:
-            file.write(f'constexpr auto {self.name[3:]} = {self.alias[3:]};\n')
-        elif self.value is not None:
-            file.write(f'constexpr auto {self.name[3:]} = {self.value};\n')
-
 class Handle:
     def __init__(self, node):
         self.name = None
@@ -442,7 +444,7 @@ class Handle:
 
 
 class Variable:
-    def __init__(self, node, constants, handles, default_values):
+    def __init__(self, node, handles, default_values):
         self.name = node.find('name').text
         self.sType_values = node.get('values')
 
@@ -511,7 +513,7 @@ class Variable:
                 type_list[cur] = type_list[cur][next_bracket + 1:]
             else:
                 break
-            if arr_len in constants:
+            if arr_len in api_constants:
                 arr_len = arr_len[3:]
             self.array_lengths.append(arr_len)
         for t in type_list:
@@ -559,11 +561,10 @@ class Variable:
     def get_init(self):
         if self.is_ptr():
             return ' = nullptr'
+        elif len(self.array_lengths) > 0:
+            return ''
         elif self.default_value is not None:
-            if len(self.array_lengths) > 0:
-                return '{}'
-            else:
-                return f'{{{self.default_value}}}'
+            return f'{{{self.default_value}}}'
         else:
             return '{}'
 
@@ -589,7 +590,7 @@ class Variable:
             type_decl += self.get_init()
         return type_decl
 
-def print_custom_comparator(file, member_list, name):
+def print_custom_comparator(file, member_list, name, cpp20mode):
     file.write(f'    constexpr bool operator==({name} const& value) const {{\n')
     file.write('        return ')
     is_first = True
@@ -598,22 +599,41 @@ def print_custom_comparator(file, member_list, name):
             is_first = False
         else:
             file.write('&& ')
-        if len(member.array_lengths) > 0:
+        if len(member.array_lengths) == 1:
             str_out = ''
-            for l in member.array_lengths:
-                for i in range(0, int(l)):
-                    if i > 0 and int(l) > 1 and i < int(l):
+            if f'VK_{member.array_lengths[0]}' in api_constants:
+                length = int(api_constants[f'VK_{member.array_lengths[0]}'].value)
+            else:
+                length = int(member.array_lengths[0])
+            for i in range(0, length):
+                if i > 0 and length > 1 and i < length:
+                    str_out += ' && '
+                str_out += f'{member.name}[{str(i)}] == value.{member.name}[{str(i)}]'
+            str_out += '\n        '
+            file.write(str_out)
+        elif len(member.array_lengths) == 2:
+            # dirty hack because multi-dimensional arrays are hell
+            str_out = ''
+            length = int(member.array_lengths[0])
+            width = int(member.array_lengths[1])
+            for i in range(0, length):
+                if i > 0 and length > 1 and i < length:
+                    str_out += ' && '
+                for j in range(0, width):
+                    if j > 0 and width > 1 and j < width:
                         str_out += ' && '
-                    str_out += f'{member.name}[{str(i)}] == value.{member.name}[{str(i)}]'
+                    str_out += f'{member.name}[{i}][{j}] == value.{member.name}[{i}][{j}]'
                 str_out += '\n        '
             file.write(str_out)
         else:
             file.write(f'{member.name} == value.{member.name} ')
     file.write(';}\n')
+    if not cpp20mode:
+        file.write(f'    constexpr bool operator!=({name} const& value) const {{return !(*this == value);}}\n')
 
 # Contains both structs and unions
 class Structure:
-    def __init__(self, node, constants, handles, default_values):
+    def __init__(self, node, handles, default_values):
         self.name = node.get('name')
         self.alias = node.get('alias')
         self.category = node.get('category') # struct or union
@@ -623,7 +643,7 @@ class Structure:
         self.structextends = node.get('structextends')
 
         for member in node.findall('member'):
-            self.members.append(Variable(member, constants, handles, default_values))
+            self.members.append(Variable(member, handles, default_values))
 
         self.is_comparable = True
         for member in self.members:
@@ -635,7 +655,7 @@ class Structure:
         if self.name in ext_types or (self.alias is not None and self.alias in ext_types):
             self.platform = platform
 
-    def print_base(self, file):
+    def print_base(self, file, cpp20mode = True):
         if self.alias is not None:
             file.write(f'using {self.name[2:]} = {self.alias[2:]};\n')
         else:
@@ -645,7 +665,10 @@ class Structure:
                     file.write(f'    {member.get_parameter_decl(default_init=True)};\n')
 
                 if self.is_comparable:
-                    file.write(f'    constexpr bool operator==({self.name[2:]} const& other) const = default;\n')
+                    if cpp20mode:
+                        file.write(f'    constexpr bool operator==({self.name[2:]} const& other) const = default;\n')
+                    else:
+                        print_custom_comparator(file, self.members, self.name[2:], cpp20mode)
                 file.write(f'    operator {self.name} const &() const noexcept {{\n')
                 file.write(f'        return *reinterpret_cast<const {self.name}*>(this);\n    }}\n')
                 file.write(f'    operator {self.name} &() noexcept {{\n')
@@ -656,7 +679,7 @@ class Structure:
                 for member in self.members:
                     file.write(f'    {member.get_parameter_decl(default_init=False)};\n')
                 if self.is_comparable:
-                    print_custom_comparator(file, self.members, self.name[2:])
+                    print_custom_comparator(file, self.members, self.name[2:], cpp20mode)
                 file.write('};\n')
 
     def print_static_asserts(self, file):
@@ -773,7 +796,7 @@ private:
 '''
 
 class Function:
-    def __init__(self, node, constants, handles, dispatchable_handles, default_values):
+    def __init__(self, node, handles, dispatchable_handles, default_values):
         self.success_codes = []
         self.error_codes = []
         if node.get('successcodes') is not None:
@@ -794,7 +817,7 @@ class Function:
         
         self.parameters = []
         for param in node.findall('param'):
-            self.parameters.append( Variable(param, constants, handles, default_values))
+            self.parameters.append( Variable(param, handles, default_values))
         self.dispatch_type = None
         self.dispatch_handle = None
         if len(self.parameters) > 0:
@@ -1148,7 +1171,7 @@ class DispatchableHandleDispatchTable:
             file.write(f'#endif // defined({prev_platform})\n')
         file.write('};\n')
 
-def PrintConsecutivePlatforms(file, in_list):
+def PrintConsecutivePlatforms(file, in_list, cpp20mode = None):
     prev_platform = None
     for item in in_list:
         if prev_platform != item.platform:
@@ -1157,7 +1180,10 @@ def PrintConsecutivePlatforms(file, in_list):
             if item.platform is not None:
                 file.write(f'#if defined({item.platform})\n')
         prev_platform = item.platform
-        item.print_base(file)
+        if cpp20mode is not None:
+            item.print_base(file, cpp20mode)
+        else:
+            item.print_base(file)
     if prev_platform is not None:
         file.write(f'#endif // defined({prev_platform})\n')
         
@@ -1166,7 +1192,6 @@ class BindingGenerator:
 
         self.platforms = {}
         self.default_values = {}
-        self.api_constants = {}
         self.macro_defines = []
         self.base_types = []
         self.func_pointers = []
@@ -1193,7 +1218,7 @@ class BindingGenerator:
                 for constant in enum.iter():
                     api_constant = ApiConstant(constant)
                     if api_constant.name not in ['VK_TRUE', 'VK_FALSE']:
-                        self.api_constants[api_constant.name] = api_constant
+                        api_constants[api_constant.name] = api_constant
                 break
 
         for xml_type in root.find('types'):
@@ -1223,7 +1248,7 @@ class BindingGenerator:
                 if handle.alias is None and handle.dispatchable:
                     self.dispatchable_handles.append(handle.name)
             elif category == 'union' or category == 'struct':
-                self.structures.append(Structure(xml_type, self.api_constants, self.handles, self.default_values))
+                self.structures.append(Structure(xml_type, self.handles, self.default_values))
 
         #fixup the list so that members using a type appear after that type is defined
         outer_counter = 0
@@ -1267,7 +1292,7 @@ class BindingGenerator:
         for commands in root.findall('commands'):
             for command in commands.findall('command'):
                 self.functions.append(
-                    Function(command, self.api_constants, self.handles, self.dispatchable_handles, self.default_values)) 
+                    Function(command, self.handles, self.dispatchable_handles, self.default_values)) 
 
         for ext in root.find('extensions'):
             if ext.tag == 'extension':
@@ -1343,14 +1368,14 @@ def main():
         vkpp_core.write('#define VK_ENABLE_BETA_EXTENSIONS\n')
         vkpp_core.write('#include <vulkan/vulkan.h>\n')
         vkpp_core.write('namespace vk {\n')
-        [ constant.print_base(vkpp_core) for constant in bindings.api_constants.values() ]
+        [ constant.print_base(vkpp_core) for constant in api_constants.values() ]
         [ base_type.print_base(vkpp_core) for base_type in bindings.base_types ]
         PrintConsecutivePlatforms(vkpp_core, bindings.enum_dict.values())
         PrintConsecutivePlatforms(vkpp_core, bindings.bitmask_dict.values())
         vkpp_core.write(bitmask_flags_macro + '\n')
         PrintConsecutivePlatforms(vkpp_core, bindings.flags_dict.values())
         PrintConsecutivePlatforms(vkpp_core, bindings.handles.values())
-        PrintConsecutivePlatforms(vkpp_core, bindings.structures)
+        PrintConsecutivePlatforms(vkpp_core, bindings.structures, False)
         vkpp_core.write('} // namespace vk\n// clang-format on\n')
 
     with open('include/vkpp_functions.h', 'w') as vkpp_functions:

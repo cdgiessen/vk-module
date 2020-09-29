@@ -3,7 +3,7 @@ find_package(Vulkan REQUIRED)
 
 add_executable(basic_sample_usage basic.cpp)
 target_link_libraries(basic_sample_usage Vulkan::Headers vkpp vkpp_string Vulkan::Vulkan)
-set_target_properties(basic_sample_usage PROPERTIES CXX_STANDARD 20)
+set_target_properties(basic_sample_usage PROPERTIES CXX_STANDARD 17)
 
 add_executable(test_vkhpp_compilation test_vkhpp.cpp)
 target_link_libraries(test_vkhpp_compilation Vulkan::Headers Vulkan::Vulkan)

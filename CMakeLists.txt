@@ -25,19 +25,19 @@ add_custom_target(generate_source copy-xml)
 add_library(vkpp_core INTERFACE)
 target_include_directories(vkpp_core INTERFACE ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(vkpp_core INTERFACE Vulkan::Headers)
-target_compile_features(vkpp_core INTERFACE cxx_std_20)
+target_compile_features(vkpp_core INTERFACE cxx_std_17)
 
 add_library(vkpp_functions INTERFACE)
 target_link_libraries(vkpp_functions INTERFACE vkpp_core)
 
 add_library(vkpp INTERFACE)
 target_link_libraries(vkpp INTERFACE Vulkan::Headers vkpp_core vkpp_functions)
-target_compile_features(vkpp INTERFACE cxx_std_20)
+target_compile_features(vkpp INTERFACE cxx_std_17)
 
 add_library(vkpp_string include/vkpp_string.cpp)
 target_include_directories(vkpp_string PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(vkpp_string PUBLIC Vulkan::Headers vkpp)
-target_compile_features(vkpp_string PUBLIC cxx_std_20)
+target_compile_features(vkpp_string PUBLIC cxx_std_17)
 
 if (SET_COMPILE_TIME_TRACE)
 target_compile_options(vkpp_string PUBLIC -ftime-trace)
