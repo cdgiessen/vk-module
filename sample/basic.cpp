@@ -43,37 +43,10 @@ int main() {
     }
 
     vk::PhysicalDevice phys_dev = phys_devices.at(0);
-    vk::ImageFormatProperties image_props;
-    vk::BufferCreateFlags flags;
-    flags = vk::BufferCreateFlagBits::SparseBinding | vk::BufferCreateFlagBits::SparseResidency;
-    std::cout << flags.flags << " " << vk::to_string(flags) << "\n"; // 3
-    flags = flags & vk::BufferCreateFlagBits::SparseResidency;
-    std::cout << flags.flags << " " << vk::to_string(flags) << "\n"; // 2
-    flags = vk::BufferCreateFlagBits::SparseBinding ^ vk::BufferCreateFlagBits::SparseResidency;
-    std::cout << flags.flags << " " << vk::to_string(flags) << "\n"; // 3
-    flags = ~vk::BufferCreateFlagBits::SparseBinding;
-    std::cout << flags.flags << " " << vk::to_string(flags) << "\n"; // 1
-    flags |= vk::BufferCreateFlagBits::SparseBinding;
-    std::cout << flags.flags << " " << vk::to_string(flags) << "\n"; // 4294967294
-    flags &= vk::BufferCreateFlagBits::SparseBinding;
-    std::cout << flags.flags << " " << vk::to_string(flags) << "\n"; // 3
-    flags ^= vk::BufferCreateFlagBits::SparseAliased;
-    std::cout << flags.flags << " " << vk::to_string(flags) << "\n"; // 7
-
-    flags = flags | vk::BufferCreateFlagBits::SparseBinding;
-    flags = flags & vk::BufferCreateFlagBits::SparseBinding;
-    flags = vk::BufferCreateFlagBits::SparseBinding | flags;
-    flags |= flags;
-    flags = vk::BufferCreateFlagBits::SparseBinding & flags;
-    flags &= flags;
-    flags = ~flags;
-    flags = vk::BufferCreateFlagBits::SparseBinding ^ flags;
-    flags = flags ^ vk::BufferCreateFlagBits::SparseBinding;
-    flags ^= flags;
-
-    vk::ImageCreateFlags img_flags = vk::ImageCreateFlagBits::SparseBinding;
     vk::PhysicalDeviceFunctions phys_dev_funcs(inst_funcs, phys_dev);
 
+    vk::ImageFormatProperties image_props;
+    vk::ImageCreateFlags img_flags = vk::ImageCreateFlagBits::SparseBinding;
     res = phys_dev_funcs.GetImageFormatProperties(vk::Format::Undefined, vk::ImageType::e1D, vk::ImageTiling::Optimal,
                                                   vk::ImageUsageFlagBits::TransferDst, img_flags, image_props);
     VkImageUsageFlagBits test_usage_flag_bits = +vk::ImageUsageFlagBits::TransferDst;

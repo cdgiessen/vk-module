@@ -45,6 +45,8 @@ endif(SET_COMPILE_TIME_TRACE)
 
 add_subdirectory(sample)
 
+option(VK_MODULE_TESTS "Build tests for the bindings, will download catch2" off)
+
 if (VK_MODULE_TESTS)
 add_subdirectory(tests)
 endif (VK_MODULE_TESTS)
