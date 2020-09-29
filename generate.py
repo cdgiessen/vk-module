@@ -6,8 +6,8 @@ import re
 '''
 todo list
 
-member arrays (+ vk constants -> int's)
-create separate versions for C++20 and C++14/17? 
+create separate versions for C++20 and C++14/17 - set compiler version, generate comparison operator
+write non autogen tests
 generate test code for flags
 2 call function helpers (enumerateXYZ)
 builder pattern for creation functions
@@ -63,7 +63,7 @@ class BaseType:
             self.type = node.find('type').text
             self.default_value = base_type_default_values[self.type]
 
-    def print(self, file):
+    def print_base(self, file):
         if self.type is not None:
             file.write(f'using {self.name[2:]} = {self.type};\n')
 
@@ -74,7 +74,7 @@ class FuncPointer:
         for t in node.itertext():
             self.text += t
 
-    def print(self, file):
+    def print_base(self, file):
         file.write(self.text + '\n')
 
 class MacroDefine:
@@ -85,7 +85,7 @@ class MacroDefine:
             self.text += t
         self.text += '\n'
 
-    def print(self, file):
+    def print_base(self, file):
         file.write(self.text)
 
 
@@ -140,7 +140,7 @@ class Enum:
         if self.name in ext_types:
             self.platform = platform
 
-    def print(self, file):
+    def print_base(self, file):
         if self.alias is not None:
             file.write(f'using {self.name[2:]} = {self.alias[2:]};\n')
         else: 
@@ -213,7 +213,7 @@ class Bitmask:
         if self.name in ext_types:
             self.platform = platform
 
-    def print(self, file):
+    def print_base(self, file):
         if self.alias is not None:
             file.write(f'using {self.name} = {self.alias[2:]};\n')
         else:
@@ -277,7 +277,7 @@ class EmptyBitmask:
         if self.name in ext_types or self.flags_name in ext_types:
             self.platform = platform
     
-    def print(self, file):
+    def print_base(self, file):
         file.write(f'enum class {self.name[2:]}: uint32_t {{ }};\n')
 
     def print_string(self, file):
@@ -378,7 +378,7 @@ class Flags:
         if (self.alias is not None and self.alias in ext_types) or self.name in ext_types:
             self.platform = platform
 
-    def print(self, file):
+    def print_base(self, file):
         if self.alias is None:
             file.write(f'DECLARE_ENUM_FLAG_OPERATORS({self.name[2:]}, {self.flags_name[2:]}, {self.name})\n')
         else:
@@ -390,7 +390,7 @@ class ApiConstant:
         self.value = node.get('value')
         self.alias = node.get('alias')
 
-    def print(self, file):
+    def print_base(self, file):
         if self.alias is not None:
             file.write(f'constexpr auto {self.name[3:]} = {self.alias[3:]};\n')
         elif self.value is not None:
@@ -415,7 +415,7 @@ class Handle:
         if self.name in ext_types:
             self.platform = platform
 
-    def print(self, file):
+    def print_base(self, file):
         if self.alias is not None:
             file.write(f'using {self.name[2:]} = {self.alias[2:]};\n')
         else:
@@ -635,7 +635,7 @@ class Structure:
         if self.name in ext_types or (self.alias is not None and self.alias in ext_types):
             self.platform = platform
 
-    def print(self, file):
+    def print_base(self, file):
         if self.alias is not None:
             file.write(f'using {self.name[2:]} = {self.alias[2:]};\n')
         else:
@@ -818,7 +818,7 @@ class Function:
         if self.name in ext_functions:
             self.platform = platform
 
-    def print(self, file, dispatch_handle = None, dispatch_handle_name = None, indent='', replace_dict=None, pfn_source=None, guard=True):
+    def print_base(self, file, dispatch_handle = None, dispatch_handle_name = None, indent='', replace_dict=None, pfn_source=None, guard=True):
         PlatformGuardHeader(file, self.platform, guard)
         if self.alias is not None:
             file.write(f'const auto {self.name[2:]} = {self.alias[2:]};\n')
@@ -1031,7 +1031,7 @@ class DispatchTable:
             else:
                 self.guarded_functions[guard_str].append(func)
 
-    def print(self, file):
+    def print_base(self, file):
         if len(self.guarded_functions.keys()) == 0:
             return
 
@@ -1054,7 +1054,7 @@ class DispatchTable:
             file.write(f'struct {self.name} {{\n')
             [ file.write(f'    {func.func_prototype} pfn_{func.name[2:]};\n') for func in func_list]
             file.write('public:\n')
-            [ func.print(file, indent='    ', guard=False) for func in func_list]
+            [ func.print_base(file, indent='    ', guard=False) for func in func_list]
             file.write(f'    {self.name}({gpa_type} {gpa_name}, {self.dispatch_type.title()} {self.dispatch_type}) {{\n')
             for func in func_list:
                 file.write(f'        pfn_{func.name[2:]} = ')
@@ -1075,7 +1075,7 @@ class DispatchTable:
         for guard, functions in self.guarded_functions.items():
             file.write(f'#if {guard}\n')
             for func in functions:               
-                func.print(file, dispatch_handle=dispatch_handle, dispatch_handle_name=self.dispatch_type,\
+                func.print_base(file, dispatch_handle=dispatch_handle, dispatch_handle_name=self.dispatch_type,\
                     indent='    ', guard=False)
             file.write(f'#endif //{guard}\n')
              
@@ -1110,7 +1110,7 @@ class DispatchableHandleDispatchTable:
             if function.dispatch_handle == name:
                 self.functions.append(function)
 
-    def print(self, file):
+    def print_base(self, file):
         functions_type = f'{self.dispatch_type.title()}Functions'
         functions_name = f'{self.dispatch_type}_functions'
         type_name = self.name[2:]
@@ -1128,7 +1128,7 @@ class DispatchableHandleDispatchTable:
                 if func.platform is not None:
                     file.write(f'#if defined({func.platform})\n')
             prev_platform = func.platform
-            func.print(file, dispatch_handle=self.name, dispatch_handle_name=var_name, indent='    ', \
+            func.print_base(file, dispatch_handle=self.name, dispatch_handle_name=var_name, indent='    ', \
                 replace_dict=self.replace_dict, pfn_source=functions_name, guard=False)
         if prev_platform is not None:
             file.write(f'#endif // defined({prev_platform})\n')
@@ -1143,7 +1143,7 @@ def PrintConsecutivePlatforms(file, in_list):
             if item.platform is not None:
                 file.write(f'#if defined({item.platform})\n')
         prev_platform = item.platform
-        item.print(file)
+        item.print_base(file)
     if prev_platform is not None:
         file.write(f'#endif // defined({prev_platform})\n')
         
@@ -1329,8 +1329,8 @@ def main():
         vkpp_core.write('#define VK_ENABLE_BETA_EXTENSIONS\n')
         vkpp_core.write('#include <vulkan/vulkan.h>\n')
         vkpp_core.write('namespace vk {\n')
-        [ constant.print(vkpp_core) for constant in bindings.api_constants.values() ]
-        [ base_type.print(vkpp_core) for base_type in bindings.base_types ]
+        [ constant.print_base(vkpp_core) for constant in bindings.api_constants.values() ]
+        [ base_type.print_base(vkpp_core) for base_type in bindings.base_types ]
         PrintConsecutivePlatforms(vkpp_core, bindings.enum_dict.values())
         PrintConsecutivePlatforms(vkpp_core, bindings.bitmask_dict.values())
         vkpp_core.write(bitmask_flags_macro + '\n')
@@ -1343,8 +1343,8 @@ def main():
         vkpp_functions.write('#pragma once\n// clang-format off\n')
         vkpp_functions.write('#include "vkpp_core.h"\n')
         vkpp_functions.write(vulkan_loader_text + '\n') #defines namespace vk here
-        [ dispatch_table.print(vkpp_functions) for dispatch_table in bindings.dispatch_tables ]
-        [ table.print(vkpp_functions) for table in bindings.dispatchable_handle_tables ]
+        [ dispatch_table.print_base(vkpp_functions) for dispatch_table in bindings.dispatch_tables ]
+        [ table.print_base(vkpp_functions) for table in bindings.dispatchable_handle_tables ]
         vkpp_functions.write('} // namespace vk\n// clang-format on\n')
 
     with open('include/vkpp_string.h', 'w') as string_helpers:

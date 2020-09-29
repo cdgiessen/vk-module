@@ -4,7 +4,6 @@
 #include "vkpp_string.h"
 
 int main() {
-    vk::Loader with_init(vkGetInstanceProcAddr);
     vk::Loader loader;
     vk::Result res = loader.init();
     if (res != vk::Result::Success)

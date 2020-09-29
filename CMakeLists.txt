@@ -45,5 +45,6 @@ endif(SET_COMPILE_TIME_TRACE)
 
 add_subdirectory(sample)
 
+if (VK_MODULE_TESTS)
 add_subdirectory(tests)
-
+endif (VK_MODULE_TESTS)
