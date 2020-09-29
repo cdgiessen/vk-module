@@ -11,7 +11,6 @@ write non autogen tests
 generate test code for flags
 2 call function helpers (enumerateXYZ)
 builder pattern for creation functions
-allow combinatorial defines (x && y || z && w) for ex: AcquireNextImage2KHR
 
 In progress
 move platform entities together to reduce the #if-def bloat
@@ -34,6 +33,7 @@ dispatchable handles (instance, physdevice, device, queue, command buffer)
 handles are a thing, decide what to do - have simple handles that are neat little wrappers and nothing more.
 create dll/so vulkan loader
 make output values references;
+allow combinatorial defines (x && y || z && w) for ex: AcquireNextImage2KHR
 '''
 
 vendor_abbreviations = []
@@ -978,7 +978,6 @@ class Requires:
         [struct.check_platform(platform, self.types) for struct in structures]
         [function.check_platform(platform, self.commands) for function in functions]
 
-
 class Extension:
     def __init__(self, node, platforms):
         self.name = node.get('name')
@@ -1000,7 +999,12 @@ class VulkanFeatureLevel:
         self.requires = []
         for require in node.findall('require'):
             self.requires.append(Requires(require))
-        
+
+class FunctionGuard:
+    def __init__(self, name, extension_or_feature):
+        self.name = name
+        self.extension_or_feature = extension_or_feature
+
 class DispatchTable:   
     def __init__(self, name, dispatch_type, ext_or_feature_list):
         self.name = name
@@ -1012,20 +1016,30 @@ class DispatchTable:
                     if func.dispatch_type == dispatch_type or dispatch_type == 'instance' and func.name == 'vkGetInstanceProcAddr':
                         if func not in dispatch_functions:
                             dispatch_functions[func] = []
-                        dispatch_functions[func].append(ext_or_feature.name)
+                        if require.extension is not None:
+                            dispatch_functions[func].append(FunctionGuard(ext_or_feature.name, require.extension))
+                        elif require.feature is not None:
+                            dispatch_functions[func].append(FunctionGuard(ext_or_feature.name, require.feature))
+                        else:
+                            dispatch_functions[func].append(FunctionGuard(ext_or_feature.name, None))
         
         self.guarded_functions = {}
         for func, guards in dispatch_functions.items():
             guard_str = ''
             if func.platform is not None:
-                guard_str += f'defined({func.platform}) && '
+                guard_str += f'defined({func.platform}) && ('
             is_first = True
             for guard in guards:
                 if is_first:
                     is_first = False
                 else:
                     guard_str += ' || '
-                guard_str += f'defined({guard})'
+                if guard.extension_or_feature is not None:
+                    guard_str += f'(defined({guard.name}) && defined({guard.extension_or_feature}))'
+                else:
+                    guard_str += f'defined({guard.name})'
+            if func.platform is not None:
+                guard_str += ')'
             if guard_str not in self.guarded_functions:
                 self.guarded_functions[guard_str] = [func]
             else:

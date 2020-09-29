@@ -191,9 +191,9 @@ struct InstanceFunctions {
     PFN_vkGetPhysicalDeviceSurfaceFormatsKHR pfn_GetPhysicalDeviceSurfaceFormatsKHR;
     PFN_vkGetPhysicalDeviceSurfacePresentModesKHR pfn_GetPhysicalDeviceSurfacePresentModesKHR;
 #endif //defined(VK_KHR_surface)
-#if defined(VK_KHR_swapchain) || defined(VK_KHR_device_group)
+#if (defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
     PFN_vkGetPhysicalDevicePresentRectanglesKHR pfn_GetPhysicalDevicePresentRectanglesKHR;
-#endif //defined(VK_KHR_swapchain) || defined(VK_KHR_device_group)
+#endif //(defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
 #if defined(VK_KHR_display)
     PFN_vkGetPhysicalDeviceDisplayPropertiesKHR pfn_GetPhysicalDeviceDisplayPropertiesKHR;
     PFN_vkGetPhysicalDeviceDisplayPlanePropertiesKHR pfn_GetPhysicalDeviceDisplayPlanePropertiesKHR;
@@ -203,46 +203,46 @@ struct InstanceFunctions {
     PFN_vkGetDisplayPlaneCapabilitiesKHR pfn_GetDisplayPlaneCapabilitiesKHR;
     PFN_vkCreateDisplayPlaneSurfaceKHR pfn_CreateDisplayPlaneSurfaceKHR;
 #endif //defined(VK_KHR_display)
-#if defined(VK_USE_PLATFORM_XLIB_KHR) && defined(VK_KHR_xlib_surface)
+#if defined(VK_USE_PLATFORM_XLIB_KHR) && (defined(VK_KHR_xlib_surface))
     PFN_vkCreateXlibSurfaceKHR pfn_CreateXlibSurfaceKHR;
     PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR pfn_GetPhysicalDeviceXlibPresentationSupportKHR;
-#endif //defined(VK_USE_PLATFORM_XLIB_KHR) && defined(VK_KHR_xlib_surface)
-#if defined(VK_USE_PLATFORM_XCB_KHR) && defined(VK_KHR_xcb_surface)
+#endif //defined(VK_USE_PLATFORM_XLIB_KHR) && (defined(VK_KHR_xlib_surface))
+#if defined(VK_USE_PLATFORM_XCB_KHR) && (defined(VK_KHR_xcb_surface))
     PFN_vkCreateXcbSurfaceKHR pfn_CreateXcbSurfaceKHR;
     PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR pfn_GetPhysicalDeviceXcbPresentationSupportKHR;
-#endif //defined(VK_USE_PLATFORM_XCB_KHR) && defined(VK_KHR_xcb_surface)
-#if defined(VK_USE_PLATFORM_WAYLAND_KHR) && defined(VK_KHR_wayland_surface)
+#endif //defined(VK_USE_PLATFORM_XCB_KHR) && (defined(VK_KHR_xcb_surface))
+#if defined(VK_USE_PLATFORM_WAYLAND_KHR) && (defined(VK_KHR_wayland_surface))
     PFN_vkCreateWaylandSurfaceKHR pfn_CreateWaylandSurfaceKHR;
     PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR pfn_GetPhysicalDeviceWaylandPresentationSupportKHR;
-#endif //defined(VK_USE_PLATFORM_WAYLAND_KHR) && defined(VK_KHR_wayland_surface)
-#if defined(VK_USE_PLATFORM_ANDROID_KHR) && defined(VK_KHR_android_surface)
+#endif //defined(VK_USE_PLATFORM_WAYLAND_KHR) && (defined(VK_KHR_wayland_surface))
+#if defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_KHR_android_surface))
     PFN_vkCreateAndroidSurfaceKHR pfn_CreateAndroidSurfaceKHR;
-#endif //defined(VK_USE_PLATFORM_ANDROID_KHR) && defined(VK_KHR_android_surface)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_win32_surface)
+#endif //defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_KHR_android_surface))
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_win32_surface))
     PFN_vkCreateWin32SurfaceKHR pfn_CreateWin32SurfaceKHR;
     PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR pfn_GetPhysicalDeviceWin32PresentationSupportKHR;
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_win32_surface)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_win32_surface))
 #if defined(VK_EXT_debug_report)
     PFN_vkCreateDebugReportCallbackEXT pfn_CreateDebugReportCallbackEXT;
     PFN_vkDestroyDebugReportCallbackEXT pfn_DestroyDebugReportCallbackEXT;
     PFN_vkDebugReportMessageEXT pfn_DebugReportMessageEXT;
 #endif //defined(VK_EXT_debug_report)
-#if defined(VK_USE_PLATFORM_GGP) && defined(VK_GGP_stream_descriptor_surface)
+#if defined(VK_USE_PLATFORM_GGP) && (defined(VK_GGP_stream_descriptor_surface))
     PFN_vkCreateStreamDescriptorSurfaceGGP pfn_CreateStreamDescriptorSurfaceGGP;
-#endif //defined(VK_USE_PLATFORM_GGP) && defined(VK_GGP_stream_descriptor_surface)
+#endif //defined(VK_USE_PLATFORM_GGP) && (defined(VK_GGP_stream_descriptor_surface))
 #if defined(VK_NV_external_memory_capabilities)
     PFN_vkGetPhysicalDeviceExternalImageFormatPropertiesNV pfn_GetPhysicalDeviceExternalImageFormatPropertiesNV;
 #endif //defined(VK_NV_external_memory_capabilities)
-#if defined(VK_USE_PLATFORM_VI_NN) && defined(VK_NN_vi_surface)
+#if defined(VK_USE_PLATFORM_VI_NN) && (defined(VK_NN_vi_surface))
     PFN_vkCreateViSurfaceNN pfn_CreateViSurfaceNN;
-#endif //defined(VK_USE_PLATFORM_VI_NN) && defined(VK_NN_vi_surface)
+#endif //defined(VK_USE_PLATFORM_VI_NN) && (defined(VK_NN_vi_surface))
 #if defined(VK_EXT_direct_mode_display)
     PFN_vkReleaseDisplayEXT pfn_ReleaseDisplayEXT;
 #endif //defined(VK_EXT_direct_mode_display)
-#if defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT) && defined(VK_EXT_acquire_xlib_display)
+#if defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT) && (defined(VK_EXT_acquire_xlib_display))
     PFN_vkAcquireXlibDisplayEXT pfn_AcquireXlibDisplayEXT;
     PFN_vkGetRandROutputDisplayEXT pfn_GetRandROutputDisplayEXT;
-#endif //defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT) && defined(VK_EXT_acquire_xlib_display)
+#endif //defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT) && (defined(VK_EXT_acquire_xlib_display))
 #if defined(VK_EXT_display_surface_counter)
     PFN_vkGetPhysicalDeviceSurfaceCapabilities2EXT pfn_GetPhysicalDeviceSurfaceCapabilities2EXT;
 #endif //defined(VK_EXT_display_surface_counter)
@@ -260,12 +260,12 @@ struct InstanceFunctions {
     PFN_vkGetDisplayModeProperties2KHR pfn_GetDisplayModeProperties2KHR;
     PFN_vkGetDisplayPlaneCapabilities2KHR pfn_GetDisplayPlaneCapabilities2KHR;
 #endif //defined(VK_KHR_get_display_properties2)
-#if defined(VK_USE_PLATFORM_IOS_MVK) && defined(VK_MVK_ios_surface)
+#if defined(VK_USE_PLATFORM_IOS_MVK) && (defined(VK_MVK_ios_surface))
     PFN_vkCreateIOSSurfaceMVK pfn_CreateIOSSurfaceMVK;
-#endif //defined(VK_USE_PLATFORM_IOS_MVK) && defined(VK_MVK_ios_surface)
-#if defined(VK_USE_PLATFORM_MACOS_MVK) && defined(VK_MVK_macos_surface)
+#endif //defined(VK_USE_PLATFORM_IOS_MVK) && (defined(VK_MVK_ios_surface))
+#if defined(VK_USE_PLATFORM_MACOS_MVK) && (defined(VK_MVK_macos_surface))
     PFN_vkCreateMacOSSurfaceMVK pfn_CreateMacOSSurfaceMVK;
-#endif //defined(VK_USE_PLATFORM_MACOS_MVK) && defined(VK_MVK_macos_surface)
+#endif //defined(VK_USE_PLATFORM_MACOS_MVK) && (defined(VK_MVK_macos_surface))
 #if defined(VK_EXT_debug_utils)
     PFN_vkCreateDebugUtilsMessengerEXT pfn_CreateDebugUtilsMessengerEXT;
     PFN_vkDestroyDebugUtilsMessengerEXT pfn_DestroyDebugUtilsMessengerEXT;
@@ -277,12 +277,12 @@ struct InstanceFunctions {
 #if defined(VK_EXT_calibrated_timestamps)
     PFN_vkGetPhysicalDeviceCalibrateableTimeDomainsEXT pfn_GetPhysicalDeviceCalibrateableTimeDomainsEXT;
 #endif //defined(VK_EXT_calibrated_timestamps)
-#if defined(VK_USE_PLATFORM_FUCHSIA) && defined(VK_FUCHSIA_imagepipe_surface)
+#if defined(VK_USE_PLATFORM_FUCHSIA) && (defined(VK_FUCHSIA_imagepipe_surface))
     PFN_vkCreateImagePipeSurfaceFUCHSIA pfn_CreateImagePipeSurfaceFUCHSIA;
-#endif //defined(VK_USE_PLATFORM_FUCHSIA) && defined(VK_FUCHSIA_imagepipe_surface)
-#if defined(VK_USE_PLATFORM_METAL_EXT) && defined(VK_EXT_metal_surface)
+#endif //defined(VK_USE_PLATFORM_FUCHSIA) && (defined(VK_FUCHSIA_imagepipe_surface))
+#if defined(VK_USE_PLATFORM_METAL_EXT) && (defined(VK_EXT_metal_surface))
     PFN_vkCreateMetalSurfaceEXT pfn_CreateMetalSurfaceEXT;
-#endif //defined(VK_USE_PLATFORM_METAL_EXT) && defined(VK_EXT_metal_surface)
+#endif //defined(VK_USE_PLATFORM_METAL_EXT) && (defined(VK_EXT_metal_surface))
 #if defined(VK_EXT_tooling_info)
     PFN_vkGetPhysicalDeviceToolPropertiesEXT pfn_GetPhysicalDeviceToolPropertiesEXT;
 #endif //defined(VK_EXT_tooling_info)
@@ -292,16 +292,16 @@ struct InstanceFunctions {
 #if defined(VK_NV_coverage_reduction_mode)
     PFN_vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV pfn_GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV;
 #endif //defined(VK_NV_coverage_reduction_mode)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive)
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
     PFN_vkGetPhysicalDeviceSurfacePresentModes2EXT pfn_GetPhysicalDeviceSurfacePresentModes2EXT;
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
 #if defined(VK_EXT_headless_surface)
     PFN_vkCreateHeadlessSurfaceEXT pfn_CreateHeadlessSurfaceEXT;
 #endif //defined(VK_EXT_headless_surface)
-#if defined(VK_USE_PLATFORM_DIRECTFB_EXT) && defined(VK_EXT_directfb_surface)
+#if defined(VK_USE_PLATFORM_DIRECTFB_EXT) && (defined(VK_EXT_directfb_surface))
     PFN_vkCreateDirectFBSurfaceEXT pfn_CreateDirectFBSurfaceEXT;
     PFN_vkGetPhysicalDeviceDirectFBPresentationSupportEXT pfn_GetPhysicalDeviceDirectFBPresentationSupportEXT;
-#endif //defined(VK_USE_PLATFORM_DIRECTFB_EXT) && defined(VK_EXT_directfb_surface)
+#endif //defined(VK_USE_PLATFORM_DIRECTFB_EXT) && (defined(VK_EXT_directfb_surface))
 #if defined(VK_VERSION_1_0)
     void DestroyInstance(const AllocationCallbacks* pAllocator) {
         return pfn_DestroyInstance(instance.get(),
@@ -525,7 +525,7 @@ struct InstanceFunctions {
             reinterpret_cast<VkPresentModeKHR*>(pPresentModes)));
     }
 #endif //defined(VK_KHR_surface)
-#if defined(VK_KHR_swapchain) || defined(VK_KHR_device_group)
+#if (defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
     [[nodiscard]] Result GetPhysicalDevicePresentRectanglesKHR(PhysicalDevice physicalDevice,
         SurfaceKHR surface,
         uint32_t&  pRectCount,
@@ -535,7 +535,7 @@ struct InstanceFunctions {
             &pRectCount,
             reinterpret_cast<VkRect2D*>(pRects)));
     }
-#endif //defined(VK_KHR_swapchain) || defined(VK_KHR_device_group)
+#endif //(defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
 #if defined(VK_KHR_display)
     [[nodiscard]] Result GetPhysicalDeviceDisplayPropertiesKHR(PhysicalDevice physicalDevice,
         uint32_t&  pPropertyCount,
@@ -598,7 +598,7 @@ struct InstanceFunctions {
             reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
     }
 #endif //defined(VK_KHR_display)
-#if defined(VK_USE_PLATFORM_XLIB_KHR) && defined(VK_KHR_xlib_surface)
+#if defined(VK_USE_PLATFORM_XLIB_KHR) && (defined(VK_KHR_xlib_surface))
     [[nodiscard]] Result CreateXlibSurfaceKHR(const XlibSurfaceCreateInfoKHR&  pCreateInfo,
         const AllocationCallbacks* pAllocator,
         SurfaceKHR&  pSurface) {
@@ -616,8 +616,8 @@ struct InstanceFunctions {
             reinterpret_cast<Display*>(&dpy),
             static_cast<VisualID>(visualID));
     }
-#endif //defined(VK_USE_PLATFORM_XLIB_KHR) && defined(VK_KHR_xlib_surface)
-#if defined(VK_USE_PLATFORM_XCB_KHR) && defined(VK_KHR_xcb_surface)
+#endif //defined(VK_USE_PLATFORM_XLIB_KHR) && (defined(VK_KHR_xlib_surface))
+#if defined(VK_USE_PLATFORM_XCB_KHR) && (defined(VK_KHR_xcb_surface))
     [[nodiscard]] Result CreateXcbSurfaceKHR(const XcbSurfaceCreateInfoKHR&  pCreateInfo,
         const AllocationCallbacks* pAllocator,
         SurfaceKHR&  pSurface) {
@@ -635,8 +635,8 @@ struct InstanceFunctions {
             reinterpret_cast<xcb_connection_t*>(&connection),
             static_cast<xcb_visualid_t>(visual_id));
     }
-#endif //defined(VK_USE_PLATFORM_XCB_KHR) && defined(VK_KHR_xcb_surface)
-#if defined(VK_USE_PLATFORM_WAYLAND_KHR) && defined(VK_KHR_wayland_surface)
+#endif //defined(VK_USE_PLATFORM_XCB_KHR) && (defined(VK_KHR_xcb_surface))
+#if defined(VK_USE_PLATFORM_WAYLAND_KHR) && (defined(VK_KHR_wayland_surface))
     [[nodiscard]] Result CreateWaylandSurfaceKHR(const WaylandSurfaceCreateInfoKHR&  pCreateInfo,
         const AllocationCallbacks* pAllocator,
         SurfaceKHR&  pSurface) {
@@ -652,8 +652,8 @@ struct InstanceFunctions {
             queueFamilyIndex,
             reinterpret_cast<wl_display*>(&display));
     }
-#endif //defined(VK_USE_PLATFORM_WAYLAND_KHR) && defined(VK_KHR_wayland_surface)
-#if defined(VK_USE_PLATFORM_ANDROID_KHR) && defined(VK_KHR_android_surface)
+#endif //defined(VK_USE_PLATFORM_WAYLAND_KHR) && (defined(VK_KHR_wayland_surface))
+#if defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_KHR_android_surface))
     [[nodiscard]] Result CreateAndroidSurfaceKHR(const AndroidSurfaceCreateInfoKHR&  pCreateInfo,
         const AllocationCallbacks* pAllocator,
         SurfaceKHR&  pSurface) {
@@ -662,8 +662,8 @@ struct InstanceFunctions {
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
     }
-#endif //defined(VK_USE_PLATFORM_ANDROID_KHR) && defined(VK_KHR_android_surface)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_win32_surface)
+#endif //defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_KHR_android_surface))
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_win32_surface))
     [[nodiscard]] Result CreateWin32SurfaceKHR(const Win32SurfaceCreateInfoKHR&  pCreateInfo,
         const AllocationCallbacks* pAllocator,
         SurfaceKHR&  pSurface) {
@@ -677,7 +677,7 @@ struct InstanceFunctions {
         return pfn_GetPhysicalDeviceWin32PresentationSupportKHR(physicalDevice.get(),
             queueFamilyIndex);
     }
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_win32_surface)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_win32_surface))
 #if defined(VK_EXT_debug_report)
     [[nodiscard]] Result CreateDebugReportCallbackEXT(const DebugReportCallbackCreateInfoEXT&  pCreateInfo,
         const AllocationCallbacks* pAllocator,
@@ -710,7 +710,7 @@ struct InstanceFunctions {
             pMessage);
     }
 #endif //defined(VK_EXT_debug_report)
-#if defined(VK_USE_PLATFORM_GGP) && defined(VK_GGP_stream_descriptor_surface)
+#if defined(VK_USE_PLATFORM_GGP) && (defined(VK_GGP_stream_descriptor_surface))
     [[nodiscard]] Result CreateStreamDescriptorSurfaceGGP(const StreamDescriptorSurfaceCreateInfoGGP&  pCreateInfo,
         const AllocationCallbacks* pAllocator,
         SurfaceKHR&  pSurface) {
@@ -719,7 +719,7 @@ struct InstanceFunctions {
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
     }
-#endif //defined(VK_USE_PLATFORM_GGP) && defined(VK_GGP_stream_descriptor_surface)
+#endif //defined(VK_USE_PLATFORM_GGP) && (defined(VK_GGP_stream_descriptor_surface))
 #if defined(VK_NV_external_memory_capabilities)
     [[nodiscard]] Result GetPhysicalDeviceExternalImageFormatPropertiesNV(PhysicalDevice physicalDevice,
         Format format,
@@ -739,7 +739,7 @@ struct InstanceFunctions {
             reinterpret_cast<VkExternalImageFormatPropertiesNV*>(&pExternalImageFormatProperties)));
     }
 #endif //defined(VK_NV_external_memory_capabilities)
-#if defined(VK_USE_PLATFORM_VI_NN) && defined(VK_NN_vi_surface)
+#if defined(VK_USE_PLATFORM_VI_NN) && (defined(VK_NN_vi_surface))
     [[nodiscard]] Result CreateViSurfaceNN(const ViSurfaceCreateInfoNN&  pCreateInfo,
         const AllocationCallbacks* pAllocator,
         SurfaceKHR&  pSurface) {
@@ -748,7 +748,7 @@ struct InstanceFunctions {
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
     }
-#endif //defined(VK_USE_PLATFORM_VI_NN) && defined(VK_NN_vi_surface)
+#endif //defined(VK_USE_PLATFORM_VI_NN) && (defined(VK_NN_vi_surface))
 #if defined(VK_EXT_direct_mode_display)
     [[nodiscard]] Result ReleaseDisplayEXT(PhysicalDevice physicalDevice,
         DisplayKHR display) {
@@ -756,7 +756,7 @@ struct InstanceFunctions {
             display.get()));
     }
 #endif //defined(VK_EXT_direct_mode_display)
-#if defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT) && defined(VK_EXT_acquire_xlib_display)
+#if defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT) && (defined(VK_EXT_acquire_xlib_display))
     [[nodiscard]] Result AcquireXlibDisplayEXT(PhysicalDevice physicalDevice,
         Display&  dpy,
         DisplayKHR display) {
@@ -773,7 +773,7 @@ struct InstanceFunctions {
             static_cast<RROutput>(rrOutput),
             reinterpret_cast<VkDisplayKHR*>(&pDisplay)));
     }
-#endif //defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT) && defined(VK_EXT_acquire_xlib_display)
+#endif //defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT) && (defined(VK_EXT_acquire_xlib_display))
 #if defined(VK_EXT_display_surface_counter)
     [[nodiscard]] Result GetPhysicalDeviceSurfaceCapabilities2EXT(PhysicalDevice physicalDevice,
         SurfaceKHR surface,
@@ -853,7 +853,7 @@ struct InstanceFunctions {
             reinterpret_cast<VkDisplayPlaneCapabilities2KHR*>(&pCapabilities)));
     }
 #endif //defined(VK_KHR_get_display_properties2)
-#if defined(VK_USE_PLATFORM_IOS_MVK) && defined(VK_MVK_ios_surface)
+#if defined(VK_USE_PLATFORM_IOS_MVK) && (defined(VK_MVK_ios_surface))
     [[nodiscard]] Result CreateIOSSurfaceMVK(const IOSSurfaceCreateInfoMVK&  pCreateInfo,
         const AllocationCallbacks* pAllocator,
         SurfaceKHR&  pSurface) {
@@ -862,8 +862,8 @@ struct InstanceFunctions {
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
     }
-#endif //defined(VK_USE_PLATFORM_IOS_MVK) && defined(VK_MVK_ios_surface)
-#if defined(VK_USE_PLATFORM_MACOS_MVK) && defined(VK_MVK_macos_surface)
+#endif //defined(VK_USE_PLATFORM_IOS_MVK) && (defined(VK_MVK_ios_surface))
+#if defined(VK_USE_PLATFORM_MACOS_MVK) && (defined(VK_MVK_macos_surface))
     [[nodiscard]] Result CreateMacOSSurfaceMVK(const MacOSSurfaceCreateInfoMVK&  pCreateInfo,
         const AllocationCallbacks* pAllocator,
         SurfaceKHR&  pSurface) {
@@ -872,7 +872,7 @@ struct InstanceFunctions {
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
     }
-#endif //defined(VK_USE_PLATFORM_MACOS_MVK) && defined(VK_MVK_macos_surface)
+#endif //defined(VK_USE_PLATFORM_MACOS_MVK) && (defined(VK_MVK_macos_surface))
 #if defined(VK_EXT_debug_utils)
     [[nodiscard]] Result CreateDebugUtilsMessengerEXT(const DebugUtilsMessengerCreateInfoEXT&  pCreateInfo,
         const AllocationCallbacks* pAllocator,
@@ -915,7 +915,7 @@ struct InstanceFunctions {
             reinterpret_cast<VkTimeDomainEXT*>(pTimeDomains)));
     }
 #endif //defined(VK_EXT_calibrated_timestamps)
-#if defined(VK_USE_PLATFORM_FUCHSIA) && defined(VK_FUCHSIA_imagepipe_surface)
+#if defined(VK_USE_PLATFORM_FUCHSIA) && (defined(VK_FUCHSIA_imagepipe_surface))
     [[nodiscard]] Result CreateImagePipeSurfaceFUCHSIA(const ImagePipeSurfaceCreateInfoFUCHSIA&  pCreateInfo,
         const AllocationCallbacks* pAllocator,
         SurfaceKHR&  pSurface) {
@@ -924,8 +924,8 @@ struct InstanceFunctions {
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
     }
-#endif //defined(VK_USE_PLATFORM_FUCHSIA) && defined(VK_FUCHSIA_imagepipe_surface)
-#if defined(VK_USE_PLATFORM_METAL_EXT) && defined(VK_EXT_metal_surface)
+#endif //defined(VK_USE_PLATFORM_FUCHSIA) && (defined(VK_FUCHSIA_imagepipe_surface))
+#if defined(VK_USE_PLATFORM_METAL_EXT) && (defined(VK_EXT_metal_surface))
     [[nodiscard]] Result CreateMetalSurfaceEXT(const MetalSurfaceCreateInfoEXT&  pCreateInfo,
         const AllocationCallbacks* pAllocator,
         SurfaceKHR&  pSurface) {
@@ -934,7 +934,7 @@ struct InstanceFunctions {
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
     }
-#endif //defined(VK_USE_PLATFORM_METAL_EXT) && defined(VK_EXT_metal_surface)
+#endif //defined(VK_USE_PLATFORM_METAL_EXT) && (defined(VK_EXT_metal_surface))
 #if defined(VK_EXT_tooling_info)
     [[nodiscard]] Result GetPhysicalDeviceToolPropertiesEXT(PhysicalDevice physicalDevice,
         uint32_t&  pToolCount,
@@ -962,7 +962,7 @@ struct InstanceFunctions {
             reinterpret_cast<VkFramebufferMixedSamplesCombinationNV*>(pCombinations)));
     }
 #endif //defined(VK_NV_coverage_reduction_mode)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive)
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
     [[nodiscard]] Result GetPhysicalDeviceSurfacePresentModes2EXT(PhysicalDevice physicalDevice,
         const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo,
         uint32_t&  pPresentModeCount,
@@ -972,7 +972,7 @@ struct InstanceFunctions {
             &pPresentModeCount,
             reinterpret_cast<VkPresentModeKHR*>(pPresentModes)));
     }
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
 #if defined(VK_EXT_headless_surface)
     [[nodiscard]] Result CreateHeadlessSurfaceEXT(const HeadlessSurfaceCreateInfoEXT&  pCreateInfo,
         const AllocationCallbacks* pAllocator,
@@ -983,7 +983,7 @@ struct InstanceFunctions {
             reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
     }
 #endif //defined(VK_EXT_headless_surface)
-#if defined(VK_USE_PLATFORM_DIRECTFB_EXT) && defined(VK_EXT_directfb_surface)
+#if defined(VK_USE_PLATFORM_DIRECTFB_EXT) && (defined(VK_EXT_directfb_surface))
     [[nodiscard]] Result CreateDirectFBSurfaceEXT(const DirectFBSurfaceCreateInfoEXT&  pCreateInfo,
         const AllocationCallbacks* pAllocator,
         SurfaceKHR&  pSurface) {
@@ -999,7 +999,7 @@ struct InstanceFunctions {
             queueFamilyIndex,
             reinterpret_cast<IDirectFB*>(&dfb));
     }
-#endif //defined(VK_USE_PLATFORM_DIRECTFB_EXT) && defined(VK_EXT_directfb_surface)
+#endif //defined(VK_USE_PLATFORM_DIRECTFB_EXT) && (defined(VK_EXT_directfb_surface))
     InstanceFunctions(Loader const& loader, Instance instance):instance(instance) { 
     PFN_vkGetInstanceProcAddr get_instance_proc_addr = loader.get();
 #if defined(VK_VERSION_1_0)
@@ -1038,9 +1038,9 @@ struct InstanceFunctions {
         pfn_GetPhysicalDeviceSurfaceFormatsKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceFormatsKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceSurfaceFormatsKHR"));
         pfn_GetPhysicalDeviceSurfacePresentModesKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfacePresentModesKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceSurfacePresentModesKHR"));
 #endif //defined(VK_KHR_surface)
-#if defined(VK_KHR_swapchain) || defined(VK_KHR_device_group)
+#if (defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
         pfn_GetPhysicalDevicePresentRectanglesKHR = reinterpret_cast<PFN_vkGetPhysicalDevicePresentRectanglesKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDevicePresentRectanglesKHR"));
-#endif //defined(VK_KHR_swapchain) || defined(VK_KHR_device_group)
+#endif //(defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
 #if defined(VK_KHR_display)
         pfn_GetPhysicalDeviceDisplayPropertiesKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceDisplayPropertiesKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceDisplayPropertiesKHR"));
         pfn_GetPhysicalDeviceDisplayPlanePropertiesKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceDisplayPlanePropertiesKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceDisplayPlanePropertiesKHR"));
@@ -1050,46 +1050,46 @@ struct InstanceFunctions {
         pfn_GetDisplayPlaneCapabilitiesKHR = reinterpret_cast<PFN_vkGetDisplayPlaneCapabilitiesKHR>(get_instance_proc_addr(instance.get(),"vkGetDisplayPlaneCapabilitiesKHR"));
         pfn_CreateDisplayPlaneSurfaceKHR = reinterpret_cast<PFN_vkCreateDisplayPlaneSurfaceKHR>(get_instance_proc_addr(instance.get(),"vkCreateDisplayPlaneSurfaceKHR"));
 #endif //defined(VK_KHR_display)
-#if defined(VK_USE_PLATFORM_XLIB_KHR) && defined(VK_KHR_xlib_surface)
+#if defined(VK_USE_PLATFORM_XLIB_KHR) && (defined(VK_KHR_xlib_surface))
         pfn_CreateXlibSurfaceKHR = reinterpret_cast<PFN_vkCreateXlibSurfaceKHR>(get_instance_proc_addr(instance.get(),"vkCreateXlibSurfaceKHR"));
         pfn_GetPhysicalDeviceXlibPresentationSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceXlibPresentationSupportKHR"));
-#endif //defined(VK_USE_PLATFORM_XLIB_KHR) && defined(VK_KHR_xlib_surface)
-#if defined(VK_USE_PLATFORM_XCB_KHR) && defined(VK_KHR_xcb_surface)
+#endif //defined(VK_USE_PLATFORM_XLIB_KHR) && (defined(VK_KHR_xlib_surface))
+#if defined(VK_USE_PLATFORM_XCB_KHR) && (defined(VK_KHR_xcb_surface))
         pfn_CreateXcbSurfaceKHR = reinterpret_cast<PFN_vkCreateXcbSurfaceKHR>(get_instance_proc_addr(instance.get(),"vkCreateXcbSurfaceKHR"));
         pfn_GetPhysicalDeviceXcbPresentationSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceXcbPresentationSupportKHR"));
-#endif //defined(VK_USE_PLATFORM_XCB_KHR) && defined(VK_KHR_xcb_surface)
-#if defined(VK_USE_PLATFORM_WAYLAND_KHR) && defined(VK_KHR_wayland_surface)
+#endif //defined(VK_USE_PLATFORM_XCB_KHR) && (defined(VK_KHR_xcb_surface))
+#if defined(VK_USE_PLATFORM_WAYLAND_KHR) && (defined(VK_KHR_wayland_surface))
         pfn_CreateWaylandSurfaceKHR = reinterpret_cast<PFN_vkCreateWaylandSurfaceKHR>(get_instance_proc_addr(instance.get(),"vkCreateWaylandSurfaceKHR"));
         pfn_GetPhysicalDeviceWaylandPresentationSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceWaylandPresentationSupportKHR"));
-#endif //defined(VK_USE_PLATFORM_WAYLAND_KHR) && defined(VK_KHR_wayland_surface)
-#if defined(VK_USE_PLATFORM_ANDROID_KHR) && defined(VK_KHR_android_surface)
+#endif //defined(VK_USE_PLATFORM_WAYLAND_KHR) && (defined(VK_KHR_wayland_surface))
+#if defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_KHR_android_surface))
         pfn_CreateAndroidSurfaceKHR = reinterpret_cast<PFN_vkCreateAndroidSurfaceKHR>(get_instance_proc_addr(instance.get(),"vkCreateAndroidSurfaceKHR"));
-#endif //defined(VK_USE_PLATFORM_ANDROID_KHR) && defined(VK_KHR_android_surface)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_win32_surface)
+#endif //defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_KHR_android_surface))
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_win32_surface))
         pfn_CreateWin32SurfaceKHR = reinterpret_cast<PFN_vkCreateWin32SurfaceKHR>(get_instance_proc_addr(instance.get(),"vkCreateWin32SurfaceKHR"));
         pfn_GetPhysicalDeviceWin32PresentationSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceWin32PresentationSupportKHR"));
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_win32_surface)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_win32_surface))
 #if defined(VK_EXT_debug_report)
         pfn_CreateDebugReportCallbackEXT = reinterpret_cast<PFN_vkCreateDebugReportCallbackEXT>(get_instance_proc_addr(instance.get(),"vkCreateDebugReportCallbackEXT"));
         pfn_DestroyDebugReportCallbackEXT = reinterpret_cast<PFN_vkDestroyDebugReportCallbackEXT>(get_instance_proc_addr(instance.get(),"vkDestroyDebugReportCallbackEXT"));
         pfn_DebugReportMessageEXT = reinterpret_cast<PFN_vkDebugReportMessageEXT>(get_instance_proc_addr(instance.get(),"vkDebugReportMessageEXT"));
 #endif //defined(VK_EXT_debug_report)
-#if defined(VK_USE_PLATFORM_GGP) && defined(VK_GGP_stream_descriptor_surface)
+#if defined(VK_USE_PLATFORM_GGP) && (defined(VK_GGP_stream_descriptor_surface))
         pfn_CreateStreamDescriptorSurfaceGGP = reinterpret_cast<PFN_vkCreateStreamDescriptorSurfaceGGP>(get_instance_proc_addr(instance.get(),"vkCreateStreamDescriptorSurfaceGGP"));
-#endif //defined(VK_USE_PLATFORM_GGP) && defined(VK_GGP_stream_descriptor_surface)
+#endif //defined(VK_USE_PLATFORM_GGP) && (defined(VK_GGP_stream_descriptor_surface))
 #if defined(VK_NV_external_memory_capabilities)
         pfn_GetPhysicalDeviceExternalImageFormatPropertiesNV = reinterpret_cast<PFN_vkGetPhysicalDeviceExternalImageFormatPropertiesNV>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceExternalImageFormatPropertiesNV"));
 #endif //defined(VK_NV_external_memory_capabilities)
-#if defined(VK_USE_PLATFORM_VI_NN) && defined(VK_NN_vi_surface)
+#if defined(VK_USE_PLATFORM_VI_NN) && (defined(VK_NN_vi_surface))
         pfn_CreateViSurfaceNN = reinterpret_cast<PFN_vkCreateViSurfaceNN>(get_instance_proc_addr(instance.get(),"vkCreateViSurfaceNN"));
-#endif //defined(VK_USE_PLATFORM_VI_NN) && defined(VK_NN_vi_surface)
+#endif //defined(VK_USE_PLATFORM_VI_NN) && (defined(VK_NN_vi_surface))
 #if defined(VK_EXT_direct_mode_display)
         pfn_ReleaseDisplayEXT = reinterpret_cast<PFN_vkReleaseDisplayEXT>(get_instance_proc_addr(instance.get(),"vkReleaseDisplayEXT"));
 #endif //defined(VK_EXT_direct_mode_display)
-#if defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT) && defined(VK_EXT_acquire_xlib_display)
+#if defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT) && (defined(VK_EXT_acquire_xlib_display))
         pfn_AcquireXlibDisplayEXT = reinterpret_cast<PFN_vkAcquireXlibDisplayEXT>(get_instance_proc_addr(instance.get(),"vkAcquireXlibDisplayEXT"));
         pfn_GetRandROutputDisplayEXT = reinterpret_cast<PFN_vkGetRandROutputDisplayEXT>(get_instance_proc_addr(instance.get(),"vkGetRandROutputDisplayEXT"));
-#endif //defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT) && defined(VK_EXT_acquire_xlib_display)
+#endif //defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT) && (defined(VK_EXT_acquire_xlib_display))
 #if defined(VK_EXT_display_surface_counter)
         pfn_GetPhysicalDeviceSurfaceCapabilities2EXT = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceCapabilities2EXT>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceSurfaceCapabilities2EXT"));
 #endif //defined(VK_EXT_display_surface_counter)
@@ -1107,12 +1107,12 @@ struct InstanceFunctions {
         pfn_GetDisplayModeProperties2KHR = reinterpret_cast<PFN_vkGetDisplayModeProperties2KHR>(get_instance_proc_addr(instance.get(),"vkGetDisplayModeProperties2KHR"));
         pfn_GetDisplayPlaneCapabilities2KHR = reinterpret_cast<PFN_vkGetDisplayPlaneCapabilities2KHR>(get_instance_proc_addr(instance.get(),"vkGetDisplayPlaneCapabilities2KHR"));
 #endif //defined(VK_KHR_get_display_properties2)
-#if defined(VK_USE_PLATFORM_IOS_MVK) && defined(VK_MVK_ios_surface)
+#if defined(VK_USE_PLATFORM_IOS_MVK) && (defined(VK_MVK_ios_surface))
         pfn_CreateIOSSurfaceMVK = reinterpret_cast<PFN_vkCreateIOSSurfaceMVK>(get_instance_proc_addr(instance.get(),"vkCreateIOSSurfaceMVK"));
-#endif //defined(VK_USE_PLATFORM_IOS_MVK) && defined(VK_MVK_ios_surface)
-#if defined(VK_USE_PLATFORM_MACOS_MVK) && defined(VK_MVK_macos_surface)
+#endif //defined(VK_USE_PLATFORM_IOS_MVK) && (defined(VK_MVK_ios_surface))
+#if defined(VK_USE_PLATFORM_MACOS_MVK) && (defined(VK_MVK_macos_surface))
         pfn_CreateMacOSSurfaceMVK = reinterpret_cast<PFN_vkCreateMacOSSurfaceMVK>(get_instance_proc_addr(instance.get(),"vkCreateMacOSSurfaceMVK"));
-#endif //defined(VK_USE_PLATFORM_MACOS_MVK) && defined(VK_MVK_macos_surface)
+#endif //defined(VK_USE_PLATFORM_MACOS_MVK) && (defined(VK_MVK_macos_surface))
 #if defined(VK_EXT_debug_utils)
         pfn_CreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(get_instance_proc_addr(instance.get(),"vkCreateDebugUtilsMessengerEXT"));
         pfn_DestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(get_instance_proc_addr(instance.get(),"vkDestroyDebugUtilsMessengerEXT"));
@@ -1124,12 +1124,12 @@ struct InstanceFunctions {
 #if defined(VK_EXT_calibrated_timestamps)
         pfn_GetPhysicalDeviceCalibrateableTimeDomainsEXT = reinterpret_cast<PFN_vkGetPhysicalDeviceCalibrateableTimeDomainsEXT>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceCalibrateableTimeDomainsEXT"));
 #endif //defined(VK_EXT_calibrated_timestamps)
-#if defined(VK_USE_PLATFORM_FUCHSIA) && defined(VK_FUCHSIA_imagepipe_surface)
+#if defined(VK_USE_PLATFORM_FUCHSIA) && (defined(VK_FUCHSIA_imagepipe_surface))
         pfn_CreateImagePipeSurfaceFUCHSIA = reinterpret_cast<PFN_vkCreateImagePipeSurfaceFUCHSIA>(get_instance_proc_addr(instance.get(),"vkCreateImagePipeSurfaceFUCHSIA"));
-#endif //defined(VK_USE_PLATFORM_FUCHSIA) && defined(VK_FUCHSIA_imagepipe_surface)
-#if defined(VK_USE_PLATFORM_METAL_EXT) && defined(VK_EXT_metal_surface)
+#endif //defined(VK_USE_PLATFORM_FUCHSIA) && (defined(VK_FUCHSIA_imagepipe_surface))
+#if defined(VK_USE_PLATFORM_METAL_EXT) && (defined(VK_EXT_metal_surface))
         pfn_CreateMetalSurfaceEXT = reinterpret_cast<PFN_vkCreateMetalSurfaceEXT>(get_instance_proc_addr(instance.get(),"vkCreateMetalSurfaceEXT"));
-#endif //defined(VK_USE_PLATFORM_METAL_EXT) && defined(VK_EXT_metal_surface)
+#endif //defined(VK_USE_PLATFORM_METAL_EXT) && (defined(VK_EXT_metal_surface))
 #if defined(VK_EXT_tooling_info)
         pfn_GetPhysicalDeviceToolPropertiesEXT = reinterpret_cast<PFN_vkGetPhysicalDeviceToolPropertiesEXT>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceToolPropertiesEXT"));
 #endif //defined(VK_EXT_tooling_info)
@@ -1139,16 +1139,16 @@ struct InstanceFunctions {
 #if defined(VK_NV_coverage_reduction_mode)
         pfn_GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV = reinterpret_cast<PFN_vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV"));
 #endif //defined(VK_NV_coverage_reduction_mode)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive)
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
         pfn_GetPhysicalDeviceSurfacePresentModes2EXT = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfacePresentModes2EXT>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceSurfacePresentModes2EXT"));
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
 #if defined(VK_EXT_headless_surface)
         pfn_CreateHeadlessSurfaceEXT = reinterpret_cast<PFN_vkCreateHeadlessSurfaceEXT>(get_instance_proc_addr(instance.get(),"vkCreateHeadlessSurfaceEXT"));
 #endif //defined(VK_EXT_headless_surface)
-#if defined(VK_USE_PLATFORM_DIRECTFB_EXT) && defined(VK_EXT_directfb_surface)
+#if defined(VK_USE_PLATFORM_DIRECTFB_EXT) && (defined(VK_EXT_directfb_surface))
         pfn_CreateDirectFBSurfaceEXT = reinterpret_cast<PFN_vkCreateDirectFBSurfaceEXT>(get_instance_proc_addr(instance.get(),"vkCreateDirectFBSurfaceEXT"));
         pfn_GetPhysicalDeviceDirectFBPresentationSupportEXT = reinterpret_cast<PFN_vkGetPhysicalDeviceDirectFBPresentationSupportEXT>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceDirectFBPresentationSupportEXT"));
-#endif //defined(VK_USE_PLATFORM_DIRECTFB_EXT) && defined(VK_EXT_directfb_surface)
+#endif //defined(VK_USE_PLATFORM_DIRECTFB_EXT) && (defined(VK_EXT_directfb_surface))
     };
 };
 struct DeviceFunctions {
@@ -1315,11 +1315,13 @@ struct DeviceFunctions {
     PFN_vkAcquireNextImageKHR pfn_AcquireNextImageKHR;
     PFN_vkQueuePresentKHR pfn_QueuePresentKHR;
 #endif //defined(VK_KHR_swapchain)
-#if defined(VK_KHR_swapchain) || defined(VK_KHR_device_group)
+#if (defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
     PFN_vkGetDeviceGroupPresentCapabilitiesKHR pfn_GetDeviceGroupPresentCapabilitiesKHR;
     PFN_vkGetDeviceGroupSurfacePresentModesKHR pfn_GetDeviceGroupSurfacePresentModesKHR;
+#endif //(defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
+#if (defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_swapchain))
     PFN_vkAcquireNextImage2KHR pfn_AcquireNextImage2KHR;
-#endif //defined(VK_KHR_swapchain) || defined(VK_KHR_device_group)
+#endif //(defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_swapchain))
 #if defined(VK_KHR_display_swapchain)
     PFN_vkCreateSharedSwapchainsKHR pfn_CreateSharedSwapchainsKHR;
 #endif //defined(VK_KHR_display_swapchain)
@@ -1345,21 +1347,21 @@ struct DeviceFunctions {
 #if defined(VK_AMD_shader_info)
     PFN_vkGetShaderInfoAMD pfn_GetShaderInfoAMD;
 #endif //defined(VK_AMD_shader_info)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_NV_external_memory_win32)
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_NV_external_memory_win32))
     PFN_vkGetMemoryWin32HandleNV pfn_GetMemoryWin32HandleNV;
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_NV_external_memory_win32)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_external_memory_win32)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_NV_external_memory_win32))
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_memory_win32))
     PFN_vkGetMemoryWin32HandleKHR pfn_GetMemoryWin32HandleKHR;
     PFN_vkGetMemoryWin32HandlePropertiesKHR pfn_GetMemoryWin32HandlePropertiesKHR;
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_external_memory_win32)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_memory_win32))
 #if defined(VK_KHR_external_memory_fd)
     PFN_vkGetMemoryFdKHR pfn_GetMemoryFdKHR;
     PFN_vkGetMemoryFdPropertiesKHR pfn_GetMemoryFdPropertiesKHR;
 #endif //defined(VK_KHR_external_memory_fd)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_external_semaphore_win32)
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_semaphore_win32))
     PFN_vkGetSemaphoreWin32HandleKHR pfn_GetSemaphoreWin32HandleKHR;
     PFN_vkImportSemaphoreWin32HandleKHR pfn_ImportSemaphoreWin32HandleKHR;
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_external_semaphore_win32)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_semaphore_win32))
 #if defined(VK_KHR_external_semaphore_fd)
     PFN_vkGetSemaphoreFdKHR pfn_GetSemaphoreFdKHR;
     PFN_vkImportSemaphoreFdKHR pfn_ImportSemaphoreFdKHR;
@@ -1367,9 +1369,9 @@ struct DeviceFunctions {
 #if defined(VK_KHR_push_descriptor)
     PFN_vkCmdPushDescriptorSetKHR pfn_CmdPushDescriptorSetKHR;
 #endif //defined(VK_KHR_push_descriptor)
-#if defined(VK_KHR_push_descriptor) || defined(VK_KHR_push_descriptor) || defined(VK_KHR_descriptor_update_template)
+#if (defined(VK_KHR_push_descriptor) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_push_descriptor) && defined(VK_KHR_descriptor_update_template)) || (defined(VK_KHR_descriptor_update_template) && defined(VK_KHR_push_descriptor))
     PFN_vkCmdPushDescriptorSetWithTemplateKHR pfn_CmdPushDescriptorSetWithTemplateKHR;
-#endif //defined(VK_KHR_push_descriptor) || defined(VK_KHR_push_descriptor) || defined(VK_KHR_descriptor_update_template)
+#endif //(defined(VK_KHR_push_descriptor) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_push_descriptor) && defined(VK_KHR_descriptor_update_template)) || (defined(VK_KHR_descriptor_update_template) && defined(VK_KHR_push_descriptor))
 #if defined(VK_EXT_conditional_rendering)
     PFN_vkCmdBeginConditionalRenderingEXT pfn_CmdBeginConditionalRenderingEXT;
     PFN_vkCmdEndConditionalRenderingEXT pfn_CmdEndConditionalRenderingEXT;
@@ -1396,10 +1398,10 @@ struct DeviceFunctions {
 #if defined(VK_KHR_shared_presentable_image)
     PFN_vkGetSwapchainStatusKHR pfn_GetSwapchainStatusKHR;
 #endif //defined(VK_KHR_shared_presentable_image)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_external_fence_win32)
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_fence_win32))
     PFN_vkGetFenceWin32HandleKHR pfn_GetFenceWin32HandleKHR;
     PFN_vkImportFenceWin32HandleKHR pfn_ImportFenceWin32HandleKHR;
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_external_fence_win32)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_fence_win32))
 #if defined(VK_KHR_external_fence_fd)
     PFN_vkGetFenceFdKHR pfn_GetFenceFdKHR;
     PFN_vkImportFenceFdKHR pfn_ImportFenceFdKHR;
@@ -1418,14 +1420,14 @@ struct DeviceFunctions {
     PFN_vkCmdEndDebugUtilsLabelEXT pfn_CmdEndDebugUtilsLabelEXT;
     PFN_vkCmdInsertDebugUtilsLabelEXT pfn_CmdInsertDebugUtilsLabelEXT;
 #endif //defined(VK_EXT_debug_utils)
-#if defined(VK_USE_PLATFORM_ANDROID_KHR) && defined(VK_ANDROID_external_memory_android_hardware_buffer)
+#if defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_ANDROID_external_memory_android_hardware_buffer))
     PFN_vkGetAndroidHardwareBufferPropertiesANDROID pfn_GetAndroidHardwareBufferPropertiesANDROID;
     PFN_vkGetMemoryAndroidHardwareBufferANDROID pfn_GetMemoryAndroidHardwareBufferANDROID;
-#endif //defined(VK_USE_PLATFORM_ANDROID_KHR) && defined(VK_ANDROID_external_memory_android_hardware_buffer)
+#endif //defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_ANDROID_external_memory_android_hardware_buffer))
 #if defined(VK_EXT_sample_locations)
     PFN_vkCmdSetSampleLocationsEXT pfn_CmdSetSampleLocationsEXT;
 #endif //defined(VK_EXT_sample_locations)
-#if defined(VK_ENABLE_BETA_EXTENSIONS) && defined(VK_KHR_ray_tracing)
+#if defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_ray_tracing))
     PFN_vkDestroyAccelerationStructureKHR pfn_DestroyAccelerationStructureKHR;
     PFN_vkGetAccelerationStructureMemoryRequirementsKHR pfn_GetAccelerationStructureMemoryRequirementsKHR;
     PFN_vkBindAccelerationStructureMemoryKHR pfn_BindAccelerationStructureMemoryKHR;
@@ -1448,7 +1450,7 @@ struct DeviceFunctions {
     PFN_vkCmdBuildAccelerationStructureIndirectKHR pfn_CmdBuildAccelerationStructureIndirectKHR;
     PFN_vkBuildAccelerationStructureKHR pfn_BuildAccelerationStructureKHR;
     PFN_vkGetAccelerationStructureDeviceAddressKHR pfn_GetAccelerationStructureDeviceAddressKHR;
-#endif //defined(VK_ENABLE_BETA_EXTENSIONS) && defined(VK_KHR_ray_tracing)
+#endif //defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_ray_tracing))
 #if defined(VK_EXT_image_drm_format_modifier)
     PFN_vkGetImageDrmFormatModifierPropertiesEXT pfn_GetImageDrmFormatModifierPropertiesEXT;
 #endif //defined(VK_EXT_image_drm_format_modifier)
@@ -1508,13 +1510,13 @@ struct DeviceFunctions {
 #if defined(VK_AMD_display_native_hdr)
     PFN_vkSetLocalDimmingAMD pfn_SetLocalDimmingAMD;
 #endif //defined(VK_AMD_display_native_hdr)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive)
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
     PFN_vkAcquireFullScreenExclusiveModeEXT pfn_AcquireFullScreenExclusiveModeEXT;
     PFN_vkReleaseFullScreenExclusiveModeEXT pfn_ReleaseFullScreenExclusiveModeEXT;
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive) || defined(VK_EXT_full_screen_exclusive)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && ((defined(VK_EXT_full_screen_exclusive) && defined(VK_KHR_device_group)) || (defined(VK_EXT_full_screen_exclusive) && defined(VK_VERSION_1_1)))
     PFN_vkGetDeviceGroupSurfacePresentModes2EXT pfn_GetDeviceGroupSurfacePresentModes2EXT;
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive) || defined(VK_EXT_full_screen_exclusive)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && ((defined(VK_EXT_full_screen_exclusive) && defined(VK_KHR_device_group)) || (defined(VK_EXT_full_screen_exclusive) && defined(VK_VERSION_1_1)))
 #if defined(VK_EXT_line_rasterization)
     PFN_vkCmdSetLineStippleEXT pfn_CmdSetLineStippleEXT;
 #endif //defined(VK_EXT_line_rasterization)
@@ -1532,13 +1534,13 @@ struct DeviceFunctions {
     PFN_vkCmdSetStencilTestEnableEXT pfn_CmdSetStencilTestEnableEXT;
     PFN_vkCmdSetStencilOpEXT pfn_CmdSetStencilOpEXT;
 #endif //defined(VK_EXT_extended_dynamic_state)
-#if defined(VK_ENABLE_BETA_EXTENSIONS) && defined(VK_KHR_deferred_host_operations)
+#if defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_deferred_host_operations))
     PFN_vkCreateDeferredOperationKHR pfn_CreateDeferredOperationKHR;
     PFN_vkDestroyDeferredOperationKHR pfn_DestroyDeferredOperationKHR;
     PFN_vkGetDeferredOperationMaxConcurrencyKHR pfn_GetDeferredOperationMaxConcurrencyKHR;
     PFN_vkGetDeferredOperationResultKHR pfn_GetDeferredOperationResultKHR;
     PFN_vkDeferredOperationJoinKHR pfn_DeferredOperationJoinKHR;
-#endif //defined(VK_ENABLE_BETA_EXTENSIONS) && defined(VK_KHR_deferred_host_operations)
+#endif //defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_deferred_host_operations))
 #if defined(VK_KHR_pipeline_executable_properties)
     PFN_vkGetPipelineExecutablePropertiesKHR pfn_GetPipelineExecutablePropertiesKHR;
     PFN_vkGetPipelineExecutableStatisticsKHR pfn_GetPipelineExecutableStatisticsKHR;
@@ -2801,7 +2803,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkPresentInfoKHR*>(&pPresentInfo)));
     }
 #endif //defined(VK_KHR_swapchain)
-#if defined(VK_KHR_swapchain) || defined(VK_KHR_device_group)
+#if (defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
     [[nodiscard]] Result GetDeviceGroupPresentCapabilitiesKHR(DeviceGroupPresentCapabilitiesKHR&  pDeviceGroupPresentCapabilities) {
         return static_cast<Result>(pfn_GetDeviceGroupPresentCapabilitiesKHR(device.get(),
             reinterpret_cast<VkDeviceGroupPresentCapabilitiesKHR*>(&pDeviceGroupPresentCapabilities)));
@@ -2812,13 +2814,15 @@ struct DeviceFunctions {
             surface.get(),
             reinterpret_cast<VkDeviceGroupPresentModeFlagsKHR*>(&pModes)));
     }
+#endif //(defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
+#if (defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_swapchain))
     [[nodiscard]] Result AcquireNextImage2KHR(const AcquireNextImageInfoKHR&  pAcquireInfo,
         uint32_t&  pImageIndex) {
         return static_cast<Result>(pfn_AcquireNextImage2KHR(device.get(),
             reinterpret_cast<const VkAcquireNextImageInfoKHR*>(&pAcquireInfo),
             &pImageIndex));
     }
-#endif //defined(VK_KHR_swapchain) || defined(VK_KHR_device_group)
+#endif //(defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_swapchain))
 #if defined(VK_KHR_display_swapchain)
     [[nodiscard]] Result CreateSharedSwapchainsKHR(uint32_t swapchainCount,
         const SwapchainCreateInfoKHR* pCreateInfos,
@@ -2952,7 +2956,7 @@ struct DeviceFunctions {
             reinterpret_cast<void*>(pInfo)));
     }
 #endif //defined(VK_AMD_shader_info)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_NV_external_memory_win32)
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_NV_external_memory_win32))
     [[nodiscard]] Result GetMemoryWin32HandleNV(DeviceMemory memory,
         ExternalMemoryHandleTypeFlagsNV handleType,
         HANDLE&  pHandle) {
@@ -2961,8 +2965,8 @@ struct DeviceFunctions {
             static_cast<VkExternalMemoryHandleTypeFlagsNV>(handleType),
             reinterpret_cast<HANDLE*>(&pHandle)));
     }
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_NV_external_memory_win32)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_external_memory_win32)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_NV_external_memory_win32))
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_memory_win32))
     [[nodiscard]] Result GetMemoryWin32HandleKHR(const MemoryGetWin32HandleInfoKHR&  pGetWin32HandleInfo,
         HANDLE&  pHandle) {
         return static_cast<Result>(pfn_GetMemoryWin32HandleKHR(device.get(),
@@ -2977,7 +2981,7 @@ struct DeviceFunctions {
             static_cast<HANDLE>(handle),
             reinterpret_cast<VkMemoryWin32HandlePropertiesKHR*>(&pMemoryWin32HandleProperties)));
     }
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_external_memory_win32)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_memory_win32))
 #if defined(VK_KHR_external_memory_fd)
     [[nodiscard]] Result GetMemoryFdKHR(const MemoryGetFdInfoKHR&  pGetFdInfo,
         int&  pFd) {
@@ -2994,7 +2998,7 @@ struct DeviceFunctions {
             reinterpret_cast<VkMemoryFdPropertiesKHR*>(&pMemoryFdProperties)));
     }
 #endif //defined(VK_KHR_external_memory_fd)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_external_semaphore_win32)
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_semaphore_win32))
     [[nodiscard]] Result GetSemaphoreWin32HandleKHR(const SemaphoreGetWin32HandleInfoKHR&  pGetWin32HandleInfo,
         HANDLE&  pHandle) {
         return static_cast<Result>(pfn_GetSemaphoreWin32HandleKHR(device.get(),
@@ -3005,7 +3009,7 @@ struct DeviceFunctions {
         return static_cast<Result>(pfn_ImportSemaphoreWin32HandleKHR(device.get(),
             reinterpret_cast<const VkImportSemaphoreWin32HandleInfoKHR*>(&pImportSemaphoreWin32HandleInfo)));
     }
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_external_semaphore_win32)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_semaphore_win32))
 #if defined(VK_KHR_external_semaphore_fd)
     [[nodiscard]] Result GetSemaphoreFdKHR(const SemaphoreGetFdInfoKHR&  pGetFdInfo,
         int&  pFd) {
@@ -3033,7 +3037,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkWriteDescriptorSet*>(pDescriptorWrites));
     }
 #endif //defined(VK_KHR_push_descriptor)
-#if defined(VK_KHR_push_descriptor) || defined(VK_KHR_push_descriptor) || defined(VK_KHR_descriptor_update_template)
+#if (defined(VK_KHR_push_descriptor) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_push_descriptor) && defined(VK_KHR_descriptor_update_template)) || (defined(VK_KHR_descriptor_update_template) && defined(VK_KHR_push_descriptor))
     void CmdPushDescriptorSetWithTemplateKHR(CommandBuffer commandBuffer,
         DescriptorUpdateTemplate descriptorUpdateTemplate,
         PipelineLayout layout,
@@ -3045,7 +3049,7 @@ struct DeviceFunctions {
             set,
             reinterpret_cast<const void*>(pData));
     }
-#endif //defined(VK_KHR_push_descriptor) || defined(VK_KHR_push_descriptor) || defined(VK_KHR_descriptor_update_template)
+#endif //(defined(VK_KHR_push_descriptor) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_push_descriptor) && defined(VK_KHR_descriptor_update_template)) || (defined(VK_KHR_descriptor_update_template) && defined(VK_KHR_push_descriptor))
 #if defined(VK_EXT_conditional_rendering)
     void CmdBeginConditionalRenderingEXT(CommandBuffer commandBuffer,
         const ConditionalRenderingBeginInfoEXT&  pConditionalRenderingBegin) {
@@ -3144,7 +3148,7 @@ struct DeviceFunctions {
             swapchain.get()));
     }
 #endif //defined(VK_KHR_shared_presentable_image)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_external_fence_win32)
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_fence_win32))
     [[nodiscard]] Result GetFenceWin32HandleKHR(const FenceGetWin32HandleInfoKHR&  pGetWin32HandleInfo,
         HANDLE&  pHandle) {
         return static_cast<Result>(pfn_GetFenceWin32HandleKHR(device.get(),
@@ -3155,7 +3159,7 @@ struct DeviceFunctions {
         return static_cast<Result>(pfn_ImportFenceWin32HandleKHR(device.get(),
             reinterpret_cast<const VkImportFenceWin32HandleInfoKHR*>(&pImportFenceWin32HandleInfo)));
     }
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_external_fence_win32)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_fence_win32))
 #if defined(VK_KHR_external_fence_fd)
     [[nodiscard]] Result GetFenceFdKHR(const FenceGetFdInfoKHR&  pGetFdInfo,
         int&  pFd) {
@@ -3213,7 +3217,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkDebugUtilsLabelEXT*>(&pLabelInfo));
     }
 #endif //defined(VK_EXT_debug_utils)
-#if defined(VK_USE_PLATFORM_ANDROID_KHR) && defined(VK_ANDROID_external_memory_android_hardware_buffer)
+#if defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_ANDROID_external_memory_android_hardware_buffer))
     [[nodiscard]] Result GetAndroidHardwareBufferPropertiesANDROID(const AHardwareBuffer&  buffer,
         AndroidHardwareBufferPropertiesANDROID&  pProperties) {
         return static_cast<Result>(pfn_GetAndroidHardwareBufferPropertiesANDROID(device.get(),
@@ -3226,7 +3230,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkMemoryGetAndroidHardwareBufferInfoANDROID*>(&pInfo),
             pBuffer));
     }
-#endif //defined(VK_USE_PLATFORM_ANDROID_KHR) && defined(VK_ANDROID_external_memory_android_hardware_buffer)
+#endif //defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_ANDROID_external_memory_android_hardware_buffer))
 #if defined(VK_EXT_sample_locations)
     void CmdSetSampleLocationsEXT(CommandBuffer commandBuffer,
         const SampleLocationsInfoEXT&  pSampleLocationsInfo) {
@@ -3234,7 +3238,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkSampleLocationsInfoEXT*>(&pSampleLocationsInfo));
     }
 #endif //defined(VK_EXT_sample_locations)
-#if defined(VK_ENABLE_BETA_EXTENSIONS) && defined(VK_KHR_ray_tracing)
+#if defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_ray_tracing))
     void DestroyAccelerationStructureKHR(AccelerationStructureKHR accelerationStructure,
         const AllocationCallbacks* pAllocator) {
         return pfn_DestroyAccelerationStructureKHR(device.get(),
@@ -3419,7 +3423,7 @@ struct DeviceFunctions {
         return pfn_GetAccelerationStructureDeviceAddressKHR(device.get(),
             reinterpret_cast<const VkAccelerationStructureDeviceAddressInfoKHR*>(&pInfo));
     }
-#endif //defined(VK_ENABLE_BETA_EXTENSIONS) && defined(VK_KHR_ray_tracing)
+#endif //defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_ray_tracing))
 #if defined(VK_EXT_image_drm_format_modifier)
     [[nodiscard]] Result GetImageDrmFormatModifierPropertiesEXT(Image image,
         ImageDrmFormatModifierPropertiesEXT&  pProperties) {
@@ -3736,7 +3740,7 @@ struct DeviceFunctions {
             localDimmingEnable);
     }
 #endif //defined(VK_AMD_display_native_hdr)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive)
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
     [[nodiscard]] Result AcquireFullScreenExclusiveModeEXT(SwapchainKHR swapchain) {
         return static_cast<Result>(pfn_AcquireFullScreenExclusiveModeEXT(device.get(),
             swapchain.get()));
@@ -3745,15 +3749,15 @@ struct DeviceFunctions {
         return static_cast<Result>(pfn_ReleaseFullScreenExclusiveModeEXT(device.get(),
             swapchain.get()));
     }
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive) || defined(VK_EXT_full_screen_exclusive)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && ((defined(VK_EXT_full_screen_exclusive) && defined(VK_KHR_device_group)) || (defined(VK_EXT_full_screen_exclusive) && defined(VK_VERSION_1_1)))
     [[nodiscard]] Result GetDeviceGroupSurfacePresentModes2EXT(const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo,
         DeviceGroupPresentModeFlagsKHR&  pModes) {
         return static_cast<Result>(pfn_GetDeviceGroupSurfacePresentModes2EXT(device.get(),
             reinterpret_cast<const VkPhysicalDeviceSurfaceInfo2KHR*>(&pSurfaceInfo),
             reinterpret_cast<VkDeviceGroupPresentModeFlagsKHR*>(&pModes)));
     }
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive) || defined(VK_EXT_full_screen_exclusive)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && ((defined(VK_EXT_full_screen_exclusive) && defined(VK_KHR_device_group)) || (defined(VK_EXT_full_screen_exclusive) && defined(VK_VERSION_1_1)))
 #if defined(VK_EXT_line_rasterization)
     void CmdSetLineStippleEXT(CommandBuffer commandBuffer,
         uint32_t lineStippleFactor,
@@ -3847,7 +3851,7 @@ struct DeviceFunctions {
             static_cast<VkCompareOp>(compareOp));
     }
 #endif //defined(VK_EXT_extended_dynamic_state)
-#if defined(VK_ENABLE_BETA_EXTENSIONS) && defined(VK_KHR_deferred_host_operations)
+#if defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_deferred_host_operations))
     [[nodiscard]] Result CreateDeferredOperationKHR(const AllocationCallbacks* pAllocator,
         DeferredOperationKHR&  pDeferredOperation) {
         return static_cast<Result>(pfn_CreateDeferredOperationKHR(device.get(),
@@ -3872,7 +3876,7 @@ struct DeviceFunctions {
         return static_cast<Result>(pfn_DeferredOperationJoinKHR(device.get(),
             operation.get()));
     }
-#endif //defined(VK_ENABLE_BETA_EXTENSIONS) && defined(VK_KHR_deferred_host_operations)
+#endif //defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_deferred_host_operations))
 #if defined(VK_KHR_pipeline_executable_properties)
     [[nodiscard]] Result GetPipelineExecutablePropertiesKHR(const PipelineInfoKHR&  pPipelineInfo,
         uint32_t&  pExecutableCount,
@@ -4142,11 +4146,13 @@ struct DeviceFunctions {
         pfn_AcquireNextImageKHR = reinterpret_cast<PFN_vkAcquireNextImageKHR>(get_device_proc_addr(device.get(),"vkAcquireNextImageKHR"));
         pfn_QueuePresentKHR = reinterpret_cast<PFN_vkQueuePresentKHR>(get_device_proc_addr(device.get(),"vkQueuePresentKHR"));
 #endif //defined(VK_KHR_swapchain)
-#if defined(VK_KHR_swapchain) || defined(VK_KHR_device_group)
+#if (defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
         pfn_GetDeviceGroupPresentCapabilitiesKHR = reinterpret_cast<PFN_vkGetDeviceGroupPresentCapabilitiesKHR>(get_device_proc_addr(device.get(),"vkGetDeviceGroupPresentCapabilitiesKHR"));
         pfn_GetDeviceGroupSurfacePresentModesKHR = reinterpret_cast<PFN_vkGetDeviceGroupSurfacePresentModesKHR>(get_device_proc_addr(device.get(),"vkGetDeviceGroupSurfacePresentModesKHR"));
+#endif //(defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
+#if (defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_swapchain))
         pfn_AcquireNextImage2KHR = reinterpret_cast<PFN_vkAcquireNextImage2KHR>(get_device_proc_addr(device.get(),"vkAcquireNextImage2KHR"));
-#endif //defined(VK_KHR_swapchain) || defined(VK_KHR_device_group)
+#endif //(defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_swapchain))
 #if defined(VK_KHR_display_swapchain)
         pfn_CreateSharedSwapchainsKHR = reinterpret_cast<PFN_vkCreateSharedSwapchainsKHR>(get_device_proc_addr(device.get(),"vkCreateSharedSwapchainsKHR"));
 #endif //defined(VK_KHR_display_swapchain)
@@ -4172,21 +4178,21 @@ struct DeviceFunctions {
 #if defined(VK_AMD_shader_info)
         pfn_GetShaderInfoAMD = reinterpret_cast<PFN_vkGetShaderInfoAMD>(get_device_proc_addr(device.get(),"vkGetShaderInfoAMD"));
 #endif //defined(VK_AMD_shader_info)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_NV_external_memory_win32)
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_NV_external_memory_win32))
         pfn_GetMemoryWin32HandleNV = reinterpret_cast<PFN_vkGetMemoryWin32HandleNV>(get_device_proc_addr(device.get(),"vkGetMemoryWin32HandleNV"));
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_NV_external_memory_win32)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_external_memory_win32)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_NV_external_memory_win32))
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_memory_win32))
         pfn_GetMemoryWin32HandleKHR = reinterpret_cast<PFN_vkGetMemoryWin32HandleKHR>(get_device_proc_addr(device.get(),"vkGetMemoryWin32HandleKHR"));
         pfn_GetMemoryWin32HandlePropertiesKHR = reinterpret_cast<PFN_vkGetMemoryWin32HandlePropertiesKHR>(get_device_proc_addr(device.get(),"vkGetMemoryWin32HandlePropertiesKHR"));
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_external_memory_win32)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_memory_win32))
 #if defined(VK_KHR_external_memory_fd)
         pfn_GetMemoryFdKHR = reinterpret_cast<PFN_vkGetMemoryFdKHR>(get_device_proc_addr(device.get(),"vkGetMemoryFdKHR"));
         pfn_GetMemoryFdPropertiesKHR = reinterpret_cast<PFN_vkGetMemoryFdPropertiesKHR>(get_device_proc_addr(device.get(),"vkGetMemoryFdPropertiesKHR"));
 #endif //defined(VK_KHR_external_memory_fd)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_external_semaphore_win32)
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_semaphore_win32))
         pfn_GetSemaphoreWin32HandleKHR = reinterpret_cast<PFN_vkGetSemaphoreWin32HandleKHR>(get_device_proc_addr(device.get(),"vkGetSemaphoreWin32HandleKHR"));
         pfn_ImportSemaphoreWin32HandleKHR = reinterpret_cast<PFN_vkImportSemaphoreWin32HandleKHR>(get_device_proc_addr(device.get(),"vkImportSemaphoreWin32HandleKHR"));
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_external_semaphore_win32)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_semaphore_win32))
 #if defined(VK_KHR_external_semaphore_fd)
         pfn_GetSemaphoreFdKHR = reinterpret_cast<PFN_vkGetSemaphoreFdKHR>(get_device_proc_addr(device.get(),"vkGetSemaphoreFdKHR"));
         pfn_ImportSemaphoreFdKHR = reinterpret_cast<PFN_vkImportSemaphoreFdKHR>(get_device_proc_addr(device.get(),"vkImportSemaphoreFdKHR"));
@@ -4194,9 +4200,9 @@ struct DeviceFunctions {
 #if defined(VK_KHR_push_descriptor)
         pfn_CmdPushDescriptorSetKHR = reinterpret_cast<PFN_vkCmdPushDescriptorSetKHR>(get_device_proc_addr(device.get(),"vkCmdPushDescriptorSetKHR"));
 #endif //defined(VK_KHR_push_descriptor)
-#if defined(VK_KHR_push_descriptor) || defined(VK_KHR_push_descriptor) || defined(VK_KHR_descriptor_update_template)
+#if (defined(VK_KHR_push_descriptor) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_push_descriptor) && defined(VK_KHR_descriptor_update_template)) || (defined(VK_KHR_descriptor_update_template) && defined(VK_KHR_push_descriptor))
         pfn_CmdPushDescriptorSetWithTemplateKHR = reinterpret_cast<PFN_vkCmdPushDescriptorSetWithTemplateKHR>(get_device_proc_addr(device.get(),"vkCmdPushDescriptorSetWithTemplateKHR"));
-#endif //defined(VK_KHR_push_descriptor) || defined(VK_KHR_push_descriptor) || defined(VK_KHR_descriptor_update_template)
+#endif //(defined(VK_KHR_push_descriptor) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_push_descriptor) && defined(VK_KHR_descriptor_update_template)) || (defined(VK_KHR_descriptor_update_template) && defined(VK_KHR_push_descriptor))
 #if defined(VK_EXT_conditional_rendering)
         pfn_CmdBeginConditionalRenderingEXT = reinterpret_cast<PFN_vkCmdBeginConditionalRenderingEXT>(get_device_proc_addr(device.get(),"vkCmdBeginConditionalRenderingEXT"));
         pfn_CmdEndConditionalRenderingEXT = reinterpret_cast<PFN_vkCmdEndConditionalRenderingEXT>(get_device_proc_addr(device.get(),"vkCmdEndConditionalRenderingEXT"));
@@ -4223,10 +4229,10 @@ struct DeviceFunctions {
 #if defined(VK_KHR_shared_presentable_image)
         pfn_GetSwapchainStatusKHR = reinterpret_cast<PFN_vkGetSwapchainStatusKHR>(get_device_proc_addr(device.get(),"vkGetSwapchainStatusKHR"));
 #endif //defined(VK_KHR_shared_presentable_image)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_external_fence_win32)
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_fence_win32))
         pfn_GetFenceWin32HandleKHR = reinterpret_cast<PFN_vkGetFenceWin32HandleKHR>(get_device_proc_addr(device.get(),"vkGetFenceWin32HandleKHR"));
         pfn_ImportFenceWin32HandleKHR = reinterpret_cast<PFN_vkImportFenceWin32HandleKHR>(get_device_proc_addr(device.get(),"vkImportFenceWin32HandleKHR"));
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_external_fence_win32)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_fence_win32))
 #if defined(VK_KHR_external_fence_fd)
         pfn_GetFenceFdKHR = reinterpret_cast<PFN_vkGetFenceFdKHR>(get_device_proc_addr(device.get(),"vkGetFenceFdKHR"));
         pfn_ImportFenceFdKHR = reinterpret_cast<PFN_vkImportFenceFdKHR>(get_device_proc_addr(device.get(),"vkImportFenceFdKHR"));
@@ -4245,14 +4251,14 @@ struct DeviceFunctions {
         pfn_CmdEndDebugUtilsLabelEXT = reinterpret_cast<PFN_vkCmdEndDebugUtilsLabelEXT>(get_device_proc_addr(device.get(),"vkCmdEndDebugUtilsLabelEXT"));
         pfn_CmdInsertDebugUtilsLabelEXT = reinterpret_cast<PFN_vkCmdInsertDebugUtilsLabelEXT>(get_device_proc_addr(device.get(),"vkCmdInsertDebugUtilsLabelEXT"));
 #endif //defined(VK_EXT_debug_utils)
-#if defined(VK_USE_PLATFORM_ANDROID_KHR) && defined(VK_ANDROID_external_memory_android_hardware_buffer)
+#if defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_ANDROID_external_memory_android_hardware_buffer))
         pfn_GetAndroidHardwareBufferPropertiesANDROID = reinterpret_cast<PFN_vkGetAndroidHardwareBufferPropertiesANDROID>(get_device_proc_addr(device.get(),"vkGetAndroidHardwareBufferPropertiesANDROID"));
         pfn_GetMemoryAndroidHardwareBufferANDROID = reinterpret_cast<PFN_vkGetMemoryAndroidHardwareBufferANDROID>(get_device_proc_addr(device.get(),"vkGetMemoryAndroidHardwareBufferANDROID"));
-#endif //defined(VK_USE_PLATFORM_ANDROID_KHR) && defined(VK_ANDROID_external_memory_android_hardware_buffer)
+#endif //defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_ANDROID_external_memory_android_hardware_buffer))
 #if defined(VK_EXT_sample_locations)
         pfn_CmdSetSampleLocationsEXT = reinterpret_cast<PFN_vkCmdSetSampleLocationsEXT>(get_device_proc_addr(device.get(),"vkCmdSetSampleLocationsEXT"));
 #endif //defined(VK_EXT_sample_locations)
-#if defined(VK_ENABLE_BETA_EXTENSIONS) && defined(VK_KHR_ray_tracing)
+#if defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_ray_tracing))
         pfn_DestroyAccelerationStructureKHR = reinterpret_cast<PFN_vkDestroyAccelerationStructureKHR>(get_device_proc_addr(device.get(),"vkDestroyAccelerationStructureKHR"));
         pfn_GetAccelerationStructureMemoryRequirementsKHR = reinterpret_cast<PFN_vkGetAccelerationStructureMemoryRequirementsKHR>(get_device_proc_addr(device.get(),"vkGetAccelerationStructureMemoryRequirementsKHR"));
         pfn_BindAccelerationStructureMemoryKHR = reinterpret_cast<PFN_vkBindAccelerationStructureMemoryKHR>(get_device_proc_addr(device.get(),"vkBindAccelerationStructureMemoryKHR"));
@@ -4275,7 +4281,7 @@ struct DeviceFunctions {
         pfn_CmdBuildAccelerationStructureIndirectKHR = reinterpret_cast<PFN_vkCmdBuildAccelerationStructureIndirectKHR>(get_device_proc_addr(device.get(),"vkCmdBuildAccelerationStructureIndirectKHR"));
         pfn_BuildAccelerationStructureKHR = reinterpret_cast<PFN_vkBuildAccelerationStructureKHR>(get_device_proc_addr(device.get(),"vkBuildAccelerationStructureKHR"));
         pfn_GetAccelerationStructureDeviceAddressKHR = reinterpret_cast<PFN_vkGetAccelerationStructureDeviceAddressKHR>(get_device_proc_addr(device.get(),"vkGetAccelerationStructureDeviceAddressKHR"));
-#endif //defined(VK_ENABLE_BETA_EXTENSIONS) && defined(VK_KHR_ray_tracing)
+#endif //defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_ray_tracing))
 #if defined(VK_EXT_image_drm_format_modifier)
         pfn_GetImageDrmFormatModifierPropertiesEXT = reinterpret_cast<PFN_vkGetImageDrmFormatModifierPropertiesEXT>(get_device_proc_addr(device.get(),"vkGetImageDrmFormatModifierPropertiesEXT"));
 #endif //defined(VK_EXT_image_drm_format_modifier)
@@ -4335,13 +4341,13 @@ struct DeviceFunctions {
 #if defined(VK_AMD_display_native_hdr)
         pfn_SetLocalDimmingAMD = reinterpret_cast<PFN_vkSetLocalDimmingAMD>(get_device_proc_addr(device.get(),"vkSetLocalDimmingAMD"));
 #endif //defined(VK_AMD_display_native_hdr)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive)
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
         pfn_AcquireFullScreenExclusiveModeEXT = reinterpret_cast<PFN_vkAcquireFullScreenExclusiveModeEXT>(get_device_proc_addr(device.get(),"vkAcquireFullScreenExclusiveModeEXT"));
         pfn_ReleaseFullScreenExclusiveModeEXT = reinterpret_cast<PFN_vkReleaseFullScreenExclusiveModeEXT>(get_device_proc_addr(device.get(),"vkReleaseFullScreenExclusiveModeEXT"));
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive) || defined(VK_EXT_full_screen_exclusive)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && ((defined(VK_EXT_full_screen_exclusive) && defined(VK_KHR_device_group)) || (defined(VK_EXT_full_screen_exclusive) && defined(VK_VERSION_1_1)))
         pfn_GetDeviceGroupSurfacePresentModes2EXT = reinterpret_cast<PFN_vkGetDeviceGroupSurfacePresentModes2EXT>(get_device_proc_addr(device.get(),"vkGetDeviceGroupSurfacePresentModes2EXT"));
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive) || defined(VK_EXT_full_screen_exclusive)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && ((defined(VK_EXT_full_screen_exclusive) && defined(VK_KHR_device_group)) || (defined(VK_EXT_full_screen_exclusive) && defined(VK_VERSION_1_1)))
 #if defined(VK_EXT_line_rasterization)
         pfn_CmdSetLineStippleEXT = reinterpret_cast<PFN_vkCmdSetLineStippleEXT>(get_device_proc_addr(device.get(),"vkCmdSetLineStippleEXT"));
 #endif //defined(VK_EXT_line_rasterization)
@@ -4359,13 +4365,13 @@ struct DeviceFunctions {
         pfn_CmdSetStencilTestEnableEXT = reinterpret_cast<PFN_vkCmdSetStencilTestEnableEXT>(get_device_proc_addr(device.get(),"vkCmdSetStencilTestEnableEXT"));
         pfn_CmdSetStencilOpEXT = reinterpret_cast<PFN_vkCmdSetStencilOpEXT>(get_device_proc_addr(device.get(),"vkCmdSetStencilOpEXT"));
 #endif //defined(VK_EXT_extended_dynamic_state)
-#if defined(VK_ENABLE_BETA_EXTENSIONS) && defined(VK_KHR_deferred_host_operations)
+#if defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_deferred_host_operations))
         pfn_CreateDeferredOperationKHR = reinterpret_cast<PFN_vkCreateDeferredOperationKHR>(get_device_proc_addr(device.get(),"vkCreateDeferredOperationKHR"));
         pfn_DestroyDeferredOperationKHR = reinterpret_cast<PFN_vkDestroyDeferredOperationKHR>(get_device_proc_addr(device.get(),"vkDestroyDeferredOperationKHR"));
         pfn_GetDeferredOperationMaxConcurrencyKHR = reinterpret_cast<PFN_vkGetDeferredOperationMaxConcurrencyKHR>(get_device_proc_addr(device.get(),"vkGetDeferredOperationMaxConcurrencyKHR"));
         pfn_GetDeferredOperationResultKHR = reinterpret_cast<PFN_vkGetDeferredOperationResultKHR>(get_device_proc_addr(device.get(),"vkGetDeferredOperationResultKHR"));
         pfn_DeferredOperationJoinKHR = reinterpret_cast<PFN_vkDeferredOperationJoinKHR>(get_device_proc_addr(device.get(),"vkDeferredOperationJoinKHR"));
-#endif //defined(VK_ENABLE_BETA_EXTENSIONS) && defined(VK_KHR_deferred_host_operations)
+#endif //defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_deferred_host_operations))
 #if defined(VK_KHR_pipeline_executable_properties)
         pfn_GetPipelineExecutablePropertiesKHR = reinterpret_cast<PFN_vkGetPipelineExecutablePropertiesKHR>(get_device_proc_addr(device.get(),"vkGetPipelineExecutablePropertiesKHR"));
         pfn_GetPipelineExecutableStatisticsKHR = reinterpret_cast<PFN_vkGetPipelineExecutableStatisticsKHR>(get_device_proc_addr(device.get(),"vkGetPipelineExecutableStatisticsKHR"));
@@ -4445,19 +4451,22 @@ public:
     };
 };
 #endif //defined(VK_KHR_surface)
+struct VK_KHR_swapchain_dispatch_tableFunctions {
+    Device const device;
 #if defined(VK_KHR_swapchain)
-struct VK_KHR_swapchain_dispatch_table {
     PFN_vkCreateSwapchainKHR pfn_CreateSwapchainKHR;
     PFN_vkDestroySwapchainKHR pfn_DestroySwapchainKHR;
     PFN_vkGetSwapchainImagesKHR pfn_GetSwapchainImagesKHR;
     PFN_vkAcquireNextImageKHR pfn_AcquireNextImageKHR;
     PFN_vkQueuePresentKHR pfn_QueuePresentKHR;
+#endif //defined(VK_KHR_swapchain)
+#if (defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1))
     PFN_vkGetDeviceGroupPresentCapabilitiesKHR pfn_GetDeviceGroupPresentCapabilitiesKHR;
     PFN_vkGetDeviceGroupSurfacePresentModesKHR pfn_GetDeviceGroupSurfacePresentModesKHR;
     PFN_vkAcquireNextImage2KHR pfn_AcquireNextImage2KHR;
-public:
-    [[nodiscard]] Result CreateSwapchainKHR(Device device,
-        const SwapchainCreateInfoKHR&  pCreateInfo,
+#endif //(defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1))
+#if defined(VK_KHR_swapchain)
+    [[nodiscard]] Result CreateSwapchainKHR(const SwapchainCreateInfoKHR&  pCreateInfo,
         const AllocationCallbacks* pAllocator,
         SwapchainKHR&  pSwapchain) {
         return static_cast<Result>(pfn_CreateSwapchainKHR(device.get(),
@@ -4465,15 +4474,13 @@ public:
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkSwapchainKHR*>(&pSwapchain)));
     }
-    void DestroySwapchainKHR(Device device,
-        SwapchainKHR swapchain,
+    void DestroySwapchainKHR(SwapchainKHR swapchain,
         const AllocationCallbacks* pAllocator) {
         return pfn_DestroySwapchainKHR(device.get(),
             swapchain.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    [[nodiscard]] Result GetSwapchainImagesKHR(Device device,
-        SwapchainKHR swapchain,
+    [[nodiscard]] Result GetSwapchainImagesKHR(SwapchainKHR swapchain,
         uint32_t&  pSwapchainImageCount,
         Image* pSwapchainImages) {
         return static_cast<Result>(pfn_GetSwapchainImagesKHR(device.get(),
@@ -4481,8 +4488,7 @@ public:
             &pSwapchainImageCount,
             reinterpret_cast<VkImage*>(pSwapchainImages)));
     }
-    [[nodiscard]] Result AcquireNextImageKHR(Device device,
-        SwapchainKHR swapchain,
+    [[nodiscard]] Result AcquireNextImageKHR(SwapchainKHR swapchain,
         uint64_t timeout,
         Semaphore semaphore,
         Fence fence,
@@ -4499,37 +4505,41 @@ public:
         return static_cast<Result>(pfn_QueuePresentKHR(queue.get(),
             reinterpret_cast<const VkPresentInfoKHR*>(&pPresentInfo)));
     }
-    [[nodiscard]] Result GetDeviceGroupPresentCapabilitiesKHR(Device device,
-        DeviceGroupPresentCapabilitiesKHR&  pDeviceGroupPresentCapabilities) {
+#endif //defined(VK_KHR_swapchain)
+#if (defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1))
+    [[nodiscard]] Result GetDeviceGroupPresentCapabilitiesKHR(DeviceGroupPresentCapabilitiesKHR&  pDeviceGroupPresentCapabilities) {
         return static_cast<Result>(pfn_GetDeviceGroupPresentCapabilitiesKHR(device.get(),
             reinterpret_cast<VkDeviceGroupPresentCapabilitiesKHR*>(&pDeviceGroupPresentCapabilities)));
     }
-    [[nodiscard]] Result GetDeviceGroupSurfacePresentModesKHR(Device device,
-        SurfaceKHR surface,
+    [[nodiscard]] Result GetDeviceGroupSurfacePresentModesKHR(SurfaceKHR surface,
         DeviceGroupPresentModeFlagsKHR&  pModes) {
         return static_cast<Result>(pfn_GetDeviceGroupSurfacePresentModesKHR(device.get(),
             surface.get(),
             reinterpret_cast<VkDeviceGroupPresentModeFlagsKHR*>(&pModes)));
     }
-    [[nodiscard]] Result AcquireNextImage2KHR(Device device,
-        const AcquireNextImageInfoKHR&  pAcquireInfo,
+    [[nodiscard]] Result AcquireNextImage2KHR(const AcquireNextImageInfoKHR&  pAcquireInfo,
         uint32_t&  pImageIndex) {
         return static_cast<Result>(pfn_AcquireNextImage2KHR(device.get(),
             reinterpret_cast<const VkAcquireNextImageInfoKHR*>(&pAcquireInfo),
             &pImageIndex));
     }
-    VK_KHR_swapchain_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device device) {
+#endif //(defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1))
+    VK_KHR_swapchain_dispatch_tableFunctions(InstanceFunctions const& instance_functions, Device device){
+    PFN_vkGetDeviceProcAddr get_device_proc_addr = instance_functions.pfn_GetDeviceProcAddr;
+#if defined(VK_KHR_swapchain)
         pfn_CreateSwapchainKHR = reinterpret_cast<PFN_vkCreateSwapchainKHR>(get_device_proc_addr(device.get(),"vkCreateSwapchainKHR"));
         pfn_DestroySwapchainKHR = reinterpret_cast<PFN_vkDestroySwapchainKHR>(get_device_proc_addr(device.get(),"vkDestroySwapchainKHR"));
         pfn_GetSwapchainImagesKHR = reinterpret_cast<PFN_vkGetSwapchainImagesKHR>(get_device_proc_addr(device.get(),"vkGetSwapchainImagesKHR"));
         pfn_AcquireNextImageKHR = reinterpret_cast<PFN_vkAcquireNextImageKHR>(get_device_proc_addr(device.get(),"vkAcquireNextImageKHR"));
         pfn_QueuePresentKHR = reinterpret_cast<PFN_vkQueuePresentKHR>(get_device_proc_addr(device.get(),"vkQueuePresentKHR"));
+#endif //defined(VK_KHR_swapchain)
+#if (defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1))
         pfn_GetDeviceGroupPresentCapabilitiesKHR = reinterpret_cast<PFN_vkGetDeviceGroupPresentCapabilitiesKHR>(get_device_proc_addr(device.get(),"vkGetDeviceGroupPresentCapabilitiesKHR"));
         pfn_GetDeviceGroupSurfacePresentModesKHR = reinterpret_cast<PFN_vkGetDeviceGroupSurfacePresentModesKHR>(get_device_proc_addr(device.get(),"vkGetDeviceGroupSurfacePresentModesKHR"));
         pfn_AcquireNextImage2KHR = reinterpret_cast<PFN_vkAcquireNextImage2KHR>(get_device_proc_addr(device.get(),"vkAcquireNextImage2KHR"));
+#endif //(defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1))
     };
 };
-#endif //defined(VK_KHR_swapchain)
 #if defined(VK_KHR_display)
 struct VK_KHR_display_dispatch_table {
     PFN_vkGetPhysicalDeviceDisplayPropertiesKHR pfn_GetPhysicalDeviceDisplayPropertiesKHR;
@@ -4632,7 +4642,7 @@ public:
     };
 };
 #endif //defined(VK_KHR_display_swapchain)
-#if defined(VK_USE_PLATFORM_XLIB_KHR) && defined(VK_KHR_xlib_surface)
+#if defined(VK_USE_PLATFORM_XLIB_KHR) && (defined(VK_KHR_xlib_surface))
 struct VK_KHR_xlib_surface_dispatch_table {
     PFN_vkCreateXlibSurfaceKHR pfn_CreateXlibSurfaceKHR;
     PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR pfn_GetPhysicalDeviceXlibPresentationSupportKHR;
@@ -4660,8 +4670,8 @@ public:
         pfn_GetPhysicalDeviceXlibPresentationSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceXlibPresentationSupportKHR"));
     };
 };
-#endif //defined(VK_USE_PLATFORM_XLIB_KHR) && defined(VK_KHR_xlib_surface)
-#if defined(VK_USE_PLATFORM_XCB_KHR) && defined(VK_KHR_xcb_surface)
+#endif //defined(VK_USE_PLATFORM_XLIB_KHR) && (defined(VK_KHR_xlib_surface))
+#if defined(VK_USE_PLATFORM_XCB_KHR) && (defined(VK_KHR_xcb_surface))
 struct VK_KHR_xcb_surface_dispatch_table {
     PFN_vkCreateXcbSurfaceKHR pfn_CreateXcbSurfaceKHR;
     PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR pfn_GetPhysicalDeviceXcbPresentationSupportKHR;
@@ -4689,8 +4699,8 @@ public:
         pfn_GetPhysicalDeviceXcbPresentationSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceXcbPresentationSupportKHR"));
     };
 };
-#endif //defined(VK_USE_PLATFORM_XCB_KHR) && defined(VK_KHR_xcb_surface)
-#if defined(VK_USE_PLATFORM_WAYLAND_KHR) && defined(VK_KHR_wayland_surface)
+#endif //defined(VK_USE_PLATFORM_XCB_KHR) && (defined(VK_KHR_xcb_surface))
+#if defined(VK_USE_PLATFORM_WAYLAND_KHR) && (defined(VK_KHR_wayland_surface))
 struct VK_KHR_wayland_surface_dispatch_table {
     PFN_vkCreateWaylandSurfaceKHR pfn_CreateWaylandSurfaceKHR;
     PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR pfn_GetPhysicalDeviceWaylandPresentationSupportKHR;
@@ -4716,8 +4726,8 @@ public:
         pfn_GetPhysicalDeviceWaylandPresentationSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceWaylandPresentationSupportKHR"));
     };
 };
-#endif //defined(VK_USE_PLATFORM_WAYLAND_KHR) && defined(VK_KHR_wayland_surface)
-#if defined(VK_USE_PLATFORM_ANDROID_KHR) && defined(VK_KHR_android_surface)
+#endif //defined(VK_USE_PLATFORM_WAYLAND_KHR) && (defined(VK_KHR_wayland_surface))
+#if defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_KHR_android_surface))
 struct VK_KHR_android_surface_dispatch_table {
     PFN_vkCreateAndroidSurfaceKHR pfn_CreateAndroidSurfaceKHR;
 public:
@@ -4734,8 +4744,8 @@ public:
         pfn_CreateAndroidSurfaceKHR = reinterpret_cast<PFN_vkCreateAndroidSurfaceKHR>(get_instance_proc_addr(instance.get(),"vkCreateAndroidSurfaceKHR"));
     };
 };
-#endif //defined(VK_USE_PLATFORM_ANDROID_KHR) && defined(VK_KHR_android_surface)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_win32_surface)
+#endif //defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_KHR_android_surface))
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_win32_surface))
 struct VK_KHR_win32_surface_dispatch_table {
     PFN_vkCreateWin32SurfaceKHR pfn_CreateWin32SurfaceKHR;
     PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR pfn_GetPhysicalDeviceWin32PresentationSupportKHR;
@@ -4759,7 +4769,7 @@ public:
         pfn_GetPhysicalDeviceWin32PresentationSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceWin32PresentationSupportKHR"));
     };
 };
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_win32_surface)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_win32_surface))
 #if defined(VK_EXT_debug_report)
 struct VK_EXT_debug_report_dispatch_table {
     PFN_vkCreateDebugReportCallbackEXT pfn_CreateDebugReportCallbackEXT;
@@ -4980,7 +4990,7 @@ public:
     };
 };
 #endif //defined(VK_AMD_shader_info)
-#if defined(VK_USE_PLATFORM_GGP) && defined(VK_GGP_stream_descriptor_surface)
+#if defined(VK_USE_PLATFORM_GGP) && (defined(VK_GGP_stream_descriptor_surface))
 struct VK_GGP_stream_descriptor_surface_dispatch_table {
     PFN_vkCreateStreamDescriptorSurfaceGGP pfn_CreateStreamDescriptorSurfaceGGP;
 public:
@@ -4997,7 +5007,7 @@ public:
         pfn_CreateStreamDescriptorSurfaceGGP = reinterpret_cast<PFN_vkCreateStreamDescriptorSurfaceGGP>(get_instance_proc_addr(instance.get(),"vkCreateStreamDescriptorSurfaceGGP"));
     };
 };
-#endif //defined(VK_USE_PLATFORM_GGP) && defined(VK_GGP_stream_descriptor_surface)
+#endif //defined(VK_USE_PLATFORM_GGP) && (defined(VK_GGP_stream_descriptor_surface))
 #if defined(VK_NV_external_memory_capabilities)
 struct VK_NV_external_memory_capabilities_dispatch_table {
     PFN_vkGetPhysicalDeviceExternalImageFormatPropertiesNV pfn_GetPhysicalDeviceExternalImageFormatPropertiesNV;
@@ -5024,7 +5034,7 @@ public:
     };
 };
 #endif //defined(VK_NV_external_memory_capabilities)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_NV_external_memory_win32)
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_NV_external_memory_win32))
 struct VK_NV_external_memory_win32_dispatch_table {
     PFN_vkGetMemoryWin32HandleNV pfn_GetMemoryWin32HandleNV;
 public:
@@ -5041,40 +5051,48 @@ public:
         pfn_GetMemoryWin32HandleNV = reinterpret_cast<PFN_vkGetMemoryWin32HandleNV>(get_device_proc_addr(device.get(),"vkGetMemoryWin32HandleNV"));
     };
 };
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_NV_external_memory_win32)
-#if defined(VK_KHR_device_group)
-struct VK_KHR_device_group_dispatch_table {
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_NV_external_memory_win32))
+struct VK_KHR_device_group_dispatch_tableFunctions {
+    Device const device;
+#if (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
     PFN_vkGetDeviceGroupPresentCapabilitiesKHR pfn_GetDeviceGroupPresentCapabilitiesKHR;
     PFN_vkGetDeviceGroupSurfacePresentModesKHR pfn_GetDeviceGroupSurfacePresentModesKHR;
+#endif //(defined(VK_KHR_device_group) && defined(VK_KHR_surface))
+#if (defined(VK_KHR_device_group) && defined(VK_KHR_swapchain))
     PFN_vkAcquireNextImage2KHR pfn_AcquireNextImage2KHR;
-public:
-    [[nodiscard]] Result GetDeviceGroupPresentCapabilitiesKHR(Device device,
-        DeviceGroupPresentCapabilitiesKHR&  pDeviceGroupPresentCapabilities) {
+#endif //(defined(VK_KHR_device_group) && defined(VK_KHR_swapchain))
+#if (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
+    [[nodiscard]] Result GetDeviceGroupPresentCapabilitiesKHR(DeviceGroupPresentCapabilitiesKHR&  pDeviceGroupPresentCapabilities) {
         return static_cast<Result>(pfn_GetDeviceGroupPresentCapabilitiesKHR(device.get(),
             reinterpret_cast<VkDeviceGroupPresentCapabilitiesKHR*>(&pDeviceGroupPresentCapabilities)));
     }
-    [[nodiscard]] Result GetDeviceGroupSurfacePresentModesKHR(Device device,
-        SurfaceKHR surface,
+    [[nodiscard]] Result GetDeviceGroupSurfacePresentModesKHR(SurfaceKHR surface,
         DeviceGroupPresentModeFlagsKHR&  pModes) {
         return static_cast<Result>(pfn_GetDeviceGroupSurfacePresentModesKHR(device.get(),
             surface.get(),
             reinterpret_cast<VkDeviceGroupPresentModeFlagsKHR*>(&pModes)));
     }
-    [[nodiscard]] Result AcquireNextImage2KHR(Device device,
-        const AcquireNextImageInfoKHR&  pAcquireInfo,
+#endif //(defined(VK_KHR_device_group) && defined(VK_KHR_surface))
+#if (defined(VK_KHR_device_group) && defined(VK_KHR_swapchain))
+    [[nodiscard]] Result AcquireNextImage2KHR(const AcquireNextImageInfoKHR&  pAcquireInfo,
         uint32_t&  pImageIndex) {
         return static_cast<Result>(pfn_AcquireNextImage2KHR(device.get(),
             reinterpret_cast<const VkAcquireNextImageInfoKHR*>(&pAcquireInfo),
             &pImageIndex));
     }
-    VK_KHR_device_group_dispatch_table(PFN_vkGetDeviceProcAddr get_device_proc_addr, Device device) {
+#endif //(defined(VK_KHR_device_group) && defined(VK_KHR_swapchain))
+    VK_KHR_device_group_dispatch_tableFunctions(InstanceFunctions const& instance_functions, Device device){
+    PFN_vkGetDeviceProcAddr get_device_proc_addr = instance_functions.pfn_GetDeviceProcAddr;
+#if (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
         pfn_GetDeviceGroupPresentCapabilitiesKHR = reinterpret_cast<PFN_vkGetDeviceGroupPresentCapabilitiesKHR>(get_device_proc_addr(device.get(),"vkGetDeviceGroupPresentCapabilitiesKHR"));
         pfn_GetDeviceGroupSurfacePresentModesKHR = reinterpret_cast<PFN_vkGetDeviceGroupSurfacePresentModesKHR>(get_device_proc_addr(device.get(),"vkGetDeviceGroupSurfacePresentModesKHR"));
+#endif //(defined(VK_KHR_device_group) && defined(VK_KHR_surface))
+#if (defined(VK_KHR_device_group) && defined(VK_KHR_swapchain))
         pfn_AcquireNextImage2KHR = reinterpret_cast<PFN_vkAcquireNextImage2KHR>(get_device_proc_addr(device.get(),"vkAcquireNextImage2KHR"));
+#endif //(defined(VK_KHR_device_group) && defined(VK_KHR_swapchain))
     };
 };
-#endif //defined(VK_KHR_device_group)
-#if defined(VK_USE_PLATFORM_VI_NN) && defined(VK_NN_vi_surface)
+#if defined(VK_USE_PLATFORM_VI_NN) && (defined(VK_NN_vi_surface))
 struct VK_NN_vi_surface_dispatch_table {
     PFN_vkCreateViSurfaceNN pfn_CreateViSurfaceNN;
 public:
@@ -5091,8 +5109,8 @@ public:
         pfn_CreateViSurfaceNN = reinterpret_cast<PFN_vkCreateViSurfaceNN>(get_instance_proc_addr(instance.get(),"vkCreateViSurfaceNN"));
     };
 };
-#endif //defined(VK_USE_PLATFORM_VI_NN) && defined(VK_NN_vi_surface)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_external_memory_win32)
+#endif //defined(VK_USE_PLATFORM_VI_NN) && (defined(VK_NN_vi_surface))
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_memory_win32))
 struct VK_KHR_external_memory_win32_dispatch_table {
     PFN_vkGetMemoryWin32HandleKHR pfn_GetMemoryWin32HandleKHR;
     PFN_vkGetMemoryWin32HandlePropertiesKHR pfn_GetMemoryWin32HandlePropertiesKHR;
@@ -5118,7 +5136,7 @@ public:
         pfn_GetMemoryWin32HandlePropertiesKHR = reinterpret_cast<PFN_vkGetMemoryWin32HandlePropertiesKHR>(get_device_proc_addr(device.get(),"vkGetMemoryWin32HandlePropertiesKHR"));
     };
 };
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_external_memory_win32)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_memory_win32))
 #if defined(VK_KHR_external_memory_fd)
 struct VK_KHR_external_memory_fd_dispatch_table {
     PFN_vkGetMemoryFdKHR pfn_GetMemoryFdKHR;
@@ -5146,7 +5164,7 @@ public:
     };
 };
 #endif //defined(VK_KHR_external_memory_fd)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_external_semaphore_win32)
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_semaphore_win32))
 struct VK_KHR_external_semaphore_win32_dispatch_table {
     PFN_vkGetSemaphoreWin32HandleKHR pfn_GetSemaphoreWin32HandleKHR;
     PFN_vkImportSemaphoreWin32HandleKHR pfn_ImportSemaphoreWin32HandleKHR;
@@ -5168,7 +5186,7 @@ public:
         pfn_ImportSemaphoreWin32HandleKHR = reinterpret_cast<PFN_vkImportSemaphoreWin32HandleKHR>(get_device_proc_addr(device.get(),"vkImportSemaphoreWin32HandleKHR"));
     };
 };
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_external_semaphore_win32)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_semaphore_win32))
 #if defined(VK_KHR_external_semaphore_fd)
 struct VK_KHR_external_semaphore_fd_dispatch_table {
     PFN_vkGetSemaphoreFdKHR pfn_GetSemaphoreFdKHR;
@@ -5197,9 +5215,9 @@ struct VK_KHR_push_descriptor_dispatch_tableFunctions {
 #if defined(VK_KHR_push_descriptor)
     PFN_vkCmdPushDescriptorSetKHR pfn_CmdPushDescriptorSetKHR;
 #endif //defined(VK_KHR_push_descriptor)
-#if defined(VK_KHR_push_descriptor) || defined(VK_KHR_push_descriptor)
+#if (defined(VK_KHR_push_descriptor) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_push_descriptor) && defined(VK_KHR_descriptor_update_template))
     PFN_vkCmdPushDescriptorSetWithTemplateKHR pfn_CmdPushDescriptorSetWithTemplateKHR;
-#endif //defined(VK_KHR_push_descriptor) || defined(VK_KHR_push_descriptor)
+#endif //(defined(VK_KHR_push_descriptor) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_push_descriptor) && defined(VK_KHR_descriptor_update_template))
 #if defined(VK_KHR_push_descriptor)
     void CmdPushDescriptorSetKHR(CommandBuffer commandBuffer,
         PipelineBindPoint pipelineBindPoint,
@@ -5215,7 +5233,7 @@ struct VK_KHR_push_descriptor_dispatch_tableFunctions {
             reinterpret_cast<const VkWriteDescriptorSet*>(pDescriptorWrites));
     }
 #endif //defined(VK_KHR_push_descriptor)
-#if defined(VK_KHR_push_descriptor) || defined(VK_KHR_push_descriptor)
+#if (defined(VK_KHR_push_descriptor) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_push_descriptor) && defined(VK_KHR_descriptor_update_template))
     void CmdPushDescriptorSetWithTemplateKHR(CommandBuffer commandBuffer,
         DescriptorUpdateTemplate descriptorUpdateTemplate,
         PipelineLayout layout,
@@ -5227,15 +5245,15 @@ struct VK_KHR_push_descriptor_dispatch_tableFunctions {
             set,
             reinterpret_cast<const void*>(pData));
     }
-#endif //defined(VK_KHR_push_descriptor) || defined(VK_KHR_push_descriptor)
+#endif //(defined(VK_KHR_push_descriptor) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_push_descriptor) && defined(VK_KHR_descriptor_update_template))
     VK_KHR_push_descriptor_dispatch_tableFunctions(InstanceFunctions const& instance_functions, Device device){
     PFN_vkGetDeviceProcAddr get_device_proc_addr = instance_functions.pfn_GetDeviceProcAddr;
 #if defined(VK_KHR_push_descriptor)
         pfn_CmdPushDescriptorSetKHR = reinterpret_cast<PFN_vkCmdPushDescriptorSetKHR>(get_device_proc_addr(device.get(),"vkCmdPushDescriptorSetKHR"));
 #endif //defined(VK_KHR_push_descriptor)
-#if defined(VK_KHR_push_descriptor) || defined(VK_KHR_push_descriptor)
+#if (defined(VK_KHR_push_descriptor) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_push_descriptor) && defined(VK_KHR_descriptor_update_template))
         pfn_CmdPushDescriptorSetWithTemplateKHR = reinterpret_cast<PFN_vkCmdPushDescriptorSetWithTemplateKHR>(get_device_proc_addr(device.get(),"vkCmdPushDescriptorSetWithTemplateKHR"));
-#endif //defined(VK_KHR_push_descriptor) || defined(VK_KHR_push_descriptor)
+#endif //(defined(VK_KHR_push_descriptor) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_push_descriptor) && defined(VK_KHR_descriptor_update_template))
     };
 };
 #if defined(VK_EXT_conditional_rendering)
@@ -5257,7 +5275,7 @@ public:
     };
 };
 #endif //defined(VK_EXT_conditional_rendering)
-#if defined(VK_KHR_descriptor_update_template)
+#if (defined(VK_KHR_descriptor_update_template) && defined(VK_KHR_push_descriptor))
 struct VK_KHR_descriptor_update_template_dispatch_table {
     PFN_vkCmdPushDescriptorSetWithTemplateKHR pfn_CmdPushDescriptorSetWithTemplateKHR;
 public:
@@ -5276,7 +5294,7 @@ public:
         pfn_CmdPushDescriptorSetWithTemplateKHR = reinterpret_cast<PFN_vkCmdPushDescriptorSetWithTemplateKHR>(get_device_proc_addr(device.get(),"vkCmdPushDescriptorSetWithTemplateKHR"));
     };
 };
-#endif //defined(VK_KHR_descriptor_update_template)
+#endif //(defined(VK_KHR_descriptor_update_template) && defined(VK_KHR_push_descriptor))
 #if defined(VK_NV_clip_space_w_scaling)
 struct VK_NV_clip_space_w_scaling_dispatch_table {
     PFN_vkCmdSetViewportWScalingNV pfn_CmdSetViewportWScalingNV;
@@ -5309,7 +5327,7 @@ public:
     };
 };
 #endif //defined(VK_EXT_direct_mode_display)
-#if defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT) && defined(VK_EXT_acquire_xlib_display)
+#if defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT) && (defined(VK_EXT_acquire_xlib_display))
 struct VK_EXT_acquire_xlib_display_dispatch_table {
     PFN_vkAcquireXlibDisplayEXT pfn_AcquireXlibDisplayEXT;
     PFN_vkGetRandROutputDisplayEXT pfn_GetRandROutputDisplayEXT;
@@ -5335,7 +5353,7 @@ public:
         pfn_GetRandROutputDisplayEXT = reinterpret_cast<PFN_vkGetRandROutputDisplayEXT>(get_instance_proc_addr(instance.get(),"vkGetRandROutputDisplayEXT"));
     };
 };
-#endif //defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT) && defined(VK_EXT_acquire_xlib_display)
+#endif //defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT) && (defined(VK_EXT_acquire_xlib_display))
 #if defined(VK_EXT_display_surface_counter)
 struct VK_EXT_display_surface_counter_dispatch_table {
     PFN_vkGetPhysicalDeviceSurfaceCapabilities2EXT pfn_GetPhysicalDeviceSurfaceCapabilities2EXT;
@@ -5480,7 +5498,7 @@ public:
     };
 };
 #endif //defined(VK_KHR_shared_presentable_image)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_external_fence_win32)
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_fence_win32))
 struct VK_KHR_external_fence_win32_dispatch_table {
     PFN_vkGetFenceWin32HandleKHR pfn_GetFenceWin32HandleKHR;
     PFN_vkImportFenceWin32HandleKHR pfn_ImportFenceWin32HandleKHR;
@@ -5502,7 +5520,7 @@ public:
         pfn_ImportFenceWin32HandleKHR = reinterpret_cast<PFN_vkImportFenceWin32HandleKHR>(get_device_proc_addr(device.get(),"vkImportFenceWin32HandleKHR"));
     };
 };
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_external_fence_win32)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_fence_win32))
 #if defined(VK_KHR_external_fence_fd)
 struct VK_KHR_external_fence_fd_dispatch_table {
     PFN_vkGetFenceFdKHR pfn_GetFenceFdKHR;
@@ -5617,7 +5635,7 @@ public:
     };
 };
 #endif //defined(VK_KHR_get_display_properties2)
-#if defined(VK_USE_PLATFORM_IOS_MVK) && defined(VK_MVK_ios_surface)
+#if defined(VK_USE_PLATFORM_IOS_MVK) && (defined(VK_MVK_ios_surface))
 struct VK_MVK_ios_surface_dispatch_table {
     PFN_vkCreateIOSSurfaceMVK pfn_CreateIOSSurfaceMVK;
 public:
@@ -5634,8 +5652,8 @@ public:
         pfn_CreateIOSSurfaceMVK = reinterpret_cast<PFN_vkCreateIOSSurfaceMVK>(get_instance_proc_addr(instance.get(),"vkCreateIOSSurfaceMVK"));
     };
 };
-#endif //defined(VK_USE_PLATFORM_IOS_MVK) && defined(VK_MVK_ios_surface)
-#if defined(VK_USE_PLATFORM_MACOS_MVK) && defined(VK_MVK_macos_surface)
+#endif //defined(VK_USE_PLATFORM_IOS_MVK) && (defined(VK_MVK_ios_surface))
+#if defined(VK_USE_PLATFORM_MACOS_MVK) && (defined(VK_MVK_macos_surface))
 struct VK_MVK_macos_surface_dispatch_table {
     PFN_vkCreateMacOSSurfaceMVK pfn_CreateMacOSSurfaceMVK;
 public:
@@ -5652,7 +5670,7 @@ public:
         pfn_CreateMacOSSurfaceMVK = reinterpret_cast<PFN_vkCreateMacOSSurfaceMVK>(get_instance_proc_addr(instance.get(),"vkCreateMacOSSurfaceMVK"));
     };
 };
-#endif //defined(VK_USE_PLATFORM_MACOS_MVK) && defined(VK_MVK_macos_surface)
+#endif //defined(VK_USE_PLATFORM_MACOS_MVK) && (defined(VK_MVK_macos_surface))
 #if defined(VK_EXT_debug_utils)
 struct VK_EXT_debug_utils_dispatch_table {
     PFN_vkCreateDebugUtilsMessengerEXT pfn_CreateDebugUtilsMessengerEXT;
@@ -5691,7 +5709,7 @@ public:
     };
 };
 #endif //defined(VK_EXT_debug_utils)
-#if defined(VK_USE_PLATFORM_ANDROID_KHR) && defined(VK_ANDROID_external_memory_android_hardware_buffer)
+#if defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_ANDROID_external_memory_android_hardware_buffer))
 struct VK_ANDROID_external_memory_android_hardware_buffer_dispatch_table {
     PFN_vkGetAndroidHardwareBufferPropertiesANDROID pfn_GetAndroidHardwareBufferPropertiesANDROID;
     PFN_vkGetMemoryAndroidHardwareBufferANDROID pfn_GetMemoryAndroidHardwareBufferANDROID;
@@ -5715,7 +5733,7 @@ public:
         pfn_GetMemoryAndroidHardwareBufferANDROID = reinterpret_cast<PFN_vkGetMemoryAndroidHardwareBufferANDROID>(get_device_proc_addr(device.get(),"vkGetMemoryAndroidHardwareBufferANDROID"));
     };
 };
-#endif //defined(VK_USE_PLATFORM_ANDROID_KHR) && defined(VK_ANDROID_external_memory_android_hardware_buffer)
+#endif //defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_ANDROID_external_memory_android_hardware_buffer))
 #if defined(VK_EXT_sample_locations)
 struct VK_EXT_sample_locations_dispatch_table {
     PFN_vkCmdSetSampleLocationsEXT pfn_CmdSetSampleLocationsEXT;
@@ -5730,7 +5748,7 @@ public:
     };
 };
 #endif //defined(VK_EXT_sample_locations)
-#if defined(VK_ENABLE_BETA_EXTENSIONS) && defined(VK_KHR_ray_tracing)
+#if defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_ray_tracing))
 struct VK_KHR_ray_tracing_dispatch_table {
     PFN_vkDestroyAccelerationStructureKHR pfn_DestroyAccelerationStructureKHR;
     PFN_vkGetAccelerationStructureMemoryRequirementsKHR pfn_GetAccelerationStructureMemoryRequirementsKHR;
@@ -5978,7 +5996,7 @@ public:
         pfn_GetAccelerationStructureDeviceAddressKHR = reinterpret_cast<PFN_vkGetAccelerationStructureDeviceAddressKHR>(get_device_proc_addr(device.get(),"vkGetAccelerationStructureDeviceAddressKHR"));
     };
 };
-#endif //defined(VK_ENABLE_BETA_EXTENSIONS) && defined(VK_KHR_ray_tracing)
+#endif //defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_ray_tracing))
 #if defined(VK_EXT_image_drm_format_modifier)
 struct VK_EXT_image_drm_format_modifier_dispatch_table {
     PFN_vkGetImageDrmFormatModifierPropertiesEXT pfn_GetImageDrmFormatModifierPropertiesEXT;
@@ -6442,7 +6460,7 @@ public:
     };
 };
 #endif //defined(VK_AMD_display_native_hdr)
-#if defined(VK_USE_PLATFORM_FUCHSIA) && defined(VK_FUCHSIA_imagepipe_surface)
+#if defined(VK_USE_PLATFORM_FUCHSIA) && (defined(VK_FUCHSIA_imagepipe_surface))
 struct VK_FUCHSIA_imagepipe_surface_dispatch_table {
     PFN_vkCreateImagePipeSurfaceFUCHSIA pfn_CreateImagePipeSurfaceFUCHSIA;
 public:
@@ -6459,8 +6477,8 @@ public:
         pfn_CreateImagePipeSurfaceFUCHSIA = reinterpret_cast<PFN_vkCreateImagePipeSurfaceFUCHSIA>(get_instance_proc_addr(instance.get(),"vkCreateImagePipeSurfaceFUCHSIA"));
     };
 };
-#endif //defined(VK_USE_PLATFORM_FUCHSIA) && defined(VK_FUCHSIA_imagepipe_surface)
-#if defined(VK_USE_PLATFORM_METAL_EXT) && defined(VK_EXT_metal_surface)
+#endif //defined(VK_USE_PLATFORM_FUCHSIA) && (defined(VK_FUCHSIA_imagepipe_surface))
+#if defined(VK_USE_PLATFORM_METAL_EXT) && (defined(VK_EXT_metal_surface))
 struct VK_EXT_metal_surface_dispatch_table {
     PFN_vkCreateMetalSurfaceEXT pfn_CreateMetalSurfaceEXT;
 public:
@@ -6477,17 +6495,17 @@ public:
         pfn_CreateMetalSurfaceEXT = reinterpret_cast<PFN_vkCreateMetalSurfaceEXT>(get_instance_proc_addr(instance.get(),"vkCreateMetalSurfaceEXT"));
     };
 };
-#endif //defined(VK_USE_PLATFORM_METAL_EXT) && defined(VK_EXT_metal_surface)
+#endif //defined(VK_USE_PLATFORM_METAL_EXT) && (defined(VK_EXT_metal_surface))
 struct VK_EXT_full_screen_exclusive_dispatch_tableFunctions {
     Device const device;
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive)
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
     PFN_vkAcquireFullScreenExclusiveModeEXT pfn_AcquireFullScreenExclusiveModeEXT;
     PFN_vkReleaseFullScreenExclusiveModeEXT pfn_ReleaseFullScreenExclusiveModeEXT;
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive) || defined(VK_EXT_full_screen_exclusive)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && ((defined(VK_EXT_full_screen_exclusive) && defined(VK_KHR_device_group)) || (defined(VK_EXT_full_screen_exclusive) && defined(VK_VERSION_1_1)))
     PFN_vkGetDeviceGroupSurfacePresentModes2EXT pfn_GetDeviceGroupSurfacePresentModes2EXT;
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive) || defined(VK_EXT_full_screen_exclusive)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && ((defined(VK_EXT_full_screen_exclusive) && defined(VK_KHR_device_group)) || (defined(VK_EXT_full_screen_exclusive) && defined(VK_VERSION_1_1)))
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
     [[nodiscard]] Result AcquireFullScreenExclusiveModeEXT(SwapchainKHR swapchain) {
         return static_cast<Result>(pfn_AcquireFullScreenExclusiveModeEXT(device.get(),
             swapchain.get()));
@@ -6496,24 +6514,24 @@ struct VK_EXT_full_screen_exclusive_dispatch_tableFunctions {
         return static_cast<Result>(pfn_ReleaseFullScreenExclusiveModeEXT(device.get(),
             swapchain.get()));
     }
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive) || defined(VK_EXT_full_screen_exclusive)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && ((defined(VK_EXT_full_screen_exclusive) && defined(VK_KHR_device_group)) || (defined(VK_EXT_full_screen_exclusive) && defined(VK_VERSION_1_1)))
     [[nodiscard]] Result GetDeviceGroupSurfacePresentModes2EXT(const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo,
         DeviceGroupPresentModeFlagsKHR&  pModes) {
         return static_cast<Result>(pfn_GetDeviceGroupSurfacePresentModes2EXT(device.get(),
             reinterpret_cast<const VkPhysicalDeviceSurfaceInfo2KHR*>(&pSurfaceInfo),
             reinterpret_cast<VkDeviceGroupPresentModeFlagsKHR*>(&pModes)));
     }
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive) || defined(VK_EXT_full_screen_exclusive)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && ((defined(VK_EXT_full_screen_exclusive) && defined(VK_KHR_device_group)) || (defined(VK_EXT_full_screen_exclusive) && defined(VK_VERSION_1_1)))
     VK_EXT_full_screen_exclusive_dispatch_tableFunctions(InstanceFunctions const& instance_functions, Device device){
     PFN_vkGetDeviceProcAddr get_device_proc_addr = instance_functions.pfn_GetDeviceProcAddr;
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive)
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
         pfn_AcquireFullScreenExclusiveModeEXT = reinterpret_cast<PFN_vkAcquireFullScreenExclusiveModeEXT>(get_device_proc_addr(device.get(),"vkAcquireFullScreenExclusiveModeEXT"));
         pfn_ReleaseFullScreenExclusiveModeEXT = reinterpret_cast<PFN_vkReleaseFullScreenExclusiveModeEXT>(get_device_proc_addr(device.get(),"vkReleaseFullScreenExclusiveModeEXT"));
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive) || defined(VK_EXT_full_screen_exclusive)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
+#if defined(VK_USE_PLATFORM_WIN32_KHR) && ((defined(VK_EXT_full_screen_exclusive) && defined(VK_KHR_device_group)) || (defined(VK_EXT_full_screen_exclusive) && defined(VK_VERSION_1_1)))
         pfn_GetDeviceGroupSurfacePresentModes2EXT = reinterpret_cast<PFN_vkGetDeviceGroupSurfacePresentModes2EXT>(get_device_proc_addr(device.get(),"vkGetDeviceGroupSurfacePresentModes2EXT"));
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_EXT_full_screen_exclusive) || defined(VK_EXT_full_screen_exclusive)
+#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && ((defined(VK_EXT_full_screen_exclusive) && defined(VK_KHR_device_group)) || (defined(VK_EXT_full_screen_exclusive) && defined(VK_VERSION_1_1)))
     };
 };
 #if defined(VK_EXT_headless_surface)
@@ -6663,7 +6681,7 @@ public:
     };
 };
 #endif //defined(VK_EXT_extended_dynamic_state)
-#if defined(VK_ENABLE_BETA_EXTENSIONS) && defined(VK_KHR_deferred_host_operations)
+#if defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_deferred_host_operations))
 struct VK_KHR_deferred_host_operations_dispatch_table {
     PFN_vkCreateDeferredOperationKHR pfn_CreateDeferredOperationKHR;
     PFN_vkDestroyDeferredOperationKHR pfn_DestroyDeferredOperationKHR;
@@ -6708,7 +6726,7 @@ public:
         pfn_DeferredOperationJoinKHR = reinterpret_cast<PFN_vkDeferredOperationJoinKHR>(get_device_proc_addr(device.get(),"vkDeferredOperationJoinKHR"));
     };
 };
-#endif //defined(VK_ENABLE_BETA_EXTENSIONS) && defined(VK_KHR_deferred_host_operations)
+#endif //defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_deferred_host_operations))
 #if defined(VK_KHR_pipeline_executable_properties)
 struct VK_KHR_pipeline_executable_properties_dispatch_table {
     PFN_vkGetPipelineExecutablePropertiesKHR pfn_GetPipelineExecutablePropertiesKHR;
@@ -6865,7 +6883,7 @@ public:
     };
 };
 #endif //defined(VK_EXT_private_data)
-#if defined(VK_USE_PLATFORM_DIRECTFB_EXT) && defined(VK_EXT_directfb_surface)
+#if defined(VK_USE_PLATFORM_DIRECTFB_EXT) && (defined(VK_EXT_directfb_surface))
 struct VK_EXT_directfb_surface_dispatch_table {
     PFN_vkCreateDirectFBSurfaceEXT pfn_CreateDirectFBSurfaceEXT;
     PFN_vkGetPhysicalDeviceDirectFBPresentationSupportEXT pfn_GetPhysicalDeviceDirectFBPresentationSupportEXT;
@@ -6891,7 +6909,7 @@ public:
         pfn_GetPhysicalDeviceDirectFBPresentationSupportEXT = reinterpret_cast<PFN_vkGetPhysicalDeviceDirectFBPresentationSupportEXT>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceDirectFBPresentationSupportEXT"));
     };
 };
-#endif //defined(VK_USE_PLATFORM_DIRECTFB_EXT) && defined(VK_EXT_directfb_surface)
+#endif //defined(VK_USE_PLATFORM_DIRECTFB_EXT) && (defined(VK_EXT_directfb_surface))
 struct PhysicalDeviceFunctions {
     InstanceFunctions const* instance_functions;
     PhysicalDevice const physicaldevice;
