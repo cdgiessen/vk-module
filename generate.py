@@ -733,6 +733,7 @@ class Loader {
             other.get_instance_proc_addr = 0;
             other.library = 0;
         }
+        return *this;
     }
 
     vk::Result init(PFN_vkGetInstanceProcAddr get_instance_proc_addr = nullptr) noexcept {
@@ -823,7 +824,7 @@ class Function:
         if len(self.parameters) > 0:
             self.free_function = self.parameters[0].base_type not in dispatchable_handles
             if self.name == 'vkGetInstanceProcAddr':
-                self.dispatch_type = None
+                self.dispatch_type = 'global'
             elif self.name == 'vkGetDeviceProcAddr':
                 self.dispatch_type = "instance"
             elif self.parameters[0].base_type == 'VkInstance' or self.parameters[0].base_type == 'VkPhysicalDevice':  
@@ -1121,11 +1122,15 @@ class DispatchTable:
             file.write(f'    {self.name}Functions(Loader const& loader) {{\n')
             file.write(f'    {gpa_type} {gpa_name} = loader.get();\n')
         elif self.dispatch_type == 'instance':
-            file.write(f'    {self.name}Functions(Loader const& loader, {self.dispatch_type.title()} {self.dispatch_type})')
-            file.write(f':{self.dispatch_type}({self.dispatch_type}) {{ \n')
-            file.write(f'    {gpa_type} {gpa_name} = loader.get();\n')
+            file.write(f'    {self.name}Functions(GlobalFunctions const& global_functions, {self.dispatch_type.title()} {self.dispatch_type})\n')
+            file.write(f'        :{self.dispatch_type}({self.dispatch_type}) {{ \n')
+            file.write(f'    {gpa_type} {gpa_name} = global_functions.pfn_GetInstanceProcAddr;\n')
         elif self.dispatch_type == 'device':
-            file.write(f'    {self.name}Functions(InstanceFunctions const& instance_functions, {self.dispatch_type.title()} {self.dispatch_type}){{\n')
+            file.write(f'    {self.name}Functions(InstanceFunctions const& instance_functions, {self.dispatch_type.title()} {self.dispatch_type})')
+            if self.name == 'Device':
+                file.write(f'\n        :{self.dispatch_type}({self.dispatch_type}) {{ \n')
+            else:
+                file.write('{\n')
             file.write(f'    {gpa_type} {gpa_name} = instance_functions.pfn_GetDeviceProcAddr;\n')
         for guard, functions in self.guarded_functions.items():
             file.write(f'#if {guard}\n')

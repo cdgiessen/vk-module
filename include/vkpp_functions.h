@@ -45,6 +45,7 @@ class Loader {
             other.get_instance_proc_addr = 0;
             other.library = 0;
         }
+        return *this;
     }
 
     vk::Result init(PFN_vkGetInstanceProcAddr get_instance_proc_addr = nullptr) noexcept {
@@ -109,6 +110,7 @@ private:
 struct GlobalFunctions {
 #if defined(VK_VERSION_1_0)
     PFN_vkCreateInstance pfn_CreateInstance;
+    PFN_vkGetInstanceProcAddr pfn_GetInstanceProcAddr;
     PFN_vkEnumerateInstanceExtensionProperties pfn_EnumerateInstanceExtensionProperties;
     PFN_vkEnumerateInstanceLayerProperties pfn_EnumerateInstanceLayerProperties;
 #endif //defined(VK_VERSION_1_0)
@@ -122,6 +124,11 @@ struct GlobalFunctions {
         return static_cast<Result>(pfn_CreateInstance(reinterpret_cast<const VkInstanceCreateInfo*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkInstance*>(&pInstance)));
+    }
+    [[nodiscard]] PFN_vkVoidFunction GetInstanceProcAddr(Instance instance,
+        const char* pName) {
+        return pfn_GetInstanceProcAddr(instance.get(),
+            pName);
     }
     [[nodiscard]] Result EnumerateInstanceExtensionProperties(const char* pLayerName,
         uint32_t&  pPropertyCount,
@@ -145,6 +152,7 @@ struct GlobalFunctions {
     PFN_vkGetInstanceProcAddr get_instance_proc_addr = loader.get();
 #if defined(VK_VERSION_1_0)
         pfn_CreateInstance = reinterpret_cast<PFN_vkCreateInstance>(get_instance_proc_addr(nullptr,"vkCreateInstance"));
+        pfn_GetInstanceProcAddr = reinterpret_cast<PFN_vkGetInstanceProcAddr>(get_instance_proc_addr(nullptr,"vkGetInstanceProcAddr"));
         pfn_EnumerateInstanceExtensionProperties = reinterpret_cast<PFN_vkEnumerateInstanceExtensionProperties>(get_instance_proc_addr(nullptr,"vkEnumerateInstanceExtensionProperties"));
         pfn_EnumerateInstanceLayerProperties = reinterpret_cast<PFN_vkEnumerateInstanceLayerProperties>(get_instance_proc_addr(nullptr,"vkEnumerateInstanceLayerProperties"));
 #endif //defined(VK_VERSION_1_0)
@@ -1000,8 +1008,9 @@ struct InstanceFunctions {
             reinterpret_cast<IDirectFB*>(&dfb));
     }
 #endif //defined(VK_USE_PLATFORM_DIRECTFB_EXT) && (defined(VK_EXT_directfb_surface))
-    InstanceFunctions(Loader const& loader, Instance instance):instance(instance) { 
-    PFN_vkGetInstanceProcAddr get_instance_proc_addr = loader.get();
+    InstanceFunctions(GlobalFunctions const& global_functions, Instance instance)
+        :instance(instance) { 
+    PFN_vkGetInstanceProcAddr get_instance_proc_addr = global_functions.pfn_GetInstanceProcAddr;
 #if defined(VK_VERSION_1_0)
         pfn_DestroyInstance = reinterpret_cast<PFN_vkDestroyInstance>(get_instance_proc_addr(instance.get(),"vkDestroyInstance"));
         pfn_EnumeratePhysicalDevices = reinterpret_cast<PFN_vkEnumeratePhysicalDevices>(get_instance_proc_addr(instance.get(),"vkEnumeratePhysicalDevices"));
@@ -3982,7 +3991,8 @@ struct DeviceFunctions {
             &pData);
     }
 #endif //defined(VK_EXT_private_data)
-    DeviceFunctions(InstanceFunctions const& instance_functions, Device device){
+    DeviceFunctions(InstanceFunctions const& instance_functions, Device device)
+        :device(device) { 
     PFN_vkGetDeviceProcAddr get_device_proc_addr = instance_functions.pfn_GetDeviceProcAddr;
 #if defined(VK_VERSION_1_0)
         pfn_DestroyDevice = reinterpret_cast<PFN_vkDestroyDevice>(get_device_proc_addr(device.get(),"vkDestroyDevice"));

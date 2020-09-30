@@ -29,6 +29,9 @@ target_compile_features(vkpp_core INTERFACE cxx_std_17)
 
 add_library(vkpp_functions INTERFACE)
 target_link_libraries(vkpp_functions INTERFACE vkpp_core)
+if (NOT WIN32)
+    target_link_libraries(vkpp_functions INTERFACE ${CMAKE_DL_LIBS})
+endif()
 
 add_library(vkpp INTERFACE)
 target_link_libraries(vkpp INTERFACE Vulkan::Headers vkpp_core vkpp_functions)
