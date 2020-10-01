@@ -1,40 +1,6 @@
 
-
 import xml.etree.ElementTree
 import re
-
-'''
-todo list
-
-create separate versions for C++20 and C++14/17 - set compiler version, generate comparison operator
-write non autogen tests
-generate test code for flags
-2 call function helpers (enumerateXYZ)
-builder pattern for creation functions
-
-In progress
-move platform entities together to reduce the #if-def bloat
-fix AccelerationStructureInstanceKHRs VkGeometryInstanceFlagsKHR being a bitmask. - worked around 
-
-Done: 
-functions
-bitfields...
-platform specific entities
-to_string for enums/flags/bitmasks
-type safe enums/flags/bitmasks
-fp dispatch table objects
-extensions -- need to be gotten from 'features'
-enum/flags with members from extensions (need 'features' stuff)
-variables with double arrays eg [3][4]
-return types as vk::Result
-extension function tables
-remove disabled extension types
-dispatchable handles (instance, physdevice, device, queue, command buffer)
-handles are a thing, decide what to do - have simple handles that are neat little wrappers and nothing more.
-create dll/so vulkan loader
-make output values references;
-allow combinatorial defines (x && y || z && w) for ex: AcquireNextImage2KHR
-'''
 
 vendor_abbreviations = []
 
