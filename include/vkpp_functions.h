@@ -20,12 +20,14 @@
 namespace vk {
 class Loader {
     public:
-    Loader(bool init_at_construction = false) noexcept {
-        if(init_at_construction){
-            init();
-        }
+    // Used to enable RAII vk::Loader behavior
+    struct LoadAtConstruction {};
+
+    explicit Loader() noexcept {}
+    explicit Loader(LoadAtConstruction load) noexcept {
+        init();
     }
-    Loader(PFN_vkGetInstanceProcAddr get_instance_proc_addr) noexcept : 
+    explicit Loader(PFN_vkGetInstanceProcAddr get_instance_proc_addr) noexcept : 
         get_instance_proc_addr(get_instance_proc_addr) { }
     ~Loader() noexcept {
         close();
@@ -148,7 +150,7 @@ struct GlobalFunctions {
         return static_cast<Result>(pfn_EnumerateInstanceVersion(&pApiVersion));
     }
 #endif //defined(VK_VERSION_1_1)
-    GlobalFunctions(Loader const& loader) {
+    explicit GlobalFunctions(Loader const& loader) {
     PFN_vkGetInstanceProcAddr get_instance_proc_addr = loader.get();
 #if defined(VK_VERSION_1_0)
         pfn_CreateInstance = reinterpret_cast<PFN_vkCreateInstance>(get_instance_proc_addr(nullptr,"vkCreateInstance"));
@@ -1008,7 +1010,7 @@ struct InstanceFunctions {
             reinterpret_cast<IDirectFB*>(&dfb));
     }
 #endif //defined(VK_USE_PLATFORM_DIRECTFB_EXT) && (defined(VK_EXT_directfb_surface))
-    InstanceFunctions(GlobalFunctions const& global_functions, Instance instance)
+    explicit InstanceFunctions(GlobalFunctions const& global_functions, Instance instance)
         :instance(instance) { 
     PFN_vkGetInstanceProcAddr get_instance_proc_addr = global_functions.pfn_GetInstanceProcAddr;
 #if defined(VK_VERSION_1_0)
@@ -3991,7 +3993,7 @@ struct DeviceFunctions {
             &pData);
     }
 #endif //defined(VK_EXT_private_data)
-    DeviceFunctions(InstanceFunctions const& instance_functions, Device device)
+    explicit DeviceFunctions(InstanceFunctions const& instance_functions, Device device)
         :device(device) { 
     PFN_vkGetDeviceProcAddr get_device_proc_addr = instance_functions.pfn_GetDeviceProcAddr;
 #if defined(VK_VERSION_1_0)
@@ -4534,7 +4536,7 @@ struct VK_KHR_swapchain_dispatch_tableFunctions {
             &pImageIndex));
     }
 #endif //(defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1))
-    VK_KHR_swapchain_dispatch_tableFunctions(InstanceFunctions const& instance_functions, Device device){
+    explicit VK_KHR_swapchain_dispatch_tableFunctions(InstanceFunctions const& instance_functions, Device device){
     PFN_vkGetDeviceProcAddr get_device_proc_addr = instance_functions.pfn_GetDeviceProcAddr;
 #if defined(VK_KHR_swapchain)
         pfn_CreateSwapchainKHR = reinterpret_cast<PFN_vkCreateSwapchainKHR>(get_device_proc_addr(device.get(),"vkCreateSwapchainKHR"));
@@ -5091,7 +5093,7 @@ struct VK_KHR_device_group_dispatch_tableFunctions {
             &pImageIndex));
     }
 #endif //(defined(VK_KHR_device_group) && defined(VK_KHR_swapchain))
-    VK_KHR_device_group_dispatch_tableFunctions(InstanceFunctions const& instance_functions, Device device){
+    explicit VK_KHR_device_group_dispatch_tableFunctions(InstanceFunctions const& instance_functions, Device device){
     PFN_vkGetDeviceProcAddr get_device_proc_addr = instance_functions.pfn_GetDeviceProcAddr;
 #if (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
         pfn_GetDeviceGroupPresentCapabilitiesKHR = reinterpret_cast<PFN_vkGetDeviceGroupPresentCapabilitiesKHR>(get_device_proc_addr(device.get(),"vkGetDeviceGroupPresentCapabilitiesKHR"));
@@ -5256,7 +5258,7 @@ struct VK_KHR_push_descriptor_dispatch_tableFunctions {
             reinterpret_cast<const void*>(pData));
     }
 #endif //(defined(VK_KHR_push_descriptor) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_push_descriptor) && defined(VK_KHR_descriptor_update_template))
-    VK_KHR_push_descriptor_dispatch_tableFunctions(InstanceFunctions const& instance_functions, Device device){
+    explicit VK_KHR_push_descriptor_dispatch_tableFunctions(InstanceFunctions const& instance_functions, Device device){
     PFN_vkGetDeviceProcAddr get_device_proc_addr = instance_functions.pfn_GetDeviceProcAddr;
 #if defined(VK_KHR_push_descriptor)
         pfn_CmdPushDescriptorSetKHR = reinterpret_cast<PFN_vkCmdPushDescriptorSetKHR>(get_device_proc_addr(device.get(),"vkCmdPushDescriptorSetKHR"));
@@ -6533,7 +6535,7 @@ struct VK_EXT_full_screen_exclusive_dispatch_tableFunctions {
             reinterpret_cast<VkDeviceGroupPresentModeFlagsKHR*>(&pModes)));
     }
 #endif //defined(VK_USE_PLATFORM_WIN32_KHR) && ((defined(VK_EXT_full_screen_exclusive) && defined(VK_KHR_device_group)) || (defined(VK_EXT_full_screen_exclusive) && defined(VK_VERSION_1_1)))
-    VK_EXT_full_screen_exclusive_dispatch_tableFunctions(InstanceFunctions const& instance_functions, Device device){
+    explicit VK_EXT_full_screen_exclusive_dispatch_tableFunctions(InstanceFunctions const& instance_functions, Device device){
     PFN_vkGetDeviceProcAddr get_device_proc_addr = instance_functions.pfn_GetDeviceProcAddr;
 #if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
         pfn_AcquireFullScreenExclusiveModeEXT = reinterpret_cast<PFN_vkAcquireFullScreenExclusiveModeEXT>(get_device_proc_addr(device.get(),"vkAcquireFullScreenExclusiveModeEXT"));

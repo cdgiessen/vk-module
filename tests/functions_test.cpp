@@ -43,7 +43,7 @@ TEST_CASE("Manual .init()", "[vk-module.functions]") {
 #endif
 }
 TEST_CASE("Constructor init", "[vk-module.functions]") {
-    vk::Loader loader(true);
+    vk::Loader loader(vk::Loader::LoadAtConstruction{});
     REQUIRE(loader.is_init());
     vk::GlobalFunctions free_funcs(loader);
     REQUIRE(free_funcs.pfn_CreateInstance != nullptr);
@@ -87,7 +87,7 @@ TEST_CASE("Create instance functions", "[vk-module.functions]") {
     vk::Result res = free_funcs.CreateInstance(info, nullptr, inst);
     REQUIRE(res == vk::Result::Success);
 
-    vk::InstanceFunctions inst_funcs(loader, inst);
+    vk::InstanceFunctions inst_funcs(free_funcs, inst);
     REQUIRE(inst_funcs.pfn_EnumeratePhysicalDevices != nullptr);
     uint32_t count = 0;
     res = inst_funcs.EnumeratePhysicalDevices(count, nullptr);

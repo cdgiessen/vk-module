@@ -31,7 +31,7 @@ int main() {
     else
         std::cout << "shouldn't print this\n";
 
-    vk::InstanceFunctions inst_funcs(loader, inst);
+    vk::InstanceFunctions inst_funcs(free_funcs, inst);
     res = inst_funcs.EnumeratePhysicalDevices(count, nullptr);
 
     std::vector<vk::PhysicalDevice> phys_devices(count);

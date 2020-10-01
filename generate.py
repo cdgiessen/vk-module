@@ -165,7 +165,7 @@ class Enum:
                     out_name = f'e{out_name}'
                 file.write(f'    {out_name} = {str(value)},\n')
             file.write('};\n')
-            file.write(f'inline {self.name} operator+({self.name[2:]} val) {{ return static_cast<{self.name}>(val);}}\n')
+            file.write(f'constexpr {self.name} c_enum({self.name[2:]} val) {{ return static_cast<{self.name}>(val);}}\n')
     
     def print_string(self, file):
         if self.alias is None:
@@ -590,46 +590,43 @@ class Variable:
             type_decl += self.get_init()
         return type_decl
 
-def print_custom_comparator(file, member_list, name, cpp20mode):
+def print_custom_comparator(file, member_list, name):
     file.write(f'    constexpr bool operator==({name} const& value) const {{\n')
-    file.write('        return ')
-    is_first = True
+    file.write('        bool is_equal = true;\n')
+    counter = 0
     for member in member_list:
-        if is_first:
-            is_first = False
-        else:
-            file.write('&& ')
         if len(member.array_lengths) == 1:
-            str_out = ''
             if f'VK_{member.array_lengths[0]}' in api_constants:
                 length = int(api_constants[f'VK_{member.array_lengths[0]}'].value)
             else:
                 length = int(member.array_lengths[0])
-            for i in range(0, length):
-                if i > 0 and length > 1 and i < length:
-                    str_out += ' && '
-                str_out += f'{member.name}[{str(i)}] == value.{member.name}[{str(i)}]'
-            str_out += '\n        '
-            file.write(str_out)
+            file.write(f'        for(size_t i = 0; i < {length}; i++)\n')
+            file.write(f'            is_equal &= {member.name}[i] == value.{member.name}[i];\n')
         elif len(member.array_lengths) == 2:
-            # dirty hack because multi-dimensional arrays are hell
-            str_out = ''
-            length = int(member.array_lengths[0])
-            width = int(member.array_lengths[1])
-            for i in range(0, length):
-                if i > 0 and length > 1 and i < length:
-                    str_out += ' && '
-                for j in range(0, width):
-                    if j > 0 and width > 1 and j < width:
-                        str_out += ' && '
-                    str_out += f'{member.name}[{i}][{j}] == value.{member.name}[{i}][{j}]'
-                str_out += '\n        '
-            file.write(str_out)
+            file.write(f'        for(size_t i = 0; i < {int(member.array_lengths[0])}; i++)\n')
+            file.write(f'            for(size_t j = 0; j < {int(member.array_lengths[1])}; j++)\n')
+            file.write(f'                is_equal &= {member.name}[i][j] == value.{member.name}[i][j];\n')
         else:
-            file.write(f'{member.name} == value.{member.name} ')
+            counter = counter + 1
+    file.write('        return is_equal')
+    if counter > 0: #if there are non array members to compare
+        file.write(' && ')
+    is_first = True
+    counter = 0
+    for member in member_list:
+        if len(member.array_lengths) > 0:
+            continue
+        if is_first:
+            is_first = False
+        else:
+            file.write('&& ')
+        file.write(f'{member.name} == value.{member.name} ')
+        counter = counter + len(str(member.name))*2 + 10
+        if counter > 120:
+            file.write('\n        ') # break it up
+            counter = 0
     file.write(';}\n')
-    if not cpp20mode:
-        file.write(f'    constexpr bool operator!=({name} const& value) const {{return !(*this == value);}}\n')
+    file.write(f'    constexpr bool operator!=({name} const& value) const {{return !(*this == value);}}\n')
 
 # Contains both structs and unions
 class Structure:
@@ -663,12 +660,11 @@ class Structure:
                 file.write(f'struct {self.name[2:]} {{\n')
                 for member in self.members:
                     file.write(f'    {member.get_parameter_decl(default_init=True)};\n')
-
                 if self.is_comparable:
                     if cpp20mode:
                         file.write(f'    constexpr bool operator==({self.name[2:]} const& other) const = default;\n')
                     else:
-                        print_custom_comparator(file, self.members, self.name[2:], cpp20mode)
+                        print_custom_comparator(file, self.members, self.name[2:])
                 file.write(f'    operator {self.name} const &() const noexcept {{\n')
                 file.write(f'        return *reinterpret_cast<const {self.name}*>(this);\n    }}\n')
                 file.write(f'    operator {self.name} &() noexcept {{\n')
@@ -679,7 +675,7 @@ class Structure:
                 for member in self.members:
                     file.write(f'    {member.get_parameter_decl(default_init=False)};\n')
                 if self.is_comparable:
-                    print_custom_comparator(file, self.members, self.name[2:], cpp20mode)
+                    print_custom_comparator(file, self.members, self.name[2:])
                 file.write('};\n')
 
     def print_static_asserts(self, file):
@@ -708,12 +704,14 @@ vulkan_loader_text = '''
 namespace vk {
 class Loader {
     public:
-    Loader(bool init_at_construction = false) noexcept {
-        if(init_at_construction){
-            init();
-        }
+    // Used to enable RAII vk::Loader behavior
+    struct LoadAtConstruction {};
+
+    explicit Loader() noexcept {}
+    explicit Loader(LoadAtConstruction load) noexcept {
+        init();
     }
-    Loader(PFN_vkGetInstanceProcAddr get_instance_proc_addr) noexcept : 
+    explicit Loader(PFN_vkGetInstanceProcAddr get_instance_proc_addr) noexcept : 
         get_instance_proc_addr(get_instance_proc_addr) { }
     ~Loader() noexcept {
         close();
@@ -1119,14 +1117,14 @@ class DispatchTable:
              
         #constructor
         if self.dispatch_type == 'global':
-            file.write(f'    {self.name}Functions(Loader const& loader) {{\n')
+            file.write(f'    explicit {self.name}Functions(Loader const& loader) {{\n')
             file.write(f'    {gpa_type} {gpa_name} = loader.get();\n')
         elif self.dispatch_type == 'instance':
-            file.write(f'    {self.name}Functions(GlobalFunctions const& global_functions, {self.dispatch_type.title()} {self.dispatch_type})\n')
+            file.write(f'    explicit {self.name}Functions(GlobalFunctions const& global_functions, {self.dispatch_type.title()} {self.dispatch_type})\n')
             file.write(f'        :{self.dispatch_type}({self.dispatch_type}) {{ \n')
             file.write(f'    {gpa_type} {gpa_name} = global_functions.pfn_GetInstanceProcAddr;\n')
         elif self.dispatch_type == 'device':
-            file.write(f'    {self.name}Functions(InstanceFunctions const& instance_functions, {self.dispatch_type.title()} {self.dispatch_type})')
+            file.write(f'    explicit {self.name}Functions(InstanceFunctions const& instance_functions, {self.dispatch_type.title()} {self.dispatch_type})')
             if self.name == 'Device':
                 file.write(f'\n        :{self.dispatch_type}({self.dispatch_type}) {{ \n')
             else:
@@ -1139,7 +1137,6 @@ class DispatchTable:
                 file.write(f'reinterpret_cast<{function.func_prototype}>({gpa_name}({gpa_val},\"{function.name}\"));\n')
             file.write(f'#endif //{guard}\n')
         file.write('    };\n};\n')
-
 
 class DispatchableHandleDispatchTable:
     def __init__(self, name, dispatch_type, replace_dict, functions):

@@ -41,13 +41,13 @@ enum class AttachmentLoadOp : uint32_t {
     Clear = 1,
     DontCare = 2,
 };
-inline VkAttachmentLoadOp operator+(AttachmentLoadOp val) { return static_cast<VkAttachmentLoadOp>(val);}
+constexpr VkAttachmentLoadOp c_enum(AttachmentLoadOp val) { return static_cast<VkAttachmentLoadOp>(val);}
 enum class AttachmentStoreOp : uint32_t {
     Store = 0,
     DontCare = 1,
     NoneQCOM = 1000301000,
 };
-inline VkAttachmentStoreOp operator+(AttachmentStoreOp val) { return static_cast<VkAttachmentStoreOp>(val);}
+constexpr VkAttachmentStoreOp c_enum(AttachmentStoreOp val) { return static_cast<VkAttachmentStoreOp>(val);}
 enum class BlendFactor : uint32_t {
     Zero = 0,
     One = 1,
@@ -69,7 +69,7 @@ enum class BlendFactor : uint32_t {
     Src1Alpha = 17,
     OneMinusSrc1Alpha = 18,
 };
-inline VkBlendFactor operator+(BlendFactor val) { return static_cast<VkBlendFactor>(val);}
+constexpr VkBlendFactor c_enum(BlendFactor val) { return static_cast<VkBlendFactor>(val);}
 enum class BlendOp : uint32_t {
     Add = 0,
     Subtract = 1,
@@ -123,7 +123,7 @@ enum class BlendOp : uint32_t {
     GreenEXT = 1000148044,
     BlueEXT = 1000148045,
 };
-inline VkBlendOp operator+(BlendOp val) { return static_cast<VkBlendOp>(val);}
+constexpr VkBlendOp c_enum(BlendOp val) { return static_cast<VkBlendOp>(val);}
 enum class BorderColor : uint32_t {
     FloatTransparentBlack = 0,
     IntTransparentBlack = 1,
@@ -134,11 +134,11 @@ enum class BorderColor : uint32_t {
     FloatCustomEXT = 1000287003,
     IntCustomEXT = 1000287004,
 };
-inline VkBorderColor operator+(BorderColor val) { return static_cast<VkBorderColor>(val);}
+constexpr VkBorderColor c_enum(BorderColor val) { return static_cast<VkBorderColor>(val);}
 enum class PipelineCacheHeaderVersion : uint32_t {
     One = 1,
 };
-inline VkPipelineCacheHeaderVersion operator+(PipelineCacheHeaderVersion val) { return static_cast<VkPipelineCacheHeaderVersion>(val);}
+constexpr VkPipelineCacheHeaderVersion c_enum(PipelineCacheHeaderVersion val) { return static_cast<VkPipelineCacheHeaderVersion>(val);}
 enum class ComponentSwizzle : uint32_t {
     Identity = 0,
     Zero = 1,
@@ -148,12 +148,12 @@ enum class ComponentSwizzle : uint32_t {
     B = 5,
     A = 6,
 };
-inline VkComponentSwizzle operator+(ComponentSwizzle val) { return static_cast<VkComponentSwizzle>(val);}
+constexpr VkComponentSwizzle c_enum(ComponentSwizzle val) { return static_cast<VkComponentSwizzle>(val);}
 enum class CommandBufferLevel : uint32_t {
     Primary = 0,
     Secondary = 1,
 };
-inline VkCommandBufferLevel operator+(CommandBufferLevel val) { return static_cast<VkCommandBufferLevel>(val);}
+constexpr VkCommandBufferLevel c_enum(CommandBufferLevel val) { return static_cast<VkCommandBufferLevel>(val);}
 enum class CompareOp : uint32_t {
     Never = 0,
     Less = 1,
@@ -164,7 +164,7 @@ enum class CompareOp : uint32_t {
     GreaterOrEqual = 6,
     Always = 7,
 };
-inline VkCompareOp operator+(CompareOp val) { return static_cast<VkCompareOp>(val);}
+constexpr VkCompareOp c_enum(CompareOp val) { return static_cast<VkCompareOp>(val);}
 enum class DescriptorType : uint32_t {
     Sampler = 0,
     CombinedImageSampler = 1,
@@ -180,7 +180,7 @@ enum class DescriptorType : uint32_t {
     InlineUniformBlockEXT = 1000138000,
     AccelerationStructureKHR = 1000165000,
 };
-inline VkDescriptorType operator+(DescriptorType val) { return static_cast<VkDescriptorType>(val);}
+constexpr VkDescriptorType c_enum(DescriptorType val) { return static_cast<VkDescriptorType>(val);}
 enum class DynamicState : uint32_t {
     Viewport = 0,
     Scissor = 1,
@@ -211,14 +211,14 @@ enum class DynamicState : uint32_t {
     StencilTestEnableEXT = 1000267010,
     StencilOpEXT = 1000267011,
 };
-inline VkDynamicState operator+(DynamicState val) { return static_cast<VkDynamicState>(val);}
+constexpr VkDynamicState c_enum(DynamicState val) { return static_cast<VkDynamicState>(val);}
 enum class PolygonMode : uint32_t {
     Fill = 0,
     Line = 1,
     Point = 2,
     FillRectangleNV = 1000153000,
 };
-inline VkPolygonMode operator+(PolygonMode val) { return static_cast<VkPolygonMode>(val);}
+constexpr VkPolygonMode c_enum(PolygonMode val) { return static_cast<VkPolygonMode>(val);}
 enum class Format : uint32_t {
     Undefined = 0,
     R4G4UnormPack8 = 1,
@@ -464,12 +464,12 @@ enum class Format : uint32_t {
     G16B16R162Plane422Unorm = 1000156032,
     G16B16R163Plane444Unorm = 1000156033,
 };
-inline VkFormat operator+(Format val) { return static_cast<VkFormat>(val);}
+constexpr VkFormat c_enum(Format val) { return static_cast<VkFormat>(val);}
 enum class FrontFace : uint32_t {
     CounterClockwise = 0,
     Clockwise = 1,
 };
-inline VkFrontFace operator+(FrontFace val) { return static_cast<VkFrontFace>(val);}
+constexpr VkFrontFace c_enum(FrontFace val) { return static_cast<VkFrontFace>(val);}
 enum class ImageLayout : uint32_t {
     Undefined = 0,
     General = 1,
@@ -491,19 +491,19 @@ enum class ImageLayout : uint32_t {
     StencilAttachmentOptimal = 1000241002,
     StencilReadOnlyOptimal = 1000241003,
 };
-inline VkImageLayout operator+(ImageLayout val) { return static_cast<VkImageLayout>(val);}
+constexpr VkImageLayout c_enum(ImageLayout val) { return static_cast<VkImageLayout>(val);}
 enum class ImageTiling : uint32_t {
     Optimal = 0,
     Linear = 1,
     DrmFormatModifierEXT = 1000158000,
 };
-inline VkImageTiling operator+(ImageTiling val) { return static_cast<VkImageTiling>(val);}
+constexpr VkImageTiling c_enum(ImageTiling val) { return static_cast<VkImageTiling>(val);}
 enum class ImageType : uint32_t {
     e1D = 0,
     e2D = 1,
     e3D = 2,
 };
-inline VkImageType operator+(ImageType val) { return static_cast<VkImageType>(val);}
+constexpr VkImageType c_enum(ImageType val) { return static_cast<VkImageType>(val);}
 enum class ImageViewType : uint32_t {
     e1D = 0,
     e2D = 1,
@@ -513,19 +513,19 @@ enum class ImageViewType : uint32_t {
     e2DArray = 5,
     CubeArray = 6,
 };
-inline VkImageViewType operator+(ImageViewType val) { return static_cast<VkImageViewType>(val);}
+constexpr VkImageViewType c_enum(ImageViewType val) { return static_cast<VkImageViewType>(val);}
 enum class SharingMode : uint32_t {
     Exclusive = 0,
     Concurrent = 1,
 };
-inline VkSharingMode operator+(SharingMode val) { return static_cast<VkSharingMode>(val);}
+constexpr VkSharingMode c_enum(SharingMode val) { return static_cast<VkSharingMode>(val);}
 enum class IndexType : uint32_t {
     Uint16 = 0,
     Uint32 = 1,
     NoneKHR = 1000165000,
     Uint8EXT = 1000265000,
 };
-inline VkIndexType operator+(IndexType val) { return static_cast<VkIndexType>(val);}
+constexpr VkIndexType c_enum(IndexType val) { return static_cast<VkIndexType>(val);}
 enum class LogicOp : uint32_t {
     Clear = 0,
     And = 1,
@@ -544,7 +544,7 @@ enum class LogicOp : uint32_t {
     Nand = 14,
     Set = 15,
 };
-inline VkLogicOp operator+(LogicOp val) { return static_cast<VkLogicOp>(val);}
+constexpr VkLogicOp c_enum(LogicOp val) { return static_cast<VkLogicOp>(val);}
 enum class PhysicalDeviceType : uint32_t {
     Other = 0,
     IntegratedGpu = 1,
@@ -552,13 +552,13 @@ enum class PhysicalDeviceType : uint32_t {
     VirtualGpu = 3,
     Cpu = 4,
 };
-inline VkPhysicalDeviceType operator+(PhysicalDeviceType val) { return static_cast<VkPhysicalDeviceType>(val);}
+constexpr VkPhysicalDeviceType c_enum(PhysicalDeviceType val) { return static_cast<VkPhysicalDeviceType>(val);}
 enum class PipelineBindPoint : uint32_t {
     Graphics = 0,
     Compute = 1,
     RayTracingKHR = 1000165000,
 };
-inline VkPipelineBindPoint operator+(PipelineBindPoint val) { return static_cast<VkPipelineBindPoint>(val);}
+constexpr VkPipelineBindPoint c_enum(PipelineBindPoint val) { return static_cast<VkPipelineBindPoint>(val);}
 enum class PrimitiveTopology : uint32_t {
     PointList = 0,
     LineList = 1,
@@ -572,7 +572,7 @@ enum class PrimitiveTopology : uint32_t {
     TriangleStripWithAdjacency = 9,
     PatchList = 10,
 };
-inline VkPrimitiveTopology operator+(PrimitiveTopology val) { return static_cast<VkPrimitiveTopology>(val);}
+constexpr VkPrimitiveTopology c_enum(PrimitiveTopology val) { return static_cast<VkPrimitiveTopology>(val);}
 enum class QueryType : uint32_t {
     Occlusion = 0,
     PipelineStatistics = 1,
@@ -583,12 +583,12 @@ enum class QueryType : uint32_t {
     AccelerationStructureSerializationSizeKHR = 1000150000,
     PerformanceQueryINTEL = 1000210000,
 };
-inline VkQueryType operator+(QueryType val) { return static_cast<VkQueryType>(val);}
+constexpr VkQueryType c_enum(QueryType val) { return static_cast<VkQueryType>(val);}
 enum class SubpassContents : uint32_t {
     Inline = 0,
     SecondaryCommandBuffers = 1,
 };
-inline VkSubpassContents operator+(SubpassContents val) { return static_cast<VkSubpassContents>(val);}
+constexpr VkSubpassContents c_enum(SubpassContents val) { return static_cast<VkSubpassContents>(val);}
 enum class Result : int32_t {
     Success = 0,
     NotReady = 1,
@@ -630,7 +630,7 @@ enum class Result : int32_t {
     ErrorFragmentation = -1000161000,
     ErrorInvalidOpaqueCaptureAddress = -1000257000,
 };
-inline VkResult operator+(Result val) { return static_cast<VkResult>(val);}
+constexpr VkResult c_enum(Result val) { return static_cast<VkResult>(val);}
 enum class StencilOp : uint32_t {
     Keep = 0,
     Zero = 1,
@@ -641,7 +641,7 @@ enum class StencilOp : uint32_t {
     IncrementAndWrap = 6,
     DecrementAndWrap = 7,
 };
-inline VkStencilOp operator+(StencilOp val) { return static_cast<VkStencilOp>(val);}
+constexpr VkStencilOp c_enum(StencilOp val) { return static_cast<VkStencilOp>(val);}
 enum class StructureType : uint32_t {
     ApplicationInfo = 0,
     InstanceCreateInfo = 1,
@@ -1087,7 +1087,7 @@ enum class StructureType : uint32_t {
     MemoryOpaqueCaptureAddressAllocateInfo = 1000257003,
     DeviceMemoryOpaqueCaptureAddressInfo = 1000257004,
 };
-inline VkStructureType operator+(StructureType val) { return static_cast<VkStructureType>(val);}
+constexpr VkStructureType c_enum(StructureType val) { return static_cast<VkStructureType>(val);}
 enum class SystemAllocationScope : uint32_t {
     Command = 0,
     Object = 1,
@@ -1095,11 +1095,11 @@ enum class SystemAllocationScope : uint32_t {
     Device = 3,
     Instance = 4,
 };
-inline VkSystemAllocationScope operator+(SystemAllocationScope val) { return static_cast<VkSystemAllocationScope>(val);}
+constexpr VkSystemAllocationScope c_enum(SystemAllocationScope val) { return static_cast<VkSystemAllocationScope>(val);}
 enum class InternalAllocationType : uint32_t {
     Executable = 0,
 };
-inline VkInternalAllocationType operator+(InternalAllocationType val) { return static_cast<VkInternalAllocationType>(val);}
+constexpr VkInternalAllocationType c_enum(InternalAllocationType val) { return static_cast<VkInternalAllocationType>(val);}
 enum class SamplerAddressMode : uint32_t {
     Repeat = 0,
     MirroredRepeat = 1,
@@ -1107,23 +1107,23 @@ enum class SamplerAddressMode : uint32_t {
     ClampToBorder = 3,
     MirrorClampToEdge = 4,
 };
-inline VkSamplerAddressMode operator+(SamplerAddressMode val) { return static_cast<VkSamplerAddressMode>(val);}
+constexpr VkSamplerAddressMode c_enum(SamplerAddressMode val) { return static_cast<VkSamplerAddressMode>(val);}
 enum class Filter : uint32_t {
     Nearest = 0,
     Linear = 1,
     CubicIMG = 1000015000,
 };
-inline VkFilter operator+(Filter val) { return static_cast<VkFilter>(val);}
+constexpr VkFilter c_enum(Filter val) { return static_cast<VkFilter>(val);}
 enum class SamplerMipmapMode : uint32_t {
     Nearest = 0,
     Linear = 1,
 };
-inline VkSamplerMipmapMode operator+(SamplerMipmapMode val) { return static_cast<VkSamplerMipmapMode>(val);}
+constexpr VkSamplerMipmapMode c_enum(SamplerMipmapMode val) { return static_cast<VkSamplerMipmapMode>(val);}
 enum class VertexInputRate : uint32_t {
     Vertex = 0,
     Instance = 1,
 };
-inline VkVertexInputRate operator+(VertexInputRate val) { return static_cast<VkVertexInputRate>(val);}
+constexpr VkVertexInputRate c_enum(VertexInputRate val) { return static_cast<VkVertexInputRate>(val);}
 enum class ObjectType : uint32_t {
     Unknown = 0,
     Instance = 1,
@@ -1166,7 +1166,7 @@ enum class ObjectType : uint32_t {
     SamplerYcbcrConversion = 1000156000,
     DescriptorUpdateTemplate = 1000085000,
 };
-inline VkObjectType operator+(ObjectType val) { return static_cast<VkObjectType>(val);}
+constexpr VkObjectType c_enum(ObjectType val) { return static_cast<VkObjectType>(val);}
 enum class IndirectCommandsTokenTypeNV : uint32_t {
     ShaderGroupNV = 0,
     StateFlagsNV = 1,
@@ -1177,12 +1177,12 @@ enum class IndirectCommandsTokenTypeNV : uint32_t {
     DrawNV = 6,
     DrawTasksNV = 7,
 };
-inline VkIndirectCommandsTokenTypeNV operator+(IndirectCommandsTokenTypeNV val) { return static_cast<VkIndirectCommandsTokenTypeNV>(val);}
+constexpr VkIndirectCommandsTokenTypeNV c_enum(IndirectCommandsTokenTypeNV val) { return static_cast<VkIndirectCommandsTokenTypeNV>(val);}
 enum class DescriptorUpdateTemplateType : uint32_t {
     DescriptorSet = 0,
     PushDescriptorsKHR = 1,
 };
-inline VkDescriptorUpdateTemplateType operator+(DescriptorUpdateTemplateType val) { return static_cast<VkDescriptorUpdateTemplateType>(val);}
+constexpr VkDescriptorUpdateTemplateType c_enum(DescriptorUpdateTemplateType val) { return static_cast<VkDescriptorUpdateTemplateType>(val);}
 using DescriptorUpdateTemplateTypeKHR = DescriptorUpdateTemplateType;
 enum class ViewportCoordinateSwizzleNV : uint32_t {
     PositiveXNV = 0,
@@ -1194,17 +1194,17 @@ enum class ViewportCoordinateSwizzleNV : uint32_t {
     PositiveWNV = 6,
     NegativeWNV = 7,
 };
-inline VkViewportCoordinateSwizzleNV operator+(ViewportCoordinateSwizzleNV val) { return static_cast<VkViewportCoordinateSwizzleNV>(val);}
+constexpr VkViewportCoordinateSwizzleNV c_enum(ViewportCoordinateSwizzleNV val) { return static_cast<VkViewportCoordinateSwizzleNV>(val);}
 enum class DiscardRectangleModeEXT : uint32_t {
     InclusiveEXT = 0,
     ExclusiveEXT = 1,
 };
-inline VkDiscardRectangleModeEXT operator+(DiscardRectangleModeEXT val) { return static_cast<VkDiscardRectangleModeEXT>(val);}
+constexpr VkDiscardRectangleModeEXT c_enum(DiscardRectangleModeEXT val) { return static_cast<VkDiscardRectangleModeEXT>(val);}
 enum class PointClippingBehavior : uint32_t {
     AllClipPlanes = 0,
     UserClipPlanesOnly = 1,
 };
-inline VkPointClippingBehavior operator+(PointClippingBehavior val) { return static_cast<VkPointClippingBehavior>(val);}
+constexpr VkPointClippingBehavior c_enum(PointClippingBehavior val) { return static_cast<VkPointClippingBehavior>(val);}
 using PointClippingBehaviorKHR = PointClippingBehavior;
 enum class CoverageModulationModeNV : uint32_t {
     NoneNV = 0,
@@ -1212,47 +1212,47 @@ enum class CoverageModulationModeNV : uint32_t {
     AlphaNV = 2,
     RgbaNV = 3,
 };
-inline VkCoverageModulationModeNV operator+(CoverageModulationModeNV val) { return static_cast<VkCoverageModulationModeNV>(val);}
+constexpr VkCoverageModulationModeNV c_enum(CoverageModulationModeNV val) { return static_cast<VkCoverageModulationModeNV>(val);}
 enum class CoverageReductionModeNV : uint32_t {
     MergeNV = 0,
     TruncateNV = 1,
 };
-inline VkCoverageReductionModeNV operator+(CoverageReductionModeNV val) { return static_cast<VkCoverageReductionModeNV>(val);}
+constexpr VkCoverageReductionModeNV c_enum(CoverageReductionModeNV val) { return static_cast<VkCoverageReductionModeNV>(val);}
 enum class ValidationCacheHeaderVersionEXT : uint32_t {
     OneEXT = 1,
 };
-inline VkValidationCacheHeaderVersionEXT operator+(ValidationCacheHeaderVersionEXT val) { return static_cast<VkValidationCacheHeaderVersionEXT>(val);}
+constexpr VkValidationCacheHeaderVersionEXT c_enum(ValidationCacheHeaderVersionEXT val) { return static_cast<VkValidationCacheHeaderVersionEXT>(val);}
 enum class ShaderInfoTypeAMD : uint32_t {
     StatisticsAMD = 0,
     BinaryAMD = 1,
     DisassemblyAMD = 2,
 };
-inline VkShaderInfoTypeAMD operator+(ShaderInfoTypeAMD val) { return static_cast<VkShaderInfoTypeAMD>(val);}
+constexpr VkShaderInfoTypeAMD c_enum(ShaderInfoTypeAMD val) { return static_cast<VkShaderInfoTypeAMD>(val);}
 enum class QueueGlobalPriorityEXT : uint32_t {
     LowEXT = 128,
     MediumEXT = 256,
     HighEXT = 512,
     RealtimeEXT = 1024,
 };
-inline VkQueueGlobalPriorityEXT operator+(QueueGlobalPriorityEXT val) { return static_cast<VkQueueGlobalPriorityEXT>(val);}
+constexpr VkQueueGlobalPriorityEXT c_enum(QueueGlobalPriorityEXT val) { return static_cast<VkQueueGlobalPriorityEXT>(val);}
 enum class TimeDomainEXT : uint32_t {
     DeviceEXT = 0,
     ClockMonotonicEXT = 1,
     ClockMonotonicRawEXT = 2,
     QueryPerformanceCounterEXT = 3,
 };
-inline VkTimeDomainEXT operator+(TimeDomainEXT val) { return static_cast<VkTimeDomainEXT>(val);}
+constexpr VkTimeDomainEXT c_enum(TimeDomainEXT val) { return static_cast<VkTimeDomainEXT>(val);}
 enum class ConservativeRasterizationModeEXT : uint32_t {
     DisabledEXT = 0,
     OverestimateEXT = 1,
     UnderestimateEXT = 2,
 };
-inline VkConservativeRasterizationModeEXT operator+(ConservativeRasterizationModeEXT val) { return static_cast<VkConservativeRasterizationModeEXT>(val);}
+constexpr VkConservativeRasterizationModeEXT c_enum(ConservativeRasterizationModeEXT val) { return static_cast<VkConservativeRasterizationModeEXT>(val);}
 enum class SemaphoreType : uint32_t {
     Binary = 0,
     Timeline = 1,
 };
-inline VkSemaphoreType operator+(SemaphoreType val) { return static_cast<VkSemaphoreType>(val);}
+constexpr VkSemaphoreType c_enum(SemaphoreType val) { return static_cast<VkSemaphoreType>(val);}
 using SemaphoreTypeKHR = SemaphoreType;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 enum class CopyAccelerationStructureModeKHR : uint32_t {
@@ -1261,7 +1261,7 @@ enum class CopyAccelerationStructureModeKHR : uint32_t {
     SerializeKHR = 2,
     DeserializeKHR = 3,
 };
-inline VkCopyAccelerationStructureModeKHR operator+(CopyAccelerationStructureModeKHR val) { return static_cast<VkCopyAccelerationStructureModeKHR>(val);}
+constexpr VkCopyAccelerationStructureModeKHR c_enum(CopyAccelerationStructureModeKHR val) { return static_cast<VkCopyAccelerationStructureModeKHR>(val);}
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using CopyAccelerationStructureModeNV = CopyAccelerationStructureModeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
@@ -1269,7 +1269,7 @@ enum class AccelerationStructureTypeKHR : uint32_t {
     TopLevelKHR = 0,
     BottomLevelKHR = 1,
 };
-inline VkAccelerationStructureTypeKHR operator+(AccelerationStructureTypeKHR val) { return static_cast<VkAccelerationStructureTypeKHR>(val);}
+constexpr VkAccelerationStructureTypeKHR c_enum(AccelerationStructureTypeKHR val) { return static_cast<VkAccelerationStructureTypeKHR>(val);}
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using AccelerationStructureTypeNV = AccelerationStructureTypeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
@@ -1278,7 +1278,7 @@ enum class GeometryTypeKHR : uint32_t {
     AabbsKHR = 1,
     InstancesKHR = 1000150000,
 };
-inline VkGeometryTypeKHR operator+(GeometryTypeKHR val) { return static_cast<VkGeometryTypeKHR>(val);}
+constexpr VkGeometryTypeKHR c_enum(GeometryTypeKHR val) { return static_cast<VkGeometryTypeKHR>(val);}
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using GeometryTypeNV = GeometryTypeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
@@ -1287,7 +1287,7 @@ enum class RayTracingShaderGroupTypeKHR : uint32_t {
     TrianglesHitGroupKHR = 1,
     ProceduralHitGroupKHR = 2,
 };
-inline VkRayTracingShaderGroupTypeKHR operator+(RayTracingShaderGroupTypeKHR val) { return static_cast<VkRayTracingShaderGroupTypeKHR>(val);}
+constexpr VkRayTracingShaderGroupTypeKHR c_enum(RayTracingShaderGroupTypeKHR val) { return static_cast<VkRayTracingShaderGroupTypeKHR>(val);}
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using RayTracingShaderGroupTypeNV = RayTracingShaderGroupTypeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
@@ -1296,7 +1296,7 @@ enum class AccelerationStructureMemoryRequirementsTypeKHR : uint32_t {
     BuildScratchKHR = 1,
     UpdateScratchKHR = 2,
 };
-inline VkAccelerationStructureMemoryRequirementsTypeKHR operator+(AccelerationStructureMemoryRequirementsTypeKHR val) { return static_cast<VkAccelerationStructureMemoryRequirementsTypeKHR>(val);}
+constexpr VkAccelerationStructureMemoryRequirementsTypeKHR c_enum(AccelerationStructureMemoryRequirementsTypeKHR val) { return static_cast<VkAccelerationStructureMemoryRequirementsTypeKHR>(val);}
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using AccelerationStructureMemoryRequirementsTypeNV = AccelerationStructureMemoryRequirementsTypeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
@@ -1305,21 +1305,21 @@ enum class AccelerationStructureBuildTypeKHR : uint32_t {
     DeviceKHR = 1,
     HostOrDeviceKHR = 2,
 };
-inline VkAccelerationStructureBuildTypeKHR operator+(AccelerationStructureBuildTypeKHR val) { return static_cast<VkAccelerationStructureBuildTypeKHR>(val);}
+constexpr VkAccelerationStructureBuildTypeKHR c_enum(AccelerationStructureBuildTypeKHR val) { return static_cast<VkAccelerationStructureBuildTypeKHR>(val);}
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 enum class MemoryOverallocationBehaviorAMD : uint32_t {
     DefaultAMD = 0,
     AllowedAMD = 1,
     DisallowedAMD = 2,
 };
-inline VkMemoryOverallocationBehaviorAMD operator+(MemoryOverallocationBehaviorAMD val) { return static_cast<VkMemoryOverallocationBehaviorAMD>(val);}
+constexpr VkMemoryOverallocationBehaviorAMD c_enum(MemoryOverallocationBehaviorAMD val) { return static_cast<VkMemoryOverallocationBehaviorAMD>(val);}
 enum class ScopeNV : uint32_t {
     DeviceNV = 1,
     WorkgroupNV = 2,
     SubgroupNV = 3,
     QueueFamilyNV = 5,
 };
-inline VkScopeNV operator+(ScopeNV val) { return static_cast<VkScopeNV>(val);}
+constexpr VkScopeNV c_enum(ScopeNV val) { return static_cast<VkScopeNV>(val);}
 enum class ComponentTypeNV : uint32_t {
     Float16NV = 0,
     Float32NV = 1,
@@ -1333,13 +1333,13 @@ enum class ComponentTypeNV : uint32_t {
     Uint32NV = 9,
     Uint64NV = 10,
 };
-inline VkComponentTypeNV operator+(ComponentTypeNV val) { return static_cast<VkComponentTypeNV>(val);}
+constexpr VkComponentTypeNV c_enum(ComponentTypeNV val) { return static_cast<VkComponentTypeNV>(val);}
 enum class PerformanceCounterScopeKHR : uint32_t {
     CommandBufferKHR = 0,
     RenderPassKHR = 1,
     CommandKHR = 2,
 };
-inline VkPerformanceCounterScopeKHR operator+(PerformanceCounterScopeKHR val) { return static_cast<VkPerformanceCounterScopeKHR>(val);}
+constexpr VkPerformanceCounterScopeKHR c_enum(PerformanceCounterScopeKHR val) { return static_cast<VkPerformanceCounterScopeKHR>(val);}
 enum class PerformanceCounterUnitKHR : uint32_t {
     GenericKHR = 0,
     PercentageKHR = 1,
@@ -1353,7 +1353,7 @@ enum class PerformanceCounterUnitKHR : uint32_t {
     HertzKHR = 9,
     CyclesKHR = 10,
 };
-inline VkPerformanceCounterUnitKHR operator+(PerformanceCounterUnitKHR val) { return static_cast<VkPerformanceCounterUnitKHR>(val);}
+constexpr VkPerformanceCounterUnitKHR c_enum(PerformanceCounterUnitKHR val) { return static_cast<VkPerformanceCounterUnitKHR>(val);}
 enum class PerformanceCounterStorageKHR : uint32_t {
     Int32KHR = 0,
     Int64KHR = 1,
@@ -1362,25 +1362,25 @@ enum class PerformanceCounterStorageKHR : uint32_t {
     Float32KHR = 4,
     Float64KHR = 5,
 };
-inline VkPerformanceCounterStorageKHR operator+(PerformanceCounterStorageKHR val) { return static_cast<VkPerformanceCounterStorageKHR>(val);}
+constexpr VkPerformanceCounterStorageKHR c_enum(PerformanceCounterStorageKHR val) { return static_cast<VkPerformanceCounterStorageKHR>(val);}
 enum class PerformanceConfigurationTypeINTEL : uint32_t {
     CommandQueueMetricsDiscoveryActivatedINTEL = 0,
 };
-inline VkPerformanceConfigurationTypeINTEL operator+(PerformanceConfigurationTypeINTEL val) { return static_cast<VkPerformanceConfigurationTypeINTEL>(val);}
+constexpr VkPerformanceConfigurationTypeINTEL c_enum(PerformanceConfigurationTypeINTEL val) { return static_cast<VkPerformanceConfigurationTypeINTEL>(val);}
 enum class QueryPoolSamplingModeINTEL : uint32_t {
     ManualINTEL = 0,
 };
-inline VkQueryPoolSamplingModeINTEL operator+(QueryPoolSamplingModeINTEL val) { return static_cast<VkQueryPoolSamplingModeINTEL>(val);}
+constexpr VkQueryPoolSamplingModeINTEL c_enum(QueryPoolSamplingModeINTEL val) { return static_cast<VkQueryPoolSamplingModeINTEL>(val);}
 enum class PerformanceOverrideTypeINTEL : uint32_t {
     NullHardwareINTEL = 0,
     FlushGpuCachesINTEL = 1,
 };
-inline VkPerformanceOverrideTypeINTEL operator+(PerformanceOverrideTypeINTEL val) { return static_cast<VkPerformanceOverrideTypeINTEL>(val);}
+constexpr VkPerformanceOverrideTypeINTEL c_enum(PerformanceOverrideTypeINTEL val) { return static_cast<VkPerformanceOverrideTypeINTEL>(val);}
 enum class PerformanceParameterTypeINTEL : uint32_t {
     HwCountersSupportedINTEL = 0,
     StreamMarkerValidBitsINTEL = 1,
 };
-inline VkPerformanceParameterTypeINTEL operator+(PerformanceParameterTypeINTEL val) { return static_cast<VkPerformanceParameterTypeINTEL>(val);}
+constexpr VkPerformanceParameterTypeINTEL c_enum(PerformanceParameterTypeINTEL val) { return static_cast<VkPerformanceParameterTypeINTEL>(val);}
 enum class PerformanceValueTypeINTEL : uint32_t {
     Uint32INTEL = 0,
     Uint64INTEL = 1,
@@ -1388,14 +1388,14 @@ enum class PerformanceValueTypeINTEL : uint32_t {
     BoolINTEL = 3,
     StringINTEL = 4,
 };
-inline VkPerformanceValueTypeINTEL operator+(PerformanceValueTypeINTEL val) { return static_cast<VkPerformanceValueTypeINTEL>(val);}
+constexpr VkPerformanceValueTypeINTEL c_enum(PerformanceValueTypeINTEL val) { return static_cast<VkPerformanceValueTypeINTEL>(val);}
 enum class LineRasterizationModeEXT : uint32_t {
     DefaultEXT = 0,
     RectangularEXT = 1,
     BresenhamEXT = 2,
     RectangularSmoothEXT = 3,
 };
-inline VkLineRasterizationModeEXT operator+(LineRasterizationModeEXT val) { return static_cast<VkLineRasterizationModeEXT>(val);}
+constexpr VkLineRasterizationModeEXT c_enum(LineRasterizationModeEXT val) { return static_cast<VkLineRasterizationModeEXT>(val);}
 enum class ColorSpaceKHR : uint32_t {
     SrgbNonlinearKHR = 0,
     DisplayP3NonlinearEXT = 1000104001,
@@ -1414,7 +1414,7 @@ enum class ColorSpaceKHR : uint32_t {
     ExtendedSrgbNonlinearEXT = 1000104014,
     DisplayNativeAMD = 1000213000,
 };
-inline VkColorSpaceKHR operator+(ColorSpaceKHR val) { return static_cast<VkColorSpaceKHR>(val);}
+constexpr VkColorSpaceKHR c_enum(ColorSpaceKHR val) { return static_cast<VkColorSpaceKHR>(val);}
 enum class PresentModeKHR : uint32_t {
     ImmediateKHR = 0,
     MailboxKHR = 1,
@@ -1423,7 +1423,7 @@ enum class PresentModeKHR : uint32_t {
     SharedDemandRefreshKHR = 1000111000,
     SharedContinuousRefreshKHR = 1000111001,
 };
-inline VkPresentModeKHR operator+(PresentModeKHR val) { return static_cast<VkPresentModeKHR>(val);}
+constexpr VkPresentModeKHR c_enum(PresentModeKHR val) { return static_cast<VkPresentModeKHR>(val);}
 enum class DebugReportObjectTypeEXT : uint32_t {
     UnknownEXT = 0,
     InstanceEXT = 1,
@@ -1461,17 +1461,17 @@ enum class DebugReportObjectTypeEXT : uint32_t {
     DescriptorUpdateTemplateEXT = 1000085000,
     AccelerationStructureKhrEXT = 1000165000,
 };
-inline VkDebugReportObjectTypeEXT operator+(DebugReportObjectTypeEXT val) { return static_cast<VkDebugReportObjectTypeEXT>(val);}
+constexpr VkDebugReportObjectTypeEXT c_enum(DebugReportObjectTypeEXT val) { return static_cast<VkDebugReportObjectTypeEXT>(val);}
 enum class RasterizationOrderAMD : uint32_t {
     StrictAMD = 0,
     RelaxedAMD = 1,
 };
-inline VkRasterizationOrderAMD operator+(RasterizationOrderAMD val) { return static_cast<VkRasterizationOrderAMD>(val);}
+constexpr VkRasterizationOrderAMD c_enum(RasterizationOrderAMD val) { return static_cast<VkRasterizationOrderAMD>(val);}
 enum class ValidationCheckEXT : uint32_t {
     AllEXT = 0,
     ShadersEXT = 1,
 };
-inline VkValidationCheckEXT operator+(ValidationCheckEXT val) { return static_cast<VkValidationCheckEXT>(val);}
+constexpr VkValidationCheckEXT c_enum(ValidationCheckEXT val) { return static_cast<VkValidationCheckEXT>(val);}
 enum class ValidationFeatureEnableEXT : uint32_t {
     GpuAssistedEXT = 0,
     GpuAssistedReserveBindingSlotEXT = 1,
@@ -1479,7 +1479,7 @@ enum class ValidationFeatureEnableEXT : uint32_t {
     DebugPrintfEXT = 3,
     SynchronizationValidationEXT = 4,
 };
-inline VkValidationFeatureEnableEXT operator+(ValidationFeatureEnableEXT val) { return static_cast<VkValidationFeatureEnableEXT>(val);}
+constexpr VkValidationFeatureEnableEXT c_enum(ValidationFeatureEnableEXT val) { return static_cast<VkValidationFeatureEnableEXT>(val);}
 enum class ValidationFeatureDisableEXT : uint32_t {
     AllEXT = 0,
     ShadersEXT = 1,
@@ -1489,26 +1489,26 @@ enum class ValidationFeatureDisableEXT : uint32_t {
     CoreChecksEXT = 5,
     UniqueHandlesEXT = 6,
 };
-inline VkValidationFeatureDisableEXT operator+(ValidationFeatureDisableEXT val) { return static_cast<VkValidationFeatureDisableEXT>(val);}
+constexpr VkValidationFeatureDisableEXT c_enum(ValidationFeatureDisableEXT val) { return static_cast<VkValidationFeatureDisableEXT>(val);}
 enum class DisplayPowerStateEXT : uint32_t {
     OffEXT = 0,
     SuspendEXT = 1,
     OnEXT = 2,
 };
-inline VkDisplayPowerStateEXT operator+(DisplayPowerStateEXT val) { return static_cast<VkDisplayPowerStateEXT>(val);}
+constexpr VkDisplayPowerStateEXT c_enum(DisplayPowerStateEXT val) { return static_cast<VkDisplayPowerStateEXT>(val);}
 enum class DeviceEventTypeEXT : uint32_t {
     DisplayHotplugEXT = 0,
 };
-inline VkDeviceEventTypeEXT operator+(DeviceEventTypeEXT val) { return static_cast<VkDeviceEventTypeEXT>(val);}
+constexpr VkDeviceEventTypeEXT c_enum(DeviceEventTypeEXT val) { return static_cast<VkDeviceEventTypeEXT>(val);}
 enum class DisplayEventTypeEXT : uint32_t {
     FirstPixelOutEXT = 0,
 };
-inline VkDisplayEventTypeEXT operator+(DisplayEventTypeEXT val) { return static_cast<VkDisplayEventTypeEXT>(val);}
+constexpr VkDisplayEventTypeEXT c_enum(DisplayEventTypeEXT val) { return static_cast<VkDisplayEventTypeEXT>(val);}
 enum class TessellationDomainOrigin : uint32_t {
     UpperLeft = 0,
     LowerLeft = 1,
 };
-inline VkTessellationDomainOrigin operator+(TessellationDomainOrigin val) { return static_cast<VkTessellationDomainOrigin>(val);}
+constexpr VkTessellationDomainOrigin c_enum(TessellationDomainOrigin val) { return static_cast<VkTessellationDomainOrigin>(val);}
 using TessellationDomainOriginKHR = TessellationDomainOrigin;
 enum class SamplerYcbcrModelConversion : uint32_t {
     RgbIdentity = 0,
@@ -1517,33 +1517,33 @@ enum class SamplerYcbcrModelConversion : uint32_t {
     Ycbcr601 = 3,
     Ycbcr2020 = 4,
 };
-inline VkSamplerYcbcrModelConversion operator+(SamplerYcbcrModelConversion val) { return static_cast<VkSamplerYcbcrModelConversion>(val);}
+constexpr VkSamplerYcbcrModelConversion c_enum(SamplerYcbcrModelConversion val) { return static_cast<VkSamplerYcbcrModelConversion>(val);}
 using SamplerYcbcrModelConversionKHR = SamplerYcbcrModelConversion;
 enum class SamplerYcbcrRange : uint32_t {
     ItuFull = 0,
     ItuNarrow = 1,
 };
-inline VkSamplerYcbcrRange operator+(SamplerYcbcrRange val) { return static_cast<VkSamplerYcbcrRange>(val);}
+constexpr VkSamplerYcbcrRange c_enum(SamplerYcbcrRange val) { return static_cast<VkSamplerYcbcrRange>(val);}
 using SamplerYcbcrRangeKHR = SamplerYcbcrRange;
 enum class ChromaLocation : uint32_t {
     CositedEven = 0,
     Midpoint = 1,
 };
-inline VkChromaLocation operator+(ChromaLocation val) { return static_cast<VkChromaLocation>(val);}
+constexpr VkChromaLocation c_enum(ChromaLocation val) { return static_cast<VkChromaLocation>(val);}
 using ChromaLocationKHR = ChromaLocation;
 enum class SamplerReductionMode : uint32_t {
     WeightedAverage = 0,
     Min = 1,
     Max = 2,
 };
-inline VkSamplerReductionMode operator+(SamplerReductionMode val) { return static_cast<VkSamplerReductionMode>(val);}
+constexpr VkSamplerReductionMode c_enum(SamplerReductionMode val) { return static_cast<VkSamplerReductionMode>(val);}
 using SamplerReductionModeEXT = SamplerReductionMode;
 enum class BlendOverlapEXT : uint32_t {
     UncorrelatedEXT = 0,
     DisjointEXT = 1,
     ConjointEXT = 2,
 };
-inline VkBlendOverlapEXT operator+(BlendOverlapEXT val) { return static_cast<VkBlendOverlapEXT>(val);}
+constexpr VkBlendOverlapEXT c_enum(BlendOverlapEXT val) { return static_cast<VkBlendOverlapEXT>(val);}
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 enum class FullScreenExclusiveEXT : uint32_t {
     DefaultEXT = 0,
@@ -1551,14 +1551,14 @@ enum class FullScreenExclusiveEXT : uint32_t {
     DisallowedEXT = 2,
     ApplicationControlledEXT = 3,
 };
-inline VkFullScreenExclusiveEXT operator+(FullScreenExclusiveEXT val) { return static_cast<VkFullScreenExclusiveEXT>(val);}
+constexpr VkFullScreenExclusiveEXT c_enum(FullScreenExclusiveEXT val) { return static_cast<VkFullScreenExclusiveEXT>(val);}
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 enum class ShaderFloatControlsIndependence : uint32_t {
     e32BitOnly = 0,
     All = 1,
     None = 2,
 };
-inline VkShaderFloatControlsIndependence operator+(ShaderFloatControlsIndependence val) { return static_cast<VkShaderFloatControlsIndependence>(val);}
+constexpr VkShaderFloatControlsIndependence c_enum(ShaderFloatControlsIndependence val) { return static_cast<VkShaderFloatControlsIndependence>(val);}
 using ShaderFloatControlsIndependenceKHR = ShaderFloatControlsIndependence;
 enum class VendorId : uint32_t {
     VIV = 0x10001,
@@ -1567,7 +1567,7 @@ enum class VendorId : uint32_t {
     Codeplay = 0x10004,
     MESA = 0x10005,
 };
-inline VkVendorId operator+(VendorId val) { return static_cast<VkVendorId>(val);}
+constexpr VkVendorId c_enum(VendorId val) { return static_cast<VkVendorId>(val);}
 enum class DriverId : uint32_t {
     AmdProprietary = 1,
     AmdOpenSource = 2,
@@ -1584,7 +1584,7 @@ enum class DriverId : uint32_t {
     MesaLlvmpipe = 13,
     Moltenvk = 14,
 };
-inline VkDriverId operator+(DriverId val) { return static_cast<VkDriverId>(val);}
+constexpr VkDriverId c_enum(DriverId val) { return static_cast<VkDriverId>(val);}
 using DriverIdKHR = DriverId;
 enum class ShadingRatePaletteEntryNV : uint32_t {
     NoInvocationsNV = 0,
@@ -1600,21 +1600,21 @@ enum class ShadingRatePaletteEntryNV : uint32_t {
     e1InvocationPer2X4PixelsNV = 10,
     e1InvocationPer4X4PixelsNV = 11,
 };
-inline VkShadingRatePaletteEntryNV operator+(ShadingRatePaletteEntryNV val) { return static_cast<VkShadingRatePaletteEntryNV>(val);}
+constexpr VkShadingRatePaletteEntryNV c_enum(ShadingRatePaletteEntryNV val) { return static_cast<VkShadingRatePaletteEntryNV>(val);}
 enum class CoarseSampleOrderTypeNV : uint32_t {
     DefaultNV = 0,
     CustomNV = 1,
     PixelMajorNV = 2,
     SampleMajorNV = 3,
 };
-inline VkCoarseSampleOrderTypeNV operator+(CoarseSampleOrderTypeNV val) { return static_cast<VkCoarseSampleOrderTypeNV>(val);}
+constexpr VkCoarseSampleOrderTypeNV c_enum(CoarseSampleOrderTypeNV val) { return static_cast<VkCoarseSampleOrderTypeNV>(val);}
 enum class PipelineExecutableStatisticFormatKHR : uint32_t {
     Bool32KHR = 0,
     Int64KHR = 1,
     Uint64KHR = 2,
     Float64KHR = 3,
 };
-inline VkPipelineExecutableStatisticFormatKHR operator+(PipelineExecutableStatisticFormatKHR val) { return static_cast<VkPipelineExecutableStatisticFormatKHR>(val);}
+constexpr VkPipelineExecutableStatisticFormatKHR c_enum(PipelineExecutableStatisticFormatKHR val) { return static_cast<VkPipelineExecutableStatisticFormatKHR>(val);}
 enum class PipelineCacheCreateFlagBits: uint32_t {
     ExternallySynchronizedBitEXT = 1,
 };
@@ -2915,7 +2915,8 @@ struct Offset2D {
     int32_t x{0};
     int32_t y{0};
     constexpr bool operator==(Offset2D const& value) const {
-        return x == value.x && y == value.y ;}
+        bool is_equal = true;
+        return is_equal && x == value.x && y == value.y ;}
     constexpr bool operator!=(Offset2D const& value) const {return !(*this == value);}
     operator VkOffset2D const &() const noexcept {
         return *reinterpret_cast<const VkOffset2D*>(this);
@@ -2929,7 +2930,8 @@ struct Offset3D {
     int32_t y{0};
     int32_t z{0};
     constexpr bool operator==(Offset3D const& value) const {
-        return x == value.x && y == value.y && z == value.z ;}
+        bool is_equal = true;
+        return is_equal && x == value.x && y == value.y && z == value.z ;}
     constexpr bool operator!=(Offset3D const& value) const {return !(*this == value);}
     operator VkOffset3D const &() const noexcept {
         return *reinterpret_cast<const VkOffset3D*>(this);
@@ -2942,7 +2944,8 @@ struct Extent2D {
     uint32_t width{0};
     uint32_t height{0};
     constexpr bool operator==(Extent2D const& value) const {
-        return width == value.width && height == value.height ;}
+        bool is_equal = true;
+        return is_equal && width == value.width && height == value.height ;}
     constexpr bool operator!=(Extent2D const& value) const {return !(*this == value);}
     operator VkExtent2D const &() const noexcept {
         return *reinterpret_cast<const VkExtent2D*>(this);
@@ -2956,7 +2959,8 @@ struct Extent3D {
     uint32_t height{0};
     uint32_t depth{0};
     constexpr bool operator==(Extent3D const& value) const {
-        return width == value.width && height == value.height && depth == value.depth ;}
+        bool is_equal = true;
+        return is_equal && width == value.width && height == value.height && depth == value.depth ;}
     constexpr bool operator!=(Extent3D const& value) const {return !(*this == value);}
     operator VkExtent3D const &() const noexcept {
         return *reinterpret_cast<const VkExtent3D*>(this);
@@ -2973,7 +2977,8 @@ struct Viewport {
     float minDepth{0.f};
     float maxDepth{0.f};
     constexpr bool operator==(Viewport const& value) const {
-        return x == value.x && y == value.y && width == value.width && height == value.height && minDepth == value.minDepth && maxDepth == value.maxDepth ;}
+        bool is_equal = true;
+        return is_equal && x == value.x && y == value.y && width == value.width && height == value.height && minDepth == value.minDepth && maxDepth == value.maxDepth ;}
     constexpr bool operator!=(Viewport const& value) const {return !(*this == value);}
     operator VkViewport const &() const noexcept {
         return *reinterpret_cast<const VkViewport*>(this);
@@ -2986,7 +2991,8 @@ struct Rect2D {
     Offset2D offset{};
     Extent2D extent{};
     constexpr bool operator==(Rect2D const& value) const {
-        return offset == value.offset && extent == value.extent ;}
+        bool is_equal = true;
+        return is_equal && offset == value.offset && extent == value.extent ;}
     constexpr bool operator!=(Rect2D const& value) const {return !(*this == value);}
     operator VkRect2D const &() const noexcept {
         return *reinterpret_cast<const VkRect2D*>(this);
@@ -3000,7 +3006,8 @@ struct ClearRect {
     uint32_t baseArrayLayer{0};
     uint32_t layerCount{0};
     constexpr bool operator==(ClearRect const& value) const {
-        return rect == value.rect && baseArrayLayer == value.baseArrayLayer && layerCount == value.layerCount ;}
+        bool is_equal = true;
+        return is_equal && rect == value.rect && baseArrayLayer == value.baseArrayLayer && layerCount == value.layerCount ;}
     constexpr bool operator!=(ClearRect const& value) const {return !(*this == value);}
     operator VkClearRect const &() const noexcept {
         return *reinterpret_cast<const VkClearRect*>(this);
@@ -3015,7 +3022,8 @@ struct ComponentMapping {
     ComponentSwizzle b{static_cast<ComponentSwizzle>(0)};
     ComponentSwizzle a{static_cast<ComponentSwizzle>(0)};
     constexpr bool operator==(ComponentMapping const& value) const {
-        return r == value.r && g == value.g && b == value.b && a == value.a ;}
+        bool is_equal = true;
+        return is_equal && r == value.r && g == value.g && b == value.b && a == value.a ;}
     constexpr bool operator!=(ComponentMapping const& value) const {return !(*this == value);}
     operator VkComponentMapping const &() const noexcept {
         return *reinterpret_cast<const VkComponentMapping*>(this);
@@ -3031,7 +3039,10 @@ struct PhysicalDeviceSparseProperties {
     Bool32 residencyAlignedMipSize{0};
     Bool32 residencyNonResidentStrict{0};
     constexpr bool operator==(PhysicalDeviceSparseProperties const& value) const {
-        return residencyStandard2DBlockShape == value.residencyStandard2DBlockShape && residencyStandard2DMultisampleBlockShape == value.residencyStandard2DMultisampleBlockShape && residencyStandard3DBlockShape == value.residencyStandard3DBlockShape && residencyAlignedMipSize == value.residencyAlignedMipSize && residencyNonResidentStrict == value.residencyNonResidentStrict ;}
+        bool is_equal = true;
+        return is_equal && residencyStandard2DBlockShape == value.residencyStandard2DBlockShape && residencyStandard2DMultisampleBlockShape == value.residencyStandard2DMultisampleBlockShape 
+        && residencyStandard3DBlockShape == value.residencyStandard3DBlockShape && residencyAlignedMipSize == value.residencyAlignedMipSize 
+        && residencyNonResidentStrict == value.residencyNonResidentStrict ;}
     constexpr bool operator!=(PhysicalDeviceSparseProperties const& value) const {return !(*this == value);}
     operator VkPhysicalDeviceSparseProperties const &() const noexcept {
         return *reinterpret_cast<const VkPhysicalDeviceSparseProperties*>(this);
@@ -3148,13 +3159,62 @@ struct PhysicalDeviceLimits {
     DeviceSize optimalBufferCopyRowPitchAlignment{0};
     DeviceSize nonCoherentAtomSize{0};
     constexpr bool operator==(PhysicalDeviceLimits const& value) const {
-        return maxImageDimension1D == value.maxImageDimension1D && maxImageDimension2D == value.maxImageDimension2D && maxImageDimension3D == value.maxImageDimension3D && maxImageDimensionCube == value.maxImageDimensionCube && maxImageArrayLayers == value.maxImageArrayLayers && maxTexelBufferElements == value.maxTexelBufferElements && maxUniformBufferRange == value.maxUniformBufferRange && maxStorageBufferRange == value.maxStorageBufferRange && maxPushConstantsSize == value.maxPushConstantsSize && maxMemoryAllocationCount == value.maxMemoryAllocationCount && maxSamplerAllocationCount == value.maxSamplerAllocationCount && bufferImageGranularity == value.bufferImageGranularity && sparseAddressSpaceSize == value.sparseAddressSpaceSize && maxBoundDescriptorSets == value.maxBoundDescriptorSets && maxPerStageDescriptorSamplers == value.maxPerStageDescriptorSamplers && maxPerStageDescriptorUniformBuffers == value.maxPerStageDescriptorUniformBuffers && maxPerStageDescriptorStorageBuffers == value.maxPerStageDescriptorStorageBuffers && maxPerStageDescriptorSampledImages == value.maxPerStageDescriptorSampledImages && maxPerStageDescriptorStorageImages == value.maxPerStageDescriptorStorageImages && maxPerStageDescriptorInputAttachments == value.maxPerStageDescriptorInputAttachments && maxPerStageResources == value.maxPerStageResources && maxDescriptorSetSamplers == value.maxDescriptorSetSamplers && maxDescriptorSetUniformBuffers == value.maxDescriptorSetUniformBuffers && maxDescriptorSetUniformBuffersDynamic == value.maxDescriptorSetUniformBuffersDynamic && maxDescriptorSetStorageBuffers == value.maxDescriptorSetStorageBuffers && maxDescriptorSetStorageBuffersDynamic == value.maxDescriptorSetStorageBuffersDynamic && maxDescriptorSetSampledImages == value.maxDescriptorSetSampledImages && maxDescriptorSetStorageImages == value.maxDescriptorSetStorageImages && maxDescriptorSetInputAttachments == value.maxDescriptorSetInputAttachments && maxVertexInputAttributes == value.maxVertexInputAttributes && maxVertexInputBindings == value.maxVertexInputBindings && maxVertexInputAttributeOffset == value.maxVertexInputAttributeOffset && maxVertexInputBindingStride == value.maxVertexInputBindingStride && maxVertexOutputComponents == value.maxVertexOutputComponents && maxTessellationGenerationLevel == value.maxTessellationGenerationLevel && maxTessellationPatchSize == value.maxTessellationPatchSize && maxTessellationControlPerVertexInputComponents == value.maxTessellationControlPerVertexInputComponents && maxTessellationControlPerVertexOutputComponents == value.maxTessellationControlPerVertexOutputComponents && maxTessellationControlPerPatchOutputComponents == value.maxTessellationControlPerPatchOutputComponents && maxTessellationControlTotalOutputComponents == value.maxTessellationControlTotalOutputComponents && maxTessellationEvaluationInputComponents == value.maxTessellationEvaluationInputComponents && maxTessellationEvaluationOutputComponents == value.maxTessellationEvaluationOutputComponents && maxGeometryShaderInvocations == value.maxGeometryShaderInvocations && maxGeometryInputComponents == value.maxGeometryInputComponents && maxGeometryOutputComponents == value.maxGeometryOutputComponents && maxGeometryOutputVertices == value.maxGeometryOutputVertices && maxGeometryTotalOutputComponents == value.maxGeometryTotalOutputComponents && maxFragmentInputComponents == value.maxFragmentInputComponents && maxFragmentOutputAttachments == value.maxFragmentOutputAttachments && maxFragmentDualSrcAttachments == value.maxFragmentDualSrcAttachments && maxFragmentCombinedOutputResources == value.maxFragmentCombinedOutputResources && maxComputeSharedMemorySize == value.maxComputeSharedMemorySize && maxComputeWorkGroupCount[0] == value.maxComputeWorkGroupCount[0] && maxComputeWorkGroupCount[1] == value.maxComputeWorkGroupCount[1] && maxComputeWorkGroupCount[2] == value.maxComputeWorkGroupCount[2]
-        && maxComputeWorkGroupInvocations == value.maxComputeWorkGroupInvocations && maxComputeWorkGroupSize[0] == value.maxComputeWorkGroupSize[0] && maxComputeWorkGroupSize[1] == value.maxComputeWorkGroupSize[1] && maxComputeWorkGroupSize[2] == value.maxComputeWorkGroupSize[2]
-        && subPixelPrecisionBits == value.subPixelPrecisionBits && subTexelPrecisionBits == value.subTexelPrecisionBits && mipmapPrecisionBits == value.mipmapPrecisionBits && maxDrawIndexedIndexValue == value.maxDrawIndexedIndexValue && maxDrawIndirectCount == value.maxDrawIndirectCount && maxSamplerLodBias == value.maxSamplerLodBias && maxSamplerAnisotropy == value.maxSamplerAnisotropy && maxViewports == value.maxViewports && maxViewportDimensions[0] == value.maxViewportDimensions[0] && maxViewportDimensions[1] == value.maxViewportDimensions[1]
-        && viewportBoundsRange[0] == value.viewportBoundsRange[0] && viewportBoundsRange[1] == value.viewportBoundsRange[1]
-        && viewportSubPixelBits == value.viewportSubPixelBits && minMemoryMapAlignment == value.minMemoryMapAlignment && minTexelBufferOffsetAlignment == value.minTexelBufferOffsetAlignment && minUniformBufferOffsetAlignment == value.minUniformBufferOffsetAlignment && minStorageBufferOffsetAlignment == value.minStorageBufferOffsetAlignment && minTexelOffset == value.minTexelOffset && maxTexelOffset == value.maxTexelOffset && minTexelGatherOffset == value.minTexelGatherOffset && maxTexelGatherOffset == value.maxTexelGatherOffset && minInterpolationOffset == value.minInterpolationOffset && maxInterpolationOffset == value.maxInterpolationOffset && subPixelInterpolationOffsetBits == value.subPixelInterpolationOffsetBits && maxFramebufferWidth == value.maxFramebufferWidth && maxFramebufferHeight == value.maxFramebufferHeight && maxFramebufferLayers == value.maxFramebufferLayers && framebufferColorSampleCounts == value.framebufferColorSampleCounts && framebufferDepthSampleCounts == value.framebufferDepthSampleCounts && framebufferStencilSampleCounts == value.framebufferStencilSampleCounts && framebufferNoAttachmentsSampleCounts == value.framebufferNoAttachmentsSampleCounts && maxColorAttachments == value.maxColorAttachments && sampledImageColorSampleCounts == value.sampledImageColorSampleCounts && sampledImageIntegerSampleCounts == value.sampledImageIntegerSampleCounts && sampledImageDepthSampleCounts == value.sampledImageDepthSampleCounts && sampledImageStencilSampleCounts == value.sampledImageStencilSampleCounts && storageImageSampleCounts == value.storageImageSampleCounts && maxSampleMaskWords == value.maxSampleMaskWords && timestampComputeAndGraphics == value.timestampComputeAndGraphics && timestampPeriod == value.timestampPeriod && maxClipDistances == value.maxClipDistances && maxCullDistances == value.maxCullDistances && maxCombinedClipAndCullDistances == value.maxCombinedClipAndCullDistances && discreteQueuePriorities == value.discreteQueuePriorities && pointSizeRange[0] == value.pointSizeRange[0] && pointSizeRange[1] == value.pointSizeRange[1]
-        && lineWidthRange[0] == value.lineWidthRange[0] && lineWidthRange[1] == value.lineWidthRange[1]
-        && pointSizeGranularity == value.pointSizeGranularity && lineWidthGranularity == value.lineWidthGranularity && strictLines == value.strictLines && standardSampleLocations == value.standardSampleLocations && optimalBufferCopyOffsetAlignment == value.optimalBufferCopyOffsetAlignment && optimalBufferCopyRowPitchAlignment == value.optimalBufferCopyRowPitchAlignment && nonCoherentAtomSize == value.nonCoherentAtomSize ;}
+        bool is_equal = true;
+        for(size_t i = 0; i < 3; i++)
+            is_equal &= maxComputeWorkGroupCount[i] == value.maxComputeWorkGroupCount[i];
+        for(size_t i = 0; i < 3; i++)
+            is_equal &= maxComputeWorkGroupSize[i] == value.maxComputeWorkGroupSize[i];
+        for(size_t i = 0; i < 2; i++)
+            is_equal &= maxViewportDimensions[i] == value.maxViewportDimensions[i];
+        for(size_t i = 0; i < 2; i++)
+            is_equal &= viewportBoundsRange[i] == value.viewportBoundsRange[i];
+        for(size_t i = 0; i < 2; i++)
+            is_equal &= pointSizeRange[i] == value.pointSizeRange[i];
+        for(size_t i = 0; i < 2; i++)
+            is_equal &= lineWidthRange[i] == value.lineWidthRange[i];
+        return is_equal && maxImageDimension1D == value.maxImageDimension1D && maxImageDimension2D == value.maxImageDimension2D && maxImageDimension3D == value.maxImageDimension3D 
+        && maxImageDimensionCube == value.maxImageDimensionCube && maxImageArrayLayers == value.maxImageArrayLayers && maxTexelBufferElements == value.maxTexelBufferElements 
+        && maxUniformBufferRange == value.maxUniformBufferRange && maxStorageBufferRange == value.maxStorageBufferRange && maxPushConstantsSize == value.maxPushConstantsSize 
+        && maxMemoryAllocationCount == value.maxMemoryAllocationCount && maxSamplerAllocationCount == value.maxSamplerAllocationCount && bufferImageGranularity == value.bufferImageGranularity 
+        && sparseAddressSpaceSize == value.sparseAddressSpaceSize && maxBoundDescriptorSets == value.maxBoundDescriptorSets && maxPerStageDescriptorSamplers == value.maxPerStageDescriptorSamplers 
+        && maxPerStageDescriptorUniformBuffers == value.maxPerStageDescriptorUniformBuffers && maxPerStageDescriptorStorageBuffers == value.maxPerStageDescriptorStorageBuffers 
+        && maxPerStageDescriptorSampledImages == value.maxPerStageDescriptorSampledImages && maxPerStageDescriptorStorageImages == value.maxPerStageDescriptorStorageImages 
+        && maxPerStageDescriptorInputAttachments == value.maxPerStageDescriptorInputAttachments && maxPerStageResources == value.maxPerStageResources 
+        && maxDescriptorSetSamplers == value.maxDescriptorSetSamplers && maxDescriptorSetUniformBuffers == value.maxDescriptorSetUniformBuffers 
+        && maxDescriptorSetUniformBuffersDynamic == value.maxDescriptorSetUniformBuffersDynamic && maxDescriptorSetStorageBuffers == value.maxDescriptorSetStorageBuffers 
+        && maxDescriptorSetStorageBuffersDynamic == value.maxDescriptorSetStorageBuffersDynamic && maxDescriptorSetSampledImages == value.maxDescriptorSetSampledImages 
+        && maxDescriptorSetStorageImages == value.maxDescriptorSetStorageImages && maxDescriptorSetInputAttachments == value.maxDescriptorSetInputAttachments 
+        && maxVertexInputAttributes == value.maxVertexInputAttributes && maxVertexInputBindings == value.maxVertexInputBindings && maxVertexInputAttributeOffset == value.maxVertexInputAttributeOffset 
+        && maxVertexInputBindingStride == value.maxVertexInputBindingStride && maxVertexOutputComponents == value.maxVertexOutputComponents 
+        && maxTessellationGenerationLevel == value.maxTessellationGenerationLevel && maxTessellationPatchSize == value.maxTessellationPatchSize 
+        && maxTessellationControlPerVertexInputComponents == value.maxTessellationControlPerVertexInputComponents && maxTessellationControlPerVertexOutputComponents == value.maxTessellationControlPerVertexOutputComponents 
+        && maxTessellationControlPerPatchOutputComponents == value.maxTessellationControlPerPatchOutputComponents && maxTessellationControlTotalOutputComponents == value.maxTessellationControlTotalOutputComponents 
+        && maxTessellationEvaluationInputComponents == value.maxTessellationEvaluationInputComponents && maxTessellationEvaluationOutputComponents == value.maxTessellationEvaluationOutputComponents 
+        && maxGeometryShaderInvocations == value.maxGeometryShaderInvocations && maxGeometryInputComponents == value.maxGeometryInputComponents 
+        && maxGeometryOutputComponents == value.maxGeometryOutputComponents && maxGeometryOutputVertices == value.maxGeometryOutputVertices 
+        && maxGeometryTotalOutputComponents == value.maxGeometryTotalOutputComponents && maxFragmentInputComponents == value.maxFragmentInputComponents 
+        && maxFragmentOutputAttachments == value.maxFragmentOutputAttachments && maxFragmentDualSrcAttachments == value.maxFragmentDualSrcAttachments 
+        && maxFragmentCombinedOutputResources == value.maxFragmentCombinedOutputResources && maxComputeSharedMemorySize == value.maxComputeSharedMemorySize 
+        && maxComputeWorkGroupInvocations == value.maxComputeWorkGroupInvocations && subPixelPrecisionBits == value.subPixelPrecisionBits 
+        && subTexelPrecisionBits == value.subTexelPrecisionBits && mipmapPrecisionBits == value.mipmapPrecisionBits && maxDrawIndexedIndexValue == value.maxDrawIndexedIndexValue 
+        && maxDrawIndirectCount == value.maxDrawIndirectCount && maxSamplerLodBias == value.maxSamplerLodBias && maxSamplerAnisotropy == value.maxSamplerAnisotropy 
+        && maxViewports == value.maxViewports && viewportSubPixelBits == value.viewportSubPixelBits && minMemoryMapAlignment == value.minMemoryMapAlignment 
+        && minTexelBufferOffsetAlignment == value.minTexelBufferOffsetAlignment && minUniformBufferOffsetAlignment == value.minUniformBufferOffsetAlignment 
+        && minStorageBufferOffsetAlignment == value.minStorageBufferOffsetAlignment && minTexelOffset == value.minTexelOffset && maxTexelOffset == value.maxTexelOffset 
+        && minTexelGatherOffset == value.minTexelGatherOffset && maxTexelGatherOffset == value.maxTexelGatherOffset && minInterpolationOffset == value.minInterpolationOffset 
+        && maxInterpolationOffset == value.maxInterpolationOffset && subPixelInterpolationOffsetBits == value.subPixelInterpolationOffsetBits 
+        && maxFramebufferWidth == value.maxFramebufferWidth && maxFramebufferHeight == value.maxFramebufferHeight && maxFramebufferLayers == value.maxFramebufferLayers 
+        && framebufferColorSampleCounts == value.framebufferColorSampleCounts && framebufferDepthSampleCounts == value.framebufferDepthSampleCounts 
+        && framebufferStencilSampleCounts == value.framebufferStencilSampleCounts && framebufferNoAttachmentsSampleCounts == value.framebufferNoAttachmentsSampleCounts 
+        && maxColorAttachments == value.maxColorAttachments && sampledImageColorSampleCounts == value.sampledImageColorSampleCounts && sampledImageIntegerSampleCounts == value.sampledImageIntegerSampleCounts 
+        && sampledImageDepthSampleCounts == value.sampledImageDepthSampleCounts && sampledImageStencilSampleCounts == value.sampledImageStencilSampleCounts 
+        && storageImageSampleCounts == value.storageImageSampleCounts && maxSampleMaskWords == value.maxSampleMaskWords && timestampComputeAndGraphics == value.timestampComputeAndGraphics 
+        && timestampPeriod == value.timestampPeriod && maxClipDistances == value.maxClipDistances && maxCullDistances == value.maxCullDistances 
+        && maxCombinedClipAndCullDistances == value.maxCombinedClipAndCullDistances && discreteQueuePriorities == value.discreteQueuePriorities 
+        && pointSizeGranularity == value.pointSizeGranularity && lineWidthGranularity == value.lineWidthGranularity && strictLines == value.strictLines 
+        && standardSampleLocations == value.standardSampleLocations && optimalBufferCopyOffsetAlignment == value.optimalBufferCopyOffsetAlignment 
+        && optimalBufferCopyRowPitchAlignment == value.optimalBufferCopyRowPitchAlignment && nonCoherentAtomSize == value.nonCoherentAtomSize 
+        ;}
     constexpr bool operator!=(PhysicalDeviceLimits const& value) const {return !(*this == value);}
     operator VkPhysicalDeviceLimits const &() const noexcept {
         return *reinterpret_cast<const VkPhysicalDeviceLimits*>(this);
@@ -3174,8 +3234,12 @@ struct PhysicalDeviceProperties {
     PhysicalDeviceLimits limits{};
     PhysicalDeviceSparseProperties sparseProperties{};
     constexpr bool operator==(PhysicalDeviceProperties const& value) const {
-        return apiVersion == value.apiVersion && driverVersion == value.driverVersion && vendorID == value.vendorID && deviceID == value.deviceID && deviceType == value.deviceType && deviceName[0] == value.deviceName[0] && deviceName[1] == value.deviceName[1] && deviceName[2] == value.deviceName[2] && deviceName[3] == value.deviceName[3] && deviceName[4] == value.deviceName[4] && deviceName[5] == value.deviceName[5] && deviceName[6] == value.deviceName[6] && deviceName[7] == value.deviceName[7] && deviceName[8] == value.deviceName[8] && deviceName[9] == value.deviceName[9] && deviceName[10] == value.deviceName[10] && deviceName[11] == value.deviceName[11] && deviceName[12] == value.deviceName[12] && deviceName[13] == value.deviceName[13] && deviceName[14] == value.deviceName[14] && deviceName[15] == value.deviceName[15] && deviceName[16] == value.deviceName[16] && deviceName[17] == value.deviceName[17] && deviceName[18] == value.deviceName[18] && deviceName[19] == value.deviceName[19] && deviceName[20] == value.deviceName[20] && deviceName[21] == value.deviceName[21] && deviceName[22] == value.deviceName[22] && deviceName[23] == value.deviceName[23] && deviceName[24] == value.deviceName[24] && deviceName[25] == value.deviceName[25] && deviceName[26] == value.deviceName[26] && deviceName[27] == value.deviceName[27] && deviceName[28] == value.deviceName[28] && deviceName[29] == value.deviceName[29] && deviceName[30] == value.deviceName[30] && deviceName[31] == value.deviceName[31] && deviceName[32] == value.deviceName[32] && deviceName[33] == value.deviceName[33] && deviceName[34] == value.deviceName[34] && deviceName[35] == value.deviceName[35] && deviceName[36] == value.deviceName[36] && deviceName[37] == value.deviceName[37] && deviceName[38] == value.deviceName[38] && deviceName[39] == value.deviceName[39] && deviceName[40] == value.deviceName[40] && deviceName[41] == value.deviceName[41] && deviceName[42] == value.deviceName[42] && deviceName[43] == value.deviceName[43] && deviceName[44] == value.deviceName[44] && deviceName[45] == value.deviceName[45] && deviceName[46] == value.deviceName[46] && deviceName[47] == value.deviceName[47] && deviceName[48] == value.deviceName[48] && deviceName[49] == value.deviceName[49] && deviceName[50] == value.deviceName[50] && deviceName[51] == value.deviceName[51] && deviceName[52] == value.deviceName[52] && deviceName[53] == value.deviceName[53] && deviceName[54] == value.deviceName[54] && deviceName[55] == value.deviceName[55] && deviceName[56] == value.deviceName[56] && deviceName[57] == value.deviceName[57] && deviceName[58] == value.deviceName[58] && deviceName[59] == value.deviceName[59] && deviceName[60] == value.deviceName[60] && deviceName[61] == value.deviceName[61] && deviceName[62] == value.deviceName[62] && deviceName[63] == value.deviceName[63] && deviceName[64] == value.deviceName[64] && deviceName[65] == value.deviceName[65] && deviceName[66] == value.deviceName[66] && deviceName[67] == value.deviceName[67] && deviceName[68] == value.deviceName[68] && deviceName[69] == value.deviceName[69] && deviceName[70] == value.deviceName[70] && deviceName[71] == value.deviceName[71] && deviceName[72] == value.deviceName[72] && deviceName[73] == value.deviceName[73] && deviceName[74] == value.deviceName[74] && deviceName[75] == value.deviceName[75] && deviceName[76] == value.deviceName[76] && deviceName[77] == value.deviceName[77] && deviceName[78] == value.deviceName[78] && deviceName[79] == value.deviceName[79] && deviceName[80] == value.deviceName[80] && deviceName[81] == value.deviceName[81] && deviceName[82] == value.deviceName[82] && deviceName[83] == value.deviceName[83] && deviceName[84] == value.deviceName[84] && deviceName[85] == value.deviceName[85] && deviceName[86] == value.deviceName[86] && deviceName[87] == value.deviceName[87] && deviceName[88] == value.deviceName[88] && deviceName[89] == value.deviceName[89] && deviceName[90] == value.deviceName[90] && deviceName[91] == value.deviceName[91] && deviceName[92] == value.deviceName[92] && deviceName[93] == value.deviceName[93] && deviceName[94] == value.deviceName[94] && deviceName[95] == value.deviceName[95] && deviceName[96] == value.deviceName[96] && deviceName[97] == value.deviceName[97] && deviceName[98] == value.deviceName[98] && deviceName[99] == value.deviceName[99] && deviceName[100] == value.deviceName[100] && deviceName[101] == value.deviceName[101] && deviceName[102] == value.deviceName[102] && deviceName[103] == value.deviceName[103] && deviceName[104] == value.deviceName[104] && deviceName[105] == value.deviceName[105] && deviceName[106] == value.deviceName[106] && deviceName[107] == value.deviceName[107] && deviceName[108] == value.deviceName[108] && deviceName[109] == value.deviceName[109] && deviceName[110] == value.deviceName[110] && deviceName[111] == value.deviceName[111] && deviceName[112] == value.deviceName[112] && deviceName[113] == value.deviceName[113] && deviceName[114] == value.deviceName[114] && deviceName[115] == value.deviceName[115] && deviceName[116] == value.deviceName[116] && deviceName[117] == value.deviceName[117] && deviceName[118] == value.deviceName[118] && deviceName[119] == value.deviceName[119] && deviceName[120] == value.deviceName[120] && deviceName[121] == value.deviceName[121] && deviceName[122] == value.deviceName[122] && deviceName[123] == value.deviceName[123] && deviceName[124] == value.deviceName[124] && deviceName[125] == value.deviceName[125] && deviceName[126] == value.deviceName[126] && deviceName[127] == value.deviceName[127] && deviceName[128] == value.deviceName[128] && deviceName[129] == value.deviceName[129] && deviceName[130] == value.deviceName[130] && deviceName[131] == value.deviceName[131] && deviceName[132] == value.deviceName[132] && deviceName[133] == value.deviceName[133] && deviceName[134] == value.deviceName[134] && deviceName[135] == value.deviceName[135] && deviceName[136] == value.deviceName[136] && deviceName[137] == value.deviceName[137] && deviceName[138] == value.deviceName[138] && deviceName[139] == value.deviceName[139] && deviceName[140] == value.deviceName[140] && deviceName[141] == value.deviceName[141] && deviceName[142] == value.deviceName[142] && deviceName[143] == value.deviceName[143] && deviceName[144] == value.deviceName[144] && deviceName[145] == value.deviceName[145] && deviceName[146] == value.deviceName[146] && deviceName[147] == value.deviceName[147] && deviceName[148] == value.deviceName[148] && deviceName[149] == value.deviceName[149] && deviceName[150] == value.deviceName[150] && deviceName[151] == value.deviceName[151] && deviceName[152] == value.deviceName[152] && deviceName[153] == value.deviceName[153] && deviceName[154] == value.deviceName[154] && deviceName[155] == value.deviceName[155] && deviceName[156] == value.deviceName[156] && deviceName[157] == value.deviceName[157] && deviceName[158] == value.deviceName[158] && deviceName[159] == value.deviceName[159] && deviceName[160] == value.deviceName[160] && deviceName[161] == value.deviceName[161] && deviceName[162] == value.deviceName[162] && deviceName[163] == value.deviceName[163] && deviceName[164] == value.deviceName[164] && deviceName[165] == value.deviceName[165] && deviceName[166] == value.deviceName[166] && deviceName[167] == value.deviceName[167] && deviceName[168] == value.deviceName[168] && deviceName[169] == value.deviceName[169] && deviceName[170] == value.deviceName[170] && deviceName[171] == value.deviceName[171] && deviceName[172] == value.deviceName[172] && deviceName[173] == value.deviceName[173] && deviceName[174] == value.deviceName[174] && deviceName[175] == value.deviceName[175] && deviceName[176] == value.deviceName[176] && deviceName[177] == value.deviceName[177] && deviceName[178] == value.deviceName[178] && deviceName[179] == value.deviceName[179] && deviceName[180] == value.deviceName[180] && deviceName[181] == value.deviceName[181] && deviceName[182] == value.deviceName[182] && deviceName[183] == value.deviceName[183] && deviceName[184] == value.deviceName[184] && deviceName[185] == value.deviceName[185] && deviceName[186] == value.deviceName[186] && deviceName[187] == value.deviceName[187] && deviceName[188] == value.deviceName[188] && deviceName[189] == value.deviceName[189] && deviceName[190] == value.deviceName[190] && deviceName[191] == value.deviceName[191] && deviceName[192] == value.deviceName[192] && deviceName[193] == value.deviceName[193] && deviceName[194] == value.deviceName[194] && deviceName[195] == value.deviceName[195] && deviceName[196] == value.deviceName[196] && deviceName[197] == value.deviceName[197] && deviceName[198] == value.deviceName[198] && deviceName[199] == value.deviceName[199] && deviceName[200] == value.deviceName[200] && deviceName[201] == value.deviceName[201] && deviceName[202] == value.deviceName[202] && deviceName[203] == value.deviceName[203] && deviceName[204] == value.deviceName[204] && deviceName[205] == value.deviceName[205] && deviceName[206] == value.deviceName[206] && deviceName[207] == value.deviceName[207] && deviceName[208] == value.deviceName[208] && deviceName[209] == value.deviceName[209] && deviceName[210] == value.deviceName[210] && deviceName[211] == value.deviceName[211] && deviceName[212] == value.deviceName[212] && deviceName[213] == value.deviceName[213] && deviceName[214] == value.deviceName[214] && deviceName[215] == value.deviceName[215] && deviceName[216] == value.deviceName[216] && deviceName[217] == value.deviceName[217] && deviceName[218] == value.deviceName[218] && deviceName[219] == value.deviceName[219] && deviceName[220] == value.deviceName[220] && deviceName[221] == value.deviceName[221] && deviceName[222] == value.deviceName[222] && deviceName[223] == value.deviceName[223] && deviceName[224] == value.deviceName[224] && deviceName[225] == value.deviceName[225] && deviceName[226] == value.deviceName[226] && deviceName[227] == value.deviceName[227] && deviceName[228] == value.deviceName[228] && deviceName[229] == value.deviceName[229] && deviceName[230] == value.deviceName[230] && deviceName[231] == value.deviceName[231] && deviceName[232] == value.deviceName[232] && deviceName[233] == value.deviceName[233] && deviceName[234] == value.deviceName[234] && deviceName[235] == value.deviceName[235] && deviceName[236] == value.deviceName[236] && deviceName[237] == value.deviceName[237] && deviceName[238] == value.deviceName[238] && deviceName[239] == value.deviceName[239] && deviceName[240] == value.deviceName[240] && deviceName[241] == value.deviceName[241] && deviceName[242] == value.deviceName[242] && deviceName[243] == value.deviceName[243] && deviceName[244] == value.deviceName[244] && deviceName[245] == value.deviceName[245] && deviceName[246] == value.deviceName[246] && deviceName[247] == value.deviceName[247] && deviceName[248] == value.deviceName[248] && deviceName[249] == value.deviceName[249] && deviceName[250] == value.deviceName[250] && deviceName[251] == value.deviceName[251] && deviceName[252] == value.deviceName[252] && deviceName[253] == value.deviceName[253] && deviceName[254] == value.deviceName[254] && deviceName[255] == value.deviceName[255]
-        && pipelineCacheUUID[0] == value.pipelineCacheUUID[0] && pipelineCacheUUID[1] == value.pipelineCacheUUID[1] && pipelineCacheUUID[2] == value.pipelineCacheUUID[2] && pipelineCacheUUID[3] == value.pipelineCacheUUID[3] && pipelineCacheUUID[4] == value.pipelineCacheUUID[4] && pipelineCacheUUID[5] == value.pipelineCacheUUID[5] && pipelineCacheUUID[6] == value.pipelineCacheUUID[6] && pipelineCacheUUID[7] == value.pipelineCacheUUID[7] && pipelineCacheUUID[8] == value.pipelineCacheUUID[8] && pipelineCacheUUID[9] == value.pipelineCacheUUID[9] && pipelineCacheUUID[10] == value.pipelineCacheUUID[10] && pipelineCacheUUID[11] == value.pipelineCacheUUID[11] && pipelineCacheUUID[12] == value.pipelineCacheUUID[12] && pipelineCacheUUID[13] == value.pipelineCacheUUID[13] && pipelineCacheUUID[14] == value.pipelineCacheUUID[14] && pipelineCacheUUID[15] == value.pipelineCacheUUID[15]
+        bool is_equal = true;
+        for(size_t i = 0; i < 256; i++)
+            is_equal &= deviceName[i] == value.deviceName[i];
+        for(size_t i = 0; i < 16; i++)
+            is_equal &= pipelineCacheUUID[i] == value.pipelineCacheUUID[i];
+        return is_equal && apiVersion == value.apiVersion && driverVersion == value.driverVersion && vendorID == value.vendorID && deviceID == value.deviceID && deviceType == value.deviceType 
         && limits == value.limits && sparseProperties == value.sparseProperties ;}
     constexpr bool operator!=(PhysicalDeviceProperties const& value) const {return !(*this == value);}
     operator VkPhysicalDeviceProperties const &() const noexcept {
@@ -3189,8 +3253,10 @@ struct ExtensionProperties {
     char extensionName[MAX_EXTENSION_NAME_SIZE];
     uint32_t specVersion{0};
     constexpr bool operator==(ExtensionProperties const& value) const {
-        return extensionName[0] == value.extensionName[0] && extensionName[1] == value.extensionName[1] && extensionName[2] == value.extensionName[2] && extensionName[3] == value.extensionName[3] && extensionName[4] == value.extensionName[4] && extensionName[5] == value.extensionName[5] && extensionName[6] == value.extensionName[6] && extensionName[7] == value.extensionName[7] && extensionName[8] == value.extensionName[8] && extensionName[9] == value.extensionName[9] && extensionName[10] == value.extensionName[10] && extensionName[11] == value.extensionName[11] && extensionName[12] == value.extensionName[12] && extensionName[13] == value.extensionName[13] && extensionName[14] == value.extensionName[14] && extensionName[15] == value.extensionName[15] && extensionName[16] == value.extensionName[16] && extensionName[17] == value.extensionName[17] && extensionName[18] == value.extensionName[18] && extensionName[19] == value.extensionName[19] && extensionName[20] == value.extensionName[20] && extensionName[21] == value.extensionName[21] && extensionName[22] == value.extensionName[22] && extensionName[23] == value.extensionName[23] && extensionName[24] == value.extensionName[24] && extensionName[25] == value.extensionName[25] && extensionName[26] == value.extensionName[26] && extensionName[27] == value.extensionName[27] && extensionName[28] == value.extensionName[28] && extensionName[29] == value.extensionName[29] && extensionName[30] == value.extensionName[30] && extensionName[31] == value.extensionName[31] && extensionName[32] == value.extensionName[32] && extensionName[33] == value.extensionName[33] && extensionName[34] == value.extensionName[34] && extensionName[35] == value.extensionName[35] && extensionName[36] == value.extensionName[36] && extensionName[37] == value.extensionName[37] && extensionName[38] == value.extensionName[38] && extensionName[39] == value.extensionName[39] && extensionName[40] == value.extensionName[40] && extensionName[41] == value.extensionName[41] && extensionName[42] == value.extensionName[42] && extensionName[43] == value.extensionName[43] && extensionName[44] == value.extensionName[44] && extensionName[45] == value.extensionName[45] && extensionName[46] == value.extensionName[46] && extensionName[47] == value.extensionName[47] && extensionName[48] == value.extensionName[48] && extensionName[49] == value.extensionName[49] && extensionName[50] == value.extensionName[50] && extensionName[51] == value.extensionName[51] && extensionName[52] == value.extensionName[52] && extensionName[53] == value.extensionName[53] && extensionName[54] == value.extensionName[54] && extensionName[55] == value.extensionName[55] && extensionName[56] == value.extensionName[56] && extensionName[57] == value.extensionName[57] && extensionName[58] == value.extensionName[58] && extensionName[59] == value.extensionName[59] && extensionName[60] == value.extensionName[60] && extensionName[61] == value.extensionName[61] && extensionName[62] == value.extensionName[62] && extensionName[63] == value.extensionName[63] && extensionName[64] == value.extensionName[64] && extensionName[65] == value.extensionName[65] && extensionName[66] == value.extensionName[66] && extensionName[67] == value.extensionName[67] && extensionName[68] == value.extensionName[68] && extensionName[69] == value.extensionName[69] && extensionName[70] == value.extensionName[70] && extensionName[71] == value.extensionName[71] && extensionName[72] == value.extensionName[72] && extensionName[73] == value.extensionName[73] && extensionName[74] == value.extensionName[74] && extensionName[75] == value.extensionName[75] && extensionName[76] == value.extensionName[76] && extensionName[77] == value.extensionName[77] && extensionName[78] == value.extensionName[78] && extensionName[79] == value.extensionName[79] && extensionName[80] == value.extensionName[80] && extensionName[81] == value.extensionName[81] && extensionName[82] == value.extensionName[82] && extensionName[83] == value.extensionName[83] && extensionName[84] == value.extensionName[84] && extensionName[85] == value.extensionName[85] && extensionName[86] == value.extensionName[86] && extensionName[87] == value.extensionName[87] && extensionName[88] == value.extensionName[88] && extensionName[89] == value.extensionName[89] && extensionName[90] == value.extensionName[90] && extensionName[91] == value.extensionName[91] && extensionName[92] == value.extensionName[92] && extensionName[93] == value.extensionName[93] && extensionName[94] == value.extensionName[94] && extensionName[95] == value.extensionName[95] && extensionName[96] == value.extensionName[96] && extensionName[97] == value.extensionName[97] && extensionName[98] == value.extensionName[98] && extensionName[99] == value.extensionName[99] && extensionName[100] == value.extensionName[100] && extensionName[101] == value.extensionName[101] && extensionName[102] == value.extensionName[102] && extensionName[103] == value.extensionName[103] && extensionName[104] == value.extensionName[104] && extensionName[105] == value.extensionName[105] && extensionName[106] == value.extensionName[106] && extensionName[107] == value.extensionName[107] && extensionName[108] == value.extensionName[108] && extensionName[109] == value.extensionName[109] && extensionName[110] == value.extensionName[110] && extensionName[111] == value.extensionName[111] && extensionName[112] == value.extensionName[112] && extensionName[113] == value.extensionName[113] && extensionName[114] == value.extensionName[114] && extensionName[115] == value.extensionName[115] && extensionName[116] == value.extensionName[116] && extensionName[117] == value.extensionName[117] && extensionName[118] == value.extensionName[118] && extensionName[119] == value.extensionName[119] && extensionName[120] == value.extensionName[120] && extensionName[121] == value.extensionName[121] && extensionName[122] == value.extensionName[122] && extensionName[123] == value.extensionName[123] && extensionName[124] == value.extensionName[124] && extensionName[125] == value.extensionName[125] && extensionName[126] == value.extensionName[126] && extensionName[127] == value.extensionName[127] && extensionName[128] == value.extensionName[128] && extensionName[129] == value.extensionName[129] && extensionName[130] == value.extensionName[130] && extensionName[131] == value.extensionName[131] && extensionName[132] == value.extensionName[132] && extensionName[133] == value.extensionName[133] && extensionName[134] == value.extensionName[134] && extensionName[135] == value.extensionName[135] && extensionName[136] == value.extensionName[136] && extensionName[137] == value.extensionName[137] && extensionName[138] == value.extensionName[138] && extensionName[139] == value.extensionName[139] && extensionName[140] == value.extensionName[140] && extensionName[141] == value.extensionName[141] && extensionName[142] == value.extensionName[142] && extensionName[143] == value.extensionName[143] && extensionName[144] == value.extensionName[144] && extensionName[145] == value.extensionName[145] && extensionName[146] == value.extensionName[146] && extensionName[147] == value.extensionName[147] && extensionName[148] == value.extensionName[148] && extensionName[149] == value.extensionName[149] && extensionName[150] == value.extensionName[150] && extensionName[151] == value.extensionName[151] && extensionName[152] == value.extensionName[152] && extensionName[153] == value.extensionName[153] && extensionName[154] == value.extensionName[154] && extensionName[155] == value.extensionName[155] && extensionName[156] == value.extensionName[156] && extensionName[157] == value.extensionName[157] && extensionName[158] == value.extensionName[158] && extensionName[159] == value.extensionName[159] && extensionName[160] == value.extensionName[160] && extensionName[161] == value.extensionName[161] && extensionName[162] == value.extensionName[162] && extensionName[163] == value.extensionName[163] && extensionName[164] == value.extensionName[164] && extensionName[165] == value.extensionName[165] && extensionName[166] == value.extensionName[166] && extensionName[167] == value.extensionName[167] && extensionName[168] == value.extensionName[168] && extensionName[169] == value.extensionName[169] && extensionName[170] == value.extensionName[170] && extensionName[171] == value.extensionName[171] && extensionName[172] == value.extensionName[172] && extensionName[173] == value.extensionName[173] && extensionName[174] == value.extensionName[174] && extensionName[175] == value.extensionName[175] && extensionName[176] == value.extensionName[176] && extensionName[177] == value.extensionName[177] && extensionName[178] == value.extensionName[178] && extensionName[179] == value.extensionName[179] && extensionName[180] == value.extensionName[180] && extensionName[181] == value.extensionName[181] && extensionName[182] == value.extensionName[182] && extensionName[183] == value.extensionName[183] && extensionName[184] == value.extensionName[184] && extensionName[185] == value.extensionName[185] && extensionName[186] == value.extensionName[186] && extensionName[187] == value.extensionName[187] && extensionName[188] == value.extensionName[188] && extensionName[189] == value.extensionName[189] && extensionName[190] == value.extensionName[190] && extensionName[191] == value.extensionName[191] && extensionName[192] == value.extensionName[192] && extensionName[193] == value.extensionName[193] && extensionName[194] == value.extensionName[194] && extensionName[195] == value.extensionName[195] && extensionName[196] == value.extensionName[196] && extensionName[197] == value.extensionName[197] && extensionName[198] == value.extensionName[198] && extensionName[199] == value.extensionName[199] && extensionName[200] == value.extensionName[200] && extensionName[201] == value.extensionName[201] && extensionName[202] == value.extensionName[202] && extensionName[203] == value.extensionName[203] && extensionName[204] == value.extensionName[204] && extensionName[205] == value.extensionName[205] && extensionName[206] == value.extensionName[206] && extensionName[207] == value.extensionName[207] && extensionName[208] == value.extensionName[208] && extensionName[209] == value.extensionName[209] && extensionName[210] == value.extensionName[210] && extensionName[211] == value.extensionName[211] && extensionName[212] == value.extensionName[212] && extensionName[213] == value.extensionName[213] && extensionName[214] == value.extensionName[214] && extensionName[215] == value.extensionName[215] && extensionName[216] == value.extensionName[216] && extensionName[217] == value.extensionName[217] && extensionName[218] == value.extensionName[218] && extensionName[219] == value.extensionName[219] && extensionName[220] == value.extensionName[220] && extensionName[221] == value.extensionName[221] && extensionName[222] == value.extensionName[222] && extensionName[223] == value.extensionName[223] && extensionName[224] == value.extensionName[224] && extensionName[225] == value.extensionName[225] && extensionName[226] == value.extensionName[226] && extensionName[227] == value.extensionName[227] && extensionName[228] == value.extensionName[228] && extensionName[229] == value.extensionName[229] && extensionName[230] == value.extensionName[230] && extensionName[231] == value.extensionName[231] && extensionName[232] == value.extensionName[232] && extensionName[233] == value.extensionName[233] && extensionName[234] == value.extensionName[234] && extensionName[235] == value.extensionName[235] && extensionName[236] == value.extensionName[236] && extensionName[237] == value.extensionName[237] && extensionName[238] == value.extensionName[238] && extensionName[239] == value.extensionName[239] && extensionName[240] == value.extensionName[240] && extensionName[241] == value.extensionName[241] && extensionName[242] == value.extensionName[242] && extensionName[243] == value.extensionName[243] && extensionName[244] == value.extensionName[244] && extensionName[245] == value.extensionName[245] && extensionName[246] == value.extensionName[246] && extensionName[247] == value.extensionName[247] && extensionName[248] == value.extensionName[248] && extensionName[249] == value.extensionName[249] && extensionName[250] == value.extensionName[250] && extensionName[251] == value.extensionName[251] && extensionName[252] == value.extensionName[252] && extensionName[253] == value.extensionName[253] && extensionName[254] == value.extensionName[254] && extensionName[255] == value.extensionName[255]
-        && specVersion == value.specVersion ;}
+        bool is_equal = true;
+        for(size_t i = 0; i < 256; i++)
+            is_equal &= extensionName[i] == value.extensionName[i];
+        return is_equal && specVersion == value.specVersion ;}
     constexpr bool operator!=(ExtensionProperties const& value) const {return !(*this == value);}
     operator VkExtensionProperties const &() const noexcept {
         return *reinterpret_cast<const VkExtensionProperties*>(this);
@@ -3205,9 +3271,12 @@ struct LayerProperties {
     uint32_t implementationVersion{0};
     char description[MAX_DESCRIPTION_SIZE];
     constexpr bool operator==(LayerProperties const& value) const {
-        return layerName[0] == value.layerName[0] && layerName[1] == value.layerName[1] && layerName[2] == value.layerName[2] && layerName[3] == value.layerName[3] && layerName[4] == value.layerName[4] && layerName[5] == value.layerName[5] && layerName[6] == value.layerName[6] && layerName[7] == value.layerName[7] && layerName[8] == value.layerName[8] && layerName[9] == value.layerName[9] && layerName[10] == value.layerName[10] && layerName[11] == value.layerName[11] && layerName[12] == value.layerName[12] && layerName[13] == value.layerName[13] && layerName[14] == value.layerName[14] && layerName[15] == value.layerName[15] && layerName[16] == value.layerName[16] && layerName[17] == value.layerName[17] && layerName[18] == value.layerName[18] && layerName[19] == value.layerName[19] && layerName[20] == value.layerName[20] && layerName[21] == value.layerName[21] && layerName[22] == value.layerName[22] && layerName[23] == value.layerName[23] && layerName[24] == value.layerName[24] && layerName[25] == value.layerName[25] && layerName[26] == value.layerName[26] && layerName[27] == value.layerName[27] && layerName[28] == value.layerName[28] && layerName[29] == value.layerName[29] && layerName[30] == value.layerName[30] && layerName[31] == value.layerName[31] && layerName[32] == value.layerName[32] && layerName[33] == value.layerName[33] && layerName[34] == value.layerName[34] && layerName[35] == value.layerName[35] && layerName[36] == value.layerName[36] && layerName[37] == value.layerName[37] && layerName[38] == value.layerName[38] && layerName[39] == value.layerName[39] && layerName[40] == value.layerName[40] && layerName[41] == value.layerName[41] && layerName[42] == value.layerName[42] && layerName[43] == value.layerName[43] && layerName[44] == value.layerName[44] && layerName[45] == value.layerName[45] && layerName[46] == value.layerName[46] && layerName[47] == value.layerName[47] && layerName[48] == value.layerName[48] && layerName[49] == value.layerName[49] && layerName[50] == value.layerName[50] && layerName[51] == value.layerName[51] && layerName[52] == value.layerName[52] && layerName[53] == value.layerName[53] && layerName[54] == value.layerName[54] && layerName[55] == value.layerName[55] && layerName[56] == value.layerName[56] && layerName[57] == value.layerName[57] && layerName[58] == value.layerName[58] && layerName[59] == value.layerName[59] && layerName[60] == value.layerName[60] && layerName[61] == value.layerName[61] && layerName[62] == value.layerName[62] && layerName[63] == value.layerName[63] && layerName[64] == value.layerName[64] && layerName[65] == value.layerName[65] && layerName[66] == value.layerName[66] && layerName[67] == value.layerName[67] && layerName[68] == value.layerName[68] && layerName[69] == value.layerName[69] && layerName[70] == value.layerName[70] && layerName[71] == value.layerName[71] && layerName[72] == value.layerName[72] && layerName[73] == value.layerName[73] && layerName[74] == value.layerName[74] && layerName[75] == value.layerName[75] && layerName[76] == value.layerName[76] && layerName[77] == value.layerName[77] && layerName[78] == value.layerName[78] && layerName[79] == value.layerName[79] && layerName[80] == value.layerName[80] && layerName[81] == value.layerName[81] && layerName[82] == value.layerName[82] && layerName[83] == value.layerName[83] && layerName[84] == value.layerName[84] && layerName[85] == value.layerName[85] && layerName[86] == value.layerName[86] && layerName[87] == value.layerName[87] && layerName[88] == value.layerName[88] && layerName[89] == value.layerName[89] && layerName[90] == value.layerName[90] && layerName[91] == value.layerName[91] && layerName[92] == value.layerName[92] && layerName[93] == value.layerName[93] && layerName[94] == value.layerName[94] && layerName[95] == value.layerName[95] && layerName[96] == value.layerName[96] && layerName[97] == value.layerName[97] && layerName[98] == value.layerName[98] && layerName[99] == value.layerName[99] && layerName[100] == value.layerName[100] && layerName[101] == value.layerName[101] && layerName[102] == value.layerName[102] && layerName[103] == value.layerName[103] && layerName[104] == value.layerName[104] && layerName[105] == value.layerName[105] && layerName[106] == value.layerName[106] && layerName[107] == value.layerName[107] && layerName[108] == value.layerName[108] && layerName[109] == value.layerName[109] && layerName[110] == value.layerName[110] && layerName[111] == value.layerName[111] && layerName[112] == value.layerName[112] && layerName[113] == value.layerName[113] && layerName[114] == value.layerName[114] && layerName[115] == value.layerName[115] && layerName[116] == value.layerName[116] && layerName[117] == value.layerName[117] && layerName[118] == value.layerName[118] && layerName[119] == value.layerName[119] && layerName[120] == value.layerName[120] && layerName[121] == value.layerName[121] && layerName[122] == value.layerName[122] && layerName[123] == value.layerName[123] && layerName[124] == value.layerName[124] && layerName[125] == value.layerName[125] && layerName[126] == value.layerName[126] && layerName[127] == value.layerName[127] && layerName[128] == value.layerName[128] && layerName[129] == value.layerName[129] && layerName[130] == value.layerName[130] && layerName[131] == value.layerName[131] && layerName[132] == value.layerName[132] && layerName[133] == value.layerName[133] && layerName[134] == value.layerName[134] && layerName[135] == value.layerName[135] && layerName[136] == value.layerName[136] && layerName[137] == value.layerName[137] && layerName[138] == value.layerName[138] && layerName[139] == value.layerName[139] && layerName[140] == value.layerName[140] && layerName[141] == value.layerName[141] && layerName[142] == value.layerName[142] && layerName[143] == value.layerName[143] && layerName[144] == value.layerName[144] && layerName[145] == value.layerName[145] && layerName[146] == value.layerName[146] && layerName[147] == value.layerName[147] && layerName[148] == value.layerName[148] && layerName[149] == value.layerName[149] && layerName[150] == value.layerName[150] && layerName[151] == value.layerName[151] && layerName[152] == value.layerName[152] && layerName[153] == value.layerName[153] && layerName[154] == value.layerName[154] && layerName[155] == value.layerName[155] && layerName[156] == value.layerName[156] && layerName[157] == value.layerName[157] && layerName[158] == value.layerName[158] && layerName[159] == value.layerName[159] && layerName[160] == value.layerName[160] && layerName[161] == value.layerName[161] && layerName[162] == value.layerName[162] && layerName[163] == value.layerName[163] && layerName[164] == value.layerName[164] && layerName[165] == value.layerName[165] && layerName[166] == value.layerName[166] && layerName[167] == value.layerName[167] && layerName[168] == value.layerName[168] && layerName[169] == value.layerName[169] && layerName[170] == value.layerName[170] && layerName[171] == value.layerName[171] && layerName[172] == value.layerName[172] && layerName[173] == value.layerName[173] && layerName[174] == value.layerName[174] && layerName[175] == value.layerName[175] && layerName[176] == value.layerName[176] && layerName[177] == value.layerName[177] && layerName[178] == value.layerName[178] && layerName[179] == value.layerName[179] && layerName[180] == value.layerName[180] && layerName[181] == value.layerName[181] && layerName[182] == value.layerName[182] && layerName[183] == value.layerName[183] && layerName[184] == value.layerName[184] && layerName[185] == value.layerName[185] && layerName[186] == value.layerName[186] && layerName[187] == value.layerName[187] && layerName[188] == value.layerName[188] && layerName[189] == value.layerName[189] && layerName[190] == value.layerName[190] && layerName[191] == value.layerName[191] && layerName[192] == value.layerName[192] && layerName[193] == value.layerName[193] && layerName[194] == value.layerName[194] && layerName[195] == value.layerName[195] && layerName[196] == value.layerName[196] && layerName[197] == value.layerName[197] && layerName[198] == value.layerName[198] && layerName[199] == value.layerName[199] && layerName[200] == value.layerName[200] && layerName[201] == value.layerName[201] && layerName[202] == value.layerName[202] && layerName[203] == value.layerName[203] && layerName[204] == value.layerName[204] && layerName[205] == value.layerName[205] && layerName[206] == value.layerName[206] && layerName[207] == value.layerName[207] && layerName[208] == value.layerName[208] && layerName[209] == value.layerName[209] && layerName[210] == value.layerName[210] && layerName[211] == value.layerName[211] && layerName[212] == value.layerName[212] && layerName[213] == value.layerName[213] && layerName[214] == value.layerName[214] && layerName[215] == value.layerName[215] && layerName[216] == value.layerName[216] && layerName[217] == value.layerName[217] && layerName[218] == value.layerName[218] && layerName[219] == value.layerName[219] && layerName[220] == value.layerName[220] && layerName[221] == value.layerName[221] && layerName[222] == value.layerName[222] && layerName[223] == value.layerName[223] && layerName[224] == value.layerName[224] && layerName[225] == value.layerName[225] && layerName[226] == value.layerName[226] && layerName[227] == value.layerName[227] && layerName[228] == value.layerName[228] && layerName[229] == value.layerName[229] && layerName[230] == value.layerName[230] && layerName[231] == value.layerName[231] && layerName[232] == value.layerName[232] && layerName[233] == value.layerName[233] && layerName[234] == value.layerName[234] && layerName[235] == value.layerName[235] && layerName[236] == value.layerName[236] && layerName[237] == value.layerName[237] && layerName[238] == value.layerName[238] && layerName[239] == value.layerName[239] && layerName[240] == value.layerName[240] && layerName[241] == value.layerName[241] && layerName[242] == value.layerName[242] && layerName[243] == value.layerName[243] && layerName[244] == value.layerName[244] && layerName[245] == value.layerName[245] && layerName[246] == value.layerName[246] && layerName[247] == value.layerName[247] && layerName[248] == value.layerName[248] && layerName[249] == value.layerName[249] && layerName[250] == value.layerName[250] && layerName[251] == value.layerName[251] && layerName[252] == value.layerName[252] && layerName[253] == value.layerName[253] && layerName[254] == value.layerName[254] && layerName[255] == value.layerName[255]
-        && specVersion == value.specVersion && implementationVersion == value.implementationVersion && description[0] == value.description[0] && description[1] == value.description[1] && description[2] == value.description[2] && description[3] == value.description[3] && description[4] == value.description[4] && description[5] == value.description[5] && description[6] == value.description[6] && description[7] == value.description[7] && description[8] == value.description[8] && description[9] == value.description[9] && description[10] == value.description[10] && description[11] == value.description[11] && description[12] == value.description[12] && description[13] == value.description[13] && description[14] == value.description[14] && description[15] == value.description[15] && description[16] == value.description[16] && description[17] == value.description[17] && description[18] == value.description[18] && description[19] == value.description[19] && description[20] == value.description[20] && description[21] == value.description[21] && description[22] == value.description[22] && description[23] == value.description[23] && description[24] == value.description[24] && description[25] == value.description[25] && description[26] == value.description[26] && description[27] == value.description[27] && description[28] == value.description[28] && description[29] == value.description[29] && description[30] == value.description[30] && description[31] == value.description[31] && description[32] == value.description[32] && description[33] == value.description[33] && description[34] == value.description[34] && description[35] == value.description[35] && description[36] == value.description[36] && description[37] == value.description[37] && description[38] == value.description[38] && description[39] == value.description[39] && description[40] == value.description[40] && description[41] == value.description[41] && description[42] == value.description[42] && description[43] == value.description[43] && description[44] == value.description[44] && description[45] == value.description[45] && description[46] == value.description[46] && description[47] == value.description[47] && description[48] == value.description[48] && description[49] == value.description[49] && description[50] == value.description[50] && description[51] == value.description[51] && description[52] == value.description[52] && description[53] == value.description[53] && description[54] == value.description[54] && description[55] == value.description[55] && description[56] == value.description[56] && description[57] == value.description[57] && description[58] == value.description[58] && description[59] == value.description[59] && description[60] == value.description[60] && description[61] == value.description[61] && description[62] == value.description[62] && description[63] == value.description[63] && description[64] == value.description[64] && description[65] == value.description[65] && description[66] == value.description[66] && description[67] == value.description[67] && description[68] == value.description[68] && description[69] == value.description[69] && description[70] == value.description[70] && description[71] == value.description[71] && description[72] == value.description[72] && description[73] == value.description[73] && description[74] == value.description[74] && description[75] == value.description[75] && description[76] == value.description[76] && description[77] == value.description[77] && description[78] == value.description[78] && description[79] == value.description[79] && description[80] == value.description[80] && description[81] == value.description[81] && description[82] == value.description[82] && description[83] == value.description[83] && description[84] == value.description[84] && description[85] == value.description[85] && description[86] == value.description[86] && description[87] == value.description[87] && description[88] == value.description[88] && description[89] == value.description[89] && description[90] == value.description[90] && description[91] == value.description[91] && description[92] == value.description[92] && description[93] == value.description[93] && description[94] == value.description[94] && description[95] == value.description[95] && description[96] == value.description[96] && description[97] == value.description[97] && description[98] == value.description[98] && description[99] == value.description[99] && description[100] == value.description[100] && description[101] == value.description[101] && description[102] == value.description[102] && description[103] == value.description[103] && description[104] == value.description[104] && description[105] == value.description[105] && description[106] == value.description[106] && description[107] == value.description[107] && description[108] == value.description[108] && description[109] == value.description[109] && description[110] == value.description[110] && description[111] == value.description[111] && description[112] == value.description[112] && description[113] == value.description[113] && description[114] == value.description[114] && description[115] == value.description[115] && description[116] == value.description[116] && description[117] == value.description[117] && description[118] == value.description[118] && description[119] == value.description[119] && description[120] == value.description[120] && description[121] == value.description[121] && description[122] == value.description[122] && description[123] == value.description[123] && description[124] == value.description[124] && description[125] == value.description[125] && description[126] == value.description[126] && description[127] == value.description[127] && description[128] == value.description[128] && description[129] == value.description[129] && description[130] == value.description[130] && description[131] == value.description[131] && description[132] == value.description[132] && description[133] == value.description[133] && description[134] == value.description[134] && description[135] == value.description[135] && description[136] == value.description[136] && description[137] == value.description[137] && description[138] == value.description[138] && description[139] == value.description[139] && description[140] == value.description[140] && description[141] == value.description[141] && description[142] == value.description[142] && description[143] == value.description[143] && description[144] == value.description[144] && description[145] == value.description[145] && description[146] == value.description[146] && description[147] == value.description[147] && description[148] == value.description[148] && description[149] == value.description[149] && description[150] == value.description[150] && description[151] == value.description[151] && description[152] == value.description[152] && description[153] == value.description[153] && description[154] == value.description[154] && description[155] == value.description[155] && description[156] == value.description[156] && description[157] == value.description[157] && description[158] == value.description[158] && description[159] == value.description[159] && description[160] == value.description[160] && description[161] == value.description[161] && description[162] == value.description[162] && description[163] == value.description[163] && description[164] == value.description[164] && description[165] == value.description[165] && description[166] == value.description[166] && description[167] == value.description[167] && description[168] == value.description[168] && description[169] == value.description[169] && description[170] == value.description[170] && description[171] == value.description[171] && description[172] == value.description[172] && description[173] == value.description[173] && description[174] == value.description[174] && description[175] == value.description[175] && description[176] == value.description[176] && description[177] == value.description[177] && description[178] == value.description[178] && description[179] == value.description[179] && description[180] == value.description[180] && description[181] == value.description[181] && description[182] == value.description[182] && description[183] == value.description[183] && description[184] == value.description[184] && description[185] == value.description[185] && description[186] == value.description[186] && description[187] == value.description[187] && description[188] == value.description[188] && description[189] == value.description[189] && description[190] == value.description[190] && description[191] == value.description[191] && description[192] == value.description[192] && description[193] == value.description[193] && description[194] == value.description[194] && description[195] == value.description[195] && description[196] == value.description[196] && description[197] == value.description[197] && description[198] == value.description[198] && description[199] == value.description[199] && description[200] == value.description[200] && description[201] == value.description[201] && description[202] == value.description[202] && description[203] == value.description[203] && description[204] == value.description[204] && description[205] == value.description[205] && description[206] == value.description[206] && description[207] == value.description[207] && description[208] == value.description[208] && description[209] == value.description[209] && description[210] == value.description[210] && description[211] == value.description[211] && description[212] == value.description[212] && description[213] == value.description[213] && description[214] == value.description[214] && description[215] == value.description[215] && description[216] == value.description[216] && description[217] == value.description[217] && description[218] == value.description[218] && description[219] == value.description[219] && description[220] == value.description[220] && description[221] == value.description[221] && description[222] == value.description[222] && description[223] == value.description[223] && description[224] == value.description[224] && description[225] == value.description[225] && description[226] == value.description[226] && description[227] == value.description[227] && description[228] == value.description[228] && description[229] == value.description[229] && description[230] == value.description[230] && description[231] == value.description[231] && description[232] == value.description[232] && description[233] == value.description[233] && description[234] == value.description[234] && description[235] == value.description[235] && description[236] == value.description[236] && description[237] == value.description[237] && description[238] == value.description[238] && description[239] == value.description[239] && description[240] == value.description[240] && description[241] == value.description[241] && description[242] == value.description[242] && description[243] == value.description[243] && description[244] == value.description[244] && description[245] == value.description[245] && description[246] == value.description[246] && description[247] == value.description[247] && description[248] == value.description[248] && description[249] == value.description[249] && description[250] == value.description[250] && description[251] == value.description[251] && description[252] == value.description[252] && description[253] == value.description[253] && description[254] == value.description[254] && description[255] == value.description[255]
-        ;}
+        bool is_equal = true;
+        for(size_t i = 0; i < 256; i++)
+            is_equal &= layerName[i] == value.layerName[i];
+        for(size_t i = 0; i < 256; i++)
+            is_equal &= description[i] == value.description[i];
+        return is_equal && specVersion == value.specVersion && implementationVersion == value.implementationVersion ;}
     constexpr bool operator!=(LayerProperties const& value) const {return !(*this == value);}
     operator VkLayerProperties const &() const noexcept {
         return *reinterpret_cast<const VkLayerProperties*>(this);
@@ -3316,7 +3385,27 @@ struct PhysicalDeviceFeatures {
     Bool32 variableMultisampleRate{0};
     Bool32 inheritedQueries{0};
     constexpr bool operator==(PhysicalDeviceFeatures const& value) const {
-        return robustBufferAccess == value.robustBufferAccess && fullDrawIndexUint32 == value.fullDrawIndexUint32 && imageCubeArray == value.imageCubeArray && independentBlend == value.independentBlend && geometryShader == value.geometryShader && tessellationShader == value.tessellationShader && sampleRateShading == value.sampleRateShading && dualSrcBlend == value.dualSrcBlend && logicOp == value.logicOp && multiDrawIndirect == value.multiDrawIndirect && drawIndirectFirstInstance == value.drawIndirectFirstInstance && depthClamp == value.depthClamp && depthBiasClamp == value.depthBiasClamp && fillModeNonSolid == value.fillModeNonSolid && depthBounds == value.depthBounds && wideLines == value.wideLines && largePoints == value.largePoints && alphaToOne == value.alphaToOne && multiViewport == value.multiViewport && samplerAnisotropy == value.samplerAnisotropy && textureCompressionETC2 == value.textureCompressionETC2 && textureCompressionASTC_LDR == value.textureCompressionASTC_LDR && textureCompressionBC == value.textureCompressionBC && occlusionQueryPrecise == value.occlusionQueryPrecise && pipelineStatisticsQuery == value.pipelineStatisticsQuery && vertexPipelineStoresAndAtomics == value.vertexPipelineStoresAndAtomics && fragmentStoresAndAtomics == value.fragmentStoresAndAtomics && shaderTessellationAndGeometryPointSize == value.shaderTessellationAndGeometryPointSize && shaderImageGatherExtended == value.shaderImageGatherExtended && shaderStorageImageExtendedFormats == value.shaderStorageImageExtendedFormats && shaderStorageImageMultisample == value.shaderStorageImageMultisample && shaderStorageImageReadWithoutFormat == value.shaderStorageImageReadWithoutFormat && shaderStorageImageWriteWithoutFormat == value.shaderStorageImageWriteWithoutFormat && shaderUniformBufferArrayDynamicIndexing == value.shaderUniformBufferArrayDynamicIndexing && shaderSampledImageArrayDynamicIndexing == value.shaderSampledImageArrayDynamicIndexing && shaderStorageBufferArrayDynamicIndexing == value.shaderStorageBufferArrayDynamicIndexing && shaderStorageImageArrayDynamicIndexing == value.shaderStorageImageArrayDynamicIndexing && shaderClipDistance == value.shaderClipDistance && shaderCullDistance == value.shaderCullDistance && shaderFloat64 == value.shaderFloat64 && shaderInt64 == value.shaderInt64 && shaderInt16 == value.shaderInt16 && shaderResourceResidency == value.shaderResourceResidency && shaderResourceMinLod == value.shaderResourceMinLod && sparseBinding == value.sparseBinding && sparseResidencyBuffer == value.sparseResidencyBuffer && sparseResidencyImage2D == value.sparseResidencyImage2D && sparseResidencyImage3D == value.sparseResidencyImage3D && sparseResidency2Samples == value.sparseResidency2Samples && sparseResidency4Samples == value.sparseResidency4Samples && sparseResidency8Samples == value.sparseResidency8Samples && sparseResidency16Samples == value.sparseResidency16Samples && sparseResidencyAliased == value.sparseResidencyAliased && variableMultisampleRate == value.variableMultisampleRate && inheritedQueries == value.inheritedQueries ;}
+        bool is_equal = true;
+        return is_equal && robustBufferAccess == value.robustBufferAccess && fullDrawIndexUint32 == value.fullDrawIndexUint32 && imageCubeArray == value.imageCubeArray 
+        && independentBlend == value.independentBlend && geometryShader == value.geometryShader && tessellationShader == value.tessellationShader 
+        && sampleRateShading == value.sampleRateShading && dualSrcBlend == value.dualSrcBlend && logicOp == value.logicOp && multiDrawIndirect == value.multiDrawIndirect 
+        && drawIndirectFirstInstance == value.drawIndirectFirstInstance && depthClamp == value.depthClamp && depthBiasClamp == value.depthBiasClamp 
+        && fillModeNonSolid == value.fillModeNonSolid && depthBounds == value.depthBounds && wideLines == value.wideLines && largePoints == value.largePoints 
+        && alphaToOne == value.alphaToOne && multiViewport == value.multiViewport && samplerAnisotropy == value.samplerAnisotropy && textureCompressionETC2 == value.textureCompressionETC2 
+        && textureCompressionASTC_LDR == value.textureCompressionASTC_LDR && textureCompressionBC == value.textureCompressionBC && occlusionQueryPrecise == value.occlusionQueryPrecise 
+        && pipelineStatisticsQuery == value.pipelineStatisticsQuery && vertexPipelineStoresAndAtomics == value.vertexPipelineStoresAndAtomics 
+        && fragmentStoresAndAtomics == value.fragmentStoresAndAtomics && shaderTessellationAndGeometryPointSize == value.shaderTessellationAndGeometryPointSize 
+        && shaderImageGatherExtended == value.shaderImageGatherExtended && shaderStorageImageExtendedFormats == value.shaderStorageImageExtendedFormats 
+        && shaderStorageImageMultisample == value.shaderStorageImageMultisample && shaderStorageImageReadWithoutFormat == value.shaderStorageImageReadWithoutFormat 
+        && shaderStorageImageWriteWithoutFormat == value.shaderStorageImageWriteWithoutFormat && shaderUniformBufferArrayDynamicIndexing == value.shaderUniformBufferArrayDynamicIndexing 
+        && shaderSampledImageArrayDynamicIndexing == value.shaderSampledImageArrayDynamicIndexing && shaderStorageBufferArrayDynamicIndexing == value.shaderStorageBufferArrayDynamicIndexing 
+        && shaderStorageImageArrayDynamicIndexing == value.shaderStorageImageArrayDynamicIndexing && shaderClipDistance == value.shaderClipDistance 
+        && shaderCullDistance == value.shaderCullDistance && shaderFloat64 == value.shaderFloat64 && shaderInt64 == value.shaderInt64 && shaderInt16 == value.shaderInt16 
+        && shaderResourceResidency == value.shaderResourceResidency && shaderResourceMinLod == value.shaderResourceMinLod && sparseBinding == value.sparseBinding 
+        && sparseResidencyBuffer == value.sparseResidencyBuffer && sparseResidencyImage2D == value.sparseResidencyImage2D && sparseResidencyImage3D == value.sparseResidencyImage3D 
+        && sparseResidency2Samples == value.sparseResidency2Samples && sparseResidency4Samples == value.sparseResidency4Samples && sparseResidency8Samples == value.sparseResidency8Samples 
+        && sparseResidency16Samples == value.sparseResidency16Samples && sparseResidencyAliased == value.sparseResidencyAliased && variableMultisampleRate == value.variableMultisampleRate 
+        && inheritedQueries == value.inheritedQueries ;}
     constexpr bool operator!=(PhysicalDeviceFeatures const& value) const {return !(*this == value);}
     operator VkPhysicalDeviceFeatures const &() const noexcept {
         return *reinterpret_cast<const VkPhysicalDeviceFeatures*>(this);
@@ -3365,7 +3454,9 @@ struct QueueFamilyProperties {
     uint32_t timestampValidBits{0};
     Extent3D minImageTransferGranularity{};
     constexpr bool operator==(QueueFamilyProperties const& value) const {
-        return queueFlags == value.queueFlags && queueCount == value.queueCount && timestampValidBits == value.timestampValidBits && minImageTransferGranularity == value.minImageTransferGranularity ;}
+        bool is_equal = true;
+        return is_equal && queueFlags == value.queueFlags && queueCount == value.queueCount && timestampValidBits == value.timestampValidBits && minImageTransferGranularity == value.minImageTransferGranularity 
+        ;}
     constexpr bool operator!=(QueueFamilyProperties const& value) const {return !(*this == value);}
     operator VkQueueFamilyProperties const &() const noexcept {
         return *reinterpret_cast<const VkQueueFamilyProperties*>(this);
@@ -3378,7 +3469,8 @@ struct MemoryHeap {
     DeviceSize size{0};
     MemoryHeapFlags flags{};
     constexpr bool operator==(MemoryHeap const& value) const {
-        return size == value.size && flags == value.flags ;}
+        bool is_equal = true;
+        return is_equal && size == value.size && flags == value.flags ;}
     constexpr bool operator!=(MemoryHeap const& value) const {return !(*this == value);}
     operator VkMemoryHeap const &() const noexcept {
         return *reinterpret_cast<const VkMemoryHeap*>(this);
@@ -3391,7 +3483,8 @@ struct MemoryType {
     MemoryPropertyFlags propertyFlags{};
     uint32_t heapIndex{0};
     constexpr bool operator==(MemoryType const& value) const {
-        return propertyFlags == value.propertyFlags && heapIndex == value.heapIndex ;}
+        bool is_equal = true;
+        return is_equal && propertyFlags == value.propertyFlags && heapIndex == value.heapIndex ;}
     constexpr bool operator!=(MemoryType const& value) const {return !(*this == value);}
     operator VkMemoryType const &() const noexcept {
         return *reinterpret_cast<const VkMemoryType*>(this);
@@ -3406,9 +3499,12 @@ struct PhysicalDeviceMemoryProperties {
     uint32_t memoryHeapCount{0};
     MemoryHeap memoryHeaps[MAX_MEMORY_HEAPS];
     constexpr bool operator==(PhysicalDeviceMemoryProperties const& value) const {
-        return memoryTypeCount == value.memoryTypeCount && memoryTypes[0] == value.memoryTypes[0] && memoryTypes[1] == value.memoryTypes[1] && memoryTypes[2] == value.memoryTypes[2] && memoryTypes[3] == value.memoryTypes[3] && memoryTypes[4] == value.memoryTypes[4] && memoryTypes[5] == value.memoryTypes[5] && memoryTypes[6] == value.memoryTypes[6] && memoryTypes[7] == value.memoryTypes[7] && memoryTypes[8] == value.memoryTypes[8] && memoryTypes[9] == value.memoryTypes[9] && memoryTypes[10] == value.memoryTypes[10] && memoryTypes[11] == value.memoryTypes[11] && memoryTypes[12] == value.memoryTypes[12] && memoryTypes[13] == value.memoryTypes[13] && memoryTypes[14] == value.memoryTypes[14] && memoryTypes[15] == value.memoryTypes[15] && memoryTypes[16] == value.memoryTypes[16] && memoryTypes[17] == value.memoryTypes[17] && memoryTypes[18] == value.memoryTypes[18] && memoryTypes[19] == value.memoryTypes[19] && memoryTypes[20] == value.memoryTypes[20] && memoryTypes[21] == value.memoryTypes[21] && memoryTypes[22] == value.memoryTypes[22] && memoryTypes[23] == value.memoryTypes[23] && memoryTypes[24] == value.memoryTypes[24] && memoryTypes[25] == value.memoryTypes[25] && memoryTypes[26] == value.memoryTypes[26] && memoryTypes[27] == value.memoryTypes[27] && memoryTypes[28] == value.memoryTypes[28] && memoryTypes[29] == value.memoryTypes[29] && memoryTypes[30] == value.memoryTypes[30] && memoryTypes[31] == value.memoryTypes[31]
-        && memoryHeapCount == value.memoryHeapCount && memoryHeaps[0] == value.memoryHeaps[0] && memoryHeaps[1] == value.memoryHeaps[1] && memoryHeaps[2] == value.memoryHeaps[2] && memoryHeaps[3] == value.memoryHeaps[3] && memoryHeaps[4] == value.memoryHeaps[4] && memoryHeaps[5] == value.memoryHeaps[5] && memoryHeaps[6] == value.memoryHeaps[6] && memoryHeaps[7] == value.memoryHeaps[7] && memoryHeaps[8] == value.memoryHeaps[8] && memoryHeaps[9] == value.memoryHeaps[9] && memoryHeaps[10] == value.memoryHeaps[10] && memoryHeaps[11] == value.memoryHeaps[11] && memoryHeaps[12] == value.memoryHeaps[12] && memoryHeaps[13] == value.memoryHeaps[13] && memoryHeaps[14] == value.memoryHeaps[14] && memoryHeaps[15] == value.memoryHeaps[15]
-        ;}
+        bool is_equal = true;
+        for(size_t i = 0; i < 32; i++)
+            is_equal &= memoryTypes[i] == value.memoryTypes[i];
+        for(size_t i = 0; i < 16; i++)
+            is_equal &= memoryHeaps[i] == value.memoryHeaps[i];
+        return is_equal && memoryTypeCount == value.memoryTypeCount && memoryHeapCount == value.memoryHeapCount ;}
     constexpr bool operator!=(PhysicalDeviceMemoryProperties const& value) const {return !(*this == value);}
     operator VkPhysicalDeviceMemoryProperties const &() const noexcept {
         return *reinterpret_cast<const VkPhysicalDeviceMemoryProperties*>(this);
@@ -3434,7 +3530,8 @@ struct MemoryRequirements {
     DeviceSize alignment{0};
     uint32_t memoryTypeBits{0};
     constexpr bool operator==(MemoryRequirements const& value) const {
-        return size == value.size && alignment == value.alignment && memoryTypeBits == value.memoryTypeBits ;}
+        bool is_equal = true;
+        return is_equal && size == value.size && alignment == value.alignment && memoryTypeBits == value.memoryTypeBits ;}
     constexpr bool operator!=(MemoryRequirements const& value) const {return !(*this == value);}
     operator VkMemoryRequirements const &() const noexcept {
         return *reinterpret_cast<const VkMemoryRequirements*>(this);
@@ -3448,7 +3545,8 @@ struct SparseImageFormatProperties {
     Extent3D imageGranularity{};
     SparseImageFormatFlags flags{};
     constexpr bool operator==(SparseImageFormatProperties const& value) const {
-        return aspectMask == value.aspectMask && imageGranularity == value.imageGranularity && flags == value.flags ;}
+        bool is_equal = true;
+        return is_equal && aspectMask == value.aspectMask && imageGranularity == value.imageGranularity && flags == value.flags ;}
     constexpr bool operator!=(SparseImageFormatProperties const& value) const {return !(*this == value);}
     operator VkSparseImageFormatProperties const &() const noexcept {
         return *reinterpret_cast<const VkSparseImageFormatProperties*>(this);
@@ -3464,7 +3562,9 @@ struct SparseImageMemoryRequirements {
     DeviceSize imageMipTailOffset{0};
     DeviceSize imageMipTailStride{0};
     constexpr bool operator==(SparseImageMemoryRequirements const& value) const {
-        return formatProperties == value.formatProperties && imageMipTailFirstLod == value.imageMipTailFirstLod && imageMipTailSize == value.imageMipTailSize && imageMipTailOffset == value.imageMipTailOffset && imageMipTailStride == value.imageMipTailStride ;}
+        bool is_equal = true;
+        return is_equal && formatProperties == value.formatProperties && imageMipTailFirstLod == value.imageMipTailFirstLod && imageMipTailSize == value.imageMipTailSize 
+        && imageMipTailOffset == value.imageMipTailOffset && imageMipTailStride == value.imageMipTailStride ;}
     constexpr bool operator!=(SparseImageMemoryRequirements const& value) const {return !(*this == value);}
     operator VkSparseImageMemoryRequirements const &() const noexcept {
         return *reinterpret_cast<const VkSparseImageMemoryRequirements*>(this);
@@ -3491,7 +3591,9 @@ struct FormatProperties {
     FormatFeatureFlags optimalTilingFeatures{};
     FormatFeatureFlags bufferFeatures{};
     constexpr bool operator==(FormatProperties const& value) const {
-        return linearTilingFeatures == value.linearTilingFeatures && optimalTilingFeatures == value.optimalTilingFeatures && bufferFeatures == value.bufferFeatures ;}
+        bool is_equal = true;
+        return is_equal && linearTilingFeatures == value.linearTilingFeatures && optimalTilingFeatures == value.optimalTilingFeatures && bufferFeatures == value.bufferFeatures 
+        ;}
     constexpr bool operator!=(FormatProperties const& value) const {return !(*this == value);}
     operator VkFormatProperties const &() const noexcept {
         return *reinterpret_cast<const VkFormatProperties*>(this);
@@ -3507,7 +3609,9 @@ struct ImageFormatProperties {
     SampleCountFlags sampleCounts{};
     DeviceSize maxResourceSize{0};
     constexpr bool operator==(ImageFormatProperties const& value) const {
-        return maxExtent == value.maxExtent && maxMipLevels == value.maxMipLevels && maxArrayLayers == value.maxArrayLayers && sampleCounts == value.sampleCounts && maxResourceSize == value.maxResourceSize ;}
+        bool is_equal = true;
+        return is_equal && maxExtent == value.maxExtent && maxMipLevels == value.maxMipLevels && maxArrayLayers == value.maxArrayLayers && sampleCounts == value.sampleCounts 
+        && maxResourceSize == value.maxResourceSize ;}
     constexpr bool operator!=(ImageFormatProperties const& value) const {return !(*this == value);}
     operator VkImageFormatProperties const &() const noexcept {
         return *reinterpret_cast<const VkImageFormatProperties*>(this);
@@ -3609,7 +3713,8 @@ struct ImageSubresource {
     uint32_t mipLevel{0};
     uint32_t arrayLayer{0};
     constexpr bool operator==(ImageSubresource const& value) const {
-        return aspectMask == value.aspectMask && mipLevel == value.mipLevel && arrayLayer == value.arrayLayer ;}
+        bool is_equal = true;
+        return is_equal && aspectMask == value.aspectMask && mipLevel == value.mipLevel && arrayLayer == value.arrayLayer ;}
     constexpr bool operator!=(ImageSubresource const& value) const {return !(*this == value);}
     operator VkImageSubresource const &() const noexcept {
         return *reinterpret_cast<const VkImageSubresource*>(this);
@@ -3624,7 +3729,9 @@ struct ImageSubresourceLayers {
     uint32_t baseArrayLayer{0};
     uint32_t layerCount{0};
     constexpr bool operator==(ImageSubresourceLayers const& value) const {
-        return aspectMask == value.aspectMask && mipLevel == value.mipLevel && baseArrayLayer == value.baseArrayLayer && layerCount == value.layerCount ;}
+        bool is_equal = true;
+        return is_equal && aspectMask == value.aspectMask && mipLevel == value.mipLevel && baseArrayLayer == value.baseArrayLayer && layerCount == value.layerCount 
+        ;}
     constexpr bool operator!=(ImageSubresourceLayers const& value) const {return !(*this == value);}
     operator VkImageSubresourceLayers const &() const noexcept {
         return *reinterpret_cast<const VkImageSubresourceLayers*>(this);
@@ -3640,7 +3747,9 @@ struct ImageSubresourceRange {
     uint32_t baseArrayLayer{0};
     uint32_t layerCount{0};
     constexpr bool operator==(ImageSubresourceRange const& value) const {
-        return aspectMask == value.aspectMask && baseMipLevel == value.baseMipLevel && levelCount == value.levelCount && baseArrayLayer == value.baseArrayLayer && layerCount == value.layerCount ;}
+        bool is_equal = true;
+        return is_equal && aspectMask == value.aspectMask && baseMipLevel == value.baseMipLevel && levelCount == value.levelCount && baseArrayLayer == value.baseArrayLayer 
+        && layerCount == value.layerCount ;}
     constexpr bool operator!=(ImageSubresourceRange const& value) const {return !(*this == value);}
     operator VkImageSubresourceRange const &() const noexcept {
         return *reinterpret_cast<const VkImageSubresourceRange*>(this);
@@ -3726,7 +3835,9 @@ struct SubresourceLayout {
     DeviceSize arrayPitch{0};
     DeviceSize depthPitch{0};
     constexpr bool operator==(SubresourceLayout const& value) const {
-        return offset == value.offset && size == value.size && rowPitch == value.rowPitch && arrayPitch == value.arrayPitch && depthPitch == value.depthPitch ;}
+        bool is_equal = true;
+        return is_equal && offset == value.offset && size == value.size && rowPitch == value.rowPitch && arrayPitch == value.arrayPitch && depthPitch == value.depthPitch 
+        ;}
     constexpr bool operator!=(SubresourceLayout const& value) const {return !(*this == value);}
     operator VkSubresourceLayout const &() const noexcept {
         return *reinterpret_cast<const VkSubresourceLayout*>(this);
@@ -3756,7 +3867,8 @@ struct BufferCopy {
     DeviceSize dstOffset{0};
     DeviceSize size{0};
     constexpr bool operator==(BufferCopy const& value) const {
-        return srcOffset == value.srcOffset && dstOffset == value.dstOffset && size == value.size ;}
+        bool is_equal = true;
+        return is_equal && srcOffset == value.srcOffset && dstOffset == value.dstOffset && size == value.size ;}
     constexpr bool operator!=(BufferCopy const& value) const {return !(*this == value);}
     operator VkBufferCopy const &() const noexcept {
         return *reinterpret_cast<const VkBufferCopy*>(this);
@@ -3852,7 +3964,9 @@ struct ImageCopy {
     Offset3D dstOffset{};
     Extent3D extent{};
     constexpr bool operator==(ImageCopy const& value) const {
-        return srcSubresource == value.srcSubresource && srcOffset == value.srcOffset && dstSubresource == value.dstSubresource && dstOffset == value.dstOffset && extent == value.extent ;}
+        bool is_equal = true;
+        return is_equal && srcSubresource == value.srcSubresource && srcOffset == value.srcOffset && dstSubresource == value.dstSubresource && dstOffset == value.dstOffset 
+        && extent == value.extent ;}
     constexpr bool operator!=(ImageCopy const& value) const {return !(*this == value);}
     operator VkImageCopy const &() const noexcept {
         return *reinterpret_cast<const VkImageCopy*>(this);
@@ -3867,9 +3981,12 @@ struct ImageBlit {
     ImageSubresourceLayers dstSubresource{};
     Offset3D dstOffsets[2];
     constexpr bool operator==(ImageBlit const& value) const {
-        return srcSubresource == value.srcSubresource && srcOffsets[0] == value.srcOffsets[0] && srcOffsets[1] == value.srcOffsets[1]
-        && dstSubresource == value.dstSubresource && dstOffsets[0] == value.dstOffsets[0] && dstOffsets[1] == value.dstOffsets[1]
-        ;}
+        bool is_equal = true;
+        for(size_t i = 0; i < 2; i++)
+            is_equal &= srcOffsets[i] == value.srcOffsets[i];
+        for(size_t i = 0; i < 2; i++)
+            is_equal &= dstOffsets[i] == value.dstOffsets[i];
+        return is_equal && srcSubresource == value.srcSubresource && dstSubresource == value.dstSubresource ;}
     constexpr bool operator!=(ImageBlit const& value) const {return !(*this == value);}
     operator VkImageBlit const &() const noexcept {
         return *reinterpret_cast<const VkImageBlit*>(this);
@@ -3886,7 +4003,9 @@ struct BufferImageCopy {
     Offset3D imageOffset{};
     Extent3D imageExtent{};
     constexpr bool operator==(BufferImageCopy const& value) const {
-        return bufferOffset == value.bufferOffset && bufferRowLength == value.bufferRowLength && bufferImageHeight == value.bufferImageHeight && imageSubresource == value.imageSubresource && imageOffset == value.imageOffset && imageExtent == value.imageExtent ;}
+        bool is_equal = true;
+        return is_equal && bufferOffset == value.bufferOffset && bufferRowLength == value.bufferRowLength && bufferImageHeight == value.bufferImageHeight && imageSubresource == value.imageSubresource 
+        && imageOffset == value.imageOffset && imageExtent == value.imageExtent ;}
     constexpr bool operator!=(BufferImageCopy const& value) const {return !(*this == value);}
     operator VkBufferImageCopy const &() const noexcept {
         return *reinterpret_cast<const VkBufferImageCopy*>(this);
@@ -3902,7 +4021,9 @@ struct ImageResolve {
     Offset3D dstOffset{};
     Extent3D extent{};
     constexpr bool operator==(ImageResolve const& value) const {
-        return srcSubresource == value.srcSubresource && srcOffset == value.srcOffset && dstSubresource == value.dstSubresource && dstOffset == value.dstOffset && extent == value.extent ;}
+        bool is_equal = true;
+        return is_equal && srcSubresource == value.srcSubresource && srcOffset == value.srcOffset && dstSubresource == value.dstSubresource && dstOffset == value.dstOffset 
+        && extent == value.extent ;}
     constexpr bool operator!=(ImageResolve const& value) const {return !(*this == value);}
     operator VkImageResolve const &() const noexcept {
         return *reinterpret_cast<const VkImageResolve*>(this);
@@ -3954,7 +4075,8 @@ struct DescriptorPoolSize {
     DescriptorType type{static_cast<DescriptorType>(0)};
     uint32_t descriptorCount{0};
     constexpr bool operator==(DescriptorPoolSize const& value) const {
-        return type == value.type && descriptorCount == value.descriptorCount ;}
+        bool is_equal = true;
+        return is_equal && type == value.type && descriptorCount == value.descriptorCount ;}
     constexpr bool operator!=(DescriptorPoolSize const& value) const {return !(*this == value);}
     operator VkDescriptorPoolSize const &() const noexcept {
         return *reinterpret_cast<const VkDescriptorPoolSize*>(this);
@@ -3995,7 +4117,8 @@ struct SpecializationMapEntry {
     uint32_t offset{0};
     size_t size{0};
     constexpr bool operator==(SpecializationMapEntry const& value) const {
-        return constantID == value.constantID && offset == value.offset && size == value.size ;}
+        bool is_equal = true;
+        return is_equal && constantID == value.constantID && offset == value.offset && size == value.size ;}
     constexpr bool operator!=(SpecializationMapEntry const& value) const {return !(*this == value);}
     operator VkSpecializationMapEntry const &() const noexcept {
         return *reinterpret_cast<const VkSpecializationMapEntry*>(this);
@@ -4051,7 +4174,8 @@ struct VertexInputBindingDescription {
     uint32_t stride{0};
     VertexInputRate inputRate{static_cast<VertexInputRate>(0)};
     constexpr bool operator==(VertexInputBindingDescription const& value) const {
-        return binding == value.binding && stride == value.stride && inputRate == value.inputRate ;}
+        bool is_equal = true;
+        return is_equal && binding == value.binding && stride == value.stride && inputRate == value.inputRate ;}
     constexpr bool operator!=(VertexInputBindingDescription const& value) const {return !(*this == value);}
     operator VkVertexInputBindingDescription const &() const noexcept {
         return *reinterpret_cast<const VkVertexInputBindingDescription*>(this);
@@ -4066,7 +4190,8 @@ struct VertexInputAttributeDescription {
     Format format{static_cast<Format>(0)};
     uint32_t offset{0};
     constexpr bool operator==(VertexInputAttributeDescription const& value) const {
-        return location == value.location && binding == value.binding && format == value.format && offset == value.offset ;}
+        bool is_equal = true;
+        return is_equal && location == value.location && binding == value.binding && format == value.format && offset == value.offset ;}
     constexpr bool operator!=(VertexInputAttributeDescription const& value) const {return !(*this == value);}
     operator VkVertexInputAttributeDescription const &() const noexcept {
         return *reinterpret_cast<const VkVertexInputAttributeDescription*>(this);
@@ -4178,7 +4303,10 @@ struct PipelineColorBlendAttachmentState {
     BlendOp alphaBlendOp{static_cast<BlendOp>(0)};
     ColorComponentFlags colorWriteMask{};
     constexpr bool operator==(PipelineColorBlendAttachmentState const& value) const {
-        return blendEnable == value.blendEnable && srcColorBlendFactor == value.srcColorBlendFactor && dstColorBlendFactor == value.dstColorBlendFactor && colorBlendOp == value.colorBlendOp && srcAlphaBlendFactor == value.srcAlphaBlendFactor && dstAlphaBlendFactor == value.dstAlphaBlendFactor && alphaBlendOp == value.alphaBlendOp && colorWriteMask == value.colorWriteMask ;}
+        bool is_equal = true;
+        return is_equal && blendEnable == value.blendEnable && srcColorBlendFactor == value.srcColorBlendFactor && dstColorBlendFactor == value.dstColorBlendFactor 
+        && colorBlendOp == value.colorBlendOp && srcAlphaBlendFactor == value.srcAlphaBlendFactor && dstAlphaBlendFactor == value.dstAlphaBlendFactor 
+        && alphaBlendOp == value.alphaBlendOp && colorWriteMask == value.colorWriteMask ;}
     constexpr bool operator!=(PipelineColorBlendAttachmentState const& value) const {return !(*this == value);}
     operator VkPipelineColorBlendAttachmentState const &() const noexcept {
         return *reinterpret_cast<const VkPipelineColorBlendAttachmentState*>(this);
@@ -4225,7 +4353,9 @@ struct StencilOpState {
     uint32_t writeMask{0};
     uint32_t reference{0};
     constexpr bool operator==(StencilOpState const& value) const {
-        return failOp == value.failOp && passOp == value.passOp && depthFailOp == value.depthFailOp && compareOp == value.compareOp && compareMask == value.compareMask && writeMask == value.writeMask && reference == value.reference ;}
+        bool is_equal = true;
+        return is_equal && failOp == value.failOp && passOp == value.passOp && depthFailOp == value.depthFailOp && compareOp == value.compareOp && compareMask == value.compareMask 
+        && writeMask == value.writeMask && reference == value.reference ;}
     constexpr bool operator!=(StencilOpState const& value) const {return !(*this == value);}
     operator VkStencilOpState const &() const noexcept {
         return *reinterpret_cast<const VkStencilOpState*>(this);
@@ -4299,7 +4429,8 @@ struct PushConstantRange {
     uint32_t offset{0};
     uint32_t size{0};
     constexpr bool operator==(PushConstantRange const& value) const {
-        return stageFlags == value.stageFlags && offset == value.offset && size == value.size ;}
+        bool is_equal = true;
+        return is_equal && stageFlags == value.stageFlags && offset == value.offset && size == value.size ;}
     constexpr bool operator!=(PushConstantRange const& value) const {return !(*this == value);}
     operator VkPushConstantRange const &() const noexcept {
         return *reinterpret_cast<const VkPushConstantRange*>(this);
@@ -4406,7 +4537,8 @@ struct ClearDepthStencilValue {
     float depth{0.f};
     uint32_t stencil{0};
     constexpr bool operator==(ClearDepthStencilValue const& value) const {
-        return depth == value.depth && stencil == value.stencil ;}
+        bool is_equal = true;
+        return is_equal && depth == value.depth && stencil == value.stencil ;}
     constexpr bool operator!=(ClearDepthStencilValue const& value) const {return !(*this == value);}
     operator VkClearDepthStencilValue const &() const noexcept {
         return *reinterpret_cast<const VkClearDepthStencilValue*>(this);
@@ -4420,17 +4552,22 @@ union ClearColorValue {
     int32_t int32[4];
     uint32_t uint32[4];
     constexpr bool operator==(ClearColorValue const& value) const {
-        return float32[0] == value.float32[0] && float32[1] == value.float32[1] && float32[2] == value.float32[2] && float32[3] == value.float32[3]
-        && int32[0] == value.int32[0] && int32[1] == value.int32[1] && int32[2] == value.int32[2] && int32[3] == value.int32[3]
-        && uint32[0] == value.uint32[0] && uint32[1] == value.uint32[1] && uint32[2] == value.uint32[2] && uint32[3] == value.uint32[3]
-        ;}
+        bool is_equal = true;
+        for(size_t i = 0; i < 4; i++)
+            is_equal &= float32[i] == value.float32[i];
+        for(size_t i = 0; i < 4; i++)
+            is_equal &= int32[i] == value.int32[i];
+        for(size_t i = 0; i < 4; i++)
+            is_equal &= uint32[i] == value.uint32[i];
+        return is_equal;}
     constexpr bool operator!=(ClearColorValue const& value) const {return !(*this == value);}
 };
 union ClearValue {
     ClearColorValue color;
     ClearDepthStencilValue depthStencil;
     constexpr bool operator==(ClearValue const& value) const {
-        return color == value.color && depthStencil == value.depthStencil ;}
+        bool is_equal = true;
+        return is_equal && color == value.color && depthStencil == value.depthStencil ;}
     constexpr bool operator!=(ClearValue const& value) const {return !(*this == value);}
 };
 struct RenderPassBeginInfo {
@@ -4453,7 +4590,8 @@ struct ClearAttachment {
     uint32_t colorAttachment{0};
     ClearValue clearValue{};
     constexpr bool operator==(ClearAttachment const& value) const {
-        return aspectMask == value.aspectMask && colorAttachment == value.colorAttachment && clearValue == value.clearValue ;}
+        bool is_equal = true;
+        return is_equal && aspectMask == value.aspectMask && colorAttachment == value.colorAttachment && clearValue == value.clearValue ;}
     constexpr bool operator!=(ClearAttachment const& value) const {return !(*this == value);}
     operator VkClearAttachment const &() const noexcept {
         return *reinterpret_cast<const VkClearAttachment*>(this);
@@ -4473,7 +4611,9 @@ struct AttachmentDescription {
     ImageLayout initialLayout{static_cast<ImageLayout>(0)};
     ImageLayout finalLayout{static_cast<ImageLayout>(0)};
     constexpr bool operator==(AttachmentDescription const& value) const {
-        return flags == value.flags && format == value.format && samples == value.samples && loadOp == value.loadOp && storeOp == value.storeOp && stencilLoadOp == value.stencilLoadOp && stencilStoreOp == value.stencilStoreOp && initialLayout == value.initialLayout && finalLayout == value.finalLayout ;}
+        bool is_equal = true;
+        return is_equal && flags == value.flags && format == value.format && samples == value.samples && loadOp == value.loadOp && storeOp == value.storeOp && stencilLoadOp == value.stencilLoadOp 
+        && stencilStoreOp == value.stencilStoreOp && initialLayout == value.initialLayout && finalLayout == value.finalLayout ;}
     constexpr bool operator!=(AttachmentDescription const& value) const {return !(*this == value);}
     operator VkAttachmentDescription const &() const noexcept {
         return *reinterpret_cast<const VkAttachmentDescription*>(this);
@@ -4486,7 +4626,8 @@ struct AttachmentReference {
     uint32_t attachment{0};
     ImageLayout layout{static_cast<ImageLayout>(0)};
     constexpr bool operator==(AttachmentReference const& value) const {
-        return attachment == value.attachment && layout == value.layout ;}
+        bool is_equal = true;
+        return is_equal && attachment == value.attachment && layout == value.layout ;}
     constexpr bool operator!=(AttachmentReference const& value) const {return !(*this == value);}
     operator VkAttachmentReference const &() const noexcept {
         return *reinterpret_cast<const VkAttachmentReference*>(this);
@@ -4522,7 +4663,9 @@ struct SubpassDependency {
     AccessFlags dstAccessMask{};
     DependencyFlags dependencyFlags{};
     constexpr bool operator==(SubpassDependency const& value) const {
-        return srcSubpass == value.srcSubpass && dstSubpass == value.dstSubpass && srcStageMask == value.srcStageMask && dstStageMask == value.dstStageMask && srcAccessMask == value.srcAccessMask && dstAccessMask == value.dstAccessMask && dependencyFlags == value.dependencyFlags ;}
+        bool is_equal = true;
+        return is_equal && srcSubpass == value.srcSubpass && dstSubpass == value.dstSubpass && srcStageMask == value.srcStageMask && dstStageMask == value.dstStageMask 
+        && srcAccessMask == value.srcAccessMask && dstAccessMask == value.dstAccessMask && dependencyFlags == value.dependencyFlags ;}
     constexpr bool operator!=(SubpassDependency const& value) const {return !(*this == value);}
     operator VkSubpassDependency const &() const noexcept {
         return *reinterpret_cast<const VkSubpassDependency*>(this);
@@ -4618,7 +4761,9 @@ struct DrawIndirectCommand {
     uint32_t firstVertex{0};
     uint32_t firstInstance{0};
     constexpr bool operator==(DrawIndirectCommand const& value) const {
-        return vertexCount == value.vertexCount && instanceCount == value.instanceCount && firstVertex == value.firstVertex && firstInstance == value.firstInstance ;}
+        bool is_equal = true;
+        return is_equal && vertexCount == value.vertexCount && instanceCount == value.instanceCount && firstVertex == value.firstVertex && firstInstance == value.firstInstance 
+        ;}
     constexpr bool operator!=(DrawIndirectCommand const& value) const {return !(*this == value);}
     operator VkDrawIndirectCommand const &() const noexcept {
         return *reinterpret_cast<const VkDrawIndirectCommand*>(this);
@@ -4634,7 +4779,9 @@ struct DrawIndexedIndirectCommand {
     int32_t vertexOffset{0};
     uint32_t firstInstance{0};
     constexpr bool operator==(DrawIndexedIndirectCommand const& value) const {
-        return indexCount == value.indexCount && instanceCount == value.instanceCount && firstIndex == value.firstIndex && vertexOffset == value.vertexOffset && firstInstance == value.firstInstance ;}
+        bool is_equal = true;
+        return is_equal && indexCount == value.indexCount && instanceCount == value.instanceCount && firstIndex == value.firstIndex && vertexOffset == value.vertexOffset 
+        && firstInstance == value.firstInstance ;}
     constexpr bool operator!=(DrawIndexedIndirectCommand const& value) const {return !(*this == value);}
     operator VkDrawIndexedIndirectCommand const &() const noexcept {
         return *reinterpret_cast<const VkDrawIndexedIndirectCommand*>(this);
@@ -4648,7 +4795,8 @@ struct DispatchIndirectCommand {
     uint32_t y{0};
     uint32_t z{0};
     constexpr bool operator==(DispatchIndirectCommand const& value) const {
-        return x == value.x && y == value.y && z == value.z ;}
+        bool is_equal = true;
+        return is_equal && x == value.x && y == value.y && z == value.z ;}
     constexpr bool operator!=(DispatchIndirectCommand const& value) const {return !(*this == value);}
     operator VkDispatchIndirectCommand const &() const noexcept {
         return *reinterpret_cast<const VkDispatchIndirectCommand*>(this);
@@ -4703,7 +4851,8 @@ struct DisplayModeParametersKHR {
     Extent2D visibleRegion{};
     uint32_t refreshRate{0};
     constexpr bool operator==(DisplayModeParametersKHR const& value) const {
-        return visibleRegion == value.visibleRegion && refreshRate == value.refreshRate ;}
+        bool is_equal = true;
+        return is_equal && visibleRegion == value.visibleRegion && refreshRate == value.refreshRate ;}
     constexpr bool operator!=(DisplayModeParametersKHR const& value) const {return !(*this == value);}
     operator VkDisplayModeParametersKHR const &() const noexcept {
         return *reinterpret_cast<const VkDisplayModeParametersKHR*>(this);
@@ -4745,7 +4894,10 @@ struct DisplayPlaneCapabilitiesKHR {
     Extent2D minDstExtent{};
     Extent2D maxDstExtent{};
     constexpr bool operator==(DisplayPlaneCapabilitiesKHR const& value) const {
-        return supportedAlpha == value.supportedAlpha && minSrcPosition == value.minSrcPosition && maxSrcPosition == value.maxSrcPosition && minSrcExtent == value.minSrcExtent && maxSrcExtent == value.maxSrcExtent && minDstPosition == value.minDstPosition && maxDstPosition == value.maxDstPosition && minDstExtent == value.minDstExtent && maxDstExtent == value.maxDstExtent ;}
+        bool is_equal = true;
+        return is_equal && supportedAlpha == value.supportedAlpha && minSrcPosition == value.minSrcPosition && maxSrcPosition == value.maxSrcPosition && minSrcExtent == value.minSrcExtent 
+        && maxSrcExtent == value.maxSrcExtent && minDstPosition == value.minDstPosition && maxDstPosition == value.maxDstPosition && minDstExtent == value.minDstExtent 
+        && maxDstExtent == value.maxDstExtent ;}
     constexpr bool operator!=(DisplayPlaneCapabilitiesKHR const& value) const {return !(*this == value);}
     operator VkDisplayPlaneCapabilitiesKHR const &() const noexcept {
         return *reinterpret_cast<const VkDisplayPlaneCapabilitiesKHR*>(this);
@@ -4797,7 +4949,11 @@ struct SurfaceCapabilitiesKHR {
     CompositeAlphaFlagsKHR supportedCompositeAlpha{};
     ImageUsageFlags supportedUsageFlags{};
     constexpr bool operator==(SurfaceCapabilitiesKHR const& value) const {
-        return minImageCount == value.minImageCount && maxImageCount == value.maxImageCount && currentExtent == value.currentExtent && minImageExtent == value.minImageExtent && maxImageExtent == value.maxImageExtent && maxImageArrayLayers == value.maxImageArrayLayers && supportedTransforms == value.supportedTransforms && currentTransform == value.currentTransform && supportedCompositeAlpha == value.supportedCompositeAlpha && supportedUsageFlags == value.supportedUsageFlags ;}
+        bool is_equal = true;
+        return is_equal && minImageCount == value.minImageCount && maxImageCount == value.maxImageCount && currentExtent == value.currentExtent && minImageExtent == value.minImageExtent 
+        && maxImageExtent == value.maxImageExtent && maxImageArrayLayers == value.maxImageArrayLayers && supportedTransforms == value.supportedTransforms 
+        && currentTransform == value.currentTransform && supportedCompositeAlpha == value.supportedCompositeAlpha && supportedUsageFlags == value.supportedUsageFlags 
+        ;}
     constexpr bool operator!=(SurfaceCapabilitiesKHR const& value) const {return !(*this == value);}
     operator VkSurfaceCapabilitiesKHR const &() const noexcept {
         return *reinterpret_cast<const VkSurfaceCapabilitiesKHR*>(this);
@@ -4941,7 +5097,8 @@ struct SurfaceFormatKHR {
     Format format{static_cast<Format>(0)};
     ColorSpaceKHR colorSpace{static_cast<ColorSpaceKHR>(0)};
     constexpr bool operator==(SurfaceFormatKHR const& value) const {
-        return format == value.format && colorSpace == value.colorSpace ;}
+        bool is_equal = true;
+        return is_equal && format == value.format && colorSpace == value.colorSpace ;}
     constexpr bool operator!=(SurfaceFormatKHR const& value) const {return !(*this == value);}
     operator VkSurfaceFormatKHR const &() const noexcept {
         return *reinterpret_cast<const VkSurfaceFormatKHR*>(this);
@@ -5122,7 +5279,9 @@ struct ExternalImageFormatPropertiesNV {
     ExternalMemoryHandleTypeFlagsNV exportFromImportedHandleTypes{};
     ExternalMemoryHandleTypeFlagsNV compatibleHandleTypes{};
     constexpr bool operator==(ExternalImageFormatPropertiesNV const& value) const {
-        return imageFormatProperties == value.imageFormatProperties && externalMemoryFeatures == value.externalMemoryFeatures && exportFromImportedHandleTypes == value.exportFromImportedHandleTypes && compatibleHandleTypes == value.compatibleHandleTypes ;}
+        bool is_equal = true;
+        return is_equal && imageFormatProperties == value.imageFormatProperties && externalMemoryFeatures == value.externalMemoryFeatures && exportFromImportedHandleTypes == value.exportFromImportedHandleTypes 
+        && compatibleHandleTypes == value.compatibleHandleTypes ;}
     constexpr bool operator!=(ExternalImageFormatPropertiesNV const& value) const {return !(*this == value);}
     operator VkExternalImageFormatPropertiesNV const &() const noexcept {
         return *reinterpret_cast<const VkExternalImageFormatPropertiesNV*>(this);
@@ -5290,7 +5449,8 @@ struct GraphicsPipelineShaderGroupsCreateInfoNV {
 struct BindShaderGroupIndirectCommandNV {
     uint32_t groupIndex{0};
     constexpr bool operator==(BindShaderGroupIndirectCommandNV const& value) const {
-        return groupIndex == value.groupIndex ;}
+        bool is_equal = true;
+        return is_equal && groupIndex == value.groupIndex ;}
     constexpr bool operator!=(BindShaderGroupIndirectCommandNV const& value) const {return !(*this == value);}
     operator VkBindShaderGroupIndirectCommandNV const &() const noexcept {
         return *reinterpret_cast<const VkBindShaderGroupIndirectCommandNV*>(this);
@@ -5304,7 +5464,8 @@ struct BindIndexBufferIndirectCommandNV {
     uint32_t size{0};
     IndexType indexType{static_cast<IndexType>(0)};
     constexpr bool operator==(BindIndexBufferIndirectCommandNV const& value) const {
-        return bufferAddress == value.bufferAddress && size == value.size && indexType == value.indexType ;}
+        bool is_equal = true;
+        return is_equal && bufferAddress == value.bufferAddress && size == value.size && indexType == value.indexType ;}
     constexpr bool operator!=(BindIndexBufferIndirectCommandNV const& value) const {return !(*this == value);}
     operator VkBindIndexBufferIndirectCommandNV const &() const noexcept {
         return *reinterpret_cast<const VkBindIndexBufferIndirectCommandNV*>(this);
@@ -5318,7 +5479,8 @@ struct BindVertexBufferIndirectCommandNV {
     uint32_t size{0};
     uint32_t stride{0};
     constexpr bool operator==(BindVertexBufferIndirectCommandNV const& value) const {
-        return bufferAddress == value.bufferAddress && size == value.size && stride == value.stride ;}
+        bool is_equal = true;
+        return is_equal && bufferAddress == value.bufferAddress && size == value.size && stride == value.stride ;}
     constexpr bool operator!=(BindVertexBufferIndirectCommandNV const& value) const {return !(*this == value);}
     operator VkBindVertexBufferIndirectCommandNV const &() const noexcept {
         return *reinterpret_cast<const VkBindVertexBufferIndirectCommandNV*>(this);
@@ -5330,7 +5492,8 @@ struct BindVertexBufferIndirectCommandNV {
 struct SetStateFlagsIndirectCommandNV {
     uint32_t data{0};
     constexpr bool operator==(SetStateFlagsIndirectCommandNV const& value) const {
-        return data == value.data ;}
+        bool is_equal = true;
+        return is_equal && data == value.data ;}
     constexpr bool operator!=(SetStateFlagsIndirectCommandNV const& value) const {return !(*this == value);}
     operator VkSetStateFlagsIndirectCommandNV const &() const noexcept {
         return *reinterpret_cast<const VkSetStateFlagsIndirectCommandNV*>(this);
@@ -5558,7 +5721,8 @@ struct ConformanceVersion {
     uint8_t subminor{0};
     uint8_t patch{0};
     constexpr bool operator==(ConformanceVersion const& value) const {
-        return major == value.major && minor == value.minor && subminor == value.subminor && patch == value.patch ;}
+        bool is_equal = true;
+        return is_equal && major == value.major && minor == value.minor && subminor == value.subminor && patch == value.patch ;}
     constexpr bool operator!=(ConformanceVersion const& value) const {return !(*this == value);}
     operator VkConformanceVersion const &() const noexcept {
         return *reinterpret_cast<const VkConformanceVersion*>(this);
@@ -5588,7 +5752,8 @@ struct RectLayerKHR {
     Extent2D extent{};
     uint32_t layer{0};
     constexpr bool operator==(RectLayerKHR const& value) const {
-        return offset == value.offset && extent == value.extent && layer == value.layer ;}
+        bool is_equal = true;
+        return is_equal && offset == value.offset && extent == value.extent && layer == value.layer ;}
     constexpr bool operator!=(RectLayerKHR const& value) const {return !(*this == value);}
     operator VkRectLayerKHR const &() const noexcept {
         return *reinterpret_cast<const VkRectLayerKHR*>(this);
@@ -5639,7 +5804,9 @@ struct ExternalMemoryProperties {
     ExternalMemoryHandleTypeFlags exportFromImportedHandleTypes{};
     ExternalMemoryHandleTypeFlags compatibleHandleTypes{};
     constexpr bool operator==(ExternalMemoryProperties const& value) const {
-        return externalMemoryFeatures == value.externalMemoryFeatures && exportFromImportedHandleTypes == value.exportFromImportedHandleTypes && compatibleHandleTypes == value.compatibleHandleTypes ;}
+        bool is_equal = true;
+        return is_equal && externalMemoryFeatures == value.externalMemoryFeatures && exportFromImportedHandleTypes == value.exportFromImportedHandleTypes 
+        && compatibleHandleTypes == value.compatibleHandleTypes ;}
     constexpr bool operator!=(ExternalMemoryProperties const& value) const {return !(*this == value);}
     operator VkExternalMemoryProperties const &() const noexcept {
         return *reinterpret_cast<const VkExternalMemoryProperties*>(this);
@@ -6425,7 +6592,9 @@ struct DescriptorUpdateTemplateEntry {
     size_t offset{0};
     size_t stride{0};
     constexpr bool operator==(DescriptorUpdateTemplateEntry const& value) const {
-        return dstBinding == value.dstBinding && dstArrayElement == value.dstArrayElement && descriptorCount == value.descriptorCount && descriptorType == value.descriptorType && offset == value.offset && stride == value.stride ;}
+        bool is_equal = true;
+        return is_equal && dstBinding == value.dstBinding && dstArrayElement == value.dstArrayElement && descriptorCount == value.descriptorCount && descriptorType == value.descriptorType 
+        && offset == value.offset && stride == value.stride ;}
     constexpr bool operator!=(DescriptorUpdateTemplateEntry const& value) const {return !(*this == value);}
     operator VkDescriptorUpdateTemplateEntry const &() const noexcept {
         return *reinterpret_cast<const VkDescriptorUpdateTemplateEntry*>(this);
@@ -6458,7 +6627,8 @@ struct XYColorEXT {
     float x{0.f};
     float y{0.f};
     constexpr bool operator==(XYColorEXT const& value) const {
-        return x == value.x && y == value.y ;}
+        bool is_equal = true;
+        return is_equal && x == value.x && y == value.y ;}
     constexpr bool operator!=(XYColorEXT const& value) const {return !(*this == value);}
     operator VkXYColorEXT const &() const noexcept {
         return *reinterpret_cast<const VkXYColorEXT*>(this);
@@ -6510,7 +6680,8 @@ struct SwapchainDisplayNativeHdrCreateInfoAMD {
 struct RefreshCycleDurationGOOGLE {
     uint64_t refreshDuration{0};
     constexpr bool operator==(RefreshCycleDurationGOOGLE const& value) const {
-        return refreshDuration == value.refreshDuration ;}
+        bool is_equal = true;
+        return is_equal && refreshDuration == value.refreshDuration ;}
     constexpr bool operator!=(RefreshCycleDurationGOOGLE const& value) const {return !(*this == value);}
     operator VkRefreshCycleDurationGOOGLE const &() const noexcept {
         return *reinterpret_cast<const VkRefreshCycleDurationGOOGLE*>(this);
@@ -6526,7 +6697,9 @@ struct PastPresentationTimingGOOGLE {
     uint64_t earliestPresentTime{0};
     uint64_t presentMargin{0};
     constexpr bool operator==(PastPresentationTimingGOOGLE const& value) const {
-        return presentID == value.presentID && desiredPresentTime == value.desiredPresentTime && actualPresentTime == value.actualPresentTime && earliestPresentTime == value.earliestPresentTime && presentMargin == value.presentMargin ;}
+        bool is_equal = true;
+        return is_equal && presentID == value.presentID && desiredPresentTime == value.desiredPresentTime && actualPresentTime == value.actualPresentTime && earliestPresentTime == value.earliestPresentTime 
+        && presentMargin == value.presentMargin ;}
     constexpr bool operator!=(PastPresentationTimingGOOGLE const& value) const {return !(*this == value);}
     operator VkPastPresentationTimingGOOGLE const &() const noexcept {
         return *reinterpret_cast<const VkPastPresentationTimingGOOGLE*>(this);
@@ -6539,7 +6712,8 @@ struct PresentTimeGOOGLE {
     uint32_t presentID{0};
     uint64_t desiredPresentTime{0};
     constexpr bool operator==(PresentTimeGOOGLE const& value) const {
-        return presentID == value.presentID && desiredPresentTime == value.desiredPresentTime ;}
+        bool is_equal = true;
+        return is_equal && presentID == value.presentID && desiredPresentTime == value.desiredPresentTime ;}
     constexpr bool operator!=(PresentTimeGOOGLE const& value) const {return !(*this == value);}
     operator VkPresentTimeGOOGLE const &() const noexcept {
         return *reinterpret_cast<const VkPresentTimeGOOGLE*>(this);
@@ -6606,7 +6780,8 @@ struct ViewportWScalingNV {
     float xcoeff{0.f};
     float ycoeff{0.f};
     constexpr bool operator==(ViewportWScalingNV const& value) const {
-        return xcoeff == value.xcoeff && ycoeff == value.ycoeff ;}
+        bool is_equal = true;
+        return is_equal && xcoeff == value.xcoeff && ycoeff == value.ycoeff ;}
     constexpr bool operator!=(ViewportWScalingNV const& value) const {return !(*this == value);}
     operator VkViewportWScalingNV const &() const noexcept {
         return *reinterpret_cast<const VkViewportWScalingNV*>(this);
@@ -6634,7 +6809,8 @@ struct ViewportSwizzleNV {
     ViewportCoordinateSwizzleNV z{static_cast<ViewportCoordinateSwizzleNV>(0)};
     ViewportCoordinateSwizzleNV w{static_cast<ViewportCoordinateSwizzleNV>(0)};
     constexpr bool operator==(ViewportSwizzleNV const& value) const {
-        return x == value.x && y == value.y && z == value.z && w == value.w ;}
+        bool is_equal = true;
+        return is_equal && x == value.x && y == value.y && z == value.z && w == value.w ;}
     constexpr bool operator!=(ViewportSwizzleNV const& value) const {return !(*this == value);}
     operator VkViewportSwizzleNV const &() const noexcept {
         return *reinterpret_cast<const VkViewportSwizzleNV*>(this);
@@ -6697,7 +6873,8 @@ struct InputAttachmentAspectReference {
     uint32_t inputAttachmentIndex{0};
     ImageAspectFlags aspectMask{};
     constexpr bool operator==(InputAttachmentAspectReference const& value) const {
-        return subpass == value.subpass && inputAttachmentIndex == value.inputAttachmentIndex && aspectMask == value.aspectMask ;}
+        bool is_equal = true;
+        return is_equal && subpass == value.subpass && inputAttachmentIndex == value.inputAttachmentIndex && aspectMask == value.aspectMask ;}
     constexpr bool operator!=(InputAttachmentAspectReference const& value) const {return !(*this == value);}
     operator VkInputAttachmentAspectReference const &() const noexcept {
         return *reinterpret_cast<const VkInputAttachmentAspectReference*>(this);
@@ -7162,7 +7339,8 @@ struct SampleLocationEXT {
     float x{0.f};
     float y{0.f};
     constexpr bool operator==(SampleLocationEXT const& value) const {
-        return x == value.x && y == value.y ;}
+        bool is_equal = true;
+        return is_equal && x == value.x && y == value.y ;}
     constexpr bool operator!=(SampleLocationEXT const& value) const {return !(*this == value);}
     operator VkSampleLocationEXT const &() const noexcept {
         return *reinterpret_cast<const VkSampleLocationEXT*>(this);
@@ -7509,7 +7687,9 @@ struct ShaderResourceUsageAMD {
     size_t ldsUsageSizeInBytes{0};
     size_t scratchMemUsageInBytes{0};
     constexpr bool operator==(ShaderResourceUsageAMD const& value) const {
-        return numUsedVgprs == value.numUsedVgprs && numUsedSgprs == value.numUsedSgprs && ldsSizePerLocalWorkGroup == value.ldsSizePerLocalWorkGroup && ldsUsageSizeInBytes == value.ldsUsageSizeInBytes && scratchMemUsageInBytes == value.scratchMemUsageInBytes ;}
+        bool is_equal = true;
+        return is_equal && numUsedVgprs == value.numUsedVgprs && numUsedSgprs == value.numUsedSgprs && ldsSizePerLocalWorkGroup == value.ldsSizePerLocalWorkGroup 
+        && ldsUsageSizeInBytes == value.ldsUsageSizeInBytes && scratchMemUsageInBytes == value.scratchMemUsageInBytes ;}
     constexpr bool operator!=(ShaderResourceUsageAMD const& value) const {return !(*this == value);}
     operator VkShaderResourceUsageAMD const &() const noexcept {
         return *reinterpret_cast<const VkShaderResourceUsageAMD*>(this);
@@ -7527,8 +7707,11 @@ struct ShaderStatisticsInfoAMD {
     uint32_t numAvailableSgprs{0};
     uint32_t computeWorkGroupSize[3];
     constexpr bool operator==(ShaderStatisticsInfoAMD const& value) const {
-        return shaderStageMask == value.shaderStageMask && resourceUsage == value.resourceUsage && numPhysicalVgprs == value.numPhysicalVgprs && numPhysicalSgprs == value.numPhysicalSgprs && numAvailableVgprs == value.numAvailableVgprs && numAvailableSgprs == value.numAvailableSgprs && computeWorkGroupSize[0] == value.computeWorkGroupSize[0] && computeWorkGroupSize[1] == value.computeWorkGroupSize[1] && computeWorkGroupSize[2] == value.computeWorkGroupSize[2]
-        ;}
+        bool is_equal = true;
+        for(size_t i = 0; i < 3; i++)
+            is_equal &= computeWorkGroupSize[i] == value.computeWorkGroupSize[i];
+        return is_equal && shaderStageMask == value.shaderStageMask && resourceUsage == value.resourceUsage && numPhysicalVgprs == value.numPhysicalVgprs && numPhysicalSgprs == value.numPhysicalSgprs 
+        && numAvailableVgprs == value.numAvailableVgprs && numAvailableSgprs == value.numAvailableSgprs ;}
     constexpr bool operator!=(ShaderStatisticsInfoAMD const& value) const {return !(*this == value);}
     operator VkShaderStatisticsInfoAMD const &() const noexcept {
         return *reinterpret_cast<const VkShaderStatisticsInfoAMD*>(this);
@@ -8041,7 +8224,8 @@ struct VertexInputBindingDivisorDescriptionEXT {
     uint32_t binding{0};
     uint32_t divisor{0};
     constexpr bool operator==(VertexInputBindingDivisorDescriptionEXT const& value) const {
-        return binding == value.binding && divisor == value.divisor ;}
+        bool is_equal = true;
+        return is_equal && binding == value.binding && divisor == value.divisor ;}
     constexpr bool operator!=(VertexInputBindingDivisorDescriptionEXT const& value) const {return !(*this == value);}
     operator VkVertexInputBindingDivisorDescriptionEXT const &() const noexcept {
         return *reinterpret_cast<const VkVertexInputBindingDivisorDescriptionEXT*>(this);
@@ -8535,7 +8719,8 @@ struct CoarseSampleLocationNV {
     uint32_t pixelY{0};
     uint32_t sample{0};
     constexpr bool operator==(CoarseSampleLocationNV const& value) const {
-        return pixelX == value.pixelX && pixelY == value.pixelY && sample == value.sample ;}
+        bool is_equal = true;
+        return is_equal && pixelX == value.pixelX && pixelY == value.pixelY && sample == value.sample ;}
     constexpr bool operator!=(CoarseSampleLocationNV const& value) const {return !(*this == value);}
     operator VkCoarseSampleLocationNV const &() const noexcept {
         return *reinterpret_cast<const VkCoarseSampleLocationNV*>(this);
@@ -8608,7 +8793,8 @@ struct DrawMeshTasksIndirectCommandNV {
     uint32_t taskCount{0};
     uint32_t firstTask{0};
     constexpr bool operator==(DrawMeshTasksIndirectCommandNV const& value) const {
-        return taskCount == value.taskCount && firstTask == value.firstTask ;}
+        bool is_equal = true;
+        return is_equal && taskCount == value.taskCount && firstTask == value.firstTask ;}
     constexpr bool operator!=(DrawMeshTasksIndirectCommandNV const& value) const {return !(*this == value);}
     operator VkDrawMeshTasksIndirectCommandNV const &() const noexcept {
         return *reinterpret_cast<const VkDrawMeshTasksIndirectCommandNV*>(this);
@@ -8938,7 +9124,8 @@ struct TraceRaysIndirectCommandKHR {
     uint32_t height{0};
     uint32_t depth{0};
     constexpr bool operator==(TraceRaysIndirectCommandKHR const& value) const {
-        return width == value.width && height == value.height && depth == value.depth ;}
+        bool is_equal = true;
+        return is_equal && width == value.width && height == value.height && depth == value.depth ;}
     constexpr bool operator!=(TraceRaysIndirectCommandKHR const& value) const {return !(*this == value);}
     operator VkTraceRaysIndirectCommandKHR const &() const noexcept {
         return *reinterpret_cast<const VkTraceRaysIndirectCommandKHR*>(this);
@@ -8953,7 +9140,9 @@ struct DrmFormatModifierPropertiesEXT {
     uint32_t drmFormatModifierPlaneCount{0};
     FormatFeatureFlags drmFormatModifierTilingFeatures{};
     constexpr bool operator==(DrmFormatModifierPropertiesEXT const& value) const {
-        return drmFormatModifier == value.drmFormatModifier && drmFormatModifierPlaneCount == value.drmFormatModifierPlaneCount && drmFormatModifierTilingFeatures == value.drmFormatModifierTilingFeatures ;}
+        bool is_equal = true;
+        return is_equal && drmFormatModifier == value.drmFormatModifier && drmFormatModifierPlaneCount == value.drmFormatModifierPlaneCount && drmFormatModifierTilingFeatures == value.drmFormatModifierTilingFeatures 
+        ;}
     constexpr bool operator!=(DrmFormatModifierPropertiesEXT const& value) const {return !(*this == value);}
     operator VkDrmFormatModifierPropertiesEXT const &() const noexcept {
         return *reinterpret_cast<const VkDrmFormatModifierPropertiesEXT*>(this);
@@ -9449,7 +9638,8 @@ struct PipelineCreationFeedbackEXT {
     PipelineCreationFeedbackFlagsEXT flags{};
     uint64_t duration{0};
     constexpr bool operator==(PipelineCreationFeedbackEXT const& value) const {
-        return flags == value.flags && duration == value.duration ;}
+        bool is_equal = true;
+        return is_equal && flags == value.flags && duration == value.duration ;}
     constexpr bool operator!=(PipelineCreationFeedbackEXT const& value) const {return !(*this == value);}
     operator VkPipelineCreationFeedbackEXT const &() const noexcept {
         return *reinterpret_cast<const VkPipelineCreationFeedbackEXT*>(this);
@@ -9578,7 +9768,9 @@ union PerformanceCounterResultKHR {
     float float32;
     double float64;
     constexpr bool operator==(PerformanceCounterResultKHR const& value) const {
-        return int32 == value.int32 && int64 == value.int64 && uint32 == value.uint32 && uint64 == value.uint64 && float32 == value.float32 && float64 == value.float64 ;}
+        bool is_equal = true;
+        return is_equal && int32 == value.int32 && int64 == value.int64 && uint32 == value.uint32 && uint64 == value.uint64 && float32 == value.float32 && float64 == value.float64 
+        ;}
     constexpr bool operator!=(PerformanceCounterResultKHR const& value) const {return !(*this == value);}
 };
 struct AcquireProfilingLockInfoKHR {
@@ -9899,7 +10091,8 @@ union PipelineExecutableStatisticValueKHR {
     uint64_t u64;
     double f64;
     constexpr bool operator==(PipelineExecutableStatisticValueKHR const& value) const {
-        return b32 == value.b32 && i64 == value.i64 && u64 == value.u64 && f64 == value.f64 ;}
+        bool is_equal = true;
+        return is_equal && b32 == value.b32 && i64 == value.i64 && u64 == value.u64 && f64 == value.f64 ;}
     constexpr bool operator!=(PipelineExecutableStatisticValueKHR const& value) const {return !(*this == value);}
 };
 struct PipelineExecutableStatisticKHR {
@@ -10410,7 +10603,9 @@ struct AccelerationStructureBuildOffsetInfoKHR {
     uint32_t firstVertex{0};
     uint32_t transformOffset{0};
     constexpr bool operator==(AccelerationStructureBuildOffsetInfoKHR const& value) const {
-        return primitiveCount == value.primitiveCount && primitiveOffset == value.primitiveOffset && firstVertex == value.firstVertex && transformOffset == value.transformOffset ;}
+        bool is_equal = true;
+        return is_equal && primitiveCount == value.primitiveCount && primitiveOffset == value.primitiveOffset && firstVertex == value.firstVertex && transformOffset == value.transformOffset 
+        ;}
     constexpr bool operator!=(AccelerationStructureBuildOffsetInfoKHR const& value) const {return !(*this == value);}
     operator VkAccelerationStructureBuildOffsetInfoKHR const &() const noexcept {
         return *reinterpret_cast<const VkAccelerationStructureBuildOffsetInfoKHR*>(this);
@@ -10459,7 +10654,8 @@ struct AabbPositionsKHR {
     float maxY{0.f};
     float maxZ{0.f};
     constexpr bool operator==(AabbPositionsKHR const& value) const {
-        return minX == value.minX && minY == value.minY && minZ == value.minZ && maxX == value.maxX && maxY == value.maxY && maxZ == value.maxZ ;}
+        bool is_equal = true;
+        return is_equal && minX == value.minX && minY == value.minY && minZ == value.minZ && maxX == value.maxX && maxY == value.maxY && maxZ == value.maxZ ;}
     constexpr bool operator!=(AabbPositionsKHR const& value) const {return !(*this == value);}
     operator VkAabbPositionsKHR const &() const noexcept {
         return *reinterpret_cast<const VkAabbPositionsKHR*>(this);
@@ -10474,10 +10670,11 @@ using AabbPositionsNV = AabbPositionsKHR;
 struct TransformMatrixKHR {
     float matrix[3][4];
     constexpr bool operator==(TransformMatrixKHR const& value) const {
-        return matrix[0][0] == value.matrix[0][0] && matrix[0][1] == value.matrix[0][1] && matrix[0][2] == value.matrix[0][2] && matrix[0][3] == value.matrix[0][3]
-         && matrix[1][0] == value.matrix[1][0] && matrix[1][1] == value.matrix[1][1] && matrix[1][2] == value.matrix[1][2] && matrix[1][3] == value.matrix[1][3]
-         && matrix[2][0] == value.matrix[2][0] && matrix[2][1] == value.matrix[2][1] && matrix[2][2] == value.matrix[2][2] && matrix[2][3] == value.matrix[2][3]
-        ;}
+        bool is_equal = true;
+        for(size_t i = 0; i < 3; i++)
+            for(size_t j = 0; j < 4; j++)
+                is_equal &= matrix[i][j] == value.matrix[i][j];
+        return is_equal;}
     constexpr bool operator!=(TransformMatrixKHR const& value) const {return !(*this == value);}
     operator VkTransformMatrixKHR const &() const noexcept {
         return *reinterpret_cast<const VkTransformMatrixKHR*>(this);
@@ -10497,7 +10694,9 @@ struct AccelerationStructureInstanceKHR {
     VkGeometryInstanceFlagsKHR flags:8;
     uint64_t accelerationStructureReference{0};
     constexpr bool operator==(AccelerationStructureInstanceKHR const& value) const {
-        return transform == value.transform && instanceCustomIndex == value.instanceCustomIndex && mask == value.mask && instanceShaderBindingTableRecordOffset == value.instanceShaderBindingTableRecordOffset && flags == value.flags && accelerationStructureReference == value.accelerationStructureReference ;}
+        bool is_equal = true;
+        return is_equal && transform == value.transform && instanceCustomIndex == value.instanceCustomIndex && mask == value.mask && instanceShaderBindingTableRecordOffset == value.instanceShaderBindingTableRecordOffset 
+        && flags == value.flags && accelerationStructureReference == value.accelerationStructureReference ;}
     constexpr bool operator!=(AccelerationStructureInstanceKHR const& value) const {return !(*this == value);}
     operator VkAccelerationStructureInstanceKHR const &() const noexcept {
         return *reinterpret_cast<const VkAccelerationStructureInstanceKHR*>(this);
