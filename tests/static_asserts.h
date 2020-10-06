@@ -1,6 +1,6 @@
 #pragma once
 // clang-format off
-#include "vkpp_core.h"
+#include "vkm_core.h"
 namespace vk {
 static_assert( sizeof(BaseOutStructure) == sizeof(VkBaseOutStructure), "Must maintain size between types" );
 static_assert( std::is_standard_layout<BaseOutStructure>::value, "Must be a standard layout type" );

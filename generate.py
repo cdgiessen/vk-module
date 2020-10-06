@@ -1,6 +1,7 @@
 
 import xml.etree.ElementTree
 import re
+from codegen_text import *
 
 vendor_abbreviations = []
 
@@ -274,69 +275,6 @@ class EmptyBitmask:
         file.write(f'    if (flag.flags == 0) return \"None\";\n')
         file.write(f'    return "Unknown";\n}};\n')
         PlatformGuardFooter(file, self.platform)
-
-
-
-bitmask_flags_macro = '''
-#define DECLARE_ENUM_FLAG_OPERATORS(FLAG_TYPE, FLAG_BITS, BASE_NAME)                \\
-                                                                                    \\
-struct FLAG_TYPE {                                                                  \\
-    using base_type = typename std::underlying_type_t<FLAG_BITS>;                   \\
-    base_type flags = static_cast<base_type>(0);                                    \\
-                                                                                    \\
-    constexpr explicit FLAG_TYPE() noexcept = default;                              \\
-    constexpr explicit FLAG_TYPE(base_type in) noexcept: flags(in){ }               \\
-    constexpr FLAG_TYPE(FLAG_BITS in) noexcept: flags(static_cast<base_type>(in)){ }\\
-    constexpr bool operator==(FLAG_TYPE const& right) const { return flags == right.flags;}\\
-    constexpr bool operator!=(FLAG_TYPE const& right) const { return flags != right.flags;}\\
-    constexpr explicit operator bool() const noexcept {                             \\
-      return flags != 0;                                                            \\
-    }                                                                               \\
-    constexpr explicit operator BASE_NAME() const noexcept {                        \\
-        return static_cast<BASE_NAME>(flags);                                       \\
-    }                                                                               \\
-};                                                                                  \\
-constexpr FLAG_TYPE operator|(FLAG_TYPE a, FLAG_TYPE b) noexcept {                  \\
-    return static_cast<FLAG_TYPE>(a.flags | b.flags);                               \\
-}                                                                                   \\
-constexpr FLAG_TYPE operator&(FLAG_TYPE a, FLAG_TYPE b) noexcept {                  \\
-    return static_cast<FLAG_TYPE>(a.flags & b.flags);                               \\
-}                                                                                   \\
-constexpr FLAG_TYPE operator^(FLAG_TYPE a, FLAG_TYPE b) noexcept {                  \\
-    return static_cast<FLAG_TYPE>(a.flags ^ b.flags);                               \\
-}                                                                                   \\
-constexpr FLAG_TYPE operator~(FLAG_TYPE a) noexcept {                               \\
-    return static_cast<FLAG_TYPE>(~a.flags);                                        \\
-}                                                                                   \\
-constexpr FLAG_TYPE& operator|=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {               \\
-    a.flags = (a.flags | b.flags);                                                  \\
-    return a;                                                                       \\
-}                                                                                   \\
-constexpr FLAG_TYPE& operator&=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {               \\
-    a.flags = (a.flags & b.flags);                                                  \\
-    return a;                                                                       \\
-}                                                                                   \\
-constexpr FLAG_TYPE operator^=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {                \\
-    a.flags = (a.flags ^ b.flags);                                                  \\
-    return a;                                                                       \\
-}                                                                                   \\
-constexpr FLAG_TYPE operator|(FLAG_BITS a, FLAG_BITS b) noexcept {                  \\
-    using T = FLAG_TYPE::base_type;                                                 \\
-    return static_cast<FLAG_TYPE>(static_cast<T>(a) | static_cast<T>(b));           \\
-}                                                                                   \\
-constexpr FLAG_TYPE operator&(FLAG_BITS a, FLAG_BITS b) noexcept {                  \\
-    using T = FLAG_TYPE::base_type;                                                 \\
-    return static_cast<FLAG_TYPE>(static_cast<T>(a) & static_cast<T>(b));           \\
-}                                                                                   \\
-constexpr FLAG_TYPE operator~(FLAG_BITS key) noexcept {                             \\
-    using T = FLAG_TYPE::base_type;                                                 \\
-    return static_cast<FLAG_TYPE>(~static_cast<T>(key));                            \\
-}                                                                                   \\
-constexpr FLAG_TYPE operator^(FLAG_BITS a, FLAG_BITS b) noexcept {                  \\
-    using T = FLAG_TYPE::base_type;                                                 \\
-    return static_cast<FLAG_TYPE>(static_cast<T>(a) ^ static_cast<T>(b));           \\
-}                                                                                   \\
-'''
 
 class Flags:
     def __init__(self, node):
@@ -651,115 +589,6 @@ class Structure:
             file.write(f'static_assert( std::is_standard_layout<{self.name[2:]}>::value, "Must be a standard layout type" );\n')
             PlatformGuardFooter(file, self.platform)
 
-vulkan_loader_text = '''
-#if !defined(VULKAN_CUSTOM_ASSERT)
-#include <cassert>
-#define VULKAN_CUSTOM_ASSERT assert
-#endif
-
-#if defined(WIN32)
-    #define VC_EXTRALEAN
-    #define WIN32_LEAN_AND_MEAN
-    #include <windows.h>
-    #if defined(MemoryBarrier)
-        #undef MemoryBarrier
-    #endif
-#elif defined(__linux__) || defined(__APPLE__)
-    #include <dlfcn.h>
-#endif
-namespace vk {
-class Loader {
-    public:
-    // Used to enable RAII vk::Loader behavior
-    struct LoadAtConstruction {};
-
-    explicit Loader() noexcept {}
-    explicit Loader(LoadAtConstruction load) noexcept {
-        init();
-    }
-    explicit Loader(PFN_vkGetInstanceProcAddr get_instance_proc_addr) noexcept : 
-        get_instance_proc_addr(get_instance_proc_addr) { }
-    ~Loader() noexcept {
-        close();
-    }
-    Loader(Loader const& other) = delete;
-    Loader& operator=(Loader const& other) = delete;
-    Loader(Loader && other) noexcept: library(other.library), get_instance_proc_addr(other.get_instance_proc_addr) {
-        other.get_instance_proc_addr = 0;
-        other.library = 0;
-    }
-    Loader& operator=(Loader && other) noexcept {
-        if (this != &other)
-        {
-            close();
-            library = other.library; 
-            get_instance_proc_addr = other.get_instance_proc_addr;
-            other.get_instance_proc_addr = 0;
-            other.library = 0;
-        }
-        return *this;
-    }
-
-    vk::Result init(PFN_vkGetInstanceProcAddr get_instance_proc_addr = nullptr) noexcept {
-        if (get_instance_proc_addr != nullptr) {
-            this->get_instance_proc_addr = get_instance_proc_addr;
-            return vk::Result::Success;
-        }
-#if defined(__linux__)
-        library = dlopen("libvulkan.so", RTLD_NOW | RTLD_LOCAL);
-        if (!library) library = dlopen("libvulkan.so.1", RTLD_NOW | RTLD_LOCAL);
-#elif defined(__APPLE__)
-        library = dlopen("libvulkan.dylib", RTLD_NOW | RTLD_LOCAL);
-#elif defined(_WIN32)
-        library = LoadLibrary(TEXT("vulkan-1.dll"));
-#endif
-        if (library == 0) return vk::Result::ErrorInitializationFailed;
-        Load(this->get_instance_proc_addr, "vkGetInstanceProcAddr");
-        if (this->get_instance_proc_addr == nullptr) return vk::Result::ErrorInitializationFailed;
-        return vk::Result::Success;
-    }
-    void close() noexcept {
-        if (library != nullptr) {
-#if defined(__linux__) || defined(__APPLE__)
-            dlclose(library);
-#elif defined(_WIN32)
-            FreeLibrary(library);
-#endif
-        library = 0;
-        }
-    }
-
-    // Check if vulkan is loaded and ready for use
-    [[nodiscard]] bool is_init() const noexcept { return get_instance_proc_addr != 0; }
-
-    // Get `vkGetInstanceProcAddr` if it was loaded, 0 if not
-    [[nodiscard]] PFN_vkGetInstanceProcAddr get() const noexcept {
-        assert(get_instance_proc_addr != nullptr && "Must call init() before use");
-        return get_instance_proc_addr;
-    }
-
-private:
-    
-    template <typename T>
-    void Load(T &func_dest, const char *func_name) {
-#if defined(__linux__) || defined(__APPLE__)
-        func_dest = reinterpret_cast<T>(dlsym(library, func_name));
-#elif defined(_WIN32)
-        func_dest = reinterpret_cast<T>(GetProcAddress(library, func_name));
-#endif
-    }
-
-#if defined(__linux__) || defined(__APPLE__)
-    void *library = nullptr;
-#elif defined(_WIN32)
-    HMODULE library = nullptr;
-#endif
-
-    PFN_vkGetInstanceProcAddr get_instance_proc_addr = nullptr;
-    
-};
-'''
-
 class Function:
     def __init__(self, node, handles, dispatchable_handles, default_values):
         self.success_codes = []
@@ -1049,6 +878,7 @@ class DispatchTable:
             gpa_val = 'nullptr'
         
         #extension function dispatch tables
+        #TODO this doesn't cath all extensions, needs to be amended
         if len(self.guarded_functions.keys()) == 1:
             guard = list(self.guarded_functions.keys())[0]
             func_list = list(self.guarded_functions.values())[0]
@@ -1313,6 +1143,62 @@ class BindingGenerator:
         self.dispatchable_handle_tables.append(DispatchableHandleDispatchTable('VkQueue', 'device',{'Queue': ''}, self.functions))
         self.dispatchable_handle_tables.append(DispatchableHandleDispatchTable('VkCommandBuffer', 'device',{'Cmd': '', 'CommandBuffer':''}, self.functions))
   
+def print_vkm_main(bindings, cpp20mode, cpp20str):
+    with open(f'cpp{cpp20str}/vkm.h', 'w') as vkm:
+        vkm.write('#pragma once\n')
+        vkm.write('#include "vkm_core.h"\n')
+        vkm.write('#include "vkm_function.h"\n')
+        vkm.write('#include "vkm_string.h"\n')
+   
+def print_vkm_core(bindings, cpp20mode, cpp20str):
+    with open(f'cpp{cpp20str}/vkm_core.h', 'w') as vkm_core:
+        vkm_core.write('#pragma once\n// clang-format off\n')
+        vkm_core.write('#include <stdint.h>\n')
+        vkm_core.write('#include <type_traits>\n')
+        vkm_core.write('#define VK_ENABLE_BETA_EXTENSIONS\n')
+        vkm_core.write('#include <vulkan/vulkan.h>\n')
+        vkm_core.write('namespace vk {\n')
+        [ constant.print_base(vkm_core) for constant in api_constants.values() ]
+        [ base_type.print_base(vkm_core) for base_type in bindings.base_types ]
+        PrintConsecutivePlatforms(vkm_core, bindings.enum_dict.values())
+        PrintConsecutivePlatforms(vkm_core, bindings.bitmask_dict.values())
+        vkm_core.write(bitmask_flags_macro + '\n')
+        PrintConsecutivePlatforms(vkm_core, bindings.flags_dict.values())
+        PrintConsecutivePlatforms(vkm_core, bindings.handles.values())
+        PrintConsecutivePlatforms(vkm_core, bindings.structures, cpp20mode)
+        vkm_core.write('} // namespace vk\n// clang-format on\n')
+
+def print_vkm_function(bindings, cpp20mode, cpp20str):
+    with open(f'cpp{cpp20str}/vkm_function.h', 'w') as vkm_function:
+        vkm_function.write('#pragma once\n// clang-format off\n')
+        vkm_function.write('#include "vkm_core.h"\n')
+        vkm_function.write(vulkan_loader_text + '\n') #defines namespace vk here
+        [ dispatch_table.print_base(vkm_function) for dispatch_table in bindings.dispatch_tables ]
+        [ table.print_base(vkm_function) for table in bindings.dispatchable_handle_tables ]
+        vkm_function.write('} // namespace vk\n// clang-format on\n')
+
+def print_vkm_string(bindings, cpp20mode, cpp20str):
+    with open(f'cpp{cpp20str}/vkm_string.h', 'w') as string_decl:
+        string_decl.write('#pragma once\n// clang-format off\n')
+        string_decl.write('#include "vkm_core.h"\n')
+        string_decl.write('#include <string>\n')
+        string_decl.write('namespace vk {\n')
+        [ enum.print_string(string_decl) for enum in bindings.enum_dict.values()]
+        [ bitmask.print_string(string_decl) for bitmask in bindings.bitmask_dict.values()]
+        string_decl.write('} // namespace vk\n// clang-format on\n')
+
+    with open(f'cpp{cpp20str}/vkm_string.cpp', 'w') as string_def:
+        string_def.write('// clang-format off\n')
+        string_def.write('#include "vkm_string.h"\n')
+        string_def.write('namespace vk {\n')
+        string_def.write('#if defined(WIN32)\n')
+        string_def.write('#pragma warning( disable : 4065 )\n')
+        string_def.write('#endif //defined(WIN32)\n')
+        [ enum.print_string_defs(string_def) for enum in bindings.enum_dict.values()]
+        [ bitmask.print_string_defs(string_def) for bitmask in bindings.bitmask_dict.values()]
+        string_def.write('} // namespace vk\n// clang-format on\n')
+    
+
 def main():
     tree = xml.etree.ElementTree.parse('registry/vk.xml')
     root = tree.getroot()
@@ -1322,62 +1208,20 @@ def main():
 
     bindings = BindingGenerator(root)
 
-    with open('include/vkpp.h', 'w') as vkpp:
-        vkpp.write('#pragma once\n// clang-format off\n')
-        vkpp.write('#include "vkpp_core.h"\n')
-        vkpp.write('#include "vkpp_functions.h"\n')
-        vkpp.write('#include "vkpp_string.h"\n')
-        vkpp.write('// clang-format on\n')
+    print_vkm_main(bindings, False, '17')
+    print_vkm_core(bindings, False, '17')
+    print_vkm_function(bindings, False, '17')
+    print_vkm_string(bindings, False, '17')
 
-    with open('include/vkpp_core.h', 'w') as vkpp_core:
-        vkpp_core.write('#pragma once\n// clang-format off\n')
-        vkpp_core.write('#include <stdint.h>\n')
-        vkpp_core.write('#include <type_traits>\n')
-        vkpp_core.write('#define VK_ENABLE_BETA_EXTENSIONS\n')
-        vkpp_core.write('#include <vulkan/vulkan.h>\n')
-        vkpp_core.write('namespace vk {\n')
-        [ constant.print_base(vkpp_core) for constant in api_constants.values() ]
-        [ base_type.print_base(vkpp_core) for base_type in bindings.base_types ]
-        PrintConsecutivePlatforms(vkpp_core, bindings.enum_dict.values())
-        PrintConsecutivePlatforms(vkpp_core, bindings.bitmask_dict.values())
-        vkpp_core.write(bitmask_flags_macro + '\n')
-        PrintConsecutivePlatforms(vkpp_core, bindings.flags_dict.values())
-        PrintConsecutivePlatforms(vkpp_core, bindings.handles.values())
-        PrintConsecutivePlatforms(vkpp_core, bindings.structures, False)
-        vkpp_core.write('} // namespace vk\n// clang-format on\n')
+    print_vkm_main(bindings, True, '20')
+    print_vkm_core(bindings, True, '20')
+    print_vkm_function(bindings, True, '20')
+    print_vkm_string(bindings, True, '20')
 
-    with open('include/vkpp_functions.h', 'w') as vkpp_functions:
-        vkpp_functions.write('#pragma once\n// clang-format off\n')
-        vkpp_functions.write('#include "vkpp_core.h"\n')
-        vkpp_functions.write(vulkan_loader_text + '\n') #defines namespace vk here
-        [ dispatch_table.print_base(vkpp_functions) for dispatch_table in bindings.dispatch_tables ]
-        [ table.print_base(vkpp_functions) for table in bindings.dispatchable_handle_tables ]
-        vkpp_functions.write('} // namespace vk\n// clang-format on\n')
-
-    with open('include/vkpp_string.h', 'w') as string_helpers:
-        string_helpers.write('#pragma once\n// clang-format off\n')
-        string_helpers.write('#include "vkpp_core.h"\n')
-        string_helpers.write('#include <string>\n')
-        string_helpers.write('namespace vk {\n')
-        [ enum.print_string(string_helpers) for enum in bindings.enum_dict.values()]
-        [ bitmask.print_string(string_helpers) for bitmask in bindings.bitmask_dict.values()]
-        string_helpers.write('} // namespace vk\n// clang-format on\n')
-
-    with open('include/vkpp_string.cpp', 'w') as string_helpers_defs:
-        string_helpers_defs.write('// clang-format off\n')
-        string_helpers_defs.write('#include "vkpp_string.h"\n')
-        string_helpers_defs.write('namespace vk {\n')
-        string_helpers_defs.write('#if defined(WIN32)\n')
-        string_helpers_defs.write('#pragma warning( disable : 4065 )\n')
-        string_helpers_defs.write('#endif //defined(WIN32)\n')
-        [ enum.print_string_defs(string_helpers_defs) for enum in bindings.enum_dict.values()]
-        [ bitmask.print_string_defs(string_helpers_defs) for bitmask in bindings.bitmask_dict.values()]
-        string_helpers_defs.write('} // namespace vk\n// clang-format on\n')
-    
     with open('tests/static_asserts.h', 'w') as static_asserts:
         static_asserts.write('#pragma once\n')
         static_asserts.write('// clang-format off\n')
-        static_asserts.write('#include "vkpp_core.h"\n')
+        static_asserts.write('#include "vkm_core.h"\n')
         static_asserts.write('namespace vk {\n')
         [ structure.print_static_asserts(static_asserts) for structure in bindings.structures ]
         [ handle.print_static_asserts(static_asserts) for handle in bindings.handles.values() ]

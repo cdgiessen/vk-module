@@ -1,9 +1,11 @@
 #include <iostream>
 #include <vector>
-#include "vkpp.h"
-#include "vkpp_string.h"
+#include "vkm.h"
+#include "vkm_string.h"
 
-int main() {
+int
+main()
+{
     vk::Loader loader;
     vk::Result res = loader.init();
     if (res != vk::Result::Success)
@@ -15,7 +17,7 @@ int main() {
     std::vector<vk::LayerProperties> props(count);
     res = free_funcs.EnumerateInstanceLayerProperties(count, props.data());
     std::cout << "count " << count << "\n";
-    for (auto &prop : props)
+    for (auto& prop : props)
         std::cout << prop.layerName << "\n";
 
     vk::InstanceCreateInfo info;
@@ -47,8 +49,12 @@ int main() {
 
     vk::ImageFormatProperties image_props;
     vk::ImageCreateFlags img_flags = vk::ImageCreateFlagBits::SparseBinding;
-    res = phys_dev_funcs.GetImageFormatProperties(vk::Format::Undefined, vk::ImageType::e1D, vk::ImageTiling::Optimal,
-                                                  vk::ImageUsageFlagBits::TransferDst, img_flags, image_props);
+    res = phys_dev_funcs.GetImageFormatProperties(vk::Format::Undefined,
+                                                  vk::ImageType::e1D,
+                                                  vk::ImageTiling::Optimal,
+                                                  vk::ImageUsageFlagBits::TransferDst,
+                                                  img_flags,
+                                                  image_props);
     VkImageUsageFlagBits test_usage_flag_bits = +vk::ImageUsageFlagBits::TransferDst;
     vk::SwapchainCreateInfoKHR swap_info;
     swap_info.preTransform = vk::SurfaceTransformFlagBitsKHR::IdentityBitKHR;
@@ -72,17 +78,11 @@ int main() {
     vk::DeviceFunctions device_functions(inst_funcs, device);
 
     uint32_t queue_indices = 0;
-    // vk::BufferCreateInfo buffer_info{.size = 100,
-    //                                  .usage = vk::BufferUsageFlagBits::IndexBuffer,
-    //                                  .sharingMode = vk::SharingMode::Exclusive,
-    //                                  .queueFamilyIndexCount = 1,
-    //                                  .pQueueFamilyIndices = &queue_indices};
-    vk::BufferCreateInfo buffer_info;
-    buffer_info.size = 100;
-    buffer_info.usage = vk::BufferUsageFlagBits::IndexBuffer;
-    buffer_info.sharingMode = vk::SharingMode::Exclusive;
-    buffer_info.queueFamilyIndexCount = 1;
-    buffer_info.pQueueFamilyIndices = &queue_indices;
+    vk::BufferCreateInfo buffer_info{ .size = 100,
+                                      .usage = vk::BufferUsageFlagBits::IndexBuffer,
+                                      .sharingMode = vk::SharingMode::Exclusive,
+                                      .queueFamilyIndexCount = 1,
+                                      .pQueueFamilyIndices = &queue_indices };
     vk::Buffer buffer;
     res = device_functions.CreateBuffer(buffer_info, nullptr, buffer);
     if (res != vk::Result::Success)
@@ -94,7 +94,7 @@ int main() {
     bool equal = x == y;
     bool not_equal = x != y;
 
-    vk::Extent2D extent = {100, 200};
+    vk::Extent2D extent = { 100, 200 };
 
     return 0;
 }

@@ -1,6 +1,6 @@
 #pragma once
 // clang-format off
-#include "vkpp_core.h"
+#include "vkm_core.h"
 
 #if !defined(VULKAN_CUSTOM_ASSERT)
 #include <cassert>

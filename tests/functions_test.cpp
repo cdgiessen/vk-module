@@ -1,8 +1,9 @@
 
 #include <catch2/catch.hpp>
-#include "vkpp_functions.h"
+#include "vkm_functions.h"
 
-TEST_CASE("Global Function Usage", "[vk-module.functions]") {
+TEST_CASE("Global Function Usage", "[vk-module.functions]")
+{
     vk::Loader loader;
     vk::Result res = loader.init();
     REQUIRE(loader.is_init());
@@ -29,7 +30,8 @@ TEST_CASE("Global Function Usage", "[vk-module.functions]") {
     REQUIRE(res == vk::Result::Success);
 }
 
-TEST_CASE("Manual .init()", "[vk-module.functions]") {
+TEST_CASE("Manual .init()", "[vk-module.functions]")
+{
     vk::Loader loader;
     vk::Result res = loader.init();
     REQUIRE(loader.is_init());
@@ -42,7 +44,8 @@ TEST_CASE("Manual .init()", "[vk-module.functions]") {
     REQUIRE(free_funcs.pfn_EnumerateInstanceVersion != nullptr);
 #endif
 }
-TEST_CASE("Constructor init", "[vk-module.functions]") {
+TEST_CASE("Constructor init", "[vk-module.functions]")
+{
     vk::Loader loader(vk::Loader::LoadAtConstruction{});
     REQUIRE(loader.is_init());
     vk::GlobalFunctions free_funcs(loader);
@@ -53,7 +56,8 @@ TEST_CASE("Constructor init", "[vk-module.functions]") {
     REQUIRE(free_funcs.pfn_EnumerateInstanceVersion != nullptr);
 #endif
 }
-TEST_CASE("Pass vkGetInstanceProcAddr to constructor", "[vk-module.functions]") {
+TEST_CASE("Pass vkGetInstanceProcAddr to constructor", "[vk-module.functions]")
+{
     vk::Loader loader(vkGetInstanceProcAddr);
     REQUIRE(loader.is_init());
     vk::GlobalFunctions free_funcs(loader);
@@ -64,7 +68,8 @@ TEST_CASE("Pass vkGetInstanceProcAddr to constructor", "[vk-module.functions]") 
     REQUIRE(free_funcs.pfn_EnumerateInstanceVersion != nullptr);
 #endif
 }
-TEST_CASE("Pass vkGetInstanceProcAddr to init", "[vk-module.functions]") {
+TEST_CASE("Pass vkGetInstanceProcAddr to init", "[vk-module.functions]")
+{
     vk::Loader loader;
     vk::Result res = loader.init(vkGetInstanceProcAddr);
     REQUIRE(loader.is_init());
@@ -78,7 +83,8 @@ TEST_CASE("Pass vkGetInstanceProcAddr to init", "[vk-module.functions]") {
 #endif
 }
 
-TEST_CASE("Create instance functions", "[vk-module.functions]") {
+TEST_CASE("Create instance functions", "[vk-module.functions]")
+{
     vk::Loader loader(vkGetInstanceProcAddr);
     vk::GlobalFunctions free_funcs(loader);
 

@@ -1,8 +1,9 @@
 
 #include <catch2/catch.hpp>
-#include "vkpp_core.h"
+#include "vkm_core.h"
 
-TEST_CASE("Flags bitwise operation", "[vk-module.flags]") {
+TEST_CASE("Flags bitwise operation", "[vk-module.flags]")
+{
 
     REQUIRE((vk::BufferCreateFlagBits::SparseBinding | vk::BufferCreateFlagBits::SparseResidency).flags == 3);
     REQUIRE((vk::BufferCreateFlagBits::SparseBinding & vk::BufferCreateFlagBits::SparseBinding).flags == 1U);
