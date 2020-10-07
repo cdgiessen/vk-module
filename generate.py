@@ -437,7 +437,7 @@ class Variable:
             self.is_comparable = False
 
         if (not self.optional or self.optional != 'true') and (self.len_attrib is None) \
-            and self.is_single_ptr and (self.base_type != "void"):
+            and ((self.is_single_ptr and self.base_type != "void") or (self.is_double_ptr)):
             self.is_ref_eligible = True
 
     def is_ptr(self):
@@ -569,6 +569,8 @@ class Structure:
             if self.category == 'struct':
                 file.write(f'struct {self.name[2:]} {{\n')
                 for member in self.members:
+                    if self.name == 'VkDeviceCreateInfo' and member.name in ['ppEnabledLayerNames', 'enabledLayerCount']:
+                        file.write('[[deprecated]]')
                     file.write(f'    {member.get_parameter_decl(default_init=True)};\n')
                 if self.is_comparable:
                     if cpp20mode:
@@ -640,24 +642,25 @@ class Function:
             if param.len_attrib is not None and param.len_attrib != "null-terminated" and param.optional is None:
                 self.span_val.add(param.len_attrib)
 
-        self.is_query_function = False
-
-        if self.name not in ['vkEnumerateDeviceLayerProperties']:
-            if self.return_type == 'VkResult' and (self.name.find("Get") != -1 or self.name.find("vkCreate") != -1) \
-                and len(self.parameters) > 0 and self.parameters[-1].is_ptr() and self.parameters[-1].len_attrib is None:
-                self.is_query_function = True
-                self.query_type = self.parameters[-1].get_base_type(downgrade_ptr_type=True)
-                if self.query_type[:2] == 'vk':
-                    self.query_type = self.query_type[:2]
-                self.query_name = self.parameters[-1].name
-        if self.is_query_function:
-            self.query_is_array = False
+        self.is_value_query = len(self.parameters) > 0 and self.return_type == 'VkResult' and self.parameters[-1].is_ptr() \
+            and not self.parameters[-1].is_const and self.parameters[-1].len_attrib is None
+        self.is_enumeration_function = len(self.parameters) > 1 and self.name.find("Enumerate") != -1 and self.parameters[-1].is_ptr() \
+            and self.parameters[-2].optional is not None and self.parameters[-2].optional == 'false,true'
+        self.query_type = None
+        self.query_name = None
+        if self.is_value_query or self.is_enumeration_function:
+            self.query_type = self.parameters[-1].get_base_type(downgrade_ptr_type=True)
+            if self.query_type[:2] == 'vk':
+                self.query_type = self.query_type[:2]
+            self.query_name = self.parameters[-1].name
+        if self.is_enumeration_function:
+            self.count_name = self.parameters[-2].name
 
     def check_platform(self, platform, ext_functions):
         if self.name in ext_functions:
             self.platform = platform
 
-    def print_return_type(self, file, indent='', replace_dict=None):
+    def print_return_type(self, file, indent='', replace_dict=None, expected_ret_type=None):
         print_function_name = self.name[2:]
         if replace_dict is not None:
             for str_from, str_to in replace_dict.items():
@@ -667,19 +670,14 @@ class Function:
         if self.return_type != 'void': 
             file.write('[[nodiscard]] ')
 
-        if self.is_query_function:
-            file.write(f'expected<{self.query_type}> {print_function_name}')
+        if expected_ret_type is not None:
+            file.write(f'expected<{expected_ret_type}> {print_function_name}')
         elif self.return_type == 'VkResult':
             file.write(f'Result {print_function_name}')
         else:
             file.write(f'{self.return_type} {print_function_name}')
 
-    def print_parameters(self, file, dispatch_handle = None, indent=''):
-        parameter_list = self.parameters
-        if dispatch_handle is not None and f'{dispatch_handle}' == self.dispatch_handle:
-            parameter_list = parameter_list[1:]
-        if self.is_query_function:
-            parameter_list = parameter_list[:-1]
+    def print_parameters(self, file, parameter_list, indent=''):
         is_first = True
         for param in parameter_list:
             if not is_first:
@@ -687,12 +685,10 @@ class Function:
             else:
                 is_first = False
             file.write(f'{param.get_full_type(use_references=True)}')
-            if self.is_query_function and param.name == 'pAllocator':
+            if param.name == 'pAllocator' and param == parameter_list[-1]:
                 file.write(f' = nullptr')
 
-    def print_c_api_call(self, file, dispatch_handle = None, dispatch_handle_name = None, indent='', pfn_source=None):
-        dispatch_matches_handle = dispatch_handle is not None and f'{dispatch_handle}' == self.dispatch_handle
-                
+    def print_c_api_call(self, file, dispatch_handle = None, dispatch_handle_name = None, indent='', pfn_source=None, last_arg=None):              
         if self.return_type == 'VkResult':
             file.write('static_cast<Result>(')
         if pfn_source is not None:
@@ -705,10 +701,13 @@ class Function:
                 file.write(f',\n{indent}        ')
             else:
                 is_first = False
-                if dispatch_matches_handle:
+                if dispatch_handle is not None and f'{dispatch_handle}' == self.dispatch_handle:
                     file.write(f'{dispatch_handle_name}.get()')
                     continue
-            if param.is_handle and not param.is_ptr():
+            # the last argument
+            if last_arg is not None and param == self.parameters[-1]:
+                file.write(last_arg)
+            elif param.is_handle and not param.is_ptr():
                 file.write(param.name + '.get()')
             elif param.base_type not in base_type_default_values.keys() and param.base_type not in base_type_implicit_conversions:
                 if param.is_ptr():
@@ -731,19 +730,42 @@ class Function:
         if self.alias is not None:
             file.write(f'const auto {self.name[2:]} = {self.alias[2:]};\n')
         else:
-            self.print_return_type(file, indent, replace_dict)
+            return_type = self.query_type
+            if self.is_enumeration_function:
+                return_type = f'detail::fixed_vector<{return_type}>'
+            self.print_return_type(file, indent, replace_dict, expected_ret_type=return_type)
             file.write('(')
-            self.print_parameters(file, dispatch_handle, indent)
+            parameter_list = self.parameters
+            if dispatch_handle is not None and f'{dispatch_handle}' == self.dispatch_handle:
+                parameter_list = parameter_list[1:]
+            if self.is_value_query:
+                parameter_list = parameter_list[:-1]
+            if self.is_enumeration_function:
+                parameter_list = parameter_list[:-2]
+            self.print_parameters(file, parameter_list, indent)
             file.write(') {\n')
-            if self.is_query_function:
+            if self.name == 'vkEnumerateInstanceVersion':
+                #early return because 1.0 doesn't support the function, will be null and shouldn't cause a crash
+                file.write(f'{indent}    if (pfn_EnumerateInstanceVersion == 0) return expected<uint32_t>(VK_MAKE_VERSION(1,0,0), Result::Success);\n')
+            if self.is_value_query:
                 if self.return_type != 'void':
                     file.write(f'{indent}    {self.query_type} {self.query_name};\n')
                     file.write(f'{indent}    vk::Result result = ')
-                    self.print_c_api_call(file, dispatch_handle, dispatch_handle_name,indent, pfn_source)
+                    self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source)
                     file.write(f'{indent}    return expected<{self.query_type}>({self.query_name}, result);\n')
                 else:
                     file.write(f'{indent}    ')
-                    self.print_c_api_call(file, dispatch_handle, dispatch_handle_name,indent, pfn_source)
+                    self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source)
+            elif self.is_enumeration_function:
+                file.write(f'{indent}    uint32_t {self.count_name} = 0;\n')
+                file.write(f'{indent}    vk::Result result = ')
+                self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source, 'nullptr')
+                file.write(f'{indent}    if (result < Result::Success) return expected(detail::fixed_vector<{self.query_type}>{{}}, result);\n')
+                file.write(f'{indent}    detail::fixed_vector<{self.query_type}> {self.query_name}{{{self.count_name}}};\n')
+                file.write(f'{indent}    result = ')
+                self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source, f'reinterpret_cast<Vk{self.query_type}*>({self.query_name}.data())')
+                file.write(f'{indent}    if ({self.count_name} < {self.query_name}.size()) {self.query_name}.shrink({self.count_name});\n')
+                file.write(f'{indent}    return expected(std::move({self.query_name}), result);\n')
             else:
                 file.write(f'{indent}    ')
                 if self.return_type != 'void':
@@ -1121,8 +1143,9 @@ class BindingGenerator:
 
         for commands in root.findall('commands'):
             for command in commands.findall('command'):
-                self.functions.append(
-                    Function(command, self.handles, self.dispatchable_handles, self.default_values)) 
+                new_function = Function(command, self.handles, self.dispatchable_handles, self.default_values)
+                if new_function.name not in ['vkEnumerateDeviceLayerProperties']:
+                    self.functions.append(new_function)
 
         for ext in root.find('extensions'):
             if ext.tag == 'extension':

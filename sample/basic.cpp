@@ -12,12 +12,11 @@ main()
         return -1;
     vk::GlobalFunctions free_funcs(library);
 
-    uint32_t count = 0;
-    res = free_funcs.EnumerateInstanceLayerProperties(count, nullptr);
-    std::vector<vk::LayerProperties> props(count);
-    res = free_funcs.EnumerateInstanceLayerProperties(count, props.data());
-    std::cout << "count " << count << "\n";
-    for (auto& prop : props)
+    auto layer_props_ret = free_funcs.EnumerateInstanceLayerProperties();
+    if (!layer_props_ret)
+        return -1;
+    std::cout << "count " << layer_props_ret.value().size() << "\n";
+    for (auto& prop : layer_props_ret.value())
         std::cout << prop.layerName << "\n";
 
     vk::Instance inst = free_funcs.CreateInstance({}).value();
@@ -32,17 +31,15 @@ main()
         std::cout << "shouldn't print this\n";
 
     vk::InstanceFunctions inst_funcs(free_funcs, inst);
-    res = inst_funcs.EnumeratePhysicalDevices(count, nullptr);
-
-    std::vector<vk::PhysicalDevice> phys_devices(count);
-    res = inst_funcs.EnumeratePhysicalDevices(count, phys_devices.data());
-
-    if (count == 0) {
+    auto phys_devices_ret = inst_funcs.EnumeratePhysicalDevices();
+    if (!phys_devices_ret)
+        return -1;
+    if (phys_devices_ret.value().size() == 0) {
         std::cout << "failed to get phys devices\n";
         return -100;
     }
 
-    vk::PhysicalDevice phys_dev = phys_devices.at(0);
+    vk::PhysicalDevice phys_dev = phys_devices_ret.value()[0];
     vk::PhysicalDeviceFunctions phys_dev_funcs(inst_funcs, phys_dev);
 
     vk::ImageCreateFlags img_flags = vk::ImageCreateFlagBits::SparseBinding;
@@ -50,7 +47,6 @@ main()
       vk::Format::Undefined, vk::ImageType::e1D, vk::ImageTiling::Optimal, vk::ImageUsageFlagBits::TransferDst, img_flags);
     if (!img_props_res)
         return -1;
-    vk::ImageFormatProperties image_props = img_props_res.value();
     vk::SwapchainCreateInfoKHR swap_info;
     swap_info.preTransform = vk::SurfaceTransformFlagBitsKHR::IdentityBitKHR;
     /*
@@ -82,6 +78,6 @@ main()
     if (!buf_res)
         return -1;
     vk::Buffer buffer = buf_res.value();
-
+    device_functions.DestroyBuffer(buffer);
     return 0;
 }

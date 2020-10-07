@@ -54,8 +54,9 @@ struct fixed_vector
     [[nodiscard]] uint32_t size() const noexcept { return _count; }
     [[nodiscard]] bool empty() noexcept { return _count == 0; }
     [[nodiscard]] bool empty() const noexcept { return _count == 0; }
-    [[nodiscard]] const T* data() noexcept { return _data; }
-    [[nodiscard]] T* data() const noexcept { return _data; }
+    [[nodiscard]] T* data() noexcept { return _data; }
+    [[nodiscard]] const T* data() const noexcept { return _data; }
+    void shrink(uint32_t count) noexcept { if (count < _count) _count = count;}
 
     [[nodiscard]] T& operator[](uint32_t count) & noexcept { return _data[count]; }
     [[nodiscard]] T const& operator[](uint32_t count) const& noexcept { return _data[count]; }

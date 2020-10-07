@@ -3292,8 +3292,8 @@ struct DeviceCreateInfo {
     DeviceCreateFlags flags{};
     uint32_t queueCreateInfoCount{0};
     const DeviceQueueCreateInfo* pQueueCreateInfos = nullptr;
-    uint32_t enabledLayerCount{0};
-    const char* const* ppEnabledLayerNames = nullptr;
+[[deprecated]]    uint32_t enabledLayerCount{0};
+[[deprecated]]    const char* const* ppEnabledLayerNames = nullptr;
     uint32_t enabledExtensionCount{0};
     const char* const* ppEnabledExtensionNames = nullptr;
     const PhysicalDeviceFeatures* pEnabledFeatures = nullptr;

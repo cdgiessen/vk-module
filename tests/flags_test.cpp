@@ -28,11 +28,11 @@ TEST_CASE("Flags bitwise operation", "[vk-module.flags]")
     REQUIRE(flags.flags == 1);
     flags = vk::BufferCreateFlagBits::SparseResidency | flags;
     REQUIRE(flags.flags == 3);
-    flags |= flags;
+    flags |= vk::BufferCreateFlags(3U);
     REQUIRE(flags.flags == 3);
     flags = vk::BufferCreateFlagBits::SparseBinding & flags;
     REQUIRE(flags.flags == 1);
-    flags &= flags;
+    flags &= vk::BufferCreateFlags(1U);
     REQUIRE(flags.flags == 1);
     flags = ~flags;
     REQUIRE(flags.flags == 0xfffffffe);
@@ -41,7 +41,7 @@ TEST_CASE("Flags bitwise operation", "[vk-module.flags]")
     REQUIRE(flags.flags == 3);
     flags = flags ^ vk::BufferCreateFlagBits::SparseBinding;
     REQUIRE(flags.flags == 2);
-    flags ^= flags;
+    flags ^= vk::BufferCreateFlags(2U);
     REQUIRE(flags.flags == 0);
 
     VkImageUsageFlagBits c_flag_bits = c_enum(vk::ImageUsageFlagBits::TransferDst);
