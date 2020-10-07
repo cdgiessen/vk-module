@@ -232,20 +232,20 @@ struct GlobalFunctions {
     PFN_vkEnumerateInstanceVersion pfn_EnumerateInstanceVersion;
 #endif //defined(VK_VERSION_1_1)
 #if defined(VK_VERSION_1_0)
-    [[nodiscard]] expected<Instance> CreateInstance(const InstanceCreateInfo&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<Instance> CreateInstance(const InstanceCreateInfo&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         Instance pInstance;
         vk::Result result = static_cast<Result>(pfn_CreateInstance(reinterpret_cast<const VkInstanceCreateInfo*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkInstance*>(&pInstance)));
         return expected<Instance>(pInstance, result);
     }
-    [[nodiscard]] PFN_vkVoidFunction GetInstanceProcAddr(Instance instance,
-        const char* pName) {
+    [[nodiscard]] PFN_vkVoidFunction GetInstanceProcAddr(Instance instance, 
+        const char* pName) const {
         return pfn_GetInstanceProcAddr(instance.get(),
             pName);
     }
-    [[nodiscard]] expected<detail::fixed_vector<ExtensionProperties>> EnumerateInstanceExtensionProperties(const char* pLayerName) {
+    [[nodiscard]] expected<detail::fixed_vector<ExtensionProperties>> EnumerateInstanceExtensionProperties(const char* pLayerName) const {
         uint32_t pPropertyCount = 0;
         vk::Result result = static_cast<Result>(pfn_EnumerateInstanceExtensionProperties(pLayerName,
             &pPropertyCount,
@@ -258,7 +258,7 @@ struct GlobalFunctions {
         if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
         return expected(std::move(pProperties), result);
     }
-    [[nodiscard]] expected<detail::fixed_vector<LayerProperties>> EnumerateInstanceLayerProperties() {
+    [[nodiscard]] expected<detail::fixed_vector<LayerProperties>> EnumerateInstanceLayerProperties() const {
         uint32_t pPropertyCount = 0;
         vk::Result result = static_cast<Result>(pfn_EnumerateInstanceLayerProperties(&pPropertyCount,
             nullptr));
@@ -271,7 +271,7 @@ struct GlobalFunctions {
     }
 #endif //defined(VK_VERSION_1_0)
 #if defined(VK_VERSION_1_1)
-    [[nodiscard]] expected<uint32_t> EnumerateInstanceVersion() {
+    [[nodiscard]] expected<uint32_t> EnumerateInstanceVersion() const {
         if (pfn_EnumerateInstanceVersion == 0) return expected<uint32_t>(VK_MAKE_VERSION(1,0,0), Result::Success);
         uint32_t pApiVersion;
         vk::Result result = static_cast<Result>(pfn_EnumerateInstanceVersion(&pApiVersion));
@@ -440,11 +440,11 @@ struct InstanceFunctions {
     PFN_vkGetPhysicalDeviceDirectFBPresentationSupportEXT pfn_GetPhysicalDeviceDirectFBPresentationSupportEXT;
 #endif //defined(VK_USE_PLATFORM_DIRECTFB_EXT) && (defined(VK_EXT_directfb_surface))
 #if defined(VK_VERSION_1_0)
-    void DestroyInstance(const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroyInstance(const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroyInstance(instance.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    [[nodiscard]] expected<detail::fixed_vector<PhysicalDevice>> EnumeratePhysicalDevices() {
+    [[nodiscard]] expected<detail::fixed_vector<PhysicalDevice>> EnumeratePhysicalDevices() const {
         uint32_t pPhysicalDeviceCount = 0;
         vk::Result result = static_cast<Result>(pfn_EnumeratePhysicalDevices(instance.get(),
             &pPhysicalDeviceCount,
@@ -457,21 +457,22 @@ struct InstanceFunctions {
         if (pPhysicalDeviceCount < pPhysicalDevices.size()) pPhysicalDevices.shrink(pPhysicalDeviceCount);
         return expected(std::move(pPhysicalDevices), result);
     }
-    [[nodiscard]] PFN_vkVoidFunction GetDeviceProcAddr(Device device,
-        const char* pName) {
+    [[nodiscard]] PFN_vkVoidFunction GetDeviceProcAddr(Device device, 
+        const char* pName) const {
         return pfn_GetDeviceProcAddr(device.get(),
             pName);
     }
-    [[nodiscard]] PFN_vkVoidFunction GetInstanceProcAddr(const char* pName) {
+    [[nodiscard]] PFN_vkVoidFunction GetInstanceProcAddr(const char* pName) const {
         return pfn_GetInstanceProcAddr(instance.get(),
             pName);
     }
-    void GetPhysicalDeviceProperties(PhysicalDevice physicalDevice,
-        PhysicalDeviceProperties&  pProperties) {
+    [[nodiscard]] PhysicalDeviceProperties GetPhysicalDeviceProperties(PhysicalDevice physicalDevice) const {
+        PhysicalDeviceProperties pProperties;
         pfn_GetPhysicalDeviceProperties(physicalDevice.get(),
             reinterpret_cast<VkPhysicalDeviceProperties*>(&pProperties));
+        return pProperties;
     }
-    detail::fixed_vector<QueueFamilyProperties> GetPhysicalDeviceQueueFamilyProperties(PhysicalDevice physicalDevice) {
+    [[nodiscard]] detail::fixed_vector<QueueFamilyProperties> GetPhysicalDeviceQueueFamilyProperties(PhysicalDevice physicalDevice) const {
         uint32_t pQueueFamilyPropertyCount = 0;
         pfn_GetPhysicalDeviceQueueFamilyProperties(physicalDevice.get(),
             &pQueueFamilyPropertyCount,
@@ -483,29 +484,32 @@ struct InstanceFunctions {
         if (pQueueFamilyPropertyCount < pQueueFamilyProperties.size()) pQueueFamilyProperties.shrink(pQueueFamilyPropertyCount);
         return pQueueFamilyProperties;
     }
-    void GetPhysicalDeviceMemoryProperties(PhysicalDevice physicalDevice,
-        PhysicalDeviceMemoryProperties&  pMemoryProperties) {
+    [[nodiscard]] PhysicalDeviceMemoryProperties GetPhysicalDeviceMemoryProperties(PhysicalDevice physicalDevice) const {
+        PhysicalDeviceMemoryProperties pMemoryProperties;
         pfn_GetPhysicalDeviceMemoryProperties(physicalDevice.get(),
             reinterpret_cast<VkPhysicalDeviceMemoryProperties*>(&pMemoryProperties));
+        return pMemoryProperties;
     }
-    void GetPhysicalDeviceFeatures(PhysicalDevice physicalDevice,
-        PhysicalDeviceFeatures&  pFeatures) {
+    [[nodiscard]] PhysicalDeviceFeatures GetPhysicalDeviceFeatures(PhysicalDevice physicalDevice) const {
+        PhysicalDeviceFeatures pFeatures;
         pfn_GetPhysicalDeviceFeatures(physicalDevice.get(),
             reinterpret_cast<VkPhysicalDeviceFeatures*>(&pFeatures));
+        return pFeatures;
     }
-    void GetPhysicalDeviceFormatProperties(PhysicalDevice physicalDevice,
-        Format format,
-        FormatProperties&  pFormatProperties) {
+    [[nodiscard]] FormatProperties GetPhysicalDeviceFormatProperties(PhysicalDevice physicalDevice, 
+        Format format) const {
+        FormatProperties pFormatProperties;
         pfn_GetPhysicalDeviceFormatProperties(physicalDevice.get(),
             static_cast<VkFormat>(format),
             reinterpret_cast<VkFormatProperties*>(&pFormatProperties));
+        return pFormatProperties;
     }
-    [[nodiscard]] expected<ImageFormatProperties> GetPhysicalDeviceImageFormatProperties(PhysicalDevice physicalDevice,
-        Format format,
-        ImageType type,
-        ImageTiling tiling,
-        ImageUsageFlags usage,
-        ImageCreateFlags flags) {
+    [[nodiscard]] expected<ImageFormatProperties> GetPhysicalDeviceImageFormatProperties(PhysicalDevice physicalDevice, 
+        Format format, 
+        ImageType type, 
+        ImageTiling tiling, 
+        ImageUsageFlags usage, 
+        ImageCreateFlags flags) const {
         ImageFormatProperties pImageFormatProperties;
         vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceImageFormatProperties(physicalDevice.get(),
             static_cast<VkFormat>(format),
@@ -516,9 +520,9 @@ struct InstanceFunctions {
             reinterpret_cast<VkImageFormatProperties*>(&pImageFormatProperties)));
         return expected<ImageFormatProperties>(pImageFormatProperties, result);
     }
-    [[nodiscard]] expected<Device> CreateDevice(PhysicalDevice physicalDevice,
-        const DeviceCreateInfo&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<Device> CreateDevice(PhysicalDevice physicalDevice, 
+        const DeviceCreateInfo&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         Device pDevice;
         vk::Result result = static_cast<Result>(pfn_CreateDevice(physicalDevice.get(),
             reinterpret_cast<const VkDeviceCreateInfo*>(&pCreateInfo),
@@ -526,8 +530,8 @@ struct InstanceFunctions {
             reinterpret_cast<VkDevice*>(&pDevice)));
         return expected<Device>(pDevice, result);
     }
-    [[nodiscard]] expected<detail::fixed_vector<ExtensionProperties>> EnumerateDeviceExtensionProperties(PhysicalDevice physicalDevice,
-        const char* pLayerName) {
+    [[nodiscard]] expected<detail::fixed_vector<ExtensionProperties>> EnumerateDeviceExtensionProperties(PhysicalDevice physicalDevice, 
+        const char* pLayerName) const {
         uint32_t pPropertyCount = 0;
         vk::Result result = static_cast<Result>(pfn_EnumerateDeviceExtensionProperties(physicalDevice.get(),
             pLayerName,
@@ -542,12 +546,12 @@ struct InstanceFunctions {
         if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
         return expected(std::move(pProperties), result);
     }
-    detail::fixed_vector<SparseImageFormatProperties> GetPhysicalDeviceSparseImageFormatProperties(PhysicalDevice physicalDevice,
-        Format format,
-        ImageType type,
-        SampleCountFlagBits samples,
-        ImageUsageFlags usage,
-        ImageTiling tiling) {
+    [[nodiscard]] detail::fixed_vector<SparseImageFormatProperties> GetPhysicalDeviceSparseImageFormatProperties(PhysicalDevice physicalDevice, 
+        Format format, 
+        ImageType type, 
+        SampleCountFlagBits samples, 
+        ImageUsageFlags usage, 
+        ImageTiling tiling) const {
         uint32_t pPropertyCount = 0;
         pfn_GetPhysicalDeviceSparseImageFormatProperties(physicalDevice.get(),
             static_cast<VkFormat>(format),
@@ -571,7 +575,7 @@ struct InstanceFunctions {
     }
 #endif //defined(VK_VERSION_1_0)
 #if defined(VK_VERSION_1_1)
-    [[nodiscard]] expected<detail::fixed_vector<PhysicalDeviceGroupProperties>> EnumeratePhysicalDeviceGroups() {
+    [[nodiscard]] expected<detail::fixed_vector<PhysicalDeviceGroupProperties>> EnumeratePhysicalDeviceGroups() const {
         uint32_t pPhysicalDeviceGroupCount = 0;
         vk::Result result = static_cast<Result>(pfn_EnumeratePhysicalDeviceGroups(instance.get(),
             &pPhysicalDeviceGroupCount,
@@ -584,32 +588,35 @@ struct InstanceFunctions {
         if (pPhysicalDeviceGroupCount < pPhysicalDeviceGroupProperties.size()) pPhysicalDeviceGroupProperties.shrink(pPhysicalDeviceGroupCount);
         return expected(std::move(pPhysicalDeviceGroupProperties), result);
     }
-    void GetPhysicalDeviceFeatures2(PhysicalDevice physicalDevice,
-        PhysicalDeviceFeatures2&  pFeatures) {
+    [[nodiscard]] PhysicalDeviceFeatures2 GetPhysicalDeviceFeatures2(PhysicalDevice physicalDevice) const {
+        PhysicalDeviceFeatures2 pFeatures;
         pfn_GetPhysicalDeviceFeatures2(physicalDevice.get(),
             reinterpret_cast<VkPhysicalDeviceFeatures2*>(&pFeatures));
+        return pFeatures;
     }
-    void GetPhysicalDeviceProperties2(PhysicalDevice physicalDevice,
-        PhysicalDeviceProperties2&  pProperties) {
+    [[nodiscard]] PhysicalDeviceProperties2 GetPhysicalDeviceProperties2(PhysicalDevice physicalDevice) const {
+        PhysicalDeviceProperties2 pProperties;
         pfn_GetPhysicalDeviceProperties2(physicalDevice.get(),
             reinterpret_cast<VkPhysicalDeviceProperties2*>(&pProperties));
+        return pProperties;
     }
-    void GetPhysicalDeviceFormatProperties2(PhysicalDevice physicalDevice,
-        Format format,
-        FormatProperties2&  pFormatProperties) {
+    [[nodiscard]] FormatProperties2 GetPhysicalDeviceFormatProperties2(PhysicalDevice physicalDevice, 
+        Format format) const {
+        FormatProperties2 pFormatProperties;
         pfn_GetPhysicalDeviceFormatProperties2(physicalDevice.get(),
             static_cast<VkFormat>(format),
             reinterpret_cast<VkFormatProperties2*>(&pFormatProperties));
+        return pFormatProperties;
     }
-    [[nodiscard]] expected<ImageFormatProperties2> GetPhysicalDeviceImageFormatProperties2(PhysicalDevice physicalDevice,
-        const PhysicalDeviceImageFormatInfo2&  pImageFormatInfo) {
+    [[nodiscard]] expected<ImageFormatProperties2> GetPhysicalDeviceImageFormatProperties2(PhysicalDevice physicalDevice, 
+        const PhysicalDeviceImageFormatInfo2&  pImageFormatInfo) const {
         ImageFormatProperties2 pImageFormatProperties;
         vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceImageFormatProperties2(physicalDevice.get(),
             reinterpret_cast<const VkPhysicalDeviceImageFormatInfo2*>(&pImageFormatInfo),
             reinterpret_cast<VkImageFormatProperties2*>(&pImageFormatProperties)));
         return expected<ImageFormatProperties2>(pImageFormatProperties, result);
     }
-    detail::fixed_vector<QueueFamilyProperties2> GetPhysicalDeviceQueueFamilyProperties2(PhysicalDevice physicalDevice) {
+    [[nodiscard]] detail::fixed_vector<QueueFamilyProperties2> GetPhysicalDeviceQueueFamilyProperties2(PhysicalDevice physicalDevice) const {
         uint32_t pQueueFamilyPropertyCount = 0;
         pfn_GetPhysicalDeviceQueueFamilyProperties2(physicalDevice.get(),
             &pQueueFamilyPropertyCount,
@@ -621,13 +628,14 @@ struct InstanceFunctions {
         if (pQueueFamilyPropertyCount < pQueueFamilyProperties.size()) pQueueFamilyProperties.shrink(pQueueFamilyPropertyCount);
         return pQueueFamilyProperties;
     }
-    void GetPhysicalDeviceMemoryProperties2(PhysicalDevice physicalDevice,
-        PhysicalDeviceMemoryProperties2&  pMemoryProperties) {
+    [[nodiscard]] PhysicalDeviceMemoryProperties2 GetPhysicalDeviceMemoryProperties2(PhysicalDevice physicalDevice) const {
+        PhysicalDeviceMemoryProperties2 pMemoryProperties;
         pfn_GetPhysicalDeviceMemoryProperties2(physicalDevice.get(),
             reinterpret_cast<VkPhysicalDeviceMemoryProperties2*>(&pMemoryProperties));
+        return pMemoryProperties;
     }
-    detail::fixed_vector<SparseImageFormatProperties2> GetPhysicalDeviceSparseImageFormatProperties2(PhysicalDevice physicalDevice,
-        const PhysicalDeviceSparseImageFormatInfo2&  pFormatInfo) {
+    [[nodiscard]] detail::fixed_vector<SparseImageFormatProperties2> GetPhysicalDeviceSparseImageFormatProperties2(PhysicalDevice physicalDevice, 
+        const PhysicalDeviceSparseImageFormatInfo2&  pFormatInfo) const {
         uint32_t pPropertyCount = 0;
         pfn_GetPhysicalDeviceSparseImageFormatProperties2(physicalDevice.get(),
             reinterpret_cast<const VkPhysicalDeviceSparseImageFormatInfo2*>(&pFormatInfo),
@@ -641,38 +649,41 @@ struct InstanceFunctions {
         if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
         return pProperties;
     }
-    void GetPhysicalDeviceExternalBufferProperties(PhysicalDevice physicalDevice,
-        const PhysicalDeviceExternalBufferInfo&  pExternalBufferInfo,
-        ExternalBufferProperties&  pExternalBufferProperties) {
+    [[nodiscard]] ExternalBufferProperties GetPhysicalDeviceExternalBufferProperties(PhysicalDevice physicalDevice, 
+        const PhysicalDeviceExternalBufferInfo&  pExternalBufferInfo) const {
+        ExternalBufferProperties pExternalBufferProperties;
         pfn_GetPhysicalDeviceExternalBufferProperties(physicalDevice.get(),
             reinterpret_cast<const VkPhysicalDeviceExternalBufferInfo*>(&pExternalBufferInfo),
             reinterpret_cast<VkExternalBufferProperties*>(&pExternalBufferProperties));
+        return pExternalBufferProperties;
     }
-    void GetPhysicalDeviceExternalFenceProperties(PhysicalDevice physicalDevice,
-        const PhysicalDeviceExternalFenceInfo&  pExternalFenceInfo,
-        ExternalFenceProperties&  pExternalFenceProperties) {
+    [[nodiscard]] ExternalFenceProperties GetPhysicalDeviceExternalFenceProperties(PhysicalDevice physicalDevice, 
+        const PhysicalDeviceExternalFenceInfo&  pExternalFenceInfo) const {
+        ExternalFenceProperties pExternalFenceProperties;
         pfn_GetPhysicalDeviceExternalFenceProperties(physicalDevice.get(),
             reinterpret_cast<const VkPhysicalDeviceExternalFenceInfo*>(&pExternalFenceInfo),
             reinterpret_cast<VkExternalFenceProperties*>(&pExternalFenceProperties));
+        return pExternalFenceProperties;
     }
-    void GetPhysicalDeviceExternalSemaphoreProperties(PhysicalDevice physicalDevice,
-        const PhysicalDeviceExternalSemaphoreInfo&  pExternalSemaphoreInfo,
-        ExternalSemaphoreProperties&  pExternalSemaphoreProperties) {
+    [[nodiscard]] ExternalSemaphoreProperties GetPhysicalDeviceExternalSemaphoreProperties(PhysicalDevice physicalDevice, 
+        const PhysicalDeviceExternalSemaphoreInfo&  pExternalSemaphoreInfo) const {
+        ExternalSemaphoreProperties pExternalSemaphoreProperties;
         pfn_GetPhysicalDeviceExternalSemaphoreProperties(physicalDevice.get(),
             reinterpret_cast<const VkPhysicalDeviceExternalSemaphoreInfo*>(&pExternalSemaphoreInfo),
             reinterpret_cast<VkExternalSemaphoreProperties*>(&pExternalSemaphoreProperties));
+        return pExternalSemaphoreProperties;
     }
 #endif //defined(VK_VERSION_1_1)
 #if defined(VK_KHR_surface)
-    void DestroySurfaceKHR(SurfaceKHR surface,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroySurfaceKHR(SurfaceKHR surface, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroySurfaceKHR(instance.get(),
             surface.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    [[nodiscard]] expected<Bool32> GetPhysicalDeviceSurfaceSupportKHR(PhysicalDevice physicalDevice,
-        uint32_t queueFamilyIndex,
-        SurfaceKHR surface) {
+    [[nodiscard]] expected<Bool32> GetPhysicalDeviceSurfaceSupportKHR(PhysicalDevice physicalDevice, 
+        uint32_t queueFamilyIndex, 
+        SurfaceKHR surface) const {
         Bool32 pSupported;
         vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceSurfaceSupportKHR(physicalDevice.get(),
             queueFamilyIndex,
@@ -680,16 +691,16 @@ struct InstanceFunctions {
             &pSupported));
         return expected<Bool32>(pSupported, result);
     }
-    [[nodiscard]] expected<SurfaceCapabilitiesKHR> GetPhysicalDeviceSurfaceCapabilitiesKHR(PhysicalDevice physicalDevice,
-        SurfaceKHR surface) {
+    [[nodiscard]] expected<SurfaceCapabilitiesKHR> GetPhysicalDeviceSurfaceCapabilitiesKHR(PhysicalDevice physicalDevice, 
+        SurfaceKHR surface) const {
         SurfaceCapabilitiesKHR pSurfaceCapabilities;
         vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice.get(),
             surface.get(),
             reinterpret_cast<VkSurfaceCapabilitiesKHR*>(&pSurfaceCapabilities)));
         return expected<SurfaceCapabilitiesKHR>(pSurfaceCapabilities, result);
     }
-    [[nodiscard]] expected<detail::fixed_vector<SurfaceFormatKHR>> GetPhysicalDeviceSurfaceFormatsKHR(PhysicalDevice physicalDevice,
-        SurfaceKHR surface) {
+    [[nodiscard]] expected<detail::fixed_vector<SurfaceFormatKHR>> GetPhysicalDeviceSurfaceFormatsKHR(PhysicalDevice physicalDevice, 
+        SurfaceKHR surface) const {
         uint32_t pSurfaceFormatCount = 0;
         vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceSurfaceFormatsKHR(physicalDevice.get(),
             surface.get(),
@@ -704,8 +715,8 @@ struct InstanceFunctions {
         if (pSurfaceFormatCount < pSurfaceFormats.size()) pSurfaceFormats.shrink(pSurfaceFormatCount);
         return expected(std::move(pSurfaceFormats), result);
     }
-    [[nodiscard]] expected<detail::fixed_vector<PresentModeKHR>> GetPhysicalDeviceSurfacePresentModesKHR(PhysicalDevice physicalDevice,
-        SurfaceKHR surface) {
+    [[nodiscard]] expected<detail::fixed_vector<PresentModeKHR>> GetPhysicalDeviceSurfacePresentModesKHR(PhysicalDevice physicalDevice, 
+        SurfaceKHR surface) const {
         uint32_t pPresentModeCount = 0;
         vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceSurfacePresentModesKHR(physicalDevice.get(),
             surface.get(),
@@ -722,8 +733,8 @@ struct InstanceFunctions {
     }
 #endif //defined(VK_KHR_surface)
 #if (defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
-    [[nodiscard]] expected<detail::fixed_vector<Rect2D>> GetPhysicalDevicePresentRectanglesKHR(PhysicalDevice physicalDevice,
-        SurfaceKHR surface) {
+    [[nodiscard]] expected<detail::fixed_vector<Rect2D>> GetPhysicalDevicePresentRectanglesKHR(PhysicalDevice physicalDevice, 
+        SurfaceKHR surface) const {
         uint32_t pRectCount = 0;
         vk::Result result = static_cast<Result>(pfn_GetPhysicalDevicePresentRectanglesKHR(physicalDevice.get(),
             surface.get(),
@@ -740,7 +751,7 @@ struct InstanceFunctions {
     }
 #endif //(defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
 #if defined(VK_KHR_display)
-    [[nodiscard]] expected<detail::fixed_vector<DisplayPropertiesKHR>> GetPhysicalDeviceDisplayPropertiesKHR(PhysicalDevice physicalDevice) {
+    [[nodiscard]] expected<detail::fixed_vector<DisplayPropertiesKHR>> GetPhysicalDeviceDisplayPropertiesKHR(PhysicalDevice physicalDevice) const {
         uint32_t pPropertyCount = 0;
         vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceDisplayPropertiesKHR(physicalDevice.get(),
             &pPropertyCount,
@@ -753,7 +764,7 @@ struct InstanceFunctions {
         if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
         return expected(std::move(pProperties), result);
     }
-    [[nodiscard]] expected<detail::fixed_vector<DisplayPlanePropertiesKHR>> GetPhysicalDeviceDisplayPlanePropertiesKHR(PhysicalDevice physicalDevice) {
+    [[nodiscard]] expected<detail::fixed_vector<DisplayPlanePropertiesKHR>> GetPhysicalDeviceDisplayPlanePropertiesKHR(PhysicalDevice physicalDevice) const {
         uint32_t pPropertyCount = 0;
         vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice.get(),
             &pPropertyCount,
@@ -766,8 +777,8 @@ struct InstanceFunctions {
         if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
         return expected(std::move(pProperties), result);
     }
-    [[nodiscard]] expected<detail::fixed_vector<DisplayKHR>> GetDisplayPlaneSupportedDisplaysKHR(PhysicalDevice physicalDevice,
-        uint32_t planeIndex) {
+    [[nodiscard]] expected<detail::fixed_vector<DisplayKHR>> GetDisplayPlaneSupportedDisplaysKHR(PhysicalDevice physicalDevice, 
+        uint32_t planeIndex) const {
         uint32_t pDisplayCount = 0;
         vk::Result result = static_cast<Result>(pfn_GetDisplayPlaneSupportedDisplaysKHR(physicalDevice.get(),
             planeIndex,
@@ -782,8 +793,8 @@ struct InstanceFunctions {
         if (pDisplayCount < pDisplays.size()) pDisplays.shrink(pDisplayCount);
         return expected(std::move(pDisplays), result);
     }
-    [[nodiscard]] expected<detail::fixed_vector<DisplayModePropertiesKHR>> GetDisplayModePropertiesKHR(PhysicalDevice physicalDevice,
-        DisplayKHR display) {
+    [[nodiscard]] expected<detail::fixed_vector<DisplayModePropertiesKHR>> GetDisplayModePropertiesKHR(PhysicalDevice physicalDevice, 
+        DisplayKHR display) const {
         uint32_t pPropertyCount = 0;
         vk::Result result = static_cast<Result>(pfn_GetDisplayModePropertiesKHR(physicalDevice.get(),
             display.get(),
@@ -798,10 +809,10 @@ struct InstanceFunctions {
         if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
         return expected(std::move(pProperties), result);
     }
-    [[nodiscard]] expected<DisplayModeKHR> CreateDisplayModeKHR(PhysicalDevice physicalDevice,
-        DisplayKHR display,
-        const DisplayModeCreateInfoKHR&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<DisplayModeKHR> CreateDisplayModeKHR(PhysicalDevice physicalDevice, 
+        DisplayKHR display, 
+        const DisplayModeCreateInfoKHR&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         DisplayModeKHR pMode;
         vk::Result result = static_cast<Result>(pfn_CreateDisplayModeKHR(physicalDevice.get(),
             display.get(),
@@ -810,9 +821,9 @@ struct InstanceFunctions {
             reinterpret_cast<VkDisplayModeKHR*>(&pMode)));
         return expected<DisplayModeKHR>(pMode, result);
     }
-    [[nodiscard]] expected<DisplayPlaneCapabilitiesKHR> GetDisplayPlaneCapabilitiesKHR(PhysicalDevice physicalDevice,
-        DisplayModeKHR mode,
-        uint32_t planeIndex) {
+    [[nodiscard]] expected<DisplayPlaneCapabilitiesKHR> GetDisplayPlaneCapabilitiesKHR(PhysicalDevice physicalDevice, 
+        DisplayModeKHR mode, 
+        uint32_t planeIndex) const {
         DisplayPlaneCapabilitiesKHR pCapabilities;
         vk::Result result = static_cast<Result>(pfn_GetDisplayPlaneCapabilitiesKHR(physicalDevice.get(),
             mode.get(),
@@ -820,8 +831,8 @@ struct InstanceFunctions {
             reinterpret_cast<VkDisplayPlaneCapabilitiesKHR*>(&pCapabilities)));
         return expected<DisplayPlaneCapabilitiesKHR>(pCapabilities, result);
     }
-    [[nodiscard]] expected<SurfaceKHR> CreateDisplayPlaneSurfaceKHR(const DisplaySurfaceCreateInfoKHR&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<SurfaceKHR> CreateDisplayPlaneSurfaceKHR(const DisplaySurfaceCreateInfoKHR&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         SurfaceKHR pSurface;
         vk::Result result = static_cast<Result>(pfn_CreateDisplayPlaneSurfaceKHR(instance.get(),
             reinterpret_cast<const VkDisplaySurfaceCreateInfoKHR*>(&pCreateInfo),
@@ -831,8 +842,8 @@ struct InstanceFunctions {
     }
 #endif //defined(VK_KHR_display)
 #if defined(VK_USE_PLATFORM_XLIB_KHR) && (defined(VK_KHR_xlib_surface))
-    [[nodiscard]] expected<SurfaceKHR> CreateXlibSurfaceKHR(const XlibSurfaceCreateInfoKHR&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<SurfaceKHR> CreateXlibSurfaceKHR(const XlibSurfaceCreateInfoKHR&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         SurfaceKHR pSurface;
         vk::Result result = static_cast<Result>(pfn_CreateXlibSurfaceKHR(instance.get(),
             reinterpret_cast<const VkXlibSurfaceCreateInfoKHR*>(&pCreateInfo),
@@ -840,10 +851,10 @@ struct InstanceFunctions {
             reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
         return expected<SurfaceKHR>(pSurface, result);
     }
-    [[nodiscard]] VkBool32 GetPhysicalDeviceXlibPresentationSupportKHR(PhysicalDevice physicalDevice,
-        uint32_t queueFamilyIndex,
-        Display&  dpy,
-        VisualID visualID) {
+    [[nodiscard]] VkBool32 GetPhysicalDeviceXlibPresentationSupportKHR(PhysicalDevice physicalDevice, 
+        uint32_t queueFamilyIndex, 
+        Display&  dpy, 
+        VisualID visualID) const {
         return pfn_GetPhysicalDeviceXlibPresentationSupportKHR(physicalDevice.get(),
             queueFamilyIndex,
             reinterpret_cast<Display*>(&dpy),
@@ -851,8 +862,8 @@ struct InstanceFunctions {
     }
 #endif //defined(VK_USE_PLATFORM_XLIB_KHR) && (defined(VK_KHR_xlib_surface))
 #if defined(VK_USE_PLATFORM_XCB_KHR) && (defined(VK_KHR_xcb_surface))
-    [[nodiscard]] expected<SurfaceKHR> CreateXcbSurfaceKHR(const XcbSurfaceCreateInfoKHR&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<SurfaceKHR> CreateXcbSurfaceKHR(const XcbSurfaceCreateInfoKHR&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         SurfaceKHR pSurface;
         vk::Result result = static_cast<Result>(pfn_CreateXcbSurfaceKHR(instance.get(),
             reinterpret_cast<const VkXcbSurfaceCreateInfoKHR*>(&pCreateInfo),
@@ -860,10 +871,10 @@ struct InstanceFunctions {
             reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
         return expected<SurfaceKHR>(pSurface, result);
     }
-    [[nodiscard]] VkBool32 GetPhysicalDeviceXcbPresentationSupportKHR(PhysicalDevice physicalDevice,
-        uint32_t queueFamilyIndex,
-        xcb_connection_t&  connection,
-        xcb_visualid_t visual_id) {
+    [[nodiscard]] VkBool32 GetPhysicalDeviceXcbPresentationSupportKHR(PhysicalDevice physicalDevice, 
+        uint32_t queueFamilyIndex, 
+        xcb_connection_t&  connection, 
+        xcb_visualid_t visual_id) const {
         return pfn_GetPhysicalDeviceXcbPresentationSupportKHR(physicalDevice.get(),
             queueFamilyIndex,
             reinterpret_cast<xcb_connection_t*>(&connection),
@@ -871,8 +882,8 @@ struct InstanceFunctions {
     }
 #endif //defined(VK_USE_PLATFORM_XCB_KHR) && (defined(VK_KHR_xcb_surface))
 #if defined(VK_USE_PLATFORM_WAYLAND_KHR) && (defined(VK_KHR_wayland_surface))
-    [[nodiscard]] expected<SurfaceKHR> CreateWaylandSurfaceKHR(const WaylandSurfaceCreateInfoKHR&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<SurfaceKHR> CreateWaylandSurfaceKHR(const WaylandSurfaceCreateInfoKHR&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         SurfaceKHR pSurface;
         vk::Result result = static_cast<Result>(pfn_CreateWaylandSurfaceKHR(instance.get(),
             reinterpret_cast<const VkWaylandSurfaceCreateInfoKHR*>(&pCreateInfo),
@@ -880,17 +891,18 @@ struct InstanceFunctions {
             reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
         return expected<SurfaceKHR>(pSurface, result);
     }
-    [[nodiscard]] VkBool32 GetPhysicalDeviceWaylandPresentationSupportKHR(PhysicalDevice physicalDevice,
-        uint32_t queueFamilyIndex,
-        wl_display&  display) {
-        return pfn_GetPhysicalDeviceWaylandPresentationSupportKHR(physicalDevice.get(),
+    [[nodiscard]] wl_display GetPhysicalDeviceWaylandPresentationSupportKHR(PhysicalDevice physicalDevice, 
+        uint32_t queueFamilyIndex) const {
+        wl_display display;
+        vk::Result result = pfn_GetPhysicalDeviceWaylandPresentationSupportKHR(physicalDevice.get(),
             queueFamilyIndex,
             reinterpret_cast<wl_display*>(&display));
+        return expected<wl_display>(display, result);
     }
 #endif //defined(VK_USE_PLATFORM_WAYLAND_KHR) && (defined(VK_KHR_wayland_surface))
 #if defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_KHR_android_surface))
-    [[nodiscard]] expected<SurfaceKHR> CreateAndroidSurfaceKHR(const AndroidSurfaceCreateInfoKHR&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<SurfaceKHR> CreateAndroidSurfaceKHR(const AndroidSurfaceCreateInfoKHR&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         SurfaceKHR pSurface;
         vk::Result result = static_cast<Result>(pfn_CreateAndroidSurfaceKHR(instance.get(),
             reinterpret_cast<const VkAndroidSurfaceCreateInfoKHR*>(&pCreateInfo),
@@ -900,8 +912,8 @@ struct InstanceFunctions {
     }
 #endif //defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_KHR_android_surface))
 #if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_win32_surface))
-    [[nodiscard]] expected<SurfaceKHR> CreateWin32SurfaceKHR(const Win32SurfaceCreateInfoKHR&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<SurfaceKHR> CreateWin32SurfaceKHR(const Win32SurfaceCreateInfoKHR&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         SurfaceKHR pSurface;
         vk::Result result = static_cast<Result>(pfn_CreateWin32SurfaceKHR(instance.get(),
             reinterpret_cast<const VkWin32SurfaceCreateInfoKHR*>(&pCreateInfo),
@@ -909,15 +921,15 @@ struct InstanceFunctions {
             reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
         return expected<SurfaceKHR>(pSurface, result);
     }
-    [[nodiscard]] VkBool32 GetPhysicalDeviceWin32PresentationSupportKHR(PhysicalDevice physicalDevice,
-        uint32_t queueFamilyIndex) {
+    [[nodiscard]] VkBool32 GetPhysicalDeviceWin32PresentationSupportKHR(PhysicalDevice physicalDevice, 
+        uint32_t queueFamilyIndex) const {
         return pfn_GetPhysicalDeviceWin32PresentationSupportKHR(physicalDevice.get(),
             queueFamilyIndex);
     }
 #endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_win32_surface))
 #if defined(VK_EXT_debug_report)
-    [[nodiscard]] expected<DebugReportCallbackEXT> CreateDebugReportCallbackEXT(const DebugReportCallbackCreateInfoEXT&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<DebugReportCallbackEXT> CreateDebugReportCallbackEXT(const DebugReportCallbackCreateInfoEXT&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         DebugReportCallbackEXT pCallback;
         vk::Result result = static_cast<Result>(pfn_CreateDebugReportCallbackEXT(instance.get(),
             reinterpret_cast<const VkDebugReportCallbackCreateInfoEXT*>(&pCreateInfo),
@@ -925,19 +937,19 @@ struct InstanceFunctions {
             reinterpret_cast<VkDebugReportCallbackEXT*>(&pCallback)));
         return expected<DebugReportCallbackEXT>(pCallback, result);
     }
-    void DestroyDebugReportCallbackEXT(DebugReportCallbackEXT callback,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroyDebugReportCallbackEXT(DebugReportCallbackEXT callback, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroyDebugReportCallbackEXT(instance.get(),
             callback.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    void DebugReportMessageEXT(DebugReportFlagsEXT flags,
-        DebugReportObjectTypeEXT objectType,
-        uint64_t object,
-        size_t location,
-        int32_t messageCode,
-        const char* pLayerPrefix,
-        const char* pMessage) {
+    void DebugReportMessageEXT(DebugReportFlagsEXT flags, 
+        DebugReportObjectTypeEXT objectType, 
+        uint64_t object, 
+        size_t location, 
+        int32_t messageCode, 
+        const char* pLayerPrefix, 
+        const char* pMessage) const {
         pfn_DebugReportMessageEXT(instance.get(),
             static_cast<VkDebugReportFlagsEXT>(flags),
             static_cast<VkDebugReportObjectTypeEXT>(objectType),
@@ -949,8 +961,8 @@ struct InstanceFunctions {
     }
 #endif //defined(VK_EXT_debug_report)
 #if defined(VK_USE_PLATFORM_GGP) && (defined(VK_GGP_stream_descriptor_surface))
-    [[nodiscard]] expected<SurfaceKHR> CreateStreamDescriptorSurfaceGGP(const StreamDescriptorSurfaceCreateInfoGGP&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<SurfaceKHR> CreateStreamDescriptorSurfaceGGP(const StreamDescriptorSurfaceCreateInfoGGP&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         SurfaceKHR pSurface;
         vk::Result result = static_cast<Result>(pfn_CreateStreamDescriptorSurfaceGGP(instance.get(),
             reinterpret_cast<const VkStreamDescriptorSurfaceCreateInfoGGP*>(&pCreateInfo),
@@ -960,13 +972,13 @@ struct InstanceFunctions {
     }
 #endif //defined(VK_USE_PLATFORM_GGP) && (defined(VK_GGP_stream_descriptor_surface))
 #if defined(VK_NV_external_memory_capabilities)
-    [[nodiscard]] expected<ExternalImageFormatPropertiesNV> GetPhysicalDeviceExternalImageFormatPropertiesNV(PhysicalDevice physicalDevice,
-        Format format,
-        ImageType type,
-        ImageTiling tiling,
-        ImageUsageFlags usage,
-        ImageCreateFlags flags,
-        ExternalMemoryHandleTypeFlagsNV externalHandleType) {
+    [[nodiscard]] expected<ExternalImageFormatPropertiesNV> GetPhysicalDeviceExternalImageFormatPropertiesNV(PhysicalDevice physicalDevice, 
+        Format format, 
+        ImageType type, 
+        ImageTiling tiling, 
+        ImageUsageFlags usage, 
+        ImageCreateFlags flags, 
+        ExternalMemoryHandleTypeFlagsNV externalHandleType) const {
         ExternalImageFormatPropertiesNV pExternalImageFormatProperties;
         vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceExternalImageFormatPropertiesNV(physicalDevice.get(),
             static_cast<VkFormat>(format),
@@ -980,8 +992,8 @@ struct InstanceFunctions {
     }
 #endif //defined(VK_NV_external_memory_capabilities)
 #if defined(VK_USE_PLATFORM_VI_NN) && (defined(VK_NN_vi_surface))
-    [[nodiscard]] expected<SurfaceKHR> CreateViSurfaceNN(const ViSurfaceCreateInfoNN&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<SurfaceKHR> CreateViSurfaceNN(const ViSurfaceCreateInfoNN&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         SurfaceKHR pSurface;
         vk::Result result = static_cast<Result>(pfn_CreateViSurfaceNN(instance.get(),
             reinterpret_cast<const VkViSurfaceCreateInfoNN*>(&pCreateInfo),
@@ -991,23 +1003,23 @@ struct InstanceFunctions {
     }
 #endif //defined(VK_USE_PLATFORM_VI_NN) && (defined(VK_NN_vi_surface))
 #if defined(VK_EXT_direct_mode_display)
-    [[nodiscard]] Result ReleaseDisplayEXT(PhysicalDevice physicalDevice,
-        DisplayKHR display) {
+    [[nodiscard]] Result ReleaseDisplayEXT(PhysicalDevice physicalDevice, 
+        DisplayKHR display) const {
         return static_cast<Result>(pfn_ReleaseDisplayEXT(physicalDevice.get(),
             display.get()));
     }
 #endif //defined(VK_EXT_direct_mode_display)
 #if defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT) && (defined(VK_EXT_acquire_xlib_display))
-    [[nodiscard]] Result AcquireXlibDisplayEXT(PhysicalDevice physicalDevice,
-        Display&  dpy,
-        DisplayKHR display) {
+    [[nodiscard]] Result AcquireXlibDisplayEXT(PhysicalDevice physicalDevice, 
+        Display&  dpy, 
+        DisplayKHR display) const {
         return static_cast<Result>(pfn_AcquireXlibDisplayEXT(physicalDevice.get(),
             reinterpret_cast<Display*>(&dpy),
             display.get()));
     }
-    [[nodiscard]] expected<DisplayKHR> GetRandROutputDisplayEXT(PhysicalDevice physicalDevice,
-        Display&  dpy,
-        RROutput rrOutput) {
+    [[nodiscard]] expected<DisplayKHR> GetRandROutputDisplayEXT(PhysicalDevice physicalDevice, 
+        Display&  dpy, 
+        RROutput rrOutput) const {
         DisplayKHR pDisplay;
         vk::Result result = static_cast<Result>(pfn_GetRandROutputDisplayEXT(physicalDevice.get(),
             reinterpret_cast<Display*>(&dpy),
@@ -1017,8 +1029,8 @@ struct InstanceFunctions {
     }
 #endif //defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT) && (defined(VK_EXT_acquire_xlib_display))
 #if defined(VK_EXT_display_surface_counter)
-    [[nodiscard]] expected<SurfaceCapabilities2EXT> GetPhysicalDeviceSurfaceCapabilities2EXT(PhysicalDevice physicalDevice,
-        SurfaceKHR surface) {
+    [[nodiscard]] expected<SurfaceCapabilities2EXT> GetPhysicalDeviceSurfaceCapabilities2EXT(PhysicalDevice physicalDevice, 
+        SurfaceKHR surface) const {
         SurfaceCapabilities2EXT pSurfaceCapabilities;
         vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceSurfaceCapabilities2EXT(physicalDevice.get(),
             surface.get(),
@@ -1027,36 +1039,37 @@ struct InstanceFunctions {
     }
 #endif //defined(VK_EXT_display_surface_counter)
 #if defined(VK_KHR_performance_query)
-    [[nodiscard]] Result EnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR(PhysicalDevice physicalDevice,
-        uint32_t queueFamilyIndex,
-        uint32_t&  pCounterCount,
-        PerformanceCounterKHR* pCounters,
-        PerformanceCounterDescriptionKHR* pCounterDescriptions) {
+    [[nodiscard]] Result EnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR(PhysicalDevice physicalDevice, 
+        uint32_t queueFamilyIndex, 
+        uint32_t&  pCounterCount, 
+        PerformanceCounterKHR* pCounters, 
+        PerformanceCounterDescriptionKHR* pCounterDescriptions) const {
         return static_cast<Result>(pfn_EnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR(physicalDevice.get(),
             queueFamilyIndex,
             &pCounterCount,
             reinterpret_cast<VkPerformanceCounterKHR*>(pCounters),
             reinterpret_cast<VkPerformanceCounterDescriptionKHR*>(pCounterDescriptions)));
     }
-    void GetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR(PhysicalDevice physicalDevice,
-        const QueryPoolPerformanceCreateInfoKHR&  pPerformanceQueryCreateInfo,
-        uint32_t&  pNumPasses) {
+    [[nodiscard]] uint32_t GetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR(PhysicalDevice physicalDevice, 
+        const QueryPoolPerformanceCreateInfoKHR&  pPerformanceQueryCreateInfo) const {
+        uint32_t pNumPasses;
         pfn_GetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR(physicalDevice.get(),
             reinterpret_cast<const VkQueryPoolPerformanceCreateInfoKHR*>(&pPerformanceQueryCreateInfo),
             &pNumPasses);
+        return pNumPasses;
     }
 #endif //defined(VK_KHR_performance_query)
 #if defined(VK_KHR_get_surface_capabilities2)
-    [[nodiscard]] expected<SurfaceCapabilities2KHR> GetPhysicalDeviceSurfaceCapabilities2KHR(PhysicalDevice physicalDevice,
-        const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) {
+    [[nodiscard]] expected<SurfaceCapabilities2KHR> GetPhysicalDeviceSurfaceCapabilities2KHR(PhysicalDevice physicalDevice, 
+        const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) const {
         SurfaceCapabilities2KHR pSurfaceCapabilities;
         vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceSurfaceCapabilities2KHR(physicalDevice.get(),
             reinterpret_cast<const VkPhysicalDeviceSurfaceInfo2KHR*>(&pSurfaceInfo),
             reinterpret_cast<VkSurfaceCapabilities2KHR*>(&pSurfaceCapabilities)));
         return expected<SurfaceCapabilities2KHR>(pSurfaceCapabilities, result);
     }
-    [[nodiscard]] expected<detail::fixed_vector<SurfaceFormat2KHR>> GetPhysicalDeviceSurfaceFormats2KHR(PhysicalDevice physicalDevice,
-        const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) {
+    [[nodiscard]] expected<detail::fixed_vector<SurfaceFormat2KHR>> GetPhysicalDeviceSurfaceFormats2KHR(PhysicalDevice physicalDevice, 
+        const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) const {
         uint32_t pSurfaceFormatCount = 0;
         vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceSurfaceFormats2KHR(physicalDevice.get(),
             reinterpret_cast<const VkPhysicalDeviceSurfaceInfo2KHR*>(&pSurfaceInfo),
@@ -1073,7 +1086,7 @@ struct InstanceFunctions {
     }
 #endif //defined(VK_KHR_get_surface_capabilities2)
 #if defined(VK_KHR_get_display_properties2)
-    [[nodiscard]] expected<detail::fixed_vector<DisplayProperties2KHR>> GetPhysicalDeviceDisplayProperties2KHR(PhysicalDevice physicalDevice) {
+    [[nodiscard]] expected<detail::fixed_vector<DisplayProperties2KHR>> GetPhysicalDeviceDisplayProperties2KHR(PhysicalDevice physicalDevice) const {
         uint32_t pPropertyCount = 0;
         vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceDisplayProperties2KHR(physicalDevice.get(),
             &pPropertyCount,
@@ -1086,7 +1099,7 @@ struct InstanceFunctions {
         if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
         return expected(std::move(pProperties), result);
     }
-    [[nodiscard]] expected<detail::fixed_vector<DisplayPlaneProperties2KHR>> GetPhysicalDeviceDisplayPlaneProperties2KHR(PhysicalDevice physicalDevice) {
+    [[nodiscard]] expected<detail::fixed_vector<DisplayPlaneProperties2KHR>> GetPhysicalDeviceDisplayPlaneProperties2KHR(PhysicalDevice physicalDevice) const {
         uint32_t pPropertyCount = 0;
         vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceDisplayPlaneProperties2KHR(physicalDevice.get(),
             &pPropertyCount,
@@ -1099,8 +1112,8 @@ struct InstanceFunctions {
         if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
         return expected(std::move(pProperties), result);
     }
-    [[nodiscard]] expected<detail::fixed_vector<DisplayModeProperties2KHR>> GetDisplayModeProperties2KHR(PhysicalDevice physicalDevice,
-        DisplayKHR display) {
+    [[nodiscard]] expected<detail::fixed_vector<DisplayModeProperties2KHR>> GetDisplayModeProperties2KHR(PhysicalDevice physicalDevice, 
+        DisplayKHR display) const {
         uint32_t pPropertyCount = 0;
         vk::Result result = static_cast<Result>(pfn_GetDisplayModeProperties2KHR(physicalDevice.get(),
             display.get(),
@@ -1115,8 +1128,8 @@ struct InstanceFunctions {
         if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
         return expected(std::move(pProperties), result);
     }
-    [[nodiscard]] expected<DisplayPlaneCapabilities2KHR> GetDisplayPlaneCapabilities2KHR(PhysicalDevice physicalDevice,
-        const DisplayPlaneInfo2KHR&  pDisplayPlaneInfo) {
+    [[nodiscard]] expected<DisplayPlaneCapabilities2KHR> GetDisplayPlaneCapabilities2KHR(PhysicalDevice physicalDevice, 
+        const DisplayPlaneInfo2KHR&  pDisplayPlaneInfo) const {
         DisplayPlaneCapabilities2KHR pCapabilities;
         vk::Result result = static_cast<Result>(pfn_GetDisplayPlaneCapabilities2KHR(physicalDevice.get(),
             reinterpret_cast<const VkDisplayPlaneInfo2KHR*>(&pDisplayPlaneInfo),
@@ -1125,8 +1138,8 @@ struct InstanceFunctions {
     }
 #endif //defined(VK_KHR_get_display_properties2)
 #if defined(VK_USE_PLATFORM_IOS_MVK) && (defined(VK_MVK_ios_surface))
-    [[nodiscard]] expected<SurfaceKHR> CreateIOSSurfaceMVK(const IOSSurfaceCreateInfoMVK&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<SurfaceKHR> CreateIOSSurfaceMVK(const IOSSurfaceCreateInfoMVK&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         SurfaceKHR pSurface;
         vk::Result result = static_cast<Result>(pfn_CreateIOSSurfaceMVK(instance.get(),
             reinterpret_cast<const VkIOSSurfaceCreateInfoMVK*>(&pCreateInfo),
@@ -1136,8 +1149,8 @@ struct InstanceFunctions {
     }
 #endif //defined(VK_USE_PLATFORM_IOS_MVK) && (defined(VK_MVK_ios_surface))
 #if defined(VK_USE_PLATFORM_MACOS_MVK) && (defined(VK_MVK_macos_surface))
-    [[nodiscard]] expected<SurfaceKHR> CreateMacOSSurfaceMVK(const MacOSSurfaceCreateInfoMVK&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<SurfaceKHR> CreateMacOSSurfaceMVK(const MacOSSurfaceCreateInfoMVK&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         SurfaceKHR pSurface;
         vk::Result result = static_cast<Result>(pfn_CreateMacOSSurfaceMVK(instance.get(),
             reinterpret_cast<const VkMacOSSurfaceCreateInfoMVK*>(&pCreateInfo),
@@ -1147,8 +1160,8 @@ struct InstanceFunctions {
     }
 #endif //defined(VK_USE_PLATFORM_MACOS_MVK) && (defined(VK_MVK_macos_surface))
 #if defined(VK_EXT_debug_utils)
-    [[nodiscard]] expected<DebugUtilsMessengerEXT> CreateDebugUtilsMessengerEXT(const DebugUtilsMessengerCreateInfoEXT&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<DebugUtilsMessengerEXT> CreateDebugUtilsMessengerEXT(const DebugUtilsMessengerCreateInfoEXT&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         DebugUtilsMessengerEXT pMessenger;
         vk::Result result = static_cast<Result>(pfn_CreateDebugUtilsMessengerEXT(instance.get(),
             reinterpret_cast<const VkDebugUtilsMessengerCreateInfoEXT*>(&pCreateInfo),
@@ -1156,15 +1169,15 @@ struct InstanceFunctions {
             reinterpret_cast<VkDebugUtilsMessengerEXT*>(&pMessenger)));
         return expected<DebugUtilsMessengerEXT>(pMessenger, result);
     }
-    void DestroyDebugUtilsMessengerEXT(DebugUtilsMessengerEXT messenger,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroyDebugUtilsMessengerEXT(DebugUtilsMessengerEXT messenger, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroyDebugUtilsMessengerEXT(instance.get(),
             messenger.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-        DebugUtilsMessageTypeFlagsEXT messageTypes,
-        const DebugUtilsMessengerCallbackDataEXT&  pCallbackData) {
+    void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeverity, 
+        DebugUtilsMessageTypeFlagsEXT messageTypes, 
+        const DebugUtilsMessengerCallbackDataEXT&  pCallbackData) const {
         pfn_SubmitDebugUtilsMessageEXT(instance.get(),
             static_cast<VkDebugUtilsMessageSeverityFlagBitsEXT>(messageSeverity),
             static_cast<VkDebugUtilsMessageTypeFlagsEXT>(messageTypes),
@@ -1172,16 +1185,17 @@ struct InstanceFunctions {
     }
 #endif //defined(VK_EXT_debug_utils)
 #if defined(VK_EXT_sample_locations)
-    void GetPhysicalDeviceMultisamplePropertiesEXT(PhysicalDevice physicalDevice,
-        SampleCountFlagBits samples,
-        MultisamplePropertiesEXT&  pMultisampleProperties) {
+    [[nodiscard]] MultisamplePropertiesEXT GetPhysicalDeviceMultisamplePropertiesEXT(PhysicalDevice physicalDevice, 
+        SampleCountFlagBits samples) const {
+        MultisamplePropertiesEXT pMultisampleProperties;
         pfn_GetPhysicalDeviceMultisamplePropertiesEXT(physicalDevice.get(),
             static_cast<VkSampleCountFlagBits>(samples),
             reinterpret_cast<VkMultisamplePropertiesEXT*>(&pMultisampleProperties));
+        return pMultisampleProperties;
     }
 #endif //defined(VK_EXT_sample_locations)
 #if defined(VK_EXT_calibrated_timestamps)
-    [[nodiscard]] expected<detail::fixed_vector<TimeDomainEXT>> GetPhysicalDeviceCalibrateableTimeDomainsEXT(PhysicalDevice physicalDevice) {
+    [[nodiscard]] expected<detail::fixed_vector<TimeDomainEXT>> GetPhysicalDeviceCalibrateableTimeDomainsEXT(PhysicalDevice physicalDevice) const {
         uint32_t pTimeDomainCount = 0;
         vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceCalibrateableTimeDomainsEXT(physicalDevice.get(),
             &pTimeDomainCount,
@@ -1196,8 +1210,8 @@ struct InstanceFunctions {
     }
 #endif //defined(VK_EXT_calibrated_timestamps)
 #if defined(VK_USE_PLATFORM_FUCHSIA) && (defined(VK_FUCHSIA_imagepipe_surface))
-    [[nodiscard]] expected<SurfaceKHR> CreateImagePipeSurfaceFUCHSIA(const ImagePipeSurfaceCreateInfoFUCHSIA&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<SurfaceKHR> CreateImagePipeSurfaceFUCHSIA(const ImagePipeSurfaceCreateInfoFUCHSIA&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         SurfaceKHR pSurface;
         vk::Result result = static_cast<Result>(pfn_CreateImagePipeSurfaceFUCHSIA(instance.get(),
             reinterpret_cast<const VkImagePipeSurfaceCreateInfoFUCHSIA*>(&pCreateInfo),
@@ -1207,8 +1221,8 @@ struct InstanceFunctions {
     }
 #endif //defined(VK_USE_PLATFORM_FUCHSIA) && (defined(VK_FUCHSIA_imagepipe_surface))
 #if defined(VK_USE_PLATFORM_METAL_EXT) && (defined(VK_EXT_metal_surface))
-    [[nodiscard]] expected<SurfaceKHR> CreateMetalSurfaceEXT(const MetalSurfaceCreateInfoEXT&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<SurfaceKHR> CreateMetalSurfaceEXT(const MetalSurfaceCreateInfoEXT&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         SurfaceKHR pSurface;
         vk::Result result = static_cast<Result>(pfn_CreateMetalSurfaceEXT(instance.get(),
             reinterpret_cast<const VkMetalSurfaceCreateInfoEXT*>(&pCreateInfo),
@@ -1218,7 +1232,7 @@ struct InstanceFunctions {
     }
 #endif //defined(VK_USE_PLATFORM_METAL_EXT) && (defined(VK_EXT_metal_surface))
 #if defined(VK_EXT_tooling_info)
-    [[nodiscard]] expected<detail::fixed_vector<PhysicalDeviceToolPropertiesEXT>> GetPhysicalDeviceToolPropertiesEXT(PhysicalDevice physicalDevice) {
+    [[nodiscard]] expected<detail::fixed_vector<PhysicalDeviceToolPropertiesEXT>> GetPhysicalDeviceToolPropertiesEXT(PhysicalDevice physicalDevice) const {
         uint32_t pToolCount = 0;
         vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceToolPropertiesEXT(physicalDevice.get(),
             &pToolCount,
@@ -1233,7 +1247,7 @@ struct InstanceFunctions {
     }
 #endif //defined(VK_EXT_tooling_info)
 #if defined(VK_NV_cooperative_matrix)
-    [[nodiscard]] expected<detail::fixed_vector<CooperativeMatrixPropertiesNV>> GetPhysicalDeviceCooperativeMatrixPropertiesNV(PhysicalDevice physicalDevice) {
+    [[nodiscard]] expected<detail::fixed_vector<CooperativeMatrixPropertiesNV>> GetPhysicalDeviceCooperativeMatrixPropertiesNV(PhysicalDevice physicalDevice) const {
         uint32_t pPropertyCount = 0;
         vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceCooperativeMatrixPropertiesNV(physicalDevice.get(),
             &pPropertyCount,
@@ -1248,7 +1262,7 @@ struct InstanceFunctions {
     }
 #endif //defined(VK_NV_cooperative_matrix)
 #if defined(VK_NV_coverage_reduction_mode)
-    [[nodiscard]] expected<detail::fixed_vector<FramebufferMixedSamplesCombinationNV>> GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(PhysicalDevice physicalDevice) {
+    [[nodiscard]] expected<detail::fixed_vector<FramebufferMixedSamplesCombinationNV>> GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(PhysicalDevice physicalDevice) const {
         uint32_t pCombinationCount = 0;
         vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(physicalDevice.get(),
             &pCombinationCount,
@@ -1263,8 +1277,8 @@ struct InstanceFunctions {
     }
 #endif //defined(VK_NV_coverage_reduction_mode)
 #if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
-    [[nodiscard]] expected<detail::fixed_vector<PresentModeKHR>> GetPhysicalDeviceSurfacePresentModes2EXT(PhysicalDevice physicalDevice,
-        const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) {
+    [[nodiscard]] expected<detail::fixed_vector<PresentModeKHR>> GetPhysicalDeviceSurfacePresentModes2EXT(PhysicalDevice physicalDevice, 
+        const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) const {
         uint32_t pPresentModeCount = 0;
         vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceSurfacePresentModes2EXT(physicalDevice.get(),
             reinterpret_cast<const VkPhysicalDeviceSurfaceInfo2KHR*>(&pSurfaceInfo),
@@ -1281,8 +1295,8 @@ struct InstanceFunctions {
     }
 #endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
 #if defined(VK_EXT_headless_surface)
-    [[nodiscard]] expected<SurfaceKHR> CreateHeadlessSurfaceEXT(const HeadlessSurfaceCreateInfoEXT&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<SurfaceKHR> CreateHeadlessSurfaceEXT(const HeadlessSurfaceCreateInfoEXT&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         SurfaceKHR pSurface;
         vk::Result result = static_cast<Result>(pfn_CreateHeadlessSurfaceEXT(instance.get(),
             reinterpret_cast<const VkHeadlessSurfaceCreateInfoEXT*>(&pCreateInfo),
@@ -1292,8 +1306,8 @@ struct InstanceFunctions {
     }
 #endif //defined(VK_EXT_headless_surface)
 #if defined(VK_USE_PLATFORM_DIRECTFB_EXT) && (defined(VK_EXT_directfb_surface))
-    [[nodiscard]] expected<SurfaceKHR> CreateDirectFBSurfaceEXT(const DirectFBSurfaceCreateInfoEXT&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<SurfaceKHR> CreateDirectFBSurfaceEXT(const DirectFBSurfaceCreateInfoEXT&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         SurfaceKHR pSurface;
         vk::Result result = static_cast<Result>(pfn_CreateDirectFBSurfaceEXT(instance.get(),
             reinterpret_cast<const VkDirectFBSurfaceCreateInfoEXT*>(&pCreateInfo),
@@ -1301,12 +1315,13 @@ struct InstanceFunctions {
             reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
         return expected<SurfaceKHR>(pSurface, result);
     }
-    [[nodiscard]] VkBool32 GetPhysicalDeviceDirectFBPresentationSupportEXT(PhysicalDevice physicalDevice,
-        uint32_t queueFamilyIndex,
-        IDirectFB&  dfb) {
-        return pfn_GetPhysicalDeviceDirectFBPresentationSupportEXT(physicalDevice.get(),
+    [[nodiscard]] IDirectFB GetPhysicalDeviceDirectFBPresentationSupportEXT(PhysicalDevice physicalDevice, 
+        uint32_t queueFamilyIndex) const {
+        IDirectFB dfb;
+        vk::Result result = pfn_GetPhysicalDeviceDirectFBPresentationSupportEXT(physicalDevice.get(),
             queueFamilyIndex,
             reinterpret_cast<IDirectFB*>(&dfb));
+        return expected<IDirectFB>(dfb, result);
     }
 #endif //defined(VK_USE_PLATFORM_DIRECTFB_EXT) && (defined(VK_EXT_directfb_surface))
     explicit InstanceFunctions(GlobalFunctions const& global_functions, Instance instance)
@@ -1870,35 +1885,36 @@ struct DeviceFunctions {
     PFN_vkGetPrivateDataEXT pfn_GetPrivateDataEXT;
 #endif //defined(VK_EXT_private_data)
 #if defined(VK_VERSION_1_0)
-    void DestroyDevice(const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroyDevice(const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroyDevice(device.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    void GetDeviceQueue(uint32_t queueFamilyIndex,
-        uint32_t queueIndex,
-        Queue&  pQueue) {
+    [[nodiscard]] Queue GetDeviceQueue(uint32_t queueFamilyIndex, 
+        uint32_t queueIndex) const {
+        Queue pQueue;
         pfn_GetDeviceQueue(device.get(),
             queueFamilyIndex,
             queueIndex,
             reinterpret_cast<VkQueue*>(&pQueue));
+        return pQueue;
     }
-    [[nodiscard]] Result QueueSubmit(Queue queue,
-        uint32_t submitCount,
-        const SubmitInfo* pSubmits,
-        Fence fence) {
+    [[nodiscard]] Result QueueSubmit(Queue queue, 
+        uint32_t submitCount, 
+        const SubmitInfo* pSubmits, 
+        Fence fence) const {
         return static_cast<Result>(pfn_QueueSubmit(queue.get(),
             submitCount,
             reinterpret_cast<const VkSubmitInfo*>(pSubmits),
             fence.get()));
     }
-    [[nodiscard]] Result QueueWaitIdle(Queue queue) {
+    [[nodiscard]] Result QueueWaitIdle(Queue queue) const {
         return static_cast<Result>(pfn_QueueWaitIdle(queue.get()));
     }
-    [[nodiscard]] Result DeviceWaitIdle() {
+    [[nodiscard]] Result DeviceWaitIdle() const {
         return static_cast<Result>(pfn_DeviceWaitIdle(device.get()));
     }
-    [[nodiscard]] expected<DeviceMemory> AllocateMemory(const MemoryAllocateInfo&  pAllocateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<DeviceMemory> AllocateMemory(const MemoryAllocateInfo&  pAllocateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         DeviceMemory pMemory;
         vk::Result result = static_cast<Result>(pfn_AllocateMemory(device.get(),
             reinterpret_cast<const VkMemoryAllocateInfo*>(&pAllocateInfo),
@@ -1906,16 +1922,16 @@ struct DeviceFunctions {
             reinterpret_cast<VkDeviceMemory*>(&pMemory)));
         return expected<DeviceMemory>(pMemory, result);
     }
-    void FreeMemory(DeviceMemory memory,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void FreeMemory(DeviceMemory memory, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_FreeMemory(device.get(),
             memory.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    [[nodiscard]] expected<void*> MapMemory(DeviceMemory memory,
-        DeviceSize offset,
-        DeviceSize size,
-        MemoryMapFlags flags) {
+    [[nodiscard]] expected<void*> MapMemory(DeviceMemory memory, 
+        DeviceSize offset, 
+        DeviceSize size, 
+        MemoryMapFlags flags) const {
         void* ppData;
         vk::Result result = static_cast<Result>(pfn_MapMemory(device.get(),
             memory.get(),
@@ -1925,57 +1941,60 @@ struct DeviceFunctions {
             reinterpret_cast<void**>(&ppData)));
         return expected<void*>(ppData, result);
     }
-    void UnmapMemory(DeviceMemory memory) {
+    void UnmapMemory(DeviceMemory memory) const {
         pfn_UnmapMemory(device.get(),
             memory.get());
     }
-    [[nodiscard]] Result FlushMappedMemoryRanges(uint32_t memoryRangeCount,
-        const MappedMemoryRange* pMemoryRanges) {
+    [[nodiscard]] Result FlushMappedMemoryRanges(uint32_t memoryRangeCount, 
+        const MappedMemoryRange* pMemoryRanges) const {
         return static_cast<Result>(pfn_FlushMappedMemoryRanges(device.get(),
             memoryRangeCount,
             reinterpret_cast<const VkMappedMemoryRange*>(pMemoryRanges)));
     }
-    [[nodiscard]] Result InvalidateMappedMemoryRanges(uint32_t memoryRangeCount,
-        const MappedMemoryRange* pMemoryRanges) {
+    [[nodiscard]] Result InvalidateMappedMemoryRanges(uint32_t memoryRangeCount, 
+        const MappedMemoryRange* pMemoryRanges) const {
         return static_cast<Result>(pfn_InvalidateMappedMemoryRanges(device.get(),
             memoryRangeCount,
             reinterpret_cast<const VkMappedMemoryRange*>(pMemoryRanges)));
     }
-    void GetDeviceMemoryCommitment(DeviceMemory memory,
-        DeviceSize&  pCommittedMemoryInBytes) {
+    [[nodiscard]] DeviceSize GetDeviceMemoryCommitment(DeviceMemory memory) const {
+        DeviceSize pCommittedMemoryInBytes;
         pfn_GetDeviceMemoryCommitment(device.get(),
             memory.get(),
             &pCommittedMemoryInBytes);
+        return pCommittedMemoryInBytes;
     }
-    void GetBufferMemoryRequirements(Buffer buffer,
-        MemoryRequirements&  pMemoryRequirements) {
+    [[nodiscard]] MemoryRequirements GetBufferMemoryRequirements(Buffer buffer) const {
+        MemoryRequirements pMemoryRequirements;
         pfn_GetBufferMemoryRequirements(device.get(),
             buffer.get(),
             reinterpret_cast<VkMemoryRequirements*>(&pMemoryRequirements));
+        return pMemoryRequirements;
     }
-    [[nodiscard]] Result BindBufferMemory(Buffer buffer,
-        DeviceMemory memory,
-        DeviceSize memoryOffset) {
+    [[nodiscard]] Result BindBufferMemory(Buffer buffer, 
+        DeviceMemory memory, 
+        DeviceSize memoryOffset) const {
         return static_cast<Result>(pfn_BindBufferMemory(device.get(),
             buffer.get(),
             memory.get(),
             memoryOffset));
     }
-    void GetImageMemoryRequirements(Image image,
-        MemoryRequirements&  pMemoryRequirements) {
+    [[nodiscard]] MemoryRequirements GetImageMemoryRequirements(Image image) const {
+        MemoryRequirements pMemoryRequirements;
         pfn_GetImageMemoryRequirements(device.get(),
             image.get(),
             reinterpret_cast<VkMemoryRequirements*>(&pMemoryRequirements));
+        return pMemoryRequirements;
     }
-    [[nodiscard]] Result BindImageMemory(Image image,
-        DeviceMemory memory,
-        DeviceSize memoryOffset) {
+    [[nodiscard]] Result BindImageMemory(Image image, 
+        DeviceMemory memory, 
+        DeviceSize memoryOffset) const {
         return static_cast<Result>(pfn_BindImageMemory(device.get(),
             image.get(),
             memory.get(),
             memoryOffset));
     }
-    detail::fixed_vector<SparseImageMemoryRequirements> GetImageSparseMemoryRequirements(Image image) {
+    [[nodiscard]] detail::fixed_vector<SparseImageMemoryRequirements> GetImageSparseMemoryRequirements(Image image) const {
         uint32_t pSparseMemoryRequirementCount = 0;
         pfn_GetImageSparseMemoryRequirements(device.get(),
             image.get(),
@@ -1989,17 +2008,17 @@ struct DeviceFunctions {
         if (pSparseMemoryRequirementCount < pSparseMemoryRequirements.size()) pSparseMemoryRequirements.shrink(pSparseMemoryRequirementCount);
         return pSparseMemoryRequirements;
     }
-    [[nodiscard]] Result QueueBindSparse(Queue queue,
-        uint32_t bindInfoCount,
-        const BindSparseInfo* pBindInfo,
-        Fence fence) {
+    [[nodiscard]] Result QueueBindSparse(Queue queue, 
+        uint32_t bindInfoCount, 
+        const BindSparseInfo* pBindInfo, 
+        Fence fence) const {
         return static_cast<Result>(pfn_QueueBindSparse(queue.get(),
             bindInfoCount,
             reinterpret_cast<const VkBindSparseInfo*>(pBindInfo),
             fence.get()));
     }
-    [[nodiscard]] expected<Fence> CreateFence(const FenceCreateInfo&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<Fence> CreateFence(const FenceCreateInfo&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         Fence pFence;
         vk::Result result = static_cast<Result>(pfn_CreateFence(device.get(),
             reinterpret_cast<const VkFenceCreateInfo*>(&pCreateInfo),
@@ -2007,34 +2026,34 @@ struct DeviceFunctions {
             reinterpret_cast<VkFence*>(&pFence)));
         return expected<Fence>(pFence, result);
     }
-    void DestroyFence(Fence fence,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroyFence(Fence fence, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroyFence(device.get(),
             fence.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    [[nodiscard]] Result ResetFences(uint32_t fenceCount,
-        const Fence* pFences) {
+    [[nodiscard]] Result ResetFences(uint32_t fenceCount, 
+        const Fence* pFences) const {
         return static_cast<Result>(pfn_ResetFences(device.get(),
             fenceCount,
             reinterpret_cast<const VkFence*>(pFences)));
     }
-    [[nodiscard]] Result GetFenceStatus(Fence fence) {
+    [[nodiscard]] Result GetFenceStatus(Fence fence) const {
         return static_cast<Result>(pfn_GetFenceStatus(device.get(),
             fence.get()));
     }
-    [[nodiscard]] Result WaitForFences(uint32_t fenceCount,
-        const Fence* pFences,
-        Bool32 waitAll,
-        uint64_t timeout) {
+    [[nodiscard]] Result WaitForFences(uint32_t fenceCount, 
+        const Fence* pFences, 
+        Bool32 waitAll, 
+        uint64_t timeout) const {
         return static_cast<Result>(pfn_WaitForFences(device.get(),
             fenceCount,
             reinterpret_cast<const VkFence*>(pFences),
             waitAll,
             timeout));
     }
-    [[nodiscard]] expected<Semaphore> CreateSemaphore(const SemaphoreCreateInfo&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<Semaphore> CreateSemaphore(const SemaphoreCreateInfo&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         Semaphore pSemaphore;
         vk::Result result = static_cast<Result>(pfn_CreateSemaphore(device.get(),
             reinterpret_cast<const VkSemaphoreCreateInfo*>(&pCreateInfo),
@@ -2042,14 +2061,14 @@ struct DeviceFunctions {
             reinterpret_cast<VkSemaphore*>(&pSemaphore)));
         return expected<Semaphore>(pSemaphore, result);
     }
-    void DestroySemaphore(Semaphore semaphore,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroySemaphore(Semaphore semaphore, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroySemaphore(device.get(),
             semaphore.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    [[nodiscard]] expected<Event> CreateEvent(const EventCreateInfo&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<Event> CreateEvent(const EventCreateInfo&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         Event pEvent;
         vk::Result result = static_cast<Result>(pfn_CreateEvent(device.get(),
             reinterpret_cast<const VkEventCreateInfo*>(&pCreateInfo),
@@ -2057,26 +2076,26 @@ struct DeviceFunctions {
             reinterpret_cast<VkEvent*>(&pEvent)));
         return expected<Event>(pEvent, result);
     }
-    void DestroyEvent(Event event,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroyEvent(Event event, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroyEvent(device.get(),
             event.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    [[nodiscard]] Result GetEventStatus(Event event) {
+    [[nodiscard]] Result GetEventStatus(Event event) const {
         return static_cast<Result>(pfn_GetEventStatus(device.get(),
             event.get()));
     }
-    [[nodiscard]] Result SetEvent(Event event) {
+    [[nodiscard]] Result SetEvent(Event event) const {
         return static_cast<Result>(pfn_SetEvent(device.get(),
             event.get()));
     }
-    [[nodiscard]] Result ResetEvent(Event event) {
+    [[nodiscard]] Result ResetEvent(Event event) const {
         return static_cast<Result>(pfn_ResetEvent(device.get(),
             event.get()));
     }
-    [[nodiscard]] expected<QueryPool> CreateQueryPool(const QueryPoolCreateInfo&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<QueryPool> CreateQueryPool(const QueryPoolCreateInfo&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         QueryPool pQueryPool;
         vk::Result result = static_cast<Result>(pfn_CreateQueryPool(device.get(),
             reinterpret_cast<const VkQueryPoolCreateInfo*>(&pCreateInfo),
@@ -2084,19 +2103,19 @@ struct DeviceFunctions {
             reinterpret_cast<VkQueryPool*>(&pQueryPool)));
         return expected<QueryPool>(pQueryPool, result);
     }
-    void DestroyQueryPool(QueryPool queryPool,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroyQueryPool(QueryPool queryPool, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroyQueryPool(device.get(),
             queryPool.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    [[nodiscard]] Result GetQueryPoolResults(QueryPool queryPool,
-        uint32_t firstQuery,
-        uint32_t queryCount,
-        size_t dataSize,
-        void* pData,
-        DeviceSize stride,
-        QueryResultFlags flags) {
+    [[nodiscard]] Result GetQueryPoolResults(QueryPool queryPool, 
+        uint32_t firstQuery, 
+        uint32_t queryCount, 
+        size_t dataSize, 
+        void* pData, 
+        DeviceSize stride, 
+        QueryResultFlags flags) const {
         return static_cast<Result>(pfn_GetQueryPoolResults(device.get(),
             queryPool.get(),
             firstQuery,
@@ -2106,8 +2125,8 @@ struct DeviceFunctions {
             stride,
             static_cast<VkQueryResultFlags>(flags)));
     }
-    [[nodiscard]] expected<Buffer> CreateBuffer(const BufferCreateInfo&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<Buffer> CreateBuffer(const BufferCreateInfo&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         Buffer pBuffer;
         vk::Result result = static_cast<Result>(pfn_CreateBuffer(device.get(),
             reinterpret_cast<const VkBufferCreateInfo*>(&pCreateInfo),
@@ -2115,14 +2134,14 @@ struct DeviceFunctions {
             reinterpret_cast<VkBuffer*>(&pBuffer)));
         return expected<Buffer>(pBuffer, result);
     }
-    void DestroyBuffer(Buffer buffer,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroyBuffer(Buffer buffer, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroyBuffer(device.get(),
             buffer.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    [[nodiscard]] expected<BufferView> CreateBufferView(const BufferViewCreateInfo&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<BufferView> CreateBufferView(const BufferViewCreateInfo&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         BufferView pView;
         vk::Result result = static_cast<Result>(pfn_CreateBufferView(device.get(),
             reinterpret_cast<const VkBufferViewCreateInfo*>(&pCreateInfo),
@@ -2130,14 +2149,14 @@ struct DeviceFunctions {
             reinterpret_cast<VkBufferView*>(&pView)));
         return expected<BufferView>(pView, result);
     }
-    void DestroyBufferView(BufferView bufferView,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroyBufferView(BufferView bufferView, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroyBufferView(device.get(),
             bufferView.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    [[nodiscard]] expected<Image> CreateImage(const ImageCreateInfo&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<Image> CreateImage(const ImageCreateInfo&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         Image pImage;
         vk::Result result = static_cast<Result>(pfn_CreateImage(device.get(),
             reinterpret_cast<const VkImageCreateInfo*>(&pCreateInfo),
@@ -2145,22 +2164,23 @@ struct DeviceFunctions {
             reinterpret_cast<VkImage*>(&pImage)));
         return expected<Image>(pImage, result);
     }
-    void DestroyImage(Image image,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroyImage(Image image, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroyImage(device.get(),
             image.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    void GetImageSubresourceLayout(Image image,
-        const ImageSubresource&  pSubresource,
-        SubresourceLayout&  pLayout) {
+    [[nodiscard]] SubresourceLayout GetImageSubresourceLayout(Image image, 
+        const ImageSubresource&  pSubresource) const {
+        SubresourceLayout pLayout;
         pfn_GetImageSubresourceLayout(device.get(),
             image.get(),
             reinterpret_cast<const VkImageSubresource*>(&pSubresource),
             reinterpret_cast<VkSubresourceLayout*>(&pLayout));
+        return pLayout;
     }
-    [[nodiscard]] expected<ImageView> CreateImageView(const ImageViewCreateInfo&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<ImageView> CreateImageView(const ImageViewCreateInfo&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         ImageView pView;
         vk::Result result = static_cast<Result>(pfn_CreateImageView(device.get(),
             reinterpret_cast<const VkImageViewCreateInfo*>(&pCreateInfo),
@@ -2168,14 +2188,14 @@ struct DeviceFunctions {
             reinterpret_cast<VkImageView*>(&pView)));
         return expected<ImageView>(pView, result);
     }
-    void DestroyImageView(ImageView imageView,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroyImageView(ImageView imageView, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroyImageView(device.get(),
             imageView.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    [[nodiscard]] expected<ShaderModule> CreateShaderModule(const ShaderModuleCreateInfo&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<ShaderModule> CreateShaderModule(const ShaderModuleCreateInfo&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         ShaderModule pShaderModule;
         vk::Result result = static_cast<Result>(pfn_CreateShaderModule(device.get(),
             reinterpret_cast<const VkShaderModuleCreateInfo*>(&pCreateInfo),
@@ -2183,14 +2203,14 @@ struct DeviceFunctions {
             reinterpret_cast<VkShaderModule*>(&pShaderModule)));
         return expected<ShaderModule>(pShaderModule, result);
     }
-    void DestroyShaderModule(ShaderModule shaderModule,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroyShaderModule(ShaderModule shaderModule, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroyShaderModule(device.get(),
             shaderModule.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    [[nodiscard]] expected<PipelineCache> CreatePipelineCache(const PipelineCacheCreateInfo&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<PipelineCache> CreatePipelineCache(const PipelineCacheCreateInfo&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         PipelineCache pPipelineCache;
         vk::Result result = static_cast<Result>(pfn_CreatePipelineCache(device.get(),
             reinterpret_cast<const VkPipelineCacheCreateInfo*>(&pCreateInfo),
@@ -2198,13 +2218,13 @@ struct DeviceFunctions {
             reinterpret_cast<VkPipelineCache*>(&pPipelineCache)));
         return expected<PipelineCache>(pPipelineCache, result);
     }
-    void DestroyPipelineCache(PipelineCache pipelineCache,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroyPipelineCache(PipelineCache pipelineCache, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroyPipelineCache(device.get(),
             pipelineCache.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    [[nodiscard]] expected<detail::fixed_vector<void*>> GetPipelineCacheData(PipelineCache pipelineCache) {
+    [[nodiscard]] expected<detail::fixed_vector<void*>> GetPipelineCacheData(PipelineCache pipelineCache) const {
         size_t pDataSize = 0;
         vk::Result result = static_cast<Result>(pfn_GetPipelineCacheData(device.get(),
             pipelineCache.get(),
@@ -2219,19 +2239,19 @@ struct DeviceFunctions {
         if (pDataSize < pData.size()) pData.shrink(pDataSize);
         return expected(std::move(pData), result);
     }
-    [[nodiscard]] Result MergePipelineCaches(PipelineCache dstCache,
-        uint32_t srcCacheCount,
-        const PipelineCache* pSrcCaches) {
+    [[nodiscard]] Result MergePipelineCaches(PipelineCache dstCache, 
+        uint32_t srcCacheCount, 
+        const PipelineCache* pSrcCaches) const {
         return static_cast<Result>(pfn_MergePipelineCaches(device.get(),
             dstCache.get(),
             srcCacheCount,
             reinterpret_cast<const VkPipelineCache*>(pSrcCaches)));
     }
-    [[nodiscard]] Result CreateGraphicsPipelines(PipelineCache pipelineCache,
-        uint32_t createInfoCount,
-        const GraphicsPipelineCreateInfo* pCreateInfos,
-        const AllocationCallbacks* pAllocator,
-        Pipeline* pPipelines) {
+    [[nodiscard]] Result CreateGraphicsPipelines(PipelineCache pipelineCache, 
+        uint32_t createInfoCount, 
+        const GraphicsPipelineCreateInfo* pCreateInfos, 
+        const AllocationCallbacks* pAllocator, 
+        Pipeline* pPipelines) const {
         return static_cast<Result>(pfn_CreateGraphicsPipelines(device.get(),
             pipelineCache.get(),
             createInfoCount,
@@ -2239,11 +2259,11 @@ struct DeviceFunctions {
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkPipeline*>(pPipelines)));
     }
-    [[nodiscard]] Result CreateComputePipelines(PipelineCache pipelineCache,
-        uint32_t createInfoCount,
-        const ComputePipelineCreateInfo* pCreateInfos,
-        const AllocationCallbacks* pAllocator,
-        Pipeline* pPipelines) {
+    [[nodiscard]] Result CreateComputePipelines(PipelineCache pipelineCache, 
+        uint32_t createInfoCount, 
+        const ComputePipelineCreateInfo* pCreateInfos, 
+        const AllocationCallbacks* pAllocator, 
+        Pipeline* pPipelines) const {
         return static_cast<Result>(pfn_CreateComputePipelines(device.get(),
             pipelineCache.get(),
             createInfoCount,
@@ -2251,14 +2271,14 @@ struct DeviceFunctions {
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkPipeline*>(pPipelines)));
     }
-    void DestroyPipeline(Pipeline pipeline,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroyPipeline(Pipeline pipeline, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroyPipeline(device.get(),
             pipeline.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    [[nodiscard]] expected<PipelineLayout> CreatePipelineLayout(const PipelineLayoutCreateInfo&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<PipelineLayout> CreatePipelineLayout(const PipelineLayoutCreateInfo&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         PipelineLayout pPipelineLayout;
         vk::Result result = static_cast<Result>(pfn_CreatePipelineLayout(device.get(),
             reinterpret_cast<const VkPipelineLayoutCreateInfo*>(&pCreateInfo),
@@ -2266,14 +2286,14 @@ struct DeviceFunctions {
             reinterpret_cast<VkPipelineLayout*>(&pPipelineLayout)));
         return expected<PipelineLayout>(pPipelineLayout, result);
     }
-    void DestroyPipelineLayout(PipelineLayout pipelineLayout,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroyPipelineLayout(PipelineLayout pipelineLayout, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroyPipelineLayout(device.get(),
             pipelineLayout.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    [[nodiscard]] expected<Sampler> CreateSampler(const SamplerCreateInfo&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<Sampler> CreateSampler(const SamplerCreateInfo&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         Sampler pSampler;
         vk::Result result = static_cast<Result>(pfn_CreateSampler(device.get(),
             reinterpret_cast<const VkSamplerCreateInfo*>(&pCreateInfo),
@@ -2281,14 +2301,14 @@ struct DeviceFunctions {
             reinterpret_cast<VkSampler*>(&pSampler)));
         return expected<Sampler>(pSampler, result);
     }
-    void DestroySampler(Sampler sampler,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroySampler(Sampler sampler, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroySampler(device.get(),
             sampler.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    [[nodiscard]] expected<DescriptorSetLayout> CreateDescriptorSetLayout(const DescriptorSetLayoutCreateInfo&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<DescriptorSetLayout> CreateDescriptorSetLayout(const DescriptorSetLayoutCreateInfo&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         DescriptorSetLayout pSetLayout;
         vk::Result result = static_cast<Result>(pfn_CreateDescriptorSetLayout(device.get(),
             reinterpret_cast<const VkDescriptorSetLayoutCreateInfo*>(&pCreateInfo),
@@ -2296,14 +2316,14 @@ struct DeviceFunctions {
             reinterpret_cast<VkDescriptorSetLayout*>(&pSetLayout)));
         return expected<DescriptorSetLayout>(pSetLayout, result);
     }
-    void DestroyDescriptorSetLayout(DescriptorSetLayout descriptorSetLayout,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroyDescriptorSetLayout(DescriptorSetLayout descriptorSetLayout, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroyDescriptorSetLayout(device.get(),
             descriptorSetLayout.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    [[nodiscard]] expected<DescriptorPool> CreateDescriptorPool(const DescriptorPoolCreateInfo&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<DescriptorPool> CreateDescriptorPool(const DescriptorPoolCreateInfo&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         DescriptorPool pDescriptorPool;
         vk::Result result = static_cast<Result>(pfn_CreateDescriptorPool(device.get(),
             reinterpret_cast<const VkDescriptorPoolCreateInfo*>(&pCreateInfo),
@@ -2311,44 +2331,44 @@ struct DeviceFunctions {
             reinterpret_cast<VkDescriptorPool*>(&pDescriptorPool)));
         return expected<DescriptorPool>(pDescriptorPool, result);
     }
-    void DestroyDescriptorPool(DescriptorPool descriptorPool,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroyDescriptorPool(DescriptorPool descriptorPool, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroyDescriptorPool(device.get(),
             descriptorPool.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    [[nodiscard]] Result ResetDescriptorPool(DescriptorPool descriptorPool,
-        DescriptorPoolResetFlags flags) {
+    [[nodiscard]] Result ResetDescriptorPool(DescriptorPool descriptorPool, 
+        DescriptorPoolResetFlags flags) const {
         return static_cast<Result>(pfn_ResetDescriptorPool(device.get(),
             descriptorPool.get(),
             static_cast<VkDescriptorPoolResetFlags>(flags)));
     }
-    [[nodiscard]] Result AllocateDescriptorSets(const DescriptorSetAllocateInfo&  pAllocateInfo,
-        DescriptorSet* pDescriptorSets) {
+    [[nodiscard]] Result AllocateDescriptorSets(const DescriptorSetAllocateInfo&  pAllocateInfo, 
+        DescriptorSet* pDescriptorSets) const {
         return static_cast<Result>(pfn_AllocateDescriptorSets(device.get(),
             reinterpret_cast<const VkDescriptorSetAllocateInfo*>(&pAllocateInfo),
             reinterpret_cast<VkDescriptorSet*>(pDescriptorSets)));
     }
-    [[nodiscard]] Result FreeDescriptorSets(DescriptorPool descriptorPool,
-        uint32_t descriptorSetCount,
-        const DescriptorSet* pDescriptorSets) {
+    [[nodiscard]] Result FreeDescriptorSets(DescriptorPool descriptorPool, 
+        uint32_t descriptorSetCount, 
+        const DescriptorSet* pDescriptorSets) const {
         return static_cast<Result>(pfn_FreeDescriptorSets(device.get(),
             descriptorPool.get(),
             descriptorSetCount,
             reinterpret_cast<const VkDescriptorSet*>(pDescriptorSets)));
     }
-    void UpdateDescriptorSets(uint32_t descriptorWriteCount,
-        const WriteDescriptorSet* pDescriptorWrites,
-        uint32_t descriptorCopyCount,
-        const CopyDescriptorSet* pDescriptorCopies) {
+    void UpdateDescriptorSets(uint32_t descriptorWriteCount, 
+        const WriteDescriptorSet* pDescriptorWrites, 
+        uint32_t descriptorCopyCount, 
+        const CopyDescriptorSet* pDescriptorCopies) const {
         pfn_UpdateDescriptorSets(device.get(),
             descriptorWriteCount,
             reinterpret_cast<const VkWriteDescriptorSet*>(pDescriptorWrites),
             descriptorCopyCount,
             reinterpret_cast<const VkCopyDescriptorSet*>(pDescriptorCopies));
     }
-    [[nodiscard]] expected<Framebuffer> CreateFramebuffer(const FramebufferCreateInfo&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<Framebuffer> CreateFramebuffer(const FramebufferCreateInfo&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         Framebuffer pFramebuffer;
         vk::Result result = static_cast<Result>(pfn_CreateFramebuffer(device.get(),
             reinterpret_cast<const VkFramebufferCreateInfo*>(&pCreateInfo),
@@ -2356,14 +2376,14 @@ struct DeviceFunctions {
             reinterpret_cast<VkFramebuffer*>(&pFramebuffer)));
         return expected<Framebuffer>(pFramebuffer, result);
     }
-    void DestroyFramebuffer(Framebuffer framebuffer,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroyFramebuffer(Framebuffer framebuffer, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroyFramebuffer(device.get(),
             framebuffer.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    [[nodiscard]] expected<RenderPass> CreateRenderPass(const RenderPassCreateInfo&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<RenderPass> CreateRenderPass(const RenderPassCreateInfo&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         RenderPass pRenderPass;
         vk::Result result = static_cast<Result>(pfn_CreateRenderPass(device.get(),
             reinterpret_cast<const VkRenderPassCreateInfo*>(&pCreateInfo),
@@ -2371,20 +2391,21 @@ struct DeviceFunctions {
             reinterpret_cast<VkRenderPass*>(&pRenderPass)));
         return expected<RenderPass>(pRenderPass, result);
     }
-    void DestroyRenderPass(RenderPass renderPass,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroyRenderPass(RenderPass renderPass, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroyRenderPass(device.get(),
             renderPass.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    void GetRenderAreaGranularity(RenderPass renderPass,
-        Extent2D&  pGranularity) {
+    [[nodiscard]] Extent2D GetRenderAreaGranularity(RenderPass renderPass) const {
+        Extent2D pGranularity;
         pfn_GetRenderAreaGranularity(device.get(),
             renderPass.get(),
             reinterpret_cast<VkExtent2D*>(&pGranularity));
+        return pGranularity;
     }
-    [[nodiscard]] expected<CommandPool> CreateCommandPool(const CommandPoolCreateInfo&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<CommandPool> CreateCommandPool(const CommandPoolCreateInfo&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         CommandPool pCommandPool;
         vk::Result result = static_cast<Result>(pfn_CreateCommandPool(device.get(),
             reinterpret_cast<const VkCommandPoolCreateInfo*>(&pCreateInfo),
@@ -2392,125 +2413,125 @@ struct DeviceFunctions {
             reinterpret_cast<VkCommandPool*>(&pCommandPool)));
         return expected<CommandPool>(pCommandPool, result);
     }
-    void DestroyCommandPool(CommandPool commandPool,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroyCommandPool(CommandPool commandPool, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroyCommandPool(device.get(),
             commandPool.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    [[nodiscard]] Result ResetCommandPool(CommandPool commandPool,
-        CommandPoolResetFlags flags) {
+    [[nodiscard]] Result ResetCommandPool(CommandPool commandPool, 
+        CommandPoolResetFlags flags) const {
         return static_cast<Result>(pfn_ResetCommandPool(device.get(),
             commandPool.get(),
             static_cast<VkCommandPoolResetFlags>(flags)));
     }
-    [[nodiscard]] Result AllocateCommandBuffers(const CommandBufferAllocateInfo&  pAllocateInfo,
-        CommandBuffer* pCommandBuffers) {
+    [[nodiscard]] Result AllocateCommandBuffers(const CommandBufferAllocateInfo&  pAllocateInfo, 
+        CommandBuffer* pCommandBuffers) const {
         return static_cast<Result>(pfn_AllocateCommandBuffers(device.get(),
             reinterpret_cast<const VkCommandBufferAllocateInfo*>(&pAllocateInfo),
             reinterpret_cast<VkCommandBuffer*>(pCommandBuffers)));
     }
-    void FreeCommandBuffers(CommandPool commandPool,
-        uint32_t commandBufferCount,
-        const CommandBuffer* pCommandBuffers) {
+    void FreeCommandBuffers(CommandPool commandPool, 
+        uint32_t commandBufferCount, 
+        const CommandBuffer* pCommandBuffers) const {
         pfn_FreeCommandBuffers(device.get(),
             commandPool.get(),
             commandBufferCount,
             reinterpret_cast<const VkCommandBuffer*>(pCommandBuffers));
     }
-    [[nodiscard]] Result BeginCommandBuffer(CommandBuffer commandBuffer,
-        const CommandBufferBeginInfo&  pBeginInfo) {
+    [[nodiscard]] Result BeginCommandBuffer(CommandBuffer commandBuffer, 
+        const CommandBufferBeginInfo&  pBeginInfo) const {
         return static_cast<Result>(pfn_BeginCommandBuffer(commandBuffer.get(),
             reinterpret_cast<const VkCommandBufferBeginInfo*>(&pBeginInfo)));
     }
-    [[nodiscard]] Result EndCommandBuffer(CommandBuffer commandBuffer) {
+    [[nodiscard]] Result EndCommandBuffer(CommandBuffer commandBuffer) const {
         return static_cast<Result>(pfn_EndCommandBuffer(commandBuffer.get()));
     }
-    [[nodiscard]] Result ResetCommandBuffer(CommandBuffer commandBuffer,
-        CommandBufferResetFlags flags) {
+    [[nodiscard]] Result ResetCommandBuffer(CommandBuffer commandBuffer, 
+        CommandBufferResetFlags flags) const {
         return static_cast<Result>(pfn_ResetCommandBuffer(commandBuffer.get(),
             static_cast<VkCommandBufferResetFlags>(flags)));
     }
-    void CmdBindPipeline(CommandBuffer commandBuffer,
-        PipelineBindPoint pipelineBindPoint,
-        Pipeline pipeline) {
+    void CmdBindPipeline(CommandBuffer commandBuffer, 
+        PipelineBindPoint pipelineBindPoint, 
+        Pipeline pipeline) const {
         pfn_CmdBindPipeline(commandBuffer.get(),
             static_cast<VkPipelineBindPoint>(pipelineBindPoint),
             pipeline.get());
     }
-    void CmdSetViewport(CommandBuffer commandBuffer,
-        uint32_t firstViewport,
-        uint32_t viewportCount,
-        const Viewport* pViewports) {
+    void CmdSetViewport(CommandBuffer commandBuffer, 
+        uint32_t firstViewport, 
+        uint32_t viewportCount, 
+        const Viewport* pViewports) const {
         pfn_CmdSetViewport(commandBuffer.get(),
             firstViewport,
             viewportCount,
             reinterpret_cast<const VkViewport*>(pViewports));
     }
-    void CmdSetScissor(CommandBuffer commandBuffer,
-        uint32_t firstScissor,
-        uint32_t scissorCount,
-        const Rect2D* pScissors) {
+    void CmdSetScissor(CommandBuffer commandBuffer, 
+        uint32_t firstScissor, 
+        uint32_t scissorCount, 
+        const Rect2D* pScissors) const {
         pfn_CmdSetScissor(commandBuffer.get(),
             firstScissor,
             scissorCount,
             reinterpret_cast<const VkRect2D*>(pScissors));
     }
-    void CmdSetLineWidth(CommandBuffer commandBuffer,
-        float lineWidth) {
+    void CmdSetLineWidth(CommandBuffer commandBuffer, 
+        float lineWidth) const {
         pfn_CmdSetLineWidth(commandBuffer.get(),
             lineWidth);
     }
-    void CmdSetDepthBias(CommandBuffer commandBuffer,
-        float depthBiasConstantFactor,
-        float depthBiasClamp,
-        float depthBiasSlopeFactor) {
+    void CmdSetDepthBias(CommandBuffer commandBuffer, 
+        float depthBiasConstantFactor, 
+        float depthBiasClamp, 
+        float depthBiasSlopeFactor) const {
         pfn_CmdSetDepthBias(commandBuffer.get(),
             depthBiasConstantFactor,
             depthBiasClamp,
             depthBiasSlopeFactor);
     }
-    void CmdSetBlendConstants(CommandBuffer commandBuffer,
-        const float blendConstants[4]) {
+    void CmdSetBlendConstants(CommandBuffer commandBuffer, 
+        const float blendConstants[4]) const {
         pfn_CmdSetBlendConstants(commandBuffer.get(),
             blendConstants);
     }
-    void CmdSetDepthBounds(CommandBuffer commandBuffer,
-        float minDepthBounds,
-        float maxDepthBounds) {
+    void CmdSetDepthBounds(CommandBuffer commandBuffer, 
+        float minDepthBounds, 
+        float maxDepthBounds) const {
         pfn_CmdSetDepthBounds(commandBuffer.get(),
             minDepthBounds,
             maxDepthBounds);
     }
-    void CmdSetStencilCompareMask(CommandBuffer commandBuffer,
-        StencilFaceFlags faceMask,
-        uint32_t compareMask) {
+    void CmdSetStencilCompareMask(CommandBuffer commandBuffer, 
+        StencilFaceFlags faceMask, 
+        uint32_t compareMask) const {
         pfn_CmdSetStencilCompareMask(commandBuffer.get(),
             static_cast<VkStencilFaceFlags>(faceMask),
             compareMask);
     }
-    void CmdSetStencilWriteMask(CommandBuffer commandBuffer,
-        StencilFaceFlags faceMask,
-        uint32_t writeMask) {
+    void CmdSetStencilWriteMask(CommandBuffer commandBuffer, 
+        StencilFaceFlags faceMask, 
+        uint32_t writeMask) const {
         pfn_CmdSetStencilWriteMask(commandBuffer.get(),
             static_cast<VkStencilFaceFlags>(faceMask),
             writeMask);
     }
-    void CmdSetStencilReference(CommandBuffer commandBuffer,
-        StencilFaceFlags faceMask,
-        uint32_t reference) {
+    void CmdSetStencilReference(CommandBuffer commandBuffer, 
+        StencilFaceFlags faceMask, 
+        uint32_t reference) const {
         pfn_CmdSetStencilReference(commandBuffer.get(),
             static_cast<VkStencilFaceFlags>(faceMask),
             reference);
     }
-    void CmdBindDescriptorSets(CommandBuffer commandBuffer,
-        PipelineBindPoint pipelineBindPoint,
-        PipelineLayout layout,
-        uint32_t firstSet,
-        uint32_t descriptorSetCount,
-        const DescriptorSet* pDescriptorSets,
-        uint32_t dynamicOffsetCount,
-        const uint32_t* pDynamicOffsets) {
+    void CmdBindDescriptorSets(CommandBuffer commandBuffer, 
+        PipelineBindPoint pipelineBindPoint, 
+        PipelineLayout layout, 
+        uint32_t firstSet, 
+        uint32_t descriptorSetCount, 
+        const DescriptorSet* pDescriptorSets, 
+        uint32_t dynamicOffsetCount, 
+        const uint32_t* pDynamicOffsets) const {
         pfn_CmdBindDescriptorSets(commandBuffer.get(),
             static_cast<VkPipelineBindPoint>(pipelineBindPoint),
             layout.get(),
@@ -2520,43 +2541,43 @@ struct DeviceFunctions {
             dynamicOffsetCount,
             pDynamicOffsets);
     }
-    void CmdBindIndexBuffer(CommandBuffer commandBuffer,
-        Buffer buffer,
-        DeviceSize offset,
-        IndexType indexType) {
+    void CmdBindIndexBuffer(CommandBuffer commandBuffer, 
+        Buffer buffer, 
+        DeviceSize offset, 
+        IndexType indexType) const {
         pfn_CmdBindIndexBuffer(commandBuffer.get(),
             buffer.get(),
             offset,
             static_cast<VkIndexType>(indexType));
     }
-    void CmdBindVertexBuffers(CommandBuffer commandBuffer,
-        uint32_t firstBinding,
-        uint32_t bindingCount,
-        const Buffer* pBuffers,
-        const DeviceSize* pOffsets) {
+    void CmdBindVertexBuffers(CommandBuffer commandBuffer, 
+        uint32_t firstBinding, 
+        uint32_t bindingCount, 
+        const Buffer* pBuffers, 
+        const DeviceSize* pOffsets) const {
         pfn_CmdBindVertexBuffers(commandBuffer.get(),
             firstBinding,
             bindingCount,
             reinterpret_cast<const VkBuffer*>(pBuffers),
             pOffsets);
     }
-    void CmdDraw(CommandBuffer commandBuffer,
-        uint32_t vertexCount,
-        uint32_t instanceCount,
-        uint32_t firstVertex,
-        uint32_t firstInstance) {
+    void CmdDraw(CommandBuffer commandBuffer, 
+        uint32_t vertexCount, 
+        uint32_t instanceCount, 
+        uint32_t firstVertex, 
+        uint32_t firstInstance) const {
         pfn_CmdDraw(commandBuffer.get(),
             vertexCount,
             instanceCount,
             firstVertex,
             firstInstance);
     }
-    void CmdDrawIndexed(CommandBuffer commandBuffer,
-        uint32_t indexCount,
-        uint32_t instanceCount,
-        uint32_t firstIndex,
-        int32_t vertexOffset,
-        uint32_t firstInstance) {
+    void CmdDrawIndexed(CommandBuffer commandBuffer, 
+        uint32_t indexCount, 
+        uint32_t instanceCount, 
+        uint32_t firstIndex, 
+        int32_t vertexOffset, 
+        uint32_t firstInstance) const {
         pfn_CmdDrawIndexed(commandBuffer.get(),
             indexCount,
             instanceCount,
@@ -2564,62 +2585,62 @@ struct DeviceFunctions {
             vertexOffset,
             firstInstance);
     }
-    void CmdDrawIndirect(CommandBuffer commandBuffer,
-        Buffer buffer,
-        DeviceSize offset,
-        uint32_t drawCount,
-        uint32_t stride) {
+    void CmdDrawIndirect(CommandBuffer commandBuffer, 
+        Buffer buffer, 
+        DeviceSize offset, 
+        uint32_t drawCount, 
+        uint32_t stride) const {
         pfn_CmdDrawIndirect(commandBuffer.get(),
             buffer.get(),
             offset,
             drawCount,
             stride);
     }
-    void CmdDrawIndexedIndirect(CommandBuffer commandBuffer,
-        Buffer buffer,
-        DeviceSize offset,
-        uint32_t drawCount,
-        uint32_t stride) {
+    void CmdDrawIndexedIndirect(CommandBuffer commandBuffer, 
+        Buffer buffer, 
+        DeviceSize offset, 
+        uint32_t drawCount, 
+        uint32_t stride) const {
         pfn_CmdDrawIndexedIndirect(commandBuffer.get(),
             buffer.get(),
             offset,
             drawCount,
             stride);
     }
-    void CmdDispatch(CommandBuffer commandBuffer,
-        uint32_t groupCountX,
-        uint32_t groupCountY,
-        uint32_t groupCountZ) {
+    void CmdDispatch(CommandBuffer commandBuffer, 
+        uint32_t groupCountX, 
+        uint32_t groupCountY, 
+        uint32_t groupCountZ) const {
         pfn_CmdDispatch(commandBuffer.get(),
             groupCountX,
             groupCountY,
             groupCountZ);
     }
-    void CmdDispatchIndirect(CommandBuffer commandBuffer,
-        Buffer buffer,
-        DeviceSize offset) {
+    void CmdDispatchIndirect(CommandBuffer commandBuffer, 
+        Buffer buffer, 
+        DeviceSize offset) const {
         pfn_CmdDispatchIndirect(commandBuffer.get(),
             buffer.get(),
             offset);
     }
-    void CmdCopyBuffer(CommandBuffer commandBuffer,
-        Buffer srcBuffer,
-        Buffer dstBuffer,
-        uint32_t regionCount,
-        const BufferCopy* pRegions) {
+    void CmdCopyBuffer(CommandBuffer commandBuffer, 
+        Buffer srcBuffer, 
+        Buffer dstBuffer, 
+        uint32_t regionCount, 
+        const BufferCopy* pRegions) const {
         pfn_CmdCopyBuffer(commandBuffer.get(),
             srcBuffer.get(),
             dstBuffer.get(),
             regionCount,
             reinterpret_cast<const VkBufferCopy*>(pRegions));
     }
-    void CmdCopyImage(CommandBuffer commandBuffer,
-        Image srcImage,
-        ImageLayout srcImageLayout,
-        Image dstImage,
-        ImageLayout dstImageLayout,
-        uint32_t regionCount,
-        const ImageCopy* pRegions) {
+    void CmdCopyImage(CommandBuffer commandBuffer, 
+        Image srcImage, 
+        ImageLayout srcImageLayout, 
+        Image dstImage, 
+        ImageLayout dstImageLayout, 
+        uint32_t regionCount, 
+        const ImageCopy* pRegions) const {
         pfn_CmdCopyImage(commandBuffer.get(),
             srcImage.get(),
             static_cast<VkImageLayout>(srcImageLayout),
@@ -2628,14 +2649,14 @@ struct DeviceFunctions {
             regionCount,
             reinterpret_cast<const VkImageCopy*>(pRegions));
     }
-    void CmdBlitImage(CommandBuffer commandBuffer,
-        Image srcImage,
-        ImageLayout srcImageLayout,
-        Image dstImage,
-        ImageLayout dstImageLayout,
-        uint32_t regionCount,
-        const ImageBlit* pRegions,
-        Filter filter) {
+    void CmdBlitImage(CommandBuffer commandBuffer, 
+        Image srcImage, 
+        ImageLayout srcImageLayout, 
+        Image dstImage, 
+        ImageLayout dstImageLayout, 
+        uint32_t regionCount, 
+        const ImageBlit* pRegions, 
+        Filter filter) const {
         pfn_CmdBlitImage(commandBuffer.get(),
             srcImage.get(),
             static_cast<VkImageLayout>(srcImageLayout),
@@ -2645,12 +2666,12 @@ struct DeviceFunctions {
             reinterpret_cast<const VkImageBlit*>(pRegions),
             static_cast<VkFilter>(filter));
     }
-    void CmdCopyBufferToImage(CommandBuffer commandBuffer,
-        Buffer srcBuffer,
-        Image dstImage,
-        ImageLayout dstImageLayout,
-        uint32_t regionCount,
-        const BufferImageCopy* pRegions) {
+    void CmdCopyBufferToImage(CommandBuffer commandBuffer, 
+        Buffer srcBuffer, 
+        Image dstImage, 
+        ImageLayout dstImageLayout, 
+        uint32_t regionCount, 
+        const BufferImageCopy* pRegions) const {
         pfn_CmdCopyBufferToImage(commandBuffer.get(),
             srcBuffer.get(),
             dstImage.get(),
@@ -2658,12 +2679,12 @@ struct DeviceFunctions {
             regionCount,
             reinterpret_cast<const VkBufferImageCopy*>(pRegions));
     }
-    void CmdCopyImageToBuffer(CommandBuffer commandBuffer,
-        Image srcImage,
-        ImageLayout srcImageLayout,
-        Buffer dstBuffer,
-        uint32_t regionCount,
-        const BufferImageCopy* pRegions) {
+    void CmdCopyImageToBuffer(CommandBuffer commandBuffer, 
+        Image srcImage, 
+        ImageLayout srcImageLayout, 
+        Buffer dstBuffer, 
+        uint32_t regionCount, 
+        const BufferImageCopy* pRegions) const {
         pfn_CmdCopyImageToBuffer(commandBuffer.get(),
             srcImage.get(),
             static_cast<VkImageLayout>(srcImageLayout),
@@ -2671,34 +2692,34 @@ struct DeviceFunctions {
             regionCount,
             reinterpret_cast<const VkBufferImageCopy*>(pRegions));
     }
-    void CmdUpdateBuffer(CommandBuffer commandBuffer,
-        Buffer dstBuffer,
-        DeviceSize dstOffset,
-        DeviceSize dataSize,
-        const void* pData) {
+    void CmdUpdateBuffer(CommandBuffer commandBuffer, 
+        Buffer dstBuffer, 
+        DeviceSize dstOffset, 
+        DeviceSize dataSize, 
+        const void* pData) const {
         pfn_CmdUpdateBuffer(commandBuffer.get(),
             dstBuffer.get(),
             dstOffset,
             dataSize,
             reinterpret_cast<const void*>(pData));
     }
-    void CmdFillBuffer(CommandBuffer commandBuffer,
-        Buffer dstBuffer,
-        DeviceSize dstOffset,
-        DeviceSize size,
-        uint32_t data) {
+    void CmdFillBuffer(CommandBuffer commandBuffer, 
+        Buffer dstBuffer, 
+        DeviceSize dstOffset, 
+        DeviceSize size, 
+        uint32_t data) const {
         pfn_CmdFillBuffer(commandBuffer.get(),
             dstBuffer.get(),
             dstOffset,
             size,
             data);
     }
-    void CmdClearColorImage(CommandBuffer commandBuffer,
-        Image image,
-        ImageLayout imageLayout,
-        const ClearColorValue&  pColor,
-        uint32_t rangeCount,
-        const ImageSubresourceRange* pRanges) {
+    void CmdClearColorImage(CommandBuffer commandBuffer, 
+        Image image, 
+        ImageLayout imageLayout, 
+        const ClearColorValue&  pColor, 
+        uint32_t rangeCount, 
+        const ImageSubresourceRange* pRanges) const {
         pfn_CmdClearColorImage(commandBuffer.get(),
             image.get(),
             static_cast<VkImageLayout>(imageLayout),
@@ -2706,12 +2727,12 @@ struct DeviceFunctions {
             rangeCount,
             reinterpret_cast<const VkImageSubresourceRange*>(pRanges));
     }
-    void CmdClearDepthStencilImage(CommandBuffer commandBuffer,
-        Image image,
-        ImageLayout imageLayout,
-        const ClearDepthStencilValue&  pDepthStencil,
-        uint32_t rangeCount,
-        const ImageSubresourceRange* pRanges) {
+    void CmdClearDepthStencilImage(CommandBuffer commandBuffer, 
+        Image image, 
+        ImageLayout imageLayout, 
+        const ClearDepthStencilValue&  pDepthStencil, 
+        uint32_t rangeCount, 
+        const ImageSubresourceRange* pRanges) const {
         pfn_CmdClearDepthStencilImage(commandBuffer.get(),
             image.get(),
             static_cast<VkImageLayout>(imageLayout),
@@ -2719,24 +2740,24 @@ struct DeviceFunctions {
             rangeCount,
             reinterpret_cast<const VkImageSubresourceRange*>(pRanges));
     }
-    void CmdClearAttachments(CommandBuffer commandBuffer,
-        uint32_t attachmentCount,
-        const ClearAttachment* pAttachments,
-        uint32_t rectCount,
-        const ClearRect* pRects) {
+    void CmdClearAttachments(CommandBuffer commandBuffer, 
+        uint32_t attachmentCount, 
+        const ClearAttachment* pAttachments, 
+        uint32_t rectCount, 
+        const ClearRect* pRects) const {
         pfn_CmdClearAttachments(commandBuffer.get(),
             attachmentCount,
             reinterpret_cast<const VkClearAttachment*>(pAttachments),
             rectCount,
             reinterpret_cast<const VkClearRect*>(pRects));
     }
-    void CmdResolveImage(CommandBuffer commandBuffer,
-        Image srcImage,
-        ImageLayout srcImageLayout,
-        Image dstImage,
-        ImageLayout dstImageLayout,
-        uint32_t regionCount,
-        const ImageResolve* pRegions) {
+    void CmdResolveImage(CommandBuffer commandBuffer, 
+        Image srcImage, 
+        ImageLayout srcImageLayout, 
+        Image dstImage, 
+        ImageLayout dstImageLayout, 
+        uint32_t regionCount, 
+        const ImageResolve* pRegions) const {
         pfn_CmdResolveImage(commandBuffer.get(),
             srcImage.get(),
             static_cast<VkImageLayout>(srcImageLayout),
@@ -2745,31 +2766,31 @@ struct DeviceFunctions {
             regionCount,
             reinterpret_cast<const VkImageResolve*>(pRegions));
     }
-    void CmdSetEvent(CommandBuffer commandBuffer,
-        Event event,
-        PipelineStageFlags stageMask) {
+    void CmdSetEvent(CommandBuffer commandBuffer, 
+        Event event, 
+        PipelineStageFlags stageMask) const {
         pfn_CmdSetEvent(commandBuffer.get(),
             event.get(),
             static_cast<VkPipelineStageFlags>(stageMask));
     }
-    void CmdResetEvent(CommandBuffer commandBuffer,
-        Event event,
-        PipelineStageFlags stageMask) {
+    void CmdResetEvent(CommandBuffer commandBuffer, 
+        Event event, 
+        PipelineStageFlags stageMask) const {
         pfn_CmdResetEvent(commandBuffer.get(),
             event.get(),
             static_cast<VkPipelineStageFlags>(stageMask));
     }
-    void CmdWaitEvents(CommandBuffer commandBuffer,
-        uint32_t eventCount,
-        const Event* pEvents,
-        PipelineStageFlags srcStageMask,
-        PipelineStageFlags dstStageMask,
-        uint32_t memoryBarrierCount,
-        const MemoryBarrier* pMemoryBarriers,
-        uint32_t bufferMemoryBarrierCount,
-        const BufferMemoryBarrier* pBufferMemoryBarriers,
-        uint32_t imageMemoryBarrierCount,
-        const ImageMemoryBarrier* pImageMemoryBarriers) {
+    void CmdWaitEvents(CommandBuffer commandBuffer, 
+        uint32_t eventCount, 
+        const Event* pEvents, 
+        PipelineStageFlags srcStageMask, 
+        PipelineStageFlags dstStageMask, 
+        uint32_t memoryBarrierCount, 
+        const MemoryBarrier* pMemoryBarriers, 
+        uint32_t bufferMemoryBarrierCount, 
+        const BufferMemoryBarrier* pBufferMemoryBarriers, 
+        uint32_t imageMemoryBarrierCount, 
+        const ImageMemoryBarrier* pImageMemoryBarriers) const {
         pfn_CmdWaitEvents(commandBuffer.get(),
             eventCount,
             reinterpret_cast<const VkEvent*>(pEvents),
@@ -2782,16 +2803,16 @@ struct DeviceFunctions {
             imageMemoryBarrierCount,
             reinterpret_cast<const VkImageMemoryBarrier*>(pImageMemoryBarriers));
     }
-    void CmdPipelineBarrier(CommandBuffer commandBuffer,
-        PipelineStageFlags srcStageMask,
-        PipelineStageFlags dstStageMask,
-        DependencyFlags dependencyFlags,
-        uint32_t memoryBarrierCount,
-        const MemoryBarrier* pMemoryBarriers,
-        uint32_t bufferMemoryBarrierCount,
-        const BufferMemoryBarrier* pBufferMemoryBarriers,
-        uint32_t imageMemoryBarrierCount,
-        const ImageMemoryBarrier* pImageMemoryBarriers) {
+    void CmdPipelineBarrier(CommandBuffer commandBuffer, 
+        PipelineStageFlags srcStageMask, 
+        PipelineStageFlags dstStageMask, 
+        DependencyFlags dependencyFlags, 
+        uint32_t memoryBarrierCount, 
+        const MemoryBarrier* pMemoryBarriers, 
+        uint32_t bufferMemoryBarrierCount, 
+        const BufferMemoryBarrier* pBufferMemoryBarriers, 
+        uint32_t imageMemoryBarrierCount, 
+        const ImageMemoryBarrier* pImageMemoryBarriers) const {
         pfn_CmdPipelineBarrier(commandBuffer.get(),
             static_cast<VkPipelineStageFlags>(srcStageMask),
             static_cast<VkPipelineStageFlags>(dstStageMask),
@@ -2803,48 +2824,48 @@ struct DeviceFunctions {
             imageMemoryBarrierCount,
             reinterpret_cast<const VkImageMemoryBarrier*>(pImageMemoryBarriers));
     }
-    void CmdBeginQuery(CommandBuffer commandBuffer,
-        QueryPool queryPool,
-        uint32_t query,
-        QueryControlFlags flags) {
+    void CmdBeginQuery(CommandBuffer commandBuffer, 
+        QueryPool queryPool, 
+        uint32_t query, 
+        QueryControlFlags flags) const {
         pfn_CmdBeginQuery(commandBuffer.get(),
             queryPool.get(),
             query,
             static_cast<VkQueryControlFlags>(flags));
     }
-    void CmdEndQuery(CommandBuffer commandBuffer,
-        QueryPool queryPool,
-        uint32_t query) {
+    void CmdEndQuery(CommandBuffer commandBuffer, 
+        QueryPool queryPool, 
+        uint32_t query) const {
         pfn_CmdEndQuery(commandBuffer.get(),
             queryPool.get(),
             query);
     }
-    void CmdResetQueryPool(CommandBuffer commandBuffer,
-        QueryPool queryPool,
-        uint32_t firstQuery,
-        uint32_t queryCount) {
+    void CmdResetQueryPool(CommandBuffer commandBuffer, 
+        QueryPool queryPool, 
+        uint32_t firstQuery, 
+        uint32_t queryCount) const {
         pfn_CmdResetQueryPool(commandBuffer.get(),
             queryPool.get(),
             firstQuery,
             queryCount);
     }
-    void CmdWriteTimestamp(CommandBuffer commandBuffer,
-        PipelineStageFlagBits pipelineStage,
-        QueryPool queryPool,
-        uint32_t query) {
+    void CmdWriteTimestamp(CommandBuffer commandBuffer, 
+        PipelineStageFlagBits pipelineStage, 
+        QueryPool queryPool, 
+        uint32_t query) const {
         pfn_CmdWriteTimestamp(commandBuffer.get(),
             static_cast<VkPipelineStageFlagBits>(pipelineStage),
             queryPool.get(),
             query);
     }
-    void CmdCopyQueryPoolResults(CommandBuffer commandBuffer,
-        QueryPool queryPool,
-        uint32_t firstQuery,
-        uint32_t queryCount,
-        Buffer dstBuffer,
-        DeviceSize dstOffset,
-        DeviceSize stride,
-        QueryResultFlags flags) {
+    void CmdCopyQueryPoolResults(CommandBuffer commandBuffer, 
+        QueryPool queryPool, 
+        uint32_t firstQuery, 
+        uint32_t queryCount, 
+        Buffer dstBuffer, 
+        DeviceSize dstOffset, 
+        DeviceSize stride, 
+        QueryResultFlags flags) const {
         pfn_CmdCopyQueryPoolResults(commandBuffer.get(),
             queryPool.get(),
             firstQuery,
@@ -2854,12 +2875,12 @@ struct DeviceFunctions {
             stride,
             static_cast<VkQueryResultFlags>(flags));
     }
-    void CmdPushConstants(CommandBuffer commandBuffer,
-        PipelineLayout layout,
-        ShaderStageFlags stageFlags,
-        uint32_t offset,
-        uint32_t size,
-        const void* pValues) {
+    void CmdPushConstants(CommandBuffer commandBuffer, 
+        PipelineLayout layout, 
+        ShaderStageFlags stageFlags, 
+        uint32_t offset, 
+        uint32_t size, 
+        const void* pValues) const {
         pfn_CmdPushConstants(commandBuffer.get(),
             layout.get(),
             static_cast<VkShaderStageFlags>(stageFlags),
@@ -2867,64 +2888,65 @@ struct DeviceFunctions {
             size,
             reinterpret_cast<const void*>(pValues));
     }
-    void CmdBeginRenderPass(CommandBuffer commandBuffer,
-        const RenderPassBeginInfo&  pRenderPassBegin,
-        SubpassContents contents) {
+    void CmdBeginRenderPass(CommandBuffer commandBuffer, 
+        const RenderPassBeginInfo&  pRenderPassBegin, 
+        SubpassContents contents) const {
         pfn_CmdBeginRenderPass(commandBuffer.get(),
             reinterpret_cast<const VkRenderPassBeginInfo*>(&pRenderPassBegin),
             static_cast<VkSubpassContents>(contents));
     }
-    void CmdNextSubpass(CommandBuffer commandBuffer,
-        SubpassContents contents) {
+    void CmdNextSubpass(CommandBuffer commandBuffer, 
+        SubpassContents contents) const {
         pfn_CmdNextSubpass(commandBuffer.get(),
             static_cast<VkSubpassContents>(contents));
     }
-    void CmdEndRenderPass(CommandBuffer commandBuffer) {
+    void CmdEndRenderPass(CommandBuffer commandBuffer) const {
         pfn_CmdEndRenderPass(commandBuffer.get());
     }
-    void CmdExecuteCommands(CommandBuffer commandBuffer,
-        uint32_t commandBufferCount,
-        const CommandBuffer* pCommandBuffers) {
+    void CmdExecuteCommands(CommandBuffer commandBuffer, 
+        uint32_t commandBufferCount, 
+        const CommandBuffer* pCommandBuffers) const {
         pfn_CmdExecuteCommands(commandBuffer.get(),
             commandBufferCount,
             reinterpret_cast<const VkCommandBuffer*>(pCommandBuffers));
     }
 #endif //defined(VK_VERSION_1_0)
 #if defined(VK_VERSION_1_1)
-    [[nodiscard]] Result BindBufferMemory2(uint32_t bindInfoCount,
-        const BindBufferMemoryInfo* pBindInfos) {
+    [[nodiscard]] Result BindBufferMemory2(uint32_t bindInfoCount, 
+        const BindBufferMemoryInfo* pBindInfos) const {
         return static_cast<Result>(pfn_BindBufferMemory2(device.get(),
             bindInfoCount,
             reinterpret_cast<const VkBindBufferMemoryInfo*>(pBindInfos)));
     }
-    [[nodiscard]] Result BindImageMemory2(uint32_t bindInfoCount,
-        const BindImageMemoryInfo* pBindInfos) {
+    [[nodiscard]] Result BindImageMemory2(uint32_t bindInfoCount, 
+        const BindImageMemoryInfo* pBindInfos) const {
         return static_cast<Result>(pfn_BindImageMemory2(device.get(),
             bindInfoCount,
             reinterpret_cast<const VkBindImageMemoryInfo*>(pBindInfos)));
     }
-    void GetDeviceGroupPeerMemoryFeatures(uint32_t heapIndex,
-        uint32_t localDeviceIndex,
-        uint32_t remoteDeviceIndex,
-        PeerMemoryFeatureFlags&  pPeerMemoryFeatures) {
+    [[nodiscard]] PeerMemoryFeatureFlags GetDeviceGroupPeerMemoryFeatures(uint32_t heapIndex, 
+        uint32_t localDeviceIndex, 
+        uint32_t remoteDeviceIndex) const {
+        PeerMemoryFeatureFlags pPeerMemoryFeatures;
         pfn_GetDeviceGroupPeerMemoryFeatures(device.get(),
             heapIndex,
             localDeviceIndex,
             remoteDeviceIndex,
             reinterpret_cast<VkPeerMemoryFeatureFlags*>(&pPeerMemoryFeatures));
+        return pPeerMemoryFeatures;
     }
-    void CmdSetDeviceMask(CommandBuffer commandBuffer,
-        uint32_t deviceMask) {
+    void CmdSetDeviceMask(CommandBuffer commandBuffer, 
+        uint32_t deviceMask) const {
         pfn_CmdSetDeviceMask(commandBuffer.get(),
             deviceMask);
     }
-    void CmdDispatchBase(CommandBuffer commandBuffer,
-        uint32_t baseGroupX,
-        uint32_t baseGroupY,
-        uint32_t baseGroupZ,
-        uint32_t groupCountX,
-        uint32_t groupCountY,
-        uint32_t groupCountZ) {
+    void CmdDispatchBase(CommandBuffer commandBuffer, 
+        uint32_t baseGroupX, 
+        uint32_t baseGroupY, 
+        uint32_t baseGroupZ, 
+        uint32_t groupCountX, 
+        uint32_t groupCountY, 
+        uint32_t groupCountZ) const {
         pfn_CmdDispatchBase(commandBuffer.get(),
             baseGroupX,
             baseGroupY,
@@ -2933,19 +2955,21 @@ struct DeviceFunctions {
             groupCountY,
             groupCountZ);
     }
-    void GetBufferMemoryRequirements2(const BufferMemoryRequirementsInfo2&  pInfo,
-        MemoryRequirements2&  pMemoryRequirements) {
+    [[nodiscard]] MemoryRequirements2 GetBufferMemoryRequirements2(const BufferMemoryRequirementsInfo2&  pInfo) const {
+        MemoryRequirements2 pMemoryRequirements;
         pfn_GetBufferMemoryRequirements2(device.get(),
             reinterpret_cast<const VkBufferMemoryRequirementsInfo2*>(&pInfo),
             reinterpret_cast<VkMemoryRequirements2*>(&pMemoryRequirements));
+        return pMemoryRequirements;
     }
-    void GetImageMemoryRequirements2(const ImageMemoryRequirementsInfo2&  pInfo,
-        MemoryRequirements2&  pMemoryRequirements) {
+    [[nodiscard]] MemoryRequirements2 GetImageMemoryRequirements2(const ImageMemoryRequirementsInfo2&  pInfo) const {
+        MemoryRequirements2 pMemoryRequirements;
         pfn_GetImageMemoryRequirements2(device.get(),
             reinterpret_cast<const VkImageMemoryRequirementsInfo2*>(&pInfo),
             reinterpret_cast<VkMemoryRequirements2*>(&pMemoryRequirements));
+        return pMemoryRequirements;
     }
-    detail::fixed_vector<SparseImageMemoryRequirements2> GetImageSparseMemoryRequirements2(const ImageSparseMemoryRequirementsInfo2&  pInfo) {
+    [[nodiscard]] detail::fixed_vector<SparseImageMemoryRequirements2> GetImageSparseMemoryRequirements2(const ImageSparseMemoryRequirementsInfo2&  pInfo) const {
         uint32_t pSparseMemoryRequirementCount = 0;
         pfn_GetImageSparseMemoryRequirements2(device.get(),
             reinterpret_cast<const VkImageSparseMemoryRequirementsInfo2*>(&pInfo),
@@ -2959,20 +2983,21 @@ struct DeviceFunctions {
         if (pSparseMemoryRequirementCount < pSparseMemoryRequirements.size()) pSparseMemoryRequirements.shrink(pSparseMemoryRequirementCount);
         return pSparseMemoryRequirements;
     }
-    void TrimCommandPool(CommandPool commandPool,
-        CommandPoolTrimFlags flags) {
+    void TrimCommandPool(CommandPool commandPool, 
+        CommandPoolTrimFlags flags) const {
         pfn_TrimCommandPool(device.get(),
             commandPool.get(),
             static_cast<VkCommandPoolTrimFlags>(flags));
     }
-    void GetDeviceQueue2(const DeviceQueueInfo2&  pQueueInfo,
-        Queue&  pQueue) {
+    [[nodiscard]] Queue GetDeviceQueue2(const DeviceQueueInfo2&  pQueueInfo) const {
+        Queue pQueue;
         pfn_GetDeviceQueue2(device.get(),
             reinterpret_cast<const VkDeviceQueueInfo2*>(&pQueueInfo),
             reinterpret_cast<VkQueue*>(&pQueue));
+        return pQueue;
     }
-    [[nodiscard]] expected<SamplerYcbcrConversion> CreateSamplerYcbcrConversion(const SamplerYcbcrConversionCreateInfo&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<SamplerYcbcrConversion> CreateSamplerYcbcrConversion(const SamplerYcbcrConversionCreateInfo&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         SamplerYcbcrConversion pYcbcrConversion;
         vk::Result result = static_cast<Result>(pfn_CreateSamplerYcbcrConversion(device.get(),
             reinterpret_cast<const VkSamplerYcbcrConversionCreateInfo*>(&pCreateInfo),
@@ -2980,14 +3005,14 @@ struct DeviceFunctions {
             reinterpret_cast<VkSamplerYcbcrConversion*>(&pYcbcrConversion)));
         return expected<SamplerYcbcrConversion>(pYcbcrConversion, result);
     }
-    void DestroySamplerYcbcrConversion(SamplerYcbcrConversion ycbcrConversion,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroySamplerYcbcrConversion(SamplerYcbcrConversion ycbcrConversion, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroySamplerYcbcrConversion(device.get(),
             ycbcrConversion.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    [[nodiscard]] expected<DescriptorUpdateTemplate> CreateDescriptorUpdateTemplate(const DescriptorUpdateTemplateCreateInfo&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<DescriptorUpdateTemplate> CreateDescriptorUpdateTemplate(const DescriptorUpdateTemplateCreateInfo&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         DescriptorUpdateTemplate pDescriptorUpdateTemplate;
         vk::Result result = static_cast<Result>(pfn_CreateDescriptorUpdateTemplate(device.get(),
             reinterpret_cast<const VkDescriptorUpdateTemplateCreateInfo*>(&pCreateInfo),
@@ -2995,35 +3020,36 @@ struct DeviceFunctions {
             reinterpret_cast<VkDescriptorUpdateTemplate*>(&pDescriptorUpdateTemplate)));
         return expected<DescriptorUpdateTemplate>(pDescriptorUpdateTemplate, result);
     }
-    void DestroyDescriptorUpdateTemplate(DescriptorUpdateTemplate descriptorUpdateTemplate,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroyDescriptorUpdateTemplate(DescriptorUpdateTemplate descriptorUpdateTemplate, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroyDescriptorUpdateTemplate(device.get(),
             descriptorUpdateTemplate.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    void UpdateDescriptorSetWithTemplate(DescriptorSet descriptorSet,
-        DescriptorUpdateTemplate descriptorUpdateTemplate,
-        const void* pData) {
+    void UpdateDescriptorSetWithTemplate(DescriptorSet descriptorSet, 
+        DescriptorUpdateTemplate descriptorUpdateTemplate, 
+        const void* pData) const {
         pfn_UpdateDescriptorSetWithTemplate(device.get(),
             descriptorSet.get(),
             descriptorUpdateTemplate.get(),
             reinterpret_cast<const void*>(pData));
     }
-    void GetDescriptorSetLayoutSupport(const DescriptorSetLayoutCreateInfo&  pCreateInfo,
-        DescriptorSetLayoutSupport&  pSupport) {
+    [[nodiscard]] DescriptorSetLayoutSupport GetDescriptorSetLayoutSupport(const DescriptorSetLayoutCreateInfo&  pCreateInfo) const {
+        DescriptorSetLayoutSupport pSupport;
         pfn_GetDescriptorSetLayoutSupport(device.get(),
             reinterpret_cast<const VkDescriptorSetLayoutCreateInfo*>(&pCreateInfo),
             reinterpret_cast<VkDescriptorSetLayoutSupport*>(&pSupport));
+        return pSupport;
     }
 #endif //defined(VK_VERSION_1_1)
 #if defined(VK_VERSION_1_2)
-    void CmdDrawIndirectCount(CommandBuffer commandBuffer,
-        Buffer buffer,
-        DeviceSize offset,
-        Buffer countBuffer,
-        DeviceSize countBufferOffset,
-        uint32_t maxDrawCount,
-        uint32_t stride) {
+    void CmdDrawIndirectCount(CommandBuffer commandBuffer, 
+        Buffer buffer, 
+        DeviceSize offset, 
+        Buffer countBuffer, 
+        DeviceSize countBufferOffset, 
+        uint32_t maxDrawCount, 
+        uint32_t stride) const {
         pfn_CmdDrawIndirectCount(commandBuffer.get(),
             buffer.get(),
             offset,
@@ -3032,13 +3058,13 @@ struct DeviceFunctions {
             maxDrawCount,
             stride);
     }
-    void CmdDrawIndexedIndirectCount(CommandBuffer commandBuffer,
-        Buffer buffer,
-        DeviceSize offset,
-        Buffer countBuffer,
-        DeviceSize countBufferOffset,
-        uint32_t maxDrawCount,
-        uint32_t stride) {
+    void CmdDrawIndexedIndirectCount(CommandBuffer commandBuffer, 
+        Buffer buffer, 
+        DeviceSize offset, 
+        Buffer countBuffer, 
+        DeviceSize countBufferOffset, 
+        uint32_t maxDrawCount, 
+        uint32_t stride) const {
         pfn_CmdDrawIndexedIndirectCount(commandBuffer.get(),
             buffer.get(),
             offset,
@@ -3047,8 +3073,8 @@ struct DeviceFunctions {
             maxDrawCount,
             stride);
     }
-    [[nodiscard]] expected<RenderPass> CreateRenderPass2(const RenderPassCreateInfo2&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<RenderPass> CreateRenderPass2(const RenderPassCreateInfo2&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         RenderPass pRenderPass;
         vk::Result result = static_cast<Result>(pfn_CreateRenderPass2(device.get(),
             reinterpret_cast<const VkRenderPassCreateInfo2*>(&pCreateInfo),
@@ -3056,66 +3082,66 @@ struct DeviceFunctions {
             reinterpret_cast<VkRenderPass*>(&pRenderPass)));
         return expected<RenderPass>(pRenderPass, result);
     }
-    void CmdBeginRenderPass2(CommandBuffer commandBuffer,
-        const RenderPassBeginInfo&  pRenderPassBegin,
-        const SubpassBeginInfo&  pSubpassBeginInfo) {
+    void CmdBeginRenderPass2(CommandBuffer commandBuffer, 
+        const RenderPassBeginInfo&  pRenderPassBegin, 
+        const SubpassBeginInfo&  pSubpassBeginInfo) const {
         pfn_CmdBeginRenderPass2(commandBuffer.get(),
             reinterpret_cast<const VkRenderPassBeginInfo*>(&pRenderPassBegin),
             reinterpret_cast<const VkSubpassBeginInfo*>(&pSubpassBeginInfo));
     }
-    void CmdNextSubpass2(CommandBuffer commandBuffer,
-        const SubpassBeginInfo&  pSubpassBeginInfo,
-        const SubpassEndInfo&  pSubpassEndInfo) {
+    void CmdNextSubpass2(CommandBuffer commandBuffer, 
+        const SubpassBeginInfo&  pSubpassBeginInfo, 
+        const SubpassEndInfo&  pSubpassEndInfo) const {
         pfn_CmdNextSubpass2(commandBuffer.get(),
             reinterpret_cast<const VkSubpassBeginInfo*>(&pSubpassBeginInfo),
             reinterpret_cast<const VkSubpassEndInfo*>(&pSubpassEndInfo));
     }
-    void CmdEndRenderPass2(CommandBuffer commandBuffer,
-        const SubpassEndInfo&  pSubpassEndInfo) {
+    void CmdEndRenderPass2(CommandBuffer commandBuffer, 
+        const SubpassEndInfo&  pSubpassEndInfo) const {
         pfn_CmdEndRenderPass2(commandBuffer.get(),
             reinterpret_cast<const VkSubpassEndInfo*>(&pSubpassEndInfo));
     }
-    void ResetQueryPool(QueryPool queryPool,
-        uint32_t firstQuery,
-        uint32_t queryCount) {
+    void ResetQueryPool(QueryPool queryPool, 
+        uint32_t firstQuery, 
+        uint32_t queryCount) const {
         pfn_ResetQueryPool(device.get(),
             queryPool.get(),
             firstQuery,
             queryCount);
     }
-    [[nodiscard]] expected<uint64_t> GetSemaphoreCounterValue(Semaphore semaphore) {
+    [[nodiscard]] expected<uint64_t> GetSemaphoreCounterValue(Semaphore semaphore) const {
         uint64_t pValue;
         vk::Result result = static_cast<Result>(pfn_GetSemaphoreCounterValue(device.get(),
             semaphore.get(),
             &pValue));
         return expected<uint64_t>(pValue, result);
     }
-    [[nodiscard]] Result WaitSemaphores(const SemaphoreWaitInfo&  pWaitInfo,
-        uint64_t timeout) {
+    [[nodiscard]] Result WaitSemaphores(const SemaphoreWaitInfo&  pWaitInfo, 
+        uint64_t timeout) const {
         return static_cast<Result>(pfn_WaitSemaphores(device.get(),
             reinterpret_cast<const VkSemaphoreWaitInfo*>(&pWaitInfo),
             timeout));
     }
-    [[nodiscard]] Result SignalSemaphore(const SemaphoreSignalInfo&  pSignalInfo) {
+    [[nodiscard]] Result SignalSemaphore(const SemaphoreSignalInfo&  pSignalInfo) const {
         return static_cast<Result>(pfn_SignalSemaphore(device.get(),
             reinterpret_cast<const VkSemaphoreSignalInfo*>(&pSignalInfo)));
     }
-    [[nodiscard]] uint64_t GetBufferOpaqueCaptureAddress(const BufferDeviceAddressInfo&  pInfo) {
+    [[nodiscard]] uint64_t GetBufferOpaqueCaptureAddress(const BufferDeviceAddressInfo&  pInfo) const {
         return pfn_GetBufferOpaqueCaptureAddress(device.get(),
             reinterpret_cast<const VkBufferDeviceAddressInfo*>(&pInfo));
     }
-    [[nodiscard]] VkDeviceAddress GetBufferDeviceAddress(const BufferDeviceAddressInfo&  pInfo) {
+    [[nodiscard]] VkDeviceAddress GetBufferDeviceAddress(const BufferDeviceAddressInfo&  pInfo) const {
         return pfn_GetBufferDeviceAddress(device.get(),
             reinterpret_cast<const VkBufferDeviceAddressInfo*>(&pInfo));
     }
-    [[nodiscard]] uint64_t GetDeviceMemoryOpaqueCaptureAddress(const DeviceMemoryOpaqueCaptureAddressInfo&  pInfo) {
+    [[nodiscard]] uint64_t GetDeviceMemoryOpaqueCaptureAddress(const DeviceMemoryOpaqueCaptureAddressInfo&  pInfo) const {
         return pfn_GetDeviceMemoryOpaqueCaptureAddress(device.get(),
             reinterpret_cast<const VkDeviceMemoryOpaqueCaptureAddressInfo*>(&pInfo));
     }
 #endif //defined(VK_VERSION_1_2)
 #if defined(VK_KHR_swapchain)
-    [[nodiscard]] expected<SwapchainKHR> CreateSwapchainKHR(const SwapchainCreateInfoKHR&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<SwapchainKHR> CreateSwapchainKHR(const SwapchainCreateInfoKHR&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         SwapchainKHR pSwapchain;
         vk::Result result = static_cast<Result>(pfn_CreateSwapchainKHR(device.get(),
             reinterpret_cast<const VkSwapchainCreateInfoKHR*>(&pCreateInfo),
@@ -3123,13 +3149,13 @@ struct DeviceFunctions {
             reinterpret_cast<VkSwapchainKHR*>(&pSwapchain)));
         return expected<SwapchainKHR>(pSwapchain, result);
     }
-    void DestroySwapchainKHR(SwapchainKHR swapchain,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroySwapchainKHR(SwapchainKHR swapchain, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroySwapchainKHR(device.get(),
             swapchain.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    [[nodiscard]] expected<detail::fixed_vector<Image>> GetSwapchainImagesKHR(SwapchainKHR swapchain) {
+    [[nodiscard]] expected<detail::fixed_vector<Image>> GetSwapchainImagesKHR(SwapchainKHR swapchain) const {
         uint32_t pSwapchainImageCount = 0;
         vk::Result result = static_cast<Result>(pfn_GetSwapchainImagesKHR(device.get(),
             swapchain.get(),
@@ -3144,10 +3170,10 @@ struct DeviceFunctions {
         if (pSwapchainImageCount < pSwapchainImages.size()) pSwapchainImages.shrink(pSwapchainImageCount);
         return expected(std::move(pSwapchainImages), result);
     }
-    [[nodiscard]] expected<uint32_t> AcquireNextImageKHR(SwapchainKHR swapchain,
-        uint64_t timeout,
-        Semaphore semaphore,
-        Fence fence) {
+    [[nodiscard]] expected<uint32_t> AcquireNextImageKHR(SwapchainKHR swapchain, 
+        uint64_t timeout, 
+        Semaphore semaphore, 
+        Fence fence) const {
         uint32_t pImageIndex;
         vk::Result result = static_cast<Result>(pfn_AcquireNextImageKHR(device.get(),
             swapchain.get(),
@@ -3157,20 +3183,20 @@ struct DeviceFunctions {
             &pImageIndex));
         return expected<uint32_t>(pImageIndex, result);
     }
-    [[nodiscard]] Result QueuePresentKHR(Queue queue,
-        const PresentInfoKHR&  pPresentInfo) {
+    [[nodiscard]] Result QueuePresentKHR(Queue queue, 
+        const PresentInfoKHR&  pPresentInfo) const {
         return static_cast<Result>(pfn_QueuePresentKHR(queue.get(),
             reinterpret_cast<const VkPresentInfoKHR*>(&pPresentInfo)));
     }
 #endif //defined(VK_KHR_swapchain)
 #if (defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
-    [[nodiscard]] expected<DeviceGroupPresentCapabilitiesKHR> GetDeviceGroupPresentCapabilitiesKHR() {
+    [[nodiscard]] expected<DeviceGroupPresentCapabilitiesKHR> GetDeviceGroupPresentCapabilitiesKHR() const {
         DeviceGroupPresentCapabilitiesKHR pDeviceGroupPresentCapabilities;
         vk::Result result = static_cast<Result>(pfn_GetDeviceGroupPresentCapabilitiesKHR(device.get(),
             reinterpret_cast<VkDeviceGroupPresentCapabilitiesKHR*>(&pDeviceGroupPresentCapabilities)));
         return expected<DeviceGroupPresentCapabilitiesKHR>(pDeviceGroupPresentCapabilities, result);
     }
-    [[nodiscard]] expected<DeviceGroupPresentModeFlagsKHR> GetDeviceGroupSurfacePresentModesKHR(SurfaceKHR surface) {
+    [[nodiscard]] expected<DeviceGroupPresentModeFlagsKHR> GetDeviceGroupSurfacePresentModesKHR(SurfaceKHR surface) const {
         DeviceGroupPresentModeFlagsKHR pModes;
         vk::Result result = static_cast<Result>(pfn_GetDeviceGroupSurfacePresentModesKHR(device.get(),
             surface.get(),
@@ -3179,7 +3205,7 @@ struct DeviceFunctions {
     }
 #endif //(defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
 #if (defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_swapchain))
-    [[nodiscard]] expected<uint32_t> AcquireNextImage2KHR(const AcquireNextImageInfoKHR&  pAcquireInfo) {
+    [[nodiscard]] expected<uint32_t> AcquireNextImage2KHR(const AcquireNextImageInfoKHR&  pAcquireInfo) const {
         uint32_t pImageIndex;
         vk::Result result = static_cast<Result>(pfn_AcquireNextImage2KHR(device.get(),
             reinterpret_cast<const VkAcquireNextImageInfoKHR*>(&pAcquireInfo),
@@ -3188,10 +3214,10 @@ struct DeviceFunctions {
     }
 #endif //(defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_swapchain))
 #if defined(VK_KHR_display_swapchain)
-    [[nodiscard]] Result CreateSharedSwapchainsKHR(uint32_t swapchainCount,
-        const SwapchainCreateInfoKHR* pCreateInfos,
-        const AllocationCallbacks* pAllocator,
-        SwapchainKHR* pSwapchains) {
+    [[nodiscard]] Result CreateSharedSwapchainsKHR(uint32_t swapchainCount, 
+        const SwapchainCreateInfoKHR* pCreateInfos, 
+        const AllocationCallbacks* pAllocator, 
+        SwapchainKHR* pSwapchains) const {
         return static_cast<Result>(pfn_CreateSharedSwapchainsKHR(device.get(),
             swapchainCount,
             reinterpret_cast<const VkSwapchainCreateInfoKHR*>(pCreateInfos),
@@ -3200,35 +3226,35 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_KHR_display_swapchain)
 #if defined(VK_EXT_debug_marker)
-    [[nodiscard]] Result DebugMarkerSetObjectNameEXT(const DebugMarkerObjectNameInfoEXT&  pNameInfo) {
+    [[nodiscard]] Result DebugMarkerSetObjectNameEXT(const DebugMarkerObjectNameInfoEXT&  pNameInfo) const {
         return static_cast<Result>(pfn_DebugMarkerSetObjectNameEXT(device.get(),
             reinterpret_cast<const VkDebugMarkerObjectNameInfoEXT*>(&pNameInfo)));
     }
-    [[nodiscard]] Result DebugMarkerSetObjectTagEXT(const DebugMarkerObjectTagInfoEXT&  pTagInfo) {
+    [[nodiscard]] Result DebugMarkerSetObjectTagEXT(const DebugMarkerObjectTagInfoEXT&  pTagInfo) const {
         return static_cast<Result>(pfn_DebugMarkerSetObjectTagEXT(device.get(),
             reinterpret_cast<const VkDebugMarkerObjectTagInfoEXT*>(&pTagInfo)));
     }
-    void CmdDebugMarkerBeginEXT(CommandBuffer commandBuffer,
-        const DebugMarkerMarkerInfoEXT&  pMarkerInfo) {
+    void CmdDebugMarkerBeginEXT(CommandBuffer commandBuffer, 
+        const DebugMarkerMarkerInfoEXT&  pMarkerInfo) const {
         pfn_CmdDebugMarkerBeginEXT(commandBuffer.get(),
             reinterpret_cast<const VkDebugMarkerMarkerInfoEXT*>(&pMarkerInfo));
     }
-    void CmdDebugMarkerEndEXT(CommandBuffer commandBuffer) {
+    void CmdDebugMarkerEndEXT(CommandBuffer commandBuffer) const {
         pfn_CmdDebugMarkerEndEXT(commandBuffer.get());
     }
-    void CmdDebugMarkerInsertEXT(CommandBuffer commandBuffer,
-        const DebugMarkerMarkerInfoEXT&  pMarkerInfo) {
+    void CmdDebugMarkerInsertEXT(CommandBuffer commandBuffer, 
+        const DebugMarkerMarkerInfoEXT&  pMarkerInfo) const {
         pfn_CmdDebugMarkerInsertEXT(commandBuffer.get(),
             reinterpret_cast<const VkDebugMarkerMarkerInfoEXT*>(&pMarkerInfo));
     }
 #endif //defined(VK_EXT_debug_marker)
 #if defined(VK_EXT_transform_feedback)
-    void CmdBindTransformFeedbackBuffersEXT(CommandBuffer commandBuffer,
-        uint32_t firstBinding,
-        uint32_t bindingCount,
-        const Buffer* pBuffers,
-        const DeviceSize* pOffsets,
-        const DeviceSize* pSizes) {
+    void CmdBindTransformFeedbackBuffersEXT(CommandBuffer commandBuffer, 
+        uint32_t firstBinding, 
+        uint32_t bindingCount, 
+        const Buffer* pBuffers, 
+        const DeviceSize* pOffsets, 
+        const DeviceSize* pSizes) const {
         pfn_CmdBindTransformFeedbackBuffersEXT(commandBuffer.get(),
             firstBinding,
             bindingCount,
@@ -3236,55 +3262,55 @@ struct DeviceFunctions {
             pOffsets,
             pSizes);
     }
-    void CmdBeginTransformFeedbackEXT(CommandBuffer commandBuffer,
-        uint32_t firstCounterBuffer,
-        uint32_t counterBufferCount,
-        const Buffer* pCounterBuffers,
-        const DeviceSize* pCounterBufferOffsets) {
+    void CmdBeginTransformFeedbackEXT(CommandBuffer commandBuffer, 
+        uint32_t firstCounterBuffer, 
+        uint32_t counterBufferCount, 
+        const Buffer* pCounterBuffers, 
+        const DeviceSize* pCounterBufferOffsets) const {
         pfn_CmdBeginTransformFeedbackEXT(commandBuffer.get(),
             firstCounterBuffer,
             counterBufferCount,
             reinterpret_cast<const VkBuffer*>(pCounterBuffers),
             pCounterBufferOffsets);
     }
-    void CmdEndTransformFeedbackEXT(CommandBuffer commandBuffer,
-        uint32_t firstCounterBuffer,
-        uint32_t counterBufferCount,
-        const Buffer* pCounterBuffers,
-        const DeviceSize* pCounterBufferOffsets) {
+    void CmdEndTransformFeedbackEXT(CommandBuffer commandBuffer, 
+        uint32_t firstCounterBuffer, 
+        uint32_t counterBufferCount, 
+        const Buffer* pCounterBuffers, 
+        const DeviceSize* pCounterBufferOffsets) const {
         pfn_CmdEndTransformFeedbackEXT(commandBuffer.get(),
             firstCounterBuffer,
             counterBufferCount,
             reinterpret_cast<const VkBuffer*>(pCounterBuffers),
             pCounterBufferOffsets);
     }
-    void CmdBeginQueryIndexedEXT(CommandBuffer commandBuffer,
-        QueryPool queryPool,
-        uint32_t query,
-        QueryControlFlags flags,
-        uint32_t index) {
+    void CmdBeginQueryIndexedEXT(CommandBuffer commandBuffer, 
+        QueryPool queryPool, 
+        uint32_t query, 
+        QueryControlFlags flags, 
+        uint32_t index) const {
         pfn_CmdBeginQueryIndexedEXT(commandBuffer.get(),
             queryPool.get(),
             query,
             static_cast<VkQueryControlFlags>(flags),
             index);
     }
-    void CmdEndQueryIndexedEXT(CommandBuffer commandBuffer,
-        QueryPool queryPool,
-        uint32_t query,
-        uint32_t index) {
+    void CmdEndQueryIndexedEXT(CommandBuffer commandBuffer, 
+        QueryPool queryPool, 
+        uint32_t query, 
+        uint32_t index) const {
         pfn_CmdEndQueryIndexedEXT(commandBuffer.get(),
             queryPool.get(),
             query,
             index);
     }
-    void CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer,
-        uint32_t instanceCount,
-        uint32_t firstInstance,
-        Buffer counterBuffer,
-        DeviceSize counterBufferOffset,
-        uint32_t counterOffset,
-        uint32_t vertexStride) {
+    void CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer, 
+        uint32_t instanceCount, 
+        uint32_t firstInstance, 
+        Buffer counterBuffer, 
+        DeviceSize counterBufferOffset, 
+        uint32_t counterOffset, 
+        uint32_t vertexStride) const {
         pfn_CmdDrawIndirectByteCountEXT(commandBuffer.get(),
             instanceCount,
             firstInstance,
@@ -3295,11 +3321,11 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_EXT_transform_feedback)
 #if defined(VK_NVX_image_view_handle)
-    [[nodiscard]] uint32_t GetImageViewHandleNVX(const ImageViewHandleInfoNVX&  pInfo) {
+    [[nodiscard]] uint32_t GetImageViewHandleNVX(const ImageViewHandleInfoNVX&  pInfo) const {
         return pfn_GetImageViewHandleNVX(device.get(),
             reinterpret_cast<const VkImageViewHandleInfoNVX*>(&pInfo));
     }
-    [[nodiscard]] expected<ImageViewAddressPropertiesNVX> GetImageViewAddressNVX(ImageView imageView) {
+    [[nodiscard]] expected<ImageViewAddressPropertiesNVX> GetImageViewAddressNVX(ImageView imageView) const {
         ImageViewAddressPropertiesNVX pProperties;
         vk::Result result = static_cast<Result>(pfn_GetImageViewAddressNVX(device.get(),
             imageView.get(),
@@ -3308,9 +3334,9 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_NVX_image_view_handle)
 #if defined(VK_AMD_shader_info)
-    [[nodiscard]] expected<detail::fixed_vector<void*>> GetShaderInfoAMD(Pipeline pipeline,
-        ShaderStageFlagBits shaderStage,
-        ShaderInfoTypeAMD infoType) {
+    [[nodiscard]] expected<detail::fixed_vector<void*>> GetShaderInfoAMD(Pipeline pipeline, 
+        ShaderStageFlagBits shaderStage, 
+        ShaderInfoTypeAMD infoType) const {
         size_t pInfoSize = 0;
         vk::Result result = static_cast<Result>(pfn_GetShaderInfoAMD(device.get(),
             pipeline.get(),
@@ -3331,8 +3357,8 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_AMD_shader_info)
 #if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_NV_external_memory_win32))
-    [[nodiscard]] expected<HANDLE> GetMemoryWin32HandleNV(DeviceMemory memory,
-        ExternalMemoryHandleTypeFlagsNV handleType) {
+    [[nodiscard]] expected<HANDLE> GetMemoryWin32HandleNV(DeviceMemory memory, 
+        ExternalMemoryHandleTypeFlagsNV handleType) const {
         HANDLE pHandle;
         vk::Result result = static_cast<Result>(pfn_GetMemoryWin32HandleNV(device.get(),
             memory.get(),
@@ -3342,15 +3368,15 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_NV_external_memory_win32))
 #if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_memory_win32))
-    [[nodiscard]] expected<HANDLE> GetMemoryWin32HandleKHR(const MemoryGetWin32HandleInfoKHR&  pGetWin32HandleInfo) {
+    [[nodiscard]] expected<HANDLE> GetMemoryWin32HandleKHR(const MemoryGetWin32HandleInfoKHR&  pGetWin32HandleInfo) const {
         HANDLE pHandle;
         vk::Result result = static_cast<Result>(pfn_GetMemoryWin32HandleKHR(device.get(),
             reinterpret_cast<const VkMemoryGetWin32HandleInfoKHR*>(&pGetWin32HandleInfo),
             reinterpret_cast<HANDLE*>(&pHandle)));
         return expected<HANDLE>(pHandle, result);
     }
-    [[nodiscard]] expected<MemoryWin32HandlePropertiesKHR> GetMemoryWin32HandlePropertiesKHR(ExternalMemoryHandleTypeFlagBits handleType,
-        HANDLE handle) {
+    [[nodiscard]] expected<MemoryWin32HandlePropertiesKHR> GetMemoryWin32HandlePropertiesKHR(ExternalMemoryHandleTypeFlagBits handleType, 
+        HANDLE handle) const {
         MemoryWin32HandlePropertiesKHR pMemoryWin32HandleProperties;
         vk::Result result = static_cast<Result>(pfn_GetMemoryWin32HandlePropertiesKHR(device.get(),
             static_cast<VkExternalMemoryHandleTypeFlagBits>(handleType),
@@ -3360,15 +3386,15 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_memory_win32))
 #if defined(VK_KHR_external_memory_fd)
-    [[nodiscard]] expected<int> GetMemoryFdKHR(const MemoryGetFdInfoKHR&  pGetFdInfo) {
+    [[nodiscard]] expected<int> GetMemoryFdKHR(const MemoryGetFdInfoKHR&  pGetFdInfo) const {
         int pFd;
         vk::Result result = static_cast<Result>(pfn_GetMemoryFdKHR(device.get(),
             reinterpret_cast<const VkMemoryGetFdInfoKHR*>(&pGetFdInfo),
             &pFd));
         return expected<int>(pFd, result);
     }
-    [[nodiscard]] expected<MemoryFdPropertiesKHR> GetMemoryFdPropertiesKHR(ExternalMemoryHandleTypeFlagBits handleType,
-        int fd) {
+    [[nodiscard]] expected<MemoryFdPropertiesKHR> GetMemoryFdPropertiesKHR(ExternalMemoryHandleTypeFlagBits handleType, 
+        int fd) const {
         MemoryFdPropertiesKHR pMemoryFdProperties;
         vk::Result result = static_cast<Result>(pfn_GetMemoryFdPropertiesKHR(device.get(),
             static_cast<VkExternalMemoryHandleTypeFlagBits>(handleType),
@@ -3378,38 +3404,38 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_KHR_external_memory_fd)
 #if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_semaphore_win32))
-    [[nodiscard]] expected<HANDLE> GetSemaphoreWin32HandleKHR(const SemaphoreGetWin32HandleInfoKHR&  pGetWin32HandleInfo) {
+    [[nodiscard]] expected<HANDLE> GetSemaphoreWin32HandleKHR(const SemaphoreGetWin32HandleInfoKHR&  pGetWin32HandleInfo) const {
         HANDLE pHandle;
         vk::Result result = static_cast<Result>(pfn_GetSemaphoreWin32HandleKHR(device.get(),
             reinterpret_cast<const VkSemaphoreGetWin32HandleInfoKHR*>(&pGetWin32HandleInfo),
             reinterpret_cast<HANDLE*>(&pHandle)));
         return expected<HANDLE>(pHandle, result);
     }
-    [[nodiscard]] Result ImportSemaphoreWin32HandleKHR(const ImportSemaphoreWin32HandleInfoKHR&  pImportSemaphoreWin32HandleInfo) {
+    [[nodiscard]] Result ImportSemaphoreWin32HandleKHR(const ImportSemaphoreWin32HandleInfoKHR&  pImportSemaphoreWin32HandleInfo) const {
         return static_cast<Result>(pfn_ImportSemaphoreWin32HandleKHR(device.get(),
             reinterpret_cast<const VkImportSemaphoreWin32HandleInfoKHR*>(&pImportSemaphoreWin32HandleInfo)));
     }
 #endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_semaphore_win32))
 #if defined(VK_KHR_external_semaphore_fd)
-    [[nodiscard]] expected<int> GetSemaphoreFdKHR(const SemaphoreGetFdInfoKHR&  pGetFdInfo) {
+    [[nodiscard]] expected<int> GetSemaphoreFdKHR(const SemaphoreGetFdInfoKHR&  pGetFdInfo) const {
         int pFd;
         vk::Result result = static_cast<Result>(pfn_GetSemaphoreFdKHR(device.get(),
             reinterpret_cast<const VkSemaphoreGetFdInfoKHR*>(&pGetFdInfo),
             &pFd));
         return expected<int>(pFd, result);
     }
-    [[nodiscard]] Result ImportSemaphoreFdKHR(const ImportSemaphoreFdInfoKHR&  pImportSemaphoreFdInfo) {
+    [[nodiscard]] Result ImportSemaphoreFdKHR(const ImportSemaphoreFdInfoKHR&  pImportSemaphoreFdInfo) const {
         return static_cast<Result>(pfn_ImportSemaphoreFdKHR(device.get(),
             reinterpret_cast<const VkImportSemaphoreFdInfoKHR*>(&pImportSemaphoreFdInfo)));
     }
 #endif //defined(VK_KHR_external_semaphore_fd)
 #if defined(VK_KHR_push_descriptor)
-    void CmdPushDescriptorSetKHR(CommandBuffer commandBuffer,
-        PipelineBindPoint pipelineBindPoint,
-        PipelineLayout layout,
-        uint32_t set,
-        uint32_t descriptorWriteCount,
-        const WriteDescriptorSet* pDescriptorWrites) {
+    void CmdPushDescriptorSetKHR(CommandBuffer commandBuffer, 
+        PipelineBindPoint pipelineBindPoint, 
+        PipelineLayout layout, 
+        uint32_t set, 
+        uint32_t descriptorWriteCount, 
+        const WriteDescriptorSet* pDescriptorWrites) const {
         pfn_CmdPushDescriptorSetKHR(commandBuffer.get(),
             static_cast<VkPipelineBindPoint>(pipelineBindPoint),
             layout.get(),
@@ -3419,11 +3445,11 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_KHR_push_descriptor)
 #if (defined(VK_KHR_push_descriptor) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_push_descriptor) && defined(VK_KHR_descriptor_update_template)) || (defined(VK_KHR_descriptor_update_template) && defined(VK_KHR_push_descriptor))
-    void CmdPushDescriptorSetWithTemplateKHR(CommandBuffer commandBuffer,
-        DescriptorUpdateTemplate descriptorUpdateTemplate,
-        PipelineLayout layout,
-        uint32_t set,
-        const void* pData) {
+    void CmdPushDescriptorSetWithTemplateKHR(CommandBuffer commandBuffer, 
+        DescriptorUpdateTemplate descriptorUpdateTemplate, 
+        PipelineLayout layout, 
+        uint32_t set, 
+        const void* pData) const {
         pfn_CmdPushDescriptorSetWithTemplateKHR(commandBuffer.get(),
             descriptorUpdateTemplate.get(),
             layout.get(),
@@ -3432,20 +3458,20 @@ struct DeviceFunctions {
     }
 #endif //(defined(VK_KHR_push_descriptor) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_push_descriptor) && defined(VK_KHR_descriptor_update_template)) || (defined(VK_KHR_descriptor_update_template) && defined(VK_KHR_push_descriptor))
 #if defined(VK_EXT_conditional_rendering)
-    void CmdBeginConditionalRenderingEXT(CommandBuffer commandBuffer,
-        const ConditionalRenderingBeginInfoEXT&  pConditionalRenderingBegin) {
+    void CmdBeginConditionalRenderingEXT(CommandBuffer commandBuffer, 
+        const ConditionalRenderingBeginInfoEXT&  pConditionalRenderingBegin) const {
         pfn_CmdBeginConditionalRenderingEXT(commandBuffer.get(),
             reinterpret_cast<const VkConditionalRenderingBeginInfoEXT*>(&pConditionalRenderingBegin));
     }
-    void CmdEndConditionalRenderingEXT(CommandBuffer commandBuffer) {
+    void CmdEndConditionalRenderingEXT(CommandBuffer commandBuffer) const {
         pfn_CmdEndConditionalRenderingEXT(commandBuffer.get());
     }
 #endif //defined(VK_EXT_conditional_rendering)
 #if defined(VK_NV_clip_space_w_scaling)
-    void CmdSetViewportWScalingNV(CommandBuffer commandBuffer,
-        uint32_t firstViewport,
-        uint32_t viewportCount,
-        const ViewportWScalingNV* pViewportWScalings) {
+    void CmdSetViewportWScalingNV(CommandBuffer commandBuffer, 
+        uint32_t firstViewport, 
+        uint32_t viewportCount, 
+        const ViewportWScalingNV* pViewportWScalings) const {
         pfn_CmdSetViewportWScalingNV(commandBuffer.get(),
             firstViewport,
             viewportCount,
@@ -3453,14 +3479,14 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_NV_clip_space_w_scaling)
 #if defined(VK_EXT_display_control)
-    [[nodiscard]] Result DisplayPowerControlEXT(DisplayKHR display,
-        const DisplayPowerInfoEXT&  pDisplayPowerInfo) {
+    [[nodiscard]] Result DisplayPowerControlEXT(DisplayKHR display, 
+        const DisplayPowerInfoEXT&  pDisplayPowerInfo) const {
         return static_cast<Result>(pfn_DisplayPowerControlEXT(device.get(),
             display.get(),
             reinterpret_cast<const VkDisplayPowerInfoEXT*>(&pDisplayPowerInfo)));
     }
-    [[nodiscard]] expected<Fence> RegisterDeviceEventEXT(const DeviceEventInfoEXT&  pDeviceEventInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<Fence> RegisterDeviceEventEXT(const DeviceEventInfoEXT&  pDeviceEventInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         Fence pFence;
         vk::Result result = static_cast<Result>(pfn_RegisterDeviceEventEXT(device.get(),
             reinterpret_cast<const VkDeviceEventInfoEXT*>(&pDeviceEventInfo),
@@ -3468,9 +3494,9 @@ struct DeviceFunctions {
             reinterpret_cast<VkFence*>(&pFence)));
         return expected<Fence>(pFence, result);
     }
-    [[nodiscard]] expected<Fence> RegisterDisplayEventEXT(DisplayKHR display,
-        const DisplayEventInfoEXT&  pDisplayEventInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<Fence> RegisterDisplayEventEXT(DisplayKHR display, 
+        const DisplayEventInfoEXT&  pDisplayEventInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         Fence pFence;
         vk::Result result = static_cast<Result>(pfn_RegisterDisplayEventEXT(device.get(),
             display.get(),
@@ -3479,8 +3505,8 @@ struct DeviceFunctions {
             reinterpret_cast<VkFence*>(&pFence)));
         return expected<Fence>(pFence, result);
     }
-    [[nodiscard]] expected<uint64_t> GetSwapchainCounterEXT(SwapchainKHR swapchain,
-        SurfaceCounterFlagBitsEXT counter) {
+    [[nodiscard]] expected<uint64_t> GetSwapchainCounterEXT(SwapchainKHR swapchain, 
+        SurfaceCounterFlagBitsEXT counter) const {
         uint64_t pCounterValue;
         vk::Result result = static_cast<Result>(pfn_GetSwapchainCounterEXT(device.get(),
             swapchain.get(),
@@ -3490,14 +3516,14 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_EXT_display_control)
 #if defined(VK_GOOGLE_display_timing)
-    [[nodiscard]] expected<RefreshCycleDurationGOOGLE> GetRefreshCycleDurationGOOGLE(SwapchainKHR swapchain) {
+    [[nodiscard]] expected<RefreshCycleDurationGOOGLE> GetRefreshCycleDurationGOOGLE(SwapchainKHR swapchain) const {
         RefreshCycleDurationGOOGLE pDisplayTimingProperties;
         vk::Result result = static_cast<Result>(pfn_GetRefreshCycleDurationGOOGLE(device.get(),
             swapchain.get(),
             reinterpret_cast<VkRefreshCycleDurationGOOGLE*>(&pDisplayTimingProperties)));
         return expected<RefreshCycleDurationGOOGLE>(pDisplayTimingProperties, result);
     }
-    [[nodiscard]] expected<detail::fixed_vector<PastPresentationTimingGOOGLE>> GetPastPresentationTimingGOOGLE(SwapchainKHR swapchain) {
+    [[nodiscard]] expected<detail::fixed_vector<PastPresentationTimingGOOGLE>> GetPastPresentationTimingGOOGLE(SwapchainKHR swapchain) const {
         uint32_t pPresentationTimingCount = 0;
         vk::Result result = static_cast<Result>(pfn_GetPastPresentationTimingGOOGLE(device.get(),
             swapchain.get(),
@@ -3514,10 +3540,10 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_GOOGLE_display_timing)
 #if defined(VK_EXT_discard_rectangles)
-    void CmdSetDiscardRectangleEXT(CommandBuffer commandBuffer,
-        uint32_t firstDiscardRectangle,
-        uint32_t discardRectangleCount,
-        const Rect2D* pDiscardRectangles) {
+    void CmdSetDiscardRectangleEXT(CommandBuffer commandBuffer, 
+        uint32_t firstDiscardRectangle, 
+        uint32_t discardRectangleCount, 
+        const Rect2D* pDiscardRectangles) const {
         pfn_CmdSetDiscardRectangleEXT(commandBuffer.get(),
             firstDiscardRectangle,
             discardRectangleCount,
@@ -3525,9 +3551,9 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_EXT_discard_rectangles)
 #if defined(VK_EXT_hdr_metadata)
-    void SetHdrMetadataEXT(uint32_t swapchainCount,
-        const SwapchainKHR* pSwapchains,
-        const HdrMetadataEXT* pMetadata) {
+    void SetHdrMetadataEXT(uint32_t swapchainCount, 
+        const SwapchainKHR* pSwapchains, 
+        const HdrMetadataEXT* pMetadata) const {
         pfn_SetHdrMetadataEXT(device.get(),
             swapchainCount,
             reinterpret_cast<const VkSwapchainKHR*>(pSwapchains),
@@ -3535,91 +3561,91 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_EXT_hdr_metadata)
 #if defined(VK_KHR_shared_presentable_image)
-    [[nodiscard]] Result GetSwapchainStatusKHR(SwapchainKHR swapchain) {
+    [[nodiscard]] Result GetSwapchainStatusKHR(SwapchainKHR swapchain) const {
         return static_cast<Result>(pfn_GetSwapchainStatusKHR(device.get(),
             swapchain.get()));
     }
 #endif //defined(VK_KHR_shared_presentable_image)
 #if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_fence_win32))
-    [[nodiscard]] expected<HANDLE> GetFenceWin32HandleKHR(const FenceGetWin32HandleInfoKHR&  pGetWin32HandleInfo) {
+    [[nodiscard]] expected<HANDLE> GetFenceWin32HandleKHR(const FenceGetWin32HandleInfoKHR&  pGetWin32HandleInfo) const {
         HANDLE pHandle;
         vk::Result result = static_cast<Result>(pfn_GetFenceWin32HandleKHR(device.get(),
             reinterpret_cast<const VkFenceGetWin32HandleInfoKHR*>(&pGetWin32HandleInfo),
             reinterpret_cast<HANDLE*>(&pHandle)));
         return expected<HANDLE>(pHandle, result);
     }
-    [[nodiscard]] Result ImportFenceWin32HandleKHR(const ImportFenceWin32HandleInfoKHR&  pImportFenceWin32HandleInfo) {
+    [[nodiscard]] Result ImportFenceWin32HandleKHR(const ImportFenceWin32HandleInfoKHR&  pImportFenceWin32HandleInfo) const {
         return static_cast<Result>(pfn_ImportFenceWin32HandleKHR(device.get(),
             reinterpret_cast<const VkImportFenceWin32HandleInfoKHR*>(&pImportFenceWin32HandleInfo)));
     }
 #endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_fence_win32))
 #if defined(VK_KHR_external_fence_fd)
-    [[nodiscard]] expected<int> GetFenceFdKHR(const FenceGetFdInfoKHR&  pGetFdInfo) {
+    [[nodiscard]] expected<int> GetFenceFdKHR(const FenceGetFdInfoKHR&  pGetFdInfo) const {
         int pFd;
         vk::Result result = static_cast<Result>(pfn_GetFenceFdKHR(device.get(),
             reinterpret_cast<const VkFenceGetFdInfoKHR*>(&pGetFdInfo),
             &pFd));
         return expected<int>(pFd, result);
     }
-    [[nodiscard]] Result ImportFenceFdKHR(const ImportFenceFdInfoKHR&  pImportFenceFdInfo) {
+    [[nodiscard]] Result ImportFenceFdKHR(const ImportFenceFdInfoKHR&  pImportFenceFdInfo) const {
         return static_cast<Result>(pfn_ImportFenceFdKHR(device.get(),
             reinterpret_cast<const VkImportFenceFdInfoKHR*>(&pImportFenceFdInfo)));
     }
 #endif //defined(VK_KHR_external_fence_fd)
 #if defined(VK_KHR_performance_query)
-    [[nodiscard]] Result AcquireProfilingLockKHR(const AcquireProfilingLockInfoKHR&  pInfo) {
+    [[nodiscard]] Result AcquireProfilingLockKHR(const AcquireProfilingLockInfoKHR&  pInfo) const {
         return static_cast<Result>(pfn_AcquireProfilingLockKHR(device.get(),
             reinterpret_cast<const VkAcquireProfilingLockInfoKHR*>(&pInfo)));
     }
-    void ReleaseProfilingLockKHR() {
+    void ReleaseProfilingLockKHR() const {
         pfn_ReleaseProfilingLockKHR(device.get());
     }
 #endif //defined(VK_KHR_performance_query)
 #if defined(VK_EXT_debug_utils)
-    [[nodiscard]] Result SetDebugUtilsObjectNameEXT(const DebugUtilsObjectNameInfoEXT&  pNameInfo) {
+    [[nodiscard]] Result SetDebugUtilsObjectNameEXT(const DebugUtilsObjectNameInfoEXT&  pNameInfo) const {
         return static_cast<Result>(pfn_SetDebugUtilsObjectNameEXT(device.get(),
             reinterpret_cast<const VkDebugUtilsObjectNameInfoEXT*>(&pNameInfo)));
     }
-    [[nodiscard]] Result SetDebugUtilsObjectTagEXT(const DebugUtilsObjectTagInfoEXT&  pTagInfo) {
+    [[nodiscard]] Result SetDebugUtilsObjectTagEXT(const DebugUtilsObjectTagInfoEXT&  pTagInfo) const {
         return static_cast<Result>(pfn_SetDebugUtilsObjectTagEXT(device.get(),
             reinterpret_cast<const VkDebugUtilsObjectTagInfoEXT*>(&pTagInfo)));
     }
-    void QueueBeginDebugUtilsLabelEXT(Queue queue,
-        const DebugUtilsLabelEXT&  pLabelInfo) {
+    void QueueBeginDebugUtilsLabelEXT(Queue queue, 
+        const DebugUtilsLabelEXT&  pLabelInfo) const {
         pfn_QueueBeginDebugUtilsLabelEXT(queue.get(),
             reinterpret_cast<const VkDebugUtilsLabelEXT*>(&pLabelInfo));
     }
-    void QueueEndDebugUtilsLabelEXT(Queue queue) {
+    void QueueEndDebugUtilsLabelEXT(Queue queue) const {
         pfn_QueueEndDebugUtilsLabelEXT(queue.get());
     }
-    void QueueInsertDebugUtilsLabelEXT(Queue queue,
-        const DebugUtilsLabelEXT&  pLabelInfo) {
+    void QueueInsertDebugUtilsLabelEXT(Queue queue, 
+        const DebugUtilsLabelEXT&  pLabelInfo) const {
         pfn_QueueInsertDebugUtilsLabelEXT(queue.get(),
             reinterpret_cast<const VkDebugUtilsLabelEXT*>(&pLabelInfo));
     }
-    void CmdBeginDebugUtilsLabelEXT(CommandBuffer commandBuffer,
-        const DebugUtilsLabelEXT&  pLabelInfo) {
+    void CmdBeginDebugUtilsLabelEXT(CommandBuffer commandBuffer, 
+        const DebugUtilsLabelEXT&  pLabelInfo) const {
         pfn_CmdBeginDebugUtilsLabelEXT(commandBuffer.get(),
             reinterpret_cast<const VkDebugUtilsLabelEXT*>(&pLabelInfo));
     }
-    void CmdEndDebugUtilsLabelEXT(CommandBuffer commandBuffer) {
+    void CmdEndDebugUtilsLabelEXT(CommandBuffer commandBuffer) const {
         pfn_CmdEndDebugUtilsLabelEXT(commandBuffer.get());
     }
-    void CmdInsertDebugUtilsLabelEXT(CommandBuffer commandBuffer,
-        const DebugUtilsLabelEXT&  pLabelInfo) {
+    void CmdInsertDebugUtilsLabelEXT(CommandBuffer commandBuffer, 
+        const DebugUtilsLabelEXT&  pLabelInfo) const {
         pfn_CmdInsertDebugUtilsLabelEXT(commandBuffer.get(),
             reinterpret_cast<const VkDebugUtilsLabelEXT*>(&pLabelInfo));
     }
 #endif //defined(VK_EXT_debug_utils)
 #if defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_ANDROID_external_memory_android_hardware_buffer))
-    [[nodiscard]] expected<AndroidHardwareBufferPropertiesANDROID> GetAndroidHardwareBufferPropertiesANDROID(const AHardwareBuffer&  buffer) {
+    [[nodiscard]] expected<AndroidHardwareBufferPropertiesANDROID> GetAndroidHardwareBufferPropertiesANDROID(const AHardwareBuffer&  buffer) const {
         AndroidHardwareBufferPropertiesANDROID pProperties;
         vk::Result result = static_cast<Result>(pfn_GetAndroidHardwareBufferPropertiesANDROID(device.get(),
             &buffer,
             reinterpret_cast<VkAndroidHardwareBufferPropertiesANDROID*>(&pProperties)));
         return expected<AndroidHardwareBufferPropertiesANDROID>(pProperties, result);
     }
-    [[nodiscard]] expected<AHardwareBuffer*> GetMemoryAndroidHardwareBufferANDROID(const MemoryGetAndroidHardwareBufferInfoANDROID&  pInfo) {
+    [[nodiscard]] expected<AHardwareBuffer*> GetMemoryAndroidHardwareBufferANDROID(const MemoryGetAndroidHardwareBufferInfoANDROID&  pInfo) const {
         AHardwareBuffer* pBuffer;
         vk::Result result = static_cast<Result>(pfn_GetMemoryAndroidHardwareBufferANDROID(device.get(),
             reinterpret_cast<const VkMemoryGetAndroidHardwareBufferInfoANDROID*>(&pInfo),
@@ -3628,64 +3654,65 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_ANDROID_external_memory_android_hardware_buffer))
 #if defined(VK_EXT_sample_locations)
-    void CmdSetSampleLocationsEXT(CommandBuffer commandBuffer,
-        const SampleLocationsInfoEXT&  pSampleLocationsInfo) {
+    void CmdSetSampleLocationsEXT(CommandBuffer commandBuffer, 
+        const SampleLocationsInfoEXT&  pSampleLocationsInfo) const {
         pfn_CmdSetSampleLocationsEXT(commandBuffer.get(),
             reinterpret_cast<const VkSampleLocationsInfoEXT*>(&pSampleLocationsInfo));
     }
 #endif //defined(VK_EXT_sample_locations)
 #if defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_ray_tracing))
-    void DestroyAccelerationStructureKHR(AccelerationStructureKHR accelerationStructure,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroyAccelerationStructureKHR(AccelerationStructureKHR accelerationStructure, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroyAccelerationStructureKHR(device.get(),
             accelerationStructure.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    void GetAccelerationStructureMemoryRequirementsKHR(const AccelerationStructureMemoryRequirementsInfoKHR&  pInfo,
-        MemoryRequirements2&  pMemoryRequirements) {
+    [[nodiscard]] MemoryRequirements2 GetAccelerationStructureMemoryRequirementsKHR(const AccelerationStructureMemoryRequirementsInfoKHR&  pInfo) const {
+        MemoryRequirements2 pMemoryRequirements;
         pfn_GetAccelerationStructureMemoryRequirementsKHR(device.get(),
             reinterpret_cast<const VkAccelerationStructureMemoryRequirementsInfoKHR*>(&pInfo),
             reinterpret_cast<VkMemoryRequirements2*>(&pMemoryRequirements));
+        return pMemoryRequirements;
     }
-    [[nodiscard]] Result BindAccelerationStructureMemoryKHR(uint32_t bindInfoCount,
-        const BindAccelerationStructureMemoryInfoKHR* pBindInfos) {
+    [[nodiscard]] Result BindAccelerationStructureMemoryKHR(uint32_t bindInfoCount, 
+        const BindAccelerationStructureMemoryInfoKHR* pBindInfos) const {
         return static_cast<Result>(pfn_BindAccelerationStructureMemoryKHR(device.get(),
             bindInfoCount,
             reinterpret_cast<const VkBindAccelerationStructureMemoryInfoKHR*>(pBindInfos)));
     }
-    void CmdCopyAccelerationStructureKHR(CommandBuffer commandBuffer,
-        const CopyAccelerationStructureInfoKHR&  pInfo) {
+    void CmdCopyAccelerationStructureKHR(CommandBuffer commandBuffer, 
+        const CopyAccelerationStructureInfoKHR&  pInfo) const {
         pfn_CmdCopyAccelerationStructureKHR(commandBuffer.get(),
             reinterpret_cast<const VkCopyAccelerationStructureInfoKHR*>(&pInfo));
     }
-    [[nodiscard]] Result CopyAccelerationStructureKHR(const CopyAccelerationStructureInfoKHR&  pInfo) {
+    [[nodiscard]] Result CopyAccelerationStructureKHR(const CopyAccelerationStructureInfoKHR&  pInfo) const {
         return static_cast<Result>(pfn_CopyAccelerationStructureKHR(device.get(),
             reinterpret_cast<const VkCopyAccelerationStructureInfoKHR*>(&pInfo)));
     }
-    void CmdCopyAccelerationStructureToMemoryKHR(CommandBuffer commandBuffer,
-        const CopyAccelerationStructureToMemoryInfoKHR&  pInfo) {
+    void CmdCopyAccelerationStructureToMemoryKHR(CommandBuffer commandBuffer, 
+        const CopyAccelerationStructureToMemoryInfoKHR&  pInfo) const {
         pfn_CmdCopyAccelerationStructureToMemoryKHR(commandBuffer.get(),
             reinterpret_cast<const VkCopyAccelerationStructureToMemoryInfoKHR*>(&pInfo));
     }
-    [[nodiscard]] Result CopyAccelerationStructureToMemoryKHR(const CopyAccelerationStructureToMemoryInfoKHR&  pInfo) {
+    [[nodiscard]] Result CopyAccelerationStructureToMemoryKHR(const CopyAccelerationStructureToMemoryInfoKHR&  pInfo) const {
         return static_cast<Result>(pfn_CopyAccelerationStructureToMemoryKHR(device.get(),
             reinterpret_cast<const VkCopyAccelerationStructureToMemoryInfoKHR*>(&pInfo)));
     }
-    void CmdCopyMemoryToAccelerationStructureKHR(CommandBuffer commandBuffer,
-        const CopyMemoryToAccelerationStructureInfoKHR&  pInfo) {
+    void CmdCopyMemoryToAccelerationStructureKHR(CommandBuffer commandBuffer, 
+        const CopyMemoryToAccelerationStructureInfoKHR&  pInfo) const {
         pfn_CmdCopyMemoryToAccelerationStructureKHR(commandBuffer.get(),
             reinterpret_cast<const VkCopyMemoryToAccelerationStructureInfoKHR*>(&pInfo));
     }
-    [[nodiscard]] Result CopyMemoryToAccelerationStructureKHR(const CopyMemoryToAccelerationStructureInfoKHR&  pInfo) {
+    [[nodiscard]] Result CopyMemoryToAccelerationStructureKHR(const CopyMemoryToAccelerationStructureInfoKHR&  pInfo) const {
         return static_cast<Result>(pfn_CopyMemoryToAccelerationStructureKHR(device.get(),
             reinterpret_cast<const VkCopyMemoryToAccelerationStructureInfoKHR*>(&pInfo)));
     }
-    void CmdWriteAccelerationStructuresPropertiesKHR(CommandBuffer commandBuffer,
-        uint32_t accelerationStructureCount,
-        const AccelerationStructureKHR* pAccelerationStructures,
-        QueryType queryType,
-        QueryPool queryPool,
-        uint32_t firstQuery) {
+    void CmdWriteAccelerationStructuresPropertiesKHR(CommandBuffer commandBuffer, 
+        uint32_t accelerationStructureCount, 
+        const AccelerationStructureKHR* pAccelerationStructures, 
+        QueryType queryType, 
+        QueryPool queryPool, 
+        uint32_t firstQuery) const {
         pfn_CmdWriteAccelerationStructuresPropertiesKHR(commandBuffer.get(),
             accelerationStructureCount,
             reinterpret_cast<const VkAccelerationStructureKHR*>(pAccelerationStructures),
@@ -3693,12 +3720,12 @@ struct DeviceFunctions {
             queryPool.get(),
             firstQuery);
     }
-    [[nodiscard]] Result WriteAccelerationStructuresPropertiesKHR(uint32_t accelerationStructureCount,
-        const AccelerationStructureKHR* pAccelerationStructures,
-        QueryType queryType,
-        size_t dataSize,
-        void* pData,
-        size_t stride) {
+    [[nodiscard]] Result WriteAccelerationStructuresPropertiesKHR(uint32_t accelerationStructureCount, 
+        const AccelerationStructureKHR* pAccelerationStructures, 
+        QueryType queryType, 
+        size_t dataSize, 
+        void* pData, 
+        size_t stride) const {
         return static_cast<Result>(pfn_WriteAccelerationStructuresPropertiesKHR(device.get(),
             accelerationStructureCount,
             reinterpret_cast<const VkAccelerationStructureKHR*>(pAccelerationStructures),
@@ -3707,14 +3734,14 @@ struct DeviceFunctions {
             reinterpret_cast<void*>(pData),
             stride));
     }
-    void CmdTraceRaysKHR(CommandBuffer commandBuffer,
-        const StridedBufferRegionKHR&  pRaygenShaderBindingTable,
-        const StridedBufferRegionKHR&  pMissShaderBindingTable,
-        const StridedBufferRegionKHR&  pHitShaderBindingTable,
-        const StridedBufferRegionKHR&  pCallableShaderBindingTable,
-        uint32_t width,
-        uint32_t height,
-        uint32_t depth) {
+    void CmdTraceRaysKHR(CommandBuffer commandBuffer, 
+        const StridedBufferRegionKHR&  pRaygenShaderBindingTable, 
+        const StridedBufferRegionKHR&  pMissShaderBindingTable, 
+        const StridedBufferRegionKHR&  pHitShaderBindingTable, 
+        const StridedBufferRegionKHR&  pCallableShaderBindingTable, 
+        uint32_t width, 
+        uint32_t height, 
+        uint32_t depth) const {
         pfn_CmdTraceRaysKHR(commandBuffer.get(),
             reinterpret_cast<const VkStridedBufferRegionKHR*>(&pRaygenShaderBindingTable),
             reinterpret_cast<const VkStridedBufferRegionKHR*>(&pMissShaderBindingTable),
@@ -3724,11 +3751,11 @@ struct DeviceFunctions {
             height,
             depth);
     }
-    [[nodiscard]] Result GetRayTracingShaderGroupHandlesKHR(Pipeline pipeline,
-        uint32_t firstGroup,
-        uint32_t groupCount,
-        size_t dataSize,
-        void* pData) {
+    [[nodiscard]] Result GetRayTracingShaderGroupHandlesKHR(Pipeline pipeline, 
+        uint32_t firstGroup, 
+        uint32_t groupCount, 
+        size_t dataSize, 
+        void* pData) const {
         return static_cast<Result>(pfn_GetRayTracingShaderGroupHandlesKHR(device.get(),
             pipeline.get(),
             firstGroup,
@@ -3736,11 +3763,11 @@ struct DeviceFunctions {
             dataSize,
             reinterpret_cast<void*>(pData)));
     }
-    [[nodiscard]] Result GetRayTracingCaptureReplayShaderGroupHandlesKHR(Pipeline pipeline,
-        uint32_t firstGroup,
-        uint32_t groupCount,
-        size_t dataSize,
-        void* pData) {
+    [[nodiscard]] Result GetRayTracingCaptureReplayShaderGroupHandlesKHR(Pipeline pipeline, 
+        uint32_t firstGroup, 
+        uint32_t groupCount, 
+        size_t dataSize, 
+        void* pData) const {
         return static_cast<Result>(pfn_GetRayTracingCaptureReplayShaderGroupHandlesKHR(device.get(),
             pipeline.get(),
             firstGroup,
@@ -3748,11 +3775,11 @@ struct DeviceFunctions {
             dataSize,
             reinterpret_cast<void*>(pData)));
     }
-    [[nodiscard]] Result CreateRayTracingPipelinesKHR(PipelineCache pipelineCache,
-        uint32_t createInfoCount,
-        const RayTracingPipelineCreateInfoKHR* pCreateInfos,
-        const AllocationCallbacks* pAllocator,
-        Pipeline* pPipelines) {
+    [[nodiscard]] Result CreateRayTracingPipelinesKHR(PipelineCache pipelineCache, 
+        uint32_t createInfoCount, 
+        const RayTracingPipelineCreateInfoKHR* pCreateInfos, 
+        const AllocationCallbacks* pAllocator, 
+        Pipeline* pPipelines) const {
         return static_cast<Result>(pfn_CreateRayTracingPipelinesKHR(device.get(),
             pipelineCache.get(),
             createInfoCount,
@@ -3760,13 +3787,13 @@ struct DeviceFunctions {
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkPipeline*>(pPipelines)));
     }
-    void CmdTraceRaysIndirectKHR(CommandBuffer commandBuffer,
-        const StridedBufferRegionKHR&  pRaygenShaderBindingTable,
-        const StridedBufferRegionKHR&  pMissShaderBindingTable,
-        const StridedBufferRegionKHR&  pHitShaderBindingTable,
-        const StridedBufferRegionKHR&  pCallableShaderBindingTable,
-        Buffer buffer,
-        DeviceSize offset) {
+    void CmdTraceRaysIndirectKHR(CommandBuffer commandBuffer, 
+        const StridedBufferRegionKHR&  pRaygenShaderBindingTable, 
+        const StridedBufferRegionKHR&  pMissShaderBindingTable, 
+        const StridedBufferRegionKHR&  pHitShaderBindingTable, 
+        const StridedBufferRegionKHR&  pCallableShaderBindingTable, 
+        Buffer buffer, 
+        DeviceSize offset) const {
         pfn_CmdTraceRaysIndirectKHR(commandBuffer.get(),
             reinterpret_cast<const VkStridedBufferRegionKHR*>(&pRaygenShaderBindingTable),
             reinterpret_cast<const VkStridedBufferRegionKHR*>(&pMissShaderBindingTable),
@@ -3775,12 +3802,12 @@ struct DeviceFunctions {
             buffer.get(),
             offset);
     }
-    [[nodiscard]] Result GetDeviceAccelerationStructureCompatibilityKHR(const AccelerationStructureVersionKHR&  version) {
+    [[nodiscard]] Result GetDeviceAccelerationStructureCompatibilityKHR(const AccelerationStructureVersionKHR&  version) const {
         return static_cast<Result>(pfn_GetDeviceAccelerationStructureCompatibilityKHR(device.get(),
             reinterpret_cast<const VkAccelerationStructureVersionKHR*>(&version)));
     }
-    [[nodiscard]] expected<AccelerationStructureKHR> CreateAccelerationStructureKHR(const AccelerationStructureCreateInfoKHR&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<AccelerationStructureKHR> CreateAccelerationStructureKHR(const AccelerationStructureCreateInfoKHR&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         AccelerationStructureKHR pAccelerationStructure;
         vk::Result result = static_cast<Result>(pfn_CreateAccelerationStructureKHR(device.get(),
             reinterpret_cast<const VkAccelerationStructureCreateInfoKHR*>(&pCreateInfo),
@@ -3788,41 +3815,41 @@ struct DeviceFunctions {
             reinterpret_cast<VkAccelerationStructureKHR*>(&pAccelerationStructure)));
         return expected<AccelerationStructureKHR>(pAccelerationStructure, result);
     }
-    void CmdBuildAccelerationStructureKHR(CommandBuffer commandBuffer,
-        uint32_t infoCount,
-        const AccelerationStructureBuildGeometryInfoKHR* pInfos,
-        const AccelerationStructureBuildOffsetInfoKHR* const* ppOffsetInfos) {
+    void CmdBuildAccelerationStructureKHR(CommandBuffer commandBuffer, 
+        uint32_t infoCount, 
+        const AccelerationStructureBuildGeometryInfoKHR* pInfos, 
+        const AccelerationStructureBuildOffsetInfoKHR* const* ppOffsetInfos) const {
         pfn_CmdBuildAccelerationStructureKHR(commandBuffer.get(),
             infoCount,
             reinterpret_cast<const VkAccelerationStructureBuildGeometryInfoKHR*>(pInfos),
             reinterpret_cast<const VkAccelerationStructureBuildOffsetInfoKHR* const*>(ppOffsetInfos));
     }
-    void CmdBuildAccelerationStructureIndirectKHR(CommandBuffer commandBuffer,
-        const AccelerationStructureBuildGeometryInfoKHR&  pInfo,
-        Buffer indirectBuffer,
-        DeviceSize indirectOffset,
-        uint32_t indirectStride) {
+    void CmdBuildAccelerationStructureIndirectKHR(CommandBuffer commandBuffer, 
+        const AccelerationStructureBuildGeometryInfoKHR&  pInfo, 
+        Buffer indirectBuffer, 
+        DeviceSize indirectOffset, 
+        uint32_t indirectStride) const {
         pfn_CmdBuildAccelerationStructureIndirectKHR(commandBuffer.get(),
             reinterpret_cast<const VkAccelerationStructureBuildGeometryInfoKHR*>(&pInfo),
             indirectBuffer.get(),
             indirectOffset,
             indirectStride);
     }
-    [[nodiscard]] Result BuildAccelerationStructureKHR(uint32_t infoCount,
-        const AccelerationStructureBuildGeometryInfoKHR* pInfos,
-        const AccelerationStructureBuildOffsetInfoKHR* const* ppOffsetInfos) {
+    [[nodiscard]] Result BuildAccelerationStructureKHR(uint32_t infoCount, 
+        const AccelerationStructureBuildGeometryInfoKHR* pInfos, 
+        const AccelerationStructureBuildOffsetInfoKHR* const* ppOffsetInfos) const {
         return static_cast<Result>(pfn_BuildAccelerationStructureKHR(device.get(),
             infoCount,
             reinterpret_cast<const VkAccelerationStructureBuildGeometryInfoKHR*>(pInfos),
             reinterpret_cast<const VkAccelerationStructureBuildOffsetInfoKHR* const*>(ppOffsetInfos)));
     }
-    [[nodiscard]] VkDeviceAddress GetAccelerationStructureDeviceAddressKHR(const AccelerationStructureDeviceAddressInfoKHR&  pInfo) {
+    [[nodiscard]] VkDeviceAddress GetAccelerationStructureDeviceAddressKHR(const AccelerationStructureDeviceAddressInfoKHR&  pInfo) const {
         return pfn_GetAccelerationStructureDeviceAddressKHR(device.get(),
             reinterpret_cast<const VkAccelerationStructureDeviceAddressInfoKHR*>(&pInfo));
     }
 #endif //defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_ray_tracing))
 #if defined(VK_EXT_image_drm_format_modifier)
-    [[nodiscard]] expected<ImageDrmFormatModifierPropertiesEXT> GetImageDrmFormatModifierPropertiesEXT(Image image) {
+    [[nodiscard]] expected<ImageDrmFormatModifierPropertiesEXT> GetImageDrmFormatModifierPropertiesEXT(Image image) const {
         ImageDrmFormatModifierPropertiesEXT pProperties;
         vk::Result result = static_cast<Result>(pfn_GetImageDrmFormatModifierPropertiesEXT(device.get(),
             image.get(),
@@ -3831,8 +3858,8 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_EXT_image_drm_format_modifier)
 #if defined(VK_EXT_validation_cache)
-    [[nodiscard]] expected<ValidationCacheEXT> CreateValidationCacheEXT(const ValidationCacheCreateInfoEXT&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<ValidationCacheEXT> CreateValidationCacheEXT(const ValidationCacheCreateInfoEXT&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         ValidationCacheEXT pValidationCache;
         vk::Result result = static_cast<Result>(pfn_CreateValidationCacheEXT(device.get(),
             reinterpret_cast<const VkValidationCacheCreateInfoEXT*>(&pCreateInfo),
@@ -3840,13 +3867,13 @@ struct DeviceFunctions {
             reinterpret_cast<VkValidationCacheEXT*>(&pValidationCache)));
         return expected<ValidationCacheEXT>(pValidationCache, result);
     }
-    void DestroyValidationCacheEXT(ValidationCacheEXT validationCache,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroyValidationCacheEXT(ValidationCacheEXT validationCache, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroyValidationCacheEXT(device.get(),
             validationCache.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    [[nodiscard]] expected<detail::fixed_vector<void*>> GetValidationCacheDataEXT(ValidationCacheEXT validationCache) {
+    [[nodiscard]] expected<detail::fixed_vector<void*>> GetValidationCacheDataEXT(ValidationCacheEXT validationCache) const {
         size_t pDataSize = 0;
         vk::Result result = static_cast<Result>(pfn_GetValidationCacheDataEXT(device.get(),
             validationCache.get(),
@@ -3861,9 +3888,9 @@ struct DeviceFunctions {
         if (pDataSize < pData.size()) pData.shrink(pDataSize);
         return expected(std::move(pData), result);
     }
-    [[nodiscard]] Result MergeValidationCachesEXT(ValidationCacheEXT dstCache,
-        uint32_t srcCacheCount,
-        const ValidationCacheEXT* pSrcCaches) {
+    [[nodiscard]] Result MergeValidationCachesEXT(ValidationCacheEXT dstCache, 
+        uint32_t srcCacheCount, 
+        const ValidationCacheEXT* pSrcCaches) const {
         return static_cast<Result>(pfn_MergeValidationCachesEXT(device.get(),
             dstCache.get(),
             srcCacheCount,
@@ -3871,26 +3898,26 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_EXT_validation_cache)
 #if defined(VK_NV_shading_rate_image)
-    void CmdBindShadingRateImageNV(CommandBuffer commandBuffer,
-        ImageView imageView,
-        ImageLayout imageLayout) {
+    void CmdBindShadingRateImageNV(CommandBuffer commandBuffer, 
+        ImageView imageView, 
+        ImageLayout imageLayout) const {
         pfn_CmdBindShadingRateImageNV(commandBuffer.get(),
             imageView.get(),
             static_cast<VkImageLayout>(imageLayout));
     }
-    void CmdSetViewportShadingRatePaletteNV(CommandBuffer commandBuffer,
-        uint32_t firstViewport,
-        uint32_t viewportCount,
-        const ShadingRatePaletteNV* pShadingRatePalettes) {
+    void CmdSetViewportShadingRatePaletteNV(CommandBuffer commandBuffer, 
+        uint32_t firstViewport, 
+        uint32_t viewportCount, 
+        const ShadingRatePaletteNV* pShadingRatePalettes) const {
         pfn_CmdSetViewportShadingRatePaletteNV(commandBuffer.get(),
             firstViewport,
             viewportCount,
             reinterpret_cast<const VkShadingRatePaletteNV*>(pShadingRatePalettes));
     }
-    void CmdSetCoarseSampleOrderNV(CommandBuffer commandBuffer,
-        CoarseSampleOrderTypeNV sampleOrderType,
-        uint32_t customSampleOrderCount,
-        const CoarseSampleOrderCustomNV* pCustomSampleOrders) {
+    void CmdSetCoarseSampleOrderNV(CommandBuffer commandBuffer, 
+        CoarseSampleOrderTypeNV sampleOrderType, 
+        uint32_t customSampleOrderCount, 
+        const CoarseSampleOrderCustomNV* pCustomSampleOrders) const {
         pfn_CmdSetCoarseSampleOrderNV(commandBuffer.get(),
             static_cast<VkCoarseSampleOrderTypeNV>(sampleOrderType),
             customSampleOrderCount,
@@ -3898,14 +3925,14 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_NV_shading_rate_image)
 #if defined(VK_NV_ray_tracing)
-    [[nodiscard]] Result CompileDeferredNV(Pipeline pipeline,
-        uint32_t shader) {
+    [[nodiscard]] Result CompileDeferredNV(Pipeline pipeline, 
+        uint32_t shader) const {
         return static_cast<Result>(pfn_CompileDeferredNV(device.get(),
             pipeline.get(),
             shader));
     }
-    [[nodiscard]] expected<AccelerationStructureNV> CreateAccelerationStructureNV(const AccelerationStructureCreateInfoNV&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<AccelerationStructureNV> CreateAccelerationStructureNV(const AccelerationStructureCreateInfoNV&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         AccelerationStructureNV pAccelerationStructure;
         vk::Result result = static_cast<Result>(pfn_CreateAccelerationStructureNV(device.get(),
             reinterpret_cast<const VkAccelerationStructureCreateInfoNV*>(&pCreateInfo),
@@ -3913,30 +3940,31 @@ struct DeviceFunctions {
             reinterpret_cast<VkAccelerationStructureNV*>(&pAccelerationStructure)));
         return expected<AccelerationStructureNV>(pAccelerationStructure, result);
     }
-    void GetAccelerationStructureMemoryRequirementsNV(const AccelerationStructureMemoryRequirementsInfoNV&  pInfo,
-        MemoryRequirements2KHR&  pMemoryRequirements) {
+    [[nodiscard]] MemoryRequirements2KHR GetAccelerationStructureMemoryRequirementsNV(const AccelerationStructureMemoryRequirementsInfoNV&  pInfo) const {
+        MemoryRequirements2KHR pMemoryRequirements;
         pfn_GetAccelerationStructureMemoryRequirementsNV(device.get(),
             reinterpret_cast<const VkAccelerationStructureMemoryRequirementsInfoNV*>(&pInfo),
             reinterpret_cast<VkMemoryRequirements2KHR*>(&pMemoryRequirements));
+        return pMemoryRequirements;
     }
-    void CmdCopyAccelerationStructureNV(CommandBuffer commandBuffer,
-        AccelerationStructureKHR dst,
-        AccelerationStructureKHR src,
-        CopyAccelerationStructureModeKHR mode) {
+    void CmdCopyAccelerationStructureNV(CommandBuffer commandBuffer, 
+        AccelerationStructureKHR dst, 
+        AccelerationStructureKHR src, 
+        CopyAccelerationStructureModeKHR mode) const {
         pfn_CmdCopyAccelerationStructureNV(commandBuffer.get(),
             dst.get(),
             src.get(),
             static_cast<VkCopyAccelerationStructureModeKHR>(mode));
     }
-    void CmdBuildAccelerationStructureNV(CommandBuffer commandBuffer,
-        const AccelerationStructureInfoNV&  pInfo,
-        Buffer instanceData,
-        DeviceSize instanceOffset,
-        Bool32 update,
-        AccelerationStructureKHR dst,
-        AccelerationStructureKHR src,
-        Buffer scratch,
-        DeviceSize scratchOffset) {
+    void CmdBuildAccelerationStructureNV(CommandBuffer commandBuffer, 
+        const AccelerationStructureInfoNV&  pInfo, 
+        Buffer instanceData, 
+        DeviceSize instanceOffset, 
+        Bool32 update, 
+        AccelerationStructureKHR dst, 
+        AccelerationStructureKHR src, 
+        Buffer scratch, 
+        DeviceSize scratchOffset) const {
         pfn_CmdBuildAccelerationStructureNV(commandBuffer.get(),
             reinterpret_cast<const VkAccelerationStructureInfoNV*>(&pInfo),
             instanceData.get(),
@@ -3947,21 +3975,21 @@ struct DeviceFunctions {
             scratch.get(),
             scratchOffset);
     }
-    void CmdTraceRaysNV(CommandBuffer commandBuffer,
-        Buffer raygenShaderBindingTableBuffer,
-        DeviceSize raygenShaderBindingOffset,
-        Buffer missShaderBindingTableBuffer,
-        DeviceSize missShaderBindingOffset,
-        DeviceSize missShaderBindingStride,
-        Buffer hitShaderBindingTableBuffer,
-        DeviceSize hitShaderBindingOffset,
-        DeviceSize hitShaderBindingStride,
-        Buffer callableShaderBindingTableBuffer,
-        DeviceSize callableShaderBindingOffset,
-        DeviceSize callableShaderBindingStride,
-        uint32_t width,
-        uint32_t height,
-        uint32_t depth) {
+    void CmdTraceRaysNV(CommandBuffer commandBuffer, 
+        Buffer raygenShaderBindingTableBuffer, 
+        DeviceSize raygenShaderBindingOffset, 
+        Buffer missShaderBindingTableBuffer, 
+        DeviceSize missShaderBindingOffset, 
+        DeviceSize missShaderBindingStride, 
+        Buffer hitShaderBindingTableBuffer, 
+        DeviceSize hitShaderBindingOffset, 
+        DeviceSize hitShaderBindingStride, 
+        Buffer callableShaderBindingTableBuffer, 
+        DeviceSize callableShaderBindingOffset, 
+        DeviceSize callableShaderBindingStride, 
+        uint32_t width, 
+        uint32_t height, 
+        uint32_t depth) const {
         pfn_CmdTraceRaysNV(commandBuffer.get(),
             raygenShaderBindingTableBuffer.get(),
             raygenShaderBindingOffset,
@@ -3978,19 +4006,19 @@ struct DeviceFunctions {
             height,
             depth);
     }
-    [[nodiscard]] Result GetAccelerationStructureHandleNV(AccelerationStructureKHR accelerationStructure,
-        size_t dataSize,
-        void* pData) {
+    [[nodiscard]] Result GetAccelerationStructureHandleNV(AccelerationStructureKHR accelerationStructure, 
+        size_t dataSize, 
+        void* pData) const {
         return static_cast<Result>(pfn_GetAccelerationStructureHandleNV(device.get(),
             accelerationStructure.get(),
             dataSize,
             reinterpret_cast<void*>(pData)));
     }
-    [[nodiscard]] Result CreateRayTracingPipelinesNV(PipelineCache pipelineCache,
-        uint32_t createInfoCount,
-        const RayTracingPipelineCreateInfoNV* pCreateInfos,
-        const AllocationCallbacks* pAllocator,
-        Pipeline* pPipelines) {
+    [[nodiscard]] Result CreateRayTracingPipelinesNV(PipelineCache pipelineCache, 
+        uint32_t createInfoCount, 
+        const RayTracingPipelineCreateInfoNV* pCreateInfos, 
+        const AllocationCallbacks* pAllocator, 
+        Pipeline* pPipelines) const {
         return static_cast<Result>(pfn_CreateRayTracingPipelinesNV(device.get(),
             pipelineCache.get(),
             createInfoCount,
@@ -4000,8 +4028,8 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_NV_ray_tracing)
 #if defined(VK_EXT_external_memory_host)
-    [[nodiscard]] expected<MemoryHostPointerPropertiesEXT> GetMemoryHostPointerPropertiesEXT(ExternalMemoryHandleTypeFlagBits handleType,
-        const void* pHostPointer) {
+    [[nodiscard]] expected<MemoryHostPointerPropertiesEXT> GetMemoryHostPointerPropertiesEXT(ExternalMemoryHandleTypeFlagBits handleType, 
+        const void* pHostPointer) const {
         MemoryHostPointerPropertiesEXT pMemoryHostPointerProperties;
         vk::Result result = static_cast<Result>(pfn_GetMemoryHostPointerPropertiesEXT(device.get(),
             static_cast<VkExternalMemoryHandleTypeFlagBits>(handleType),
@@ -4011,11 +4039,11 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_EXT_external_memory_host)
 #if defined(VK_AMD_buffer_marker)
-    void CmdWriteBufferMarkerAMD(CommandBuffer commandBuffer,
-        PipelineStageFlagBits pipelineStage,
-        Buffer dstBuffer,
-        DeviceSize dstOffset,
-        uint32_t marker) {
+    void CmdWriteBufferMarkerAMD(CommandBuffer commandBuffer, 
+        PipelineStageFlagBits pipelineStage, 
+        Buffer dstBuffer, 
+        DeviceSize dstOffset, 
+        uint32_t marker) const {
         pfn_CmdWriteBufferMarkerAMD(commandBuffer.get(),
             static_cast<VkPipelineStageFlagBits>(pipelineStage),
             dstBuffer.get(),
@@ -4024,9 +4052,9 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_AMD_buffer_marker)
 #if defined(VK_EXT_calibrated_timestamps)
-    [[nodiscard]] expected<uint64_t> GetCalibratedTimestampsEXT(uint32_t timestampCount,
-        const CalibratedTimestampInfoEXT* pTimestampInfos,
-        uint64_t* pTimestamps) {
+    [[nodiscard]] expected<uint64_t> GetCalibratedTimestampsEXT(uint32_t timestampCount, 
+        const CalibratedTimestampInfoEXT* pTimestampInfos, 
+        uint64_t* pTimestamps) const {
         uint64_t pMaxDeviation;
         vk::Result result = static_cast<Result>(pfn_GetCalibratedTimestampsEXT(device.get(),
             timestampCount,
@@ -4037,31 +4065,31 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_EXT_calibrated_timestamps)
 #if defined(VK_NV_mesh_shader)
-    void CmdDrawMeshTasksNV(CommandBuffer commandBuffer,
-        uint32_t taskCount,
-        uint32_t firstTask) {
+    void CmdDrawMeshTasksNV(CommandBuffer commandBuffer, 
+        uint32_t taskCount, 
+        uint32_t firstTask) const {
         pfn_CmdDrawMeshTasksNV(commandBuffer.get(),
             taskCount,
             firstTask);
     }
-    void CmdDrawMeshTasksIndirectNV(CommandBuffer commandBuffer,
-        Buffer buffer,
-        DeviceSize offset,
-        uint32_t drawCount,
-        uint32_t stride) {
+    void CmdDrawMeshTasksIndirectNV(CommandBuffer commandBuffer, 
+        Buffer buffer, 
+        DeviceSize offset, 
+        uint32_t drawCount, 
+        uint32_t stride) const {
         pfn_CmdDrawMeshTasksIndirectNV(commandBuffer.get(),
             buffer.get(),
             offset,
             drawCount,
             stride);
     }
-    void CmdDrawMeshTasksIndirectCountNV(CommandBuffer commandBuffer,
-        Buffer buffer,
-        DeviceSize offset,
-        Buffer countBuffer,
-        DeviceSize countBufferOffset,
-        uint32_t maxDrawCount,
-        uint32_t stride) {
+    void CmdDrawMeshTasksIndirectCountNV(CommandBuffer commandBuffer, 
+        Buffer buffer, 
+        DeviceSize offset, 
+        Buffer countBuffer, 
+        DeviceSize countBufferOffset, 
+        uint32_t maxDrawCount, 
+        uint32_t stride) const {
         pfn_CmdDrawMeshTasksIndirectCountNV(commandBuffer.get(),
             buffer.get(),
             offset,
@@ -4072,10 +4100,10 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_NV_mesh_shader)
 #if defined(VK_NV_scissor_exclusive)
-    void CmdSetExclusiveScissorNV(CommandBuffer commandBuffer,
-        uint32_t firstExclusiveScissor,
-        uint32_t exclusiveScissorCount,
-        const Rect2D* pExclusiveScissors) {
+    void CmdSetExclusiveScissorNV(CommandBuffer commandBuffer, 
+        uint32_t firstExclusiveScissor, 
+        uint32_t exclusiveScissorCount, 
+        const Rect2D* pExclusiveScissors) const {
         pfn_CmdSetExclusiveScissorNV(commandBuffer.get(),
             firstExclusiveScissor,
             exclusiveScissorCount,
@@ -4083,12 +4111,12 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_NV_scissor_exclusive)
 #if defined(VK_NV_device_diagnostic_checkpoints)
-    void CmdSetCheckpointNV(CommandBuffer commandBuffer,
-        const void* pCheckpointMarker) {
+    void CmdSetCheckpointNV(CommandBuffer commandBuffer, 
+        const void* pCheckpointMarker) const {
         pfn_CmdSetCheckpointNV(commandBuffer.get(),
             reinterpret_cast<const void*>(pCheckpointMarker));
     }
-    detail::fixed_vector<CheckpointDataNV> GetQueueCheckpointDataNV(Queue queue) {
+    [[nodiscard]] detail::fixed_vector<CheckpointDataNV> GetQueueCheckpointDataNV(Queue queue) const {
         uint32_t pCheckpointDataCount = 0;
         pfn_GetQueueCheckpointDataNV(queue.get(),
             &pCheckpointDataCount,
@@ -4102,45 +4130,45 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_NV_device_diagnostic_checkpoints)
 #if defined(VK_INTEL_performance_query)
-    [[nodiscard]] Result InitializePerformanceApiINTEL(const InitializePerformanceApiInfoINTEL&  pInitializeInfo) {
+    [[nodiscard]] Result InitializePerformanceApiINTEL(const InitializePerformanceApiInfoINTEL&  pInitializeInfo) const {
         return static_cast<Result>(pfn_InitializePerformanceApiINTEL(device.get(),
             reinterpret_cast<const VkInitializePerformanceApiInfoINTEL*>(&pInitializeInfo)));
     }
-    void UninitializePerformanceApiINTEL() {
+    void UninitializePerformanceApiINTEL() const {
         pfn_UninitializePerformanceApiINTEL(device.get());
     }
-    [[nodiscard]] Result CmdSetPerformanceMarkerINTEL(CommandBuffer commandBuffer,
-        const PerformanceMarkerInfoINTEL&  pMarkerInfo) {
+    [[nodiscard]] Result CmdSetPerformanceMarkerINTEL(CommandBuffer commandBuffer, 
+        const PerformanceMarkerInfoINTEL&  pMarkerInfo) const {
         return static_cast<Result>(pfn_CmdSetPerformanceMarkerINTEL(commandBuffer.get(),
             reinterpret_cast<const VkPerformanceMarkerInfoINTEL*>(&pMarkerInfo)));
     }
-    [[nodiscard]] Result CmdSetPerformanceStreamMarkerINTEL(CommandBuffer commandBuffer,
-        const PerformanceStreamMarkerInfoINTEL&  pMarkerInfo) {
+    [[nodiscard]] Result CmdSetPerformanceStreamMarkerINTEL(CommandBuffer commandBuffer, 
+        const PerformanceStreamMarkerInfoINTEL&  pMarkerInfo) const {
         return static_cast<Result>(pfn_CmdSetPerformanceStreamMarkerINTEL(commandBuffer.get(),
             reinterpret_cast<const VkPerformanceStreamMarkerInfoINTEL*>(&pMarkerInfo)));
     }
-    [[nodiscard]] Result CmdSetPerformanceOverrideINTEL(CommandBuffer commandBuffer,
-        const PerformanceOverrideInfoINTEL&  pOverrideInfo) {
+    [[nodiscard]] Result CmdSetPerformanceOverrideINTEL(CommandBuffer commandBuffer, 
+        const PerformanceOverrideInfoINTEL&  pOverrideInfo) const {
         return static_cast<Result>(pfn_CmdSetPerformanceOverrideINTEL(commandBuffer.get(),
             reinterpret_cast<const VkPerformanceOverrideInfoINTEL*>(&pOverrideInfo)));
     }
-    [[nodiscard]] expected<PerformanceConfigurationINTEL> AcquirePerformanceConfigurationINTEL(const PerformanceConfigurationAcquireInfoINTEL&  pAcquireInfo) {
+    [[nodiscard]] expected<PerformanceConfigurationINTEL> AcquirePerformanceConfigurationINTEL(const PerformanceConfigurationAcquireInfoINTEL&  pAcquireInfo) const {
         PerformanceConfigurationINTEL pConfiguration;
         vk::Result result = static_cast<Result>(pfn_AcquirePerformanceConfigurationINTEL(device.get(),
             reinterpret_cast<const VkPerformanceConfigurationAcquireInfoINTEL*>(&pAcquireInfo),
             reinterpret_cast<VkPerformanceConfigurationINTEL*>(&pConfiguration)));
         return expected<PerformanceConfigurationINTEL>(pConfiguration, result);
     }
-    [[nodiscard]] Result ReleasePerformanceConfigurationINTEL(PerformanceConfigurationINTEL configuration) {
+    [[nodiscard]] Result ReleasePerformanceConfigurationINTEL(PerformanceConfigurationINTEL configuration) const {
         return static_cast<Result>(pfn_ReleasePerformanceConfigurationINTEL(device.get(),
             configuration.get()));
     }
-    [[nodiscard]] Result QueueSetPerformanceConfigurationINTEL(Queue queue,
-        PerformanceConfigurationINTEL configuration) {
+    [[nodiscard]] Result QueueSetPerformanceConfigurationINTEL(Queue queue, 
+        PerformanceConfigurationINTEL configuration) const {
         return static_cast<Result>(pfn_QueueSetPerformanceConfigurationINTEL(queue.get(),
             configuration.get()));
     }
-    [[nodiscard]] expected<PerformanceValueINTEL> GetPerformanceParameterINTEL(PerformanceParameterTypeINTEL parameter) {
+    [[nodiscard]] expected<PerformanceValueINTEL> GetPerformanceParameterINTEL(PerformanceParameterTypeINTEL parameter) const {
         PerformanceValueINTEL pValue;
         vk::Result result = static_cast<Result>(pfn_GetPerformanceParameterINTEL(device.get(),
             static_cast<VkPerformanceParameterTypeINTEL>(parameter),
@@ -4149,25 +4177,25 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_INTEL_performance_query)
 #if defined(VK_AMD_display_native_hdr)
-    void SetLocalDimmingAMD(SwapchainKHR swapChain,
-        Bool32 localDimmingEnable) {
+    void SetLocalDimmingAMD(SwapchainKHR swapChain, 
+        Bool32 localDimmingEnable) const {
         pfn_SetLocalDimmingAMD(device.get(),
             swapChain.get(),
             localDimmingEnable);
     }
 #endif //defined(VK_AMD_display_native_hdr)
 #if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
-    [[nodiscard]] Result AcquireFullScreenExclusiveModeEXT(SwapchainKHR swapchain) {
+    [[nodiscard]] Result AcquireFullScreenExclusiveModeEXT(SwapchainKHR swapchain) const {
         return static_cast<Result>(pfn_AcquireFullScreenExclusiveModeEXT(device.get(),
             swapchain.get()));
     }
-    [[nodiscard]] Result ReleaseFullScreenExclusiveModeEXT(SwapchainKHR swapchain) {
+    [[nodiscard]] Result ReleaseFullScreenExclusiveModeEXT(SwapchainKHR swapchain) const {
         return static_cast<Result>(pfn_ReleaseFullScreenExclusiveModeEXT(device.get(),
             swapchain.get()));
     }
 #endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
 #if defined(VK_USE_PLATFORM_WIN32_KHR) && ((defined(VK_EXT_full_screen_exclusive) && defined(VK_KHR_device_group)) || (defined(VK_EXT_full_screen_exclusive) && defined(VK_VERSION_1_1)))
-    [[nodiscard]] expected<DeviceGroupPresentModeFlagsKHR> GetDeviceGroupSurfacePresentModes2EXT(const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) {
+    [[nodiscard]] expected<DeviceGroupPresentModeFlagsKHR> GetDeviceGroupSurfacePresentModes2EXT(const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) const {
         DeviceGroupPresentModeFlagsKHR pModes;
         vk::Result result = static_cast<Result>(pfn_GetDeviceGroupSurfacePresentModes2EXT(device.get(),
             reinterpret_cast<const VkPhysicalDeviceSurfaceInfo2KHR*>(&pSurfaceInfo),
@@ -4176,51 +4204,51 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_USE_PLATFORM_WIN32_KHR) && ((defined(VK_EXT_full_screen_exclusive) && defined(VK_KHR_device_group)) || (defined(VK_EXT_full_screen_exclusive) && defined(VK_VERSION_1_1)))
 #if defined(VK_EXT_line_rasterization)
-    void CmdSetLineStippleEXT(CommandBuffer commandBuffer,
-        uint32_t lineStippleFactor,
-        uint16_t lineStipplePattern) {
+    void CmdSetLineStippleEXT(CommandBuffer commandBuffer, 
+        uint32_t lineStippleFactor, 
+        uint16_t lineStipplePattern) const {
         pfn_CmdSetLineStippleEXT(commandBuffer.get(),
             lineStippleFactor,
             lineStipplePattern);
     }
 #endif //defined(VK_EXT_line_rasterization)
 #if defined(VK_EXT_extended_dynamic_state)
-    void CmdSetCullModeEXT(CommandBuffer commandBuffer,
-        CullModeFlags cullMode) {
+    void CmdSetCullModeEXT(CommandBuffer commandBuffer, 
+        CullModeFlags cullMode) const {
         pfn_CmdSetCullModeEXT(commandBuffer.get(),
             static_cast<VkCullModeFlags>(cullMode));
     }
-    void CmdSetFrontFaceEXT(CommandBuffer commandBuffer,
-        FrontFace frontFace) {
+    void CmdSetFrontFaceEXT(CommandBuffer commandBuffer, 
+        FrontFace frontFace) const {
         pfn_CmdSetFrontFaceEXT(commandBuffer.get(),
             static_cast<VkFrontFace>(frontFace));
     }
-    void CmdSetPrimitiveTopologyEXT(CommandBuffer commandBuffer,
-        PrimitiveTopology primitiveTopology) {
+    void CmdSetPrimitiveTopologyEXT(CommandBuffer commandBuffer, 
+        PrimitiveTopology primitiveTopology) const {
         pfn_CmdSetPrimitiveTopologyEXT(commandBuffer.get(),
             static_cast<VkPrimitiveTopology>(primitiveTopology));
     }
-    void CmdSetViewportWithCountEXT(CommandBuffer commandBuffer,
-        uint32_t viewportCount,
-        const Viewport* pViewports) {
+    void CmdSetViewportWithCountEXT(CommandBuffer commandBuffer, 
+        uint32_t viewportCount, 
+        const Viewport* pViewports) const {
         pfn_CmdSetViewportWithCountEXT(commandBuffer.get(),
             viewportCount,
             reinterpret_cast<const VkViewport*>(pViewports));
     }
-    void CmdSetScissorWithCountEXT(CommandBuffer commandBuffer,
-        uint32_t scissorCount,
-        const Rect2D* pScissors) {
+    void CmdSetScissorWithCountEXT(CommandBuffer commandBuffer, 
+        uint32_t scissorCount, 
+        const Rect2D* pScissors) const {
         pfn_CmdSetScissorWithCountEXT(commandBuffer.get(),
             scissorCount,
             reinterpret_cast<const VkRect2D*>(pScissors));
     }
-    void CmdBindVertexBuffers2EXT(CommandBuffer commandBuffer,
-        uint32_t firstBinding,
-        uint32_t bindingCount,
-        const Buffer* pBuffers,
-        const DeviceSize* pOffsets,
-        const DeviceSize* pSizes,
-        const DeviceSize* pStrides) {
+    void CmdBindVertexBuffers2EXT(CommandBuffer commandBuffer, 
+        uint32_t firstBinding, 
+        uint32_t bindingCount, 
+        const Buffer* pBuffers, 
+        const DeviceSize* pOffsets, 
+        const DeviceSize* pSizes, 
+        const DeviceSize* pStrides) const {
         pfn_CmdBindVertexBuffers2EXT(commandBuffer.get(),
             firstBinding,
             bindingCount,
@@ -4229,37 +4257,37 @@ struct DeviceFunctions {
             pSizes,
             pStrides);
     }
-    void CmdSetDepthTestEnableEXT(CommandBuffer commandBuffer,
-        Bool32 depthTestEnable) {
+    void CmdSetDepthTestEnableEXT(CommandBuffer commandBuffer, 
+        Bool32 depthTestEnable) const {
         pfn_CmdSetDepthTestEnableEXT(commandBuffer.get(),
             depthTestEnable);
     }
-    void CmdSetDepthWriteEnableEXT(CommandBuffer commandBuffer,
-        Bool32 depthWriteEnable) {
+    void CmdSetDepthWriteEnableEXT(CommandBuffer commandBuffer, 
+        Bool32 depthWriteEnable) const {
         pfn_CmdSetDepthWriteEnableEXT(commandBuffer.get(),
             depthWriteEnable);
     }
-    void CmdSetDepthCompareOpEXT(CommandBuffer commandBuffer,
-        CompareOp depthCompareOp) {
+    void CmdSetDepthCompareOpEXT(CommandBuffer commandBuffer, 
+        CompareOp depthCompareOp) const {
         pfn_CmdSetDepthCompareOpEXT(commandBuffer.get(),
             static_cast<VkCompareOp>(depthCompareOp));
     }
-    void CmdSetDepthBoundsTestEnableEXT(CommandBuffer commandBuffer,
-        Bool32 depthBoundsTestEnable) {
+    void CmdSetDepthBoundsTestEnableEXT(CommandBuffer commandBuffer, 
+        Bool32 depthBoundsTestEnable) const {
         pfn_CmdSetDepthBoundsTestEnableEXT(commandBuffer.get(),
             depthBoundsTestEnable);
     }
-    void CmdSetStencilTestEnableEXT(CommandBuffer commandBuffer,
-        Bool32 stencilTestEnable) {
+    void CmdSetStencilTestEnableEXT(CommandBuffer commandBuffer, 
+        Bool32 stencilTestEnable) const {
         pfn_CmdSetStencilTestEnableEXT(commandBuffer.get(),
             stencilTestEnable);
     }
-    void CmdSetStencilOpEXT(CommandBuffer commandBuffer,
-        StencilFaceFlags faceMask,
-        StencilOp failOp,
-        StencilOp passOp,
-        StencilOp depthFailOp,
-        CompareOp compareOp) {
+    void CmdSetStencilOpEXT(CommandBuffer commandBuffer, 
+        StencilFaceFlags faceMask, 
+        StencilOp failOp, 
+        StencilOp passOp, 
+        StencilOp depthFailOp, 
+        CompareOp compareOp) const {
         pfn_CmdSetStencilOpEXT(commandBuffer.get(),
             static_cast<VkStencilFaceFlags>(faceMask),
             static_cast<VkStencilOp>(failOp),
@@ -4269,34 +4297,34 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_EXT_extended_dynamic_state)
 #if defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_deferred_host_operations))
-    [[nodiscard]] expected<DeferredOperationKHR> CreateDeferredOperationKHR(const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<DeferredOperationKHR> CreateDeferredOperationKHR(const AllocationCallbacks* pAllocator = nullptr) const {
         DeferredOperationKHR pDeferredOperation;
         vk::Result result = static_cast<Result>(pfn_CreateDeferredOperationKHR(device.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkDeferredOperationKHR*>(&pDeferredOperation)));
         return expected<DeferredOperationKHR>(pDeferredOperation, result);
     }
-    void DestroyDeferredOperationKHR(DeferredOperationKHR operation,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroyDeferredOperationKHR(DeferredOperationKHR operation, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroyDeferredOperationKHR(device.get(),
             operation.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    [[nodiscard]] uint32_t GetDeferredOperationMaxConcurrencyKHR(DeferredOperationKHR operation) {
+    [[nodiscard]] uint32_t GetDeferredOperationMaxConcurrencyKHR(DeferredOperationKHR operation) const {
         return pfn_GetDeferredOperationMaxConcurrencyKHR(device.get(),
             operation.get());
     }
-    [[nodiscard]] Result GetDeferredOperationResultKHR(DeferredOperationKHR operation) {
+    [[nodiscard]] Result GetDeferredOperationResultKHR(DeferredOperationKHR operation) const {
         return static_cast<Result>(pfn_GetDeferredOperationResultKHR(device.get(),
             operation.get()));
     }
-    [[nodiscard]] Result DeferredOperationJoinKHR(DeferredOperationKHR operation) {
+    [[nodiscard]] Result DeferredOperationJoinKHR(DeferredOperationKHR operation) const {
         return static_cast<Result>(pfn_DeferredOperationJoinKHR(device.get(),
             operation.get()));
     }
 #endif //defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_deferred_host_operations))
 #if defined(VK_KHR_pipeline_executable_properties)
-    [[nodiscard]] expected<detail::fixed_vector<PipelineExecutablePropertiesKHR>> GetPipelineExecutablePropertiesKHR(const PipelineInfoKHR&  pPipelineInfo) {
+    [[nodiscard]] expected<detail::fixed_vector<PipelineExecutablePropertiesKHR>> GetPipelineExecutablePropertiesKHR(const PipelineInfoKHR&  pPipelineInfo) const {
         uint32_t pExecutableCount = 0;
         vk::Result result = static_cast<Result>(pfn_GetPipelineExecutablePropertiesKHR(device.get(),
             reinterpret_cast<const VkPipelineInfoKHR*>(&pPipelineInfo),
@@ -4311,7 +4339,7 @@ struct DeviceFunctions {
         if (pExecutableCount < pProperties.size()) pProperties.shrink(pExecutableCount);
         return expected(std::move(pProperties), result);
     }
-    [[nodiscard]] expected<detail::fixed_vector<PipelineExecutableStatisticKHR>> GetPipelineExecutableStatisticsKHR(const PipelineExecutableInfoKHR&  pExecutableInfo) {
+    [[nodiscard]] expected<detail::fixed_vector<PipelineExecutableStatisticKHR>> GetPipelineExecutableStatisticsKHR(const PipelineExecutableInfoKHR&  pExecutableInfo) const {
         uint32_t pStatisticCount = 0;
         vk::Result result = static_cast<Result>(pfn_GetPipelineExecutableStatisticsKHR(device.get(),
             reinterpret_cast<const VkPipelineExecutableInfoKHR*>(&pExecutableInfo),
@@ -4326,7 +4354,7 @@ struct DeviceFunctions {
         if (pStatisticCount < pStatistics.size()) pStatistics.shrink(pStatisticCount);
         return expected(std::move(pStatistics), result);
     }
-    [[nodiscard]] expected<detail::fixed_vector<PipelineExecutableInternalRepresentationKHR>> GetPipelineExecutableInternalRepresentationsKHR(const PipelineExecutableInfoKHR&  pExecutableInfo) {
+    [[nodiscard]] expected<detail::fixed_vector<PipelineExecutableInternalRepresentationKHR>> GetPipelineExecutableInternalRepresentationsKHR(const PipelineExecutableInfoKHR&  pExecutableInfo) const {
         uint32_t pInternalRepresentationCount = 0;
         vk::Result result = static_cast<Result>(pfn_GetPipelineExecutableInternalRepresentationsKHR(device.get(),
             reinterpret_cast<const VkPipelineExecutableInfoKHR*>(&pExecutableInfo),
@@ -4343,35 +4371,36 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_KHR_pipeline_executable_properties)
 #if defined(VK_NV_device_generated_commands)
-    void CmdExecuteGeneratedCommandsNV(CommandBuffer commandBuffer,
-        Bool32 isPreprocessed,
-        const GeneratedCommandsInfoNV&  pGeneratedCommandsInfo) {
+    void CmdExecuteGeneratedCommandsNV(CommandBuffer commandBuffer, 
+        Bool32 isPreprocessed, 
+        const GeneratedCommandsInfoNV&  pGeneratedCommandsInfo) const {
         pfn_CmdExecuteGeneratedCommandsNV(commandBuffer.get(),
             isPreprocessed,
             reinterpret_cast<const VkGeneratedCommandsInfoNV*>(&pGeneratedCommandsInfo));
     }
-    void CmdPreprocessGeneratedCommandsNV(CommandBuffer commandBuffer,
-        const GeneratedCommandsInfoNV&  pGeneratedCommandsInfo) {
+    void CmdPreprocessGeneratedCommandsNV(CommandBuffer commandBuffer, 
+        const GeneratedCommandsInfoNV&  pGeneratedCommandsInfo) const {
         pfn_CmdPreprocessGeneratedCommandsNV(commandBuffer.get(),
             reinterpret_cast<const VkGeneratedCommandsInfoNV*>(&pGeneratedCommandsInfo));
     }
-    void CmdBindPipelineShaderGroupNV(CommandBuffer commandBuffer,
-        PipelineBindPoint pipelineBindPoint,
-        Pipeline pipeline,
-        uint32_t groupIndex) {
+    void CmdBindPipelineShaderGroupNV(CommandBuffer commandBuffer, 
+        PipelineBindPoint pipelineBindPoint, 
+        Pipeline pipeline, 
+        uint32_t groupIndex) const {
         pfn_CmdBindPipelineShaderGroupNV(commandBuffer.get(),
             static_cast<VkPipelineBindPoint>(pipelineBindPoint),
             pipeline.get(),
             groupIndex);
     }
-    void GetGeneratedCommandsMemoryRequirementsNV(const GeneratedCommandsMemoryRequirementsInfoNV&  pInfo,
-        MemoryRequirements2&  pMemoryRequirements) {
+    [[nodiscard]] MemoryRequirements2 GetGeneratedCommandsMemoryRequirementsNV(const GeneratedCommandsMemoryRequirementsInfoNV&  pInfo) const {
+        MemoryRequirements2 pMemoryRequirements;
         pfn_GetGeneratedCommandsMemoryRequirementsNV(device.get(),
             reinterpret_cast<const VkGeneratedCommandsMemoryRequirementsInfoNV*>(&pInfo),
             reinterpret_cast<VkMemoryRequirements2*>(&pMemoryRequirements));
+        return pMemoryRequirements;
     }
-    [[nodiscard]] expected<IndirectCommandsLayoutNV> CreateIndirectCommandsLayoutNV(const IndirectCommandsLayoutCreateInfoNV&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<IndirectCommandsLayoutNV> CreateIndirectCommandsLayoutNV(const IndirectCommandsLayoutCreateInfoNV&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         IndirectCommandsLayoutNV pIndirectCommandsLayout;
         vk::Result result = static_cast<Result>(pfn_CreateIndirectCommandsLayoutNV(device.get(),
             reinterpret_cast<const VkIndirectCommandsLayoutCreateInfoNV*>(&pCreateInfo),
@@ -4379,16 +4408,16 @@ struct DeviceFunctions {
             reinterpret_cast<VkIndirectCommandsLayoutNV*>(&pIndirectCommandsLayout)));
         return expected<IndirectCommandsLayoutNV>(pIndirectCommandsLayout, result);
     }
-    void DestroyIndirectCommandsLayoutNV(IndirectCommandsLayoutNV indirectCommandsLayout,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroyIndirectCommandsLayoutNV(IndirectCommandsLayoutNV indirectCommandsLayout, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroyIndirectCommandsLayoutNV(device.get(),
             indirectCommandsLayout.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
 #endif //defined(VK_NV_device_generated_commands)
 #if defined(VK_EXT_private_data)
-    [[nodiscard]] expected<PrivateDataSlotEXT> CreatePrivateDataSlotEXT(const PrivateDataSlotCreateInfoEXT&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    [[nodiscard]] expected<PrivateDataSlotEXT> CreatePrivateDataSlotEXT(const PrivateDataSlotCreateInfoEXT&  pCreateInfo, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         PrivateDataSlotEXT pPrivateDataSlot;
         vk::Result result = static_cast<Result>(pfn_CreatePrivateDataSlotEXT(device.get(),
             reinterpret_cast<const VkPrivateDataSlotCreateInfoEXT*>(&pCreateInfo),
@@ -4396,31 +4425,32 @@ struct DeviceFunctions {
             reinterpret_cast<VkPrivateDataSlotEXT*>(&pPrivateDataSlot)));
         return expected<PrivateDataSlotEXT>(pPrivateDataSlot, result);
     }
-    void DestroyPrivateDataSlotEXT(PrivateDataSlotEXT privateDataSlot,
-        const AllocationCallbacks* pAllocator = nullptr) {
+    void DestroyPrivateDataSlotEXT(PrivateDataSlotEXT privateDataSlot, 
+        const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroyPrivateDataSlotEXT(device.get(),
             privateDataSlot.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    [[nodiscard]] Result SetPrivateDataEXT(ObjectType objectType,
-        uint64_t objectHandle,
-        PrivateDataSlotEXT privateDataSlot,
-        uint64_t data) {
+    [[nodiscard]] Result SetPrivateDataEXT(ObjectType objectType, 
+        uint64_t objectHandle, 
+        PrivateDataSlotEXT privateDataSlot, 
+        uint64_t data) const {
         return static_cast<Result>(pfn_SetPrivateDataEXT(device.get(),
             static_cast<VkObjectType>(objectType),
             objectHandle,
             privateDataSlot.get(),
             data));
     }
-    void GetPrivateDataEXT(ObjectType objectType,
-        uint64_t objectHandle,
-        PrivateDataSlotEXT privateDataSlot,
-        uint64_t&  pData) {
+    [[nodiscard]] uint64_t GetPrivateDataEXT(ObjectType objectType, 
+        uint64_t objectHandle, 
+        PrivateDataSlotEXT privateDataSlot) const {
+        uint64_t pData;
         pfn_GetPrivateDataEXT(device.get(),
             static_cast<VkObjectType>(objectType),
             objectHandle,
             privateDataSlot.get(),
             &pData);
+        return pData;
     }
 #endif //defined(VK_EXT_private_data)
     explicit DeviceFunctions(InstanceFunctions const& instance_functions, Device device)
@@ -4840,1556 +4870,390 @@ struct PhysicalDeviceFunctions {
     PhysicalDevice const physicaldevice;
     PhysicalDeviceFunctions(InstanceFunctions const& instance_functions, PhysicalDevice const physicaldevice)
         :instance_functions(&instance_functions), physicaldevice(physicaldevice){}
-    void GetProperties(PhysicalDeviceProperties&  pProperties) {
-        instance_functions->pfn_GetPhysicalDeviceProperties(physicaldevice.get(),
-            reinterpret_cast<VkPhysicalDeviceProperties*>(&pProperties));
-    }
-    detail::fixed_vector<QueueFamilyProperties> GetQueueFamilyProperties() {
-        uint32_t pQueueFamilyPropertyCount = 0;
-        instance_functions->pfn_GetPhysicalDeviceQueueFamilyProperties(physicaldevice.get(),
-            &pQueueFamilyPropertyCount,
-            nullptr);
-        detail::fixed_vector<QueueFamilyProperties> pQueueFamilyProperties{pQueueFamilyPropertyCount};
-        instance_functions->pfn_GetPhysicalDeviceQueueFamilyProperties(physicaldevice.get(),
-            &pQueueFamilyPropertyCount,
-            reinterpret_cast<VkQueueFamilyProperties*>(pQueueFamilyProperties.data()));
-        if (pQueueFamilyPropertyCount < pQueueFamilyProperties.size()) pQueueFamilyProperties.shrink(pQueueFamilyPropertyCount);
-        return pQueueFamilyProperties;
-    }
-    void GetMemoryProperties(PhysicalDeviceMemoryProperties&  pMemoryProperties) {
-        instance_functions->pfn_GetPhysicalDeviceMemoryProperties(physicaldevice.get(),
-            reinterpret_cast<VkPhysicalDeviceMemoryProperties*>(&pMemoryProperties));
-    }
-    void GetFeatures(PhysicalDeviceFeatures&  pFeatures) {
-        instance_functions->pfn_GetPhysicalDeviceFeatures(physicaldevice.get(),
-            reinterpret_cast<VkPhysicalDeviceFeatures*>(&pFeatures));
-    }
-    void GetFormatProperties(Format format,
-        FormatProperties&  pFormatProperties) {
-        instance_functions->pfn_GetPhysicalDeviceFormatProperties(physicaldevice.get(),
-            static_cast<VkFormat>(format),
-            reinterpret_cast<VkFormatProperties*>(&pFormatProperties));
-    }
-    [[nodiscard]] expected<ImageFormatProperties> GetImageFormatProperties(Format format,
-        ImageType type,
-        ImageTiling tiling,
-        ImageUsageFlags usage,
-        ImageCreateFlags flags) {
-        ImageFormatProperties pImageFormatProperties;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceImageFormatProperties(physicaldevice.get(),
-            static_cast<VkFormat>(format),
-            static_cast<VkImageType>(type),
-            static_cast<VkImageTiling>(tiling),
-            static_cast<VkImageUsageFlags>(usage),
-            static_cast<VkImageCreateFlags>(flags),
-            reinterpret_cast<VkImageFormatProperties*>(&pImageFormatProperties)));
-        return expected<ImageFormatProperties>(pImageFormatProperties, result);
-    }
-    [[nodiscard]] expected<Device> CreateDevice(const DeviceCreateInfo&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
-        Device pDevice;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_CreateDevice(physicaldevice.get(),
-            reinterpret_cast<const VkDeviceCreateInfo*>(&pCreateInfo),
-            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
-            reinterpret_cast<VkDevice*>(&pDevice)));
-        return expected<Device>(pDevice, result);
-    }
-    [[nodiscard]] expected<detail::fixed_vector<ExtensionProperties>> EnumerateDeviceExtensionProperties(const char* pLayerName) {
-        uint32_t pPropertyCount = 0;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_EnumerateDeviceExtensionProperties(physicaldevice.get(),
-            pLayerName,
-            &pPropertyCount,
-            nullptr));
-        if (result < Result::Success) return expected(detail::fixed_vector<ExtensionProperties>{}, result);
-        detail::fixed_vector<ExtensionProperties> pProperties{pPropertyCount};
-        result = static_cast<Result>(instance_functions->pfn_EnumerateDeviceExtensionProperties(physicaldevice.get(),
-            pLayerName,
-            &pPropertyCount,
-            reinterpret_cast<VkExtensionProperties*>(pProperties.data())));
-        if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
-        return expected(std::move(pProperties), result);
-    }
-    detail::fixed_vector<SparseImageFormatProperties> GetSparseImageFormatProperties(Format format,
-        ImageType type,
-        SampleCountFlagBits samples,
-        ImageUsageFlags usage,
-        ImageTiling tiling) {
-        uint32_t pPropertyCount = 0;
-        instance_functions->pfn_GetPhysicalDeviceSparseImageFormatProperties(physicaldevice.get(),
-            static_cast<VkFormat>(format),
-            static_cast<VkImageType>(type),
-            static_cast<VkSampleCountFlagBits>(samples),
-            static_cast<VkImageUsageFlags>(usage),
-            static_cast<VkImageTiling>(tiling),
-            &pPropertyCount,
-            nullptr);
-        detail::fixed_vector<SparseImageFormatProperties> pProperties{pPropertyCount};
-        instance_functions->pfn_GetPhysicalDeviceSparseImageFormatProperties(physicaldevice.get(),
-            static_cast<VkFormat>(format),
-            static_cast<VkImageType>(type),
-            static_cast<VkSampleCountFlagBits>(samples),
-            static_cast<VkImageUsageFlags>(usage),
-            static_cast<VkImageTiling>(tiling),
-            &pPropertyCount,
-            reinterpret_cast<VkSparseImageFormatProperties*>(pProperties.data()));
-        if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
-        return pProperties;
-    }
-    [[nodiscard]] expected<detail::fixed_vector<DisplayPropertiesKHR>> GetDisplayPropertiesKHR() {
-        uint32_t pPropertyCount = 0;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceDisplayPropertiesKHR(physicaldevice.get(),
-            &pPropertyCount,
-            nullptr));
-        if (result < Result::Success) return expected(detail::fixed_vector<DisplayPropertiesKHR>{}, result);
-        detail::fixed_vector<DisplayPropertiesKHR> pProperties{pPropertyCount};
-        result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceDisplayPropertiesKHR(physicaldevice.get(),
-            &pPropertyCount,
-            reinterpret_cast<VkDisplayPropertiesKHR*>(pProperties.data())));
-        if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
-        return expected(std::move(pProperties), result);
-    }
-    [[nodiscard]] expected<detail::fixed_vector<DisplayPlanePropertiesKHR>> GetDisplayPlanePropertiesKHR() {
-        uint32_t pPropertyCount = 0;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceDisplayPlanePropertiesKHR(physicaldevice.get(),
-            &pPropertyCount,
-            nullptr));
-        if (result < Result::Success) return expected(detail::fixed_vector<DisplayPlanePropertiesKHR>{}, result);
-        detail::fixed_vector<DisplayPlanePropertiesKHR> pProperties{pPropertyCount};
-        result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceDisplayPlanePropertiesKHR(physicaldevice.get(),
-            &pPropertyCount,
-            reinterpret_cast<VkDisplayPlanePropertiesKHR*>(pProperties.data())));
-        if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
-        return expected(std::move(pProperties), result);
-    }
-    [[nodiscard]] expected<detail::fixed_vector<DisplayKHR>> GetDisplayPlaneSupportedDisplaysKHR(uint32_t planeIndex) {
-        uint32_t pDisplayCount = 0;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_GetDisplayPlaneSupportedDisplaysKHR(physicaldevice.get(),
-            planeIndex,
-            &pDisplayCount,
-            nullptr));
-        if (result < Result::Success) return expected(detail::fixed_vector<DisplayKHR>{}, result);
-        detail::fixed_vector<DisplayKHR> pDisplays{pDisplayCount};
-        result = static_cast<Result>(instance_functions->pfn_GetDisplayPlaneSupportedDisplaysKHR(physicaldevice.get(),
-            planeIndex,
-            &pDisplayCount,
-            reinterpret_cast<VkDisplayKHR*>(pDisplays.data())));
-        if (pDisplayCount < pDisplays.size()) pDisplays.shrink(pDisplayCount);
-        return expected(std::move(pDisplays), result);
-    }
-    [[nodiscard]] expected<detail::fixed_vector<DisplayModePropertiesKHR>> GetDisplayModePropertiesKHR(DisplayKHR display) {
-        uint32_t pPropertyCount = 0;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_GetDisplayModePropertiesKHR(physicaldevice.get(),
-            display.get(),
-            &pPropertyCount,
-            nullptr));
-        if (result < Result::Success) return expected(detail::fixed_vector<DisplayModePropertiesKHR>{}, result);
-        detail::fixed_vector<DisplayModePropertiesKHR> pProperties{pPropertyCount};
-        result = static_cast<Result>(instance_functions->pfn_GetDisplayModePropertiesKHR(physicaldevice.get(),
-            display.get(),
-            &pPropertyCount,
-            reinterpret_cast<VkDisplayModePropertiesKHR*>(pProperties.data())));
-        if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
-        return expected(std::move(pProperties), result);
-    }
-    [[nodiscard]] expected<DisplayModeKHR> CreateDisplayModeKHR(DisplayKHR display,
-        const DisplayModeCreateInfoKHR&  pCreateInfo,
-        const AllocationCallbacks* pAllocator = nullptr) {
-        DisplayModeKHR pMode;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_CreateDisplayModeKHR(physicaldevice.get(),
-            display.get(),
-            reinterpret_cast<const VkDisplayModeCreateInfoKHR*>(&pCreateInfo),
-            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
-            reinterpret_cast<VkDisplayModeKHR*>(&pMode)));
-        return expected<DisplayModeKHR>(pMode, result);
-    }
-    [[nodiscard]] expected<DisplayPlaneCapabilitiesKHR> GetDisplayPlaneCapabilitiesKHR(DisplayModeKHR mode,
-        uint32_t planeIndex) {
-        DisplayPlaneCapabilitiesKHR pCapabilities;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_GetDisplayPlaneCapabilitiesKHR(physicaldevice.get(),
-            mode.get(),
-            planeIndex,
-            reinterpret_cast<VkDisplayPlaneCapabilitiesKHR*>(&pCapabilities)));
-        return expected<DisplayPlaneCapabilitiesKHR>(pCapabilities, result);
-    }
-    [[nodiscard]] expected<Bool32> GetSurfaceSupportKHR(uint32_t queueFamilyIndex,
-        SurfaceKHR surface) {
-        Bool32 pSupported;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSurfaceSupportKHR(physicaldevice.get(),
-            queueFamilyIndex,
-            surface.get(),
-            &pSupported));
-        return expected<Bool32>(pSupported, result);
-    }
-    [[nodiscard]] expected<SurfaceCapabilitiesKHR> GetSurfaceCapabilitiesKHR(SurfaceKHR surface) {
-        SurfaceCapabilitiesKHR pSurfaceCapabilities;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSurfaceCapabilitiesKHR(physicaldevice.get(),
-            surface.get(),
-            reinterpret_cast<VkSurfaceCapabilitiesKHR*>(&pSurfaceCapabilities)));
-        return expected<SurfaceCapabilitiesKHR>(pSurfaceCapabilities, result);
-    }
-    [[nodiscard]] expected<detail::fixed_vector<SurfaceFormatKHR>> GetSurfaceFormatsKHR(SurfaceKHR surface) {
-        uint32_t pSurfaceFormatCount = 0;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSurfaceFormatsKHR(physicaldevice.get(),
-            surface.get(),
-            &pSurfaceFormatCount,
-            nullptr));
-        if (result < Result::Success) return expected(detail::fixed_vector<SurfaceFormatKHR>{}, result);
-        detail::fixed_vector<SurfaceFormatKHR> pSurfaceFormats{pSurfaceFormatCount};
-        result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSurfaceFormatsKHR(physicaldevice.get(),
-            surface.get(),
-            &pSurfaceFormatCount,
-            reinterpret_cast<VkSurfaceFormatKHR*>(pSurfaceFormats.data())));
-        if (pSurfaceFormatCount < pSurfaceFormats.size()) pSurfaceFormats.shrink(pSurfaceFormatCount);
-        return expected(std::move(pSurfaceFormats), result);
-    }
-    [[nodiscard]] expected<detail::fixed_vector<PresentModeKHR>> GetSurfacePresentModesKHR(SurfaceKHR surface) {
-        uint32_t pPresentModeCount = 0;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSurfacePresentModesKHR(physicaldevice.get(),
-            surface.get(),
-            &pPresentModeCount,
-            nullptr));
-        if (result < Result::Success) return expected(detail::fixed_vector<PresentModeKHR>{}, result);
-        detail::fixed_vector<PresentModeKHR> pPresentModes{pPresentModeCount};
-        result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSurfacePresentModesKHR(physicaldevice.get(),
-            surface.get(),
-            &pPresentModeCount,
-            reinterpret_cast<VkPresentModeKHR*>(pPresentModes.data())));
-        if (pPresentModeCount < pPresentModes.size()) pPresentModes.shrink(pPresentModeCount);
-        return expected(std::move(pPresentModes), result);
-    }
+    [[nodiscard]] PhysicalDeviceProperties GetProperties() const {
+        return instance_functions->GetPhysicalDeviceProperties(physicaldevice);}
+    [[nodiscard]] detail::fixed_vector<QueueFamilyProperties> GetQueueFamilyProperties() const {
+        return instance_functions->GetPhysicalDeviceQueueFamilyProperties(physicaldevice);}
+    [[nodiscard]] PhysicalDeviceMemoryProperties GetMemoryProperties() const {
+        return instance_functions->GetPhysicalDeviceMemoryProperties(physicaldevice);}
+    [[nodiscard]] PhysicalDeviceFeatures GetFeatures() const {
+        return instance_functions->GetPhysicalDeviceFeatures(physicaldevice);}
+    [[nodiscard]] FormatProperties GetFormatProperties(Format format) const {
+        return instance_functions->GetPhysicalDeviceFormatProperties(physicaldevice, format);}
+    [[nodiscard]] expected<ImageFormatProperties> GetImageFormatProperties(Format format, ImageType type, ImageTiling tiling, ImageUsageFlags usage, ImageCreateFlags flags) const {
+        return instance_functions->GetPhysicalDeviceImageFormatProperties(physicaldevice, format, type, tiling, usage, flags);}
+    [[nodiscard]] expected<Device> CreateDevice(const DeviceCreateInfo&  pCreateInfo, const AllocationCallbacks* pAllocator = nullptr) const {
+        return instance_functions->CreateDevice(physicaldevice, pCreateInfo, pAllocator);}
+    [[nodiscard]] expected<detail::fixed_vector<ExtensionProperties>> EnumerateDeviceExtensionProperties(const char* pLayerName) const {
+        return instance_functions->EnumerateDeviceExtensionProperties(physicaldevice, pLayerName);}
+    [[nodiscard]] detail::fixed_vector<SparseImageFormatProperties> GetSparseImageFormatProperties(Format format, ImageType type, SampleCountFlagBits samples, ImageUsageFlags usage, ImageTiling tiling) const {
+        return instance_functions->GetPhysicalDeviceSparseImageFormatProperties(physicaldevice, format, type, samples, usage, tiling);}
+    [[nodiscard]] expected<detail::fixed_vector<DisplayPropertiesKHR>> GetDisplayPropertiesKHR() const {
+        return instance_functions->GetPhysicalDeviceDisplayPropertiesKHR(physicaldevice);}
+    [[nodiscard]] expected<detail::fixed_vector<DisplayPlanePropertiesKHR>> GetDisplayPlanePropertiesKHR() const {
+        return instance_functions->GetPhysicalDeviceDisplayPlanePropertiesKHR(physicaldevice);}
+    [[nodiscard]] expected<detail::fixed_vector<DisplayKHR>> GetDisplayPlaneSupportedDisplaysKHR(uint32_t planeIndex) const {
+        return instance_functions->GetDisplayPlaneSupportedDisplaysKHR(physicaldevice, planeIndex);}
+    [[nodiscard]] expected<detail::fixed_vector<DisplayModePropertiesKHR>> GetDisplayModePropertiesKHR(DisplayKHR display) const {
+        return instance_functions->GetDisplayModePropertiesKHR(physicaldevice, display);}
+    [[nodiscard]] expected<DisplayModeKHR> CreateDisplayModeKHR(DisplayKHR display, const DisplayModeCreateInfoKHR&  pCreateInfo, const AllocationCallbacks* pAllocator = nullptr) const {
+        return instance_functions->CreateDisplayModeKHR(physicaldevice, display, pCreateInfo, pAllocator);}
+    [[nodiscard]] expected<DisplayPlaneCapabilitiesKHR> GetDisplayPlaneCapabilitiesKHR(DisplayModeKHR mode, uint32_t planeIndex) const {
+        return instance_functions->GetDisplayPlaneCapabilitiesKHR(physicaldevice, mode, planeIndex);}
+    [[nodiscard]] expected<Bool32> GetSurfaceSupportKHR(uint32_t queueFamilyIndex, SurfaceKHR surface) const {
+        return instance_functions->GetPhysicalDeviceSurfaceSupportKHR(physicaldevice, queueFamilyIndex, surface);}
+    [[nodiscard]] expected<SurfaceCapabilitiesKHR> GetSurfaceCapabilitiesKHR(SurfaceKHR surface) const {
+        return instance_functions->GetPhysicalDeviceSurfaceCapabilitiesKHR(physicaldevice, surface);}
+    [[nodiscard]] expected<detail::fixed_vector<SurfaceFormatKHR>> GetSurfaceFormatsKHR(SurfaceKHR surface) const {
+        return instance_functions->GetPhysicalDeviceSurfaceFormatsKHR(physicaldevice, surface);}
+    [[nodiscard]] expected<detail::fixed_vector<PresentModeKHR>> GetSurfacePresentModesKHR(SurfaceKHR surface) const {
+        return instance_functions->GetPhysicalDeviceSurfacePresentModesKHR(physicaldevice, surface);}
 #if defined(VK_USE_PLATFORM_WAYLAND_KHR)
-    [[nodiscard]] VkBool32 GetWaylandPresentationSupportKHR(uint32_t queueFamilyIndex,
-        wl_display&  display) {
-        return instance_functions->pfn_GetPhysicalDeviceWaylandPresentationSupportKHR(physicaldevice.get(),
-            queueFamilyIndex,
-            reinterpret_cast<wl_display*>(&display));
-    }
+    [[nodiscard]] wl_display GetWaylandPresentationSupportKHR(uint32_t queueFamilyIndex) const {
+        return instance_functions->GetPhysicalDeviceWaylandPresentationSupportKHR(physicaldevice, queueFamilyIndex);}
 #endif // defined(VK_USE_PLATFORM_WAYLAND_KHR)
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
-    [[nodiscard]] VkBool32 GetWin32PresentationSupportKHR(uint32_t queueFamilyIndex) {
-        return instance_functions->pfn_GetPhysicalDeviceWin32PresentationSupportKHR(physicaldevice.get(),
-            queueFamilyIndex);
-    }
+    [[nodiscard]] VkBool32 GetWin32PresentationSupportKHR(uint32_t queueFamilyIndex) const {
+        return instance_functions->GetPhysicalDeviceWin32PresentationSupportKHR(physicaldevice, queueFamilyIndex);}
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 #if defined(VK_USE_PLATFORM_XLIB_KHR)
-    [[nodiscard]] VkBool32 GetXlibPresentationSupportKHR(uint32_t queueFamilyIndex,
-        Display&  dpy,
-        VisualID visualID) {
-        return instance_functions->pfn_GetPhysicalDeviceXlibPresentationSupportKHR(physicaldevice.get(),
-            queueFamilyIndex,
-            reinterpret_cast<Display*>(&dpy),
-            static_cast<VisualID>(visualID));
-    }
+    [[nodiscard]] VkBool32 GetXlibPresentationSupportKHR(uint32_t queueFamilyIndex, Display&  dpy, VisualID visualID) const {
+        return instance_functions->GetPhysicalDeviceXlibPresentationSupportKHR(physicaldevice, queueFamilyIndex, dpy, visualID);}
 #endif // defined(VK_USE_PLATFORM_XLIB_KHR)
 #if defined(VK_USE_PLATFORM_XCB_KHR)
-    [[nodiscard]] VkBool32 GetXcbPresentationSupportKHR(uint32_t queueFamilyIndex,
-        xcb_connection_t&  connection,
-        xcb_visualid_t visual_id) {
-        return instance_functions->pfn_GetPhysicalDeviceXcbPresentationSupportKHR(physicaldevice.get(),
-            queueFamilyIndex,
-            reinterpret_cast<xcb_connection_t*>(&connection),
-            static_cast<xcb_visualid_t>(visual_id));
-    }
+    [[nodiscard]] VkBool32 GetXcbPresentationSupportKHR(uint32_t queueFamilyIndex, xcb_connection_t&  connection, xcb_visualid_t visual_id) const {
+        return instance_functions->GetPhysicalDeviceXcbPresentationSupportKHR(physicaldevice, queueFamilyIndex, connection, visual_id);}
 #endif // defined(VK_USE_PLATFORM_XCB_KHR)
 #if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
-    [[nodiscard]] VkBool32 GetDirectFBPresentationSupportEXT(uint32_t queueFamilyIndex,
-        IDirectFB&  dfb) {
-        return instance_functions->pfn_GetPhysicalDeviceDirectFBPresentationSupportEXT(physicaldevice.get(),
-            queueFamilyIndex,
-            reinterpret_cast<IDirectFB*>(&dfb));
-    }
+    [[nodiscard]] IDirectFB GetDirectFBPresentationSupportEXT(uint32_t queueFamilyIndex) const {
+        return instance_functions->GetPhysicalDeviceDirectFBPresentationSupportEXT(physicaldevice, queueFamilyIndex);}
 #endif // defined(VK_USE_PLATFORM_DIRECTFB_EXT)
-    [[nodiscard]] expected<ExternalImageFormatPropertiesNV> GetExternalImageFormatPropertiesNV(Format format,
-        ImageType type,
-        ImageTiling tiling,
-        ImageUsageFlags usage,
-        ImageCreateFlags flags,
-        ExternalMemoryHandleTypeFlagsNV externalHandleType) {
-        ExternalImageFormatPropertiesNV pExternalImageFormatProperties;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceExternalImageFormatPropertiesNV(physicaldevice.get(),
-            static_cast<VkFormat>(format),
-            static_cast<VkImageType>(type),
-            static_cast<VkImageTiling>(tiling),
-            static_cast<VkImageUsageFlags>(usage),
-            static_cast<VkImageCreateFlags>(flags),
-            static_cast<VkExternalMemoryHandleTypeFlagsNV>(externalHandleType),
-            reinterpret_cast<VkExternalImageFormatPropertiesNV*>(&pExternalImageFormatProperties)));
-        return expected<ExternalImageFormatPropertiesNV>(pExternalImageFormatProperties, result);
-    }
-    void GetFeatures2(PhysicalDeviceFeatures2&  pFeatures) {
-        instance_functions->pfn_GetPhysicalDeviceFeatures2(physicaldevice.get(),
-            reinterpret_cast<VkPhysicalDeviceFeatures2*>(&pFeatures));
-    }
-    void GetProperties2(PhysicalDeviceProperties2&  pProperties) {
-        instance_functions->pfn_GetPhysicalDeviceProperties2(physicaldevice.get(),
-            reinterpret_cast<VkPhysicalDeviceProperties2*>(&pProperties));
-    }
-    void GetFormatProperties2(Format format,
-        FormatProperties2&  pFormatProperties) {
-        instance_functions->pfn_GetPhysicalDeviceFormatProperties2(physicaldevice.get(),
-            static_cast<VkFormat>(format),
-            reinterpret_cast<VkFormatProperties2*>(&pFormatProperties));
-    }
-    [[nodiscard]] expected<ImageFormatProperties2> GetImageFormatProperties2(const PhysicalDeviceImageFormatInfo2&  pImageFormatInfo) {
-        ImageFormatProperties2 pImageFormatProperties;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceImageFormatProperties2(physicaldevice.get(),
-            reinterpret_cast<const VkPhysicalDeviceImageFormatInfo2*>(&pImageFormatInfo),
-            reinterpret_cast<VkImageFormatProperties2*>(&pImageFormatProperties)));
-        return expected<ImageFormatProperties2>(pImageFormatProperties, result);
-    }
-    detail::fixed_vector<QueueFamilyProperties2> GetQueueFamilyProperties2() {
-        uint32_t pQueueFamilyPropertyCount = 0;
-        instance_functions->pfn_GetPhysicalDeviceQueueFamilyProperties2(physicaldevice.get(),
-            &pQueueFamilyPropertyCount,
-            nullptr);
-        detail::fixed_vector<QueueFamilyProperties2> pQueueFamilyProperties{pQueueFamilyPropertyCount};
-        instance_functions->pfn_GetPhysicalDeviceQueueFamilyProperties2(physicaldevice.get(),
-            &pQueueFamilyPropertyCount,
-            reinterpret_cast<VkQueueFamilyProperties2*>(pQueueFamilyProperties.data()));
-        if (pQueueFamilyPropertyCount < pQueueFamilyProperties.size()) pQueueFamilyProperties.shrink(pQueueFamilyPropertyCount);
-        return pQueueFamilyProperties;
-    }
-    void GetMemoryProperties2(PhysicalDeviceMemoryProperties2&  pMemoryProperties) {
-        instance_functions->pfn_GetPhysicalDeviceMemoryProperties2(physicaldevice.get(),
-            reinterpret_cast<VkPhysicalDeviceMemoryProperties2*>(&pMemoryProperties));
-    }
-    detail::fixed_vector<SparseImageFormatProperties2> GetSparseImageFormatProperties2(const PhysicalDeviceSparseImageFormatInfo2&  pFormatInfo) {
-        uint32_t pPropertyCount = 0;
-        instance_functions->pfn_GetPhysicalDeviceSparseImageFormatProperties2(physicaldevice.get(),
-            reinterpret_cast<const VkPhysicalDeviceSparseImageFormatInfo2*>(&pFormatInfo),
-            &pPropertyCount,
-            nullptr);
-        detail::fixed_vector<SparseImageFormatProperties2> pProperties{pPropertyCount};
-        instance_functions->pfn_GetPhysicalDeviceSparseImageFormatProperties2(physicaldevice.get(),
-            reinterpret_cast<const VkPhysicalDeviceSparseImageFormatInfo2*>(&pFormatInfo),
-            &pPropertyCount,
-            reinterpret_cast<VkSparseImageFormatProperties2*>(pProperties.data()));
-        if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
-        return pProperties;
-    }
-    void GetExternalBufferProperties(const PhysicalDeviceExternalBufferInfo&  pExternalBufferInfo,
-        ExternalBufferProperties&  pExternalBufferProperties) {
-        instance_functions->pfn_GetPhysicalDeviceExternalBufferProperties(physicaldevice.get(),
-            reinterpret_cast<const VkPhysicalDeviceExternalBufferInfo*>(&pExternalBufferInfo),
-            reinterpret_cast<VkExternalBufferProperties*>(&pExternalBufferProperties));
-    }
-    void GetExternalSemaphoreProperties(const PhysicalDeviceExternalSemaphoreInfo&  pExternalSemaphoreInfo,
-        ExternalSemaphoreProperties&  pExternalSemaphoreProperties) {
-        instance_functions->pfn_GetPhysicalDeviceExternalSemaphoreProperties(physicaldevice.get(),
-            reinterpret_cast<const VkPhysicalDeviceExternalSemaphoreInfo*>(&pExternalSemaphoreInfo),
-            reinterpret_cast<VkExternalSemaphoreProperties*>(&pExternalSemaphoreProperties));
-    }
-    void GetExternalFenceProperties(const PhysicalDeviceExternalFenceInfo&  pExternalFenceInfo,
-        ExternalFenceProperties&  pExternalFenceProperties) {
-        instance_functions->pfn_GetPhysicalDeviceExternalFenceProperties(physicaldevice.get(),
-            reinterpret_cast<const VkPhysicalDeviceExternalFenceInfo*>(&pExternalFenceInfo),
-            reinterpret_cast<VkExternalFenceProperties*>(&pExternalFenceProperties));
-    }
-    [[nodiscard]] Result ReleaseDisplayEXT(DisplayKHR display) {
-        return static_cast<Result>(instance_functions->pfn_ReleaseDisplayEXT(physicaldevice.get(),
-            display.get()));
-    }
+    [[nodiscard]] expected<ExternalImageFormatPropertiesNV> GetExternalImageFormatPropertiesNV(Format format, ImageType type, ImageTiling tiling, ImageUsageFlags usage, ImageCreateFlags flags, ExternalMemoryHandleTypeFlagsNV externalHandleType) const {
+        return instance_functions->GetPhysicalDeviceExternalImageFormatPropertiesNV(physicaldevice, format, type, tiling, usage, flags, externalHandleType);}
+    [[nodiscard]] PhysicalDeviceFeatures2 GetFeatures2() const {
+        return instance_functions->GetPhysicalDeviceFeatures2(physicaldevice);}
+    [[nodiscard]] PhysicalDeviceProperties2 GetProperties2() const {
+        return instance_functions->GetPhysicalDeviceProperties2(physicaldevice);}
+    [[nodiscard]] FormatProperties2 GetFormatProperties2(Format format) const {
+        return instance_functions->GetPhysicalDeviceFormatProperties2(physicaldevice, format);}
+    [[nodiscard]] expected<ImageFormatProperties2> GetImageFormatProperties2(const PhysicalDeviceImageFormatInfo2&  pImageFormatInfo) const {
+        return instance_functions->GetPhysicalDeviceImageFormatProperties2(physicaldevice, pImageFormatInfo);}
+    [[nodiscard]] detail::fixed_vector<QueueFamilyProperties2> GetQueueFamilyProperties2() const {
+        return instance_functions->GetPhysicalDeviceQueueFamilyProperties2(physicaldevice);}
+    [[nodiscard]] PhysicalDeviceMemoryProperties2 GetMemoryProperties2() const {
+        return instance_functions->GetPhysicalDeviceMemoryProperties2(physicaldevice);}
+    [[nodiscard]] detail::fixed_vector<SparseImageFormatProperties2> GetSparseImageFormatProperties2(const PhysicalDeviceSparseImageFormatInfo2&  pFormatInfo) const {
+        return instance_functions->GetPhysicalDeviceSparseImageFormatProperties2(physicaldevice, pFormatInfo);}
+    [[nodiscard]] ExternalBufferProperties GetExternalBufferProperties(const PhysicalDeviceExternalBufferInfo&  pExternalBufferInfo) const {
+        return instance_functions->GetPhysicalDeviceExternalBufferProperties(physicaldevice, pExternalBufferInfo);}
+    [[nodiscard]] ExternalSemaphoreProperties GetExternalSemaphoreProperties(const PhysicalDeviceExternalSemaphoreInfo&  pExternalSemaphoreInfo) const {
+        return instance_functions->GetPhysicalDeviceExternalSemaphoreProperties(physicaldevice, pExternalSemaphoreInfo);}
+    [[nodiscard]] ExternalFenceProperties GetExternalFenceProperties(const PhysicalDeviceExternalFenceInfo&  pExternalFenceInfo) const {
+        return instance_functions->GetPhysicalDeviceExternalFenceProperties(physicaldevice, pExternalFenceInfo);}
+    [[nodiscard]] Result ReleaseDisplayEXT(DisplayKHR display) const {
+        return instance_functions->ReleaseDisplayEXT(physicaldevice, display);}
 #if defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT)
-    [[nodiscard]] Result AcquireXlibDisplayEXT(Display&  dpy,
-        DisplayKHR display) {
-        return static_cast<Result>(instance_functions->pfn_AcquireXlibDisplayEXT(physicaldevice.get(),
-            reinterpret_cast<Display*>(&dpy),
-            display.get()));
-    }
-    [[nodiscard]] expected<DisplayKHR> GetRandROutputDisplayEXT(Display&  dpy,
-        RROutput rrOutput) {
-        DisplayKHR pDisplay;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_GetRandROutputDisplayEXT(physicaldevice.get(),
-            reinterpret_cast<Display*>(&dpy),
-            static_cast<RROutput>(rrOutput),
-            reinterpret_cast<VkDisplayKHR*>(&pDisplay)));
-        return expected<DisplayKHR>(pDisplay, result);
-    }
+    [[nodiscard]] Result AcquireXlibDisplayEXT(Display&  dpy, DisplayKHR display) const {
+        return instance_functions->AcquireXlibDisplayEXT(physicaldevice, dpy, display);}
+    [[nodiscard]] expected<DisplayKHR> GetRandROutputDisplayEXT(Display&  dpy, RROutput rrOutput) const {
+        return instance_functions->GetRandROutputDisplayEXT(physicaldevice, dpy, rrOutput);}
 #endif // defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT)
-    [[nodiscard]] expected<SurfaceCapabilities2EXT> GetSurfaceCapabilities2EXT(SurfaceKHR surface) {
-        SurfaceCapabilities2EXT pSurfaceCapabilities;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSurfaceCapabilities2EXT(physicaldevice.get(),
-            surface.get(),
-            reinterpret_cast<VkSurfaceCapabilities2EXT*>(&pSurfaceCapabilities)));
-        return expected<SurfaceCapabilities2EXT>(pSurfaceCapabilities, result);
-    }
-    [[nodiscard]] expected<detail::fixed_vector<Rect2D>> GetPresentRectanglesKHR(SurfaceKHR surface) {
-        uint32_t pRectCount = 0;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDevicePresentRectanglesKHR(physicaldevice.get(),
-            surface.get(),
-            &pRectCount,
-            nullptr));
-        if (result < Result::Success) return expected(detail::fixed_vector<Rect2D>{}, result);
-        detail::fixed_vector<Rect2D> pRects{pRectCount};
-        result = static_cast<Result>(instance_functions->pfn_GetPhysicalDevicePresentRectanglesKHR(physicaldevice.get(),
-            surface.get(),
-            &pRectCount,
-            reinterpret_cast<VkRect2D*>(pRects.data())));
-        if (pRectCount < pRects.size()) pRects.shrink(pRectCount);
-        return expected(std::move(pRects), result);
-    }
-    void GetMultisamplePropertiesEXT(SampleCountFlagBits samples,
-        MultisamplePropertiesEXT&  pMultisampleProperties) {
-        instance_functions->pfn_GetPhysicalDeviceMultisamplePropertiesEXT(physicaldevice.get(),
-            static_cast<VkSampleCountFlagBits>(samples),
-            reinterpret_cast<VkMultisamplePropertiesEXT*>(&pMultisampleProperties));
-    }
-    [[nodiscard]] expected<SurfaceCapabilities2KHR> GetSurfaceCapabilities2KHR(const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) {
-        SurfaceCapabilities2KHR pSurfaceCapabilities;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSurfaceCapabilities2KHR(physicaldevice.get(),
-            reinterpret_cast<const VkPhysicalDeviceSurfaceInfo2KHR*>(&pSurfaceInfo),
-            reinterpret_cast<VkSurfaceCapabilities2KHR*>(&pSurfaceCapabilities)));
-        return expected<SurfaceCapabilities2KHR>(pSurfaceCapabilities, result);
-    }
-    [[nodiscard]] expected<detail::fixed_vector<SurfaceFormat2KHR>> GetSurfaceFormats2KHR(const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) {
-        uint32_t pSurfaceFormatCount = 0;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSurfaceFormats2KHR(physicaldevice.get(),
-            reinterpret_cast<const VkPhysicalDeviceSurfaceInfo2KHR*>(&pSurfaceInfo),
-            &pSurfaceFormatCount,
-            nullptr));
-        if (result < Result::Success) return expected(detail::fixed_vector<SurfaceFormat2KHR>{}, result);
-        detail::fixed_vector<SurfaceFormat2KHR> pSurfaceFormats{pSurfaceFormatCount};
-        result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSurfaceFormats2KHR(physicaldevice.get(),
-            reinterpret_cast<const VkPhysicalDeviceSurfaceInfo2KHR*>(&pSurfaceInfo),
-            &pSurfaceFormatCount,
-            reinterpret_cast<VkSurfaceFormat2KHR*>(pSurfaceFormats.data())));
-        if (pSurfaceFormatCount < pSurfaceFormats.size()) pSurfaceFormats.shrink(pSurfaceFormatCount);
-        return expected(std::move(pSurfaceFormats), result);
-    }
-    [[nodiscard]] expected<detail::fixed_vector<DisplayProperties2KHR>> GetDisplayProperties2KHR() {
-        uint32_t pPropertyCount = 0;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceDisplayProperties2KHR(physicaldevice.get(),
-            &pPropertyCount,
-            nullptr));
-        if (result < Result::Success) return expected(detail::fixed_vector<DisplayProperties2KHR>{}, result);
-        detail::fixed_vector<DisplayProperties2KHR> pProperties{pPropertyCount};
-        result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceDisplayProperties2KHR(physicaldevice.get(),
-            &pPropertyCount,
-            reinterpret_cast<VkDisplayProperties2KHR*>(pProperties.data())));
-        if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
-        return expected(std::move(pProperties), result);
-    }
-    [[nodiscard]] expected<detail::fixed_vector<DisplayPlaneProperties2KHR>> GetDisplayPlaneProperties2KHR() {
-        uint32_t pPropertyCount = 0;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceDisplayPlaneProperties2KHR(physicaldevice.get(),
-            &pPropertyCount,
-            nullptr));
-        if (result < Result::Success) return expected(detail::fixed_vector<DisplayPlaneProperties2KHR>{}, result);
-        detail::fixed_vector<DisplayPlaneProperties2KHR> pProperties{pPropertyCount};
-        result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceDisplayPlaneProperties2KHR(physicaldevice.get(),
-            &pPropertyCount,
-            reinterpret_cast<VkDisplayPlaneProperties2KHR*>(pProperties.data())));
-        if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
-        return expected(std::move(pProperties), result);
-    }
-    [[nodiscard]] expected<detail::fixed_vector<DisplayModeProperties2KHR>> GetDisplayModeProperties2KHR(DisplayKHR display) {
-        uint32_t pPropertyCount = 0;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_GetDisplayModeProperties2KHR(physicaldevice.get(),
-            display.get(),
-            &pPropertyCount,
-            nullptr));
-        if (result < Result::Success) return expected(detail::fixed_vector<DisplayModeProperties2KHR>{}, result);
-        detail::fixed_vector<DisplayModeProperties2KHR> pProperties{pPropertyCount};
-        result = static_cast<Result>(instance_functions->pfn_GetDisplayModeProperties2KHR(physicaldevice.get(),
-            display.get(),
-            &pPropertyCount,
-            reinterpret_cast<VkDisplayModeProperties2KHR*>(pProperties.data())));
-        if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
-        return expected(std::move(pProperties), result);
-    }
-    [[nodiscard]] expected<DisplayPlaneCapabilities2KHR> GetDisplayPlaneCapabilities2KHR(const DisplayPlaneInfo2KHR&  pDisplayPlaneInfo) {
-        DisplayPlaneCapabilities2KHR pCapabilities;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_GetDisplayPlaneCapabilities2KHR(physicaldevice.get(),
-            reinterpret_cast<const VkDisplayPlaneInfo2KHR*>(&pDisplayPlaneInfo),
-            reinterpret_cast<VkDisplayPlaneCapabilities2KHR*>(&pCapabilities)));
-        return expected<DisplayPlaneCapabilities2KHR>(pCapabilities, result);
-    }
-    [[nodiscard]] expected<detail::fixed_vector<TimeDomainEXT>> GetCalibrateableTimeDomainsEXT() {
-        uint32_t pTimeDomainCount = 0;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceCalibrateableTimeDomainsEXT(physicaldevice.get(),
-            &pTimeDomainCount,
-            nullptr));
-        if (result < Result::Success) return expected(detail::fixed_vector<TimeDomainEXT>{}, result);
-        detail::fixed_vector<TimeDomainEXT> pTimeDomains{pTimeDomainCount};
-        result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceCalibrateableTimeDomainsEXT(physicaldevice.get(),
-            &pTimeDomainCount,
-            reinterpret_cast<VkTimeDomainEXT*>(pTimeDomains.data())));
-        if (pTimeDomainCount < pTimeDomains.size()) pTimeDomains.shrink(pTimeDomainCount);
-        return expected(std::move(pTimeDomains), result);
-    }
-    [[nodiscard]] expected<detail::fixed_vector<CooperativeMatrixPropertiesNV>> GetCooperativeMatrixPropertiesNV() {
-        uint32_t pPropertyCount = 0;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceCooperativeMatrixPropertiesNV(physicaldevice.get(),
-            &pPropertyCount,
-            nullptr));
-        if (result < Result::Success) return expected(detail::fixed_vector<CooperativeMatrixPropertiesNV>{}, result);
-        detail::fixed_vector<CooperativeMatrixPropertiesNV> pProperties{pPropertyCount};
-        result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceCooperativeMatrixPropertiesNV(physicaldevice.get(),
-            &pPropertyCount,
-            reinterpret_cast<VkCooperativeMatrixPropertiesNV*>(pProperties.data())));
-        if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
-        return expected(std::move(pProperties), result);
-    }
+    [[nodiscard]] expected<SurfaceCapabilities2EXT> GetSurfaceCapabilities2EXT(SurfaceKHR surface) const {
+        return instance_functions->GetPhysicalDeviceSurfaceCapabilities2EXT(physicaldevice, surface);}
+    [[nodiscard]] expected<detail::fixed_vector<Rect2D>> GetPresentRectanglesKHR(SurfaceKHR surface) const {
+        return instance_functions->GetPhysicalDevicePresentRectanglesKHR(physicaldevice, surface);}
+    [[nodiscard]] MultisamplePropertiesEXT GetMultisamplePropertiesEXT(SampleCountFlagBits samples) const {
+        return instance_functions->GetPhysicalDeviceMultisamplePropertiesEXT(physicaldevice, samples);}
+    [[nodiscard]] expected<SurfaceCapabilities2KHR> GetSurfaceCapabilities2KHR(const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) const {
+        return instance_functions->GetPhysicalDeviceSurfaceCapabilities2KHR(physicaldevice, pSurfaceInfo);}
+    [[nodiscard]] expected<detail::fixed_vector<SurfaceFormat2KHR>> GetSurfaceFormats2KHR(const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) const {
+        return instance_functions->GetPhysicalDeviceSurfaceFormats2KHR(physicaldevice, pSurfaceInfo);}
+    [[nodiscard]] expected<detail::fixed_vector<DisplayProperties2KHR>> GetDisplayProperties2KHR() const {
+        return instance_functions->GetPhysicalDeviceDisplayProperties2KHR(physicaldevice);}
+    [[nodiscard]] expected<detail::fixed_vector<DisplayPlaneProperties2KHR>> GetDisplayPlaneProperties2KHR() const {
+        return instance_functions->GetPhysicalDeviceDisplayPlaneProperties2KHR(physicaldevice);}
+    [[nodiscard]] expected<detail::fixed_vector<DisplayModeProperties2KHR>> GetDisplayModeProperties2KHR(DisplayKHR display) const {
+        return instance_functions->GetDisplayModeProperties2KHR(physicaldevice, display);}
+    [[nodiscard]] expected<DisplayPlaneCapabilities2KHR> GetDisplayPlaneCapabilities2KHR(const DisplayPlaneInfo2KHR&  pDisplayPlaneInfo) const {
+        return instance_functions->GetDisplayPlaneCapabilities2KHR(physicaldevice, pDisplayPlaneInfo);}
+    [[nodiscard]] expected<detail::fixed_vector<TimeDomainEXT>> GetCalibrateableTimeDomainsEXT() const {
+        return instance_functions->GetPhysicalDeviceCalibrateableTimeDomainsEXT(physicaldevice);}
+    [[nodiscard]] expected<detail::fixed_vector<CooperativeMatrixPropertiesNV>> GetCooperativeMatrixPropertiesNV() const {
+        return instance_functions->GetPhysicalDeviceCooperativeMatrixPropertiesNV(physicaldevice);}
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
-    [[nodiscard]] expected<detail::fixed_vector<PresentModeKHR>> GetSurfacePresentModes2EXT(const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) {
-        uint32_t pPresentModeCount = 0;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSurfacePresentModes2EXT(physicaldevice.get(),
-            reinterpret_cast<const VkPhysicalDeviceSurfaceInfo2KHR*>(&pSurfaceInfo),
-            &pPresentModeCount,
-            nullptr));
-        if (result < Result::Success) return expected(detail::fixed_vector<PresentModeKHR>{}, result);
-        detail::fixed_vector<PresentModeKHR> pPresentModes{pPresentModeCount};
-        result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSurfacePresentModes2EXT(physicaldevice.get(),
-            reinterpret_cast<const VkPhysicalDeviceSurfaceInfo2KHR*>(&pSurfaceInfo),
-            &pPresentModeCount,
-            reinterpret_cast<VkPresentModeKHR*>(pPresentModes.data())));
-        if (pPresentModeCount < pPresentModes.size()) pPresentModes.shrink(pPresentModeCount);
-        return expected(std::move(pPresentModes), result);
-    }
+    [[nodiscard]] expected<detail::fixed_vector<PresentModeKHR>> GetSurfacePresentModes2EXT(const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) const {
+        return instance_functions->GetPhysicalDeviceSurfacePresentModes2EXT(physicaldevice, pSurfaceInfo);}
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
-    [[nodiscard]] Result EnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR(uint32_t queueFamilyIndex,
-        uint32_t&  pCounterCount,
-        PerformanceCounterKHR* pCounters,
-        PerformanceCounterDescriptionKHR* pCounterDescriptions) {
-        return static_cast<Result>(instance_functions->pfn_EnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR(physicaldevice.get(),
-            queueFamilyIndex,
-            &pCounterCount,
-            reinterpret_cast<VkPerformanceCounterKHR*>(pCounters),
-            reinterpret_cast<VkPerformanceCounterDescriptionKHR*>(pCounterDescriptions)));
-    }
-    void GetQueueFamilyPerformanceQueryPassesKHR(const QueryPoolPerformanceCreateInfoKHR&  pPerformanceQueryCreateInfo,
-        uint32_t&  pNumPasses) {
-        instance_functions->pfn_GetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR(physicaldevice.get(),
-            reinterpret_cast<const VkQueryPoolPerformanceCreateInfoKHR*>(&pPerformanceQueryCreateInfo),
-            &pNumPasses);
-    }
-    [[nodiscard]] expected<detail::fixed_vector<FramebufferMixedSamplesCombinationNV>> GetSupportedFramebufferMixedSamplesCombinationsNV() {
-        uint32_t pCombinationCount = 0;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(physicaldevice.get(),
-            &pCombinationCount,
-            nullptr));
-        if (result < Result::Success) return expected(detail::fixed_vector<FramebufferMixedSamplesCombinationNV>{}, result);
-        detail::fixed_vector<FramebufferMixedSamplesCombinationNV> pCombinations{pCombinationCount};
-        result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(physicaldevice.get(),
-            &pCombinationCount,
-            reinterpret_cast<VkFramebufferMixedSamplesCombinationNV*>(pCombinations.data())));
-        if (pCombinationCount < pCombinations.size()) pCombinations.shrink(pCombinationCount);
-        return expected(std::move(pCombinations), result);
-    }
-    [[nodiscard]] expected<detail::fixed_vector<PhysicalDeviceToolPropertiesEXT>> GetToolPropertiesEXT() {
-        uint32_t pToolCount = 0;
-        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceToolPropertiesEXT(physicaldevice.get(),
-            &pToolCount,
-            nullptr));
-        if (result < Result::Success) return expected(detail::fixed_vector<PhysicalDeviceToolPropertiesEXT>{}, result);
-        detail::fixed_vector<PhysicalDeviceToolPropertiesEXT> pToolProperties{pToolCount};
-        result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceToolPropertiesEXT(physicaldevice.get(),
-            &pToolCount,
-            reinterpret_cast<VkPhysicalDeviceToolPropertiesEXT*>(pToolProperties.data())));
-        if (pToolCount < pToolProperties.size()) pToolProperties.shrink(pToolCount);
-        return expected(std::move(pToolProperties), result);
-    }
+    [[nodiscard]] Result EnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR(uint32_t queueFamilyIndex, uint32_t&  pCounterCount, PerformanceCounterKHR* pCounters, PerformanceCounterDescriptionKHR* pCounterDescriptions) const {
+        return instance_functions->EnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR(physicaldevice, queueFamilyIndex, pCounterCount, pCounters, pCounterDescriptions);}
+    [[nodiscard]] uint32_t GetQueueFamilyPerformanceQueryPassesKHR(const QueryPoolPerformanceCreateInfoKHR&  pPerformanceQueryCreateInfo) const {
+        return instance_functions->GetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR(physicaldevice, pPerformanceQueryCreateInfo);}
+    [[nodiscard]] expected<detail::fixed_vector<FramebufferMixedSamplesCombinationNV>> GetSupportedFramebufferMixedSamplesCombinationsNV() const {
+        return instance_functions->GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(physicaldevice);}
+    [[nodiscard]] expected<detail::fixed_vector<PhysicalDeviceToolPropertiesEXT>> GetToolPropertiesEXT() const {
+        return instance_functions->GetPhysicalDeviceToolPropertiesEXT(physicaldevice);}
 };
 struct QueueFunctions {
     DeviceFunctions const* device_functions;
     Queue const queue;
     QueueFunctions(DeviceFunctions const& device_functions, Queue const queue)
         :device_functions(&device_functions), queue(queue){}
-    [[nodiscard]] Result Submit(uint32_t submitCount,
-        const SubmitInfo* pSubmits,
-        Fence fence) {
-        return static_cast<Result>(device_functions->pfn_QueueSubmit(queue.get(),
-            submitCount,
-            reinterpret_cast<const VkSubmitInfo*>(pSubmits),
-            fence.get()));
-    }
-    [[nodiscard]] Result WaitIdle() {
-        return static_cast<Result>(device_functions->pfn_QueueWaitIdle(queue.get()));
-    }
-    [[nodiscard]] Result BindSparse(uint32_t bindInfoCount,
-        const BindSparseInfo* pBindInfo,
-        Fence fence) {
-        return static_cast<Result>(device_functions->pfn_QueueBindSparse(queue.get(),
-            bindInfoCount,
-            reinterpret_cast<const VkBindSparseInfo*>(pBindInfo),
-            fence.get()));
-    }
-    [[nodiscard]] Result PresentKHR(const PresentInfoKHR&  pPresentInfo) {
-        return static_cast<Result>(device_functions->pfn_QueuePresentKHR(queue.get(),
-            reinterpret_cast<const VkPresentInfoKHR*>(&pPresentInfo)));
-    }
-    void BeginDebugUtilsLabelEXT(const DebugUtilsLabelEXT&  pLabelInfo) {
-        device_functions->pfn_QueueBeginDebugUtilsLabelEXT(queue.get(),
-            reinterpret_cast<const VkDebugUtilsLabelEXT*>(&pLabelInfo));
-    }
-    void EndDebugUtilsLabelEXT() {
-        device_functions->pfn_QueueEndDebugUtilsLabelEXT(queue.get());
-    }
-    void InsertDebugUtilsLabelEXT(const DebugUtilsLabelEXT&  pLabelInfo) {
-        device_functions->pfn_QueueInsertDebugUtilsLabelEXT(queue.get(),
-            reinterpret_cast<const VkDebugUtilsLabelEXT*>(&pLabelInfo));
-    }
-    detail::fixed_vector<CheckpointDataNV> GetCheckpointDataNV() {
-        uint32_t pCheckpointDataCount = 0;
-        device_functions->pfn_GetQueueCheckpointDataNV(queue.get(),
-            &pCheckpointDataCount,
-            nullptr);
-        detail::fixed_vector<CheckpointDataNV> pCheckpointData{pCheckpointDataCount};
-        device_functions->pfn_GetQueueCheckpointDataNV(queue.get(),
-            &pCheckpointDataCount,
-            reinterpret_cast<VkCheckpointDataNV*>(pCheckpointData.data()));
-        if (pCheckpointDataCount < pCheckpointData.size()) pCheckpointData.shrink(pCheckpointDataCount);
-        return pCheckpointData;
-    }
-    [[nodiscard]] Result SetPerformanceConfigurationINTEL(PerformanceConfigurationINTEL configuration) {
-        return static_cast<Result>(device_functions->pfn_QueueSetPerformanceConfigurationINTEL(queue.get(),
-            configuration.get()));
-    }
+    [[nodiscard]] Result Submit(uint32_t submitCount, const SubmitInfo* pSubmits, Fence fence) const {
+        return device_functions->QueueSubmit(queue, submitCount, pSubmits, fence);}
+    [[nodiscard]] Result WaitIdle() const {
+        return device_functions->QueueWaitIdle(queue);}
+    [[nodiscard]] Result BindSparse(uint32_t bindInfoCount, const BindSparseInfo* pBindInfo, Fence fence) const {
+        return device_functions->QueueBindSparse(queue, bindInfoCount, pBindInfo, fence);}
+    [[nodiscard]] Result PresentKHR(const PresentInfoKHR&  pPresentInfo) const {
+        return device_functions->QueuePresentKHR(queue, pPresentInfo);}
+    void BeginDebugUtilsLabelEXT(const DebugUtilsLabelEXT&  pLabelInfo) const {
+        device_functions->QueueBeginDebugUtilsLabelEXT(queue, pLabelInfo);}
+    void EndDebugUtilsLabelEXT() const {
+        device_functions->QueueEndDebugUtilsLabelEXT(queue);}
+    void InsertDebugUtilsLabelEXT(const DebugUtilsLabelEXT&  pLabelInfo) const {
+        device_functions->QueueInsertDebugUtilsLabelEXT(queue, pLabelInfo);}
+    [[nodiscard]] detail::fixed_vector<CheckpointDataNV> GetCheckpointDataNV() const {
+        return device_functions->GetQueueCheckpointDataNV(queue);}
+    [[nodiscard]] Result SetPerformanceConfigurationINTEL(PerformanceConfigurationINTEL configuration) const {
+        return device_functions->QueueSetPerformanceConfigurationINTEL(queue, configuration);}
 };
 struct CommandBufferFunctions {
     DeviceFunctions const* device_functions;
     CommandBuffer const commandbuffer;
     CommandBufferFunctions(DeviceFunctions const& device_functions, CommandBuffer const commandbuffer)
         :device_functions(&device_functions), commandbuffer(commandbuffer){}
-    [[nodiscard]] Result Begin(const CommandBufferBeginInfo&  pBeginInfo) {
-        return static_cast<Result>(device_functions->pfn_BeginCommandBuffer(commandbuffer.get(),
-            reinterpret_cast<const VkCommandBufferBeginInfo*>(&pBeginInfo)));
-    }
-    [[nodiscard]] Result End() {
-        return static_cast<Result>(device_functions->pfn_EndCommandBuffer(commandbuffer.get()));
-    }
-    [[nodiscard]] Result Reset(CommandBufferResetFlags flags) {
-        return static_cast<Result>(device_functions->pfn_ResetCommandBuffer(commandbuffer.get(),
-            static_cast<VkCommandBufferResetFlags>(flags)));
-    }
-    void BindPipeline(PipelineBindPoint pipelineBindPoint,
-        Pipeline pipeline) {
-        device_functions->pfn_CmdBindPipeline(commandbuffer.get(),
-            static_cast<VkPipelineBindPoint>(pipelineBindPoint),
-            pipeline.get());
-    }
-    void SetViewport(uint32_t firstViewport,
-        uint32_t viewportCount,
-        const Viewport* pViewports) {
-        device_functions->pfn_CmdSetViewport(commandbuffer.get(),
-            firstViewport,
-            viewportCount,
-            reinterpret_cast<const VkViewport*>(pViewports));
-    }
-    void SetScissor(uint32_t firstScissor,
-        uint32_t scissorCount,
-        const Rect2D* pScissors) {
-        device_functions->pfn_CmdSetScissor(commandbuffer.get(),
-            firstScissor,
-            scissorCount,
-            reinterpret_cast<const VkRect2D*>(pScissors));
-    }
-    void SetLineWidth(float lineWidth) {
-        device_functions->pfn_CmdSetLineWidth(commandbuffer.get(),
-            lineWidth);
-    }
-    void SetDepthBias(float depthBiasConstantFactor,
-        float depthBiasClamp,
-        float depthBiasSlopeFactor) {
-        device_functions->pfn_CmdSetDepthBias(commandbuffer.get(),
-            depthBiasConstantFactor,
-            depthBiasClamp,
-            depthBiasSlopeFactor);
-    }
-    void SetBlendConstants(const float blendConstants[4]) {
-        device_functions->pfn_CmdSetBlendConstants(commandbuffer.get(),
-            blendConstants);
-    }
-    void SetDepthBounds(float minDepthBounds,
-        float maxDepthBounds) {
-        device_functions->pfn_CmdSetDepthBounds(commandbuffer.get(),
-            minDepthBounds,
-            maxDepthBounds);
-    }
-    void SetStencilCompareMask(StencilFaceFlags faceMask,
-        uint32_t compareMask) {
-        device_functions->pfn_CmdSetStencilCompareMask(commandbuffer.get(),
-            static_cast<VkStencilFaceFlags>(faceMask),
-            compareMask);
-    }
-    void SetStencilWriteMask(StencilFaceFlags faceMask,
-        uint32_t writeMask) {
-        device_functions->pfn_CmdSetStencilWriteMask(commandbuffer.get(),
-            static_cast<VkStencilFaceFlags>(faceMask),
-            writeMask);
-    }
-    void SetStencilReference(StencilFaceFlags faceMask,
-        uint32_t reference) {
-        device_functions->pfn_CmdSetStencilReference(commandbuffer.get(),
-            static_cast<VkStencilFaceFlags>(faceMask),
-            reference);
-    }
-    void BindDescriptorSets(PipelineBindPoint pipelineBindPoint,
-        PipelineLayout layout,
-        uint32_t firstSet,
-        uint32_t descriptorSetCount,
-        const DescriptorSet* pDescriptorSets,
-        uint32_t dynamicOffsetCount,
-        const uint32_t* pDynamicOffsets) {
-        device_functions->pfn_CmdBindDescriptorSets(commandbuffer.get(),
-            static_cast<VkPipelineBindPoint>(pipelineBindPoint),
-            layout.get(),
-            firstSet,
-            descriptorSetCount,
-            reinterpret_cast<const VkDescriptorSet*>(pDescriptorSets),
-            dynamicOffsetCount,
-            pDynamicOffsets);
-    }
-    void BindIndexBuffer(Buffer buffer,
-        DeviceSize offset,
-        IndexType indexType) {
-        device_functions->pfn_CmdBindIndexBuffer(commandbuffer.get(),
-            buffer.get(),
-            offset,
-            static_cast<VkIndexType>(indexType));
-    }
-    void BindVertexBuffers(uint32_t firstBinding,
-        uint32_t bindingCount,
-        const Buffer* pBuffers,
-        const DeviceSize* pOffsets) {
-        device_functions->pfn_CmdBindVertexBuffers(commandbuffer.get(),
-            firstBinding,
-            bindingCount,
-            reinterpret_cast<const VkBuffer*>(pBuffers),
-            pOffsets);
-    }
-    void Draw(uint32_t vertexCount,
-        uint32_t instanceCount,
-        uint32_t firstVertex,
-        uint32_t firstInstance) {
-        device_functions->pfn_CmdDraw(commandbuffer.get(),
-            vertexCount,
-            instanceCount,
-            firstVertex,
-            firstInstance);
-    }
-    void DrawIndexed(uint32_t indexCount,
-        uint32_t instanceCount,
-        uint32_t firstIndex,
-        int32_t vertexOffset,
-        uint32_t firstInstance) {
-        device_functions->pfn_CmdDrawIndexed(commandbuffer.get(),
-            indexCount,
-            instanceCount,
-            firstIndex,
-            vertexOffset,
-            firstInstance);
-    }
-    void DrawIndirect(Buffer buffer,
-        DeviceSize offset,
-        uint32_t drawCount,
-        uint32_t stride) {
-        device_functions->pfn_CmdDrawIndirect(commandbuffer.get(),
-            buffer.get(),
-            offset,
-            drawCount,
-            stride);
-    }
-    void DrawIndexedIndirect(Buffer buffer,
-        DeviceSize offset,
-        uint32_t drawCount,
-        uint32_t stride) {
-        device_functions->pfn_CmdDrawIndexedIndirect(commandbuffer.get(),
-            buffer.get(),
-            offset,
-            drawCount,
-            stride);
-    }
-    void Dispatch(uint32_t groupCountX,
-        uint32_t groupCountY,
-        uint32_t groupCountZ) {
-        device_functions->pfn_CmdDispatch(commandbuffer.get(),
-            groupCountX,
-            groupCountY,
-            groupCountZ);
-    }
-    void DispatchIndirect(Buffer buffer,
-        DeviceSize offset) {
-        device_functions->pfn_CmdDispatchIndirect(commandbuffer.get(),
-            buffer.get(),
-            offset);
-    }
-    void CopyBuffer(Buffer srcBuffer,
-        Buffer dstBuffer,
-        uint32_t regionCount,
-        const BufferCopy* pRegions) {
-        device_functions->pfn_CmdCopyBuffer(commandbuffer.get(),
-            srcBuffer.get(),
-            dstBuffer.get(),
-            regionCount,
-            reinterpret_cast<const VkBufferCopy*>(pRegions));
-    }
-    void CopyImage(Image srcImage,
-        ImageLayout srcImageLayout,
-        Image dstImage,
-        ImageLayout dstImageLayout,
-        uint32_t regionCount,
-        const ImageCopy* pRegions) {
-        device_functions->pfn_CmdCopyImage(commandbuffer.get(),
-            srcImage.get(),
-            static_cast<VkImageLayout>(srcImageLayout),
-            dstImage.get(),
-            static_cast<VkImageLayout>(dstImageLayout),
-            regionCount,
-            reinterpret_cast<const VkImageCopy*>(pRegions));
-    }
-    void BlitImage(Image srcImage,
-        ImageLayout srcImageLayout,
-        Image dstImage,
-        ImageLayout dstImageLayout,
-        uint32_t regionCount,
-        const ImageBlit* pRegions,
-        Filter filter) {
-        device_functions->pfn_CmdBlitImage(commandbuffer.get(),
-            srcImage.get(),
-            static_cast<VkImageLayout>(srcImageLayout),
-            dstImage.get(),
-            static_cast<VkImageLayout>(dstImageLayout),
-            regionCount,
-            reinterpret_cast<const VkImageBlit*>(pRegions),
-            static_cast<VkFilter>(filter));
-    }
-    void CopyBufferToImage(Buffer srcBuffer,
-        Image dstImage,
-        ImageLayout dstImageLayout,
-        uint32_t regionCount,
-        const BufferImageCopy* pRegions) {
-        device_functions->pfn_CmdCopyBufferToImage(commandbuffer.get(),
-            srcBuffer.get(),
-            dstImage.get(),
-            static_cast<VkImageLayout>(dstImageLayout),
-            regionCount,
-            reinterpret_cast<const VkBufferImageCopy*>(pRegions));
-    }
-    void CopyImageToBuffer(Image srcImage,
-        ImageLayout srcImageLayout,
-        Buffer dstBuffer,
-        uint32_t regionCount,
-        const BufferImageCopy* pRegions) {
-        device_functions->pfn_CmdCopyImageToBuffer(commandbuffer.get(),
-            srcImage.get(),
-            static_cast<VkImageLayout>(srcImageLayout),
-            dstBuffer.get(),
-            regionCount,
-            reinterpret_cast<const VkBufferImageCopy*>(pRegions));
-    }
-    void UpdateBuffer(Buffer dstBuffer,
-        DeviceSize dstOffset,
-        DeviceSize dataSize,
-        const void* pData) {
-        device_functions->pfn_CmdUpdateBuffer(commandbuffer.get(),
-            dstBuffer.get(),
-            dstOffset,
-            dataSize,
-            reinterpret_cast<const void*>(pData));
-    }
-    void FillBuffer(Buffer dstBuffer,
-        DeviceSize dstOffset,
-        DeviceSize size,
-        uint32_t data) {
-        device_functions->pfn_CmdFillBuffer(commandbuffer.get(),
-            dstBuffer.get(),
-            dstOffset,
-            size,
-            data);
-    }
-    void ClearColorImage(Image image,
-        ImageLayout imageLayout,
-        const ClearColorValue&  pColor,
-        uint32_t rangeCount,
-        const ImageSubresourceRange* pRanges) {
-        device_functions->pfn_CmdClearColorImage(commandbuffer.get(),
-            image.get(),
-            static_cast<VkImageLayout>(imageLayout),
-            reinterpret_cast<const VkClearColorValue*>(&pColor),
-            rangeCount,
-            reinterpret_cast<const VkImageSubresourceRange*>(pRanges));
-    }
-    void ClearDepthStencilImage(Image image,
-        ImageLayout imageLayout,
-        const ClearDepthStencilValue&  pDepthStencil,
-        uint32_t rangeCount,
-        const ImageSubresourceRange* pRanges) {
-        device_functions->pfn_CmdClearDepthStencilImage(commandbuffer.get(),
-            image.get(),
-            static_cast<VkImageLayout>(imageLayout),
-            reinterpret_cast<const VkClearDepthStencilValue*>(&pDepthStencil),
-            rangeCount,
-            reinterpret_cast<const VkImageSubresourceRange*>(pRanges));
-    }
-    void ClearAttachments(uint32_t attachmentCount,
-        const ClearAttachment* pAttachments,
-        uint32_t rectCount,
-        const ClearRect* pRects) {
-        device_functions->pfn_CmdClearAttachments(commandbuffer.get(),
-            attachmentCount,
-            reinterpret_cast<const VkClearAttachment*>(pAttachments),
-            rectCount,
-            reinterpret_cast<const VkClearRect*>(pRects));
-    }
-    void ResolveImage(Image srcImage,
-        ImageLayout srcImageLayout,
-        Image dstImage,
-        ImageLayout dstImageLayout,
-        uint32_t regionCount,
-        const ImageResolve* pRegions) {
-        device_functions->pfn_CmdResolveImage(commandbuffer.get(),
-            srcImage.get(),
-            static_cast<VkImageLayout>(srcImageLayout),
-            dstImage.get(),
-            static_cast<VkImageLayout>(dstImageLayout),
-            regionCount,
-            reinterpret_cast<const VkImageResolve*>(pRegions));
-    }
-    void SetEvent(Event event,
-        PipelineStageFlags stageMask) {
-        device_functions->pfn_CmdSetEvent(commandbuffer.get(),
-            event.get(),
-            static_cast<VkPipelineStageFlags>(stageMask));
-    }
-    void ResetEvent(Event event,
-        PipelineStageFlags stageMask) {
-        device_functions->pfn_CmdResetEvent(commandbuffer.get(),
-            event.get(),
-            static_cast<VkPipelineStageFlags>(stageMask));
-    }
-    void WaitEvents(uint32_t eventCount,
-        const Event* pEvents,
-        PipelineStageFlags srcStageMask,
-        PipelineStageFlags dstStageMask,
-        uint32_t memoryBarrierCount,
-        const MemoryBarrier* pMemoryBarriers,
-        uint32_t bufferMemoryBarrierCount,
-        const BufferMemoryBarrier* pBufferMemoryBarriers,
-        uint32_t imageMemoryBarrierCount,
-        const ImageMemoryBarrier* pImageMemoryBarriers) {
-        device_functions->pfn_CmdWaitEvents(commandbuffer.get(),
-            eventCount,
-            reinterpret_cast<const VkEvent*>(pEvents),
-            static_cast<VkPipelineStageFlags>(srcStageMask),
-            static_cast<VkPipelineStageFlags>(dstStageMask),
-            memoryBarrierCount,
-            reinterpret_cast<const VkMemoryBarrier*>(pMemoryBarriers),
-            bufferMemoryBarrierCount,
-            reinterpret_cast<const VkBufferMemoryBarrier*>(pBufferMemoryBarriers),
-            imageMemoryBarrierCount,
-            reinterpret_cast<const VkImageMemoryBarrier*>(pImageMemoryBarriers));
-    }
-    void PipelineBarrier(PipelineStageFlags srcStageMask,
-        PipelineStageFlags dstStageMask,
-        DependencyFlags dependencyFlags,
-        uint32_t memoryBarrierCount,
-        const MemoryBarrier* pMemoryBarriers,
-        uint32_t bufferMemoryBarrierCount,
-        const BufferMemoryBarrier* pBufferMemoryBarriers,
-        uint32_t imageMemoryBarrierCount,
-        const ImageMemoryBarrier* pImageMemoryBarriers) {
-        device_functions->pfn_CmdPipelineBarrier(commandbuffer.get(),
-            static_cast<VkPipelineStageFlags>(srcStageMask),
-            static_cast<VkPipelineStageFlags>(dstStageMask),
-            static_cast<VkDependencyFlags>(dependencyFlags),
-            memoryBarrierCount,
-            reinterpret_cast<const VkMemoryBarrier*>(pMemoryBarriers),
-            bufferMemoryBarrierCount,
-            reinterpret_cast<const VkBufferMemoryBarrier*>(pBufferMemoryBarriers),
-            imageMemoryBarrierCount,
-            reinterpret_cast<const VkImageMemoryBarrier*>(pImageMemoryBarriers));
-    }
-    void BeginQuery(QueryPool queryPool,
-        uint32_t query,
-        QueryControlFlags flags) {
-        device_functions->pfn_CmdBeginQuery(commandbuffer.get(),
-            queryPool.get(),
-            query,
-            static_cast<VkQueryControlFlags>(flags));
-    }
-    void EndQuery(QueryPool queryPool,
-        uint32_t query) {
-        device_functions->pfn_CmdEndQuery(commandbuffer.get(),
-            queryPool.get(),
-            query);
-    }
-    void BeginConditionalRenderingEXT(const ConditionalRenderingBeginInfoEXT&  pConditionalRenderingBegin) {
-        device_functions->pfn_CmdBeginConditionalRenderingEXT(commandbuffer.get(),
-            reinterpret_cast<const VkConditionalRenderingBeginInfoEXT*>(&pConditionalRenderingBegin));
-    }
-    void EndConditionalRenderingEXT() {
-        device_functions->pfn_CmdEndConditionalRenderingEXT(commandbuffer.get());
-    }
-    void ResetQueryPool(QueryPool queryPool,
-        uint32_t firstQuery,
-        uint32_t queryCount) {
-        device_functions->pfn_CmdResetQueryPool(commandbuffer.get(),
-            queryPool.get(),
-            firstQuery,
-            queryCount);
-    }
-    void WriteTimestamp(PipelineStageFlagBits pipelineStage,
-        QueryPool queryPool,
-        uint32_t query) {
-        device_functions->pfn_CmdWriteTimestamp(commandbuffer.get(),
-            static_cast<VkPipelineStageFlagBits>(pipelineStage),
-            queryPool.get(),
-            query);
-    }
-    void CopyQueryPoolResults(QueryPool queryPool,
-        uint32_t firstQuery,
-        uint32_t queryCount,
-        Buffer dstBuffer,
-        DeviceSize dstOffset,
-        DeviceSize stride,
-        QueryResultFlags flags) {
-        device_functions->pfn_CmdCopyQueryPoolResults(commandbuffer.get(),
-            queryPool.get(),
-            firstQuery,
-            queryCount,
-            dstBuffer.get(),
-            dstOffset,
-            stride,
-            static_cast<VkQueryResultFlags>(flags));
-    }
-    void PushConstants(PipelineLayout layout,
-        ShaderStageFlags stageFlags,
-        uint32_t offset,
-        uint32_t size,
-        const void* pValues) {
-        device_functions->pfn_CmdPushConstants(commandbuffer.get(),
-            layout.get(),
-            static_cast<VkShaderStageFlags>(stageFlags),
-            offset,
-            size,
-            reinterpret_cast<const void*>(pValues));
-    }
-    void BeginRenderPass(const RenderPassBeginInfo&  pRenderPassBegin,
-        SubpassContents contents) {
-        device_functions->pfn_CmdBeginRenderPass(commandbuffer.get(),
-            reinterpret_cast<const VkRenderPassBeginInfo*>(&pRenderPassBegin),
-            static_cast<VkSubpassContents>(contents));
-    }
-    void NextSubpass(SubpassContents contents) {
-        device_functions->pfn_CmdNextSubpass(commandbuffer.get(),
-            static_cast<VkSubpassContents>(contents));
-    }
-    void EndRenderPass() {
-        device_functions->pfn_CmdEndRenderPass(commandbuffer.get());
-    }
-    void ExecuteCommands(uint32_t commandBufferCount,
-        const CommandBuffer* pCommandBuffers) {
-        device_functions->pfn_CmdExecuteCommands(commandbuffer.get(),
-            commandBufferCount,
-            reinterpret_cast<const VkCommandBuffer*>(pCommandBuffers));
-    }
-    void DebugMarkerBeginEXT(const DebugMarkerMarkerInfoEXT&  pMarkerInfo) {
-        device_functions->pfn_CmdDebugMarkerBeginEXT(commandbuffer.get(),
-            reinterpret_cast<const VkDebugMarkerMarkerInfoEXT*>(&pMarkerInfo));
-    }
-    void DebugMarkerEndEXT() {
-        device_functions->pfn_CmdDebugMarkerEndEXT(commandbuffer.get());
-    }
-    void DebugMarkerInsertEXT(const DebugMarkerMarkerInfoEXT&  pMarkerInfo) {
-        device_functions->pfn_CmdDebugMarkerInsertEXT(commandbuffer.get(),
-            reinterpret_cast<const VkDebugMarkerMarkerInfoEXT*>(&pMarkerInfo));
-    }
-    void ExecuteGeneratedCommandsNV(Bool32 isPreprocessed,
-        const GeneratedCommandsInfoNV&  pGeneratedCommandsInfo) {
-        device_functions->pfn_CmdExecuteGeneratedCommandsNV(commandbuffer.get(),
-            isPreprocessed,
-            reinterpret_cast<const VkGeneratedCommandsInfoNV*>(&pGeneratedCommandsInfo));
-    }
-    void PreprocessGeneratedCommandsNV(const GeneratedCommandsInfoNV&  pGeneratedCommandsInfo) {
-        device_functions->pfn_CmdPreprocessGeneratedCommandsNV(commandbuffer.get(),
-            reinterpret_cast<const VkGeneratedCommandsInfoNV*>(&pGeneratedCommandsInfo));
-    }
-    void BindPipelineShaderGroupNV(PipelineBindPoint pipelineBindPoint,
-        Pipeline pipeline,
-        uint32_t groupIndex) {
-        device_functions->pfn_CmdBindPipelineShaderGroupNV(commandbuffer.get(),
-            static_cast<VkPipelineBindPoint>(pipelineBindPoint),
-            pipeline.get(),
-            groupIndex);
-    }
-    void PushDescriptorSetKHR(PipelineBindPoint pipelineBindPoint,
-        PipelineLayout layout,
-        uint32_t set,
-        uint32_t descriptorWriteCount,
-        const WriteDescriptorSet* pDescriptorWrites) {
-        device_functions->pfn_CmdPushDescriptorSetKHR(commandbuffer.get(),
-            static_cast<VkPipelineBindPoint>(pipelineBindPoint),
-            layout.get(),
-            set,
-            descriptorWriteCount,
-            reinterpret_cast<const VkWriteDescriptorSet*>(pDescriptorWrites));
-    }
-    void SetDeviceMask(uint32_t deviceMask) {
-        device_functions->pfn_CmdSetDeviceMask(commandbuffer.get(),
-            deviceMask);
-    }
-    void DispatchBase(uint32_t baseGroupX,
-        uint32_t baseGroupY,
-        uint32_t baseGroupZ,
-        uint32_t groupCountX,
-        uint32_t groupCountY,
-        uint32_t groupCountZ) {
-        device_functions->pfn_CmdDispatchBase(commandbuffer.get(),
-            baseGroupX,
-            baseGroupY,
-            baseGroupZ,
-            groupCountX,
-            groupCountY,
-            groupCountZ);
-    }
-    void PushDescriptorSetWithTemplateKHR(DescriptorUpdateTemplate descriptorUpdateTemplate,
-        PipelineLayout layout,
-        uint32_t set,
-        const void* pData) {
-        device_functions->pfn_CmdPushDescriptorSetWithTemplateKHR(commandbuffer.get(),
-            descriptorUpdateTemplate.get(),
-            layout.get(),
-            set,
-            reinterpret_cast<const void*>(pData));
-    }
-    void SetViewportWScalingNV(uint32_t firstViewport,
-        uint32_t viewportCount,
-        const ViewportWScalingNV* pViewportWScalings) {
-        device_functions->pfn_CmdSetViewportWScalingNV(commandbuffer.get(),
-            firstViewport,
-            viewportCount,
-            reinterpret_cast<const VkViewportWScalingNV*>(pViewportWScalings));
-    }
-    void SetDiscardRectangleEXT(uint32_t firstDiscardRectangle,
-        uint32_t discardRectangleCount,
-        const Rect2D* pDiscardRectangles) {
-        device_functions->pfn_CmdSetDiscardRectangleEXT(commandbuffer.get(),
-            firstDiscardRectangle,
-            discardRectangleCount,
-            reinterpret_cast<const VkRect2D*>(pDiscardRectangles));
-    }
-    void SetSampleLocationsEXT(const SampleLocationsInfoEXT&  pSampleLocationsInfo) {
-        device_functions->pfn_CmdSetSampleLocationsEXT(commandbuffer.get(),
-            reinterpret_cast<const VkSampleLocationsInfoEXT*>(&pSampleLocationsInfo));
-    }
-    void BeginDebugUtilsLabelEXT(const DebugUtilsLabelEXT&  pLabelInfo) {
-        device_functions->pfn_CmdBeginDebugUtilsLabelEXT(commandbuffer.get(),
-            reinterpret_cast<const VkDebugUtilsLabelEXT*>(&pLabelInfo));
-    }
-    void EndDebugUtilsLabelEXT() {
-        device_functions->pfn_CmdEndDebugUtilsLabelEXT(commandbuffer.get());
-    }
-    void InsertDebugUtilsLabelEXT(const DebugUtilsLabelEXT&  pLabelInfo) {
-        device_functions->pfn_CmdInsertDebugUtilsLabelEXT(commandbuffer.get(),
-            reinterpret_cast<const VkDebugUtilsLabelEXT*>(&pLabelInfo));
-    }
-    void WriteBufferMarkerAMD(PipelineStageFlagBits pipelineStage,
-        Buffer dstBuffer,
-        DeviceSize dstOffset,
-        uint32_t marker) {
-        device_functions->pfn_CmdWriteBufferMarkerAMD(commandbuffer.get(),
-            static_cast<VkPipelineStageFlagBits>(pipelineStage),
-            dstBuffer.get(),
-            dstOffset,
-            marker);
-    }
-    void BeginRenderPass2(const RenderPassBeginInfo&  pRenderPassBegin,
-        const SubpassBeginInfo&  pSubpassBeginInfo) {
-        device_functions->pfn_CmdBeginRenderPass2(commandbuffer.get(),
-            reinterpret_cast<const VkRenderPassBeginInfo*>(&pRenderPassBegin),
-            reinterpret_cast<const VkSubpassBeginInfo*>(&pSubpassBeginInfo));
-    }
-    void NextSubpass2(const SubpassBeginInfo&  pSubpassBeginInfo,
-        const SubpassEndInfo&  pSubpassEndInfo) {
-        device_functions->pfn_CmdNextSubpass2(commandbuffer.get(),
-            reinterpret_cast<const VkSubpassBeginInfo*>(&pSubpassBeginInfo),
-            reinterpret_cast<const VkSubpassEndInfo*>(&pSubpassEndInfo));
-    }
-    void EndRenderPass2(const SubpassEndInfo&  pSubpassEndInfo) {
-        device_functions->pfn_CmdEndRenderPass2(commandbuffer.get(),
-            reinterpret_cast<const VkSubpassEndInfo*>(&pSubpassEndInfo));
-    }
-    void DrawIndirectCount(Buffer buffer,
-        DeviceSize offset,
-        Buffer countBuffer,
-        DeviceSize countBufferOffset,
-        uint32_t maxDrawCount,
-        uint32_t stride) {
-        device_functions->pfn_CmdDrawIndirectCount(commandbuffer.get(),
-            buffer.get(),
-            offset,
-            countBuffer.get(),
-            countBufferOffset,
-            maxDrawCount,
-            stride);
-    }
-    void DrawIndexedIndirectCount(Buffer buffer,
-        DeviceSize offset,
-        Buffer countBuffer,
-        DeviceSize countBufferOffset,
-        uint32_t maxDrawCount,
-        uint32_t stride) {
-        device_functions->pfn_CmdDrawIndexedIndirectCount(commandbuffer.get(),
-            buffer.get(),
-            offset,
-            countBuffer.get(),
-            countBufferOffset,
-            maxDrawCount,
-            stride);
-    }
-    void SetCheckpointNV(const void* pCheckpointMarker) {
-        device_functions->pfn_CmdSetCheckpointNV(commandbuffer.get(),
-            reinterpret_cast<const void*>(pCheckpointMarker));
-    }
-    void BindTransformFeedbackBuffersEXT(uint32_t firstBinding,
-        uint32_t bindingCount,
-        const Buffer* pBuffers,
-        const DeviceSize* pOffsets,
-        const DeviceSize* pSizes) {
-        device_functions->pfn_CmdBindTransformFeedbackBuffersEXT(commandbuffer.get(),
-            firstBinding,
-            bindingCount,
-            reinterpret_cast<const VkBuffer*>(pBuffers),
-            pOffsets,
-            pSizes);
-    }
-    void BeginTransformFeedbackEXT(uint32_t firstCounterBuffer,
-        uint32_t counterBufferCount,
-        const Buffer* pCounterBuffers,
-        const DeviceSize* pCounterBufferOffsets) {
-        device_functions->pfn_CmdBeginTransformFeedbackEXT(commandbuffer.get(),
-            firstCounterBuffer,
-            counterBufferCount,
-            reinterpret_cast<const VkBuffer*>(pCounterBuffers),
-            pCounterBufferOffsets);
-    }
-    void EndTransformFeedbackEXT(uint32_t firstCounterBuffer,
-        uint32_t counterBufferCount,
-        const Buffer* pCounterBuffers,
-        const DeviceSize* pCounterBufferOffsets) {
-        device_functions->pfn_CmdEndTransformFeedbackEXT(commandbuffer.get(),
-            firstCounterBuffer,
-            counterBufferCount,
-            reinterpret_cast<const VkBuffer*>(pCounterBuffers),
-            pCounterBufferOffsets);
-    }
-    void BeginQueryIndexedEXT(QueryPool queryPool,
-        uint32_t query,
-        QueryControlFlags flags,
-        uint32_t index) {
-        device_functions->pfn_CmdBeginQueryIndexedEXT(commandbuffer.get(),
-            queryPool.get(),
-            query,
-            static_cast<VkQueryControlFlags>(flags),
-            index);
-    }
-    void EndQueryIndexedEXT(QueryPool queryPool,
-        uint32_t query,
-        uint32_t index) {
-        device_functions->pfn_CmdEndQueryIndexedEXT(commandbuffer.get(),
-            queryPool.get(),
-            query,
-            index);
-    }
-    void DrawIndirectByteCountEXT(uint32_t instanceCount,
-        uint32_t firstInstance,
-        Buffer counterBuffer,
-        DeviceSize counterBufferOffset,
-        uint32_t counterOffset,
-        uint32_t vertexStride) {
-        device_functions->pfn_CmdDrawIndirectByteCountEXT(commandbuffer.get(),
-            instanceCount,
-            firstInstance,
-            counterBuffer.get(),
-            counterBufferOffset,
-            counterOffset,
-            vertexStride);
-    }
-    void SetExclusiveScissorNV(uint32_t firstExclusiveScissor,
-        uint32_t exclusiveScissorCount,
-        const Rect2D* pExclusiveScissors) {
-        device_functions->pfn_CmdSetExclusiveScissorNV(commandbuffer.get(),
-            firstExclusiveScissor,
-            exclusiveScissorCount,
-            reinterpret_cast<const VkRect2D*>(pExclusiveScissors));
-    }
-    void BindShadingRateImageNV(ImageView imageView,
-        ImageLayout imageLayout) {
-        device_functions->pfn_CmdBindShadingRateImageNV(commandbuffer.get(),
-            imageView.get(),
-            static_cast<VkImageLayout>(imageLayout));
-    }
-    void SetViewportShadingRatePaletteNV(uint32_t firstViewport,
-        uint32_t viewportCount,
-        const ShadingRatePaletteNV* pShadingRatePalettes) {
-        device_functions->pfn_CmdSetViewportShadingRatePaletteNV(commandbuffer.get(),
-            firstViewport,
-            viewportCount,
-            reinterpret_cast<const VkShadingRatePaletteNV*>(pShadingRatePalettes));
-    }
-    void SetCoarseSampleOrderNV(CoarseSampleOrderTypeNV sampleOrderType,
-        uint32_t customSampleOrderCount,
-        const CoarseSampleOrderCustomNV* pCustomSampleOrders) {
-        device_functions->pfn_CmdSetCoarseSampleOrderNV(commandbuffer.get(),
-            static_cast<VkCoarseSampleOrderTypeNV>(sampleOrderType),
-            customSampleOrderCount,
-            reinterpret_cast<const VkCoarseSampleOrderCustomNV*>(pCustomSampleOrders));
-    }
-    void DrawMeshTasksNV(uint32_t taskCount,
-        uint32_t firstTask) {
-        device_functions->pfn_CmdDrawMeshTasksNV(commandbuffer.get(),
-            taskCount,
-            firstTask);
-    }
-    void DrawMeshTasksIndirectNV(Buffer buffer,
-        DeviceSize offset,
-        uint32_t drawCount,
-        uint32_t stride) {
-        device_functions->pfn_CmdDrawMeshTasksIndirectNV(commandbuffer.get(),
-            buffer.get(),
-            offset,
-            drawCount,
-            stride);
-    }
-    void DrawMeshTasksIndirectCountNV(Buffer buffer,
-        DeviceSize offset,
-        Buffer countBuffer,
-        DeviceSize countBufferOffset,
-        uint32_t maxDrawCount,
-        uint32_t stride) {
-        device_functions->pfn_CmdDrawMeshTasksIndirectCountNV(commandbuffer.get(),
-            buffer.get(),
-            offset,
-            countBuffer.get(),
-            countBufferOffset,
-            maxDrawCount,
-            stride);
-    }
-    void CopyAccelerationStructureNV(AccelerationStructureKHR dst,
-        AccelerationStructureKHR src,
-        CopyAccelerationStructureModeKHR mode) {
-        device_functions->pfn_CmdCopyAccelerationStructureNV(commandbuffer.get(),
-            dst.get(),
-            src.get(),
-            static_cast<VkCopyAccelerationStructureModeKHR>(mode));
-    }
+    [[nodiscard]] Result Begin(const CommandBufferBeginInfo&  pBeginInfo) const {
+        return device_functions->BeginCommandBuffer(commandbuffer, pBeginInfo);}
+    [[nodiscard]] Result End() const {
+        return device_functions->EndCommandBuffer(commandbuffer);}
+    [[nodiscard]] Result Reset(CommandBufferResetFlags flags) const {
+        return device_functions->ResetCommandBuffer(commandbuffer, flags);}
+    void BindPipeline(PipelineBindPoint pipelineBindPoint, Pipeline pipeline) const {
+        device_functions->CmdBindPipeline(commandbuffer, pipelineBindPoint, pipeline);}
+    void SetViewport(uint32_t firstViewport, uint32_t viewportCount, const Viewport* pViewports) const {
+        device_functions->CmdSetViewport(commandbuffer, firstViewport, viewportCount, pViewports);}
+    void SetScissor(uint32_t firstScissor, uint32_t scissorCount, const Rect2D* pScissors) const {
+        device_functions->CmdSetScissor(commandbuffer, firstScissor, scissorCount, pScissors);}
+    void SetLineWidth(float lineWidth) const {
+        device_functions->CmdSetLineWidth(commandbuffer, lineWidth);}
+    void SetDepthBias(float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor) const {
+        device_functions->CmdSetDepthBias(commandbuffer, depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor);}
+    void SetBlendConstants(const float blendConstants[4]) const {
+        device_functions->CmdSetBlendConstants(commandbuffer, blendConstants);}
+    void SetDepthBounds(float minDepthBounds, float maxDepthBounds) const {
+        device_functions->CmdSetDepthBounds(commandbuffer, minDepthBounds, maxDepthBounds);}
+    void SetStencilCompareMask(StencilFaceFlags faceMask, uint32_t compareMask) const {
+        device_functions->CmdSetStencilCompareMask(commandbuffer, faceMask, compareMask);}
+    void SetStencilWriteMask(StencilFaceFlags faceMask, uint32_t writeMask) const {
+        device_functions->CmdSetStencilWriteMask(commandbuffer, faceMask, writeMask);}
+    void SetStencilReference(StencilFaceFlags faceMask, uint32_t reference) const {
+        device_functions->CmdSetStencilReference(commandbuffer, faceMask, reference);}
+    void BindDescriptorSets(PipelineBindPoint pipelineBindPoint, PipelineLayout layout, uint32_t firstSet, uint32_t descriptorSetCount, const DescriptorSet* pDescriptorSets, uint32_t dynamicOffsetCount, const uint32_t* pDynamicOffsets) const {
+        device_functions->CmdBindDescriptorSets(commandbuffer, pipelineBindPoint, layout, firstSet, descriptorSetCount, pDescriptorSets, dynamicOffsetCount, pDynamicOffsets);}
+    void BindIndexBuffer(Buffer buffer, DeviceSize offset, IndexType indexType) const {
+        device_functions->CmdBindIndexBuffer(commandbuffer, buffer, offset, indexType);}
+    void BindVertexBuffers(uint32_t firstBinding, uint32_t bindingCount, const Buffer* pBuffers, const DeviceSize* pOffsets) const {
+        device_functions->CmdBindVertexBuffers(commandbuffer, firstBinding, bindingCount, pBuffers, pOffsets);}
+    void Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance) const {
+        device_functions->CmdDraw(commandbuffer, vertexCount, instanceCount, firstVertex, firstInstance);}
+    void DrawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, int32_t vertexOffset, uint32_t firstInstance) const {
+        device_functions->CmdDrawIndexed(commandbuffer, indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);}
+    void DrawIndirect(Buffer buffer, DeviceSize offset, uint32_t drawCount, uint32_t stride) const {
+        device_functions->CmdDrawIndirect(commandbuffer, buffer, offset, drawCount, stride);}
+    void DrawIndexedIndirect(Buffer buffer, DeviceSize offset, uint32_t drawCount, uint32_t stride) const {
+        device_functions->CmdDrawIndexedIndirect(commandbuffer, buffer, offset, drawCount, stride);}
+    void Dispatch(uint32_t groupCountX, uint32_t groupCountY, uint32_t groupCountZ) const {
+        device_functions->CmdDispatch(commandbuffer, groupCountX, groupCountY, groupCountZ);}
+    void DispatchIndirect(Buffer buffer, DeviceSize offset) const {
+        device_functions->CmdDispatchIndirect(commandbuffer, buffer, offset);}
+    void CopyBuffer(Buffer srcBuffer, Buffer dstBuffer, uint32_t regionCount, const BufferCopy* pRegions) const {
+        device_functions->CmdCopyBuffer(commandbuffer, srcBuffer, dstBuffer, regionCount, pRegions);}
+    void CopyImage(Image srcImage, ImageLayout srcImageLayout, Image dstImage, ImageLayout dstImageLayout, uint32_t regionCount, const ImageCopy* pRegions) const {
+        device_functions->CmdCopyImage(commandbuffer, srcImage, srcImageLayout, dstImage, dstImageLayout, regionCount, pRegions);}
+    void BlitImage(Image srcImage, ImageLayout srcImageLayout, Image dstImage, ImageLayout dstImageLayout, uint32_t regionCount, const ImageBlit* pRegions, Filter filter) const {
+        device_functions->CmdBlitImage(commandbuffer, srcImage, srcImageLayout, dstImage, dstImageLayout, regionCount, pRegions, filter);}
+    void CopyBufferToImage(Buffer srcBuffer, Image dstImage, ImageLayout dstImageLayout, uint32_t regionCount, const BufferImageCopy* pRegions) const {
+        device_functions->CmdCopyBufferToImage(commandbuffer, srcBuffer, dstImage, dstImageLayout, regionCount, pRegions);}
+    void CopyImageToBuffer(Image srcImage, ImageLayout srcImageLayout, Buffer dstBuffer, uint32_t regionCount, const BufferImageCopy* pRegions) const {
+        device_functions->CmdCopyImageToBuffer(commandbuffer, srcImage, srcImageLayout, dstBuffer, regionCount, pRegions);}
+    void UpdateBuffer(Buffer dstBuffer, DeviceSize dstOffset, DeviceSize dataSize, const void* pData) const {
+        device_functions->CmdUpdateBuffer(commandbuffer, dstBuffer, dstOffset, dataSize, pData);}
+    void FillBuffer(Buffer dstBuffer, DeviceSize dstOffset, DeviceSize size, uint32_t data) const {
+        device_functions->CmdFillBuffer(commandbuffer, dstBuffer, dstOffset, size, data);}
+    void ClearColorImage(Image image, ImageLayout imageLayout, const ClearColorValue&  pColor, uint32_t rangeCount, const ImageSubresourceRange* pRanges) const {
+        device_functions->CmdClearColorImage(commandbuffer, image, imageLayout, pColor, rangeCount, pRanges);}
+    void ClearDepthStencilImage(Image image, ImageLayout imageLayout, const ClearDepthStencilValue&  pDepthStencil, uint32_t rangeCount, const ImageSubresourceRange* pRanges) const {
+        device_functions->CmdClearDepthStencilImage(commandbuffer, image, imageLayout, pDepthStencil, rangeCount, pRanges);}
+    void ClearAttachments(uint32_t attachmentCount, const ClearAttachment* pAttachments, uint32_t rectCount, const ClearRect* pRects) const {
+        device_functions->CmdClearAttachments(commandbuffer, attachmentCount, pAttachments, rectCount, pRects);}
+    void ResolveImage(Image srcImage, ImageLayout srcImageLayout, Image dstImage, ImageLayout dstImageLayout, uint32_t regionCount, const ImageResolve* pRegions) const {
+        device_functions->CmdResolveImage(commandbuffer, srcImage, srcImageLayout, dstImage, dstImageLayout, regionCount, pRegions);}
+    void SetEvent(Event event, PipelineStageFlags stageMask) const {
+        device_functions->CmdSetEvent(commandbuffer, event, stageMask);}
+    void ResetEvent(Event event, PipelineStageFlags stageMask) const {
+        device_functions->CmdResetEvent(commandbuffer, event, stageMask);}
+    void WaitEvents(uint32_t eventCount, const Event* pEvents, PipelineStageFlags srcStageMask, PipelineStageFlags dstStageMask, uint32_t memoryBarrierCount, const MemoryBarrier* pMemoryBarriers, uint32_t bufferMemoryBarrierCount, const BufferMemoryBarrier* pBufferMemoryBarriers, uint32_t imageMemoryBarrierCount, const ImageMemoryBarrier* pImageMemoryBarriers) const {
+        device_functions->CmdWaitEvents(commandbuffer, eventCount, pEvents, srcStageMask, dstStageMask, memoryBarrierCount, pMemoryBarriers, bufferMemoryBarrierCount, pBufferMemoryBarriers, imageMemoryBarrierCount, pImageMemoryBarriers);}
+    void PipelineBarrier(PipelineStageFlags srcStageMask, PipelineStageFlags dstStageMask, DependencyFlags dependencyFlags, uint32_t memoryBarrierCount, const MemoryBarrier* pMemoryBarriers, uint32_t bufferMemoryBarrierCount, const BufferMemoryBarrier* pBufferMemoryBarriers, uint32_t imageMemoryBarrierCount, const ImageMemoryBarrier* pImageMemoryBarriers) const {
+        device_functions->CmdPipelineBarrier(commandbuffer, srcStageMask, dstStageMask, dependencyFlags, memoryBarrierCount, pMemoryBarriers, bufferMemoryBarrierCount, pBufferMemoryBarriers, imageMemoryBarrierCount, pImageMemoryBarriers);}
+    void BeginQuery(QueryPool queryPool, uint32_t query, QueryControlFlags flags) const {
+        device_functions->CmdBeginQuery(commandbuffer, queryPool, query, flags);}
+    void EndQuery(QueryPool queryPool, uint32_t query) const {
+        device_functions->CmdEndQuery(commandbuffer, queryPool, query);}
+    void BeginConditionalRenderingEXT(const ConditionalRenderingBeginInfoEXT&  pConditionalRenderingBegin) const {
+        device_functions->CmdBeginConditionalRenderingEXT(commandbuffer, pConditionalRenderingBegin);}
+    void EndConditionalRenderingEXT() const {
+        device_functions->CmdEndConditionalRenderingEXT(commandbuffer);}
+    void ResetQueryPool(QueryPool queryPool, uint32_t firstQuery, uint32_t queryCount) const {
+        device_functions->CmdResetQueryPool(commandbuffer, queryPool, firstQuery, queryCount);}
+    void WriteTimestamp(PipelineStageFlagBits pipelineStage, QueryPool queryPool, uint32_t query) const {
+        device_functions->CmdWriteTimestamp(commandbuffer, pipelineStage, queryPool, query);}
+    void CopyQueryPoolResults(QueryPool queryPool, uint32_t firstQuery, uint32_t queryCount, Buffer dstBuffer, DeviceSize dstOffset, DeviceSize stride, QueryResultFlags flags) const {
+        device_functions->CmdCopyQueryPoolResults(commandbuffer, queryPool, firstQuery, queryCount, dstBuffer, dstOffset, stride, flags);}
+    void PushConstants(PipelineLayout layout, ShaderStageFlags stageFlags, uint32_t offset, uint32_t size, const void* pValues) const {
+        device_functions->CmdPushConstants(commandbuffer, layout, stageFlags, offset, size, pValues);}
+    void BeginRenderPass(const RenderPassBeginInfo&  pRenderPassBegin, SubpassContents contents) const {
+        device_functions->CmdBeginRenderPass(commandbuffer, pRenderPassBegin, contents);}
+    void NextSubpass(SubpassContents contents) const {
+        device_functions->CmdNextSubpass(commandbuffer, contents);}
+    void EndRenderPass() const {
+        device_functions->CmdEndRenderPass(commandbuffer);}
+    void ExecuteCommands(uint32_t commandBufferCount, const CommandBuffer* pCommandBuffers) const {
+        device_functions->CmdExecuteCommands(commandbuffer, commandBufferCount, pCommandBuffers);}
+    void DebugMarkerBeginEXT(const DebugMarkerMarkerInfoEXT&  pMarkerInfo) const {
+        device_functions->CmdDebugMarkerBeginEXT(commandbuffer, pMarkerInfo);}
+    void DebugMarkerEndEXT() const {
+        device_functions->CmdDebugMarkerEndEXT(commandbuffer);}
+    void DebugMarkerInsertEXT(const DebugMarkerMarkerInfoEXT&  pMarkerInfo) const {
+        device_functions->CmdDebugMarkerInsertEXT(commandbuffer, pMarkerInfo);}
+    void ExecuteGeneratedCommandsNV(Bool32 isPreprocessed, const GeneratedCommandsInfoNV&  pGeneratedCommandsInfo) const {
+        device_functions->CmdExecuteGeneratedCommandsNV(commandbuffer, isPreprocessed, pGeneratedCommandsInfo);}
+    void PreprocessGeneratedCommandsNV(const GeneratedCommandsInfoNV&  pGeneratedCommandsInfo) const {
+        device_functions->CmdPreprocessGeneratedCommandsNV(commandbuffer, pGeneratedCommandsInfo);}
+    void BindPipelineShaderGroupNV(PipelineBindPoint pipelineBindPoint, Pipeline pipeline, uint32_t groupIndex) const {
+        device_functions->CmdBindPipelineShaderGroupNV(commandbuffer, pipelineBindPoint, pipeline, groupIndex);}
+    void PushDescriptorSetKHR(PipelineBindPoint pipelineBindPoint, PipelineLayout layout, uint32_t set, uint32_t descriptorWriteCount, const WriteDescriptorSet* pDescriptorWrites) const {
+        device_functions->CmdPushDescriptorSetKHR(commandbuffer, pipelineBindPoint, layout, set, descriptorWriteCount, pDescriptorWrites);}
+    void SetDeviceMask(uint32_t deviceMask) const {
+        device_functions->CmdSetDeviceMask(commandbuffer, deviceMask);}
+    void DispatchBase(uint32_t baseGroupX, uint32_t baseGroupY, uint32_t baseGroupZ, uint32_t groupCountX, uint32_t groupCountY, uint32_t groupCountZ) const {
+        device_functions->CmdDispatchBase(commandbuffer, baseGroupX, baseGroupY, baseGroupZ, groupCountX, groupCountY, groupCountZ);}
+    void PushDescriptorSetWithTemplateKHR(DescriptorUpdateTemplate descriptorUpdateTemplate, PipelineLayout layout, uint32_t set, const void* pData) const {
+        device_functions->CmdPushDescriptorSetWithTemplateKHR(commandbuffer, descriptorUpdateTemplate, layout, set, pData);}
+    void SetViewportWScalingNV(uint32_t firstViewport, uint32_t viewportCount, const ViewportWScalingNV* pViewportWScalings) const {
+        device_functions->CmdSetViewportWScalingNV(commandbuffer, firstViewport, viewportCount, pViewportWScalings);}
+    void SetDiscardRectangleEXT(uint32_t firstDiscardRectangle, uint32_t discardRectangleCount, const Rect2D* pDiscardRectangles) const {
+        device_functions->CmdSetDiscardRectangleEXT(commandbuffer, firstDiscardRectangle, discardRectangleCount, pDiscardRectangles);}
+    void SetSampleLocationsEXT(const SampleLocationsInfoEXT&  pSampleLocationsInfo) const {
+        device_functions->CmdSetSampleLocationsEXT(commandbuffer, pSampleLocationsInfo);}
+    void BeginDebugUtilsLabelEXT(const DebugUtilsLabelEXT&  pLabelInfo) const {
+        device_functions->CmdBeginDebugUtilsLabelEXT(commandbuffer, pLabelInfo);}
+    void EndDebugUtilsLabelEXT() const {
+        device_functions->CmdEndDebugUtilsLabelEXT(commandbuffer);}
+    void InsertDebugUtilsLabelEXT(const DebugUtilsLabelEXT&  pLabelInfo) const {
+        device_functions->CmdInsertDebugUtilsLabelEXT(commandbuffer, pLabelInfo);}
+    void WriteBufferMarkerAMD(PipelineStageFlagBits pipelineStage, Buffer dstBuffer, DeviceSize dstOffset, uint32_t marker) const {
+        device_functions->CmdWriteBufferMarkerAMD(commandbuffer, pipelineStage, dstBuffer, dstOffset, marker);}
+    void BeginRenderPass2(const RenderPassBeginInfo&  pRenderPassBegin, const SubpassBeginInfo&  pSubpassBeginInfo) const {
+        device_functions->CmdBeginRenderPass2(commandbuffer, pRenderPassBegin, pSubpassBeginInfo);}
+    void NextSubpass2(const SubpassBeginInfo&  pSubpassBeginInfo, const SubpassEndInfo&  pSubpassEndInfo) const {
+        device_functions->CmdNextSubpass2(commandbuffer, pSubpassBeginInfo, pSubpassEndInfo);}
+    void EndRenderPass2(const SubpassEndInfo&  pSubpassEndInfo) const {
+        device_functions->CmdEndRenderPass2(commandbuffer, pSubpassEndInfo);}
+    void DrawIndirectCount(Buffer buffer, DeviceSize offset, Buffer countBuffer, DeviceSize countBufferOffset, uint32_t maxDrawCount, uint32_t stride) const {
+        device_functions->CmdDrawIndirectCount(commandbuffer, buffer, offset, countBuffer, countBufferOffset, maxDrawCount, stride);}
+    void DrawIndexedIndirectCount(Buffer buffer, DeviceSize offset, Buffer countBuffer, DeviceSize countBufferOffset, uint32_t maxDrawCount, uint32_t stride) const {
+        device_functions->CmdDrawIndexedIndirectCount(commandbuffer, buffer, offset, countBuffer, countBufferOffset, maxDrawCount, stride);}
+    void SetCheckpointNV(const void* pCheckpointMarker) const {
+        device_functions->CmdSetCheckpointNV(commandbuffer, pCheckpointMarker);}
+    void BindTransformFeedbackBuffersEXT(uint32_t firstBinding, uint32_t bindingCount, const Buffer* pBuffers, const DeviceSize* pOffsets, const DeviceSize* pSizes) const {
+        device_functions->CmdBindTransformFeedbackBuffersEXT(commandbuffer, firstBinding, bindingCount, pBuffers, pOffsets, pSizes);}
+    void BeginTransformFeedbackEXT(uint32_t firstCounterBuffer, uint32_t counterBufferCount, const Buffer* pCounterBuffers, const DeviceSize* pCounterBufferOffsets) const {
+        device_functions->CmdBeginTransformFeedbackEXT(commandbuffer, firstCounterBuffer, counterBufferCount, pCounterBuffers, pCounterBufferOffsets);}
+    void EndTransformFeedbackEXT(uint32_t firstCounterBuffer, uint32_t counterBufferCount, const Buffer* pCounterBuffers, const DeviceSize* pCounterBufferOffsets) const {
+        device_functions->CmdEndTransformFeedbackEXT(commandbuffer, firstCounterBuffer, counterBufferCount, pCounterBuffers, pCounterBufferOffsets);}
+    void BeginQueryIndexedEXT(QueryPool queryPool, uint32_t query, QueryControlFlags flags, uint32_t index) const {
+        device_functions->CmdBeginQueryIndexedEXT(commandbuffer, queryPool, query, flags, index);}
+    void EndQueryIndexedEXT(QueryPool queryPool, uint32_t query, uint32_t index) const {
+        device_functions->CmdEndQueryIndexedEXT(commandbuffer, queryPool, query, index);}
+    void DrawIndirectByteCountEXT(uint32_t instanceCount, uint32_t firstInstance, Buffer counterBuffer, DeviceSize counterBufferOffset, uint32_t counterOffset, uint32_t vertexStride) const {
+        device_functions->CmdDrawIndirectByteCountEXT(commandbuffer, instanceCount, firstInstance, counterBuffer, counterBufferOffset, counterOffset, vertexStride);}
+    void SetExclusiveScissorNV(uint32_t firstExclusiveScissor, uint32_t exclusiveScissorCount, const Rect2D* pExclusiveScissors) const {
+        device_functions->CmdSetExclusiveScissorNV(commandbuffer, firstExclusiveScissor, exclusiveScissorCount, pExclusiveScissors);}
+    void BindShadingRateImageNV(ImageView imageView, ImageLayout imageLayout) const {
+        device_functions->CmdBindShadingRateImageNV(commandbuffer, imageView, imageLayout);}
+    void SetViewportShadingRatePaletteNV(uint32_t firstViewport, uint32_t viewportCount, const ShadingRatePaletteNV* pShadingRatePalettes) const {
+        device_functions->CmdSetViewportShadingRatePaletteNV(commandbuffer, firstViewport, viewportCount, pShadingRatePalettes);}
+    void SetCoarseSampleOrderNV(CoarseSampleOrderTypeNV sampleOrderType, uint32_t customSampleOrderCount, const CoarseSampleOrderCustomNV* pCustomSampleOrders) const {
+        device_functions->CmdSetCoarseSampleOrderNV(commandbuffer, sampleOrderType, customSampleOrderCount, pCustomSampleOrders);}
+    void DrawMeshTasksNV(uint32_t taskCount, uint32_t firstTask) const {
+        device_functions->CmdDrawMeshTasksNV(commandbuffer, taskCount, firstTask);}
+    void DrawMeshTasksIndirectNV(Buffer buffer, DeviceSize offset, uint32_t drawCount, uint32_t stride) const {
+        device_functions->CmdDrawMeshTasksIndirectNV(commandbuffer, buffer, offset, drawCount, stride);}
+    void DrawMeshTasksIndirectCountNV(Buffer buffer, DeviceSize offset, Buffer countBuffer, DeviceSize countBufferOffset, uint32_t maxDrawCount, uint32_t stride) const {
+        device_functions->CmdDrawMeshTasksIndirectCountNV(commandbuffer, buffer, offset, countBuffer, countBufferOffset, maxDrawCount, stride);}
+    void CopyAccelerationStructureNV(AccelerationStructureKHR dst, AccelerationStructureKHR src, CopyAccelerationStructureModeKHR mode) const {
+        device_functions->CmdCopyAccelerationStructureNV(commandbuffer, dst, src, mode);}
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-    void CopyAccelerationStructureKHR(const CopyAccelerationStructureInfoKHR&  pInfo) {
-        device_functions->pfn_CmdCopyAccelerationStructureKHR(commandbuffer.get(),
-            reinterpret_cast<const VkCopyAccelerationStructureInfoKHR*>(&pInfo));
-    }
-    void CopyAccelerationStructureToMemoryKHR(const CopyAccelerationStructureToMemoryInfoKHR&  pInfo) {
-        device_functions->pfn_CmdCopyAccelerationStructureToMemoryKHR(commandbuffer.get(),
-            reinterpret_cast<const VkCopyAccelerationStructureToMemoryInfoKHR*>(&pInfo));
-    }
-    void CopyMemoryToAccelerationStructureKHR(const CopyMemoryToAccelerationStructureInfoKHR&  pInfo) {
-        device_functions->pfn_CmdCopyMemoryToAccelerationStructureKHR(commandbuffer.get(),
-            reinterpret_cast<const VkCopyMemoryToAccelerationStructureInfoKHR*>(&pInfo));
-    }
-    void WriteAccelerationStructuresPropertiesKHR(uint32_t accelerationStructureCount,
-        const AccelerationStructureKHR* pAccelerationStructures,
-        QueryType queryType,
-        QueryPool queryPool,
-        uint32_t firstQuery) {
-        device_functions->pfn_CmdWriteAccelerationStructuresPropertiesKHR(commandbuffer.get(),
-            accelerationStructureCount,
-            reinterpret_cast<const VkAccelerationStructureKHR*>(pAccelerationStructures),
-            static_cast<VkQueryType>(queryType),
-            queryPool.get(),
-            firstQuery);
-    }
+    void CopyAccelerationStructureKHR(const CopyAccelerationStructureInfoKHR&  pInfo) const {
+        device_functions->CmdCopyAccelerationStructureKHR(commandbuffer, pInfo);}
+    void CopyAccelerationStructureToMemoryKHR(const CopyAccelerationStructureToMemoryInfoKHR&  pInfo) const {
+        device_functions->CmdCopyAccelerationStructureToMemoryKHR(commandbuffer, pInfo);}
+    void CopyMemoryToAccelerationStructureKHR(const CopyMemoryToAccelerationStructureInfoKHR&  pInfo) const {
+        device_functions->CmdCopyMemoryToAccelerationStructureKHR(commandbuffer, pInfo);}
+    void WriteAccelerationStructuresPropertiesKHR(uint32_t accelerationStructureCount, const AccelerationStructureKHR* pAccelerationStructures, QueryType queryType, QueryPool queryPool, uint32_t firstQuery) const {
+        device_functions->CmdWriteAccelerationStructuresPropertiesKHR(commandbuffer, accelerationStructureCount, pAccelerationStructures, queryType, queryPool, firstQuery);}
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
-    void BuildAccelerationStructureNV(const AccelerationStructureInfoNV&  pInfo,
-        Buffer instanceData,
-        DeviceSize instanceOffset,
-        Bool32 update,
-        AccelerationStructureKHR dst,
-        AccelerationStructureKHR src,
-        Buffer scratch,
-        DeviceSize scratchOffset) {
-        device_functions->pfn_CmdBuildAccelerationStructureNV(commandbuffer.get(),
-            reinterpret_cast<const VkAccelerationStructureInfoNV*>(&pInfo),
-            instanceData.get(),
-            instanceOffset,
-            update,
-            dst.get(),
-            src.get(),
-            scratch.get(),
-            scratchOffset);
-    }
+    void BuildAccelerationStructureNV(const AccelerationStructureInfoNV&  pInfo, Buffer instanceData, DeviceSize instanceOffset, Bool32 update, AccelerationStructureKHR dst, AccelerationStructureKHR src, Buffer scratch, DeviceSize scratchOffset) const {
+        device_functions->CmdBuildAccelerationStructureNV(commandbuffer, pInfo, instanceData, instanceOffset, update, dst, src, scratch, scratchOffset);}
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-    void TraceRaysKHR(const StridedBufferRegionKHR&  pRaygenShaderBindingTable,
-        const StridedBufferRegionKHR&  pMissShaderBindingTable,
-        const StridedBufferRegionKHR&  pHitShaderBindingTable,
-        const StridedBufferRegionKHR&  pCallableShaderBindingTable,
-        uint32_t width,
-        uint32_t height,
-        uint32_t depth) {
-        device_functions->pfn_CmdTraceRaysKHR(commandbuffer.get(),
-            reinterpret_cast<const VkStridedBufferRegionKHR*>(&pRaygenShaderBindingTable),
-            reinterpret_cast<const VkStridedBufferRegionKHR*>(&pMissShaderBindingTable),
-            reinterpret_cast<const VkStridedBufferRegionKHR*>(&pHitShaderBindingTable),
-            reinterpret_cast<const VkStridedBufferRegionKHR*>(&pCallableShaderBindingTable),
-            width,
-            height,
-            depth);
-    }
+    void TraceRaysKHR(const StridedBufferRegionKHR&  pRaygenShaderBindingTable, const StridedBufferRegionKHR&  pMissShaderBindingTable, const StridedBufferRegionKHR&  pHitShaderBindingTable, const StridedBufferRegionKHR&  pCallableShaderBindingTable, uint32_t width, uint32_t height, uint32_t depth) const {
+        device_functions->CmdTraceRaysKHR(commandbuffer, pRaygenShaderBindingTable, pMissShaderBindingTable, pHitShaderBindingTable, pCallableShaderBindingTable, width, height, depth);}
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
-    void TraceRaysNV(Buffer raygenShaderBindingTableBuffer,
-        DeviceSize raygenShaderBindingOffset,
-        Buffer missShaderBindingTableBuffer,
-        DeviceSize missShaderBindingOffset,
-        DeviceSize missShaderBindingStride,
-        Buffer hitShaderBindingTableBuffer,
-        DeviceSize hitShaderBindingOffset,
-        DeviceSize hitShaderBindingStride,
-        Buffer callableShaderBindingTableBuffer,
-        DeviceSize callableShaderBindingOffset,
-        DeviceSize callableShaderBindingStride,
-        uint32_t width,
-        uint32_t height,
-        uint32_t depth) {
-        device_functions->pfn_CmdTraceRaysNV(commandbuffer.get(),
-            raygenShaderBindingTableBuffer.get(),
-            raygenShaderBindingOffset,
-            missShaderBindingTableBuffer.get(),
-            missShaderBindingOffset,
-            missShaderBindingStride,
-            hitShaderBindingTableBuffer.get(),
-            hitShaderBindingOffset,
-            hitShaderBindingStride,
-            callableShaderBindingTableBuffer.get(),
-            callableShaderBindingOffset,
-            callableShaderBindingStride,
-            width,
-            height,
-            depth);
-    }
+    void TraceRaysNV(Buffer raygenShaderBindingTableBuffer, DeviceSize raygenShaderBindingOffset, Buffer missShaderBindingTableBuffer, DeviceSize missShaderBindingOffset, DeviceSize missShaderBindingStride, Buffer hitShaderBindingTableBuffer, DeviceSize hitShaderBindingOffset, DeviceSize hitShaderBindingStride, Buffer callableShaderBindingTableBuffer, DeviceSize callableShaderBindingOffset, DeviceSize callableShaderBindingStride, uint32_t width, uint32_t height, uint32_t depth) const {
+        device_functions->CmdTraceRaysNV(commandbuffer, raygenShaderBindingTableBuffer, raygenShaderBindingOffset, missShaderBindingTableBuffer, missShaderBindingOffset, missShaderBindingStride, hitShaderBindingTableBuffer, hitShaderBindingOffset, hitShaderBindingStride, callableShaderBindingTableBuffer, callableShaderBindingOffset, callableShaderBindingStride, width, height, depth);}
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-    void TraceRaysIndirectKHR(const StridedBufferRegionKHR&  pRaygenShaderBindingTable,
-        const StridedBufferRegionKHR&  pMissShaderBindingTable,
-        const StridedBufferRegionKHR&  pHitShaderBindingTable,
-        const StridedBufferRegionKHR&  pCallableShaderBindingTable,
-        Buffer buffer,
-        DeviceSize offset) {
-        device_functions->pfn_CmdTraceRaysIndirectKHR(commandbuffer.get(),
-            reinterpret_cast<const VkStridedBufferRegionKHR*>(&pRaygenShaderBindingTable),
-            reinterpret_cast<const VkStridedBufferRegionKHR*>(&pMissShaderBindingTable),
-            reinterpret_cast<const VkStridedBufferRegionKHR*>(&pHitShaderBindingTable),
-            reinterpret_cast<const VkStridedBufferRegionKHR*>(&pCallableShaderBindingTable),
-            buffer.get(),
-            offset);
-    }
+    void TraceRaysIndirectKHR(const StridedBufferRegionKHR&  pRaygenShaderBindingTable, const StridedBufferRegionKHR&  pMissShaderBindingTable, const StridedBufferRegionKHR&  pHitShaderBindingTable, const StridedBufferRegionKHR&  pCallableShaderBindingTable, Buffer buffer, DeviceSize offset) const {
+        device_functions->CmdTraceRaysIndirectKHR(commandbuffer, pRaygenShaderBindingTable, pMissShaderBindingTable, pHitShaderBindingTable, pCallableShaderBindingTable, buffer, offset);}
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
-    [[nodiscard]] Result SetPerformanceMarkerINTEL(const PerformanceMarkerInfoINTEL&  pMarkerInfo) {
-        return static_cast<Result>(device_functions->pfn_CmdSetPerformanceMarkerINTEL(commandbuffer.get(),
-            reinterpret_cast<const VkPerformanceMarkerInfoINTEL*>(&pMarkerInfo)));
-    }
-    [[nodiscard]] Result SetPerformanceStreamMarkerINTEL(const PerformanceStreamMarkerInfoINTEL&  pMarkerInfo) {
-        return static_cast<Result>(device_functions->pfn_CmdSetPerformanceStreamMarkerINTEL(commandbuffer.get(),
-            reinterpret_cast<const VkPerformanceStreamMarkerInfoINTEL*>(&pMarkerInfo)));
-    }
-    [[nodiscard]] Result SetPerformanceOverrideINTEL(const PerformanceOverrideInfoINTEL&  pOverrideInfo) {
-        return static_cast<Result>(device_functions->pfn_CmdSetPerformanceOverrideINTEL(commandbuffer.get(),
-            reinterpret_cast<const VkPerformanceOverrideInfoINTEL*>(&pOverrideInfo)));
-    }
-    void SetLineStippleEXT(uint32_t lineStippleFactor,
-        uint16_t lineStipplePattern) {
-        device_functions->pfn_CmdSetLineStippleEXT(commandbuffer.get(),
-            lineStippleFactor,
-            lineStipplePattern);
-    }
+    [[nodiscard]] Result SetPerformanceMarkerINTEL(const PerformanceMarkerInfoINTEL&  pMarkerInfo) const {
+        return device_functions->CmdSetPerformanceMarkerINTEL(commandbuffer, pMarkerInfo);}
+    [[nodiscard]] Result SetPerformanceStreamMarkerINTEL(const PerformanceStreamMarkerInfoINTEL&  pMarkerInfo) const {
+        return device_functions->CmdSetPerformanceStreamMarkerINTEL(commandbuffer, pMarkerInfo);}
+    [[nodiscard]] Result SetPerformanceOverrideINTEL(const PerformanceOverrideInfoINTEL&  pOverrideInfo) const {
+        return device_functions->CmdSetPerformanceOverrideINTEL(commandbuffer, pOverrideInfo);}
+    void SetLineStippleEXT(uint32_t lineStippleFactor, uint16_t lineStipplePattern) const {
+        device_functions->CmdSetLineStippleEXT(commandbuffer, lineStippleFactor, lineStipplePattern);}
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-    void BuildAccelerationStructureKHR(uint32_t infoCount,
-        const AccelerationStructureBuildGeometryInfoKHR* pInfos,
-        const AccelerationStructureBuildOffsetInfoKHR* const* ppOffsetInfos) {
-        device_functions->pfn_CmdBuildAccelerationStructureKHR(commandbuffer.get(),
-            infoCount,
-            reinterpret_cast<const VkAccelerationStructureBuildGeometryInfoKHR*>(pInfos),
-            reinterpret_cast<const VkAccelerationStructureBuildOffsetInfoKHR* const*>(ppOffsetInfos));
-    }
-    void BuildAccelerationStructureIndirectKHR(const AccelerationStructureBuildGeometryInfoKHR&  pInfo,
-        Buffer indirectBuffer,
-        DeviceSize indirectOffset,
-        uint32_t indirectStride) {
-        device_functions->pfn_CmdBuildAccelerationStructureIndirectKHR(commandbuffer.get(),
-            reinterpret_cast<const VkAccelerationStructureBuildGeometryInfoKHR*>(&pInfo),
-            indirectBuffer.get(),
-            indirectOffset,
-            indirectStride);
-    }
+    void BuildAccelerationStructureKHR(uint32_t infoCount, const AccelerationStructureBuildGeometryInfoKHR* pInfos, const AccelerationStructureBuildOffsetInfoKHR* const* ppOffsetInfos) const {
+        device_functions->CmdBuildAccelerationStructureKHR(commandbuffer, infoCount, pInfos, ppOffsetInfos);}
+    void BuildAccelerationStructureIndirectKHR(const AccelerationStructureBuildGeometryInfoKHR&  pInfo, Buffer indirectBuffer, DeviceSize indirectOffset, uint32_t indirectStride) const {
+        device_functions->CmdBuildAccelerationStructureIndirectKHR(commandbuffer, pInfo, indirectBuffer, indirectOffset, indirectStride);}
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
-    void SetCullModeEXT(CullModeFlags cullMode) {
-        device_functions->pfn_CmdSetCullModeEXT(commandbuffer.get(),
-            static_cast<VkCullModeFlags>(cullMode));
-    }
-    void SetFrontFaceEXT(FrontFace frontFace) {
-        device_functions->pfn_CmdSetFrontFaceEXT(commandbuffer.get(),
-            static_cast<VkFrontFace>(frontFace));
-    }
-    void SetPrimitiveTopologyEXT(PrimitiveTopology primitiveTopology) {
-        device_functions->pfn_CmdSetPrimitiveTopologyEXT(commandbuffer.get(),
-            static_cast<VkPrimitiveTopology>(primitiveTopology));
-    }
-    void SetViewportWithCountEXT(uint32_t viewportCount,
-        const Viewport* pViewports) {
-        device_functions->pfn_CmdSetViewportWithCountEXT(commandbuffer.get(),
-            viewportCount,
-            reinterpret_cast<const VkViewport*>(pViewports));
-    }
-    void SetScissorWithCountEXT(uint32_t scissorCount,
-        const Rect2D* pScissors) {
-        device_functions->pfn_CmdSetScissorWithCountEXT(commandbuffer.get(),
-            scissorCount,
-            reinterpret_cast<const VkRect2D*>(pScissors));
-    }
-    void BindVertexBuffers2EXT(uint32_t firstBinding,
-        uint32_t bindingCount,
-        const Buffer* pBuffers,
-        const DeviceSize* pOffsets,
-        const DeviceSize* pSizes,
-        const DeviceSize* pStrides) {
-        device_functions->pfn_CmdBindVertexBuffers2EXT(commandbuffer.get(),
-            firstBinding,
-            bindingCount,
-            reinterpret_cast<const VkBuffer*>(pBuffers),
-            pOffsets,
-            pSizes,
-            pStrides);
-    }
-    void SetDepthTestEnableEXT(Bool32 depthTestEnable) {
-        device_functions->pfn_CmdSetDepthTestEnableEXT(commandbuffer.get(),
-            depthTestEnable);
-    }
-    void SetDepthWriteEnableEXT(Bool32 depthWriteEnable) {
-        device_functions->pfn_CmdSetDepthWriteEnableEXT(commandbuffer.get(),
-            depthWriteEnable);
-    }
-    void SetDepthCompareOpEXT(CompareOp depthCompareOp) {
-        device_functions->pfn_CmdSetDepthCompareOpEXT(commandbuffer.get(),
-            static_cast<VkCompareOp>(depthCompareOp));
-    }
-    void SetDepthBoundsTestEnableEXT(Bool32 depthBoundsTestEnable) {
-        device_functions->pfn_CmdSetDepthBoundsTestEnableEXT(commandbuffer.get(),
-            depthBoundsTestEnable);
-    }
-    void SetStencilTestEnableEXT(Bool32 stencilTestEnable) {
-        device_functions->pfn_CmdSetStencilTestEnableEXT(commandbuffer.get(),
-            stencilTestEnable);
-    }
-    void SetStencilOpEXT(StencilFaceFlags faceMask,
-        StencilOp failOp,
-        StencilOp passOp,
-        StencilOp depthFailOp,
-        CompareOp compareOp) {
-        device_functions->pfn_CmdSetStencilOpEXT(commandbuffer.get(),
-            static_cast<VkStencilFaceFlags>(faceMask),
-            static_cast<VkStencilOp>(failOp),
-            static_cast<VkStencilOp>(passOp),
-            static_cast<VkStencilOp>(depthFailOp),
-            static_cast<VkCompareOp>(compareOp));
-    }
+    void SetCullModeEXT(CullModeFlags cullMode) const {
+        device_functions->CmdSetCullModeEXT(commandbuffer, cullMode);}
+    void SetFrontFaceEXT(FrontFace frontFace) const {
+        device_functions->CmdSetFrontFaceEXT(commandbuffer, frontFace);}
+    void SetPrimitiveTopologyEXT(PrimitiveTopology primitiveTopology) const {
+        device_functions->CmdSetPrimitiveTopologyEXT(commandbuffer, primitiveTopology);}
+    void SetViewportWithCountEXT(uint32_t viewportCount, const Viewport* pViewports) const {
+        device_functions->CmdSetViewportWithCountEXT(commandbuffer, viewportCount, pViewports);}
+    void SetScissorWithCountEXT(uint32_t scissorCount, const Rect2D* pScissors) const {
+        device_functions->CmdSetScissorWithCountEXT(commandbuffer, scissorCount, pScissors);}
+    void BindVertexBuffers2EXT(uint32_t firstBinding, uint32_t bindingCount, const Buffer* pBuffers, const DeviceSize* pOffsets, const DeviceSize* pSizes, const DeviceSize* pStrides) const {
+        device_functions->CmdBindVertexBuffers2EXT(commandbuffer, firstBinding, bindingCount, pBuffers, pOffsets, pSizes, pStrides);}
+    void SetDepthTestEnableEXT(Bool32 depthTestEnable) const {
+        device_functions->CmdSetDepthTestEnableEXT(commandbuffer, depthTestEnable);}
+    void SetDepthWriteEnableEXT(Bool32 depthWriteEnable) const {
+        device_functions->CmdSetDepthWriteEnableEXT(commandbuffer, depthWriteEnable);}
+    void SetDepthCompareOpEXT(CompareOp depthCompareOp) const {
+        device_functions->CmdSetDepthCompareOpEXT(commandbuffer, depthCompareOp);}
+    void SetDepthBoundsTestEnableEXT(Bool32 depthBoundsTestEnable) const {
+        device_functions->CmdSetDepthBoundsTestEnableEXT(commandbuffer, depthBoundsTestEnable);}
+    void SetStencilTestEnableEXT(Bool32 stencilTestEnable) const {
+        device_functions->CmdSetStencilTestEnableEXT(commandbuffer, stencilTestEnable);}
+    void SetStencilOpEXT(StencilFaceFlags faceMask, StencilOp failOp, StencilOp passOp, StencilOp depthFailOp, CompareOp compareOp) const {
+        device_functions->CmdSetStencilOpEXT(commandbuffer, faceMask, failOp, passOp, depthFailOp, compareOp);}
 };
 } // namespace vk
 // clang-format on

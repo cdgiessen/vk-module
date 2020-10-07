@@ -642,7 +642,7 @@ class Function:
             if param.len_attrib is not None and param.len_attrib != "null-terminated" and param.optional is None:
                 self.span_val.add(param.len_attrib)
 
-        self.is_value_query = len(self.parameters) > 0 and self.return_type == 'VkResult' and self.parameters[-1].is_ptr() \
+        self.is_value_query = len(self.parameters) > 0 and self.parameters[-1].is_ptr() \
             and not self.parameters[-1].is_const and self.parameters[-1].len_attrib is None
         self.is_enumeration_function = len(self.parameters) > 1 and self.parameters[-1].is_ptr() and not self.parameters[-1].is_const\
             and self.parameters[-2].optional is not None and self.parameters[-2].optional == 'false,true'
@@ -654,7 +654,10 @@ class Function:
             if self.query_type[:2] == 'vk':
                 self.query_type = self.query_type[:2]
             self.query_name = self.parameters[-1].name
-            self.full_return_type = f'expected<{self.query_type}>'
+            if self.return_type == 'VkResult':
+                self.full_return_type = f'expected<{self.query_type}>'
+            else:
+                self.full_return_type = f'{self.query_type}'
         if self.is_enumeration_function:
             self.query_type = self.parameters[-1].get_base_type(downgrade_ptr_type=self.parameters[-1].base_type != 'void')
             self.base_query_type =self.parameters[-1].get_base_type(use_vk_type=False)
@@ -676,7 +679,7 @@ class Function:
                 if print_function_name.find(str_from) != -1:
                     print_function_name = print_function_name.replace(str_from, str_to)
         file.write(f'{indent}')
-        if self.return_type != 'void': 
+        if self.return_type != 'void' or self.full_return_type != None: 
             file.write('[[nodiscard]] ')
 
         if full_return_type is not None:
@@ -686,13 +689,12 @@ class Function:
         else:
             file.write(f'{self.return_type} {print_function_name}')
 
-    def print_parameters(self, file, parameter_list, indent=''):
-        is_first = True
+    def print_parameters(self, file, parameter_list, indent='', break_between=True):
         for param in parameter_list:
-            if not is_first:
-                file.write(f',\n{indent}    ')
-            else:
-                is_first = False
+            if param != parameter_list[0]:
+                file.write(', ')
+                if break_between:
+                    file.write(f'\n{indent}    ')
             file.write(f'{param.get_full_type(use_references=True)}')
             if param.name == 'pAllocator' and param == parameter_list[-1]:
                 file.write(f' = nullptr')
@@ -734,62 +736,83 @@ class Function:
             file.write(')')
         file.write(');\n')
 
-    def print_function(self, file, dispatch_handle = None, dispatch_handle_name = None, indent='', replace_dict=None, pfn_source=None, guard=True):
+    def print_function(self, file, dispatch_handle = None, dispatch_handle_name = None, indent='', replace_dict=None, pfn_source=None, guard=True, forwarding_function=False):
         PlatformGuardHeader(file, self.platform, guard)
         if self.alias is not None:
             file.write(f'const auto {self.name[2:]} = {self.alias[2:]};\n')
-        else:
-            self.print_return_type(file, indent, replace_dict, self.full_return_type)
-            file.write('(')
-            parameter_list = self.parameters
-            if dispatch_handle is not None and f'{dispatch_handle}' == self.dispatch_handle:
-                parameter_list = parameter_list[1:]
-            if self.is_value_query:
-                parameter_list = parameter_list[:-1]
-            if self.is_enumeration_function:
-                parameter_list = parameter_list[:-2]
-            self.print_parameters(file, parameter_list, indent)
-            file.write(') {\n')
-            if self.name == 'vkEnumerateInstanceVersion':
-                #early return because 1.0 doesn't support the function, will be null and shouldn't cause a crash
-                file.write(f'{indent}    if (pfn_EnumerateInstanceVersion == 0) return expected<uint32_t>(VK_MAKE_VERSION(1,0,0), Result::Success);\n')
-            if self.is_value_query:
-                if self.return_type != 'void':
-                    file.write(f'{indent}    {self.query_type} {self.query_name};\n')
-                    file.write(f'{indent}    vk::Result result = ')
-                    self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source)
-                    file.write(f'{indent}    return expected<{self.query_type}>({self.query_name}, result);\n')
-                else:
-                    file.write(f'{indent}    ')
-                    self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source)
-            elif self.is_enumeration_function:
-                if self.return_type == 'void':
-                    file.write(f'{indent}    {self.count_type} {self.count_name} = 0;\n{indent}    ')
-                    self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source, 'nullptr')
-                    file.write(f'{indent}    detail::fixed_vector<{self.query_type}> {self.query_name}{{{self.count_name}}};\n{indent}    ')
-                    self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source, f'reinterpret_cast<{self.base_query_type}>({self.query_name}.data())')
-                    file.write(f'{indent}    if ({self.count_name} < {self.query_name}.size()) {self.query_name}.shrink({self.count_name});\n')
-                    file.write(f'{indent}    return {self.query_name};\n')
-                else:
-                    file.write(f'{indent}    {self.count_type} {self.count_name} = 0;\n')
-                    file.write(f'{indent}    vk::Result result = ')
-                    self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source, 'nullptr')
-                    file.write(f'{indent}    if (result < Result::Success) return expected(detail::fixed_vector<{self.query_type}>{{}}, result);\n')
-                    file.write(f'{indent}    detail::fixed_vector<{self.query_type}> {self.query_name}{{{self.count_name}}};\n')
-                    file.write(f'{indent}    result = ')
-                    self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source, f'reinterpret_cast<{self.base_query_type}>({self.query_name}.data())')
-                    file.write(f'{indent}    if ({self.count_name} < {self.query_name}.size()) {self.query_name}.shrink({self.count_name});\n')
-                    file.write(f'{indent}    return expected(std::move({self.query_name}), result);\n')
-            else:
-                file.write(f'{indent}    ')
-                if self.return_type != 'void':
-                    file.write(f'return ')
-                self.print_c_api_call(file, dispatch_handle, dispatch_handle_name,indent, pfn_source)
+            PlatformGuardFooter(file, self.platform, guard)
+            return;
 
-            file.write(f'{indent}}}\n')
+        self.print_return_type(file, indent, replace_dict, self.full_return_type)
+        file.write('(')
+        parameter_list = self.parameters
+        if dispatch_handle is not None and f'{dispatch_handle}' == self.dispatch_handle:
+            parameter_list = parameter_list[1:]
+        if self.is_value_query:
+            parameter_list = parameter_list[:-1]
+        if self.is_enumeration_function:
+            parameter_list = parameter_list[:-2]
+        self.print_parameters(file, parameter_list, indent, break_between=not forwarding_function)
+        file.write(') const {\n')
+        if forwarding_function:
+            file.write(f'{indent}    ')
+            if self.return_type != 'void' or self.full_return_type != None:
+                file.write(f'return ')
+            file.write(f'{pfn_source}->{self.name[2:]}(')
+            forwarding_parameter_list =  self.parameters
+            if self.is_value_query:
+                forwarding_parameter_list = forwarding_parameter_list[:-1]
+            if self.is_enumeration_function:
+                forwarding_parameter_list = forwarding_parameter_list[:-2]
+            for param in forwarding_parameter_list:
+                if param == forwarding_parameter_list[0]:
+                    file.write(f'{dispatch_handle_name}')
+                else:
+                    file.write(f', {param.name}')
+            file.write(f');}}\n')
+            PlatformGuardFooter(file, self.platform, guard)
+            return
+
+        if self.name == 'vkEnumerateInstanceVersion':
+            #early return because 1.0 doesn't support the function, will be null and shouldn't cause a crash
+            file.write(f'{indent}    if (pfn_EnumerateInstanceVersion == 0) return expected<uint32_t>(VK_MAKE_VERSION(1,0,0), Result::Success);\n')
+        if self.is_value_query:
+            file.write(f'{indent}    {self.query_type} {self.query_name};\n{indent}    ')
+            if self.return_type != 'void':
+                file.write(f'vk::Result result = ')
+            self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source)
+            if self.return_type != 'void':
+                file.write(f'{indent}    return expected<{self.query_type}>({self.query_name}, result);\n')
+            else:
+                file.write(f'{indent}    return {self.query_name};\n')
+        elif self.is_enumeration_function:
+            if self.return_type == 'void':
+                file.write(f'{indent}    {self.count_type} {self.count_name} = 0;\n{indent}    ')
+                self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source, 'nullptr')
+                file.write(f'{indent}    detail::fixed_vector<{self.query_type}> {self.query_name}{{{self.count_name}}};\n{indent}    ')
+                self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source, f'reinterpret_cast<{self.base_query_type}>({self.query_name}.data())')
+                file.write(f'{indent}    if ({self.count_name} < {self.query_name}.size()) {self.query_name}.shrink({self.count_name});\n')
+                file.write(f'{indent}    return {self.query_name};\n')
+            else:
+                file.write(f'{indent}    {self.count_type} {self.count_name} = 0;\n')
+                file.write(f'{indent}    vk::Result result = ')
+                self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source, 'nullptr')
+                file.write(f'{indent}    if (result < Result::Success) return expected(detail::fixed_vector<{self.query_type}>{{}}, result);\n')
+                file.write(f'{indent}    detail::fixed_vector<{self.query_type}> {self.query_name}{{{self.count_name}}};\n')
+                file.write(f'{indent}    result = ')
+                self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source, f'reinterpret_cast<{self.base_query_type}>({self.query_name}.data())')
+                file.write(f'{indent}    if ({self.count_name} < {self.query_name}.size()) {self.query_name}.shrink({self.count_name});\n')
+                file.write(f'{indent}    return expected(std::move({self.query_name}), result);\n')
+        else:
+            file.write(f'{indent}    ')
+            if self.return_type != 'void':
+                file.write(f'return ')
+            self.print_c_api_call(file, dispatch_handle, dispatch_handle_name,indent, pfn_source)
+
+        file.write(f'{indent}}}\n')
 
         PlatformGuardFooter(file, self.platform, guard)
-
+    
 class ExtEnum:
     def __init__(self, name, value):
         self.name = name
@@ -1032,7 +1055,7 @@ class DispatchableHandleDispatchTable:
                     file.write(f'#if defined({func.platform})\n')
             prev_platform = func.platform
             func.print_function(file, dispatch_handle=self.name, dispatch_handle_name=var_name, indent='    ', \
-                replace_dict=self.replace_dict, pfn_source=functions_name, guard=False)
+                replace_dict=self.replace_dict, pfn_source=functions_name, guard=False, forwarding_function=True)
         if prev_platform is not None:
             file.write(f'#endif // defined({prev_platform})\n')
         file.write('};\n')
