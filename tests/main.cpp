@@ -13,7 +13,11 @@ TEST_CASE("test static vector", "[vk-module.fixed_vector]")
     REQUIRE(b.size() == size);
     vk::ExtensionProperties ext;
     auto hi_str = "hi";
-    strncpy(ext.extensionName, hi_str, vk::MAX_EXTENSION_NAME_SIZE);
+    for (int i = 0; i < vk::MAX_EXTENSION_NAME_SIZE; i++) {
+        ext.extensionName[i] = hi_str[i];
+        if (ext.extensionName[i] == '\0' || hi_str[i] == '\0')
+            break;
+    }
     b[0] = ext;
     REQUIRE(strncmp(hi_str, b[0].extensionName, vk::MAX_EXTENSION_NAME_SIZE) == 0);
 
@@ -32,16 +36,17 @@ TEST_CASE("test static vector", "[vk-module.fixed_vector]")
     REQUIRE(counter == 6);
 }
 
-TEST_CASE("Union operations", "[vk-module.union]"){
+TEST_CASE("Union operations", "[vk-module.union]")
+{
     vk::ClearColorValue x, y;
     x.float32[0] = 1.f;
     y.uint32[0] = 1;
     REQUIRE((x == y) == false);
     REQUIRE((x != y) == true);
 }
-TEST_CASE("Struct operations", "[vk-module.struct]"){
+TEST_CASE("Struct operations", "[vk-module.struct]")
+{
     vk::Extent2D extent = { 100, 200 };
     REQUIRE(extent.width == 100);
     REQUIRE(extent.height == 200);
-
 }

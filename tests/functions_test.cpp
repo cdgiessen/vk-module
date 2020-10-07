@@ -85,12 +85,13 @@ TEST_CASE("Pass vkGetInstanceProcAddr to init", "[vk-module.functions]")
 
 TEST_CASE("Create instance functions", "[vk-module.functions]")
 {
-    vk::DynamicLibrary library(vkGetInstanceProcAddr);
+    vk::DynamicLibrary library{ vkGetInstanceProcAddr };
     vk::GlobalFunctions free_funcs(library);
 
     vk::InstanceCreateInfo info;
     auto ret = free_funcs.CreateInstance(info);
-    if (!ret) return;
+    if (!ret)
+        return;
     REQUIRE(ret.raw_result() == vk::Result::Success);
     vk::Instance inst = ret.value();
 

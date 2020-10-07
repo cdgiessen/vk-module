@@ -7,13 +7,16 @@
 #define VULKAN_CUSTOM_ASSERT assert
 #endif
 
-#if defined(WIN32)
-    #define VC_EXTRALEAN
-    #define WIN32_LEAN_AND_MEAN
-    #include <windows.h>
-    #if defined(MemoryBarrier)
-        #undef MemoryBarrier
+#if defined(_WIN32)
+    typedef struct HINSTANCE__ * HINSTANCE;
+    #if defined( _WIN64 )
+    typedef int64_t( __stdcall * FARPROC )();
+    #else
+    typedef int( __stdcall * FARPROC )();
     #endif
+    extern "C" __declspec( dllimport ) HINSTANCE __stdcall LoadLibraryA( char const * lpLibFileName );
+    extern "C" __declspec( dllimport ) int __stdcall FreeLibrary( HINSTANCE hLibModule );
+    extern "C" __declspec( dllimport ) FARPROC __stdcall GetProcAddress( HINSTANCE hModule, const char * lpProcName );
 #elif defined(__linux__) || defined(__APPLE__)
     #include <dlfcn.h>
 #endif
@@ -27,8 +30,8 @@ class DynamicLibrary {
     explicit DynamicLibrary([[maybe_unused]] LoadAtConstruction load) noexcept {
         init();
     }
-    explicit DynamicLibrary(PFN_vkGetInstanceProcAddr get_instance_proc_addr) noexcept : 
-        get_instance_proc_addr(get_instance_proc_addr) { }
+    explicit DynamicLibrary(PFN_vkGetInstanceProcAddr GetInstanceProcAddr) noexcept : 
+        get_instance_proc_addr(GetInstanceProcAddr) { }
     ~DynamicLibrary() noexcept {
         close();
     }
@@ -50,9 +53,9 @@ class DynamicLibrary {
         return *this;
     }
 
-    vk::Result init(PFN_vkGetInstanceProcAddr get_instance_proc_addr = nullptr) noexcept {
-        if (get_instance_proc_addr != nullptr) {
-            this->get_instance_proc_addr = get_instance_proc_addr;
+    vk::Result init(PFN_vkGetInstanceProcAddr GetInstanceProcAddr = nullptr) noexcept {
+        if (GetInstanceProcAddr != nullptr) {
+            get_instance_proc_addr = GetInstanceProcAddr;
             return vk::Result::Success;
         }
 #if defined(__linux__)
@@ -61,11 +64,11 @@ class DynamicLibrary {
 #elif defined(__APPLE__)
         library = dlopen("libvulkan.dylib", RTLD_NOW | RTLD_LOCAL);
 #elif defined(_WIN32)
-        library = LoadLibrary(TEXT("vulkan-1.dll"));
+        library = ::LoadLibraryA("vulkan-1.dll");
 #endif
         if (library == 0) return vk::Result::ErrorInitializationFailed;
-        Load(this->get_instance_proc_addr, "vkGetInstanceProcAddr");
-        if (this->get_instance_proc_addr == nullptr) return vk::Result::ErrorInitializationFailed;
+        Load(get_instance_proc_addr, "vkGetInstanceProcAddr");
+        if (get_instance_proc_addr == nullptr) return vk::Result::ErrorInitializationFailed;
         return vk::Result::Success;
     }
     void close() noexcept {
@@ -73,7 +76,7 @@ class DynamicLibrary {
 #if defined(__linux__) || defined(__APPLE__)
             dlclose(library);
 #elif defined(_WIN32)
-            FreeLibrary(library);
+            ::FreeLibrary(library);
 #endif
         library = 0;
         }
@@ -95,14 +98,14 @@ private:
 #if defined(__linux__) || defined(__APPLE__)
         func_dest = reinterpret_cast<T>(dlsym(library, func_name));
 #elif defined(_WIN32)
-        func_dest = reinterpret_cast<T>(GetProcAddress(library, func_name));
+        func_dest = reinterpret_cast<T>(::GetProcAddress(library, func_name));
 #endif
     }
 
 #if defined(__linux__) || defined(__APPLE__)
     void *library = nullptr;
 #elif defined(_WIN32)
-    HMODULE library = nullptr;
+    ::HINSTANCE library = nullptr;
 #endif
 
     PFN_vkGetInstanceProcAddr get_instance_proc_addr = nullptr;
@@ -263,7 +266,7 @@ struct GlobalFunctions {
     PFN_vkGetInstanceProcAddr get_instance_proc_addr = library.get();
 #if defined(VK_VERSION_1_0)
         pfn_CreateInstance = reinterpret_cast<PFN_vkCreateInstance>(get_instance_proc_addr(nullptr,"vkCreateInstance"));
-        pfn_GetInstanceProcAddr = reinterpret_cast<PFN_vkGetInstanceProcAddr>(get_instance_proc_addr(nullptr,"vkGetInstanceProcAddr"));
+        pfn_GetInstanceProcAddr = get_instance_proc_addr;
         pfn_EnumerateInstanceExtensionProperties = reinterpret_cast<PFN_vkEnumerateInstanceExtensionProperties>(get_instance_proc_addr(nullptr,"vkEnumerateInstanceExtensionProperties"));
         pfn_EnumerateInstanceLayerProperties = reinterpret_cast<PFN_vkEnumerateInstanceLayerProperties>(get_instance_proc_addr(nullptr,"vkEnumerateInstanceLayerProperties"));
 #endif //defined(VK_VERSION_1_0)
@@ -1154,7 +1157,7 @@ struct InstanceFunctions {
         pfn_DestroyInstance = reinterpret_cast<PFN_vkDestroyInstance>(get_instance_proc_addr(instance.get(),"vkDestroyInstance"));
         pfn_EnumeratePhysicalDevices = reinterpret_cast<PFN_vkEnumeratePhysicalDevices>(get_instance_proc_addr(instance.get(),"vkEnumeratePhysicalDevices"));
         pfn_GetDeviceProcAddr = reinterpret_cast<PFN_vkGetDeviceProcAddr>(get_instance_proc_addr(instance.get(),"vkGetDeviceProcAddr"));
-        pfn_GetInstanceProcAddr = reinterpret_cast<PFN_vkGetInstanceProcAddr>(get_instance_proc_addr(instance.get(),"vkGetInstanceProcAddr"));
+        pfn_GetInstanceProcAddr = get_instance_proc_addr;
         pfn_GetPhysicalDeviceProperties = reinterpret_cast<PFN_vkGetPhysicalDeviceProperties>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceProperties"));
         pfn_GetPhysicalDeviceQueueFamilyProperties = reinterpret_cast<PFN_vkGetPhysicalDeviceQueueFamilyProperties>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceQueueFamilyProperties"));
         pfn_GetPhysicalDeviceMemoryProperties = reinterpret_cast<PFN_vkGetPhysicalDeviceMemoryProperties>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceMemoryProperties"));

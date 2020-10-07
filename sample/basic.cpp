@@ -48,9 +48,9 @@ main()
     vk::ImageCreateFlags img_flags = vk::ImageCreateFlagBits::SparseBinding;
     auto img_props_res = phys_dev_funcs.GetImageFormatProperties(
       vk::Format::Undefined, vk::ImageType::e1D, vk::ImageTiling::Optimal, vk::ImageUsageFlagBits::TransferDst, img_flags);
-    if (!img_props_res) return -1;
+    if (!img_props_res)
+        return -1;
     vk::ImageFormatProperties image_props = img_props_res.value();
-    VkImageUsageFlagBits test_usage_flag_bits = c_enum(vk::ImageUsageFlagBits::TransferDst);
     vk::SwapchainCreateInfoKHR swap_info;
     swap_info.preTransform = vk::SurfaceTransformFlagBitsKHR::IdentityBitKHR;
     /*

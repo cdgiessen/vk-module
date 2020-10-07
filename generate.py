@@ -959,7 +959,10 @@ class DispatchTable:
             file.write(f'#if {guard}\n')
             for function in functions:
                 file.write(f'        pfn_{function.name[2:]} = ')
-                file.write(f'reinterpret_cast<{function.func_prototype}>({gpa_name}({gpa_val},\"{function.name}\"));\n')
+                if function.name == 'vkGetInstanceProcAddr': 
+                    file.write(f'{gpa_name};\n') #had a crash here once, may not be needed.
+                else:
+                    file.write(f'reinterpret_cast<{function.func_prototype}>({gpa_name}({gpa_val},\"{function.name}\"));\n')
             file.write(f'#endif //{guard}\n')
         file.write('    };\n};\n')
 

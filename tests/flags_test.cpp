@@ -43,4 +43,7 @@ TEST_CASE("Flags bitwise operation", "[vk-module.flags]")
     REQUIRE(flags.flags == 2);
     flags ^= flags;
     REQUIRE(flags.flags == 0);
+
+    VkImageUsageFlagBits c_flag_bits = c_enum(vk::ImageUsageFlagBits::TransferDst);
+    REQUIRE(c_flag_bits == 2);
 }
