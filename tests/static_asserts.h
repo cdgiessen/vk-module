@@ -860,6 +860,12 @@ static_assert( sizeof(DebugUtilsMessengerCreateInfoEXT) == sizeof(VkDebugUtilsMe
 static_assert( std::is_standard_layout<DebugUtilsMessengerCreateInfoEXT>::value, "Must be a standard layout type" );
 static_assert( sizeof(DebugUtilsMessengerCallbackDataEXT) == sizeof(VkDebugUtilsMessengerCallbackDataEXT), "Must maintain size between types" );
 static_assert( std::is_standard_layout<DebugUtilsMessengerCallbackDataEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(PhysicalDeviceDeviceMemoryReportFeaturesEXT) == sizeof(VkPhysicalDeviceDeviceMemoryReportFeaturesEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<PhysicalDeviceDeviceMemoryReportFeaturesEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(DeviceDeviceMemoryReportCreateInfoEXT) == sizeof(VkDeviceDeviceMemoryReportCreateInfoEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<DeviceDeviceMemoryReportCreateInfoEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(DeviceMemoryReportCallbackDataEXT) == sizeof(VkDeviceMemoryReportCallbackDataEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<DeviceMemoryReportCallbackDataEXT>::value, "Must be a standard layout type" );
 static_assert( sizeof(ImportMemoryHostPointerInfoEXT) == sizeof(VkImportMemoryHostPointerInfoEXT), "Must maintain size between types" );
 static_assert( std::is_standard_layout<ImportMemoryHostPointerInfoEXT>::value, "Must be a standard layout type" );
 static_assert( sizeof(MemoryHostPointerPropertiesEXT) == sizeof(VkMemoryHostPointerPropertiesEXT), "Must maintain size between types" );
@@ -1462,8 +1468,40 @@ static_assert( sizeof(PhysicalDeviceRobustness2PropertiesEXT) == sizeof(VkPhysic
 static_assert( std::is_standard_layout<PhysicalDeviceRobustness2PropertiesEXT>::value, "Must be a standard layout type" );
 static_assert( sizeof(PhysicalDeviceImageRobustnessFeaturesEXT) == sizeof(VkPhysicalDeviceImageRobustnessFeaturesEXT), "Must maintain size between types" );
 static_assert( std::is_standard_layout<PhysicalDeviceImageRobustnessFeaturesEXT>::value, "Must be a standard layout type" );
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+static_assert( sizeof(PhysicalDevicePortabilitySubsetFeaturesKHR) == sizeof(VkPhysicalDevicePortabilitySubsetFeaturesKHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<PhysicalDevicePortabilitySubsetFeaturesKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+static_assert( sizeof(PhysicalDevicePortabilitySubsetPropertiesKHR) == sizeof(VkPhysicalDevicePortabilitySubsetPropertiesKHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<PhysicalDevicePortabilitySubsetPropertiesKHR>::value, "Must be a standard layout type" );
+#endif // VK_ENABLE_BETA_EXTENSIONS
 static_assert( sizeof(PhysicalDevice4444FormatsFeaturesEXT) == sizeof(VkPhysicalDevice4444FormatsFeaturesEXT), "Must maintain size between types" );
 static_assert( std::is_standard_layout<PhysicalDevice4444FormatsFeaturesEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(BufferCopy2KHR) == sizeof(VkBufferCopy2KHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<BufferCopy2KHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(ImageCopy2KHR) == sizeof(VkImageCopy2KHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<ImageCopy2KHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(ImageBlit2KHR) == sizeof(VkImageBlit2KHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<ImageBlit2KHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(BufferImageCopy2KHR) == sizeof(VkBufferImageCopy2KHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<BufferImageCopy2KHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(ImageResolve2KHR) == sizeof(VkImageResolve2KHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<ImageResolve2KHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(CopyBufferInfo2KHR) == sizeof(VkCopyBufferInfo2KHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<CopyBufferInfo2KHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(CopyImageInfo2KHR) == sizeof(VkCopyImageInfo2KHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<CopyImageInfo2KHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(BlitImageInfo2KHR) == sizeof(VkBlitImageInfo2KHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<BlitImageInfo2KHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(CopyBufferToImageInfo2KHR) == sizeof(VkCopyBufferToImageInfo2KHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<CopyBufferToImageInfo2KHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(CopyImageToBufferInfo2KHR) == sizeof(VkCopyImageToBufferInfo2KHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<CopyImageToBufferInfo2KHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(ResolveImageInfo2KHR) == sizeof(VkResolveImageInfo2KHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<ResolveImageInfo2KHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(PhysicalDeviceShaderImageAtomicInt64FeaturesEXT) == sizeof(VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<PhysicalDeviceShaderImageAtomicInt64FeaturesEXT>::value, "Must be a standard layout type" );
 static_assert( sizeof(Instance) == sizeof(VkInstance),"Must maintain size between handles");
 static_assert( sizeof(PhysicalDevice) == sizeof(VkPhysicalDevice),"Must maintain size between handles");
 static_assert( sizeof(Device) == sizeof(VkDevice),"Must maintain size between handles");

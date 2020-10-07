@@ -7,7 +7,7 @@ include(FetchContent)
 FetchContent_Declare(
     vulkan_headers
     GIT_REPOSITORY https://github.com/KhronosGroup/Vulkan-Headers
-    GIT_TAG        v1.2.151
+    GIT_TAG        v1.2.156
 )
 FetchContent_GetProperties(vulkan-headers)
 if(NOT vulkan_headers_POPULATED)

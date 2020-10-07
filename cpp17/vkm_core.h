@@ -847,6 +847,8 @@ enum class StructureType : uint32_t {
     ImageDrmFormatModifierPropertiesEXT = 1000158005,
     ValidationCacheCreateInfoEXT = 1000160000,
     ShaderModuleValidationCacheCreateInfoEXT = 1000160001,
+    PhysicalDevicePortabilitySubsetFeaturesKHR = 1000163000,
+    PhysicalDevicePortabilitySubsetPropertiesKHR = 1000163001,
     PipelineViewportShadingRateImageStateCreateInfoNV = 1000164000,
     PhysicalDeviceShadingRateImageFeaturesNV = 1000164001,
     PhysicalDeviceShadingRateImagePropertiesNV = 1000164002,
@@ -907,6 +909,7 @@ enum class StructureType : uint32_t {
     PhysicalDeviceSubgroupSizeControlFeaturesEXT = 1000225002,
     PhysicalDeviceShaderCoreProperties2AMD = 1000227000,
     PhysicalDeviceCoherentMemoryFeaturesAMD = 1000229000,
+    PhysicalDeviceShaderImageAtomicInt64FeaturesEXT = 1000234000,
     PhysicalDeviceMemoryBudgetPropertiesEXT = 1000237000,
     PhysicalDeviceMemoryPriorityFeaturesEXT = 1000238000,
     MemoryPriorityAllocateInfoEXT = 1000238001,
@@ -954,6 +957,9 @@ enum class StructureType : uint32_t {
     PhysicalDeviceTexelBufferAlignmentPropertiesEXT = 1000281001,
     CommandBufferInheritanceRenderPassTransformInfoQCOM = 1000282000,
     RenderPassTransformBeginInfoQCOM = 1000282001,
+    PhysicalDeviceDeviceMemoryReportFeaturesEXT = 1000284000,
+    DeviceDeviceMemoryReportCreateInfoEXT = 1000284001,
+    DeviceMemoryReportCallbackDataEXT = 1000284002,
     PhysicalDeviceRobustness2FeaturesEXT = 1000286000,
     PhysicalDeviceRobustness2PropertiesEXT = 1000286001,
     SamplerCustomBorderColorCreateInfoEXT = 1000287000,
@@ -969,6 +975,17 @@ enum class StructureType : uint32_t {
     PhysicalDeviceFragmentDensityMap2FeaturesEXT = 1000332000,
     PhysicalDeviceFragmentDensityMap2PropertiesEXT = 1000332001,
     PhysicalDeviceImageRobustnessFeaturesEXT = 1000335000,
+    CopyBufferInfo2KHR = 1000337000,
+    CopyImageInfo2KHR = 1000337001,
+    CopyBufferToImageInfo2KHR = 1000337002,
+    CopyImageToBufferInfo2KHR = 1000337003,
+    BlitImageInfo2KHR = 1000337004,
+    ResolveImageInfo2KHR = 1000337005,
+    BufferCopy2KHR = 1000337006,
+    ImageCopy2KHR = 1000337007,
+    ImageBlit2KHR = 1000337008,
+    BufferImageCopy2KHR = 1000337009,
+    ImageResolve2KHR = 1000337010,
     PhysicalDevice4444FormatsFeaturesEXT = 1000340000,
     DirectfbSurfaceCreateInfoEXT = 1000346000,
     PhysicalDeviceSubgroupProperties = 1000094000,
@@ -1462,6 +1479,14 @@ enum class DebugReportObjectTypeEXT : uint32_t {
     AccelerationStructureKhrEXT = 1000165000,
 };
 constexpr inline VkDebugReportObjectTypeEXT c_enum(DebugReportObjectTypeEXT val) { return static_cast<VkDebugReportObjectTypeEXT>(val);}
+enum class DeviceMemoryReportEventTypeEXT : uint32_t {
+    AllocateEXT = 0,
+    FreeEXT = 1,
+    ImportEXT = 2,
+    UnimportEXT = 3,
+    AllocationFailedEXT = 4,
+};
+constexpr inline VkDeviceMemoryReportEventTypeEXT c_enum(DeviceMemoryReportEventTypeEXT val) { return static_cast<VkDeviceMemoryReportEventTypeEXT>(val);}
 enum class RasterizationOrderAMD : uint32_t {
     StrictAMD = 0,
     RelaxedAMD = 1,
@@ -1619,13 +1644,6 @@ enum class PipelineCacheCreateFlagBits: uint32_t {
     ExternallySynchronizedBitEXT = 1,
 };
 inline VkPipelineCacheCreateFlagBits c_enum(PipelineCacheCreateFlagBits val) { return static_cast<VkPipelineCacheCreateFlagBits>(val);}
-enum class CullModeFlagBits: uint32_t {
-    None = 0,
-    Front = 1,
-    Back = 2,
-    FrontAndBack = 0x00000003,
-};
-inline VkCullModeFlagBits c_enum(CullModeFlagBits val) { return static_cast<VkCullModeFlagBits>(val);}
 enum class QueueFlagBits: uint32_t {
     Graphics = 1,
     Compute = 2,
@@ -1634,6 +1652,13 @@ enum class QueueFlagBits: uint32_t {
     Protected = 16,
 };
 inline VkQueueFlagBits c_enum(QueueFlagBits val) { return static_cast<VkQueueFlagBits>(val);}
+enum class CullModeFlagBits: uint32_t {
+    None = 0,
+    Front = 1,
+    Back = 2,
+    FrontAndBack = 0x00000003,
+};
+inline VkCullModeFlagBits c_enum(CullModeFlagBits val) { return static_cast<VkCullModeFlagBits>(val);}
 enum class RenderPassCreateFlagBits: uint32_t {
     TransformBitQCOM = 2,
 };
@@ -2301,6 +2326,7 @@ enum class PipelineCoverageReductionStateCreateFlagBitsNV: uint32_t { };
 enum class ValidationCacheCreateFlagBitsEXT: uint32_t { };
 enum class DebugUtilsMessengerCreateFlagBitsEXT: uint32_t { };
 enum class DebugUtilsMessengerCallbackDataFlagBitsEXT: uint32_t { };
+enum class DeviceMemoryReportFlagBitsEXT: uint32_t { };
 enum class PipelineRasterizationConservativeStateCreateFlagBitsEXT: uint32_t { };
 enum class PipelineRasterizationStateStreamCreateFlagBitsEXT: uint32_t { };
 enum class PipelineRasterizationDepthClipStateCreateFlagBitsEXT: uint32_t { };
@@ -2528,6 +2554,7 @@ DECLARE_ENUM_FLAG_OPERATORS(DebugUtilsMessageSeverityFlagsEXT, DebugUtilsMessage
 DECLARE_ENUM_FLAG_OPERATORS(DebugUtilsMessageTypeFlagsEXT, DebugUtilsMessageTypeFlagBitsEXT, VkDebugUtilsMessageTypeFlagsEXT)
 DECLARE_ENUM_FLAG_OPERATORS(DebugUtilsMessengerCreateFlagsEXT, DebugUtilsMessengerCreateFlagBitsEXT, VkDebugUtilsMessengerCreateFlagsEXT)
 DECLARE_ENUM_FLAG_OPERATORS(DebugUtilsMessengerCallbackDataFlagsEXT, DebugUtilsMessengerCallbackDataFlagBitsEXT, VkDebugUtilsMessengerCallbackDataFlagsEXT)
+DECLARE_ENUM_FLAG_OPERATORS(DeviceMemoryReportFlagsEXT, DeviceMemoryReportFlagBitsEXT, VkDeviceMemoryReportFlagsEXT)
 DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationConservativeStateCreateFlagsEXT, PipelineRasterizationConservativeStateCreateFlagBitsEXT, VkPipelineRasterizationConservativeStateCreateFlagsEXT)
 DECLARE_ENUM_FLAG_OPERATORS(DescriptorBindingFlags, DescriptorBindingFlagBits, VkDescriptorBindingFlags)
 using DescriptorBindingFlagsEXT = DescriptorBindingFlags;
@@ -7806,6 +7833,47 @@ struct DebugUtilsMessengerCallbackDataEXT {
         return *reinterpret_cast<VkDebugUtilsMessengerCallbackDataEXT*>(this);
     }
 };
+struct PhysicalDeviceDeviceMemoryReportFeaturesEXT {
+    StructureType sType{StructureType::PhysicalDeviceDeviceMemoryReportFeaturesEXT};
+    void* pNext = nullptr;
+    Bool32 deviceMemoryReport{0};
+    operator VkPhysicalDeviceDeviceMemoryReportFeaturesEXT const &() const noexcept {
+        return *reinterpret_cast<const VkPhysicalDeviceDeviceMemoryReportFeaturesEXT*>(this);
+    }
+    operator VkPhysicalDeviceDeviceMemoryReportFeaturesEXT &() noexcept {
+        return *reinterpret_cast<VkPhysicalDeviceDeviceMemoryReportFeaturesEXT*>(this);
+    }
+};
+struct DeviceDeviceMemoryReportCreateInfoEXT {
+    StructureType sType{StructureType::DeviceDeviceMemoryReportCreateInfoEXT};
+    const void* pNext = nullptr;
+    DeviceMemoryReportFlagsEXT flags{};
+    PFN_vkDeviceMemoryReportCallbackEXT pfnUserCallback{};
+    void* pUserData = nullptr;
+    operator VkDeviceDeviceMemoryReportCreateInfoEXT const &() const noexcept {
+        return *reinterpret_cast<const VkDeviceDeviceMemoryReportCreateInfoEXT*>(this);
+    }
+    operator VkDeviceDeviceMemoryReportCreateInfoEXT &() noexcept {
+        return *reinterpret_cast<VkDeviceDeviceMemoryReportCreateInfoEXT*>(this);
+    }
+};
+struct DeviceMemoryReportCallbackDataEXT {
+    StructureType sType{StructureType::DeviceMemoryReportCallbackDataEXT};
+    const void* pNext = nullptr;
+    DeviceMemoryReportFlagsEXT flags{};
+    DeviceMemoryReportEventTypeEXT type{static_cast<DeviceMemoryReportEventTypeEXT>(0)};
+    uint64_t memoryObjectId{0};
+    DeviceSize size{0};
+    ObjectType objectType{static_cast<ObjectType>(0)};
+    uint64_t objectHandle{0};
+    uint32_t heapIndex{0};
+    operator VkDeviceMemoryReportCallbackDataEXT const &() const noexcept {
+        return *reinterpret_cast<const VkDeviceMemoryReportCallbackDataEXT*>(this);
+    }
+    operator VkDeviceMemoryReportCallbackDataEXT &() noexcept {
+        return *reinterpret_cast<VkDeviceMemoryReportCallbackDataEXT*>(this);
+    }
+};
 struct ImportMemoryHostPointerInfoEXT {
     StructureType sType{StructureType::ImportMemoryHostPointerInfoEXT};
     const void* pNext = nullptr;
@@ -10873,6 +10941,44 @@ struct PhysicalDeviceImageRobustnessFeaturesEXT {
         return *reinterpret_cast<VkPhysicalDeviceImageRobustnessFeaturesEXT*>(this);
     }
 };
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+struct PhysicalDevicePortabilitySubsetFeaturesKHR {
+    StructureType sType{StructureType::PhysicalDevicePortabilitySubsetFeaturesKHR};
+    void* pNext = nullptr;
+    Bool32 constantAlphaColorBlendFactors{0};
+    Bool32 events{0};
+    Bool32 imageViewFormatReinterpretation{0};
+    Bool32 imageViewFormatSwizzle{0};
+    Bool32 imageView2DOn3DImage{0};
+    Bool32 multisampleArrayImage{0};
+    Bool32 mutableComparisonSamplers{0};
+    Bool32 pointPolygons{0};
+    Bool32 samplerMipLodBias{0};
+    Bool32 separateStencilMaskRef{0};
+    Bool32 shaderSampleRateInterpolationFunctions{0};
+    Bool32 tessellationIsolines{0};
+    Bool32 tessellationPointMode{0};
+    Bool32 triangleFans{0};
+    Bool32 vertexAttributeAccessBeyondStride{0};
+    operator VkPhysicalDevicePortabilitySubsetFeaturesKHR const &() const noexcept {
+        return *reinterpret_cast<const VkPhysicalDevicePortabilitySubsetFeaturesKHR*>(this);
+    }
+    operator VkPhysicalDevicePortabilitySubsetFeaturesKHR &() noexcept {
+        return *reinterpret_cast<VkPhysicalDevicePortabilitySubsetFeaturesKHR*>(this);
+    }
+};
+struct PhysicalDevicePortabilitySubsetPropertiesKHR {
+    StructureType sType{StructureType::PhysicalDevicePortabilitySubsetPropertiesKHR};
+    void* pNext = nullptr;
+    uint32_t minVertexInputBindingStrideAlignment{0};
+    operator VkPhysicalDevicePortabilitySubsetPropertiesKHR const &() const noexcept {
+        return *reinterpret_cast<const VkPhysicalDevicePortabilitySubsetPropertiesKHR*>(this);
+    }
+    operator VkPhysicalDevicePortabilitySubsetPropertiesKHR &() noexcept {
+        return *reinterpret_cast<VkPhysicalDevicePortabilitySubsetPropertiesKHR*>(this);
+    }
+};
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 struct PhysicalDevice4444FormatsFeaturesEXT {
     StructureType sType{StructureType::PhysicalDevice4444FormatsFeaturesEXT};
     void* pNext = nullptr;
@@ -10883,6 +10989,184 @@ struct PhysicalDevice4444FormatsFeaturesEXT {
     }
     operator VkPhysicalDevice4444FormatsFeaturesEXT &() noexcept {
         return *reinterpret_cast<VkPhysicalDevice4444FormatsFeaturesEXT*>(this);
+    }
+};
+struct BufferCopy2KHR {
+    StructureType sType{StructureType::BufferCopy2KHR};
+    const void* pNext = nullptr;
+    DeviceSize srcOffset{0};
+    DeviceSize dstOffset{0};
+    DeviceSize size{0};
+    operator VkBufferCopy2KHR const &() const noexcept {
+        return *reinterpret_cast<const VkBufferCopy2KHR*>(this);
+    }
+    operator VkBufferCopy2KHR &() noexcept {
+        return *reinterpret_cast<VkBufferCopy2KHR*>(this);
+    }
+};
+struct ImageCopy2KHR {
+    StructureType sType{StructureType::ImageCopy2KHR};
+    const void* pNext = nullptr;
+    ImageSubresourceLayers srcSubresource{};
+    Offset3D srcOffset{};
+    ImageSubresourceLayers dstSubresource{};
+    Offset3D dstOffset{};
+    Extent3D extent{};
+    operator VkImageCopy2KHR const &() const noexcept {
+        return *reinterpret_cast<const VkImageCopy2KHR*>(this);
+    }
+    operator VkImageCopy2KHR &() noexcept {
+        return *reinterpret_cast<VkImageCopy2KHR*>(this);
+    }
+};
+struct ImageBlit2KHR {
+    StructureType sType{StructureType::ImageBlit2KHR};
+    const void* pNext = nullptr;
+    ImageSubresourceLayers srcSubresource{};
+    Offset3D srcOffsets[2];
+    ImageSubresourceLayers dstSubresource{};
+    Offset3D dstOffsets[2];
+    operator VkImageBlit2KHR const &() const noexcept {
+        return *reinterpret_cast<const VkImageBlit2KHR*>(this);
+    }
+    operator VkImageBlit2KHR &() noexcept {
+        return *reinterpret_cast<VkImageBlit2KHR*>(this);
+    }
+};
+struct BufferImageCopy2KHR {
+    StructureType sType{StructureType::BufferImageCopy2KHR};
+    const void* pNext = nullptr;
+    DeviceSize bufferOffset{0};
+    uint32_t bufferRowLength{0};
+    uint32_t bufferImageHeight{0};
+    ImageSubresourceLayers imageSubresource{};
+    Offset3D imageOffset{};
+    Extent3D imageExtent{};
+    operator VkBufferImageCopy2KHR const &() const noexcept {
+        return *reinterpret_cast<const VkBufferImageCopy2KHR*>(this);
+    }
+    operator VkBufferImageCopy2KHR &() noexcept {
+        return *reinterpret_cast<VkBufferImageCopy2KHR*>(this);
+    }
+};
+struct ImageResolve2KHR {
+    StructureType sType{StructureType::ImageResolve2KHR};
+    const void* pNext = nullptr;
+    ImageSubresourceLayers srcSubresource{};
+    Offset3D srcOffset{};
+    ImageSubresourceLayers dstSubresource{};
+    Offset3D dstOffset{};
+    Extent3D extent{};
+    operator VkImageResolve2KHR const &() const noexcept {
+        return *reinterpret_cast<const VkImageResolve2KHR*>(this);
+    }
+    operator VkImageResolve2KHR &() noexcept {
+        return *reinterpret_cast<VkImageResolve2KHR*>(this);
+    }
+};
+struct CopyBufferInfo2KHR {
+    StructureType sType{StructureType::CopyBufferInfo2KHR};
+    const void* pNext = nullptr;
+    Buffer srcBuffer{};
+    Buffer dstBuffer{};
+    uint32_t regionCount{0};
+    const BufferCopy2KHR* pRegions = nullptr;
+    operator VkCopyBufferInfo2KHR const &() const noexcept {
+        return *reinterpret_cast<const VkCopyBufferInfo2KHR*>(this);
+    }
+    operator VkCopyBufferInfo2KHR &() noexcept {
+        return *reinterpret_cast<VkCopyBufferInfo2KHR*>(this);
+    }
+};
+struct CopyImageInfo2KHR {
+    StructureType sType{StructureType::CopyImageInfo2KHR};
+    const void* pNext = nullptr;
+    Image srcImage{};
+    ImageLayout srcImageLayout{static_cast<ImageLayout>(0)};
+    Image dstImage{};
+    ImageLayout dstImageLayout{static_cast<ImageLayout>(0)};
+    uint32_t regionCount{0};
+    const ImageCopy2KHR* pRegions = nullptr;
+    operator VkCopyImageInfo2KHR const &() const noexcept {
+        return *reinterpret_cast<const VkCopyImageInfo2KHR*>(this);
+    }
+    operator VkCopyImageInfo2KHR &() noexcept {
+        return *reinterpret_cast<VkCopyImageInfo2KHR*>(this);
+    }
+};
+struct BlitImageInfo2KHR {
+    StructureType sType{StructureType::BlitImageInfo2KHR};
+    const void* pNext = nullptr;
+    Image srcImage{};
+    ImageLayout srcImageLayout{static_cast<ImageLayout>(0)};
+    Image dstImage{};
+    ImageLayout dstImageLayout{static_cast<ImageLayout>(0)};
+    uint32_t regionCount{0};
+    const ImageBlit2KHR* pRegions = nullptr;
+    Filter filter{static_cast<Filter>(0)};
+    operator VkBlitImageInfo2KHR const &() const noexcept {
+        return *reinterpret_cast<const VkBlitImageInfo2KHR*>(this);
+    }
+    operator VkBlitImageInfo2KHR &() noexcept {
+        return *reinterpret_cast<VkBlitImageInfo2KHR*>(this);
+    }
+};
+struct CopyBufferToImageInfo2KHR {
+    StructureType sType{StructureType::CopyBufferToImageInfo2KHR};
+    const void* pNext = nullptr;
+    Buffer srcBuffer{};
+    Image dstImage{};
+    ImageLayout dstImageLayout{static_cast<ImageLayout>(0)};
+    uint32_t regionCount{0};
+    const BufferImageCopy2KHR* pRegions = nullptr;
+    operator VkCopyBufferToImageInfo2KHR const &() const noexcept {
+        return *reinterpret_cast<const VkCopyBufferToImageInfo2KHR*>(this);
+    }
+    operator VkCopyBufferToImageInfo2KHR &() noexcept {
+        return *reinterpret_cast<VkCopyBufferToImageInfo2KHR*>(this);
+    }
+};
+struct CopyImageToBufferInfo2KHR {
+    StructureType sType{StructureType::CopyImageToBufferInfo2KHR};
+    const void* pNext = nullptr;
+    Image srcImage{};
+    ImageLayout srcImageLayout{static_cast<ImageLayout>(0)};
+    Buffer dstBuffer{};
+    uint32_t regionCount{0};
+    const BufferImageCopy2KHR* pRegions = nullptr;
+    operator VkCopyImageToBufferInfo2KHR const &() const noexcept {
+        return *reinterpret_cast<const VkCopyImageToBufferInfo2KHR*>(this);
+    }
+    operator VkCopyImageToBufferInfo2KHR &() noexcept {
+        return *reinterpret_cast<VkCopyImageToBufferInfo2KHR*>(this);
+    }
+};
+struct ResolveImageInfo2KHR {
+    StructureType sType{StructureType::ResolveImageInfo2KHR};
+    const void* pNext = nullptr;
+    Image srcImage{};
+    ImageLayout srcImageLayout{static_cast<ImageLayout>(0)};
+    Image dstImage{};
+    ImageLayout dstImageLayout{static_cast<ImageLayout>(0)};
+    uint32_t regionCount{0};
+    const ImageResolve2KHR* pRegions = nullptr;
+    operator VkResolveImageInfo2KHR const &() const noexcept {
+        return *reinterpret_cast<const VkResolveImageInfo2KHR*>(this);
+    }
+    operator VkResolveImageInfo2KHR &() noexcept {
+        return *reinterpret_cast<VkResolveImageInfo2KHR*>(this);
+    }
+};
+struct PhysicalDeviceShaderImageAtomicInt64FeaturesEXT {
+    StructureType sType{StructureType::PhysicalDeviceShaderImageAtomicInt64FeaturesEXT};
+    void* pNext = nullptr;
+    Bool32 shaderImageInt64Atomics{0};
+    Bool32 sparseImageInt64Atomics{0};
+    operator VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT const &() const noexcept {
+        return *reinterpret_cast<const VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT*>(this);
+    }
+    operator VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT &() noexcept {
+        return *reinterpret_cast<VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT*>(this);
     }
 };
 } // namespace vk

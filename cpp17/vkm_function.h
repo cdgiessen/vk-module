@@ -1884,6 +1884,14 @@ struct DeviceFunctions {
     PFN_vkSetPrivateDataEXT pfn_SetPrivateDataEXT;
     PFN_vkGetPrivateDataEXT pfn_GetPrivateDataEXT;
 #endif //defined(VK_EXT_private_data)
+#if defined(VK_KHR_copy_commands2)
+    PFN_vkCmdCopyBuffer2KHR pfn_CmdCopyBuffer2KHR;
+    PFN_vkCmdCopyImage2KHR pfn_CmdCopyImage2KHR;
+    PFN_vkCmdBlitImage2KHR pfn_CmdBlitImage2KHR;
+    PFN_vkCmdCopyBufferToImage2KHR pfn_CmdCopyBufferToImage2KHR;
+    PFN_vkCmdCopyImageToBuffer2KHR pfn_CmdCopyImageToBuffer2KHR;
+    PFN_vkCmdResolveImage2KHR pfn_CmdResolveImage2KHR;
+#endif //defined(VK_KHR_copy_commands2)
 #if defined(VK_VERSION_1_0)
     void DestroyDevice(const AllocationCallbacks* pAllocator = nullptr) const {
         pfn_DestroyDevice(device.get(),
@@ -4453,6 +4461,38 @@ struct DeviceFunctions {
         return pData;
     }
 #endif //defined(VK_EXT_private_data)
+#if defined(VK_KHR_copy_commands2)
+    void CmdCopyBuffer2KHR(CommandBuffer commandBuffer, 
+        const CopyBufferInfo2KHR&  pCopyBufferInfo) const {
+        pfn_CmdCopyBuffer2KHR(commandBuffer.get(),
+            reinterpret_cast<const VkCopyBufferInfo2KHR*>(&pCopyBufferInfo));
+    }
+    void CmdCopyImage2KHR(CommandBuffer commandBuffer, 
+        const CopyImageInfo2KHR&  pCopyImageInfo) const {
+        pfn_CmdCopyImage2KHR(commandBuffer.get(),
+            reinterpret_cast<const VkCopyImageInfo2KHR*>(&pCopyImageInfo));
+    }
+    void CmdBlitImage2KHR(CommandBuffer commandBuffer, 
+        const BlitImageInfo2KHR&  pBlitImageInfo) const {
+        pfn_CmdBlitImage2KHR(commandBuffer.get(),
+            reinterpret_cast<const VkBlitImageInfo2KHR*>(&pBlitImageInfo));
+    }
+    void CmdCopyBufferToImage2KHR(CommandBuffer commandBuffer, 
+        const CopyBufferToImageInfo2KHR&  pCopyBufferToImageInfo) const {
+        pfn_CmdCopyBufferToImage2KHR(commandBuffer.get(),
+            reinterpret_cast<const VkCopyBufferToImageInfo2KHR*>(&pCopyBufferToImageInfo));
+    }
+    void CmdCopyImageToBuffer2KHR(CommandBuffer commandBuffer, 
+        const CopyImageToBufferInfo2KHR&  pCopyImageToBufferInfo) const {
+        pfn_CmdCopyImageToBuffer2KHR(commandBuffer.get(),
+            reinterpret_cast<const VkCopyImageToBufferInfo2KHR*>(&pCopyImageToBufferInfo));
+    }
+    void CmdResolveImage2KHR(CommandBuffer commandBuffer, 
+        const ResolveImageInfo2KHR&  pResolveImageInfo) const {
+        pfn_CmdResolveImage2KHR(commandBuffer.get(),
+            reinterpret_cast<const VkResolveImageInfo2KHR*>(&pResolveImageInfo));
+    }
+#endif //defined(VK_KHR_copy_commands2)
     explicit DeviceFunctions(InstanceFunctions const& instance_functions, Device device)
         :device(device) { 
     PFN_vkGetDeviceProcAddr get_device_proc_addr = instance_functions.pfn_GetDeviceProcAddr;
@@ -4863,6 +4903,14 @@ struct DeviceFunctions {
         pfn_SetPrivateDataEXT = reinterpret_cast<PFN_vkSetPrivateDataEXT>(get_device_proc_addr(device.get(),"vkSetPrivateDataEXT"));
         pfn_GetPrivateDataEXT = reinterpret_cast<PFN_vkGetPrivateDataEXT>(get_device_proc_addr(device.get(),"vkGetPrivateDataEXT"));
 #endif //defined(VK_EXT_private_data)
+#if defined(VK_KHR_copy_commands2)
+        pfn_CmdCopyBuffer2KHR = reinterpret_cast<PFN_vkCmdCopyBuffer2KHR>(get_device_proc_addr(device.get(),"vkCmdCopyBuffer2KHR"));
+        pfn_CmdCopyImage2KHR = reinterpret_cast<PFN_vkCmdCopyImage2KHR>(get_device_proc_addr(device.get(),"vkCmdCopyImage2KHR"));
+        pfn_CmdBlitImage2KHR = reinterpret_cast<PFN_vkCmdBlitImage2KHR>(get_device_proc_addr(device.get(),"vkCmdBlitImage2KHR"));
+        pfn_CmdCopyBufferToImage2KHR = reinterpret_cast<PFN_vkCmdCopyBufferToImage2KHR>(get_device_proc_addr(device.get(),"vkCmdCopyBufferToImage2KHR"));
+        pfn_CmdCopyImageToBuffer2KHR = reinterpret_cast<PFN_vkCmdCopyImageToBuffer2KHR>(get_device_proc_addr(device.get(),"vkCmdCopyImageToBuffer2KHR"));
+        pfn_CmdResolveImage2KHR = reinterpret_cast<PFN_vkCmdResolveImage2KHR>(get_device_proc_addr(device.get(),"vkCmdResolveImage2KHR"));
+#endif //defined(VK_KHR_copy_commands2)
     };
 };
 struct PhysicalDeviceFunctions {
@@ -5254,6 +5302,18 @@ struct CommandBufferFunctions {
         device_functions->CmdSetStencilTestEnableEXT(commandbuffer, stencilTestEnable);}
     void SetStencilOpEXT(StencilFaceFlags faceMask, StencilOp failOp, StencilOp passOp, StencilOp depthFailOp, CompareOp compareOp) const {
         device_functions->CmdSetStencilOpEXT(commandbuffer, faceMask, failOp, passOp, depthFailOp, compareOp);}
+    void CopyBuffer2KHR(const CopyBufferInfo2KHR&  pCopyBufferInfo) const {
+        device_functions->CmdCopyBuffer2KHR(commandbuffer, pCopyBufferInfo);}
+    void CopyImage2KHR(const CopyImageInfo2KHR&  pCopyImageInfo) const {
+        device_functions->CmdCopyImage2KHR(commandbuffer, pCopyImageInfo);}
+    void BlitImage2KHR(const BlitImageInfo2KHR&  pBlitImageInfo) const {
+        device_functions->CmdBlitImage2KHR(commandbuffer, pBlitImageInfo);}
+    void CopyBufferToImage2KHR(const CopyBufferToImageInfo2KHR&  pCopyBufferToImageInfo) const {
+        device_functions->CmdCopyBufferToImage2KHR(commandbuffer, pCopyBufferToImageInfo);}
+    void CopyImageToBuffer2KHR(const CopyImageToBufferInfo2KHR&  pCopyImageToBufferInfo) const {
+        device_functions->CmdCopyImageToBuffer2KHR(commandbuffer, pCopyImageToBufferInfo);}
+    void ResolveImage2KHR(const ResolveImageInfo2KHR&  pResolveImageInfo) const {
+        device_functions->CmdResolveImage2KHR(commandbuffer, pResolveImageInfo);}
 };
 } // namespace vk
 // clang-format on

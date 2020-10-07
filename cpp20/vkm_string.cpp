@@ -872,6 +872,8 @@ const char * to_string(StructureType val) {
         case(StructureType::ImageDrmFormatModifierPropertiesEXT): return "ImageDrmFormatModifierPropertiesEXT";
         case(StructureType::ValidationCacheCreateInfoEXT): return "ValidationCacheCreateInfoEXT";
         case(StructureType::ShaderModuleValidationCacheCreateInfoEXT): return "ShaderModuleValidationCacheCreateInfoEXT";
+        case(StructureType::PhysicalDevicePortabilitySubsetFeaturesKHR): return "PhysicalDevicePortabilitySubsetFeaturesKHR";
+        case(StructureType::PhysicalDevicePortabilitySubsetPropertiesKHR): return "PhysicalDevicePortabilitySubsetPropertiesKHR";
         case(StructureType::PipelineViewportShadingRateImageStateCreateInfoNV): return "PipelineViewportShadingRateImageStateCreateInfoNV";
         case(StructureType::PhysicalDeviceShadingRateImageFeaturesNV): return "PhysicalDeviceShadingRateImageFeaturesNV";
         case(StructureType::PhysicalDeviceShadingRateImagePropertiesNV): return "PhysicalDeviceShadingRateImagePropertiesNV";
@@ -932,6 +934,7 @@ const char * to_string(StructureType val) {
         case(StructureType::PhysicalDeviceSubgroupSizeControlFeaturesEXT): return "PhysicalDeviceSubgroupSizeControlFeaturesEXT";
         case(StructureType::PhysicalDeviceShaderCoreProperties2AMD): return "PhysicalDeviceShaderCoreProperties2AMD";
         case(StructureType::PhysicalDeviceCoherentMemoryFeaturesAMD): return "PhysicalDeviceCoherentMemoryFeaturesAMD";
+        case(StructureType::PhysicalDeviceShaderImageAtomicInt64FeaturesEXT): return "PhysicalDeviceShaderImageAtomicInt64FeaturesEXT";
         case(StructureType::PhysicalDeviceMemoryBudgetPropertiesEXT): return "PhysicalDeviceMemoryBudgetPropertiesEXT";
         case(StructureType::PhysicalDeviceMemoryPriorityFeaturesEXT): return "PhysicalDeviceMemoryPriorityFeaturesEXT";
         case(StructureType::MemoryPriorityAllocateInfoEXT): return "MemoryPriorityAllocateInfoEXT";
@@ -979,6 +982,9 @@ const char * to_string(StructureType val) {
         case(StructureType::PhysicalDeviceTexelBufferAlignmentPropertiesEXT): return "PhysicalDeviceTexelBufferAlignmentPropertiesEXT";
         case(StructureType::CommandBufferInheritanceRenderPassTransformInfoQCOM): return "CommandBufferInheritanceRenderPassTransformInfoQCOM";
         case(StructureType::RenderPassTransformBeginInfoQCOM): return "RenderPassTransformBeginInfoQCOM";
+        case(StructureType::PhysicalDeviceDeviceMemoryReportFeaturesEXT): return "PhysicalDeviceDeviceMemoryReportFeaturesEXT";
+        case(StructureType::DeviceDeviceMemoryReportCreateInfoEXT): return "DeviceDeviceMemoryReportCreateInfoEXT";
+        case(StructureType::DeviceMemoryReportCallbackDataEXT): return "DeviceMemoryReportCallbackDataEXT";
         case(StructureType::PhysicalDeviceRobustness2FeaturesEXT): return "PhysicalDeviceRobustness2FeaturesEXT";
         case(StructureType::PhysicalDeviceRobustness2PropertiesEXT): return "PhysicalDeviceRobustness2PropertiesEXT";
         case(StructureType::SamplerCustomBorderColorCreateInfoEXT): return "SamplerCustomBorderColorCreateInfoEXT";
@@ -994,6 +1000,17 @@ const char * to_string(StructureType val) {
         case(StructureType::PhysicalDeviceFragmentDensityMap2FeaturesEXT): return "PhysicalDeviceFragmentDensityMap2FeaturesEXT";
         case(StructureType::PhysicalDeviceFragmentDensityMap2PropertiesEXT): return "PhysicalDeviceFragmentDensityMap2PropertiesEXT";
         case(StructureType::PhysicalDeviceImageRobustnessFeaturesEXT): return "PhysicalDeviceImageRobustnessFeaturesEXT";
+        case(StructureType::CopyBufferInfo2KHR): return "CopyBufferInfo2KHR";
+        case(StructureType::CopyImageInfo2KHR): return "CopyImageInfo2KHR";
+        case(StructureType::CopyBufferToImageInfo2KHR): return "CopyBufferToImageInfo2KHR";
+        case(StructureType::CopyImageToBufferInfo2KHR): return "CopyImageToBufferInfo2KHR";
+        case(StructureType::BlitImageInfo2KHR): return "BlitImageInfo2KHR";
+        case(StructureType::ResolveImageInfo2KHR): return "ResolveImageInfo2KHR";
+        case(StructureType::BufferCopy2KHR): return "BufferCopy2KHR";
+        case(StructureType::ImageCopy2KHR): return "ImageCopy2KHR";
+        case(StructureType::ImageBlit2KHR): return "ImageBlit2KHR";
+        case(StructureType::BufferImageCopy2KHR): return "BufferImageCopy2KHR";
+        case(StructureType::ImageResolve2KHR): return "ImageResolve2KHR";
         case(StructureType::PhysicalDevice4444FormatsFeaturesEXT): return "PhysicalDevice4444FormatsFeaturesEXT";
         case(StructureType::DirectfbSurfaceCreateInfoEXT): return "DirectfbSurfaceCreateInfoEXT";
         case(StructureType::PhysicalDeviceSubgroupProperties): return "PhysicalDeviceSubgroupProperties";
@@ -1562,6 +1579,16 @@ const char * to_string(DebugReportObjectTypeEXT val) {
         default: return "UNKNOWN";
     }
 }
+const char * to_string(DeviceMemoryReportEventTypeEXT val) {
+    switch(val) {
+        case(DeviceMemoryReportEventTypeEXT::AllocateEXT): return "AllocateEXT";
+        case(DeviceMemoryReportEventTypeEXT::FreeEXT): return "FreeEXT";
+        case(DeviceMemoryReportEventTypeEXT::ImportEXT): return "ImportEXT";
+        case(DeviceMemoryReportEventTypeEXT::UnimportEXT): return "UnimportEXT";
+        case(DeviceMemoryReportEventTypeEXT::AllocationFailedEXT): return "AllocationFailedEXT";
+        default: return "UNKNOWN";
+    }
+}
 const char * to_string(RasterizationOrderAMD val) {
     switch(val) {
         case(RasterizationOrderAMD::StrictAMD): return "StrictAMD";
@@ -1760,22 +1787,6 @@ std::string to_string(PipelineCacheCreateFlags flag){
     if (flag & PipelineCacheCreateFlagBits::ExternallySynchronizedBitEXT) out += "ExternallySynchronizedBitEXT | ";
     return out.substr(0, out.size() - 3);
 };
-const char * to_string(CullModeFlagBits val) {
-    switch(val) {
-        case(CullModeFlagBits::None): return "None";
-        case(CullModeFlagBits::Front): return "Front";
-        case(CullModeFlagBits::Back): return "Back";
-        default: return "UNKNOWN";
-    }
-}
-std::string to_string(CullModeFlags flag){
-    if (flag.flags == 0) return "None";
-    std::string out;
-    if (flag & CullModeFlagBits::None) out += "None | ";
-    if (flag & CullModeFlagBits::Front) out += "Front | ";
-    if (flag & CullModeFlagBits::Back) out += "Back | ";
-    return out.substr(0, out.size() - 3);
-};
 const char * to_string(QueueFlagBits val) {
     switch(val) {
         case(QueueFlagBits::Graphics): return "Graphics";
@@ -1794,6 +1805,22 @@ std::string to_string(QueueFlags flag){
     if (flag & QueueFlagBits::Transfer) out += "Transfer | ";
     if (flag & QueueFlagBits::SparseBinding) out += "SparseBinding | ";
     if (flag & QueueFlagBits::Protected) out += "Protected | ";
+    return out.substr(0, out.size() - 3);
+};
+const char * to_string(CullModeFlagBits val) {
+    switch(val) {
+        case(CullModeFlagBits::None): return "None";
+        case(CullModeFlagBits::Front): return "Front";
+        case(CullModeFlagBits::Back): return "Back";
+        default: return "UNKNOWN";
+    }
+}
+std::string to_string(CullModeFlags flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & CullModeFlagBits::None) out += "None | ";
+    if (flag & CullModeFlagBits::Front) out += "Front | ";
+    if (flag & CullModeFlagBits::Back) out += "Back | ";
     return out.substr(0, out.size() - 3);
 };
 const char * to_string(RenderPassCreateFlagBits val) {
@@ -3711,6 +3738,15 @@ const char * to_string(DebugUtilsMessengerCallbackDataFlagBitsEXT val) {
     }
 }
 std::string to_string(DebugUtilsMessengerCallbackDataFlagsEXT flag){
+    if (flag.flags == 0) return "None";
+    return "Unknown";
+};
+const char * to_string(DeviceMemoryReportFlagBitsEXT val) {
+    switch(val) {
+        default: return "UNKNOWN";
+    }
+}
+std::string to_string(DeviceMemoryReportFlagsEXT flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
 };
