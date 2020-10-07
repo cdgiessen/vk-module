@@ -644,23 +644,32 @@ class Function:
 
         self.is_value_query = len(self.parameters) > 0 and self.return_type == 'VkResult' and self.parameters[-1].is_ptr() \
             and not self.parameters[-1].is_const and self.parameters[-1].len_attrib is None
-        self.is_enumeration_function = len(self.parameters) > 1 and self.name.find("Enumerate") != -1 and self.parameters[-1].is_ptr() \
+        self.is_enumeration_function = len(self.parameters) > 1 and self.parameters[-1].is_ptr() and not self.parameters[-1].is_const\
             and self.parameters[-2].optional is not None and self.parameters[-2].optional == 'false,true'
         self.query_type = None
         self.query_name = None
-        if self.is_value_query or self.is_enumeration_function:
+        self.full_return_type = None
+        if self.is_value_query:
             self.query_type = self.parameters[-1].get_base_type(downgrade_ptr_type=True)
             if self.query_type[:2] == 'vk':
                 self.query_type = self.query_type[:2]
             self.query_name = self.parameters[-1].name
+            self.full_return_type = f'expected<{self.query_type}>'
         if self.is_enumeration_function:
+            self.query_type = self.parameters[-1].get_base_type(downgrade_ptr_type=self.parameters[-1].base_type != 'void')
+            self.base_query_type =self.parameters[-1].get_base_type(use_vk_type=False)
+            self.query_name = self.parameters[-1].name
+            self.count_type = self.parameters[-2].base_type
             self.count_name = self.parameters[-2].name
-
+            if self.return_type == 'VkResult':
+                self.full_return_type = f'expected<detail::fixed_vector<{self.query_type}>>'
+            else: # void
+                self.full_return_type = f'detail::fixed_vector<{self.query_type}>'
     def check_platform(self, platform, ext_functions):
         if self.name in ext_functions:
             self.platform = platform
 
-    def print_return_type(self, file, indent='', replace_dict=None, expected_ret_type=None):
+    def print_return_type(self, file, indent='', replace_dict=None, full_return_type=None):
         print_function_name = self.name[2:]
         if replace_dict is not None:
             for str_from, str_to in replace_dict.items():
@@ -670,8 +679,8 @@ class Function:
         if self.return_type != 'void': 
             file.write('[[nodiscard]] ')
 
-        if expected_ret_type is not None:
-            file.write(f'expected<{expected_ret_type}> {print_function_name}')
+        if full_return_type is not None:
+            file.write(f'{full_return_type} {print_function_name}')
         elif self.return_type == 'VkResult':
             file.write(f'Result {print_function_name}')
         else:
@@ -730,10 +739,7 @@ class Function:
         if self.alias is not None:
             file.write(f'const auto {self.name[2:]} = {self.alias[2:]};\n')
         else:
-            return_type = self.query_type
-            if self.is_enumeration_function:
-                return_type = f'detail::fixed_vector<{return_type}>'
-            self.print_return_type(file, indent, replace_dict, expected_ret_type=return_type)
+            self.print_return_type(file, indent, replace_dict, self.full_return_type)
             file.write('(')
             parameter_list = self.parameters
             if dispatch_handle is not None and f'{dispatch_handle}' == self.dispatch_handle:
@@ -757,15 +763,23 @@ class Function:
                     file.write(f'{indent}    ')
                     self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source)
             elif self.is_enumeration_function:
-                file.write(f'{indent}    uint32_t {self.count_name} = 0;\n')
-                file.write(f'{indent}    vk::Result result = ')
-                self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source, 'nullptr')
-                file.write(f'{indent}    if (result < Result::Success) return expected(detail::fixed_vector<{self.query_type}>{{}}, result);\n')
-                file.write(f'{indent}    detail::fixed_vector<{self.query_type}> {self.query_name}{{{self.count_name}}};\n')
-                file.write(f'{indent}    result = ')
-                self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source, f'reinterpret_cast<Vk{self.query_type}*>({self.query_name}.data())')
-                file.write(f'{indent}    if ({self.count_name} < {self.query_name}.size()) {self.query_name}.shrink({self.count_name});\n')
-                file.write(f'{indent}    return expected(std::move({self.query_name}), result);\n')
+                if self.return_type == 'void':
+                    file.write(f'{indent}    {self.count_type} {self.count_name} = 0;\n{indent}    ')
+                    self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source, 'nullptr')
+                    file.write(f'{indent}    detail::fixed_vector<{self.query_type}> {self.query_name}{{{self.count_name}}};\n{indent}    ')
+                    self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source, f'reinterpret_cast<{self.base_query_type}>({self.query_name}.data())')
+                    file.write(f'{indent}    if ({self.count_name} < {self.query_name}.size()) {self.query_name}.shrink({self.count_name});\n')
+                    file.write(f'{indent}    return {self.query_name};\n')
+                else:
+                    file.write(f'{indent}    {self.count_type} {self.count_name} = 0;\n')
+                    file.write(f'{indent}    vk::Result result = ')
+                    self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source, 'nullptr')
+                    file.write(f'{indent}    if (result < Result::Success) return expected(detail::fixed_vector<{self.query_type}>{{}}, result);\n')
+                    file.write(f'{indent}    detail::fixed_vector<{self.query_type}> {self.query_name}{{{self.count_name}}};\n')
+                    file.write(f'{indent}    result = ')
+                    self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source, f'reinterpret_cast<{self.base_query_type}>({self.query_name}.data())')
+                    file.write(f'{indent}    if ({self.count_name} < {self.query_name}.size()) {self.query_name}.shrink({self.count_name});\n')
+                    file.write(f'{indent}    return expected(std::move({self.query_name}), result);\n')
             else:
                 file.write(f'{indent}    ')
                 if self.return_type != 'void':

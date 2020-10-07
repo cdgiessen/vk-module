@@ -14,11 +14,11 @@ template<typename T>
 struct fixed_vector
 {
     explicit fixed_vector() noexcept {}
-    explicit fixed_vector(uint32_t count) noexcept
+    explicit fixed_vector(size_t count) noexcept
     {
         _count = count;
         _data = new (std::nothrow) T[count];
-        for (uint32_t i = 0; i < count; i++)
+        for (size_t i = 0; i < count; i++)
             _data[i] = T(); // some vulkan structs have default values, so must be initialized
     }
     ~fixed_vector() noexcept { delete _data; }
@@ -26,14 +26,14 @@ struct fixed_vector
     {
         _count = value._count;
         _data = new (std::nothrow) T[value.count];
-        for (uint32_t i = 0; i < value.count; i++)
+        for (size_t i = 0; i < value.count; i++)
             _data[i] = value[i];
     }
     fixed_vector& operator=(fixed_vector const& value) noexcept
     {
         _count = value._count;
         _data = new (std::nothrow) T[value.count];
-        for (uint32_t i = 0; i < value.count; i++)
+        for (size_t i = 0; i < value.count; i++)
             _data[i] = value[i];
     }
     fixed_vector(fixed_vector&& other) noexcept
@@ -50,16 +50,16 @@ struct fixed_vector
         return *this;
     }
 
-    [[nodiscard]] uint32_t size() noexcept { return _count; }
-    [[nodiscard]] uint32_t size() const noexcept { return _count; }
+    [[nodiscard]] size_t size() noexcept { return _count; }
+    [[nodiscard]] size_t size() const noexcept { return _count; }
     [[nodiscard]] bool empty() noexcept { return _count == 0; }
     [[nodiscard]] bool empty() const noexcept { return _count == 0; }
     [[nodiscard]] T* data() noexcept { return _data; }
     [[nodiscard]] const T* data() const noexcept { return _data; }
-    void shrink(uint32_t count) noexcept { if (count < _count) _count = count;}
+    void shrink(size_t count) noexcept { if (count < _count) _count = count;}
 
-    [[nodiscard]] T& operator[](uint32_t count) & noexcept { return _data[count]; }
-    [[nodiscard]] T const& operator[](uint32_t count) const& noexcept { return _data[count]; }
+    [[nodiscard]] T& operator[](size_t count) & noexcept { return _data[count]; }
+    [[nodiscard]] T const& operator[](size_t count) const& noexcept { return _data[count]; }
 
     [[nodiscard]] const T* begin() const noexcept { return _data + 0; }
     [[nodiscard]] T* begin() noexcept { return _data + 0; }
@@ -67,7 +67,7 @@ struct fixed_vector
     [[nodiscard]] T* end() noexcept { return _data + _count; }
 
   private:
-    uint32_t _count = 0; // vulkan uses uint32_t everywhere, makes this inline with the API
+    size_t _count = 0;
     T* _data = nullptr;
 };
 } // namespace vk::detail

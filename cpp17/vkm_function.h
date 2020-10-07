@@ -162,11 +162,11 @@ template<typename T>
 struct fixed_vector
 {
     explicit fixed_vector() noexcept {}
-    explicit fixed_vector(uint32_t count) noexcept
+    explicit fixed_vector(size_t count) noexcept
     {
         _count = count;
         _data = new (std::nothrow) T[count];
-        for (uint32_t i = 0; i < count; i++)
+        for (size_t i = 0; i < count; i++)
             _data[i] = T(); // some vulkan structs have default values, so must be initialized
     }
     ~fixed_vector() noexcept { delete _data; }
@@ -174,14 +174,14 @@ struct fixed_vector
     {
         _count = value._count;
         _data = new (std::nothrow) T[value.count];
-        for (uint32_t i = 0; i < value.count; i++)
+        for (size_t i = 0; i < value.count; i++)
             _data[i] = value[i];
     }
     fixed_vector& operator=(fixed_vector const& value) noexcept
     {
         _count = value._count;
         _data = new (std::nothrow) T[value.count];
-        for (uint32_t i = 0; i < value.count; i++)
+        for (size_t i = 0; i < value.count; i++)
             _data[i] = value[i];
     }
     fixed_vector(fixed_vector&& other) noexcept
@@ -198,16 +198,16 @@ struct fixed_vector
         return *this;
     }
 
-    [[nodiscard]] uint32_t size() noexcept { return _count; }
-    [[nodiscard]] uint32_t size() const noexcept { return _count; }
+    [[nodiscard]] size_t size() noexcept { return _count; }
+    [[nodiscard]] size_t size() const noexcept { return _count; }
     [[nodiscard]] bool empty() noexcept { return _count == 0; }
     [[nodiscard]] bool empty() const noexcept { return _count == 0; }
     [[nodiscard]] T* data() noexcept { return _data; }
     [[nodiscard]] const T* data() const noexcept { return _data; }
-    void shrink(uint32_t count) noexcept { if (count < _count) _count = count;}
+    void shrink(size_t count) noexcept { if (count < _count) _count = count;}
 
-    [[nodiscard]] T& operator[](uint32_t count) & noexcept { return _data[count]; }
-    [[nodiscard]] T const& operator[](uint32_t count) const& noexcept { return _data[count]; }
+    [[nodiscard]] T& operator[](size_t count) & noexcept { return _data[count]; }
+    [[nodiscard]] T const& operator[](size_t count) const& noexcept { return _data[count]; }
 
     [[nodiscard]] const T* begin() const noexcept { return _data + 0; }
     [[nodiscard]] T* begin() noexcept { return _data + 0; }
@@ -215,7 +215,7 @@ struct fixed_vector
     [[nodiscard]] T* end() noexcept { return _data + _count; }
 
   private:
-    uint32_t _count = 0; // vulkan uses uint32_t everywhere, makes this inline with the API
+    size_t _count = 0;
     T* _data = nullptr;
 };
 } // namespace vk::detail
@@ -471,12 +471,17 @@ struct InstanceFunctions {
         pfn_GetPhysicalDeviceProperties(physicalDevice.get(),
             reinterpret_cast<VkPhysicalDeviceProperties*>(&pProperties));
     }
-    void GetPhysicalDeviceQueueFamilyProperties(PhysicalDevice physicalDevice,
-        uint32_t&  pQueueFamilyPropertyCount,
-        QueueFamilyProperties* pQueueFamilyProperties) {
+    detail::fixed_vector<QueueFamilyProperties> GetPhysicalDeviceQueueFamilyProperties(PhysicalDevice physicalDevice) {
+        uint32_t pQueueFamilyPropertyCount = 0;
         pfn_GetPhysicalDeviceQueueFamilyProperties(physicalDevice.get(),
             &pQueueFamilyPropertyCount,
-            reinterpret_cast<VkQueueFamilyProperties*>(pQueueFamilyProperties));
+            nullptr);
+        detail::fixed_vector<QueueFamilyProperties> pQueueFamilyProperties{pQueueFamilyPropertyCount};
+        pfn_GetPhysicalDeviceQueueFamilyProperties(physicalDevice.get(),
+            &pQueueFamilyPropertyCount,
+            reinterpret_cast<VkQueueFamilyProperties*>(pQueueFamilyProperties.data()));
+        if (pQueueFamilyPropertyCount < pQueueFamilyProperties.size()) pQueueFamilyProperties.shrink(pQueueFamilyPropertyCount);
+        return pQueueFamilyProperties;
     }
     void GetPhysicalDeviceMemoryProperties(PhysicalDevice physicalDevice,
         PhysicalDeviceMemoryProperties&  pMemoryProperties) {
@@ -537,14 +542,13 @@ struct InstanceFunctions {
         if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
         return expected(std::move(pProperties), result);
     }
-    void GetPhysicalDeviceSparseImageFormatProperties(PhysicalDevice physicalDevice,
+    detail::fixed_vector<SparseImageFormatProperties> GetPhysicalDeviceSparseImageFormatProperties(PhysicalDevice physicalDevice,
         Format format,
         ImageType type,
         SampleCountFlagBits samples,
         ImageUsageFlags usage,
-        ImageTiling tiling,
-        uint32_t&  pPropertyCount,
-        SparseImageFormatProperties* pProperties) {
+        ImageTiling tiling) {
+        uint32_t pPropertyCount = 0;
         pfn_GetPhysicalDeviceSparseImageFormatProperties(physicalDevice.get(),
             static_cast<VkFormat>(format),
             static_cast<VkImageType>(type),
@@ -552,7 +556,18 @@ struct InstanceFunctions {
             static_cast<VkImageUsageFlags>(usage),
             static_cast<VkImageTiling>(tiling),
             &pPropertyCount,
-            reinterpret_cast<VkSparseImageFormatProperties*>(pProperties));
+            nullptr);
+        detail::fixed_vector<SparseImageFormatProperties> pProperties{pPropertyCount};
+        pfn_GetPhysicalDeviceSparseImageFormatProperties(physicalDevice.get(),
+            static_cast<VkFormat>(format),
+            static_cast<VkImageType>(type),
+            static_cast<VkSampleCountFlagBits>(samples),
+            static_cast<VkImageUsageFlags>(usage),
+            static_cast<VkImageTiling>(tiling),
+            &pPropertyCount,
+            reinterpret_cast<VkSparseImageFormatProperties*>(pProperties.data()));
+        if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+        return pProperties;
     }
 #endif //defined(VK_VERSION_1_0)
 #if defined(VK_VERSION_1_1)
@@ -594,26 +609,37 @@ struct InstanceFunctions {
             reinterpret_cast<VkImageFormatProperties2*>(&pImageFormatProperties)));
         return expected<ImageFormatProperties2>(pImageFormatProperties, result);
     }
-    void GetPhysicalDeviceQueueFamilyProperties2(PhysicalDevice physicalDevice,
-        uint32_t&  pQueueFamilyPropertyCount,
-        QueueFamilyProperties2* pQueueFamilyProperties) {
+    detail::fixed_vector<QueueFamilyProperties2> GetPhysicalDeviceQueueFamilyProperties2(PhysicalDevice physicalDevice) {
+        uint32_t pQueueFamilyPropertyCount = 0;
         pfn_GetPhysicalDeviceQueueFamilyProperties2(physicalDevice.get(),
             &pQueueFamilyPropertyCount,
-            reinterpret_cast<VkQueueFamilyProperties2*>(pQueueFamilyProperties));
+            nullptr);
+        detail::fixed_vector<QueueFamilyProperties2> pQueueFamilyProperties{pQueueFamilyPropertyCount};
+        pfn_GetPhysicalDeviceQueueFamilyProperties2(physicalDevice.get(),
+            &pQueueFamilyPropertyCount,
+            reinterpret_cast<VkQueueFamilyProperties2*>(pQueueFamilyProperties.data()));
+        if (pQueueFamilyPropertyCount < pQueueFamilyProperties.size()) pQueueFamilyProperties.shrink(pQueueFamilyPropertyCount);
+        return pQueueFamilyProperties;
     }
     void GetPhysicalDeviceMemoryProperties2(PhysicalDevice physicalDevice,
         PhysicalDeviceMemoryProperties2&  pMemoryProperties) {
         pfn_GetPhysicalDeviceMemoryProperties2(physicalDevice.get(),
             reinterpret_cast<VkPhysicalDeviceMemoryProperties2*>(&pMemoryProperties));
     }
-    void GetPhysicalDeviceSparseImageFormatProperties2(PhysicalDevice physicalDevice,
-        const PhysicalDeviceSparseImageFormatInfo2&  pFormatInfo,
-        uint32_t&  pPropertyCount,
-        SparseImageFormatProperties2* pProperties) {
+    detail::fixed_vector<SparseImageFormatProperties2> GetPhysicalDeviceSparseImageFormatProperties2(PhysicalDevice physicalDevice,
+        const PhysicalDeviceSparseImageFormatInfo2&  pFormatInfo) {
+        uint32_t pPropertyCount = 0;
         pfn_GetPhysicalDeviceSparseImageFormatProperties2(physicalDevice.get(),
             reinterpret_cast<const VkPhysicalDeviceSparseImageFormatInfo2*>(&pFormatInfo),
             &pPropertyCount,
-            reinterpret_cast<VkSparseImageFormatProperties2*>(pProperties));
+            nullptr);
+        detail::fixed_vector<SparseImageFormatProperties2> pProperties{pPropertyCount};
+        pfn_GetPhysicalDeviceSparseImageFormatProperties2(physicalDevice.get(),
+            reinterpret_cast<const VkPhysicalDeviceSparseImageFormatInfo2*>(&pFormatInfo),
+            &pPropertyCount,
+            reinterpret_cast<VkSparseImageFormatProperties2*>(pProperties.data()));
+        if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+        return pProperties;
     }
     void GetPhysicalDeviceExternalBufferProperties(PhysicalDevice physicalDevice,
         const PhysicalDeviceExternalBufferInfo&  pExternalBufferInfo,
@@ -662,68 +688,115 @@ struct InstanceFunctions {
             reinterpret_cast<VkSurfaceCapabilitiesKHR*>(&pSurfaceCapabilities)));
         return expected<SurfaceCapabilitiesKHR>(pSurfaceCapabilities, result);
     }
-    [[nodiscard]] Result GetPhysicalDeviceSurfaceFormatsKHR(PhysicalDevice physicalDevice,
-        SurfaceKHR surface,
-        uint32_t&  pSurfaceFormatCount,
-        SurfaceFormatKHR* pSurfaceFormats) {
-        return static_cast<Result>(pfn_GetPhysicalDeviceSurfaceFormatsKHR(physicalDevice.get(),
+    [[nodiscard]] expected<detail::fixed_vector<SurfaceFormatKHR>> GetPhysicalDeviceSurfaceFormatsKHR(PhysicalDevice physicalDevice,
+        SurfaceKHR surface) {
+        uint32_t pSurfaceFormatCount = 0;
+        vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceSurfaceFormatsKHR(physicalDevice.get(),
             surface.get(),
             &pSurfaceFormatCount,
-            reinterpret_cast<VkSurfaceFormatKHR*>(pSurfaceFormats)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<SurfaceFormatKHR>{}, result);
+        detail::fixed_vector<SurfaceFormatKHR> pSurfaceFormats{pSurfaceFormatCount};
+        result = static_cast<Result>(pfn_GetPhysicalDeviceSurfaceFormatsKHR(physicalDevice.get(),
+            surface.get(),
+            &pSurfaceFormatCount,
+            reinterpret_cast<VkSurfaceFormatKHR*>(pSurfaceFormats.data())));
+        if (pSurfaceFormatCount < pSurfaceFormats.size()) pSurfaceFormats.shrink(pSurfaceFormatCount);
+        return expected(std::move(pSurfaceFormats), result);
     }
-    [[nodiscard]] Result GetPhysicalDeviceSurfacePresentModesKHR(PhysicalDevice physicalDevice,
-        SurfaceKHR surface,
-        uint32_t&  pPresentModeCount,
-        PresentModeKHR* pPresentModes) {
-        return static_cast<Result>(pfn_GetPhysicalDeviceSurfacePresentModesKHR(physicalDevice.get(),
+    [[nodiscard]] expected<detail::fixed_vector<PresentModeKHR>> GetPhysicalDeviceSurfacePresentModesKHR(PhysicalDevice physicalDevice,
+        SurfaceKHR surface) {
+        uint32_t pPresentModeCount = 0;
+        vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceSurfacePresentModesKHR(physicalDevice.get(),
             surface.get(),
             &pPresentModeCount,
-            reinterpret_cast<VkPresentModeKHR*>(pPresentModes)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<PresentModeKHR>{}, result);
+        detail::fixed_vector<PresentModeKHR> pPresentModes{pPresentModeCount};
+        result = static_cast<Result>(pfn_GetPhysicalDeviceSurfacePresentModesKHR(physicalDevice.get(),
+            surface.get(),
+            &pPresentModeCount,
+            reinterpret_cast<VkPresentModeKHR*>(pPresentModes.data())));
+        if (pPresentModeCount < pPresentModes.size()) pPresentModes.shrink(pPresentModeCount);
+        return expected(std::move(pPresentModes), result);
     }
 #endif //defined(VK_KHR_surface)
 #if (defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
-    [[nodiscard]] Result GetPhysicalDevicePresentRectanglesKHR(PhysicalDevice physicalDevice,
-        SurfaceKHR surface,
-        uint32_t&  pRectCount,
-        Rect2D* pRects) {
-        return static_cast<Result>(pfn_GetPhysicalDevicePresentRectanglesKHR(physicalDevice.get(),
+    [[nodiscard]] expected<detail::fixed_vector<Rect2D>> GetPhysicalDevicePresentRectanglesKHR(PhysicalDevice physicalDevice,
+        SurfaceKHR surface) {
+        uint32_t pRectCount = 0;
+        vk::Result result = static_cast<Result>(pfn_GetPhysicalDevicePresentRectanglesKHR(physicalDevice.get(),
             surface.get(),
             &pRectCount,
-            reinterpret_cast<VkRect2D*>(pRects)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<Rect2D>{}, result);
+        detail::fixed_vector<Rect2D> pRects{pRectCount};
+        result = static_cast<Result>(pfn_GetPhysicalDevicePresentRectanglesKHR(physicalDevice.get(),
+            surface.get(),
+            &pRectCount,
+            reinterpret_cast<VkRect2D*>(pRects.data())));
+        if (pRectCount < pRects.size()) pRects.shrink(pRectCount);
+        return expected(std::move(pRects), result);
     }
 #endif //(defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
 #if defined(VK_KHR_display)
-    [[nodiscard]] Result GetPhysicalDeviceDisplayPropertiesKHR(PhysicalDevice physicalDevice,
-        uint32_t&  pPropertyCount,
-        DisplayPropertiesKHR* pProperties) {
-        return static_cast<Result>(pfn_GetPhysicalDeviceDisplayPropertiesKHR(physicalDevice.get(),
+    [[nodiscard]] expected<detail::fixed_vector<DisplayPropertiesKHR>> GetPhysicalDeviceDisplayPropertiesKHR(PhysicalDevice physicalDevice) {
+        uint32_t pPropertyCount = 0;
+        vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceDisplayPropertiesKHR(physicalDevice.get(),
             &pPropertyCount,
-            reinterpret_cast<VkDisplayPropertiesKHR*>(pProperties)));
-    }
-    [[nodiscard]] Result GetPhysicalDeviceDisplayPlanePropertiesKHR(PhysicalDevice physicalDevice,
-        uint32_t&  pPropertyCount,
-        DisplayPlanePropertiesKHR* pProperties) {
-        return static_cast<Result>(pfn_GetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice.get(),
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<DisplayPropertiesKHR>{}, result);
+        detail::fixed_vector<DisplayPropertiesKHR> pProperties{pPropertyCount};
+        result = static_cast<Result>(pfn_GetPhysicalDeviceDisplayPropertiesKHR(physicalDevice.get(),
             &pPropertyCount,
-            reinterpret_cast<VkDisplayPlanePropertiesKHR*>(pProperties)));
+            reinterpret_cast<VkDisplayPropertiesKHR*>(pProperties.data())));
+        if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+        return expected(std::move(pProperties), result);
     }
-    [[nodiscard]] Result GetDisplayPlaneSupportedDisplaysKHR(PhysicalDevice physicalDevice,
-        uint32_t planeIndex,
-        uint32_t&  pDisplayCount,
-        DisplayKHR* pDisplays) {
-        return static_cast<Result>(pfn_GetDisplayPlaneSupportedDisplaysKHR(physicalDevice.get(),
+    [[nodiscard]] expected<detail::fixed_vector<DisplayPlanePropertiesKHR>> GetPhysicalDeviceDisplayPlanePropertiesKHR(PhysicalDevice physicalDevice) {
+        uint32_t pPropertyCount = 0;
+        vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice.get(),
+            &pPropertyCount,
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<DisplayPlanePropertiesKHR>{}, result);
+        detail::fixed_vector<DisplayPlanePropertiesKHR> pProperties{pPropertyCount};
+        result = static_cast<Result>(pfn_GetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice.get(),
+            &pPropertyCount,
+            reinterpret_cast<VkDisplayPlanePropertiesKHR*>(pProperties.data())));
+        if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+        return expected(std::move(pProperties), result);
+    }
+    [[nodiscard]] expected<detail::fixed_vector<DisplayKHR>> GetDisplayPlaneSupportedDisplaysKHR(PhysicalDevice physicalDevice,
+        uint32_t planeIndex) {
+        uint32_t pDisplayCount = 0;
+        vk::Result result = static_cast<Result>(pfn_GetDisplayPlaneSupportedDisplaysKHR(physicalDevice.get(),
             planeIndex,
             &pDisplayCount,
-            reinterpret_cast<VkDisplayKHR*>(pDisplays)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<DisplayKHR>{}, result);
+        detail::fixed_vector<DisplayKHR> pDisplays{pDisplayCount};
+        result = static_cast<Result>(pfn_GetDisplayPlaneSupportedDisplaysKHR(physicalDevice.get(),
+            planeIndex,
+            &pDisplayCount,
+            reinterpret_cast<VkDisplayKHR*>(pDisplays.data())));
+        if (pDisplayCount < pDisplays.size()) pDisplays.shrink(pDisplayCount);
+        return expected(std::move(pDisplays), result);
     }
-    [[nodiscard]] Result GetDisplayModePropertiesKHR(PhysicalDevice physicalDevice,
-        DisplayKHR display,
-        uint32_t&  pPropertyCount,
-        DisplayModePropertiesKHR* pProperties) {
-        return static_cast<Result>(pfn_GetDisplayModePropertiesKHR(physicalDevice.get(),
+    [[nodiscard]] expected<detail::fixed_vector<DisplayModePropertiesKHR>> GetDisplayModePropertiesKHR(PhysicalDevice physicalDevice,
+        DisplayKHR display) {
+        uint32_t pPropertyCount = 0;
+        vk::Result result = static_cast<Result>(pfn_GetDisplayModePropertiesKHR(physicalDevice.get(),
             display.get(),
             &pPropertyCount,
-            reinterpret_cast<VkDisplayModePropertiesKHR*>(pProperties)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<DisplayModePropertiesKHR>{}, result);
+        detail::fixed_vector<DisplayModePropertiesKHR> pProperties{pPropertyCount};
+        result = static_cast<Result>(pfn_GetDisplayModePropertiesKHR(physicalDevice.get(),
+            display.get(),
+            &pPropertyCount,
+            reinterpret_cast<VkDisplayModePropertiesKHR*>(pProperties.data())));
+        if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+        return expected(std::move(pProperties), result);
     }
     [[nodiscard]] expected<DisplayModeKHR> CreateDisplayModeKHR(PhysicalDevice physicalDevice,
         DisplayKHR display,
@@ -982,39 +1055,65 @@ struct InstanceFunctions {
             reinterpret_cast<VkSurfaceCapabilities2KHR*>(&pSurfaceCapabilities)));
         return expected<SurfaceCapabilities2KHR>(pSurfaceCapabilities, result);
     }
-    [[nodiscard]] Result GetPhysicalDeviceSurfaceFormats2KHR(PhysicalDevice physicalDevice,
-        const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo,
-        uint32_t&  pSurfaceFormatCount,
-        SurfaceFormat2KHR* pSurfaceFormats) {
-        return static_cast<Result>(pfn_GetPhysicalDeviceSurfaceFormats2KHR(physicalDevice.get(),
+    [[nodiscard]] expected<detail::fixed_vector<SurfaceFormat2KHR>> GetPhysicalDeviceSurfaceFormats2KHR(PhysicalDevice physicalDevice,
+        const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) {
+        uint32_t pSurfaceFormatCount = 0;
+        vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceSurfaceFormats2KHR(physicalDevice.get(),
             reinterpret_cast<const VkPhysicalDeviceSurfaceInfo2KHR*>(&pSurfaceInfo),
             &pSurfaceFormatCount,
-            reinterpret_cast<VkSurfaceFormat2KHR*>(pSurfaceFormats)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<SurfaceFormat2KHR>{}, result);
+        detail::fixed_vector<SurfaceFormat2KHR> pSurfaceFormats{pSurfaceFormatCount};
+        result = static_cast<Result>(pfn_GetPhysicalDeviceSurfaceFormats2KHR(physicalDevice.get(),
+            reinterpret_cast<const VkPhysicalDeviceSurfaceInfo2KHR*>(&pSurfaceInfo),
+            &pSurfaceFormatCount,
+            reinterpret_cast<VkSurfaceFormat2KHR*>(pSurfaceFormats.data())));
+        if (pSurfaceFormatCount < pSurfaceFormats.size()) pSurfaceFormats.shrink(pSurfaceFormatCount);
+        return expected(std::move(pSurfaceFormats), result);
     }
 #endif //defined(VK_KHR_get_surface_capabilities2)
 #if defined(VK_KHR_get_display_properties2)
-    [[nodiscard]] Result GetPhysicalDeviceDisplayProperties2KHR(PhysicalDevice physicalDevice,
-        uint32_t&  pPropertyCount,
-        DisplayProperties2KHR* pProperties) {
-        return static_cast<Result>(pfn_GetPhysicalDeviceDisplayProperties2KHR(physicalDevice.get(),
+    [[nodiscard]] expected<detail::fixed_vector<DisplayProperties2KHR>> GetPhysicalDeviceDisplayProperties2KHR(PhysicalDevice physicalDevice) {
+        uint32_t pPropertyCount = 0;
+        vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceDisplayProperties2KHR(physicalDevice.get(),
             &pPropertyCount,
-            reinterpret_cast<VkDisplayProperties2KHR*>(pProperties)));
-    }
-    [[nodiscard]] Result GetPhysicalDeviceDisplayPlaneProperties2KHR(PhysicalDevice physicalDevice,
-        uint32_t&  pPropertyCount,
-        DisplayPlaneProperties2KHR* pProperties) {
-        return static_cast<Result>(pfn_GetPhysicalDeviceDisplayPlaneProperties2KHR(physicalDevice.get(),
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<DisplayProperties2KHR>{}, result);
+        detail::fixed_vector<DisplayProperties2KHR> pProperties{pPropertyCount};
+        result = static_cast<Result>(pfn_GetPhysicalDeviceDisplayProperties2KHR(physicalDevice.get(),
             &pPropertyCount,
-            reinterpret_cast<VkDisplayPlaneProperties2KHR*>(pProperties)));
+            reinterpret_cast<VkDisplayProperties2KHR*>(pProperties.data())));
+        if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+        return expected(std::move(pProperties), result);
     }
-    [[nodiscard]] Result GetDisplayModeProperties2KHR(PhysicalDevice physicalDevice,
-        DisplayKHR display,
-        uint32_t&  pPropertyCount,
-        DisplayModeProperties2KHR* pProperties) {
-        return static_cast<Result>(pfn_GetDisplayModeProperties2KHR(physicalDevice.get(),
+    [[nodiscard]] expected<detail::fixed_vector<DisplayPlaneProperties2KHR>> GetPhysicalDeviceDisplayPlaneProperties2KHR(PhysicalDevice physicalDevice) {
+        uint32_t pPropertyCount = 0;
+        vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceDisplayPlaneProperties2KHR(physicalDevice.get(),
+            &pPropertyCount,
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<DisplayPlaneProperties2KHR>{}, result);
+        detail::fixed_vector<DisplayPlaneProperties2KHR> pProperties{pPropertyCount};
+        result = static_cast<Result>(pfn_GetPhysicalDeviceDisplayPlaneProperties2KHR(physicalDevice.get(),
+            &pPropertyCount,
+            reinterpret_cast<VkDisplayPlaneProperties2KHR*>(pProperties.data())));
+        if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+        return expected(std::move(pProperties), result);
+    }
+    [[nodiscard]] expected<detail::fixed_vector<DisplayModeProperties2KHR>> GetDisplayModeProperties2KHR(PhysicalDevice physicalDevice,
+        DisplayKHR display) {
+        uint32_t pPropertyCount = 0;
+        vk::Result result = static_cast<Result>(pfn_GetDisplayModeProperties2KHR(physicalDevice.get(),
             display.get(),
             &pPropertyCount,
-            reinterpret_cast<VkDisplayModeProperties2KHR*>(pProperties)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<DisplayModeProperties2KHR>{}, result);
+        detail::fixed_vector<DisplayModeProperties2KHR> pProperties{pPropertyCount};
+        result = static_cast<Result>(pfn_GetDisplayModeProperties2KHR(physicalDevice.get(),
+            display.get(),
+            &pPropertyCount,
+            reinterpret_cast<VkDisplayModeProperties2KHR*>(pProperties.data())));
+        if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+        return expected(std::move(pProperties), result);
     }
     [[nodiscard]] expected<DisplayPlaneCapabilities2KHR> GetDisplayPlaneCapabilities2KHR(PhysicalDevice physicalDevice,
         const DisplayPlaneInfo2KHR&  pDisplayPlaneInfo) {
@@ -1082,12 +1181,18 @@ struct InstanceFunctions {
     }
 #endif //defined(VK_EXT_sample_locations)
 #if defined(VK_EXT_calibrated_timestamps)
-    [[nodiscard]] Result GetPhysicalDeviceCalibrateableTimeDomainsEXT(PhysicalDevice physicalDevice,
-        uint32_t&  pTimeDomainCount,
-        TimeDomainEXT* pTimeDomains) {
-        return static_cast<Result>(pfn_GetPhysicalDeviceCalibrateableTimeDomainsEXT(physicalDevice.get(),
+    [[nodiscard]] expected<detail::fixed_vector<TimeDomainEXT>> GetPhysicalDeviceCalibrateableTimeDomainsEXT(PhysicalDevice physicalDevice) {
+        uint32_t pTimeDomainCount = 0;
+        vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceCalibrateableTimeDomainsEXT(physicalDevice.get(),
             &pTimeDomainCount,
-            reinterpret_cast<VkTimeDomainEXT*>(pTimeDomains)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<TimeDomainEXT>{}, result);
+        detail::fixed_vector<TimeDomainEXT> pTimeDomains{pTimeDomainCount};
+        result = static_cast<Result>(pfn_GetPhysicalDeviceCalibrateableTimeDomainsEXT(physicalDevice.get(),
+            &pTimeDomainCount,
+            reinterpret_cast<VkTimeDomainEXT*>(pTimeDomains.data())));
+        if (pTimeDomainCount < pTimeDomains.size()) pTimeDomains.shrink(pTimeDomainCount);
+        return expected(std::move(pTimeDomains), result);
     }
 #endif //defined(VK_EXT_calibrated_timestamps)
 #if defined(VK_USE_PLATFORM_FUCHSIA) && (defined(VK_FUCHSIA_imagepipe_surface))
@@ -1113,41 +1218,66 @@ struct InstanceFunctions {
     }
 #endif //defined(VK_USE_PLATFORM_METAL_EXT) && (defined(VK_EXT_metal_surface))
 #if defined(VK_EXT_tooling_info)
-    [[nodiscard]] Result GetPhysicalDeviceToolPropertiesEXT(PhysicalDevice physicalDevice,
-        uint32_t&  pToolCount,
-        PhysicalDeviceToolPropertiesEXT* pToolProperties) {
-        return static_cast<Result>(pfn_GetPhysicalDeviceToolPropertiesEXT(physicalDevice.get(),
+    [[nodiscard]] expected<detail::fixed_vector<PhysicalDeviceToolPropertiesEXT>> GetPhysicalDeviceToolPropertiesEXT(PhysicalDevice physicalDevice) {
+        uint32_t pToolCount = 0;
+        vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceToolPropertiesEXT(physicalDevice.get(),
             &pToolCount,
-            reinterpret_cast<VkPhysicalDeviceToolPropertiesEXT*>(pToolProperties)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<PhysicalDeviceToolPropertiesEXT>{}, result);
+        detail::fixed_vector<PhysicalDeviceToolPropertiesEXT> pToolProperties{pToolCount};
+        result = static_cast<Result>(pfn_GetPhysicalDeviceToolPropertiesEXT(physicalDevice.get(),
+            &pToolCount,
+            reinterpret_cast<VkPhysicalDeviceToolPropertiesEXT*>(pToolProperties.data())));
+        if (pToolCount < pToolProperties.size()) pToolProperties.shrink(pToolCount);
+        return expected(std::move(pToolProperties), result);
     }
 #endif //defined(VK_EXT_tooling_info)
 #if defined(VK_NV_cooperative_matrix)
-    [[nodiscard]] Result GetPhysicalDeviceCooperativeMatrixPropertiesNV(PhysicalDevice physicalDevice,
-        uint32_t&  pPropertyCount,
-        CooperativeMatrixPropertiesNV* pProperties) {
-        return static_cast<Result>(pfn_GetPhysicalDeviceCooperativeMatrixPropertiesNV(physicalDevice.get(),
+    [[nodiscard]] expected<detail::fixed_vector<CooperativeMatrixPropertiesNV>> GetPhysicalDeviceCooperativeMatrixPropertiesNV(PhysicalDevice physicalDevice) {
+        uint32_t pPropertyCount = 0;
+        vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceCooperativeMatrixPropertiesNV(physicalDevice.get(),
             &pPropertyCount,
-            reinterpret_cast<VkCooperativeMatrixPropertiesNV*>(pProperties)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<CooperativeMatrixPropertiesNV>{}, result);
+        detail::fixed_vector<CooperativeMatrixPropertiesNV> pProperties{pPropertyCount};
+        result = static_cast<Result>(pfn_GetPhysicalDeviceCooperativeMatrixPropertiesNV(physicalDevice.get(),
+            &pPropertyCount,
+            reinterpret_cast<VkCooperativeMatrixPropertiesNV*>(pProperties.data())));
+        if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+        return expected(std::move(pProperties), result);
     }
 #endif //defined(VK_NV_cooperative_matrix)
 #if defined(VK_NV_coverage_reduction_mode)
-    [[nodiscard]] Result GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(PhysicalDevice physicalDevice,
-        uint32_t&  pCombinationCount,
-        FramebufferMixedSamplesCombinationNV* pCombinations) {
-        return static_cast<Result>(pfn_GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(physicalDevice.get(),
+    [[nodiscard]] expected<detail::fixed_vector<FramebufferMixedSamplesCombinationNV>> GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(PhysicalDevice physicalDevice) {
+        uint32_t pCombinationCount = 0;
+        vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(physicalDevice.get(),
             &pCombinationCount,
-            reinterpret_cast<VkFramebufferMixedSamplesCombinationNV*>(pCombinations)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<FramebufferMixedSamplesCombinationNV>{}, result);
+        detail::fixed_vector<FramebufferMixedSamplesCombinationNV> pCombinations{pCombinationCount};
+        result = static_cast<Result>(pfn_GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(physicalDevice.get(),
+            &pCombinationCount,
+            reinterpret_cast<VkFramebufferMixedSamplesCombinationNV*>(pCombinations.data())));
+        if (pCombinationCount < pCombinations.size()) pCombinations.shrink(pCombinationCount);
+        return expected(std::move(pCombinations), result);
     }
 #endif //defined(VK_NV_coverage_reduction_mode)
 #if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
-    [[nodiscard]] Result GetPhysicalDeviceSurfacePresentModes2EXT(PhysicalDevice physicalDevice,
-        const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo,
-        uint32_t&  pPresentModeCount,
-        PresentModeKHR* pPresentModes) {
-        return static_cast<Result>(pfn_GetPhysicalDeviceSurfacePresentModes2EXT(physicalDevice.get(),
+    [[nodiscard]] expected<detail::fixed_vector<PresentModeKHR>> GetPhysicalDeviceSurfacePresentModes2EXT(PhysicalDevice physicalDevice,
+        const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) {
+        uint32_t pPresentModeCount = 0;
+        vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceSurfacePresentModes2EXT(physicalDevice.get(),
             reinterpret_cast<const VkPhysicalDeviceSurfaceInfo2KHR*>(&pSurfaceInfo),
             &pPresentModeCount,
-            reinterpret_cast<VkPresentModeKHR*>(pPresentModes)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<PresentModeKHR>{}, result);
+        detail::fixed_vector<PresentModeKHR> pPresentModes{pPresentModeCount};
+        result = static_cast<Result>(pfn_GetPhysicalDeviceSurfacePresentModes2EXT(physicalDevice.get(),
+            reinterpret_cast<const VkPhysicalDeviceSurfaceInfo2KHR*>(&pSurfaceInfo),
+            &pPresentModeCount,
+            reinterpret_cast<VkPresentModeKHR*>(pPresentModes.data())));
+        if (pPresentModeCount < pPresentModes.size()) pPresentModes.shrink(pPresentModeCount);
+        return expected(std::move(pPresentModes), result);
     }
 #endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
 #if defined(VK_EXT_headless_surface)
@@ -1845,13 +1975,19 @@ struct DeviceFunctions {
             memory.get(),
             memoryOffset));
     }
-    void GetImageSparseMemoryRequirements(Image image,
-        uint32_t&  pSparseMemoryRequirementCount,
-        SparseImageMemoryRequirements* pSparseMemoryRequirements) {
+    detail::fixed_vector<SparseImageMemoryRequirements> GetImageSparseMemoryRequirements(Image image) {
+        uint32_t pSparseMemoryRequirementCount = 0;
         pfn_GetImageSparseMemoryRequirements(device.get(),
             image.get(),
             &pSparseMemoryRequirementCount,
-            reinterpret_cast<VkSparseImageMemoryRequirements*>(pSparseMemoryRequirements));
+            nullptr);
+        detail::fixed_vector<SparseImageMemoryRequirements> pSparseMemoryRequirements{pSparseMemoryRequirementCount};
+        pfn_GetImageSparseMemoryRequirements(device.get(),
+            image.get(),
+            &pSparseMemoryRequirementCount,
+            reinterpret_cast<VkSparseImageMemoryRequirements*>(pSparseMemoryRequirements.data()));
+        if (pSparseMemoryRequirementCount < pSparseMemoryRequirements.size()) pSparseMemoryRequirements.shrink(pSparseMemoryRequirementCount);
+        return pSparseMemoryRequirements;
     }
     [[nodiscard]] Result QueueBindSparse(Queue queue,
         uint32_t bindInfoCount,
@@ -2068,13 +2204,20 @@ struct DeviceFunctions {
             pipelineCache.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    [[nodiscard]] Result GetPipelineCacheData(PipelineCache pipelineCache,
-        size_t&  pDataSize,
-        void* pData) {
-        return static_cast<Result>(pfn_GetPipelineCacheData(device.get(),
+    [[nodiscard]] expected<detail::fixed_vector<void*>> GetPipelineCacheData(PipelineCache pipelineCache) {
+        size_t pDataSize = 0;
+        vk::Result result = static_cast<Result>(pfn_GetPipelineCacheData(device.get(),
             pipelineCache.get(),
             &pDataSize,
-            reinterpret_cast<void*>(pData)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<void*>{}, result);
+        detail::fixed_vector<void*> pData{pDataSize};
+        result = static_cast<Result>(pfn_GetPipelineCacheData(device.get(),
+            pipelineCache.get(),
+            &pDataSize,
+            reinterpret_cast<void*>(pData.data())));
+        if (pDataSize < pData.size()) pData.shrink(pDataSize);
+        return expected(std::move(pData), result);
     }
     [[nodiscard]] Result MergePipelineCaches(PipelineCache dstCache,
         uint32_t srcCacheCount,
@@ -2802,13 +2945,19 @@ struct DeviceFunctions {
             reinterpret_cast<const VkImageMemoryRequirementsInfo2*>(&pInfo),
             reinterpret_cast<VkMemoryRequirements2*>(&pMemoryRequirements));
     }
-    void GetImageSparseMemoryRequirements2(const ImageSparseMemoryRequirementsInfo2&  pInfo,
-        uint32_t&  pSparseMemoryRequirementCount,
-        SparseImageMemoryRequirements2* pSparseMemoryRequirements) {
+    detail::fixed_vector<SparseImageMemoryRequirements2> GetImageSparseMemoryRequirements2(const ImageSparseMemoryRequirementsInfo2&  pInfo) {
+        uint32_t pSparseMemoryRequirementCount = 0;
         pfn_GetImageSparseMemoryRequirements2(device.get(),
             reinterpret_cast<const VkImageSparseMemoryRequirementsInfo2*>(&pInfo),
             &pSparseMemoryRequirementCount,
-            reinterpret_cast<VkSparseImageMemoryRequirements2*>(pSparseMemoryRequirements));
+            nullptr);
+        detail::fixed_vector<SparseImageMemoryRequirements2> pSparseMemoryRequirements{pSparseMemoryRequirementCount};
+        pfn_GetImageSparseMemoryRequirements2(device.get(),
+            reinterpret_cast<const VkImageSparseMemoryRequirementsInfo2*>(&pInfo),
+            &pSparseMemoryRequirementCount,
+            reinterpret_cast<VkSparseImageMemoryRequirements2*>(pSparseMemoryRequirements.data()));
+        if (pSparseMemoryRequirementCount < pSparseMemoryRequirements.size()) pSparseMemoryRequirements.shrink(pSparseMemoryRequirementCount);
+        return pSparseMemoryRequirements;
     }
     void TrimCommandPool(CommandPool commandPool,
         CommandPoolTrimFlags flags) {
@@ -2980,13 +3129,20 @@ struct DeviceFunctions {
             swapchain.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    [[nodiscard]] Result GetSwapchainImagesKHR(SwapchainKHR swapchain,
-        uint32_t&  pSwapchainImageCount,
-        Image* pSwapchainImages) {
-        return static_cast<Result>(pfn_GetSwapchainImagesKHR(device.get(),
+    [[nodiscard]] expected<detail::fixed_vector<Image>> GetSwapchainImagesKHR(SwapchainKHR swapchain) {
+        uint32_t pSwapchainImageCount = 0;
+        vk::Result result = static_cast<Result>(pfn_GetSwapchainImagesKHR(device.get(),
             swapchain.get(),
             &pSwapchainImageCount,
-            reinterpret_cast<VkImage*>(pSwapchainImages)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<Image>{}, result);
+        detail::fixed_vector<Image> pSwapchainImages{pSwapchainImageCount};
+        result = static_cast<Result>(pfn_GetSwapchainImagesKHR(device.get(),
+            swapchain.get(),
+            &pSwapchainImageCount,
+            reinterpret_cast<VkImage*>(pSwapchainImages.data())));
+        if (pSwapchainImageCount < pSwapchainImages.size()) pSwapchainImages.shrink(pSwapchainImageCount);
+        return expected(std::move(pSwapchainImages), result);
     }
     [[nodiscard]] expected<uint32_t> AcquireNextImageKHR(SwapchainKHR swapchain,
         uint64_t timeout,
@@ -3152,17 +3308,26 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_NVX_image_view_handle)
 #if defined(VK_AMD_shader_info)
-    [[nodiscard]] Result GetShaderInfoAMD(Pipeline pipeline,
+    [[nodiscard]] expected<detail::fixed_vector<void*>> GetShaderInfoAMD(Pipeline pipeline,
         ShaderStageFlagBits shaderStage,
-        ShaderInfoTypeAMD infoType,
-        size_t&  pInfoSize,
-        void* pInfo) {
-        return static_cast<Result>(pfn_GetShaderInfoAMD(device.get(),
+        ShaderInfoTypeAMD infoType) {
+        size_t pInfoSize = 0;
+        vk::Result result = static_cast<Result>(pfn_GetShaderInfoAMD(device.get(),
             pipeline.get(),
             static_cast<VkShaderStageFlagBits>(shaderStage),
             static_cast<VkShaderInfoTypeAMD>(infoType),
             &pInfoSize,
-            reinterpret_cast<void*>(pInfo)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<void*>{}, result);
+        detail::fixed_vector<void*> pInfo{pInfoSize};
+        result = static_cast<Result>(pfn_GetShaderInfoAMD(device.get(),
+            pipeline.get(),
+            static_cast<VkShaderStageFlagBits>(shaderStage),
+            static_cast<VkShaderInfoTypeAMD>(infoType),
+            &pInfoSize,
+            reinterpret_cast<void*>(pInfo.data())));
+        if (pInfoSize < pInfo.size()) pInfo.shrink(pInfoSize);
+        return expected(std::move(pInfo), result);
     }
 #endif //defined(VK_AMD_shader_info)
 #if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_NV_external_memory_win32))
@@ -3332,13 +3497,20 @@ struct DeviceFunctions {
             reinterpret_cast<VkRefreshCycleDurationGOOGLE*>(&pDisplayTimingProperties)));
         return expected<RefreshCycleDurationGOOGLE>(pDisplayTimingProperties, result);
     }
-    [[nodiscard]] Result GetPastPresentationTimingGOOGLE(SwapchainKHR swapchain,
-        uint32_t&  pPresentationTimingCount,
-        PastPresentationTimingGOOGLE* pPresentationTimings) {
-        return static_cast<Result>(pfn_GetPastPresentationTimingGOOGLE(device.get(),
+    [[nodiscard]] expected<detail::fixed_vector<PastPresentationTimingGOOGLE>> GetPastPresentationTimingGOOGLE(SwapchainKHR swapchain) {
+        uint32_t pPresentationTimingCount = 0;
+        vk::Result result = static_cast<Result>(pfn_GetPastPresentationTimingGOOGLE(device.get(),
             swapchain.get(),
             &pPresentationTimingCount,
-            reinterpret_cast<VkPastPresentationTimingGOOGLE*>(pPresentationTimings)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<PastPresentationTimingGOOGLE>{}, result);
+        detail::fixed_vector<PastPresentationTimingGOOGLE> pPresentationTimings{pPresentationTimingCount};
+        result = static_cast<Result>(pfn_GetPastPresentationTimingGOOGLE(device.get(),
+            swapchain.get(),
+            &pPresentationTimingCount,
+            reinterpret_cast<VkPastPresentationTimingGOOGLE*>(pPresentationTimings.data())));
+        if (pPresentationTimingCount < pPresentationTimings.size()) pPresentationTimings.shrink(pPresentationTimingCount);
+        return expected(std::move(pPresentationTimings), result);
     }
 #endif //defined(VK_GOOGLE_display_timing)
 #if defined(VK_EXT_discard_rectangles)
@@ -3674,13 +3846,20 @@ struct DeviceFunctions {
             validationCache.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
     }
-    [[nodiscard]] Result GetValidationCacheDataEXT(ValidationCacheEXT validationCache,
-        size_t&  pDataSize,
-        void* pData) {
-        return static_cast<Result>(pfn_GetValidationCacheDataEXT(device.get(),
+    [[nodiscard]] expected<detail::fixed_vector<void*>> GetValidationCacheDataEXT(ValidationCacheEXT validationCache) {
+        size_t pDataSize = 0;
+        vk::Result result = static_cast<Result>(pfn_GetValidationCacheDataEXT(device.get(),
             validationCache.get(),
             &pDataSize,
-            reinterpret_cast<void*>(pData)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<void*>{}, result);
+        detail::fixed_vector<void*> pData{pDataSize};
+        result = static_cast<Result>(pfn_GetValidationCacheDataEXT(device.get(),
+            validationCache.get(),
+            &pDataSize,
+            reinterpret_cast<void*>(pData.data())));
+        if (pDataSize < pData.size()) pData.shrink(pDataSize);
+        return expected(std::move(pData), result);
     }
     [[nodiscard]] Result MergeValidationCachesEXT(ValidationCacheEXT dstCache,
         uint32_t srcCacheCount,
@@ -3909,12 +4088,17 @@ struct DeviceFunctions {
         pfn_CmdSetCheckpointNV(commandBuffer.get(),
             reinterpret_cast<const void*>(pCheckpointMarker));
     }
-    void GetQueueCheckpointDataNV(Queue queue,
-        uint32_t&  pCheckpointDataCount,
-        CheckpointDataNV* pCheckpointData) {
+    detail::fixed_vector<CheckpointDataNV> GetQueueCheckpointDataNV(Queue queue) {
+        uint32_t pCheckpointDataCount = 0;
         pfn_GetQueueCheckpointDataNV(queue.get(),
             &pCheckpointDataCount,
-            reinterpret_cast<VkCheckpointDataNV*>(pCheckpointData));
+            nullptr);
+        detail::fixed_vector<CheckpointDataNV> pCheckpointData{pCheckpointDataCount};
+        pfn_GetQueueCheckpointDataNV(queue.get(),
+            &pCheckpointDataCount,
+            reinterpret_cast<VkCheckpointDataNV*>(pCheckpointData.data()));
+        if (pCheckpointDataCount < pCheckpointData.size()) pCheckpointData.shrink(pCheckpointDataCount);
+        return pCheckpointData;
     }
 #endif //defined(VK_NV_device_diagnostic_checkpoints)
 #if defined(VK_INTEL_performance_query)
@@ -4112,29 +4296,50 @@ struct DeviceFunctions {
     }
 #endif //defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_deferred_host_operations))
 #if defined(VK_KHR_pipeline_executable_properties)
-    [[nodiscard]] Result GetPipelineExecutablePropertiesKHR(const PipelineInfoKHR&  pPipelineInfo,
-        uint32_t&  pExecutableCount,
-        PipelineExecutablePropertiesKHR* pProperties) {
-        return static_cast<Result>(pfn_GetPipelineExecutablePropertiesKHR(device.get(),
+    [[nodiscard]] expected<detail::fixed_vector<PipelineExecutablePropertiesKHR>> GetPipelineExecutablePropertiesKHR(const PipelineInfoKHR&  pPipelineInfo) {
+        uint32_t pExecutableCount = 0;
+        vk::Result result = static_cast<Result>(pfn_GetPipelineExecutablePropertiesKHR(device.get(),
             reinterpret_cast<const VkPipelineInfoKHR*>(&pPipelineInfo),
             &pExecutableCount,
-            reinterpret_cast<VkPipelineExecutablePropertiesKHR*>(pProperties)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<PipelineExecutablePropertiesKHR>{}, result);
+        detail::fixed_vector<PipelineExecutablePropertiesKHR> pProperties{pExecutableCount};
+        result = static_cast<Result>(pfn_GetPipelineExecutablePropertiesKHR(device.get(),
+            reinterpret_cast<const VkPipelineInfoKHR*>(&pPipelineInfo),
+            &pExecutableCount,
+            reinterpret_cast<VkPipelineExecutablePropertiesKHR*>(pProperties.data())));
+        if (pExecutableCount < pProperties.size()) pProperties.shrink(pExecutableCount);
+        return expected(std::move(pProperties), result);
     }
-    [[nodiscard]] Result GetPipelineExecutableStatisticsKHR(const PipelineExecutableInfoKHR&  pExecutableInfo,
-        uint32_t&  pStatisticCount,
-        PipelineExecutableStatisticKHR* pStatistics) {
-        return static_cast<Result>(pfn_GetPipelineExecutableStatisticsKHR(device.get(),
+    [[nodiscard]] expected<detail::fixed_vector<PipelineExecutableStatisticKHR>> GetPipelineExecutableStatisticsKHR(const PipelineExecutableInfoKHR&  pExecutableInfo) {
+        uint32_t pStatisticCount = 0;
+        vk::Result result = static_cast<Result>(pfn_GetPipelineExecutableStatisticsKHR(device.get(),
             reinterpret_cast<const VkPipelineExecutableInfoKHR*>(&pExecutableInfo),
             &pStatisticCount,
-            reinterpret_cast<VkPipelineExecutableStatisticKHR*>(pStatistics)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<PipelineExecutableStatisticKHR>{}, result);
+        detail::fixed_vector<PipelineExecutableStatisticKHR> pStatistics{pStatisticCount};
+        result = static_cast<Result>(pfn_GetPipelineExecutableStatisticsKHR(device.get(),
+            reinterpret_cast<const VkPipelineExecutableInfoKHR*>(&pExecutableInfo),
+            &pStatisticCount,
+            reinterpret_cast<VkPipelineExecutableStatisticKHR*>(pStatistics.data())));
+        if (pStatisticCount < pStatistics.size()) pStatistics.shrink(pStatisticCount);
+        return expected(std::move(pStatistics), result);
     }
-    [[nodiscard]] Result GetPipelineExecutableInternalRepresentationsKHR(const PipelineExecutableInfoKHR&  pExecutableInfo,
-        uint32_t&  pInternalRepresentationCount,
-        PipelineExecutableInternalRepresentationKHR* pInternalRepresentations) {
-        return static_cast<Result>(pfn_GetPipelineExecutableInternalRepresentationsKHR(device.get(),
+    [[nodiscard]] expected<detail::fixed_vector<PipelineExecutableInternalRepresentationKHR>> GetPipelineExecutableInternalRepresentationsKHR(const PipelineExecutableInfoKHR&  pExecutableInfo) {
+        uint32_t pInternalRepresentationCount = 0;
+        vk::Result result = static_cast<Result>(pfn_GetPipelineExecutableInternalRepresentationsKHR(device.get(),
             reinterpret_cast<const VkPipelineExecutableInfoKHR*>(&pExecutableInfo),
             &pInternalRepresentationCount,
-            reinterpret_cast<VkPipelineExecutableInternalRepresentationKHR*>(pInternalRepresentations)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<PipelineExecutableInternalRepresentationKHR>{}, result);
+        detail::fixed_vector<PipelineExecutableInternalRepresentationKHR> pInternalRepresentations{pInternalRepresentationCount};
+        result = static_cast<Result>(pfn_GetPipelineExecutableInternalRepresentationsKHR(device.get(),
+            reinterpret_cast<const VkPipelineExecutableInfoKHR*>(&pExecutableInfo),
+            &pInternalRepresentationCount,
+            reinterpret_cast<VkPipelineExecutableInternalRepresentationKHR*>(pInternalRepresentations.data())));
+        if (pInternalRepresentationCount < pInternalRepresentations.size()) pInternalRepresentations.shrink(pInternalRepresentationCount);
+        return expected(std::move(pInternalRepresentations), result);
     }
 #endif //defined(VK_KHR_pipeline_executable_properties)
 #if defined(VK_NV_device_generated_commands)
@@ -4639,11 +4844,17 @@ struct PhysicalDeviceFunctions {
         instance_functions->pfn_GetPhysicalDeviceProperties(physicaldevice.get(),
             reinterpret_cast<VkPhysicalDeviceProperties*>(&pProperties));
     }
-    void GetQueueFamilyProperties(uint32_t&  pQueueFamilyPropertyCount,
-        QueueFamilyProperties* pQueueFamilyProperties) {
+    detail::fixed_vector<QueueFamilyProperties> GetQueueFamilyProperties() {
+        uint32_t pQueueFamilyPropertyCount = 0;
         instance_functions->pfn_GetPhysicalDeviceQueueFamilyProperties(physicaldevice.get(),
             &pQueueFamilyPropertyCount,
-            reinterpret_cast<VkQueueFamilyProperties*>(pQueueFamilyProperties));
+            nullptr);
+        detail::fixed_vector<QueueFamilyProperties> pQueueFamilyProperties{pQueueFamilyPropertyCount};
+        instance_functions->pfn_GetPhysicalDeviceQueueFamilyProperties(physicaldevice.get(),
+            &pQueueFamilyPropertyCount,
+            reinterpret_cast<VkQueueFamilyProperties*>(pQueueFamilyProperties.data()));
+        if (pQueueFamilyPropertyCount < pQueueFamilyProperties.size()) pQueueFamilyProperties.shrink(pQueueFamilyPropertyCount);
+        return pQueueFamilyProperties;
     }
     void GetMemoryProperties(PhysicalDeviceMemoryProperties&  pMemoryProperties) {
         instance_functions->pfn_GetPhysicalDeviceMemoryProperties(physicaldevice.get(),
@@ -4698,13 +4909,12 @@ struct PhysicalDeviceFunctions {
         if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
         return expected(std::move(pProperties), result);
     }
-    void GetSparseImageFormatProperties(Format format,
+    detail::fixed_vector<SparseImageFormatProperties> GetSparseImageFormatProperties(Format format,
         ImageType type,
         SampleCountFlagBits samples,
         ImageUsageFlags usage,
-        ImageTiling tiling,
-        uint32_t&  pPropertyCount,
-        SparseImageFormatProperties* pProperties) {
+        ImageTiling tiling) {
+        uint32_t pPropertyCount = 0;
         instance_functions->pfn_GetPhysicalDeviceSparseImageFormatProperties(physicaldevice.get(),
             static_cast<VkFormat>(format),
             static_cast<VkImageType>(type),
@@ -4712,35 +4922,74 @@ struct PhysicalDeviceFunctions {
             static_cast<VkImageUsageFlags>(usage),
             static_cast<VkImageTiling>(tiling),
             &pPropertyCount,
-            reinterpret_cast<VkSparseImageFormatProperties*>(pProperties));
-    }
-    [[nodiscard]] Result GetDisplayPropertiesKHR(uint32_t&  pPropertyCount,
-        DisplayPropertiesKHR* pProperties) {
-        return static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceDisplayPropertiesKHR(physicaldevice.get(),
+            nullptr);
+        detail::fixed_vector<SparseImageFormatProperties> pProperties{pPropertyCount};
+        instance_functions->pfn_GetPhysicalDeviceSparseImageFormatProperties(physicaldevice.get(),
+            static_cast<VkFormat>(format),
+            static_cast<VkImageType>(type),
+            static_cast<VkSampleCountFlagBits>(samples),
+            static_cast<VkImageUsageFlags>(usage),
+            static_cast<VkImageTiling>(tiling),
             &pPropertyCount,
-            reinterpret_cast<VkDisplayPropertiesKHR*>(pProperties)));
+            reinterpret_cast<VkSparseImageFormatProperties*>(pProperties.data()));
+        if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+        return pProperties;
     }
-    [[nodiscard]] Result GetDisplayPlanePropertiesKHR(uint32_t&  pPropertyCount,
-        DisplayPlanePropertiesKHR* pProperties) {
-        return static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceDisplayPlanePropertiesKHR(physicaldevice.get(),
+    [[nodiscard]] expected<detail::fixed_vector<DisplayPropertiesKHR>> GetDisplayPropertiesKHR() {
+        uint32_t pPropertyCount = 0;
+        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceDisplayPropertiesKHR(physicaldevice.get(),
             &pPropertyCount,
-            reinterpret_cast<VkDisplayPlanePropertiesKHR*>(pProperties)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<DisplayPropertiesKHR>{}, result);
+        detail::fixed_vector<DisplayPropertiesKHR> pProperties{pPropertyCount};
+        result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceDisplayPropertiesKHR(physicaldevice.get(),
+            &pPropertyCount,
+            reinterpret_cast<VkDisplayPropertiesKHR*>(pProperties.data())));
+        if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+        return expected(std::move(pProperties), result);
     }
-    [[nodiscard]] Result GetDisplayPlaneSupportedDisplaysKHR(uint32_t planeIndex,
-        uint32_t&  pDisplayCount,
-        DisplayKHR* pDisplays) {
-        return static_cast<Result>(instance_functions->pfn_GetDisplayPlaneSupportedDisplaysKHR(physicaldevice.get(),
+    [[nodiscard]] expected<detail::fixed_vector<DisplayPlanePropertiesKHR>> GetDisplayPlanePropertiesKHR() {
+        uint32_t pPropertyCount = 0;
+        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceDisplayPlanePropertiesKHR(physicaldevice.get(),
+            &pPropertyCount,
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<DisplayPlanePropertiesKHR>{}, result);
+        detail::fixed_vector<DisplayPlanePropertiesKHR> pProperties{pPropertyCount};
+        result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceDisplayPlanePropertiesKHR(physicaldevice.get(),
+            &pPropertyCount,
+            reinterpret_cast<VkDisplayPlanePropertiesKHR*>(pProperties.data())));
+        if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+        return expected(std::move(pProperties), result);
+    }
+    [[nodiscard]] expected<detail::fixed_vector<DisplayKHR>> GetDisplayPlaneSupportedDisplaysKHR(uint32_t planeIndex) {
+        uint32_t pDisplayCount = 0;
+        vk::Result result = static_cast<Result>(instance_functions->pfn_GetDisplayPlaneSupportedDisplaysKHR(physicaldevice.get(),
             planeIndex,
             &pDisplayCount,
-            reinterpret_cast<VkDisplayKHR*>(pDisplays)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<DisplayKHR>{}, result);
+        detail::fixed_vector<DisplayKHR> pDisplays{pDisplayCount};
+        result = static_cast<Result>(instance_functions->pfn_GetDisplayPlaneSupportedDisplaysKHR(physicaldevice.get(),
+            planeIndex,
+            &pDisplayCount,
+            reinterpret_cast<VkDisplayKHR*>(pDisplays.data())));
+        if (pDisplayCount < pDisplays.size()) pDisplays.shrink(pDisplayCount);
+        return expected(std::move(pDisplays), result);
     }
-    [[nodiscard]] Result GetDisplayModePropertiesKHR(DisplayKHR display,
-        uint32_t&  pPropertyCount,
-        DisplayModePropertiesKHR* pProperties) {
-        return static_cast<Result>(instance_functions->pfn_GetDisplayModePropertiesKHR(physicaldevice.get(),
+    [[nodiscard]] expected<detail::fixed_vector<DisplayModePropertiesKHR>> GetDisplayModePropertiesKHR(DisplayKHR display) {
+        uint32_t pPropertyCount = 0;
+        vk::Result result = static_cast<Result>(instance_functions->pfn_GetDisplayModePropertiesKHR(physicaldevice.get(),
             display.get(),
             &pPropertyCount,
-            reinterpret_cast<VkDisplayModePropertiesKHR*>(pProperties)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<DisplayModePropertiesKHR>{}, result);
+        detail::fixed_vector<DisplayModePropertiesKHR> pProperties{pPropertyCount};
+        result = static_cast<Result>(instance_functions->pfn_GetDisplayModePropertiesKHR(physicaldevice.get(),
+            display.get(),
+            &pPropertyCount,
+            reinterpret_cast<VkDisplayModePropertiesKHR*>(pProperties.data())));
+        if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+        return expected(std::move(pProperties), result);
     }
     [[nodiscard]] expected<DisplayModeKHR> CreateDisplayModeKHR(DisplayKHR display,
         const DisplayModeCreateInfoKHR&  pCreateInfo,
@@ -4778,21 +5027,35 @@ struct PhysicalDeviceFunctions {
             reinterpret_cast<VkSurfaceCapabilitiesKHR*>(&pSurfaceCapabilities)));
         return expected<SurfaceCapabilitiesKHR>(pSurfaceCapabilities, result);
     }
-    [[nodiscard]] Result GetSurfaceFormatsKHR(SurfaceKHR surface,
-        uint32_t&  pSurfaceFormatCount,
-        SurfaceFormatKHR* pSurfaceFormats) {
-        return static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSurfaceFormatsKHR(physicaldevice.get(),
+    [[nodiscard]] expected<detail::fixed_vector<SurfaceFormatKHR>> GetSurfaceFormatsKHR(SurfaceKHR surface) {
+        uint32_t pSurfaceFormatCount = 0;
+        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSurfaceFormatsKHR(physicaldevice.get(),
             surface.get(),
             &pSurfaceFormatCount,
-            reinterpret_cast<VkSurfaceFormatKHR*>(pSurfaceFormats)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<SurfaceFormatKHR>{}, result);
+        detail::fixed_vector<SurfaceFormatKHR> pSurfaceFormats{pSurfaceFormatCount};
+        result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSurfaceFormatsKHR(physicaldevice.get(),
+            surface.get(),
+            &pSurfaceFormatCount,
+            reinterpret_cast<VkSurfaceFormatKHR*>(pSurfaceFormats.data())));
+        if (pSurfaceFormatCount < pSurfaceFormats.size()) pSurfaceFormats.shrink(pSurfaceFormatCount);
+        return expected(std::move(pSurfaceFormats), result);
     }
-    [[nodiscard]] Result GetSurfacePresentModesKHR(SurfaceKHR surface,
-        uint32_t&  pPresentModeCount,
-        PresentModeKHR* pPresentModes) {
-        return static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSurfacePresentModesKHR(physicaldevice.get(),
+    [[nodiscard]] expected<detail::fixed_vector<PresentModeKHR>> GetSurfacePresentModesKHR(SurfaceKHR surface) {
+        uint32_t pPresentModeCount = 0;
+        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSurfacePresentModesKHR(physicaldevice.get(),
             surface.get(),
             &pPresentModeCount,
-            reinterpret_cast<VkPresentModeKHR*>(pPresentModes)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<PresentModeKHR>{}, result);
+        detail::fixed_vector<PresentModeKHR> pPresentModes{pPresentModeCount};
+        result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSurfacePresentModesKHR(physicaldevice.get(),
+            surface.get(),
+            &pPresentModeCount,
+            reinterpret_cast<VkPresentModeKHR*>(pPresentModes.data())));
+        if (pPresentModeCount < pPresentModes.size()) pPresentModes.shrink(pPresentModeCount);
+        return expected(std::move(pPresentModes), result);
     }
 #if defined(VK_USE_PLATFORM_WAYLAND_KHR)
     [[nodiscard]] VkBool32 GetWaylandPresentationSupportKHR(uint32_t queueFamilyIndex,
@@ -4874,23 +5137,35 @@ struct PhysicalDeviceFunctions {
             reinterpret_cast<VkImageFormatProperties2*>(&pImageFormatProperties)));
         return expected<ImageFormatProperties2>(pImageFormatProperties, result);
     }
-    void GetQueueFamilyProperties2(uint32_t&  pQueueFamilyPropertyCount,
-        QueueFamilyProperties2* pQueueFamilyProperties) {
+    detail::fixed_vector<QueueFamilyProperties2> GetQueueFamilyProperties2() {
+        uint32_t pQueueFamilyPropertyCount = 0;
         instance_functions->pfn_GetPhysicalDeviceQueueFamilyProperties2(physicaldevice.get(),
             &pQueueFamilyPropertyCount,
-            reinterpret_cast<VkQueueFamilyProperties2*>(pQueueFamilyProperties));
+            nullptr);
+        detail::fixed_vector<QueueFamilyProperties2> pQueueFamilyProperties{pQueueFamilyPropertyCount};
+        instance_functions->pfn_GetPhysicalDeviceQueueFamilyProperties2(physicaldevice.get(),
+            &pQueueFamilyPropertyCount,
+            reinterpret_cast<VkQueueFamilyProperties2*>(pQueueFamilyProperties.data()));
+        if (pQueueFamilyPropertyCount < pQueueFamilyProperties.size()) pQueueFamilyProperties.shrink(pQueueFamilyPropertyCount);
+        return pQueueFamilyProperties;
     }
     void GetMemoryProperties2(PhysicalDeviceMemoryProperties2&  pMemoryProperties) {
         instance_functions->pfn_GetPhysicalDeviceMemoryProperties2(physicaldevice.get(),
             reinterpret_cast<VkPhysicalDeviceMemoryProperties2*>(&pMemoryProperties));
     }
-    void GetSparseImageFormatProperties2(const PhysicalDeviceSparseImageFormatInfo2&  pFormatInfo,
-        uint32_t&  pPropertyCount,
-        SparseImageFormatProperties2* pProperties) {
+    detail::fixed_vector<SparseImageFormatProperties2> GetSparseImageFormatProperties2(const PhysicalDeviceSparseImageFormatInfo2&  pFormatInfo) {
+        uint32_t pPropertyCount = 0;
         instance_functions->pfn_GetPhysicalDeviceSparseImageFormatProperties2(physicaldevice.get(),
             reinterpret_cast<const VkPhysicalDeviceSparseImageFormatInfo2*>(&pFormatInfo),
             &pPropertyCount,
-            reinterpret_cast<VkSparseImageFormatProperties2*>(pProperties));
+            nullptr);
+        detail::fixed_vector<SparseImageFormatProperties2> pProperties{pPropertyCount};
+        instance_functions->pfn_GetPhysicalDeviceSparseImageFormatProperties2(physicaldevice.get(),
+            reinterpret_cast<const VkPhysicalDeviceSparseImageFormatInfo2*>(&pFormatInfo),
+            &pPropertyCount,
+            reinterpret_cast<VkSparseImageFormatProperties2*>(pProperties.data()));
+        if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+        return pProperties;
     }
     void GetExternalBufferProperties(const PhysicalDeviceExternalBufferInfo&  pExternalBufferInfo,
         ExternalBufferProperties&  pExternalBufferProperties) {
@@ -4938,13 +5213,20 @@ struct PhysicalDeviceFunctions {
             reinterpret_cast<VkSurfaceCapabilities2EXT*>(&pSurfaceCapabilities)));
         return expected<SurfaceCapabilities2EXT>(pSurfaceCapabilities, result);
     }
-    [[nodiscard]] Result GetPresentRectanglesKHR(SurfaceKHR surface,
-        uint32_t&  pRectCount,
-        Rect2D* pRects) {
-        return static_cast<Result>(instance_functions->pfn_GetPhysicalDevicePresentRectanglesKHR(physicaldevice.get(),
+    [[nodiscard]] expected<detail::fixed_vector<Rect2D>> GetPresentRectanglesKHR(SurfaceKHR surface) {
+        uint32_t pRectCount = 0;
+        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDevicePresentRectanglesKHR(physicaldevice.get(),
             surface.get(),
             &pRectCount,
-            reinterpret_cast<VkRect2D*>(pRects)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<Rect2D>{}, result);
+        detail::fixed_vector<Rect2D> pRects{pRectCount};
+        result = static_cast<Result>(instance_functions->pfn_GetPhysicalDevicePresentRectanglesKHR(physicaldevice.get(),
+            surface.get(),
+            &pRectCount,
+            reinterpret_cast<VkRect2D*>(pRects.data())));
+        if (pRectCount < pRects.size()) pRects.shrink(pRectCount);
+        return expected(std::move(pRects), result);
     }
     void GetMultisamplePropertiesEXT(SampleCountFlagBits samples,
         MultisamplePropertiesEXT&  pMultisampleProperties) {
@@ -4959,33 +5241,61 @@ struct PhysicalDeviceFunctions {
             reinterpret_cast<VkSurfaceCapabilities2KHR*>(&pSurfaceCapabilities)));
         return expected<SurfaceCapabilities2KHR>(pSurfaceCapabilities, result);
     }
-    [[nodiscard]] Result GetSurfaceFormats2KHR(const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo,
-        uint32_t&  pSurfaceFormatCount,
-        SurfaceFormat2KHR* pSurfaceFormats) {
-        return static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSurfaceFormats2KHR(physicaldevice.get(),
+    [[nodiscard]] expected<detail::fixed_vector<SurfaceFormat2KHR>> GetSurfaceFormats2KHR(const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) {
+        uint32_t pSurfaceFormatCount = 0;
+        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSurfaceFormats2KHR(physicaldevice.get(),
             reinterpret_cast<const VkPhysicalDeviceSurfaceInfo2KHR*>(&pSurfaceInfo),
             &pSurfaceFormatCount,
-            reinterpret_cast<VkSurfaceFormat2KHR*>(pSurfaceFormats)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<SurfaceFormat2KHR>{}, result);
+        detail::fixed_vector<SurfaceFormat2KHR> pSurfaceFormats{pSurfaceFormatCount};
+        result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSurfaceFormats2KHR(physicaldevice.get(),
+            reinterpret_cast<const VkPhysicalDeviceSurfaceInfo2KHR*>(&pSurfaceInfo),
+            &pSurfaceFormatCount,
+            reinterpret_cast<VkSurfaceFormat2KHR*>(pSurfaceFormats.data())));
+        if (pSurfaceFormatCount < pSurfaceFormats.size()) pSurfaceFormats.shrink(pSurfaceFormatCount);
+        return expected(std::move(pSurfaceFormats), result);
     }
-    [[nodiscard]] Result GetDisplayProperties2KHR(uint32_t&  pPropertyCount,
-        DisplayProperties2KHR* pProperties) {
-        return static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceDisplayProperties2KHR(physicaldevice.get(),
+    [[nodiscard]] expected<detail::fixed_vector<DisplayProperties2KHR>> GetDisplayProperties2KHR() {
+        uint32_t pPropertyCount = 0;
+        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceDisplayProperties2KHR(physicaldevice.get(),
             &pPropertyCount,
-            reinterpret_cast<VkDisplayProperties2KHR*>(pProperties)));
-    }
-    [[nodiscard]] Result GetDisplayPlaneProperties2KHR(uint32_t&  pPropertyCount,
-        DisplayPlaneProperties2KHR* pProperties) {
-        return static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceDisplayPlaneProperties2KHR(physicaldevice.get(),
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<DisplayProperties2KHR>{}, result);
+        detail::fixed_vector<DisplayProperties2KHR> pProperties{pPropertyCount};
+        result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceDisplayProperties2KHR(physicaldevice.get(),
             &pPropertyCount,
-            reinterpret_cast<VkDisplayPlaneProperties2KHR*>(pProperties)));
+            reinterpret_cast<VkDisplayProperties2KHR*>(pProperties.data())));
+        if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+        return expected(std::move(pProperties), result);
     }
-    [[nodiscard]] Result GetDisplayModeProperties2KHR(DisplayKHR display,
-        uint32_t&  pPropertyCount,
-        DisplayModeProperties2KHR* pProperties) {
-        return static_cast<Result>(instance_functions->pfn_GetDisplayModeProperties2KHR(physicaldevice.get(),
+    [[nodiscard]] expected<detail::fixed_vector<DisplayPlaneProperties2KHR>> GetDisplayPlaneProperties2KHR() {
+        uint32_t pPropertyCount = 0;
+        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceDisplayPlaneProperties2KHR(physicaldevice.get(),
+            &pPropertyCount,
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<DisplayPlaneProperties2KHR>{}, result);
+        detail::fixed_vector<DisplayPlaneProperties2KHR> pProperties{pPropertyCount};
+        result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceDisplayPlaneProperties2KHR(physicaldevice.get(),
+            &pPropertyCount,
+            reinterpret_cast<VkDisplayPlaneProperties2KHR*>(pProperties.data())));
+        if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+        return expected(std::move(pProperties), result);
+    }
+    [[nodiscard]] expected<detail::fixed_vector<DisplayModeProperties2KHR>> GetDisplayModeProperties2KHR(DisplayKHR display) {
+        uint32_t pPropertyCount = 0;
+        vk::Result result = static_cast<Result>(instance_functions->pfn_GetDisplayModeProperties2KHR(physicaldevice.get(),
             display.get(),
             &pPropertyCount,
-            reinterpret_cast<VkDisplayModeProperties2KHR*>(pProperties)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<DisplayModeProperties2KHR>{}, result);
+        detail::fixed_vector<DisplayModeProperties2KHR> pProperties{pPropertyCount};
+        result = static_cast<Result>(instance_functions->pfn_GetDisplayModeProperties2KHR(physicaldevice.get(),
+            display.get(),
+            &pPropertyCount,
+            reinterpret_cast<VkDisplayModeProperties2KHR*>(pProperties.data())));
+        if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+        return expected(std::move(pProperties), result);
     }
     [[nodiscard]] expected<DisplayPlaneCapabilities2KHR> GetDisplayPlaneCapabilities2KHR(const DisplayPlaneInfo2KHR&  pDisplayPlaneInfo) {
         DisplayPlaneCapabilities2KHR pCapabilities;
@@ -4994,26 +5304,47 @@ struct PhysicalDeviceFunctions {
             reinterpret_cast<VkDisplayPlaneCapabilities2KHR*>(&pCapabilities)));
         return expected<DisplayPlaneCapabilities2KHR>(pCapabilities, result);
     }
-    [[nodiscard]] Result GetCalibrateableTimeDomainsEXT(uint32_t&  pTimeDomainCount,
-        TimeDomainEXT* pTimeDomains) {
-        return static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceCalibrateableTimeDomainsEXT(physicaldevice.get(),
+    [[nodiscard]] expected<detail::fixed_vector<TimeDomainEXT>> GetCalibrateableTimeDomainsEXT() {
+        uint32_t pTimeDomainCount = 0;
+        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceCalibrateableTimeDomainsEXT(physicaldevice.get(),
             &pTimeDomainCount,
-            reinterpret_cast<VkTimeDomainEXT*>(pTimeDomains)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<TimeDomainEXT>{}, result);
+        detail::fixed_vector<TimeDomainEXT> pTimeDomains{pTimeDomainCount};
+        result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceCalibrateableTimeDomainsEXT(physicaldevice.get(),
+            &pTimeDomainCount,
+            reinterpret_cast<VkTimeDomainEXT*>(pTimeDomains.data())));
+        if (pTimeDomainCount < pTimeDomains.size()) pTimeDomains.shrink(pTimeDomainCount);
+        return expected(std::move(pTimeDomains), result);
     }
-    [[nodiscard]] Result GetCooperativeMatrixPropertiesNV(uint32_t&  pPropertyCount,
-        CooperativeMatrixPropertiesNV* pProperties) {
-        return static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceCooperativeMatrixPropertiesNV(physicaldevice.get(),
+    [[nodiscard]] expected<detail::fixed_vector<CooperativeMatrixPropertiesNV>> GetCooperativeMatrixPropertiesNV() {
+        uint32_t pPropertyCount = 0;
+        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceCooperativeMatrixPropertiesNV(physicaldevice.get(),
             &pPropertyCount,
-            reinterpret_cast<VkCooperativeMatrixPropertiesNV*>(pProperties)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<CooperativeMatrixPropertiesNV>{}, result);
+        detail::fixed_vector<CooperativeMatrixPropertiesNV> pProperties{pPropertyCount};
+        result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceCooperativeMatrixPropertiesNV(physicaldevice.get(),
+            &pPropertyCount,
+            reinterpret_cast<VkCooperativeMatrixPropertiesNV*>(pProperties.data())));
+        if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+        return expected(std::move(pProperties), result);
     }
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
-    [[nodiscard]] Result GetSurfacePresentModes2EXT(const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo,
-        uint32_t&  pPresentModeCount,
-        PresentModeKHR* pPresentModes) {
-        return static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSurfacePresentModes2EXT(physicaldevice.get(),
+    [[nodiscard]] expected<detail::fixed_vector<PresentModeKHR>> GetSurfacePresentModes2EXT(const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) {
+        uint32_t pPresentModeCount = 0;
+        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSurfacePresentModes2EXT(physicaldevice.get(),
             reinterpret_cast<const VkPhysicalDeviceSurfaceInfo2KHR*>(&pSurfaceInfo),
             &pPresentModeCount,
-            reinterpret_cast<VkPresentModeKHR*>(pPresentModes)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<PresentModeKHR>{}, result);
+        detail::fixed_vector<PresentModeKHR> pPresentModes{pPresentModeCount};
+        result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSurfacePresentModes2EXT(physicaldevice.get(),
+            reinterpret_cast<const VkPhysicalDeviceSurfaceInfo2KHR*>(&pSurfaceInfo),
+            &pPresentModeCount,
+            reinterpret_cast<VkPresentModeKHR*>(pPresentModes.data())));
+        if (pPresentModeCount < pPresentModes.size()) pPresentModes.shrink(pPresentModeCount);
+        return expected(std::move(pPresentModes), result);
     }
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
     [[nodiscard]] Result EnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR(uint32_t queueFamilyIndex,
@@ -5032,17 +5363,31 @@ struct PhysicalDeviceFunctions {
             reinterpret_cast<const VkQueryPoolPerformanceCreateInfoKHR*>(&pPerformanceQueryCreateInfo),
             &pNumPasses);
     }
-    [[nodiscard]] Result GetSupportedFramebufferMixedSamplesCombinationsNV(uint32_t&  pCombinationCount,
-        FramebufferMixedSamplesCombinationNV* pCombinations) {
-        return static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(physicaldevice.get(),
+    [[nodiscard]] expected<detail::fixed_vector<FramebufferMixedSamplesCombinationNV>> GetSupportedFramebufferMixedSamplesCombinationsNV() {
+        uint32_t pCombinationCount = 0;
+        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(physicaldevice.get(),
             &pCombinationCount,
-            reinterpret_cast<VkFramebufferMixedSamplesCombinationNV*>(pCombinations)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<FramebufferMixedSamplesCombinationNV>{}, result);
+        detail::fixed_vector<FramebufferMixedSamplesCombinationNV> pCombinations{pCombinationCount};
+        result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(physicaldevice.get(),
+            &pCombinationCount,
+            reinterpret_cast<VkFramebufferMixedSamplesCombinationNV*>(pCombinations.data())));
+        if (pCombinationCount < pCombinations.size()) pCombinations.shrink(pCombinationCount);
+        return expected(std::move(pCombinations), result);
     }
-    [[nodiscard]] Result GetToolPropertiesEXT(uint32_t&  pToolCount,
-        PhysicalDeviceToolPropertiesEXT* pToolProperties) {
-        return static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceToolPropertiesEXT(physicaldevice.get(),
+    [[nodiscard]] expected<detail::fixed_vector<PhysicalDeviceToolPropertiesEXT>> GetToolPropertiesEXT() {
+        uint32_t pToolCount = 0;
+        vk::Result result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceToolPropertiesEXT(physicaldevice.get(),
             &pToolCount,
-            reinterpret_cast<VkPhysicalDeviceToolPropertiesEXT*>(pToolProperties)));
+            nullptr));
+        if (result < Result::Success) return expected(detail::fixed_vector<PhysicalDeviceToolPropertiesEXT>{}, result);
+        detail::fixed_vector<PhysicalDeviceToolPropertiesEXT> pToolProperties{pToolCount};
+        result = static_cast<Result>(instance_functions->pfn_GetPhysicalDeviceToolPropertiesEXT(physicaldevice.get(),
+            &pToolCount,
+            reinterpret_cast<VkPhysicalDeviceToolPropertiesEXT*>(pToolProperties.data())));
+        if (pToolCount < pToolProperties.size()) pToolProperties.shrink(pToolCount);
+        return expected(std::move(pToolProperties), result);
     }
 };
 struct QueueFunctions {
@@ -5084,11 +5429,17 @@ struct QueueFunctions {
         device_functions->pfn_QueueInsertDebugUtilsLabelEXT(queue.get(),
             reinterpret_cast<const VkDebugUtilsLabelEXT*>(&pLabelInfo));
     }
-    void GetCheckpointDataNV(uint32_t&  pCheckpointDataCount,
-        CheckpointDataNV* pCheckpointData) {
+    detail::fixed_vector<CheckpointDataNV> GetCheckpointDataNV() {
+        uint32_t pCheckpointDataCount = 0;
         device_functions->pfn_GetQueueCheckpointDataNV(queue.get(),
             &pCheckpointDataCount,
-            reinterpret_cast<VkCheckpointDataNV*>(pCheckpointData));
+            nullptr);
+        detail::fixed_vector<CheckpointDataNV> pCheckpointData{pCheckpointDataCount};
+        device_functions->pfn_GetQueueCheckpointDataNV(queue.get(),
+            &pCheckpointDataCount,
+            reinterpret_cast<VkCheckpointDataNV*>(pCheckpointData.data()));
+        if (pCheckpointDataCount < pCheckpointData.size()) pCheckpointData.shrink(pCheckpointDataCount);
+        return pCheckpointData;
     }
     [[nodiscard]] Result SetPerformanceConfigurationINTEL(PerformanceConfigurationINTEL configuration) {
         return static_cast<Result>(device_functions->pfn_QueueSetPerformanceConfigurationINTEL(queue.get(),
