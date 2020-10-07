@@ -6,11 +6,11 @@
 int
 main()
 {
-    vk::Loader loader;
-    vk::Result res = loader.init();
+    vk::DynamicLibrary library;
+    vk::Result res = library.init();
     if (res != vk::Result::Success)
         return -1;
-    vk::GlobalFunctions free_funcs(loader);
+    vk::GlobalFunctions free_funcs(library);
 
     uint32_t count = 0;
     res = free_funcs.EnumerateInstanceLayerProperties(count, nullptr);
@@ -20,9 +20,7 @@ main()
     for (auto& prop : props)
         std::cout << prop.layerName << "\n";
 
-    vk::InstanceCreateInfo info;
-    vk::Instance inst;
-    res = free_funcs.CreateInstance(info, nullptr, inst);
+    vk::Instance inst = free_funcs.CreateInstance({}).value();
     if (res != vk::Result::Success) {
         std::cout << "failed to create instance\n";
         return static_cast<int>(res);
@@ -47,15 +45,12 @@ main()
     vk::PhysicalDevice phys_dev = phys_devices.at(0);
     vk::PhysicalDeviceFunctions phys_dev_funcs(inst_funcs, phys_dev);
 
-    vk::ImageFormatProperties image_props;
     vk::ImageCreateFlags img_flags = vk::ImageCreateFlagBits::SparseBinding;
-    res = phys_dev_funcs.GetImageFormatProperties(vk::Format::Undefined,
-                                                  vk::ImageType::e1D,
-                                                  vk::ImageTiling::Optimal,
-                                                  vk::ImageUsageFlagBits::TransferDst,
-                                                  img_flags,
-                                                  image_props);
-    VkImageUsageFlagBits test_usage_flag_bits = +vk::ImageUsageFlagBits::TransferDst;
+    auto img_props_res = phys_dev_funcs.GetImageFormatProperties(
+      vk::Format::Undefined, vk::ImageType::e1D, vk::ImageTiling::Optimal, vk::ImageUsageFlagBits::TransferDst, img_flags);
+    if (!img_props_res) return -1;
+    vk::ImageFormatProperties image_props = img_props_res.value();
+    VkImageUsageFlagBits test_usage_flag_bits = c_enum(vk::ImageUsageFlagBits::TransferDst);
     vk::SwapchainCreateInfoKHR swap_info;
     swap_info.preTransform = vk::SurfaceTransformFlagBitsKHR::IdentityBitKHR;
     /*
@@ -68,13 +63,13 @@ main()
     vk::DeviceQueueCreateInfo queue_info;
     queue_info.queueCount = 1;
     queue_info.pQueuePriorities = &priority;
-    vk::Device device;
     vk::DeviceCreateInfo dev_create_info;
     dev_create_info.queueCreateInfoCount = 1;
     dev_create_info.pQueueCreateInfos = &queue_info;
-    res = inst_funcs.CreateDevice(phys_dev, dev_create_info, nullptr, device);
-    if (res != vk::Result::Success)
+    auto dev_res = inst_funcs.CreateDevice(phys_dev, dev_create_info);
+    if (!dev_res)
         return -1;
+    vk::Device device = dev_res.value();
     vk::DeviceFunctions device_functions(inst_funcs, device);
 
     uint32_t queue_indices = 0;
@@ -83,18 +78,10 @@ main()
                                       .sharingMode = vk::SharingMode::Exclusive,
                                       .queueFamilyIndexCount = 1,
                                       .pQueueFamilyIndices = &queue_indices };
-    vk::Buffer buffer;
-    res = device_functions.CreateBuffer(buffer_info, nullptr, buffer);
-    if (res != vk::Result::Success)
+    auto buf_res = device_functions.CreateBuffer(buffer_info, nullptr);
+    if (!buf_res)
         return -1;
-
-    vk::ClearColorValue x, y;
-    x.float32[0] = 1.f;
-    y.uint32[0] = 1;
-    bool equal = x == y;
-    bool not_equal = x != y;
-
-    vk::Extent2D extent = { 100, 200 };
+    vk::Buffer buffer = buf_res.value();
 
     return 0;
 }

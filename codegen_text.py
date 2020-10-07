@@ -1,8 +1,15 @@
-static_vector = '''
+fixed_vector_text = '''
+} // namespace vk
+
 #include <stdint.h>
 #include <new>
 
 namespace vk::detail {
+/* Array data structure where the length is determined at construction time.
+ * Cannot resize, add, or delete elements from.
+ * Used for returning a collection from the Vulkan API
+ * Does not throw any exceptions
+ */
 template<typename T>
 struct fixed_vector
 {
@@ -63,6 +70,41 @@ struct fixed_vector
     T* _data = nullptr;
 };
 } // namespace vk::detail
+namespace vk {
+'''
+
+vulkan_expected_type = '''
+/* Return type for Vulkan Module API functions which return a value or values
+ * Holds a T value or a vk::Result for indicating the error 
+ * Do not use with success codes other than zero
+ * Example in function definition
+ * vk::expected<vk::Buffer> CreateBuffer(const BufferCreateInfo& pCreateInfo, const AllocationCallbacks* pAllocator = nullptr) { ... }
+ * Example usage:
+ * auto buffer_return  = CreateBuffer( ... );
+ * if (!buffer_return)
+ *     error_exit("Failed to create buffer", buffer_return.error());
+ * vk::Buffer buffer = buffer_return.value(); //Get value now that we've check for errors
+ */
+template<typename T>
+struct expected {
+	explicit expected (T const& value, Result result) noexcept: _value{ value}, _result{ result } {}
+	explicit expected (T&& value, Result result) noexcept: _value{ std::move (value) }, _result{ result } {}
+
+	const T&  value () const&    noexcept { assert (_result == Result::Success); return _value; }
+	T&        value () &         noexcept { assert (_result == Result::Success); return _value; }
+	const T&& value () const&&   noexcept { assert (_result == Result::Success); return std::move (_value); }
+	T&&       value () &&        noexcept { assert (_result == Result::Success); return std::move (_value); }
+
+    Result error() const noexcept { assert (_result != Result::Success); return _result; }
+    Result raw_result() const noexcept { return _result; }
+
+    bool has_value () const noexcept { return _result == Result::Success; }
+	explicit operator bool () const noexcept { return has_value (); }
+
+private:
+    T _value;
+    Result _result = Result::Success;
+};
 
 '''
 
@@ -127,7 +169,7 @@ constexpr FLAG_TYPE operator^(FLAG_BITS a, FLAG_BITS b) noexcept {              
 }                                                                                   \\
 '''
 
-vulkan_loader_text = '''
+vulkan_library_text = '''
 #if !defined(VULKAN_CUSTOM_ASSERT)
 #include <cassert>
 #define VULKAN_CUSTOM_ASSERT assert
@@ -144,27 +186,27 @@ vulkan_loader_text = '''
     #include <dlfcn.h>
 #endif
 namespace vk {
-class Loader {
+class DynamicLibrary {
     public:
-    // Used to enable RAII vk::Loader behavior
+    // Used to enable RAII vk::DynamicLibrary behavior
     struct LoadAtConstruction {};
 
-    explicit Loader() noexcept {}
-    explicit Loader(LoadAtConstruction load) noexcept {
+    explicit DynamicLibrary() noexcept {}
+    explicit DynamicLibrary([[maybe_unused]] LoadAtConstruction load) noexcept {
         init();
     }
-    explicit Loader(PFN_vkGetInstanceProcAddr get_instance_proc_addr) noexcept : 
+    explicit DynamicLibrary(PFN_vkGetInstanceProcAddr get_instance_proc_addr) noexcept : 
         get_instance_proc_addr(get_instance_proc_addr) { }
-    ~Loader() noexcept {
+    ~DynamicLibrary() noexcept {
         close();
     }
-    Loader(Loader const& other) = delete;
-    Loader& operator=(Loader const& other) = delete;
-    Loader(Loader && other) noexcept: library(other.library), get_instance_proc_addr(other.get_instance_proc_addr) {
+    DynamicLibrary(DynamicLibrary const& other) = delete;
+    DynamicLibrary& operator=(DynamicLibrary const& other) = delete;
+    DynamicLibrary(DynamicLibrary && other) noexcept: library(other.library), get_instance_proc_addr(other.get_instance_proc_addr) {
         other.get_instance_proc_addr = 0;
         other.library = 0;
     }
-    Loader& operator=(Loader && other) noexcept {
+    DynamicLibrary& operator=(DynamicLibrary && other) noexcept {
         if (this != &other)
         {
             close();

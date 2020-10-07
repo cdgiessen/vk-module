@@ -132,7 +132,7 @@ class Enum:
                     out_name = f'e{out_name}'
                 file.write(f'    {out_name} = {str(value)},\n')
             file.write('};\n')
-            file.write(f'constexpr {self.name} c_enum({self.name[2:]} val) {{ return static_cast<{self.name}>(val);}}\n')
+            file.write(f'constexpr inline {self.name} c_enum({self.name[2:]} val) {{ return static_cast<{self.name}>(val);}}\n')
     
     def print_string(self, file):
         if self.alias is None:
@@ -206,7 +206,7 @@ class Bitmask:
                 file.write(f"    {out_name} = {bitpos},\n")
             file.write('};\n')
             if len(self.values) > 0:
-                file.write(f'inline {self.name} operator+({self.name[2:]} val) {{ return static_cast<{self.name}>(val);}}\n')
+                file.write(f'inline {self.name} c_enum({self.name[2:]} val) {{ return static_cast<{self.name}>(val);}}\n')
 
     def print_string(self, file):
         if self.alias is None:
@@ -443,7 +443,7 @@ class Variable:
     def is_ptr(self):
         return self.is_single_ptr or self.is_double_ptr or self.is_const_double_ptr
 
-    def get_base_type(self, use_vk_type=True, use_references=False):
+    def get_base_type(self, use_vk_type=True, use_references=False, downgrade_ptr_type=False):
         type_decl = ''
         if self.is_const:
             type_decl += 'const '
@@ -451,14 +451,20 @@ class Variable:
             type_decl += self.base_type_modified
         else:
             type_decl += self.base_type
-        if use_references and self.is_ref_eligible:
-            type_decl += '& '
-        elif self.is_single_ptr:
-            type_decl += '*'
-        elif self.is_double_ptr:
-            type_decl += '**'
-        elif self.is_const_double_ptr:
-            type_decl += '* const*'
+        if downgrade_ptr_type:
+            if self.is_double_ptr:
+                type_decl += '*'
+            elif self.is_const_double_ptr:
+                type_decl += 'const*'
+        else:
+            if use_references and self.is_ref_eligible:
+                type_decl += '& '
+            elif self.is_single_ptr:
+                type_decl += '*'
+            elif self.is_double_ptr:
+                type_decl += '**'
+            elif self.is_const_double_ptr:
+                type_decl += '* const*'
 
         return type_decl
 
@@ -616,107 +622,137 @@ class Function:
         self.dispatch_handle = None
         if len(self.parameters) > 0:
             self.free_function = self.parameters[0].base_type not in dispatchable_handles
-            if self.name == 'vkGetInstanceProcAddr':
+            
+            if self.name == 'vkGetInstanceProcAddr' or self.free_function:
                 self.dispatch_type = 'global'
-            elif self.name == 'vkGetDeviceProcAddr':
+            elif self.name == 'vkGetDeviceProcAddr' or self.parameters[0].base_type in ['VkInstance', 'VkPhysicalDevice']:
                 self.dispatch_type = "instance"
-            elif self.parameters[0].base_type == 'VkInstance' or self.parameters[0].base_type == 'VkPhysicalDevice':  
-                self.dispatch_type = "instance"
-            elif self.free_function:
-                self.dispatch_type = "global"
             else:
                 self.dispatch_type = "device"
+
             if self.parameters[0].base_type in dispatchable_handles:
                 self.dispatch_handle = self.parameters[0].base_type
         if self.name is not None:
             self.func_prototype = f'PFN_{self.name}'
 
+        self.span_val = set()
+        for param in self.parameters:
+            if param.len_attrib is not None and param.len_attrib != "null-terminated" and param.optional is None:
+                self.span_val.add(param.len_attrib)
+
+        self.is_query_function = False
+
+        if self.name not in ['vkEnumerateDeviceLayerProperties']:
+            if self.return_type == 'VkResult' and (self.name.find("Get") != -1 or self.name.find("vkCreate") != -1) \
+                and len(self.parameters) > 0 and self.parameters[-1].is_ptr() and self.parameters[-1].len_attrib is None:
+                self.is_query_function = True
+                self.query_type = self.parameters[-1].get_base_type(downgrade_ptr_type=True)
+                if self.query_type[:2] == 'vk':
+                    self.query_type = self.query_type[:2]
+                self.query_name = self.parameters[-1].name
+        if self.is_query_function:
+            self.query_is_array = False
+
     def check_platform(self, platform, ext_functions):
         if self.name in ext_functions:
             self.platform = platform
 
-    def print_base(self, file, dispatch_handle = None, dispatch_handle_name = None, indent='', replace_dict=None, pfn_source=None, guard=True):
+    def print_return_type(self, file, indent='', replace_dict=None):
+        print_function_name = self.name[2:]
+        if replace_dict is not None:
+            for str_from, str_to in replace_dict.items():
+                if print_function_name.find(str_from) != -1:
+                    print_function_name = print_function_name.replace(str_from, str_to)
+        file.write(f'{indent}')
+        if self.return_type != 'void': 
+            file.write('[[nodiscard]] ')
+
+        if self.is_query_function:
+            file.write(f'expected<{self.query_type}> {print_function_name}')
+        elif self.return_type == 'VkResult':
+            file.write(f'Result {print_function_name}')
+        else:
+            file.write(f'{self.return_type} {print_function_name}')
+
+    def print_parameters(self, file, dispatch_handle = None, indent=''):
+        parameter_list = self.parameters
+        if dispatch_handle is not None and f'{dispatch_handle}' == self.dispatch_handle:
+            parameter_list = parameter_list[1:]
+        if self.is_query_function:
+            parameter_list = parameter_list[:-1]
+        is_first = True
+        for param in parameter_list:
+            if not is_first:
+                file.write(f',\n{indent}    ')
+            else:
+                is_first = False
+            file.write(f'{param.get_full_type(use_references=True)}')
+            if self.is_query_function and param.name == 'pAllocator':
+                file.write(f' = nullptr')
+
+    def print_c_api_call(self, file, dispatch_handle = None, dispatch_handle_name = None, indent='', pfn_source=None):
+        dispatch_matches_handle = dispatch_handle is not None and f'{dispatch_handle}' == self.dispatch_handle
+                
+        if self.return_type == 'VkResult':
+            file.write('static_cast<Result>(')
+        if pfn_source is not None:
+            file.write(f'{pfn_source}->')
+        file.write(f'pfn_{self.name[2:]}(')
+
+        is_first = True
+        for param in self.parameters:
+            if not is_first:
+                file.write(f',\n{indent}        ')
+            else:
+                is_first = False
+                if dispatch_matches_handle:
+                    file.write(f'{dispatch_handle_name}.get()')
+                    continue
+            if param.is_handle and not param.is_ptr():
+                file.write(param.name + '.get()')
+            elif param.base_type not in base_type_default_values.keys() and param.base_type not in base_type_implicit_conversions:
+                if param.is_ptr():
+                    file.write(f'reinterpret_cast<{param.get_base_type_only()}>(')
+                    if param.is_ref_eligible:
+                        file.write('&')
+                    file.write(f'{param.name})')
+                else:
+                    file.write(f'static_cast<{param.get_base_type_only()}>({param.name})')
+            else:
+                if param.is_ref_eligible:
+                    file.write('&')
+                file.write(param.name)
+        if self.return_type == 'VkResult':
+            file.write(')')
+        file.write(');\n')
+
+    def print_function(self, file, dispatch_handle = None, dispatch_handle_name = None, indent='', replace_dict=None, pfn_source=None, guard=True):
         PlatformGuardHeader(file, self.platform, guard)
         if self.alias is not None:
             file.write(f'const auto {self.name[2:]} = {self.alias[2:]};\n')
         else:
-            print_function_name = self.name[2:]
-            if replace_dict is not None:
-                for str_from, str_to in replace_dict.items():
-                    if print_function_name.find(str_from) != -1:
-                        print_function_name = print_function_name.replace(str_from, str_to)
-            file.write(f'{indent}')
-            if self.return_type != 'void': 
-                file.write('[[nodiscard]] ')
-
-            if self.return_type == 'VkResult':
-                file.write(f'Result {print_function_name}(')
-            else:
-                file.write(f'{self.return_type} {print_function_name}(')
-
-            parameter_list = self.parameters
-            dispatch_matches_handle = False
-            if dispatch_handle is not None and f'{dispatch_handle}' == self.dispatch_handle:
-                parameter_list = self.parameters[1:]
-                dispatch_matches_handle = True
-            is_first = True
-            for param in parameter_list:
-                if not is_first:
-                    file.write(f',\n{indent}    ')
-                else:
-                    is_first = False
-                file.write(f'{param.get_full_type(use_references=True)}')
+            self.print_return_type(file, indent, replace_dict)
+            file.write('(')
+            self.print_parameters(file, dispatch_handle, indent)
             file.write(') {\n')
-
-            file.write(f'{indent}    return ')
-            if self.return_type == 'VkResult':
-                file.write('static_cast<Result>(')
-            if pfn_source is not None:
-                file.write(f'{pfn_source}->')
-            file.write(f'pfn_{self.name[2:]}(')
-
-            is_first = True
-            for param in self.parameters:
-                if not is_first:
-                    file.write(f',\n{indent}        ')
+            if self.is_query_function:
+                if self.return_type != 'void':
+                    file.write(f'{indent}    {self.query_type} {self.query_name};\n')
+                    file.write(f'{indent}    vk::Result result = ')
+                    self.print_c_api_call(file, dispatch_handle, dispatch_handle_name,indent, pfn_source)
+                    file.write(f'{indent}    return expected<{self.query_type}>({self.query_name}, result);\n')
                 else:
-                    is_first = False
-                    if dispatch_matches_handle:
-                        file.write(f'{dispatch_handle_name}.get()')
-                        continue
-                if param.is_handle and not param.is_ptr():
-                    file.write(param.name + '.get()')
-                elif param.base_type not in base_type_default_values.keys() and param.base_type not in base_type_implicit_conversions:
-                    if param.is_ptr():
-                        file.write(f'reinterpret_cast<{param.get_base_type_only()}>(')
-                        if param.is_ref_eligible:
-                            file.write('&')
-                        file.write(f'{param.name})')
-                    else:
-                        file.write(f'static_cast<{param.get_base_type_only()}>({param.name})')
-                else:
-                    if param.is_ref_eligible:
-                        file.write('&')
-                    file.write(param.name)
-            if self.return_type == 'VkResult':
-                file.write(')')
-            file.write(');\n')
-            file.write(indent + '}\n')
+                    file.write(f'{indent}    ')
+                    self.print_c_api_call(file, dispatch_handle, dispatch_handle_name,indent, pfn_source)
+            else:
+                file.write(f'{indent}    ')
+                if self.return_type != 'void':
+                    file.write(f'return ')
+                self.print_c_api_call(file, dispatch_handle, dispatch_handle_name,indent, pfn_source)
+
+            file.write(f'{indent}}}\n')
 
         PlatformGuardFooter(file, self.platform, guard)
-
-    def print_function_def(self, file):
-        if self.alias is not None:
-            return
-        file.write(f'using VKFN_{self.name[2:]} = {self.return_type} (*) (')
-        first_param = True
-        for param in self.parameters:
-            if not first_param:
-                file.write(", ")
-            else:
-                first_param = False
-            file.write(param.get_vk_base_type())
-        file.write(");\n")
 
 class ExtEnum:
     def __init__(self, name, value):
@@ -866,19 +902,12 @@ class DispatchTable:
         if len(self.guarded_functions.keys()) == 0:
             return
 
-        gpa_type = 'PFN_vkGetInstanceProcAddr'
-        gpa_name = "get_instance_proc_addr"
-        if self.dispatch_type == "device":
-            gpa_type = 'PFN_vkGetDeviceProcAddr'
-            gpa_name = "get_device_proc_addr"
-            dispatch_handle = None
-        gpa_val = f'{self.dispatch_type}.get()'
-        dispatch_handle = f'Vk{self.dispatch_type.title()}'
-        if self.dispatch_type == "global":
-            gpa_val = 'nullptr'
-        
+        gpa_type = 'PFN_vkGetDeviceProcAddr' if self.dispatch_type  == 'device' else 'PFN_vkGetInstanceProcAddr'
+        gpa_name = 'get_device_proc_addr'  if self.dispatch_type == 'device' else 'get_instance_proc_addr'
+        dispatch_handle = f'Vk{self.dispatch_type.title()}' if self.dispatch_type != 'global' else None
+        gpa_val = f'{self.dispatch_type}.get()' if self.dispatch_type != 'global' else 'nullptr'
+                
         #extension function dispatch tables
-        #TODO this doesn't cath all extensions, needs to be amended
         if len(self.guarded_functions.keys()) == 1:
             guard = list(self.guarded_functions.keys())[0]
             func_list = list(self.guarded_functions.values())[0]
@@ -907,14 +936,14 @@ class DispatchTable:
         for guard, functions in self.guarded_functions.items():
             file.write(f'#if {guard}\n')
             for func in functions:               
-                func.print_base(file, dispatch_handle=dispatch_handle, dispatch_handle_name=self.dispatch_type,\
+                func.print_function(file, dispatch_handle=dispatch_handle, dispatch_handle_name=self.dispatch_type,\
                     indent='    ', guard=False)
             file.write(f'#endif //{guard}\n')
              
         #constructor
         if self.dispatch_type == 'global':
-            file.write(f'    explicit {self.name}Functions(Loader const& loader) {{\n')
-            file.write(f'    {gpa_type} {gpa_name} = loader.get();\n')
+            file.write(f'    explicit {self.name}Functions(DynamicLibrary const& library) {{\n')
+            file.write(f'    {gpa_type} {gpa_name} = library.get();\n')
         elif self.dispatch_type == 'instance':
             file.write(f'    explicit {self.name}Functions(GlobalFunctions const& global_functions, {self.dispatch_type.title()} {self.dispatch_type})\n')
             file.write(f'        :{self.dispatch_type}({self.dispatch_type}) {{ \n')
@@ -963,7 +992,7 @@ class DispatchableHandleDispatchTable:
                 if func.platform is not None:
                     file.write(f'#if defined({func.platform})\n')
             prev_platform = func.platform
-            func.print_base(file, dispatch_handle=self.name, dispatch_handle_name=var_name, indent='    ', \
+            func.print_function(file, dispatch_handle=self.name, dispatch_handle_name=var_name, indent='    ', \
                 replace_dict=self.replace_dict, pfn_source=functions_name, guard=False)
         if prev_platform is not None:
             file.write(f'#endif // defined({prev_platform})\n')
@@ -1136,8 +1165,8 @@ class BindingGenerator:
         self.dispatch_tables.append(DispatchTable("Instance", "instance", features_and_extensions))
         self.dispatch_tables.append(DispatchTable("Device", "device", features_and_extensions))
 
-        for ext in self.ext_list:
-            self.dispatch_tables.append(DispatchTable(f'{ext.name}_dispatch_table', ext.ext_type, [ext]))
+        # for ext in self.ext_list:
+        #     self.dispatch_tables.append(DispatchTable(f'{ext.name}_dispatch_table', ext.ext_type, [ext]))
 
         self.dispatchable_handle_tables.append(DispatchableHandleDispatchTable('VkPhysicalDevice', 'instance',{'GetPhysicalDevice': 'Get'}, self.functions))
         self.dispatchable_handle_tables.append(DispatchableHandleDispatchTable('VkQueue', 'device',{'Queue': ''}, self.functions))
@@ -1172,7 +1201,9 @@ def print_vkm_function(bindings, cpp20mode, cpp20str):
     with open(f'cpp{cpp20str}/vkm_function.h', 'w') as vkm_function:
         vkm_function.write('#pragma once\n// clang-format off\n')
         vkm_function.write('#include "vkm_core.h"\n')
-        vkm_function.write(vulkan_loader_text + '\n') #defines namespace vk here
+        vkm_function.write(vulkan_library_text + '\n') #defines namespace vk here
+        vkm_function.write(vulkan_expected_type + '\n')
+        vkm_function.write(fixed_vector_text + '\n')
         [ dispatch_table.print_base(vkm_function) for dispatch_table in bindings.dispatch_tables ]
         [ table.print_base(vkm_function) for table in bindings.dispatchable_handle_tables ]
         vkm_function.write('} // namespace vk\n// clang-format on\n')

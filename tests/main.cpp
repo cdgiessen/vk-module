@@ -1,8 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
-#include "vkm_core.h"
-#include "vkm_vector.h"
+#include "vkm.h"
 
 TEST_CASE("test static vector", "[vk-module.fixed_vector]")
 {
@@ -31,4 +30,18 @@ TEST_CASE("test static vector", "[vk-module.fixed_vector]")
         counter += x;
     }
     REQUIRE(counter == 6);
+}
+
+TEST_CASE("Union operations", "[vk-module.union]"){
+    vk::ClearColorValue x, y;
+    x.float32[0] = 1.f;
+    y.uint32[0] = 1;
+    REQUIRE((x == y) == false);
+    REQUIRE((x != y) == true);
+}
+TEST_CASE("Struct operations", "[vk-module.struct]"){
+    vk::Extent2D extent = { 100, 200 };
+    REQUIRE(extent.width == 100);
+    REQUIRE(extent.height == 200);
+
 }
