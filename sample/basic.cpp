@@ -3,8 +3,7 @@
 #include "vkm.h"
 #include "vkm_string.h"
 
-int
-main()
+int main()
 {
     vk::DynamicLibrary library;
     vk::Result res = library.init();
@@ -79,5 +78,46 @@ main()
         return -1;
     vk::Buffer buffer = buf_res.value();
     device_functions.DestroyBuffer(buffer);
+    vk::CommandPoolCreateInfo pool_info{ .flags = vk::CommandPoolCreateFlagBits::ResetCommandBuffer };
+    auto cmd_pool = device_functions.CreateCommandPool(pool_info).value();
+    vk::CommandBufferAllocateInfo alloc_info{
+        .commandPool = cmd_pool,
+        .level = vk::CommandBufferLevel::Primary,
+        .commandBufferCount = 1,
+    };
+
+    vk::CommandBuffer cmd_buf;
+    auto alloc_ret = device_functions.AllocateCommandBuffers(alloc_info, &cmd_buf);
+    if (!alloc_ret) {
+        return -1;
+    }
+    vk::CommandBufferFunctions cmd_buf_functions{ device_functions, cmd_buf };
+    auto begin_ret = cmd_buf_functions.Begin({});
+    if (!begin_ret)
+        return -1;
+
+    vk::RenderPass renderpass;
+    vk::Framebuffer framebuffer;
+    vk::ClearValue clear_color{ .color = vk::ClearColorValue{ 0, 0, 0, 1 } };
+    vk::Viewport viewport{ 0, 0, 1, 1, 0, 1 };
+    vk::Rect2D scissor{ 0, 0, 100, 100 };
+
+    auto ret = cmd_buf_functions
+                 .BeginRenderPass({ .renderPass = renderpass,
+                                    .framebuffer = framebuffer,
+                                    .renderArea = scissor,
+                                    .clearValueCount = 1,
+                                    .pClearValues = &clear_color },
+                                  vk::SubpassContents::Inline)
+                 .SetViewport(0, 1, &viewport)
+                 .SetScissor(0, 1, &scissor)
+                 .BindVertexBuffers(0, 1, &buffer, { 0 })
+                 .BindIndexBuffer(buffer, 0, vk::IndexType::Uint16)
+                 .Draw(10, 1, 0, 0)
+                 .End();
+    if (!ret) {
+        std::cout << "error: " << vk::to_string(ret) << '\n';
+        return -1;
+    }
     return 0;
 }

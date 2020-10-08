@@ -29,7 +29,6 @@ const char * to_string(PipelineBindPoint val);
 const char * to_string(PrimitiveTopology val);
 const char * to_string(QueryType val);
 const char * to_string(SubpassContents val);
-const char * to_string(Result val);
 const char * to_string(StencilOp val);
 const char * to_string(StructureType val);
 const char * to_string(SystemAllocationScope val);

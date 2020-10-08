@@ -133,15 +133,20 @@ class Enum:
                 file.write(f'    {out_name} = {str(value)},\n')
             file.write('};\n')
             file.write(f'constexpr inline {self.name} c_enum({self.name[2:]} val) {{ return static_cast<{self.name}>(val);}}\n')
+
+            if self.name == 'VkResult':
+                file.write(f'inline bool operator!(Result result) {{ return result < static_cast<Result>(0); }}\n')
+                file.write('inline ')
+                self.print_string_defs(file, skip=True)
     
     def print_string(self, file):
-        if self.alias is None:
+        if self.alias is None and self.name != 'VkResult':
             PlatformGuardHeader(file, self.platform)
             file.write(f'const char * to_string({self.name[2:]} val);\n')
             PlatformGuardFooter(file, self.platform)
 
-    def print_string_defs(self, file):
-        if self.alias is None:
+    def print_string_defs(self, file, skip=False):
+        if self.alias is None and (skip or self.name != 'VkResult'):
             PlatformGuardHeader(file, self.platform)
             file.write(f'const char * to_string({self.name[2:]} val) {{\n')
             file.write('    switch(val) {\n')
@@ -737,13 +742,13 @@ class Function:
             file.write(')')
         file.write(');\n')
 
-    def print_function(self, file, dispatch_handle = None, dispatch_handle_name = None, indent='', replace_dict=None, pfn_source=None, guard=True, forwarding_function=False):
+    def print_function(self, file, dispatch_handle = None, dispatch_handle_name = None, indent='', replace_dict=None, \
+            pfn_source=None, guard=True, make_void_return_this=None):
         PlatformGuardHeader(file, self.platform, guard)
         if self.alias is not None:
             file.write(f'const auto {self.name[2:]} = {self.alias[2:]};\n')
             PlatformGuardFooter(file, self.platform, guard)
             return
-
         self.print_return_type(file, indent, replace_dict, self.full_return_type)
         file.write('(')
         parameter_list = self.parameters
@@ -753,27 +758,8 @@ class Function:
             parameter_list = parameter_list[:-1]
         if self.is_enumeration_function:
             parameter_list = parameter_list[:-2]
-        self.print_parameters(file, parameter_list, indent, break_between=not forwarding_function)
+        self.print_parameters(file, parameter_list, indent)
         file.write(') const {\n')
-        if forwarding_function:
-            file.write(f'{indent}    ')
-            if self.return_type != 'void' or self.full_return_type != None:
-                file.write(f'return ')
-            file.write(f'{pfn_source}->{self.name[2:]}(')
-            forwarding_parameter_list =  self.parameters
-            if self.is_value_query:
-                forwarding_parameter_list = forwarding_parameter_list[:-1]
-            if self.is_enumeration_function:
-                forwarding_parameter_list = forwarding_parameter_list[:-2]
-            for param in forwarding_parameter_list:
-                if param == forwarding_parameter_list[0]:
-                    file.write(f'{dispatch_handle_name}')
-                else:
-                    file.write(f', {param.name}')
-            file.write(f');}}\n')
-            PlatformGuardFooter(file, self.platform, guard)
-            return
-
         if self.name == 'vkEnumerateInstanceVersion':
             #early return because 1.0 doesn't support the function, will be null and shouldn't cause a crash
             file.write(f'{indent}    if (pfn_EnumerateInstanceVersion == 0) return expected<uint32_t>(VK_MAKE_VERSION(1,0,0), Result::Success);\n')
@@ -813,7 +799,42 @@ class Function:
         file.write(f'{indent}}}\n')
 
         PlatformGuardFooter(file, self.platform, guard)
-    
+
+    def print_forwarding_function(self, file, dispatch_handle = None, dispatch_handle_name = None, indent='', replace_dict=None, \
+            pfn_source=None, guard=True, make_void_return_this=None):
+        PlatformGuardHeader(file, self.platform, guard)
+        if self.alias is not None:
+            file.write(f'const auto {self.name[2:]} = {self.alias[2:]};\n')
+            PlatformGuardFooter(file, self.platform, guard)
+            return
+        if make_void_return_this is not None and self.return_type == 'void':
+            self.print_return_type(file, indent, replace_dict, make_void_return_this)    
+        else:
+            self.print_return_type(file, indent, replace_dict, self.full_return_type)    
+
+        file.write('(')
+        parameter_list = self.parameters
+        if self.is_value_query:
+            parameter_list = parameter_list[:-1]
+        if self.is_enumeration_function:
+            parameter_list = parameter_list[:-2]
+        self.print_parameters(file, parameter_list[1:], indent, break_between=False)
+        file.write(') const {\n')
+        file.write(f'{indent}    ')
+        if self.return_type != 'void' or self.full_return_type != None:
+            file.write(f'return ')
+        file.write(f'{pfn_source}->{self.name[2:]}(')
+        for param in parameter_list:
+            if param == parameter_list[0]:
+                file.write(f'{dispatch_handle_name}')
+            else:
+                file.write(f', {param.name}')
+        file.write(f');')
+        if self.return_type == 'void' and make_void_return_this is not None:
+            file.write(f'\n{indent}    return *this;')
+        file.write(f' }}\n')
+        PlatformGuardFooter(file, self.platform, guard)
+
 class ExtEnum:
     def __init__(self, name, value):
         self.name = name
@@ -1043,6 +1064,7 @@ class DispatchableHandleDispatchTable:
         functions_name = f'{self.dispatch_type}_functions'
         type_name = self.name[2:]
         var_name = self.name[2:].lower()
+        command_buffer_return_type = f'{type_name}Functions const&' if type_name == 'CommandBuffer' else None
         file.write(f'struct {type_name}Functions {{\n')
         file.write(f'    {functions_type} const* {functions_name};\n')
         file.write(f'    {type_name} const {var_name};\n')   
@@ -1056,8 +1078,8 @@ class DispatchableHandleDispatchTable:
                 if func.platform is not None:
                     file.write(f'#if defined({func.platform})\n')
             prev_platform = func.platform
-            func.print_function(file, dispatch_handle=self.name, dispatch_handle_name=var_name, indent='    ', \
-                replace_dict=self.replace_dict, pfn_source=functions_name, guard=False, forwarding_function=True)
+            func.print_forwarding_function(file, dispatch_handle=self.name, dispatch_handle_name=var_name, indent='    ', replace_dict=self.replace_dict, \
+                pfn_source=functions_name, guard=False, make_void_return_this=command_buffer_return_type)
         if prev_platform is not None:
             file.write(f'#endif // defined({prev_platform})\n')
         file.write('};\n')

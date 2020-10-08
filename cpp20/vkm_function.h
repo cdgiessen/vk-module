@@ -145,6 +145,8 @@ struct expected {
     bool has_value () const noexcept { return _result == Result::Success; }
 	explicit operator bool () const noexcept { return has_value (); }
 
+    void ignore() const noexcept{};
+
 private:
     T _value;
     Result _result = Result::Success;
@@ -4945,127 +4947,127 @@ struct PhysicalDeviceFunctions {
     PhysicalDeviceFunctions(InstanceFunctions const& instance_functions, PhysicalDevice const physicaldevice)
         :instance_functions(&instance_functions), physicaldevice(physicaldevice){}
     [[nodiscard]] PhysicalDeviceProperties GetProperties() const {
-        return instance_functions->GetPhysicalDeviceProperties(physicaldevice);}
+        return instance_functions->GetPhysicalDeviceProperties(physicaldevice); }
     [[nodiscard]] detail::fixed_vector<QueueFamilyProperties> GetQueueFamilyProperties() const {
-        return instance_functions->GetPhysicalDeviceQueueFamilyProperties(physicaldevice);}
+        return instance_functions->GetPhysicalDeviceQueueFamilyProperties(physicaldevice); }
     [[nodiscard]] PhysicalDeviceMemoryProperties GetMemoryProperties() const {
-        return instance_functions->GetPhysicalDeviceMemoryProperties(physicaldevice);}
+        return instance_functions->GetPhysicalDeviceMemoryProperties(physicaldevice); }
     [[nodiscard]] PhysicalDeviceFeatures GetFeatures() const {
-        return instance_functions->GetPhysicalDeviceFeatures(physicaldevice);}
+        return instance_functions->GetPhysicalDeviceFeatures(physicaldevice); }
     [[nodiscard]] FormatProperties GetFormatProperties(Format format) const {
-        return instance_functions->GetPhysicalDeviceFormatProperties(physicaldevice, format);}
+        return instance_functions->GetPhysicalDeviceFormatProperties(physicaldevice, format); }
     [[nodiscard]] expected<ImageFormatProperties> GetImageFormatProperties(Format format, ImageType type, ImageTiling tiling, ImageUsageFlags usage, ImageCreateFlags flags) const {
-        return instance_functions->GetPhysicalDeviceImageFormatProperties(physicaldevice, format, type, tiling, usage, flags);}
+        return instance_functions->GetPhysicalDeviceImageFormatProperties(physicaldevice, format, type, tiling, usage, flags); }
     [[nodiscard]] expected<Device> CreateDevice(const DeviceCreateInfo&  pCreateInfo, const AllocationCallbacks* pAllocator = nullptr) const {
-        return instance_functions->CreateDevice(physicaldevice, pCreateInfo, pAllocator);}
+        return instance_functions->CreateDevice(physicaldevice, pCreateInfo, pAllocator); }
     [[nodiscard]] expected<detail::fixed_vector<ExtensionProperties>> EnumerateDeviceExtensionProperties(const char* pLayerName) const {
-        return instance_functions->EnumerateDeviceExtensionProperties(physicaldevice, pLayerName);}
+        return instance_functions->EnumerateDeviceExtensionProperties(physicaldevice, pLayerName); }
     [[nodiscard]] detail::fixed_vector<SparseImageFormatProperties> GetSparseImageFormatProperties(Format format, ImageType type, SampleCountFlagBits samples, ImageUsageFlags usage, ImageTiling tiling) const {
-        return instance_functions->GetPhysicalDeviceSparseImageFormatProperties(physicaldevice, format, type, samples, usage, tiling);}
+        return instance_functions->GetPhysicalDeviceSparseImageFormatProperties(physicaldevice, format, type, samples, usage, tiling); }
     [[nodiscard]] expected<detail::fixed_vector<DisplayPropertiesKHR>> GetDisplayPropertiesKHR() const {
-        return instance_functions->GetPhysicalDeviceDisplayPropertiesKHR(physicaldevice);}
+        return instance_functions->GetPhysicalDeviceDisplayPropertiesKHR(physicaldevice); }
     [[nodiscard]] expected<detail::fixed_vector<DisplayPlanePropertiesKHR>> GetDisplayPlanePropertiesKHR() const {
-        return instance_functions->GetPhysicalDeviceDisplayPlanePropertiesKHR(physicaldevice);}
+        return instance_functions->GetPhysicalDeviceDisplayPlanePropertiesKHR(physicaldevice); }
     [[nodiscard]] expected<detail::fixed_vector<DisplayKHR>> GetDisplayPlaneSupportedDisplaysKHR(uint32_t planeIndex) const {
-        return instance_functions->GetDisplayPlaneSupportedDisplaysKHR(physicaldevice, planeIndex);}
+        return instance_functions->GetDisplayPlaneSupportedDisplaysKHR(physicaldevice, planeIndex); }
     [[nodiscard]] expected<detail::fixed_vector<DisplayModePropertiesKHR>> GetDisplayModePropertiesKHR(DisplayKHR display) const {
-        return instance_functions->GetDisplayModePropertiesKHR(physicaldevice, display);}
+        return instance_functions->GetDisplayModePropertiesKHR(physicaldevice, display); }
     [[nodiscard]] expected<DisplayModeKHR> CreateDisplayModeKHR(DisplayKHR display, const DisplayModeCreateInfoKHR&  pCreateInfo, const AllocationCallbacks* pAllocator = nullptr) const {
-        return instance_functions->CreateDisplayModeKHR(physicaldevice, display, pCreateInfo, pAllocator);}
+        return instance_functions->CreateDisplayModeKHR(physicaldevice, display, pCreateInfo, pAllocator); }
     [[nodiscard]] expected<DisplayPlaneCapabilitiesKHR> GetDisplayPlaneCapabilitiesKHR(DisplayModeKHR mode, uint32_t planeIndex) const {
-        return instance_functions->GetDisplayPlaneCapabilitiesKHR(physicaldevice, mode, planeIndex);}
+        return instance_functions->GetDisplayPlaneCapabilitiesKHR(physicaldevice, mode, planeIndex); }
     [[nodiscard]] expected<Bool32> GetSurfaceSupportKHR(uint32_t queueFamilyIndex, SurfaceKHR surface) const {
-        return instance_functions->GetPhysicalDeviceSurfaceSupportKHR(physicaldevice, queueFamilyIndex, surface);}
+        return instance_functions->GetPhysicalDeviceSurfaceSupportKHR(physicaldevice, queueFamilyIndex, surface); }
     [[nodiscard]] expected<SurfaceCapabilitiesKHR> GetSurfaceCapabilitiesKHR(SurfaceKHR surface) const {
-        return instance_functions->GetPhysicalDeviceSurfaceCapabilitiesKHR(physicaldevice, surface);}
+        return instance_functions->GetPhysicalDeviceSurfaceCapabilitiesKHR(physicaldevice, surface); }
     [[nodiscard]] expected<detail::fixed_vector<SurfaceFormatKHR>> GetSurfaceFormatsKHR(SurfaceKHR surface) const {
-        return instance_functions->GetPhysicalDeviceSurfaceFormatsKHR(physicaldevice, surface);}
+        return instance_functions->GetPhysicalDeviceSurfaceFormatsKHR(physicaldevice, surface); }
     [[nodiscard]] expected<detail::fixed_vector<PresentModeKHR>> GetSurfacePresentModesKHR(SurfaceKHR surface) const {
-        return instance_functions->GetPhysicalDeviceSurfacePresentModesKHR(physicaldevice, surface);}
+        return instance_functions->GetPhysicalDeviceSurfacePresentModesKHR(physicaldevice, surface); }
 #if defined(VK_USE_PLATFORM_WAYLAND_KHR)
     [[nodiscard]] wl_display GetWaylandPresentationSupportKHR(uint32_t queueFamilyIndex) const {
-        return instance_functions->GetPhysicalDeviceWaylandPresentationSupportKHR(physicaldevice, queueFamilyIndex);}
+        return instance_functions->GetPhysicalDeviceWaylandPresentationSupportKHR(physicaldevice, queueFamilyIndex); }
 #endif // defined(VK_USE_PLATFORM_WAYLAND_KHR)
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     [[nodiscard]] VkBool32 GetWin32PresentationSupportKHR(uint32_t queueFamilyIndex) const {
-        return instance_functions->GetPhysicalDeviceWin32PresentationSupportKHR(physicaldevice, queueFamilyIndex);}
+        return instance_functions->GetPhysicalDeviceWin32PresentationSupportKHR(physicaldevice, queueFamilyIndex); }
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 #if defined(VK_USE_PLATFORM_XLIB_KHR)
     [[nodiscard]] VkBool32 GetXlibPresentationSupportKHR(uint32_t queueFamilyIndex, Display&  dpy, VisualID visualID) const {
-        return instance_functions->GetPhysicalDeviceXlibPresentationSupportKHR(physicaldevice, queueFamilyIndex, dpy, visualID);}
+        return instance_functions->GetPhysicalDeviceXlibPresentationSupportKHR(physicaldevice, queueFamilyIndex, dpy, visualID); }
 #endif // defined(VK_USE_PLATFORM_XLIB_KHR)
 #if defined(VK_USE_PLATFORM_XCB_KHR)
     [[nodiscard]] VkBool32 GetXcbPresentationSupportKHR(uint32_t queueFamilyIndex, xcb_connection_t&  connection, xcb_visualid_t visual_id) const {
-        return instance_functions->GetPhysicalDeviceXcbPresentationSupportKHR(physicaldevice, queueFamilyIndex, connection, visual_id);}
+        return instance_functions->GetPhysicalDeviceXcbPresentationSupportKHR(physicaldevice, queueFamilyIndex, connection, visual_id); }
 #endif // defined(VK_USE_PLATFORM_XCB_KHR)
 #if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
     [[nodiscard]] IDirectFB GetDirectFBPresentationSupportEXT(uint32_t queueFamilyIndex) const {
-        return instance_functions->GetPhysicalDeviceDirectFBPresentationSupportEXT(physicaldevice, queueFamilyIndex);}
+        return instance_functions->GetPhysicalDeviceDirectFBPresentationSupportEXT(physicaldevice, queueFamilyIndex); }
 #endif // defined(VK_USE_PLATFORM_DIRECTFB_EXT)
     [[nodiscard]] expected<ExternalImageFormatPropertiesNV> GetExternalImageFormatPropertiesNV(Format format, ImageType type, ImageTiling tiling, ImageUsageFlags usage, ImageCreateFlags flags, ExternalMemoryHandleTypeFlagsNV externalHandleType) const {
-        return instance_functions->GetPhysicalDeviceExternalImageFormatPropertiesNV(physicaldevice, format, type, tiling, usage, flags, externalHandleType);}
+        return instance_functions->GetPhysicalDeviceExternalImageFormatPropertiesNV(physicaldevice, format, type, tiling, usage, flags, externalHandleType); }
     [[nodiscard]] PhysicalDeviceFeatures2 GetFeatures2() const {
-        return instance_functions->GetPhysicalDeviceFeatures2(physicaldevice);}
+        return instance_functions->GetPhysicalDeviceFeatures2(physicaldevice); }
     [[nodiscard]] PhysicalDeviceProperties2 GetProperties2() const {
-        return instance_functions->GetPhysicalDeviceProperties2(physicaldevice);}
+        return instance_functions->GetPhysicalDeviceProperties2(physicaldevice); }
     [[nodiscard]] FormatProperties2 GetFormatProperties2(Format format) const {
-        return instance_functions->GetPhysicalDeviceFormatProperties2(physicaldevice, format);}
+        return instance_functions->GetPhysicalDeviceFormatProperties2(physicaldevice, format); }
     [[nodiscard]] expected<ImageFormatProperties2> GetImageFormatProperties2(const PhysicalDeviceImageFormatInfo2&  pImageFormatInfo) const {
-        return instance_functions->GetPhysicalDeviceImageFormatProperties2(physicaldevice, pImageFormatInfo);}
+        return instance_functions->GetPhysicalDeviceImageFormatProperties2(physicaldevice, pImageFormatInfo); }
     [[nodiscard]] detail::fixed_vector<QueueFamilyProperties2> GetQueueFamilyProperties2() const {
-        return instance_functions->GetPhysicalDeviceQueueFamilyProperties2(physicaldevice);}
+        return instance_functions->GetPhysicalDeviceQueueFamilyProperties2(physicaldevice); }
     [[nodiscard]] PhysicalDeviceMemoryProperties2 GetMemoryProperties2() const {
-        return instance_functions->GetPhysicalDeviceMemoryProperties2(physicaldevice);}
+        return instance_functions->GetPhysicalDeviceMemoryProperties2(physicaldevice); }
     [[nodiscard]] detail::fixed_vector<SparseImageFormatProperties2> GetSparseImageFormatProperties2(const PhysicalDeviceSparseImageFormatInfo2&  pFormatInfo) const {
-        return instance_functions->GetPhysicalDeviceSparseImageFormatProperties2(physicaldevice, pFormatInfo);}
+        return instance_functions->GetPhysicalDeviceSparseImageFormatProperties2(physicaldevice, pFormatInfo); }
     [[nodiscard]] ExternalBufferProperties GetExternalBufferProperties(const PhysicalDeviceExternalBufferInfo&  pExternalBufferInfo) const {
-        return instance_functions->GetPhysicalDeviceExternalBufferProperties(physicaldevice, pExternalBufferInfo);}
+        return instance_functions->GetPhysicalDeviceExternalBufferProperties(physicaldevice, pExternalBufferInfo); }
     [[nodiscard]] ExternalSemaphoreProperties GetExternalSemaphoreProperties(const PhysicalDeviceExternalSemaphoreInfo&  pExternalSemaphoreInfo) const {
-        return instance_functions->GetPhysicalDeviceExternalSemaphoreProperties(physicaldevice, pExternalSemaphoreInfo);}
+        return instance_functions->GetPhysicalDeviceExternalSemaphoreProperties(physicaldevice, pExternalSemaphoreInfo); }
     [[nodiscard]] ExternalFenceProperties GetExternalFenceProperties(const PhysicalDeviceExternalFenceInfo&  pExternalFenceInfo) const {
-        return instance_functions->GetPhysicalDeviceExternalFenceProperties(physicaldevice, pExternalFenceInfo);}
+        return instance_functions->GetPhysicalDeviceExternalFenceProperties(physicaldevice, pExternalFenceInfo); }
     [[nodiscard]] Result ReleaseDisplayEXT(DisplayKHR display) const {
-        return instance_functions->ReleaseDisplayEXT(physicaldevice, display);}
+        return instance_functions->ReleaseDisplayEXT(physicaldevice, display); }
 #if defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT)
     [[nodiscard]] Result AcquireXlibDisplayEXT(Display&  dpy, DisplayKHR display) const {
-        return instance_functions->AcquireXlibDisplayEXT(physicaldevice, dpy, display);}
+        return instance_functions->AcquireXlibDisplayEXT(physicaldevice, dpy, display); }
     [[nodiscard]] expected<DisplayKHR> GetRandROutputDisplayEXT(Display&  dpy, RROutput rrOutput) const {
-        return instance_functions->GetRandROutputDisplayEXT(physicaldevice, dpy, rrOutput);}
+        return instance_functions->GetRandROutputDisplayEXT(physicaldevice, dpy, rrOutput); }
 #endif // defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT)
     [[nodiscard]] expected<SurfaceCapabilities2EXT> GetSurfaceCapabilities2EXT(SurfaceKHR surface) const {
-        return instance_functions->GetPhysicalDeviceSurfaceCapabilities2EXT(physicaldevice, surface);}
+        return instance_functions->GetPhysicalDeviceSurfaceCapabilities2EXT(physicaldevice, surface); }
     [[nodiscard]] expected<detail::fixed_vector<Rect2D>> GetPresentRectanglesKHR(SurfaceKHR surface) const {
-        return instance_functions->GetPhysicalDevicePresentRectanglesKHR(physicaldevice, surface);}
+        return instance_functions->GetPhysicalDevicePresentRectanglesKHR(physicaldevice, surface); }
     [[nodiscard]] MultisamplePropertiesEXT GetMultisamplePropertiesEXT(SampleCountFlagBits samples) const {
-        return instance_functions->GetPhysicalDeviceMultisamplePropertiesEXT(physicaldevice, samples);}
+        return instance_functions->GetPhysicalDeviceMultisamplePropertiesEXT(physicaldevice, samples); }
     [[nodiscard]] expected<SurfaceCapabilities2KHR> GetSurfaceCapabilities2KHR(const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) const {
-        return instance_functions->GetPhysicalDeviceSurfaceCapabilities2KHR(physicaldevice, pSurfaceInfo);}
+        return instance_functions->GetPhysicalDeviceSurfaceCapabilities2KHR(physicaldevice, pSurfaceInfo); }
     [[nodiscard]] expected<detail::fixed_vector<SurfaceFormat2KHR>> GetSurfaceFormats2KHR(const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) const {
-        return instance_functions->GetPhysicalDeviceSurfaceFormats2KHR(physicaldevice, pSurfaceInfo);}
+        return instance_functions->GetPhysicalDeviceSurfaceFormats2KHR(physicaldevice, pSurfaceInfo); }
     [[nodiscard]] expected<detail::fixed_vector<DisplayProperties2KHR>> GetDisplayProperties2KHR() const {
-        return instance_functions->GetPhysicalDeviceDisplayProperties2KHR(physicaldevice);}
+        return instance_functions->GetPhysicalDeviceDisplayProperties2KHR(physicaldevice); }
     [[nodiscard]] expected<detail::fixed_vector<DisplayPlaneProperties2KHR>> GetDisplayPlaneProperties2KHR() const {
-        return instance_functions->GetPhysicalDeviceDisplayPlaneProperties2KHR(physicaldevice);}
+        return instance_functions->GetPhysicalDeviceDisplayPlaneProperties2KHR(physicaldevice); }
     [[nodiscard]] expected<detail::fixed_vector<DisplayModeProperties2KHR>> GetDisplayModeProperties2KHR(DisplayKHR display) const {
-        return instance_functions->GetDisplayModeProperties2KHR(physicaldevice, display);}
+        return instance_functions->GetDisplayModeProperties2KHR(physicaldevice, display); }
     [[nodiscard]] expected<DisplayPlaneCapabilities2KHR> GetDisplayPlaneCapabilities2KHR(const DisplayPlaneInfo2KHR&  pDisplayPlaneInfo) const {
-        return instance_functions->GetDisplayPlaneCapabilities2KHR(physicaldevice, pDisplayPlaneInfo);}
+        return instance_functions->GetDisplayPlaneCapabilities2KHR(physicaldevice, pDisplayPlaneInfo); }
     [[nodiscard]] expected<detail::fixed_vector<TimeDomainEXT>> GetCalibrateableTimeDomainsEXT() const {
-        return instance_functions->GetPhysicalDeviceCalibrateableTimeDomainsEXT(physicaldevice);}
+        return instance_functions->GetPhysicalDeviceCalibrateableTimeDomainsEXT(physicaldevice); }
     [[nodiscard]] expected<detail::fixed_vector<CooperativeMatrixPropertiesNV>> GetCooperativeMatrixPropertiesNV() const {
-        return instance_functions->GetPhysicalDeviceCooperativeMatrixPropertiesNV(physicaldevice);}
+        return instance_functions->GetPhysicalDeviceCooperativeMatrixPropertiesNV(physicaldevice); }
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     [[nodiscard]] expected<detail::fixed_vector<PresentModeKHR>> GetSurfacePresentModes2EXT(const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) const {
-        return instance_functions->GetPhysicalDeviceSurfacePresentModes2EXT(physicaldevice, pSurfaceInfo);}
+        return instance_functions->GetPhysicalDeviceSurfacePresentModes2EXT(physicaldevice, pSurfaceInfo); }
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
     [[nodiscard]] Result EnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR(uint32_t queueFamilyIndex, uint32_t&  pCounterCount, PerformanceCounterKHR* pCounters, PerformanceCounterDescriptionKHR* pCounterDescriptions) const {
-        return instance_functions->EnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR(physicaldevice, queueFamilyIndex, pCounterCount, pCounters, pCounterDescriptions);}
+        return instance_functions->EnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR(physicaldevice, queueFamilyIndex, pCounterCount, pCounters, pCounterDescriptions); }
     [[nodiscard]] uint32_t GetQueueFamilyPerformanceQueryPassesKHR(const QueryPoolPerformanceCreateInfoKHR&  pPerformanceQueryCreateInfo) const {
-        return instance_functions->GetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR(physicaldevice, pPerformanceQueryCreateInfo);}
+        return instance_functions->GetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR(physicaldevice, pPerformanceQueryCreateInfo); }
     [[nodiscard]] expected<detail::fixed_vector<FramebufferMixedSamplesCombinationNV>> GetSupportedFramebufferMixedSamplesCombinationsNV() const {
-        return instance_functions->GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(physicaldevice);}
+        return instance_functions->GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(physicaldevice); }
     [[nodiscard]] expected<detail::fixed_vector<PhysicalDeviceToolPropertiesEXT>> GetToolPropertiesEXT() const {
-        return instance_functions->GetPhysicalDeviceToolPropertiesEXT(physicaldevice);}
+        return instance_functions->GetPhysicalDeviceToolPropertiesEXT(physicaldevice); }
 };
 struct QueueFunctions {
     DeviceFunctions const* device_functions;
@@ -5073,23 +5075,23 @@ struct QueueFunctions {
     QueueFunctions(DeviceFunctions const& device_functions, Queue const queue)
         :device_functions(&device_functions), queue(queue){}
     [[nodiscard]] Result Submit(uint32_t submitCount, const SubmitInfo* pSubmits, Fence fence) const {
-        return device_functions->QueueSubmit(queue, submitCount, pSubmits, fence);}
+        return device_functions->QueueSubmit(queue, submitCount, pSubmits, fence); }
     [[nodiscard]] Result WaitIdle() const {
-        return device_functions->QueueWaitIdle(queue);}
+        return device_functions->QueueWaitIdle(queue); }
     [[nodiscard]] Result BindSparse(uint32_t bindInfoCount, const BindSparseInfo* pBindInfo, Fence fence) const {
-        return device_functions->QueueBindSparse(queue, bindInfoCount, pBindInfo, fence);}
+        return device_functions->QueueBindSparse(queue, bindInfoCount, pBindInfo, fence); }
     [[nodiscard]] Result PresentKHR(const PresentInfoKHR&  pPresentInfo) const {
-        return device_functions->QueuePresentKHR(queue, pPresentInfo);}
+        return device_functions->QueuePresentKHR(queue, pPresentInfo); }
     void BeginDebugUtilsLabelEXT(const DebugUtilsLabelEXT&  pLabelInfo) const {
-        device_functions->QueueBeginDebugUtilsLabelEXT(queue, pLabelInfo);}
+        device_functions->QueueBeginDebugUtilsLabelEXT(queue, pLabelInfo); }
     void EndDebugUtilsLabelEXT() const {
-        device_functions->QueueEndDebugUtilsLabelEXT(queue);}
+        device_functions->QueueEndDebugUtilsLabelEXT(queue); }
     void InsertDebugUtilsLabelEXT(const DebugUtilsLabelEXT&  pLabelInfo) const {
-        device_functions->QueueInsertDebugUtilsLabelEXT(queue, pLabelInfo);}
+        device_functions->QueueInsertDebugUtilsLabelEXT(queue, pLabelInfo); }
     [[nodiscard]] detail::fixed_vector<CheckpointDataNV> GetCheckpointDataNV() const {
-        return device_functions->GetQueueCheckpointDataNV(queue);}
+        return device_functions->GetQueueCheckpointDataNV(queue); }
     [[nodiscard]] Result SetPerformanceConfigurationINTEL(PerformanceConfigurationINTEL configuration) const {
-        return device_functions->QueueSetPerformanceConfigurationINTEL(queue, configuration);}
+        return device_functions->QueueSetPerformanceConfigurationINTEL(queue, configuration); }
 };
 struct CommandBufferFunctions {
     DeviceFunctions const* device_functions;
@@ -5097,249 +5099,361 @@ struct CommandBufferFunctions {
     CommandBufferFunctions(DeviceFunctions const& device_functions, CommandBuffer const commandbuffer)
         :device_functions(&device_functions), commandbuffer(commandbuffer){}
     [[nodiscard]] Result Begin(const CommandBufferBeginInfo&  pBeginInfo) const {
-        return device_functions->BeginCommandBuffer(commandbuffer, pBeginInfo);}
+        return device_functions->BeginCommandBuffer(commandbuffer, pBeginInfo); }
     [[nodiscard]] Result End() const {
-        return device_functions->EndCommandBuffer(commandbuffer);}
+        return device_functions->EndCommandBuffer(commandbuffer); }
     [[nodiscard]] Result Reset(CommandBufferResetFlags flags) const {
-        return device_functions->ResetCommandBuffer(commandbuffer, flags);}
-    void BindPipeline(PipelineBindPoint pipelineBindPoint, Pipeline pipeline) const {
-        device_functions->CmdBindPipeline(commandbuffer, pipelineBindPoint, pipeline);}
-    void SetViewport(uint32_t firstViewport, uint32_t viewportCount, const Viewport* pViewports) const {
-        device_functions->CmdSetViewport(commandbuffer, firstViewport, viewportCount, pViewports);}
-    void SetScissor(uint32_t firstScissor, uint32_t scissorCount, const Rect2D* pScissors) const {
-        device_functions->CmdSetScissor(commandbuffer, firstScissor, scissorCount, pScissors);}
-    void SetLineWidth(float lineWidth) const {
-        device_functions->CmdSetLineWidth(commandbuffer, lineWidth);}
-    void SetDepthBias(float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor) const {
-        device_functions->CmdSetDepthBias(commandbuffer, depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor);}
-    void SetBlendConstants(const float blendConstants[4]) const {
-        device_functions->CmdSetBlendConstants(commandbuffer, blendConstants);}
-    void SetDepthBounds(float minDepthBounds, float maxDepthBounds) const {
-        device_functions->CmdSetDepthBounds(commandbuffer, minDepthBounds, maxDepthBounds);}
-    void SetStencilCompareMask(StencilFaceFlags faceMask, uint32_t compareMask) const {
-        device_functions->CmdSetStencilCompareMask(commandbuffer, faceMask, compareMask);}
-    void SetStencilWriteMask(StencilFaceFlags faceMask, uint32_t writeMask) const {
-        device_functions->CmdSetStencilWriteMask(commandbuffer, faceMask, writeMask);}
-    void SetStencilReference(StencilFaceFlags faceMask, uint32_t reference) const {
-        device_functions->CmdSetStencilReference(commandbuffer, faceMask, reference);}
-    void BindDescriptorSets(PipelineBindPoint pipelineBindPoint, PipelineLayout layout, uint32_t firstSet, uint32_t descriptorSetCount, const DescriptorSet* pDescriptorSets, uint32_t dynamicOffsetCount, const uint32_t* pDynamicOffsets) const {
-        device_functions->CmdBindDescriptorSets(commandbuffer, pipelineBindPoint, layout, firstSet, descriptorSetCount, pDescriptorSets, dynamicOffsetCount, pDynamicOffsets);}
-    void BindIndexBuffer(Buffer buffer, DeviceSize offset, IndexType indexType) const {
-        device_functions->CmdBindIndexBuffer(commandbuffer, buffer, offset, indexType);}
-    void BindVertexBuffers(uint32_t firstBinding, uint32_t bindingCount, const Buffer* pBuffers, const DeviceSize* pOffsets) const {
-        device_functions->CmdBindVertexBuffers(commandbuffer, firstBinding, bindingCount, pBuffers, pOffsets);}
-    void Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance) const {
-        device_functions->CmdDraw(commandbuffer, vertexCount, instanceCount, firstVertex, firstInstance);}
-    void DrawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, int32_t vertexOffset, uint32_t firstInstance) const {
-        device_functions->CmdDrawIndexed(commandbuffer, indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);}
-    void DrawIndirect(Buffer buffer, DeviceSize offset, uint32_t drawCount, uint32_t stride) const {
-        device_functions->CmdDrawIndirect(commandbuffer, buffer, offset, drawCount, stride);}
-    void DrawIndexedIndirect(Buffer buffer, DeviceSize offset, uint32_t drawCount, uint32_t stride) const {
-        device_functions->CmdDrawIndexedIndirect(commandbuffer, buffer, offset, drawCount, stride);}
-    void Dispatch(uint32_t groupCountX, uint32_t groupCountY, uint32_t groupCountZ) const {
-        device_functions->CmdDispatch(commandbuffer, groupCountX, groupCountY, groupCountZ);}
-    void DispatchIndirect(Buffer buffer, DeviceSize offset) const {
-        device_functions->CmdDispatchIndirect(commandbuffer, buffer, offset);}
-    void CopyBuffer(Buffer srcBuffer, Buffer dstBuffer, uint32_t regionCount, const BufferCopy* pRegions) const {
-        device_functions->CmdCopyBuffer(commandbuffer, srcBuffer, dstBuffer, regionCount, pRegions);}
-    void CopyImage(Image srcImage, ImageLayout srcImageLayout, Image dstImage, ImageLayout dstImageLayout, uint32_t regionCount, const ImageCopy* pRegions) const {
-        device_functions->CmdCopyImage(commandbuffer, srcImage, srcImageLayout, dstImage, dstImageLayout, regionCount, pRegions);}
-    void BlitImage(Image srcImage, ImageLayout srcImageLayout, Image dstImage, ImageLayout dstImageLayout, uint32_t regionCount, const ImageBlit* pRegions, Filter filter) const {
-        device_functions->CmdBlitImage(commandbuffer, srcImage, srcImageLayout, dstImage, dstImageLayout, regionCount, pRegions, filter);}
-    void CopyBufferToImage(Buffer srcBuffer, Image dstImage, ImageLayout dstImageLayout, uint32_t regionCount, const BufferImageCopy* pRegions) const {
-        device_functions->CmdCopyBufferToImage(commandbuffer, srcBuffer, dstImage, dstImageLayout, regionCount, pRegions);}
-    void CopyImageToBuffer(Image srcImage, ImageLayout srcImageLayout, Buffer dstBuffer, uint32_t regionCount, const BufferImageCopy* pRegions) const {
-        device_functions->CmdCopyImageToBuffer(commandbuffer, srcImage, srcImageLayout, dstBuffer, regionCount, pRegions);}
-    void UpdateBuffer(Buffer dstBuffer, DeviceSize dstOffset, DeviceSize dataSize, const void* pData) const {
-        device_functions->CmdUpdateBuffer(commandbuffer, dstBuffer, dstOffset, dataSize, pData);}
-    void FillBuffer(Buffer dstBuffer, DeviceSize dstOffset, DeviceSize size, uint32_t data) const {
-        device_functions->CmdFillBuffer(commandbuffer, dstBuffer, dstOffset, size, data);}
-    void ClearColorImage(Image image, ImageLayout imageLayout, const ClearColorValue&  pColor, uint32_t rangeCount, const ImageSubresourceRange* pRanges) const {
-        device_functions->CmdClearColorImage(commandbuffer, image, imageLayout, pColor, rangeCount, pRanges);}
-    void ClearDepthStencilImage(Image image, ImageLayout imageLayout, const ClearDepthStencilValue&  pDepthStencil, uint32_t rangeCount, const ImageSubresourceRange* pRanges) const {
-        device_functions->CmdClearDepthStencilImage(commandbuffer, image, imageLayout, pDepthStencil, rangeCount, pRanges);}
-    void ClearAttachments(uint32_t attachmentCount, const ClearAttachment* pAttachments, uint32_t rectCount, const ClearRect* pRects) const {
-        device_functions->CmdClearAttachments(commandbuffer, attachmentCount, pAttachments, rectCount, pRects);}
-    void ResolveImage(Image srcImage, ImageLayout srcImageLayout, Image dstImage, ImageLayout dstImageLayout, uint32_t regionCount, const ImageResolve* pRegions) const {
-        device_functions->CmdResolveImage(commandbuffer, srcImage, srcImageLayout, dstImage, dstImageLayout, regionCount, pRegions);}
-    void SetEvent(Event event, PipelineStageFlags stageMask) const {
-        device_functions->CmdSetEvent(commandbuffer, event, stageMask);}
-    void ResetEvent(Event event, PipelineStageFlags stageMask) const {
-        device_functions->CmdResetEvent(commandbuffer, event, stageMask);}
-    void WaitEvents(uint32_t eventCount, const Event* pEvents, PipelineStageFlags srcStageMask, PipelineStageFlags dstStageMask, uint32_t memoryBarrierCount, const MemoryBarrier* pMemoryBarriers, uint32_t bufferMemoryBarrierCount, const BufferMemoryBarrier* pBufferMemoryBarriers, uint32_t imageMemoryBarrierCount, const ImageMemoryBarrier* pImageMemoryBarriers) const {
-        device_functions->CmdWaitEvents(commandbuffer, eventCount, pEvents, srcStageMask, dstStageMask, memoryBarrierCount, pMemoryBarriers, bufferMemoryBarrierCount, pBufferMemoryBarriers, imageMemoryBarrierCount, pImageMemoryBarriers);}
-    void PipelineBarrier(PipelineStageFlags srcStageMask, PipelineStageFlags dstStageMask, DependencyFlags dependencyFlags, uint32_t memoryBarrierCount, const MemoryBarrier* pMemoryBarriers, uint32_t bufferMemoryBarrierCount, const BufferMemoryBarrier* pBufferMemoryBarriers, uint32_t imageMemoryBarrierCount, const ImageMemoryBarrier* pImageMemoryBarriers) const {
-        device_functions->CmdPipelineBarrier(commandbuffer, srcStageMask, dstStageMask, dependencyFlags, memoryBarrierCount, pMemoryBarriers, bufferMemoryBarrierCount, pBufferMemoryBarriers, imageMemoryBarrierCount, pImageMemoryBarriers);}
-    void BeginQuery(QueryPool queryPool, uint32_t query, QueryControlFlags flags) const {
-        device_functions->CmdBeginQuery(commandbuffer, queryPool, query, flags);}
-    void EndQuery(QueryPool queryPool, uint32_t query) const {
-        device_functions->CmdEndQuery(commandbuffer, queryPool, query);}
-    void BeginConditionalRenderingEXT(const ConditionalRenderingBeginInfoEXT&  pConditionalRenderingBegin) const {
-        device_functions->CmdBeginConditionalRenderingEXT(commandbuffer, pConditionalRenderingBegin);}
-    void EndConditionalRenderingEXT() const {
-        device_functions->CmdEndConditionalRenderingEXT(commandbuffer);}
-    void ResetQueryPool(QueryPool queryPool, uint32_t firstQuery, uint32_t queryCount) const {
-        device_functions->CmdResetQueryPool(commandbuffer, queryPool, firstQuery, queryCount);}
-    void WriteTimestamp(PipelineStageFlagBits pipelineStage, QueryPool queryPool, uint32_t query) const {
-        device_functions->CmdWriteTimestamp(commandbuffer, pipelineStage, queryPool, query);}
-    void CopyQueryPoolResults(QueryPool queryPool, uint32_t firstQuery, uint32_t queryCount, Buffer dstBuffer, DeviceSize dstOffset, DeviceSize stride, QueryResultFlags flags) const {
-        device_functions->CmdCopyQueryPoolResults(commandbuffer, queryPool, firstQuery, queryCount, dstBuffer, dstOffset, stride, flags);}
-    void PushConstants(PipelineLayout layout, ShaderStageFlags stageFlags, uint32_t offset, uint32_t size, const void* pValues) const {
-        device_functions->CmdPushConstants(commandbuffer, layout, stageFlags, offset, size, pValues);}
-    void BeginRenderPass(const RenderPassBeginInfo&  pRenderPassBegin, SubpassContents contents) const {
-        device_functions->CmdBeginRenderPass(commandbuffer, pRenderPassBegin, contents);}
-    void NextSubpass(SubpassContents contents) const {
-        device_functions->CmdNextSubpass(commandbuffer, contents);}
-    void EndRenderPass() const {
-        device_functions->CmdEndRenderPass(commandbuffer);}
-    void ExecuteCommands(uint32_t commandBufferCount, const CommandBuffer* pCommandBuffers) const {
-        device_functions->CmdExecuteCommands(commandbuffer, commandBufferCount, pCommandBuffers);}
-    void DebugMarkerBeginEXT(const DebugMarkerMarkerInfoEXT&  pMarkerInfo) const {
-        device_functions->CmdDebugMarkerBeginEXT(commandbuffer, pMarkerInfo);}
-    void DebugMarkerEndEXT() const {
-        device_functions->CmdDebugMarkerEndEXT(commandbuffer);}
-    void DebugMarkerInsertEXT(const DebugMarkerMarkerInfoEXT&  pMarkerInfo) const {
-        device_functions->CmdDebugMarkerInsertEXT(commandbuffer, pMarkerInfo);}
-    void ExecuteGeneratedCommandsNV(Bool32 isPreprocessed, const GeneratedCommandsInfoNV&  pGeneratedCommandsInfo) const {
-        device_functions->CmdExecuteGeneratedCommandsNV(commandbuffer, isPreprocessed, pGeneratedCommandsInfo);}
-    void PreprocessGeneratedCommandsNV(const GeneratedCommandsInfoNV&  pGeneratedCommandsInfo) const {
-        device_functions->CmdPreprocessGeneratedCommandsNV(commandbuffer, pGeneratedCommandsInfo);}
-    void BindPipelineShaderGroupNV(PipelineBindPoint pipelineBindPoint, Pipeline pipeline, uint32_t groupIndex) const {
-        device_functions->CmdBindPipelineShaderGroupNV(commandbuffer, pipelineBindPoint, pipeline, groupIndex);}
-    void PushDescriptorSetKHR(PipelineBindPoint pipelineBindPoint, PipelineLayout layout, uint32_t set, uint32_t descriptorWriteCount, const WriteDescriptorSet* pDescriptorWrites) const {
-        device_functions->CmdPushDescriptorSetKHR(commandbuffer, pipelineBindPoint, layout, set, descriptorWriteCount, pDescriptorWrites);}
-    void SetDeviceMask(uint32_t deviceMask) const {
-        device_functions->CmdSetDeviceMask(commandbuffer, deviceMask);}
-    void DispatchBase(uint32_t baseGroupX, uint32_t baseGroupY, uint32_t baseGroupZ, uint32_t groupCountX, uint32_t groupCountY, uint32_t groupCountZ) const {
-        device_functions->CmdDispatchBase(commandbuffer, baseGroupX, baseGroupY, baseGroupZ, groupCountX, groupCountY, groupCountZ);}
-    void PushDescriptorSetWithTemplateKHR(DescriptorUpdateTemplate descriptorUpdateTemplate, PipelineLayout layout, uint32_t set, const void* pData) const {
-        device_functions->CmdPushDescriptorSetWithTemplateKHR(commandbuffer, descriptorUpdateTemplate, layout, set, pData);}
-    void SetViewportWScalingNV(uint32_t firstViewport, uint32_t viewportCount, const ViewportWScalingNV* pViewportWScalings) const {
-        device_functions->CmdSetViewportWScalingNV(commandbuffer, firstViewport, viewportCount, pViewportWScalings);}
-    void SetDiscardRectangleEXT(uint32_t firstDiscardRectangle, uint32_t discardRectangleCount, const Rect2D* pDiscardRectangles) const {
-        device_functions->CmdSetDiscardRectangleEXT(commandbuffer, firstDiscardRectangle, discardRectangleCount, pDiscardRectangles);}
-    void SetSampleLocationsEXT(const SampleLocationsInfoEXT&  pSampleLocationsInfo) const {
-        device_functions->CmdSetSampleLocationsEXT(commandbuffer, pSampleLocationsInfo);}
-    void BeginDebugUtilsLabelEXT(const DebugUtilsLabelEXT&  pLabelInfo) const {
-        device_functions->CmdBeginDebugUtilsLabelEXT(commandbuffer, pLabelInfo);}
-    void EndDebugUtilsLabelEXT() const {
-        device_functions->CmdEndDebugUtilsLabelEXT(commandbuffer);}
-    void InsertDebugUtilsLabelEXT(const DebugUtilsLabelEXT&  pLabelInfo) const {
-        device_functions->CmdInsertDebugUtilsLabelEXT(commandbuffer, pLabelInfo);}
-    void WriteBufferMarkerAMD(PipelineStageFlagBits pipelineStage, Buffer dstBuffer, DeviceSize dstOffset, uint32_t marker) const {
-        device_functions->CmdWriteBufferMarkerAMD(commandbuffer, pipelineStage, dstBuffer, dstOffset, marker);}
-    void BeginRenderPass2(const RenderPassBeginInfo&  pRenderPassBegin, const SubpassBeginInfo&  pSubpassBeginInfo) const {
-        device_functions->CmdBeginRenderPass2(commandbuffer, pRenderPassBegin, pSubpassBeginInfo);}
-    void NextSubpass2(const SubpassBeginInfo&  pSubpassBeginInfo, const SubpassEndInfo&  pSubpassEndInfo) const {
-        device_functions->CmdNextSubpass2(commandbuffer, pSubpassBeginInfo, pSubpassEndInfo);}
-    void EndRenderPass2(const SubpassEndInfo&  pSubpassEndInfo) const {
-        device_functions->CmdEndRenderPass2(commandbuffer, pSubpassEndInfo);}
-    void DrawIndirectCount(Buffer buffer, DeviceSize offset, Buffer countBuffer, DeviceSize countBufferOffset, uint32_t maxDrawCount, uint32_t stride) const {
-        device_functions->CmdDrawIndirectCount(commandbuffer, buffer, offset, countBuffer, countBufferOffset, maxDrawCount, stride);}
-    void DrawIndexedIndirectCount(Buffer buffer, DeviceSize offset, Buffer countBuffer, DeviceSize countBufferOffset, uint32_t maxDrawCount, uint32_t stride) const {
-        device_functions->CmdDrawIndexedIndirectCount(commandbuffer, buffer, offset, countBuffer, countBufferOffset, maxDrawCount, stride);}
-    void SetCheckpointNV(const void* pCheckpointMarker) const {
-        device_functions->CmdSetCheckpointNV(commandbuffer, pCheckpointMarker);}
-    void BindTransformFeedbackBuffersEXT(uint32_t firstBinding, uint32_t bindingCount, const Buffer* pBuffers, const DeviceSize* pOffsets, const DeviceSize* pSizes) const {
-        device_functions->CmdBindTransformFeedbackBuffersEXT(commandbuffer, firstBinding, bindingCount, pBuffers, pOffsets, pSizes);}
-    void BeginTransformFeedbackEXT(uint32_t firstCounterBuffer, uint32_t counterBufferCount, const Buffer* pCounterBuffers, const DeviceSize* pCounterBufferOffsets) const {
-        device_functions->CmdBeginTransformFeedbackEXT(commandbuffer, firstCounterBuffer, counterBufferCount, pCounterBuffers, pCounterBufferOffsets);}
-    void EndTransformFeedbackEXT(uint32_t firstCounterBuffer, uint32_t counterBufferCount, const Buffer* pCounterBuffers, const DeviceSize* pCounterBufferOffsets) const {
-        device_functions->CmdEndTransformFeedbackEXT(commandbuffer, firstCounterBuffer, counterBufferCount, pCounterBuffers, pCounterBufferOffsets);}
-    void BeginQueryIndexedEXT(QueryPool queryPool, uint32_t query, QueryControlFlags flags, uint32_t index) const {
-        device_functions->CmdBeginQueryIndexedEXT(commandbuffer, queryPool, query, flags, index);}
-    void EndQueryIndexedEXT(QueryPool queryPool, uint32_t query, uint32_t index) const {
-        device_functions->CmdEndQueryIndexedEXT(commandbuffer, queryPool, query, index);}
-    void DrawIndirectByteCountEXT(uint32_t instanceCount, uint32_t firstInstance, Buffer counterBuffer, DeviceSize counterBufferOffset, uint32_t counterOffset, uint32_t vertexStride) const {
-        device_functions->CmdDrawIndirectByteCountEXT(commandbuffer, instanceCount, firstInstance, counterBuffer, counterBufferOffset, counterOffset, vertexStride);}
-    void SetExclusiveScissorNV(uint32_t firstExclusiveScissor, uint32_t exclusiveScissorCount, const Rect2D* pExclusiveScissors) const {
-        device_functions->CmdSetExclusiveScissorNV(commandbuffer, firstExclusiveScissor, exclusiveScissorCount, pExclusiveScissors);}
-    void BindShadingRateImageNV(ImageView imageView, ImageLayout imageLayout) const {
-        device_functions->CmdBindShadingRateImageNV(commandbuffer, imageView, imageLayout);}
-    void SetViewportShadingRatePaletteNV(uint32_t firstViewport, uint32_t viewportCount, const ShadingRatePaletteNV* pShadingRatePalettes) const {
-        device_functions->CmdSetViewportShadingRatePaletteNV(commandbuffer, firstViewport, viewportCount, pShadingRatePalettes);}
-    void SetCoarseSampleOrderNV(CoarseSampleOrderTypeNV sampleOrderType, uint32_t customSampleOrderCount, const CoarseSampleOrderCustomNV* pCustomSampleOrders) const {
-        device_functions->CmdSetCoarseSampleOrderNV(commandbuffer, sampleOrderType, customSampleOrderCount, pCustomSampleOrders);}
-    void DrawMeshTasksNV(uint32_t taskCount, uint32_t firstTask) const {
-        device_functions->CmdDrawMeshTasksNV(commandbuffer, taskCount, firstTask);}
-    void DrawMeshTasksIndirectNV(Buffer buffer, DeviceSize offset, uint32_t drawCount, uint32_t stride) const {
-        device_functions->CmdDrawMeshTasksIndirectNV(commandbuffer, buffer, offset, drawCount, stride);}
-    void DrawMeshTasksIndirectCountNV(Buffer buffer, DeviceSize offset, Buffer countBuffer, DeviceSize countBufferOffset, uint32_t maxDrawCount, uint32_t stride) const {
-        device_functions->CmdDrawMeshTasksIndirectCountNV(commandbuffer, buffer, offset, countBuffer, countBufferOffset, maxDrawCount, stride);}
-    void CopyAccelerationStructureNV(AccelerationStructureKHR dst, AccelerationStructureKHR src, CopyAccelerationStructureModeKHR mode) const {
-        device_functions->CmdCopyAccelerationStructureNV(commandbuffer, dst, src, mode);}
+        return device_functions->ResetCommandBuffer(commandbuffer, flags); }
+    CommandBufferFunctions const& BindPipeline(PipelineBindPoint pipelineBindPoint, Pipeline pipeline) const {
+        device_functions->CmdBindPipeline(commandbuffer, pipelineBindPoint, pipeline);
+        return *this; }
+    CommandBufferFunctions const& SetViewport(uint32_t firstViewport, uint32_t viewportCount, const Viewport* pViewports) const {
+        device_functions->CmdSetViewport(commandbuffer, firstViewport, viewportCount, pViewports);
+        return *this; }
+    CommandBufferFunctions const& SetScissor(uint32_t firstScissor, uint32_t scissorCount, const Rect2D* pScissors) const {
+        device_functions->CmdSetScissor(commandbuffer, firstScissor, scissorCount, pScissors);
+        return *this; }
+    CommandBufferFunctions const& SetLineWidth(float lineWidth) const {
+        device_functions->CmdSetLineWidth(commandbuffer, lineWidth);
+        return *this; }
+    CommandBufferFunctions const& SetDepthBias(float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor) const {
+        device_functions->CmdSetDepthBias(commandbuffer, depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor);
+        return *this; }
+    CommandBufferFunctions const& SetBlendConstants(const float blendConstants[4]) const {
+        device_functions->CmdSetBlendConstants(commandbuffer, blendConstants);
+        return *this; }
+    CommandBufferFunctions const& SetDepthBounds(float minDepthBounds, float maxDepthBounds) const {
+        device_functions->CmdSetDepthBounds(commandbuffer, minDepthBounds, maxDepthBounds);
+        return *this; }
+    CommandBufferFunctions const& SetStencilCompareMask(StencilFaceFlags faceMask, uint32_t compareMask) const {
+        device_functions->CmdSetStencilCompareMask(commandbuffer, faceMask, compareMask);
+        return *this; }
+    CommandBufferFunctions const& SetStencilWriteMask(StencilFaceFlags faceMask, uint32_t writeMask) const {
+        device_functions->CmdSetStencilWriteMask(commandbuffer, faceMask, writeMask);
+        return *this; }
+    CommandBufferFunctions const& SetStencilReference(StencilFaceFlags faceMask, uint32_t reference) const {
+        device_functions->CmdSetStencilReference(commandbuffer, faceMask, reference);
+        return *this; }
+    CommandBufferFunctions const& BindDescriptorSets(PipelineBindPoint pipelineBindPoint, PipelineLayout layout, uint32_t firstSet, uint32_t descriptorSetCount, const DescriptorSet* pDescriptorSets, uint32_t dynamicOffsetCount, const uint32_t* pDynamicOffsets) const {
+        device_functions->CmdBindDescriptorSets(commandbuffer, pipelineBindPoint, layout, firstSet, descriptorSetCount, pDescriptorSets, dynamicOffsetCount, pDynamicOffsets);
+        return *this; }
+    CommandBufferFunctions const& BindIndexBuffer(Buffer buffer, DeviceSize offset, IndexType indexType) const {
+        device_functions->CmdBindIndexBuffer(commandbuffer, buffer, offset, indexType);
+        return *this; }
+    CommandBufferFunctions const& BindVertexBuffers(uint32_t firstBinding, uint32_t bindingCount, const Buffer* pBuffers, const DeviceSize* pOffsets) const {
+        device_functions->CmdBindVertexBuffers(commandbuffer, firstBinding, bindingCount, pBuffers, pOffsets);
+        return *this; }
+    CommandBufferFunctions const& Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance) const {
+        device_functions->CmdDraw(commandbuffer, vertexCount, instanceCount, firstVertex, firstInstance);
+        return *this; }
+    CommandBufferFunctions const& DrawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, int32_t vertexOffset, uint32_t firstInstance) const {
+        device_functions->CmdDrawIndexed(commandbuffer, indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
+        return *this; }
+    CommandBufferFunctions const& DrawIndirect(Buffer buffer, DeviceSize offset, uint32_t drawCount, uint32_t stride) const {
+        device_functions->CmdDrawIndirect(commandbuffer, buffer, offset, drawCount, stride);
+        return *this; }
+    CommandBufferFunctions const& DrawIndexedIndirect(Buffer buffer, DeviceSize offset, uint32_t drawCount, uint32_t stride) const {
+        device_functions->CmdDrawIndexedIndirect(commandbuffer, buffer, offset, drawCount, stride);
+        return *this; }
+    CommandBufferFunctions const& Dispatch(uint32_t groupCountX, uint32_t groupCountY, uint32_t groupCountZ) const {
+        device_functions->CmdDispatch(commandbuffer, groupCountX, groupCountY, groupCountZ);
+        return *this; }
+    CommandBufferFunctions const& DispatchIndirect(Buffer buffer, DeviceSize offset) const {
+        device_functions->CmdDispatchIndirect(commandbuffer, buffer, offset);
+        return *this; }
+    CommandBufferFunctions const& CopyBuffer(Buffer srcBuffer, Buffer dstBuffer, uint32_t regionCount, const BufferCopy* pRegions) const {
+        device_functions->CmdCopyBuffer(commandbuffer, srcBuffer, dstBuffer, regionCount, pRegions);
+        return *this; }
+    CommandBufferFunctions const& CopyImage(Image srcImage, ImageLayout srcImageLayout, Image dstImage, ImageLayout dstImageLayout, uint32_t regionCount, const ImageCopy* pRegions) const {
+        device_functions->CmdCopyImage(commandbuffer, srcImage, srcImageLayout, dstImage, dstImageLayout, regionCount, pRegions);
+        return *this; }
+    CommandBufferFunctions const& BlitImage(Image srcImage, ImageLayout srcImageLayout, Image dstImage, ImageLayout dstImageLayout, uint32_t regionCount, const ImageBlit* pRegions, Filter filter) const {
+        device_functions->CmdBlitImage(commandbuffer, srcImage, srcImageLayout, dstImage, dstImageLayout, regionCount, pRegions, filter);
+        return *this; }
+    CommandBufferFunctions const& CopyBufferToImage(Buffer srcBuffer, Image dstImage, ImageLayout dstImageLayout, uint32_t regionCount, const BufferImageCopy* pRegions) const {
+        device_functions->CmdCopyBufferToImage(commandbuffer, srcBuffer, dstImage, dstImageLayout, regionCount, pRegions);
+        return *this; }
+    CommandBufferFunctions const& CopyImageToBuffer(Image srcImage, ImageLayout srcImageLayout, Buffer dstBuffer, uint32_t regionCount, const BufferImageCopy* pRegions) const {
+        device_functions->CmdCopyImageToBuffer(commandbuffer, srcImage, srcImageLayout, dstBuffer, regionCount, pRegions);
+        return *this; }
+    CommandBufferFunctions const& UpdateBuffer(Buffer dstBuffer, DeviceSize dstOffset, DeviceSize dataSize, const void* pData) const {
+        device_functions->CmdUpdateBuffer(commandbuffer, dstBuffer, dstOffset, dataSize, pData);
+        return *this; }
+    CommandBufferFunctions const& FillBuffer(Buffer dstBuffer, DeviceSize dstOffset, DeviceSize size, uint32_t data) const {
+        device_functions->CmdFillBuffer(commandbuffer, dstBuffer, dstOffset, size, data);
+        return *this; }
+    CommandBufferFunctions const& ClearColorImage(Image image, ImageLayout imageLayout, const ClearColorValue&  pColor, uint32_t rangeCount, const ImageSubresourceRange* pRanges) const {
+        device_functions->CmdClearColorImage(commandbuffer, image, imageLayout, pColor, rangeCount, pRanges);
+        return *this; }
+    CommandBufferFunctions const& ClearDepthStencilImage(Image image, ImageLayout imageLayout, const ClearDepthStencilValue&  pDepthStencil, uint32_t rangeCount, const ImageSubresourceRange* pRanges) const {
+        device_functions->CmdClearDepthStencilImage(commandbuffer, image, imageLayout, pDepthStencil, rangeCount, pRanges);
+        return *this; }
+    CommandBufferFunctions const& ClearAttachments(uint32_t attachmentCount, const ClearAttachment* pAttachments, uint32_t rectCount, const ClearRect* pRects) const {
+        device_functions->CmdClearAttachments(commandbuffer, attachmentCount, pAttachments, rectCount, pRects);
+        return *this; }
+    CommandBufferFunctions const& ResolveImage(Image srcImage, ImageLayout srcImageLayout, Image dstImage, ImageLayout dstImageLayout, uint32_t regionCount, const ImageResolve* pRegions) const {
+        device_functions->CmdResolveImage(commandbuffer, srcImage, srcImageLayout, dstImage, dstImageLayout, regionCount, pRegions);
+        return *this; }
+    CommandBufferFunctions const& SetEvent(Event event, PipelineStageFlags stageMask) const {
+        device_functions->CmdSetEvent(commandbuffer, event, stageMask);
+        return *this; }
+    CommandBufferFunctions const& ResetEvent(Event event, PipelineStageFlags stageMask) const {
+        device_functions->CmdResetEvent(commandbuffer, event, stageMask);
+        return *this; }
+    CommandBufferFunctions const& WaitEvents(uint32_t eventCount, const Event* pEvents, PipelineStageFlags srcStageMask, PipelineStageFlags dstStageMask, uint32_t memoryBarrierCount, const MemoryBarrier* pMemoryBarriers, uint32_t bufferMemoryBarrierCount, const BufferMemoryBarrier* pBufferMemoryBarriers, uint32_t imageMemoryBarrierCount, const ImageMemoryBarrier* pImageMemoryBarriers) const {
+        device_functions->CmdWaitEvents(commandbuffer, eventCount, pEvents, srcStageMask, dstStageMask, memoryBarrierCount, pMemoryBarriers, bufferMemoryBarrierCount, pBufferMemoryBarriers, imageMemoryBarrierCount, pImageMemoryBarriers);
+        return *this; }
+    CommandBufferFunctions const& PipelineBarrier(PipelineStageFlags srcStageMask, PipelineStageFlags dstStageMask, DependencyFlags dependencyFlags, uint32_t memoryBarrierCount, const MemoryBarrier* pMemoryBarriers, uint32_t bufferMemoryBarrierCount, const BufferMemoryBarrier* pBufferMemoryBarriers, uint32_t imageMemoryBarrierCount, const ImageMemoryBarrier* pImageMemoryBarriers) const {
+        device_functions->CmdPipelineBarrier(commandbuffer, srcStageMask, dstStageMask, dependencyFlags, memoryBarrierCount, pMemoryBarriers, bufferMemoryBarrierCount, pBufferMemoryBarriers, imageMemoryBarrierCount, pImageMemoryBarriers);
+        return *this; }
+    CommandBufferFunctions const& BeginQuery(QueryPool queryPool, uint32_t query, QueryControlFlags flags) const {
+        device_functions->CmdBeginQuery(commandbuffer, queryPool, query, flags);
+        return *this; }
+    CommandBufferFunctions const& EndQuery(QueryPool queryPool, uint32_t query) const {
+        device_functions->CmdEndQuery(commandbuffer, queryPool, query);
+        return *this; }
+    CommandBufferFunctions const& BeginConditionalRenderingEXT(const ConditionalRenderingBeginInfoEXT&  pConditionalRenderingBegin) const {
+        device_functions->CmdBeginConditionalRenderingEXT(commandbuffer, pConditionalRenderingBegin);
+        return *this; }
+    CommandBufferFunctions const& EndConditionalRenderingEXT() const {
+        device_functions->CmdEndConditionalRenderingEXT(commandbuffer);
+        return *this; }
+    CommandBufferFunctions const& ResetQueryPool(QueryPool queryPool, uint32_t firstQuery, uint32_t queryCount) const {
+        device_functions->CmdResetQueryPool(commandbuffer, queryPool, firstQuery, queryCount);
+        return *this; }
+    CommandBufferFunctions const& WriteTimestamp(PipelineStageFlagBits pipelineStage, QueryPool queryPool, uint32_t query) const {
+        device_functions->CmdWriteTimestamp(commandbuffer, pipelineStage, queryPool, query);
+        return *this; }
+    CommandBufferFunctions const& CopyQueryPoolResults(QueryPool queryPool, uint32_t firstQuery, uint32_t queryCount, Buffer dstBuffer, DeviceSize dstOffset, DeviceSize stride, QueryResultFlags flags) const {
+        device_functions->CmdCopyQueryPoolResults(commandbuffer, queryPool, firstQuery, queryCount, dstBuffer, dstOffset, stride, flags);
+        return *this; }
+    CommandBufferFunctions const& PushConstants(PipelineLayout layout, ShaderStageFlags stageFlags, uint32_t offset, uint32_t size, const void* pValues) const {
+        device_functions->CmdPushConstants(commandbuffer, layout, stageFlags, offset, size, pValues);
+        return *this; }
+    CommandBufferFunctions const& BeginRenderPass(const RenderPassBeginInfo&  pRenderPassBegin, SubpassContents contents) const {
+        device_functions->CmdBeginRenderPass(commandbuffer, pRenderPassBegin, contents);
+        return *this; }
+    CommandBufferFunctions const& NextSubpass(SubpassContents contents) const {
+        device_functions->CmdNextSubpass(commandbuffer, contents);
+        return *this; }
+    CommandBufferFunctions const& EndRenderPass() const {
+        device_functions->CmdEndRenderPass(commandbuffer);
+        return *this; }
+    CommandBufferFunctions const& ExecuteCommands(uint32_t commandBufferCount, const CommandBuffer* pCommandBuffers) const {
+        device_functions->CmdExecuteCommands(commandbuffer, commandBufferCount, pCommandBuffers);
+        return *this; }
+    CommandBufferFunctions const& DebugMarkerBeginEXT(const DebugMarkerMarkerInfoEXT&  pMarkerInfo) const {
+        device_functions->CmdDebugMarkerBeginEXT(commandbuffer, pMarkerInfo);
+        return *this; }
+    CommandBufferFunctions const& DebugMarkerEndEXT() const {
+        device_functions->CmdDebugMarkerEndEXT(commandbuffer);
+        return *this; }
+    CommandBufferFunctions const& DebugMarkerInsertEXT(const DebugMarkerMarkerInfoEXT&  pMarkerInfo) const {
+        device_functions->CmdDebugMarkerInsertEXT(commandbuffer, pMarkerInfo);
+        return *this; }
+    CommandBufferFunctions const& ExecuteGeneratedCommandsNV(Bool32 isPreprocessed, const GeneratedCommandsInfoNV&  pGeneratedCommandsInfo) const {
+        device_functions->CmdExecuteGeneratedCommandsNV(commandbuffer, isPreprocessed, pGeneratedCommandsInfo);
+        return *this; }
+    CommandBufferFunctions const& PreprocessGeneratedCommandsNV(const GeneratedCommandsInfoNV&  pGeneratedCommandsInfo) const {
+        device_functions->CmdPreprocessGeneratedCommandsNV(commandbuffer, pGeneratedCommandsInfo);
+        return *this; }
+    CommandBufferFunctions const& BindPipelineShaderGroupNV(PipelineBindPoint pipelineBindPoint, Pipeline pipeline, uint32_t groupIndex) const {
+        device_functions->CmdBindPipelineShaderGroupNV(commandbuffer, pipelineBindPoint, pipeline, groupIndex);
+        return *this; }
+    CommandBufferFunctions const& PushDescriptorSetKHR(PipelineBindPoint pipelineBindPoint, PipelineLayout layout, uint32_t set, uint32_t descriptorWriteCount, const WriteDescriptorSet* pDescriptorWrites) const {
+        device_functions->CmdPushDescriptorSetKHR(commandbuffer, pipelineBindPoint, layout, set, descriptorWriteCount, pDescriptorWrites);
+        return *this; }
+    CommandBufferFunctions const& SetDeviceMask(uint32_t deviceMask) const {
+        device_functions->CmdSetDeviceMask(commandbuffer, deviceMask);
+        return *this; }
+    CommandBufferFunctions const& DispatchBase(uint32_t baseGroupX, uint32_t baseGroupY, uint32_t baseGroupZ, uint32_t groupCountX, uint32_t groupCountY, uint32_t groupCountZ) const {
+        device_functions->CmdDispatchBase(commandbuffer, baseGroupX, baseGroupY, baseGroupZ, groupCountX, groupCountY, groupCountZ);
+        return *this; }
+    CommandBufferFunctions const& PushDescriptorSetWithTemplateKHR(DescriptorUpdateTemplate descriptorUpdateTemplate, PipelineLayout layout, uint32_t set, const void* pData) const {
+        device_functions->CmdPushDescriptorSetWithTemplateKHR(commandbuffer, descriptorUpdateTemplate, layout, set, pData);
+        return *this; }
+    CommandBufferFunctions const& SetViewportWScalingNV(uint32_t firstViewport, uint32_t viewportCount, const ViewportWScalingNV* pViewportWScalings) const {
+        device_functions->CmdSetViewportWScalingNV(commandbuffer, firstViewport, viewportCount, pViewportWScalings);
+        return *this; }
+    CommandBufferFunctions const& SetDiscardRectangleEXT(uint32_t firstDiscardRectangle, uint32_t discardRectangleCount, const Rect2D* pDiscardRectangles) const {
+        device_functions->CmdSetDiscardRectangleEXT(commandbuffer, firstDiscardRectangle, discardRectangleCount, pDiscardRectangles);
+        return *this; }
+    CommandBufferFunctions const& SetSampleLocationsEXT(const SampleLocationsInfoEXT&  pSampleLocationsInfo) const {
+        device_functions->CmdSetSampleLocationsEXT(commandbuffer, pSampleLocationsInfo);
+        return *this; }
+    CommandBufferFunctions const& BeginDebugUtilsLabelEXT(const DebugUtilsLabelEXT&  pLabelInfo) const {
+        device_functions->CmdBeginDebugUtilsLabelEXT(commandbuffer, pLabelInfo);
+        return *this; }
+    CommandBufferFunctions const& EndDebugUtilsLabelEXT() const {
+        device_functions->CmdEndDebugUtilsLabelEXT(commandbuffer);
+        return *this; }
+    CommandBufferFunctions const& InsertDebugUtilsLabelEXT(const DebugUtilsLabelEXT&  pLabelInfo) const {
+        device_functions->CmdInsertDebugUtilsLabelEXT(commandbuffer, pLabelInfo);
+        return *this; }
+    CommandBufferFunctions const& WriteBufferMarkerAMD(PipelineStageFlagBits pipelineStage, Buffer dstBuffer, DeviceSize dstOffset, uint32_t marker) const {
+        device_functions->CmdWriteBufferMarkerAMD(commandbuffer, pipelineStage, dstBuffer, dstOffset, marker);
+        return *this; }
+    CommandBufferFunctions const& BeginRenderPass2(const RenderPassBeginInfo&  pRenderPassBegin, const SubpassBeginInfo&  pSubpassBeginInfo) const {
+        device_functions->CmdBeginRenderPass2(commandbuffer, pRenderPassBegin, pSubpassBeginInfo);
+        return *this; }
+    CommandBufferFunctions const& NextSubpass2(const SubpassBeginInfo&  pSubpassBeginInfo, const SubpassEndInfo&  pSubpassEndInfo) const {
+        device_functions->CmdNextSubpass2(commandbuffer, pSubpassBeginInfo, pSubpassEndInfo);
+        return *this; }
+    CommandBufferFunctions const& EndRenderPass2(const SubpassEndInfo&  pSubpassEndInfo) const {
+        device_functions->CmdEndRenderPass2(commandbuffer, pSubpassEndInfo);
+        return *this; }
+    CommandBufferFunctions const& DrawIndirectCount(Buffer buffer, DeviceSize offset, Buffer countBuffer, DeviceSize countBufferOffset, uint32_t maxDrawCount, uint32_t stride) const {
+        device_functions->CmdDrawIndirectCount(commandbuffer, buffer, offset, countBuffer, countBufferOffset, maxDrawCount, stride);
+        return *this; }
+    CommandBufferFunctions const& DrawIndexedIndirectCount(Buffer buffer, DeviceSize offset, Buffer countBuffer, DeviceSize countBufferOffset, uint32_t maxDrawCount, uint32_t stride) const {
+        device_functions->CmdDrawIndexedIndirectCount(commandbuffer, buffer, offset, countBuffer, countBufferOffset, maxDrawCount, stride);
+        return *this; }
+    CommandBufferFunctions const& SetCheckpointNV(const void* pCheckpointMarker) const {
+        device_functions->CmdSetCheckpointNV(commandbuffer, pCheckpointMarker);
+        return *this; }
+    CommandBufferFunctions const& BindTransformFeedbackBuffersEXT(uint32_t firstBinding, uint32_t bindingCount, const Buffer* pBuffers, const DeviceSize* pOffsets, const DeviceSize* pSizes) const {
+        device_functions->CmdBindTransformFeedbackBuffersEXT(commandbuffer, firstBinding, bindingCount, pBuffers, pOffsets, pSizes);
+        return *this; }
+    CommandBufferFunctions const& BeginTransformFeedbackEXT(uint32_t firstCounterBuffer, uint32_t counterBufferCount, const Buffer* pCounterBuffers, const DeviceSize* pCounterBufferOffsets) const {
+        device_functions->CmdBeginTransformFeedbackEXT(commandbuffer, firstCounterBuffer, counterBufferCount, pCounterBuffers, pCounterBufferOffsets);
+        return *this; }
+    CommandBufferFunctions const& EndTransformFeedbackEXT(uint32_t firstCounterBuffer, uint32_t counterBufferCount, const Buffer* pCounterBuffers, const DeviceSize* pCounterBufferOffsets) const {
+        device_functions->CmdEndTransformFeedbackEXT(commandbuffer, firstCounterBuffer, counterBufferCount, pCounterBuffers, pCounterBufferOffsets);
+        return *this; }
+    CommandBufferFunctions const& BeginQueryIndexedEXT(QueryPool queryPool, uint32_t query, QueryControlFlags flags, uint32_t index) const {
+        device_functions->CmdBeginQueryIndexedEXT(commandbuffer, queryPool, query, flags, index);
+        return *this; }
+    CommandBufferFunctions const& EndQueryIndexedEXT(QueryPool queryPool, uint32_t query, uint32_t index) const {
+        device_functions->CmdEndQueryIndexedEXT(commandbuffer, queryPool, query, index);
+        return *this; }
+    CommandBufferFunctions const& DrawIndirectByteCountEXT(uint32_t instanceCount, uint32_t firstInstance, Buffer counterBuffer, DeviceSize counterBufferOffset, uint32_t counterOffset, uint32_t vertexStride) const {
+        device_functions->CmdDrawIndirectByteCountEXT(commandbuffer, instanceCount, firstInstance, counterBuffer, counterBufferOffset, counterOffset, vertexStride);
+        return *this; }
+    CommandBufferFunctions const& SetExclusiveScissorNV(uint32_t firstExclusiveScissor, uint32_t exclusiveScissorCount, const Rect2D* pExclusiveScissors) const {
+        device_functions->CmdSetExclusiveScissorNV(commandbuffer, firstExclusiveScissor, exclusiveScissorCount, pExclusiveScissors);
+        return *this; }
+    CommandBufferFunctions const& BindShadingRateImageNV(ImageView imageView, ImageLayout imageLayout) const {
+        device_functions->CmdBindShadingRateImageNV(commandbuffer, imageView, imageLayout);
+        return *this; }
+    CommandBufferFunctions const& SetViewportShadingRatePaletteNV(uint32_t firstViewport, uint32_t viewportCount, const ShadingRatePaletteNV* pShadingRatePalettes) const {
+        device_functions->CmdSetViewportShadingRatePaletteNV(commandbuffer, firstViewport, viewportCount, pShadingRatePalettes);
+        return *this; }
+    CommandBufferFunctions const& SetCoarseSampleOrderNV(CoarseSampleOrderTypeNV sampleOrderType, uint32_t customSampleOrderCount, const CoarseSampleOrderCustomNV* pCustomSampleOrders) const {
+        device_functions->CmdSetCoarseSampleOrderNV(commandbuffer, sampleOrderType, customSampleOrderCount, pCustomSampleOrders);
+        return *this; }
+    CommandBufferFunctions const& DrawMeshTasksNV(uint32_t taskCount, uint32_t firstTask) const {
+        device_functions->CmdDrawMeshTasksNV(commandbuffer, taskCount, firstTask);
+        return *this; }
+    CommandBufferFunctions const& DrawMeshTasksIndirectNV(Buffer buffer, DeviceSize offset, uint32_t drawCount, uint32_t stride) const {
+        device_functions->CmdDrawMeshTasksIndirectNV(commandbuffer, buffer, offset, drawCount, stride);
+        return *this; }
+    CommandBufferFunctions const& DrawMeshTasksIndirectCountNV(Buffer buffer, DeviceSize offset, Buffer countBuffer, DeviceSize countBufferOffset, uint32_t maxDrawCount, uint32_t stride) const {
+        device_functions->CmdDrawMeshTasksIndirectCountNV(commandbuffer, buffer, offset, countBuffer, countBufferOffset, maxDrawCount, stride);
+        return *this; }
+    CommandBufferFunctions const& CopyAccelerationStructureNV(AccelerationStructureKHR dst, AccelerationStructureKHR src, CopyAccelerationStructureModeKHR mode) const {
+        device_functions->CmdCopyAccelerationStructureNV(commandbuffer, dst, src, mode);
+        return *this; }
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-    void CopyAccelerationStructureKHR(const CopyAccelerationStructureInfoKHR&  pInfo) const {
-        device_functions->CmdCopyAccelerationStructureKHR(commandbuffer, pInfo);}
-    void CopyAccelerationStructureToMemoryKHR(const CopyAccelerationStructureToMemoryInfoKHR&  pInfo) const {
-        device_functions->CmdCopyAccelerationStructureToMemoryKHR(commandbuffer, pInfo);}
-    void CopyMemoryToAccelerationStructureKHR(const CopyMemoryToAccelerationStructureInfoKHR&  pInfo) const {
-        device_functions->CmdCopyMemoryToAccelerationStructureKHR(commandbuffer, pInfo);}
-    void WriteAccelerationStructuresPropertiesKHR(uint32_t accelerationStructureCount, const AccelerationStructureKHR* pAccelerationStructures, QueryType queryType, QueryPool queryPool, uint32_t firstQuery) const {
-        device_functions->CmdWriteAccelerationStructuresPropertiesKHR(commandbuffer, accelerationStructureCount, pAccelerationStructures, queryType, queryPool, firstQuery);}
+    CommandBufferFunctions const& CopyAccelerationStructureKHR(const CopyAccelerationStructureInfoKHR&  pInfo) const {
+        device_functions->CmdCopyAccelerationStructureKHR(commandbuffer, pInfo);
+        return *this; }
+    CommandBufferFunctions const& CopyAccelerationStructureToMemoryKHR(const CopyAccelerationStructureToMemoryInfoKHR&  pInfo) const {
+        device_functions->CmdCopyAccelerationStructureToMemoryKHR(commandbuffer, pInfo);
+        return *this; }
+    CommandBufferFunctions const& CopyMemoryToAccelerationStructureKHR(const CopyMemoryToAccelerationStructureInfoKHR&  pInfo) const {
+        device_functions->CmdCopyMemoryToAccelerationStructureKHR(commandbuffer, pInfo);
+        return *this; }
+    CommandBufferFunctions const& WriteAccelerationStructuresPropertiesKHR(uint32_t accelerationStructureCount, const AccelerationStructureKHR* pAccelerationStructures, QueryType queryType, QueryPool queryPool, uint32_t firstQuery) const {
+        device_functions->CmdWriteAccelerationStructuresPropertiesKHR(commandbuffer, accelerationStructureCount, pAccelerationStructures, queryType, queryPool, firstQuery);
+        return *this; }
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
-    void BuildAccelerationStructureNV(const AccelerationStructureInfoNV&  pInfo, Buffer instanceData, DeviceSize instanceOffset, Bool32 update, AccelerationStructureKHR dst, AccelerationStructureKHR src, Buffer scratch, DeviceSize scratchOffset) const {
-        device_functions->CmdBuildAccelerationStructureNV(commandbuffer, pInfo, instanceData, instanceOffset, update, dst, src, scratch, scratchOffset);}
+    CommandBufferFunctions const& BuildAccelerationStructureNV(const AccelerationStructureInfoNV&  pInfo, Buffer instanceData, DeviceSize instanceOffset, Bool32 update, AccelerationStructureKHR dst, AccelerationStructureKHR src, Buffer scratch, DeviceSize scratchOffset) const {
+        device_functions->CmdBuildAccelerationStructureNV(commandbuffer, pInfo, instanceData, instanceOffset, update, dst, src, scratch, scratchOffset);
+        return *this; }
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-    void TraceRaysKHR(const StridedBufferRegionKHR&  pRaygenShaderBindingTable, const StridedBufferRegionKHR&  pMissShaderBindingTable, const StridedBufferRegionKHR&  pHitShaderBindingTable, const StridedBufferRegionKHR&  pCallableShaderBindingTable, uint32_t width, uint32_t height, uint32_t depth) const {
-        device_functions->CmdTraceRaysKHR(commandbuffer, pRaygenShaderBindingTable, pMissShaderBindingTable, pHitShaderBindingTable, pCallableShaderBindingTable, width, height, depth);}
+    CommandBufferFunctions const& TraceRaysKHR(const StridedBufferRegionKHR&  pRaygenShaderBindingTable, const StridedBufferRegionKHR&  pMissShaderBindingTable, const StridedBufferRegionKHR&  pHitShaderBindingTable, const StridedBufferRegionKHR&  pCallableShaderBindingTable, uint32_t width, uint32_t height, uint32_t depth) const {
+        device_functions->CmdTraceRaysKHR(commandbuffer, pRaygenShaderBindingTable, pMissShaderBindingTable, pHitShaderBindingTable, pCallableShaderBindingTable, width, height, depth);
+        return *this; }
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
-    void TraceRaysNV(Buffer raygenShaderBindingTableBuffer, DeviceSize raygenShaderBindingOffset, Buffer missShaderBindingTableBuffer, DeviceSize missShaderBindingOffset, DeviceSize missShaderBindingStride, Buffer hitShaderBindingTableBuffer, DeviceSize hitShaderBindingOffset, DeviceSize hitShaderBindingStride, Buffer callableShaderBindingTableBuffer, DeviceSize callableShaderBindingOffset, DeviceSize callableShaderBindingStride, uint32_t width, uint32_t height, uint32_t depth) const {
-        device_functions->CmdTraceRaysNV(commandbuffer, raygenShaderBindingTableBuffer, raygenShaderBindingOffset, missShaderBindingTableBuffer, missShaderBindingOffset, missShaderBindingStride, hitShaderBindingTableBuffer, hitShaderBindingOffset, hitShaderBindingStride, callableShaderBindingTableBuffer, callableShaderBindingOffset, callableShaderBindingStride, width, height, depth);}
+    CommandBufferFunctions const& TraceRaysNV(Buffer raygenShaderBindingTableBuffer, DeviceSize raygenShaderBindingOffset, Buffer missShaderBindingTableBuffer, DeviceSize missShaderBindingOffset, DeviceSize missShaderBindingStride, Buffer hitShaderBindingTableBuffer, DeviceSize hitShaderBindingOffset, DeviceSize hitShaderBindingStride, Buffer callableShaderBindingTableBuffer, DeviceSize callableShaderBindingOffset, DeviceSize callableShaderBindingStride, uint32_t width, uint32_t height, uint32_t depth) const {
+        device_functions->CmdTraceRaysNV(commandbuffer, raygenShaderBindingTableBuffer, raygenShaderBindingOffset, missShaderBindingTableBuffer, missShaderBindingOffset, missShaderBindingStride, hitShaderBindingTableBuffer, hitShaderBindingOffset, hitShaderBindingStride, callableShaderBindingTableBuffer, callableShaderBindingOffset, callableShaderBindingStride, width, height, depth);
+        return *this; }
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-    void TraceRaysIndirectKHR(const StridedBufferRegionKHR&  pRaygenShaderBindingTable, const StridedBufferRegionKHR&  pMissShaderBindingTable, const StridedBufferRegionKHR&  pHitShaderBindingTable, const StridedBufferRegionKHR&  pCallableShaderBindingTable, Buffer buffer, DeviceSize offset) const {
-        device_functions->CmdTraceRaysIndirectKHR(commandbuffer, pRaygenShaderBindingTable, pMissShaderBindingTable, pHitShaderBindingTable, pCallableShaderBindingTable, buffer, offset);}
+    CommandBufferFunctions const& TraceRaysIndirectKHR(const StridedBufferRegionKHR&  pRaygenShaderBindingTable, const StridedBufferRegionKHR&  pMissShaderBindingTable, const StridedBufferRegionKHR&  pHitShaderBindingTable, const StridedBufferRegionKHR&  pCallableShaderBindingTable, Buffer buffer, DeviceSize offset) const {
+        device_functions->CmdTraceRaysIndirectKHR(commandbuffer, pRaygenShaderBindingTable, pMissShaderBindingTable, pHitShaderBindingTable, pCallableShaderBindingTable, buffer, offset);
+        return *this; }
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
     [[nodiscard]] Result SetPerformanceMarkerINTEL(const PerformanceMarkerInfoINTEL&  pMarkerInfo) const {
-        return device_functions->CmdSetPerformanceMarkerINTEL(commandbuffer, pMarkerInfo);}
+        return device_functions->CmdSetPerformanceMarkerINTEL(commandbuffer, pMarkerInfo); }
     [[nodiscard]] Result SetPerformanceStreamMarkerINTEL(const PerformanceStreamMarkerInfoINTEL&  pMarkerInfo) const {
-        return device_functions->CmdSetPerformanceStreamMarkerINTEL(commandbuffer, pMarkerInfo);}
+        return device_functions->CmdSetPerformanceStreamMarkerINTEL(commandbuffer, pMarkerInfo); }
     [[nodiscard]] Result SetPerformanceOverrideINTEL(const PerformanceOverrideInfoINTEL&  pOverrideInfo) const {
-        return device_functions->CmdSetPerformanceOverrideINTEL(commandbuffer, pOverrideInfo);}
-    void SetLineStippleEXT(uint32_t lineStippleFactor, uint16_t lineStipplePattern) const {
-        device_functions->CmdSetLineStippleEXT(commandbuffer, lineStippleFactor, lineStipplePattern);}
+        return device_functions->CmdSetPerformanceOverrideINTEL(commandbuffer, pOverrideInfo); }
+    CommandBufferFunctions const& SetLineStippleEXT(uint32_t lineStippleFactor, uint16_t lineStipplePattern) const {
+        device_functions->CmdSetLineStippleEXT(commandbuffer, lineStippleFactor, lineStipplePattern);
+        return *this; }
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-    void BuildAccelerationStructureKHR(uint32_t infoCount, const AccelerationStructureBuildGeometryInfoKHR* pInfos, const AccelerationStructureBuildOffsetInfoKHR* const* ppOffsetInfos) const {
-        device_functions->CmdBuildAccelerationStructureKHR(commandbuffer, infoCount, pInfos, ppOffsetInfos);}
-    void BuildAccelerationStructureIndirectKHR(const AccelerationStructureBuildGeometryInfoKHR&  pInfo, Buffer indirectBuffer, DeviceSize indirectOffset, uint32_t indirectStride) const {
-        device_functions->CmdBuildAccelerationStructureIndirectKHR(commandbuffer, pInfo, indirectBuffer, indirectOffset, indirectStride);}
+    CommandBufferFunctions const& BuildAccelerationStructureKHR(uint32_t infoCount, const AccelerationStructureBuildGeometryInfoKHR* pInfos, const AccelerationStructureBuildOffsetInfoKHR* const* ppOffsetInfos) const {
+        device_functions->CmdBuildAccelerationStructureKHR(commandbuffer, infoCount, pInfos, ppOffsetInfos);
+        return *this; }
+    CommandBufferFunctions const& BuildAccelerationStructureIndirectKHR(const AccelerationStructureBuildGeometryInfoKHR&  pInfo, Buffer indirectBuffer, DeviceSize indirectOffset, uint32_t indirectStride) const {
+        device_functions->CmdBuildAccelerationStructureIndirectKHR(commandbuffer, pInfo, indirectBuffer, indirectOffset, indirectStride);
+        return *this; }
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
-    void SetCullModeEXT(CullModeFlags cullMode) const {
-        device_functions->CmdSetCullModeEXT(commandbuffer, cullMode);}
-    void SetFrontFaceEXT(FrontFace frontFace) const {
-        device_functions->CmdSetFrontFaceEXT(commandbuffer, frontFace);}
-    void SetPrimitiveTopologyEXT(PrimitiveTopology primitiveTopology) const {
-        device_functions->CmdSetPrimitiveTopologyEXT(commandbuffer, primitiveTopology);}
-    void SetViewportWithCountEXT(uint32_t viewportCount, const Viewport* pViewports) const {
-        device_functions->CmdSetViewportWithCountEXT(commandbuffer, viewportCount, pViewports);}
-    void SetScissorWithCountEXT(uint32_t scissorCount, const Rect2D* pScissors) const {
-        device_functions->CmdSetScissorWithCountEXT(commandbuffer, scissorCount, pScissors);}
-    void BindVertexBuffers2EXT(uint32_t firstBinding, uint32_t bindingCount, const Buffer* pBuffers, const DeviceSize* pOffsets, const DeviceSize* pSizes, const DeviceSize* pStrides) const {
-        device_functions->CmdBindVertexBuffers2EXT(commandbuffer, firstBinding, bindingCount, pBuffers, pOffsets, pSizes, pStrides);}
-    void SetDepthTestEnableEXT(Bool32 depthTestEnable) const {
-        device_functions->CmdSetDepthTestEnableEXT(commandbuffer, depthTestEnable);}
-    void SetDepthWriteEnableEXT(Bool32 depthWriteEnable) const {
-        device_functions->CmdSetDepthWriteEnableEXT(commandbuffer, depthWriteEnable);}
-    void SetDepthCompareOpEXT(CompareOp depthCompareOp) const {
-        device_functions->CmdSetDepthCompareOpEXT(commandbuffer, depthCompareOp);}
-    void SetDepthBoundsTestEnableEXT(Bool32 depthBoundsTestEnable) const {
-        device_functions->CmdSetDepthBoundsTestEnableEXT(commandbuffer, depthBoundsTestEnable);}
-    void SetStencilTestEnableEXT(Bool32 stencilTestEnable) const {
-        device_functions->CmdSetStencilTestEnableEXT(commandbuffer, stencilTestEnable);}
-    void SetStencilOpEXT(StencilFaceFlags faceMask, StencilOp failOp, StencilOp passOp, StencilOp depthFailOp, CompareOp compareOp) const {
-        device_functions->CmdSetStencilOpEXT(commandbuffer, faceMask, failOp, passOp, depthFailOp, compareOp);}
-    void CopyBuffer2KHR(const CopyBufferInfo2KHR&  pCopyBufferInfo) const {
-        device_functions->CmdCopyBuffer2KHR(commandbuffer, pCopyBufferInfo);}
-    void CopyImage2KHR(const CopyImageInfo2KHR&  pCopyImageInfo) const {
-        device_functions->CmdCopyImage2KHR(commandbuffer, pCopyImageInfo);}
-    void BlitImage2KHR(const BlitImageInfo2KHR&  pBlitImageInfo) const {
-        device_functions->CmdBlitImage2KHR(commandbuffer, pBlitImageInfo);}
-    void CopyBufferToImage2KHR(const CopyBufferToImageInfo2KHR&  pCopyBufferToImageInfo) const {
-        device_functions->CmdCopyBufferToImage2KHR(commandbuffer, pCopyBufferToImageInfo);}
-    void CopyImageToBuffer2KHR(const CopyImageToBufferInfo2KHR&  pCopyImageToBufferInfo) const {
-        device_functions->CmdCopyImageToBuffer2KHR(commandbuffer, pCopyImageToBufferInfo);}
-    void ResolveImage2KHR(const ResolveImageInfo2KHR&  pResolveImageInfo) const {
-        device_functions->CmdResolveImage2KHR(commandbuffer, pResolveImageInfo);}
+    CommandBufferFunctions const& SetCullModeEXT(CullModeFlags cullMode) const {
+        device_functions->CmdSetCullModeEXT(commandbuffer, cullMode);
+        return *this; }
+    CommandBufferFunctions const& SetFrontFaceEXT(FrontFace frontFace) const {
+        device_functions->CmdSetFrontFaceEXT(commandbuffer, frontFace);
+        return *this; }
+    CommandBufferFunctions const& SetPrimitiveTopologyEXT(PrimitiveTopology primitiveTopology) const {
+        device_functions->CmdSetPrimitiveTopologyEXT(commandbuffer, primitiveTopology);
+        return *this; }
+    CommandBufferFunctions const& SetViewportWithCountEXT(uint32_t viewportCount, const Viewport* pViewports) const {
+        device_functions->CmdSetViewportWithCountEXT(commandbuffer, viewportCount, pViewports);
+        return *this; }
+    CommandBufferFunctions const& SetScissorWithCountEXT(uint32_t scissorCount, const Rect2D* pScissors) const {
+        device_functions->CmdSetScissorWithCountEXT(commandbuffer, scissorCount, pScissors);
+        return *this; }
+    CommandBufferFunctions const& BindVertexBuffers2EXT(uint32_t firstBinding, uint32_t bindingCount, const Buffer* pBuffers, const DeviceSize* pOffsets, const DeviceSize* pSizes, const DeviceSize* pStrides) const {
+        device_functions->CmdBindVertexBuffers2EXT(commandbuffer, firstBinding, bindingCount, pBuffers, pOffsets, pSizes, pStrides);
+        return *this; }
+    CommandBufferFunctions const& SetDepthTestEnableEXT(Bool32 depthTestEnable) const {
+        device_functions->CmdSetDepthTestEnableEXT(commandbuffer, depthTestEnable);
+        return *this; }
+    CommandBufferFunctions const& SetDepthWriteEnableEXT(Bool32 depthWriteEnable) const {
+        device_functions->CmdSetDepthWriteEnableEXT(commandbuffer, depthWriteEnable);
+        return *this; }
+    CommandBufferFunctions const& SetDepthCompareOpEXT(CompareOp depthCompareOp) const {
+        device_functions->CmdSetDepthCompareOpEXT(commandbuffer, depthCompareOp);
+        return *this; }
+    CommandBufferFunctions const& SetDepthBoundsTestEnableEXT(Bool32 depthBoundsTestEnable) const {
+        device_functions->CmdSetDepthBoundsTestEnableEXT(commandbuffer, depthBoundsTestEnable);
+        return *this; }
+    CommandBufferFunctions const& SetStencilTestEnableEXT(Bool32 stencilTestEnable) const {
+        device_functions->CmdSetStencilTestEnableEXT(commandbuffer, stencilTestEnable);
+        return *this; }
+    CommandBufferFunctions const& SetStencilOpEXT(StencilFaceFlags faceMask, StencilOp failOp, StencilOp passOp, StencilOp depthFailOp, CompareOp compareOp) const {
+        device_functions->CmdSetStencilOpEXT(commandbuffer, faceMask, failOp, passOp, depthFailOp, compareOp);
+        return *this; }
+    CommandBufferFunctions const& CopyBuffer2KHR(const CopyBufferInfo2KHR&  pCopyBufferInfo) const {
+        device_functions->CmdCopyBuffer2KHR(commandbuffer, pCopyBufferInfo);
+        return *this; }
+    CommandBufferFunctions const& CopyImage2KHR(const CopyImageInfo2KHR&  pCopyImageInfo) const {
+        device_functions->CmdCopyImage2KHR(commandbuffer, pCopyImageInfo);
+        return *this; }
+    CommandBufferFunctions const& BlitImage2KHR(const BlitImageInfo2KHR&  pBlitImageInfo) const {
+        device_functions->CmdBlitImage2KHR(commandbuffer, pBlitImageInfo);
+        return *this; }
+    CommandBufferFunctions const& CopyBufferToImage2KHR(const CopyBufferToImageInfo2KHR&  pCopyBufferToImageInfo) const {
+        device_functions->CmdCopyBufferToImage2KHR(commandbuffer, pCopyBufferToImageInfo);
+        return *this; }
+    CommandBufferFunctions const& CopyImageToBuffer2KHR(const CopyImageToBufferInfo2KHR&  pCopyImageToBufferInfo) const {
+        device_functions->CmdCopyImageToBuffer2KHR(commandbuffer, pCopyImageToBufferInfo);
+        return *this; }
+    CommandBufferFunctions const& ResolveImage2KHR(const ResolveImageInfo2KHR&  pResolveImageInfo) const {
+        device_functions->CmdResolveImage2KHR(commandbuffer, pResolveImageInfo);
+        return *this; }
 };
 } // namespace vk
 // clang-format on
