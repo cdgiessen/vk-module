@@ -127,12 +127,17 @@ private:
 template<typename T>
 struct expected {
 	explicit expected (T const& value, Result result) noexcept: _value{ value}, _result{ result } {}
-	explicit expected (T&& value, Result result) noexcept: _value{ std::move (value) }, _result{ result } {}
+	explicit expected (T&& value, Result result) noexcept: _value{ detail::move(value) }, _result{ result } {}
 
+    const T* operator-> () const noexcept { assert (_result == Result::Success); return &_value; }
+	T*       operator-> ()       noexcept { assert (_result == Result::Success); return &_value; }
+	const T& operator* () const& noexcept { assert (_result == Result::Success); return _value; }
+	T&       operator* () &      noexcept { assert (_result == Result::Success); return _value; }
+	T&&      operator* () &&	 noexcept { assert (_result == Result::Success); return detail::move (_value); }
 	const T&  value () const&    noexcept { assert (_result == Result::Success); return _value; }
 	T&        value () &         noexcept { assert (_result == Result::Success); return _value; }
-	const T&& value () const&&   noexcept { assert (_result == Result::Success); return std::move (_value); }
-	T&&       value () &&        noexcept { assert (_result == Result::Success); return std::move (_value); }
+	const T&& value () const&&   noexcept { assert (_result == Result::Success); return detail::move(_value); }
+	T&&       value () &&        noexcept { assert (_result == Result::Success); return detail::move(_value); }
 
     Result error() const noexcept { assert (_result != Result::Success); return _result; }
     Result raw_result() const noexcept { return _result; }
@@ -153,6 +158,24 @@ private:
 #include <new>
 
 namespace vk::detail {
+template <typename T>
+struct remove_reference { using type = T; };
+
+template <typename T>
+struct remove_reference<T&> { using type = T; };
+
+template <typename T>
+struct remove_reference<T&&> { using type = T; };
+
+template <typename T>
+using remove_reference_t = typename remove_reference<T>::type;
+
+template <typename Type>
+inline constexpr remove_reference_t<Type>&& move(Type&& t) noexcept
+{
+    return static_cast<remove_reference_t<Type>&&>(t);
+}
+
 /* Array data structure where the length is determined at construction time.
  * Cannot resize, add, or delete elements from.
  * Used for returning a collection from the Vulkan API
@@ -278,7 +301,8 @@ struct GlobalFunctions {
         return expected<uint32_t>(pApiVersion, result);
     }
 #endif //defined(VK_VERSION_1_1)
-    explicit GlobalFunctions(DynamicLibrary const& library) {
+    explicit GlobalFunctions() noexcept {}
+    explicit GlobalFunctions(DynamicLibrary const& library) noexcept {
     PFN_vkGetInstanceProcAddr get_instance_proc_addr = library.get();
 #if defined(VK_VERSION_1_0)
         pfn_CreateInstance = reinterpret_cast<PFN_vkCreateInstance>(get_instance_proc_addr(nullptr,"vkCreateInstance"));
@@ -1324,7 +1348,8 @@ struct InstanceFunctions {
         return expected<IDirectFB>(dfb, result);
     }
 #endif //defined(VK_USE_PLATFORM_DIRECTFB_EXT) && (defined(VK_EXT_directfb_surface))
-    explicit InstanceFunctions(GlobalFunctions const& global_functions, Instance instance)
+    explicit InstanceFunctions() noexcept {}
+    explicit InstanceFunctions(GlobalFunctions const& global_functions, Instance instance) noexcept 
         :instance(instance) { 
     PFN_vkGetInstanceProcAddr get_instance_proc_addr = global_functions.pfn_GetInstanceProcAddr;
 #if defined(VK_VERSION_1_0)
@@ -4493,7 +4518,8 @@ struct DeviceFunctions {
             reinterpret_cast<const VkResolveImageInfo2KHR*>(&pResolveImageInfo));
     }
 #endif //defined(VK_KHR_copy_commands2)
-    explicit DeviceFunctions(InstanceFunctions const& instance_functions, Device device)
+    explicit DeviceFunctions() noexcept {}
+    explicit DeviceFunctions(InstanceFunctions const& instance_functions, Device device) noexcept 
         :device(device) { 
     PFN_vkGetDeviceProcAddr get_device_proc_addr = instance_functions.pfn_GetDeviceProcAddr;
 #if defined(VK_VERSION_1_0)

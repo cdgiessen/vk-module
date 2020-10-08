@@ -285,6 +285,7 @@ class Flags:
             self.name = node.get('name')
             self.alias = node.get('alias')
 
+        self.base_type = 'uint32_t'
         self.flags_name = self.name.replace('Flags', 'FlagBits')
         self.requires = node.get('requires')
         self.need_empty = False
@@ -298,7 +299,7 @@ class Flags:
 
     def print_base(self, file):
         if self.alias is None:
-            file.write(f'DECLARE_ENUM_FLAG_OPERATORS({self.name[2:]}, {self.flags_name[2:]}, {self.name})\n')
+            file.write(f'DECLARE_ENUM_FLAG_OPERATORS({self.name[2:]}, {self.flags_name[2:]}, {self.name}, {self.base_type})\n')
         else:
             file.write(f'using {self.name[2:]} = {self.alias[2:]};\n')
 
@@ -741,7 +742,7 @@ class Function:
         if self.alias is not None:
             file.write(f'const auto {self.name[2:]} = {self.alias[2:]};\n')
             PlatformGuardFooter(file, self.platform, guard)
-            return;
+            return
 
         self.print_return_type(file, indent, replace_dict, self.full_return_type)
         file.write('(')
@@ -1000,15 +1001,16 @@ class DispatchTable:
             file.write(f'#endif //{guard}\n')
              
         #constructor
+        file.write(f'    explicit {self.name}Functions() noexcept {{}}\n')   
         if self.dispatch_type == 'global':
-            file.write(f'    explicit {self.name}Functions(DynamicLibrary const& library) {{\n')
+            file.write(f'    explicit {self.name}Functions(DynamicLibrary const& library) noexcept {{\n')
             file.write(f'    {gpa_type} {gpa_name} = library.get();\n')
         elif self.dispatch_type == 'instance':
-            file.write(f'    explicit {self.name}Functions(GlobalFunctions const& global_functions, {self.dispatch_type.title()} {self.dispatch_type})\n')
+            file.write(f'    explicit {self.name}Functions(GlobalFunctions const& global_functions, {self.dispatch_type.title()} {self.dispatch_type}) noexcept \n')
             file.write(f'        :{self.dispatch_type}({self.dispatch_type}) {{ \n')
             file.write(f'    {gpa_type} {gpa_name} = global_functions.pfn_GetInstanceProcAddr;\n')
         elif self.dispatch_type == 'device':
-            file.write(f'    explicit {self.name}Functions(InstanceFunctions const& instance_functions, {self.dispatch_type.title()} {self.dispatch_type})')
+            file.write(f'    explicit {self.name}Functions(InstanceFunctions const& instance_functions, {self.dispatch_type.title()} {self.dispatch_type}) noexcept ')
             if self.name == 'Device':
                 file.write(f'\n        :{self.dispatch_type}({self.dispatch_type}) {{ \n')
             else:
@@ -1043,7 +1045,7 @@ class DispatchableHandleDispatchTable:
         var_name = self.name[2:].lower()
         file.write(f'struct {type_name}Functions {{\n')
         file.write(f'    {functions_type} const* {functions_name};\n')
-        file.write(f'    {type_name} const {var_name};\n')      
+        file.write(f'    {type_name} const {var_name};\n')   
         file.write(f'    {type_name}Functions({functions_type} const& {functions_name}, {type_name} const {var_name})\n')
         file.write(f'        :{functions_name}(&{functions_name}), {var_name}({var_name}){{}}\n')
         prev_platform = None
@@ -1246,7 +1248,6 @@ def print_vkm_core(bindings, cpp20mode, cpp20str):
     with open(f'cpp{cpp20str}/vkm_core.h', 'w') as vkm_core:
         vkm_core.write('#pragma once\n// clang-format off\n')
         vkm_core.write('#include <stdint.h>\n')
-        vkm_core.write('#include <type_traits>\n')
         vkm_core.write('#define VK_ENABLE_BETA_EXTENSIONS\n')
         vkm_core.write('#include <vulkan/vulkan.h>\n')
         vkm_core.write('namespace vk {\n')
@@ -1316,6 +1317,7 @@ def main():
         static_asserts.write('#pragma once\n')
         static_asserts.write('// clang-format off\n')
         static_asserts.write('#include "vkm_core.h"\n')
+        static_asserts.write('#include <type_traits>\n')
         static_asserts.write('namespace vk {\n')
         [ structure.print_static_asserts(static_asserts) for structure in bindings.structures ]
         [ handle.print_static_asserts(static_asserts) for handle in bindings.handles.values() ]

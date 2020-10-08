@@ -1,7 +1,6 @@
 #pragma once
 // clang-format off
 #include <stdint.h>
-#include <type_traits>
 #define VK_ENABLE_BETA_EXTENSIONS
 #include <vulkan/vulkan.h>
 namespace vk {
@@ -2331,239 +2330,234 @@ enum class PipelineRasterizationConservativeStateCreateFlagBitsEXT: uint32_t { }
 enum class PipelineRasterizationStateStreamCreateFlagBitsEXT: uint32_t { };
 enum class PipelineRasterizationDepthClipStateCreateFlagBitsEXT: uint32_t { };
 
-#define DECLARE_ENUM_FLAG_OPERATORS(FLAG_TYPE, FLAG_BITS, BASE_NAME)                \
-                                                                                    \
-struct FLAG_TYPE {                                                                  \
-    using base_type = typename std::underlying_type_t<FLAG_BITS>;                   \
-    base_type flags = static_cast<base_type>(0);                                    \
-                                                                                    \
-    constexpr explicit FLAG_TYPE() noexcept = default;                              \
-    constexpr explicit FLAG_TYPE(base_type in) noexcept: flags(in){ }               \
-    constexpr FLAG_TYPE(FLAG_BITS in) noexcept: flags(static_cast<base_type>(in)){ }\
+#define DECLARE_ENUM_FLAG_OPERATORS(FLAG_TYPE, FLAG_BITS, BASE_NAME, BASE_TYPE)            \
+                                                                                           \
+struct FLAG_TYPE {                                                                         \
+    BASE_TYPE flags = static_cast<BASE_TYPE>(0);                                           \
+                                                                                           \
+    constexpr explicit FLAG_TYPE() noexcept = default;                                     \
+    constexpr explicit FLAG_TYPE(BASE_TYPE in) noexcept: flags(in){ }                      \
+    constexpr FLAG_TYPE(FLAG_BITS in) noexcept: flags(static_cast<BASE_TYPE>(in)){ }       \
     constexpr bool operator==(FLAG_TYPE const& right) const { return flags == right.flags;}\
     constexpr bool operator!=(FLAG_TYPE const& right) const { return flags != right.flags;}\
-    constexpr explicit operator bool() const noexcept {                             \
-      return flags != 0;                                                            \
-    }                                                                               \
-    constexpr explicit operator BASE_NAME() const noexcept {                        \
-        return static_cast<BASE_NAME>(flags);                                       \
-    }                                                                               \
-};                                                                                  \
-constexpr FLAG_TYPE operator|(FLAG_TYPE a, FLAG_TYPE b) noexcept {                  \
-    return static_cast<FLAG_TYPE>(a.flags | b.flags);                               \
-}                                                                                   \
-constexpr FLAG_TYPE operator&(FLAG_TYPE a, FLAG_TYPE b) noexcept {                  \
-    return static_cast<FLAG_TYPE>(a.flags & b.flags);                               \
-}                                                                                   \
-constexpr FLAG_TYPE operator^(FLAG_TYPE a, FLAG_TYPE b) noexcept {                  \
-    return static_cast<FLAG_TYPE>(a.flags ^ b.flags);                               \
-}                                                                                   \
-constexpr FLAG_TYPE operator~(FLAG_TYPE a) noexcept {                               \
-    return static_cast<FLAG_TYPE>(~a.flags);                                        \
-}                                                                                   \
-constexpr FLAG_TYPE& operator|=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {               \
-    a.flags = (a.flags | b.flags);                                                  \
-    return a;                                                                       \
-}                                                                                   \
-constexpr FLAG_TYPE& operator&=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {               \
-    a.flags = (a.flags & b.flags);                                                  \
-    return a;                                                                       \
-}                                                                                   \
-constexpr FLAG_TYPE operator^=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {                \
-    a.flags = (a.flags ^ b.flags);                                                  \
-    return a;                                                                       \
-}                                                                                   \
-constexpr FLAG_TYPE operator|(FLAG_BITS a, FLAG_BITS b) noexcept {                  \
-    using T = FLAG_TYPE::base_type;                                                 \
-    return static_cast<FLAG_TYPE>(static_cast<T>(a) | static_cast<T>(b));           \
-}                                                                                   \
-constexpr FLAG_TYPE operator&(FLAG_BITS a, FLAG_BITS b) noexcept {                  \
-    using T = FLAG_TYPE::base_type;                                                 \
-    return static_cast<FLAG_TYPE>(static_cast<T>(a) & static_cast<T>(b));           \
-}                                                                                   \
-constexpr FLAG_TYPE operator~(FLAG_BITS key) noexcept {                             \
-    using T = FLAG_TYPE::base_type;                                                 \
-    return static_cast<FLAG_TYPE>(~static_cast<T>(key));                            \
-}                                                                                   \
-constexpr FLAG_TYPE operator^(FLAG_BITS a, FLAG_BITS b) noexcept {                  \
-    using T = FLAG_TYPE::base_type;                                                 \
-    return static_cast<FLAG_TYPE>(static_cast<T>(a) ^ static_cast<T>(b));           \
-}                                                                                   \
+    constexpr explicit operator bool() const noexcept {                                    \
+      return flags != 0;                                                                   \
+    }                                                                                      \
+    constexpr explicit operator BASE_NAME() const noexcept {                               \
+        return static_cast<BASE_NAME>(flags);                                              \
+    }                                                                                      \
+};                                                                                         \
+constexpr FLAG_TYPE operator|(FLAG_TYPE a, FLAG_TYPE b) noexcept {                         \
+    return static_cast<FLAG_TYPE>(a.flags | b.flags);                                      \
+}                                                                                          \
+constexpr FLAG_TYPE operator&(FLAG_TYPE a, FLAG_TYPE b) noexcept {                         \
+    return static_cast<FLAG_TYPE>(a.flags & b.flags);                                      \
+}                                                                                          \
+constexpr FLAG_TYPE operator^(FLAG_TYPE a, FLAG_TYPE b) noexcept {                         \
+    return static_cast<FLAG_TYPE>(a.flags ^ b.flags);                                      \
+}                                                                                          \
+constexpr FLAG_TYPE operator~(FLAG_TYPE a) noexcept {                                      \
+    return static_cast<FLAG_TYPE>(~a.flags);                                               \
+}                                                                                          \
+constexpr FLAG_TYPE& operator|=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {                      \
+    a.flags = (a.flags | b.flags);                                                         \
+    return a;                                                                              \
+}                                                                                          \
+constexpr FLAG_TYPE& operator&=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {                      \
+    a.flags = (a.flags & b.flags);                                                         \
+    return a;                                                                              \
+}                                                                                          \
+constexpr FLAG_TYPE operator^=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {                       \
+    a.flags = (a.flags ^ b.flags);                                                         \
+    return a;                                                                              \
+}                                                                                          \
+constexpr FLAG_TYPE operator|(FLAG_BITS a, FLAG_BITS b) noexcept {                         \
+    return static_cast<FLAG_TYPE>(static_cast<BASE_TYPE>(a) | static_cast<BASE_TYPE>(b));  \
+}                                                                                          \
+constexpr FLAG_TYPE operator&(FLAG_BITS a, FLAG_BITS b) noexcept {                         \
+    return static_cast<FLAG_TYPE>(static_cast<BASE_TYPE>(a) & static_cast<BASE_TYPE>(b));  \
+}                                                                                          \
+constexpr FLAG_TYPE operator~(FLAG_BITS key) noexcept {                                    \
+    return static_cast<FLAG_TYPE>(~static_cast<BASE_TYPE>(key));                           \
+}                                                                                          \
+constexpr FLAG_TYPE operator^(FLAG_BITS a, FLAG_BITS b) noexcept {                         \
+    return static_cast<FLAG_TYPE>(static_cast<BASE_TYPE>(a) ^ static_cast<BASE_TYPE>(b));  \
+}                                                                                          \
 
-DECLARE_ENUM_FLAG_OPERATORS(FramebufferCreateFlags, FramebufferCreateFlagBits, VkFramebufferCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(QueryPoolCreateFlags, QueryPoolCreateFlagBits, VkQueryPoolCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(RenderPassCreateFlags, RenderPassCreateFlagBits, VkRenderPassCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(SamplerCreateFlags, SamplerCreateFlagBits, VkSamplerCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineLayoutCreateFlags, PipelineLayoutCreateFlagBits, VkPipelineLayoutCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineCacheCreateFlags, PipelineCacheCreateFlagBits, VkPipelineCacheCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineDepthStencilStateCreateFlags, PipelineDepthStencilStateCreateFlagBits, VkPipelineDepthStencilStateCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineDynamicStateCreateFlags, PipelineDynamicStateCreateFlagBits, VkPipelineDynamicStateCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineColorBlendStateCreateFlags, PipelineColorBlendStateCreateFlagBits, VkPipelineColorBlendStateCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineMultisampleStateCreateFlags, PipelineMultisampleStateCreateFlagBits, VkPipelineMultisampleStateCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationStateCreateFlags, PipelineRasterizationStateCreateFlagBits, VkPipelineRasterizationStateCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineViewportStateCreateFlags, PipelineViewportStateCreateFlagBits, VkPipelineViewportStateCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineTessellationStateCreateFlags, PipelineTessellationStateCreateFlagBits, VkPipelineTessellationStateCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineInputAssemblyStateCreateFlags, PipelineInputAssemblyStateCreateFlagBits, VkPipelineInputAssemblyStateCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineVertexInputStateCreateFlags, PipelineVertexInputStateCreateFlagBits, VkPipelineVertexInputStateCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineShaderStageCreateFlags, PipelineShaderStageCreateFlagBits, VkPipelineShaderStageCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(DescriptorSetLayoutCreateFlags, DescriptorSetLayoutCreateFlagBits, VkDescriptorSetLayoutCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(BufferViewCreateFlags, BufferViewCreateFlagBits, VkBufferViewCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(InstanceCreateFlags, InstanceCreateFlagBits, VkInstanceCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(DeviceCreateFlags, DeviceCreateFlagBits, VkDeviceCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(DeviceQueueCreateFlags, DeviceQueueCreateFlagBits, VkDeviceQueueCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(QueueFlags, QueueFlagBits, VkQueueFlags)
-DECLARE_ENUM_FLAG_OPERATORS(MemoryPropertyFlags, MemoryPropertyFlagBits, VkMemoryPropertyFlags)
-DECLARE_ENUM_FLAG_OPERATORS(MemoryHeapFlags, MemoryHeapFlagBits, VkMemoryHeapFlags)
-DECLARE_ENUM_FLAG_OPERATORS(AccessFlags, AccessFlagBits, VkAccessFlags)
-DECLARE_ENUM_FLAG_OPERATORS(BufferUsageFlags, BufferUsageFlagBits, VkBufferUsageFlags)
-DECLARE_ENUM_FLAG_OPERATORS(BufferCreateFlags, BufferCreateFlagBits, VkBufferCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(ShaderStageFlags, ShaderStageFlagBits, VkShaderStageFlags)
-DECLARE_ENUM_FLAG_OPERATORS(ImageUsageFlags, ImageUsageFlagBits, VkImageUsageFlags)
-DECLARE_ENUM_FLAG_OPERATORS(ImageCreateFlags, ImageCreateFlagBits, VkImageCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(ImageViewCreateFlags, ImageViewCreateFlagBits, VkImageViewCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineCreateFlags, PipelineCreateFlagBits, VkPipelineCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(ColorComponentFlags, ColorComponentFlagBits, VkColorComponentFlags)
-DECLARE_ENUM_FLAG_OPERATORS(FenceCreateFlags, FenceCreateFlagBits, VkFenceCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(SemaphoreCreateFlags, SemaphoreCreateFlagBits, VkSemaphoreCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(FormatFeatureFlags, FormatFeatureFlagBits, VkFormatFeatureFlags)
-DECLARE_ENUM_FLAG_OPERATORS(QueryControlFlags, QueryControlFlagBits, VkQueryControlFlags)
-DECLARE_ENUM_FLAG_OPERATORS(QueryResultFlags, QueryResultFlagBits, VkQueryResultFlags)
-DECLARE_ENUM_FLAG_OPERATORS(ShaderModuleCreateFlags, ShaderModuleCreateFlagBits, VkShaderModuleCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(EventCreateFlags, EventCreateFlagBits, VkEventCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(CommandPoolCreateFlags, CommandPoolCreateFlagBits, VkCommandPoolCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(CommandPoolResetFlags, CommandPoolResetFlagBits, VkCommandPoolResetFlags)
-DECLARE_ENUM_FLAG_OPERATORS(CommandBufferResetFlags, CommandBufferResetFlagBits, VkCommandBufferResetFlags)
-DECLARE_ENUM_FLAG_OPERATORS(CommandBufferUsageFlags, CommandBufferUsageFlagBits, VkCommandBufferUsageFlags)
-DECLARE_ENUM_FLAG_OPERATORS(QueryPipelineStatisticFlags, QueryPipelineStatisticFlagBits, VkQueryPipelineStatisticFlags)
-DECLARE_ENUM_FLAG_OPERATORS(MemoryMapFlags, MemoryMapFlagBits, VkMemoryMapFlags)
-DECLARE_ENUM_FLAG_OPERATORS(ImageAspectFlags, ImageAspectFlagBits, VkImageAspectFlags)
-DECLARE_ENUM_FLAG_OPERATORS(SparseMemoryBindFlags, SparseMemoryBindFlagBits, VkSparseMemoryBindFlags)
-DECLARE_ENUM_FLAG_OPERATORS(SparseImageFormatFlags, SparseImageFormatFlagBits, VkSparseImageFormatFlags)
-DECLARE_ENUM_FLAG_OPERATORS(SubpassDescriptionFlags, SubpassDescriptionFlagBits, VkSubpassDescriptionFlags)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineStageFlags, PipelineStageFlagBits, VkPipelineStageFlags)
-DECLARE_ENUM_FLAG_OPERATORS(SampleCountFlags, SampleCountFlagBits, VkSampleCountFlags)
-DECLARE_ENUM_FLAG_OPERATORS(AttachmentDescriptionFlags, AttachmentDescriptionFlagBits, VkAttachmentDescriptionFlags)
-DECLARE_ENUM_FLAG_OPERATORS(StencilFaceFlags, StencilFaceFlagBits, VkStencilFaceFlags)
-DECLARE_ENUM_FLAG_OPERATORS(CullModeFlags, CullModeFlagBits, VkCullModeFlags)
-DECLARE_ENUM_FLAG_OPERATORS(DescriptorPoolCreateFlags, DescriptorPoolCreateFlagBits, VkDescriptorPoolCreateFlags)
-DECLARE_ENUM_FLAG_OPERATORS(DescriptorPoolResetFlags, DescriptorPoolResetFlagBits, VkDescriptorPoolResetFlags)
-DECLARE_ENUM_FLAG_OPERATORS(DependencyFlags, DependencyFlagBits, VkDependencyFlags)
-DECLARE_ENUM_FLAG_OPERATORS(SubgroupFeatureFlags, SubgroupFeatureFlagBits, VkSubgroupFeatureFlags)
-DECLARE_ENUM_FLAG_OPERATORS(IndirectCommandsLayoutUsageFlagsNV, IndirectCommandsLayoutUsageFlagBitsNV, VkIndirectCommandsLayoutUsageFlagsNV)
-DECLARE_ENUM_FLAG_OPERATORS(IndirectStateFlagsNV, IndirectStateFlagBitsNV, VkIndirectStateFlagsNV)
+DECLARE_ENUM_FLAG_OPERATORS(FramebufferCreateFlags, FramebufferCreateFlagBits, VkFramebufferCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(QueryPoolCreateFlags, QueryPoolCreateFlagBits, VkQueryPoolCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(RenderPassCreateFlags, RenderPassCreateFlagBits, VkRenderPassCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(SamplerCreateFlags, SamplerCreateFlagBits, VkSamplerCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineLayoutCreateFlags, PipelineLayoutCreateFlagBits, VkPipelineLayoutCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineCacheCreateFlags, PipelineCacheCreateFlagBits, VkPipelineCacheCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineDepthStencilStateCreateFlags, PipelineDepthStencilStateCreateFlagBits, VkPipelineDepthStencilStateCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineDynamicStateCreateFlags, PipelineDynamicStateCreateFlagBits, VkPipelineDynamicStateCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineColorBlendStateCreateFlags, PipelineColorBlendStateCreateFlagBits, VkPipelineColorBlendStateCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineMultisampleStateCreateFlags, PipelineMultisampleStateCreateFlagBits, VkPipelineMultisampleStateCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationStateCreateFlags, PipelineRasterizationStateCreateFlagBits, VkPipelineRasterizationStateCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineViewportStateCreateFlags, PipelineViewportStateCreateFlagBits, VkPipelineViewportStateCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineTessellationStateCreateFlags, PipelineTessellationStateCreateFlagBits, VkPipelineTessellationStateCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineInputAssemblyStateCreateFlags, PipelineInputAssemblyStateCreateFlagBits, VkPipelineInputAssemblyStateCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineVertexInputStateCreateFlags, PipelineVertexInputStateCreateFlagBits, VkPipelineVertexInputStateCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineShaderStageCreateFlags, PipelineShaderStageCreateFlagBits, VkPipelineShaderStageCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DescriptorSetLayoutCreateFlags, DescriptorSetLayoutCreateFlagBits, VkDescriptorSetLayoutCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(BufferViewCreateFlags, BufferViewCreateFlagBits, VkBufferViewCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(InstanceCreateFlags, InstanceCreateFlagBits, VkInstanceCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DeviceCreateFlags, DeviceCreateFlagBits, VkDeviceCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DeviceQueueCreateFlags, DeviceQueueCreateFlagBits, VkDeviceQueueCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(QueueFlags, QueueFlagBits, VkQueueFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(MemoryPropertyFlags, MemoryPropertyFlagBits, VkMemoryPropertyFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(MemoryHeapFlags, MemoryHeapFlagBits, VkMemoryHeapFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(AccessFlags, AccessFlagBits, VkAccessFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(BufferUsageFlags, BufferUsageFlagBits, VkBufferUsageFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(BufferCreateFlags, BufferCreateFlagBits, VkBufferCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ShaderStageFlags, ShaderStageFlagBits, VkShaderStageFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ImageUsageFlags, ImageUsageFlagBits, VkImageUsageFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ImageCreateFlags, ImageCreateFlagBits, VkImageCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ImageViewCreateFlags, ImageViewCreateFlagBits, VkImageViewCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineCreateFlags, PipelineCreateFlagBits, VkPipelineCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ColorComponentFlags, ColorComponentFlagBits, VkColorComponentFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(FenceCreateFlags, FenceCreateFlagBits, VkFenceCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(SemaphoreCreateFlags, SemaphoreCreateFlagBits, VkSemaphoreCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(FormatFeatureFlags, FormatFeatureFlagBits, VkFormatFeatureFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(QueryControlFlags, QueryControlFlagBits, VkQueryControlFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(QueryResultFlags, QueryResultFlagBits, VkQueryResultFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ShaderModuleCreateFlags, ShaderModuleCreateFlagBits, VkShaderModuleCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(EventCreateFlags, EventCreateFlagBits, VkEventCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(CommandPoolCreateFlags, CommandPoolCreateFlagBits, VkCommandPoolCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(CommandPoolResetFlags, CommandPoolResetFlagBits, VkCommandPoolResetFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(CommandBufferResetFlags, CommandBufferResetFlagBits, VkCommandBufferResetFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(CommandBufferUsageFlags, CommandBufferUsageFlagBits, VkCommandBufferUsageFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(QueryPipelineStatisticFlags, QueryPipelineStatisticFlagBits, VkQueryPipelineStatisticFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(MemoryMapFlags, MemoryMapFlagBits, VkMemoryMapFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ImageAspectFlags, ImageAspectFlagBits, VkImageAspectFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(SparseMemoryBindFlags, SparseMemoryBindFlagBits, VkSparseMemoryBindFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(SparseImageFormatFlags, SparseImageFormatFlagBits, VkSparseImageFormatFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(SubpassDescriptionFlags, SubpassDescriptionFlagBits, VkSubpassDescriptionFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineStageFlags, PipelineStageFlagBits, VkPipelineStageFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(SampleCountFlags, SampleCountFlagBits, VkSampleCountFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(AttachmentDescriptionFlags, AttachmentDescriptionFlagBits, VkAttachmentDescriptionFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(StencilFaceFlags, StencilFaceFlagBits, VkStencilFaceFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(CullModeFlags, CullModeFlagBits, VkCullModeFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DescriptorPoolCreateFlags, DescriptorPoolCreateFlagBits, VkDescriptorPoolCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DescriptorPoolResetFlags, DescriptorPoolResetFlagBits, VkDescriptorPoolResetFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DependencyFlags, DependencyFlagBits, VkDependencyFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(SubgroupFeatureFlags, SubgroupFeatureFlagBits, VkSubgroupFeatureFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(IndirectCommandsLayoutUsageFlagsNV, IndirectCommandsLayoutUsageFlagBitsNV, VkIndirectCommandsLayoutUsageFlagsNV, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(IndirectStateFlagsNV, IndirectStateFlagBitsNV, VkIndirectStateFlagsNV, uint32_t)
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-DECLARE_ENUM_FLAG_OPERATORS(GeometryFlagsKHR, GeometryFlagBitsKHR, VkGeometryFlagsKHR)
+DECLARE_ENUM_FLAG_OPERATORS(GeometryFlagsKHR, GeometryFlagBitsKHR, VkGeometryFlagsKHR, uint32_t)
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using GeometryFlagsNV = GeometryFlagsKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-DECLARE_ENUM_FLAG_OPERATORS(GeometryInstanceFlagsKHR, GeometryInstanceFlagBitsKHR, VkGeometryInstanceFlagsKHR)
+DECLARE_ENUM_FLAG_OPERATORS(GeometryInstanceFlagsKHR, GeometryInstanceFlagBitsKHR, VkGeometryInstanceFlagsKHR, uint32_t)
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using GeometryInstanceFlagsNV = GeometryInstanceFlagsKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-DECLARE_ENUM_FLAG_OPERATORS(BuildAccelerationStructureFlagsKHR, BuildAccelerationStructureFlagBitsKHR, VkBuildAccelerationStructureFlagsKHR)
+DECLARE_ENUM_FLAG_OPERATORS(BuildAccelerationStructureFlagsKHR, BuildAccelerationStructureFlagBitsKHR, VkBuildAccelerationStructureFlagsKHR, uint32_t)
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using BuildAccelerationStructureFlagsNV = BuildAccelerationStructureFlagsKHR;
-DECLARE_ENUM_FLAG_OPERATORS(PrivateDataSlotCreateFlagsEXT, PrivateDataSlotCreateFlagBitsEXT, VkPrivateDataSlotCreateFlagsEXT)
-DECLARE_ENUM_FLAG_OPERATORS(DescriptorUpdateTemplateCreateFlags, DescriptorUpdateTemplateCreateFlagBits, VkDescriptorUpdateTemplateCreateFlags)
+DECLARE_ENUM_FLAG_OPERATORS(PrivateDataSlotCreateFlagsEXT, PrivateDataSlotCreateFlagBitsEXT, VkPrivateDataSlotCreateFlagsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DescriptorUpdateTemplateCreateFlags, DescriptorUpdateTemplateCreateFlagBits, VkDescriptorUpdateTemplateCreateFlags, uint32_t)
 using DescriptorUpdateTemplateCreateFlagsKHR = DescriptorUpdateTemplateCreateFlags;
-DECLARE_ENUM_FLAG_OPERATORS(PipelineCreationFeedbackFlagsEXT, PipelineCreationFeedbackFlagBitsEXT, VkPipelineCreationFeedbackFlagsEXT)
-DECLARE_ENUM_FLAG_OPERATORS(PerformanceCounterDescriptionFlagsKHR, PerformanceCounterDescriptionFlagBitsKHR, VkPerformanceCounterDescriptionFlagsKHR)
-DECLARE_ENUM_FLAG_OPERATORS(AcquireProfilingLockFlagsKHR, AcquireProfilingLockFlagBitsKHR, VkAcquireProfilingLockFlagsKHR)
-DECLARE_ENUM_FLAG_OPERATORS(SemaphoreWaitFlags, SemaphoreWaitFlagBits, VkSemaphoreWaitFlags)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineCreationFeedbackFlagsEXT, PipelineCreationFeedbackFlagBitsEXT, VkPipelineCreationFeedbackFlagsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PerformanceCounterDescriptionFlagsKHR, PerformanceCounterDescriptionFlagBitsKHR, VkPerformanceCounterDescriptionFlagsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(AcquireProfilingLockFlagsKHR, AcquireProfilingLockFlagBitsKHR, VkAcquireProfilingLockFlagsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(SemaphoreWaitFlags, SemaphoreWaitFlagBits, VkSemaphoreWaitFlags, uint32_t)
 using SemaphoreWaitFlagsKHR = SemaphoreWaitFlags;
-DECLARE_ENUM_FLAG_OPERATORS(PipelineCompilerControlFlagsAMD, PipelineCompilerControlFlagBitsAMD, VkPipelineCompilerControlFlagsAMD)
-DECLARE_ENUM_FLAG_OPERATORS(ShaderCorePropertiesFlagsAMD, ShaderCorePropertiesFlagBitsAMD, VkShaderCorePropertiesFlagsAMD)
-DECLARE_ENUM_FLAG_OPERATORS(DeviceDiagnosticsConfigFlagsNV, DeviceDiagnosticsConfigFlagBitsNV, VkDeviceDiagnosticsConfigFlagsNV)
-DECLARE_ENUM_FLAG_OPERATORS(CompositeAlphaFlagsKHR, CompositeAlphaFlagBitsKHR, VkCompositeAlphaFlagsKHR)
-DECLARE_ENUM_FLAG_OPERATORS(DisplayPlaneAlphaFlagsKHR, DisplayPlaneAlphaFlagBitsKHR, VkDisplayPlaneAlphaFlagsKHR)
-DECLARE_ENUM_FLAG_OPERATORS(SurfaceTransformFlagsKHR, SurfaceTransformFlagBitsKHR, VkSurfaceTransformFlagsKHR)
-DECLARE_ENUM_FLAG_OPERATORS(SwapchainCreateFlagsKHR, SwapchainCreateFlagBitsKHR, VkSwapchainCreateFlagsKHR)
-DECLARE_ENUM_FLAG_OPERATORS(DisplayModeCreateFlagsKHR, DisplayModeCreateFlagBitsKHR, VkDisplayModeCreateFlagsKHR)
-DECLARE_ENUM_FLAG_OPERATORS(DisplaySurfaceCreateFlagsKHR, DisplaySurfaceCreateFlagBitsKHR, VkDisplaySurfaceCreateFlagsKHR)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineCompilerControlFlagsAMD, PipelineCompilerControlFlagBitsAMD, VkPipelineCompilerControlFlagsAMD, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ShaderCorePropertiesFlagsAMD, ShaderCorePropertiesFlagBitsAMD, VkShaderCorePropertiesFlagsAMD, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DeviceDiagnosticsConfigFlagsNV, DeviceDiagnosticsConfigFlagBitsNV, VkDeviceDiagnosticsConfigFlagsNV, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(CompositeAlphaFlagsKHR, CompositeAlphaFlagBitsKHR, VkCompositeAlphaFlagsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DisplayPlaneAlphaFlagsKHR, DisplayPlaneAlphaFlagBitsKHR, VkDisplayPlaneAlphaFlagsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(SurfaceTransformFlagsKHR, SurfaceTransformFlagBitsKHR, VkSurfaceTransformFlagsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(SwapchainCreateFlagsKHR, SwapchainCreateFlagBitsKHR, VkSwapchainCreateFlagsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DisplayModeCreateFlagsKHR, DisplayModeCreateFlagBitsKHR, VkDisplayModeCreateFlagsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DisplaySurfaceCreateFlagsKHR, DisplaySurfaceCreateFlagBitsKHR, VkDisplaySurfaceCreateFlagsKHR, uint32_t)
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
-DECLARE_ENUM_FLAG_OPERATORS(AndroidSurfaceCreateFlagsKHR, AndroidSurfaceCreateFlagBitsKHR, VkAndroidSurfaceCreateFlagsKHR)
+DECLARE_ENUM_FLAG_OPERATORS(AndroidSurfaceCreateFlagsKHR, AndroidSurfaceCreateFlagBitsKHR, VkAndroidSurfaceCreateFlagsKHR, uint32_t)
 #endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
 #if defined(VK_USE_PLATFORM_VI_NN)
-DECLARE_ENUM_FLAG_OPERATORS(ViSurfaceCreateFlagsNN, ViSurfaceCreateFlagBitsNN, VkViSurfaceCreateFlagsNN)
+DECLARE_ENUM_FLAG_OPERATORS(ViSurfaceCreateFlagsNN, ViSurfaceCreateFlagBitsNN, VkViSurfaceCreateFlagsNN, uint32_t)
 #endif // defined(VK_USE_PLATFORM_VI_NN)
 #if defined(VK_USE_PLATFORM_WAYLAND_KHR)
-DECLARE_ENUM_FLAG_OPERATORS(WaylandSurfaceCreateFlagsKHR, WaylandSurfaceCreateFlagBitsKHR, VkWaylandSurfaceCreateFlagsKHR)
+DECLARE_ENUM_FLAG_OPERATORS(WaylandSurfaceCreateFlagsKHR, WaylandSurfaceCreateFlagBitsKHR, VkWaylandSurfaceCreateFlagsKHR, uint32_t)
 #endif // defined(VK_USE_PLATFORM_WAYLAND_KHR)
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
-DECLARE_ENUM_FLAG_OPERATORS(Win32SurfaceCreateFlagsKHR, Win32SurfaceCreateFlagBitsKHR, VkWin32SurfaceCreateFlagsKHR)
+DECLARE_ENUM_FLAG_OPERATORS(Win32SurfaceCreateFlagsKHR, Win32SurfaceCreateFlagBitsKHR, VkWin32SurfaceCreateFlagsKHR, uint32_t)
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 #if defined(VK_USE_PLATFORM_XLIB_KHR)
-DECLARE_ENUM_FLAG_OPERATORS(XlibSurfaceCreateFlagsKHR, XlibSurfaceCreateFlagBitsKHR, VkXlibSurfaceCreateFlagsKHR)
+DECLARE_ENUM_FLAG_OPERATORS(XlibSurfaceCreateFlagsKHR, XlibSurfaceCreateFlagBitsKHR, VkXlibSurfaceCreateFlagsKHR, uint32_t)
 #endif // defined(VK_USE_PLATFORM_XLIB_KHR)
 #if defined(VK_USE_PLATFORM_XCB_KHR)
-DECLARE_ENUM_FLAG_OPERATORS(XcbSurfaceCreateFlagsKHR, XcbSurfaceCreateFlagBitsKHR, VkXcbSurfaceCreateFlagsKHR)
+DECLARE_ENUM_FLAG_OPERATORS(XcbSurfaceCreateFlagsKHR, XcbSurfaceCreateFlagBitsKHR, VkXcbSurfaceCreateFlagsKHR, uint32_t)
 #endif // defined(VK_USE_PLATFORM_XCB_KHR)
 #if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
-DECLARE_ENUM_FLAG_OPERATORS(DirectFBSurfaceCreateFlagsEXT, DirectFBSurfaceCreateFlagBitsEXT, VkDirectFBSurfaceCreateFlagsEXT)
+DECLARE_ENUM_FLAG_OPERATORS(DirectFBSurfaceCreateFlagsEXT, DirectFBSurfaceCreateFlagBitsEXT, VkDirectFBSurfaceCreateFlagsEXT, uint32_t)
 #endif // defined(VK_USE_PLATFORM_DIRECTFB_EXT)
 #if defined(VK_USE_PLATFORM_IOS_MVK)
-DECLARE_ENUM_FLAG_OPERATORS(IOSSurfaceCreateFlagsMVK, IOSSurfaceCreateFlagBitsMVK, VkIOSSurfaceCreateFlagsMVK)
+DECLARE_ENUM_FLAG_OPERATORS(IOSSurfaceCreateFlagsMVK, IOSSurfaceCreateFlagBitsMVK, VkIOSSurfaceCreateFlagsMVK, uint32_t)
 #endif // defined(VK_USE_PLATFORM_IOS_MVK)
 #if defined(VK_USE_PLATFORM_MACOS_MVK)
-DECLARE_ENUM_FLAG_OPERATORS(MacOSSurfaceCreateFlagsMVK, MacOSSurfaceCreateFlagBitsMVK, VkMacOSSurfaceCreateFlagsMVK)
+DECLARE_ENUM_FLAG_OPERATORS(MacOSSurfaceCreateFlagsMVK, MacOSSurfaceCreateFlagBitsMVK, VkMacOSSurfaceCreateFlagsMVK, uint32_t)
 #endif // defined(VK_USE_PLATFORM_MACOS_MVK)
 #if defined(VK_USE_PLATFORM_METAL_EXT)
-DECLARE_ENUM_FLAG_OPERATORS(MetalSurfaceCreateFlagsEXT, MetalSurfaceCreateFlagBitsEXT, VkMetalSurfaceCreateFlagsEXT)
+DECLARE_ENUM_FLAG_OPERATORS(MetalSurfaceCreateFlagsEXT, MetalSurfaceCreateFlagBitsEXT, VkMetalSurfaceCreateFlagsEXT, uint32_t)
 #endif // defined(VK_USE_PLATFORM_METAL_EXT)
 #if defined(VK_USE_PLATFORM_FUCHSIA)
-DECLARE_ENUM_FLAG_OPERATORS(ImagePipeSurfaceCreateFlagsFUCHSIA, ImagePipeSurfaceCreateFlagBitsFUCHSIA, VkImagePipeSurfaceCreateFlagsFUCHSIA)
+DECLARE_ENUM_FLAG_OPERATORS(ImagePipeSurfaceCreateFlagsFUCHSIA, ImagePipeSurfaceCreateFlagBitsFUCHSIA, VkImagePipeSurfaceCreateFlagsFUCHSIA, uint32_t)
 #endif // defined(VK_USE_PLATFORM_FUCHSIA)
 #if defined(VK_USE_PLATFORM_GGP)
-DECLARE_ENUM_FLAG_OPERATORS(StreamDescriptorSurfaceCreateFlagsGGP, StreamDescriptorSurfaceCreateFlagBitsGGP, VkStreamDescriptorSurfaceCreateFlagsGGP)
+DECLARE_ENUM_FLAG_OPERATORS(StreamDescriptorSurfaceCreateFlagsGGP, StreamDescriptorSurfaceCreateFlagBitsGGP, VkStreamDescriptorSurfaceCreateFlagsGGP, uint32_t)
 #endif // defined(VK_USE_PLATFORM_GGP)
-DECLARE_ENUM_FLAG_OPERATORS(HeadlessSurfaceCreateFlagsEXT, HeadlessSurfaceCreateFlagBitsEXT, VkHeadlessSurfaceCreateFlagsEXT)
-DECLARE_ENUM_FLAG_OPERATORS(PeerMemoryFeatureFlags, PeerMemoryFeatureFlagBits, VkPeerMemoryFeatureFlags)
+DECLARE_ENUM_FLAG_OPERATORS(HeadlessSurfaceCreateFlagsEXT, HeadlessSurfaceCreateFlagBitsEXT, VkHeadlessSurfaceCreateFlagsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PeerMemoryFeatureFlags, PeerMemoryFeatureFlagBits, VkPeerMemoryFeatureFlags, uint32_t)
 using PeerMemoryFeatureFlagsKHR = PeerMemoryFeatureFlags;
-DECLARE_ENUM_FLAG_OPERATORS(MemoryAllocateFlags, MemoryAllocateFlagBits, VkMemoryAllocateFlags)
+DECLARE_ENUM_FLAG_OPERATORS(MemoryAllocateFlags, MemoryAllocateFlagBits, VkMemoryAllocateFlags, uint32_t)
 using MemoryAllocateFlagsKHR = MemoryAllocateFlags;
-DECLARE_ENUM_FLAG_OPERATORS(DeviceGroupPresentModeFlagsKHR, DeviceGroupPresentModeFlagBitsKHR, VkDeviceGroupPresentModeFlagsKHR)
-DECLARE_ENUM_FLAG_OPERATORS(DebugReportFlagsEXT, DebugReportFlagBitsEXT, VkDebugReportFlagsEXT)
-DECLARE_ENUM_FLAG_OPERATORS(CommandPoolTrimFlags, CommandPoolTrimFlagBits, VkCommandPoolTrimFlags)
+DECLARE_ENUM_FLAG_OPERATORS(DeviceGroupPresentModeFlagsKHR, DeviceGroupPresentModeFlagBitsKHR, VkDeviceGroupPresentModeFlagsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DebugReportFlagsEXT, DebugReportFlagBitsEXT, VkDebugReportFlagsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(CommandPoolTrimFlags, CommandPoolTrimFlagBits, VkCommandPoolTrimFlags, uint32_t)
 using CommandPoolTrimFlagsKHR = CommandPoolTrimFlags;
-DECLARE_ENUM_FLAG_OPERATORS(ExternalMemoryHandleTypeFlagsNV, ExternalMemoryHandleTypeFlagBitsNV, VkExternalMemoryHandleTypeFlagsNV)
-DECLARE_ENUM_FLAG_OPERATORS(ExternalMemoryFeatureFlagsNV, ExternalMemoryFeatureFlagBitsNV, VkExternalMemoryFeatureFlagsNV)
-DECLARE_ENUM_FLAG_OPERATORS(ExternalMemoryHandleTypeFlags, ExternalMemoryHandleTypeFlagBits, VkExternalMemoryHandleTypeFlags)
+DECLARE_ENUM_FLAG_OPERATORS(ExternalMemoryHandleTypeFlagsNV, ExternalMemoryHandleTypeFlagBitsNV, VkExternalMemoryHandleTypeFlagsNV, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ExternalMemoryFeatureFlagsNV, ExternalMemoryFeatureFlagBitsNV, VkExternalMemoryFeatureFlagsNV, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ExternalMemoryHandleTypeFlags, ExternalMemoryHandleTypeFlagBits, VkExternalMemoryHandleTypeFlags, uint32_t)
 using ExternalMemoryHandleTypeFlagsKHR = ExternalMemoryHandleTypeFlags;
-DECLARE_ENUM_FLAG_OPERATORS(ExternalMemoryFeatureFlags, ExternalMemoryFeatureFlagBits, VkExternalMemoryFeatureFlags)
+DECLARE_ENUM_FLAG_OPERATORS(ExternalMemoryFeatureFlags, ExternalMemoryFeatureFlagBits, VkExternalMemoryFeatureFlags, uint32_t)
 using ExternalMemoryFeatureFlagsKHR = ExternalMemoryFeatureFlags;
-DECLARE_ENUM_FLAG_OPERATORS(ExternalSemaphoreHandleTypeFlags, ExternalSemaphoreHandleTypeFlagBits, VkExternalSemaphoreHandleTypeFlags)
+DECLARE_ENUM_FLAG_OPERATORS(ExternalSemaphoreHandleTypeFlags, ExternalSemaphoreHandleTypeFlagBits, VkExternalSemaphoreHandleTypeFlags, uint32_t)
 using ExternalSemaphoreHandleTypeFlagsKHR = ExternalSemaphoreHandleTypeFlags;
-DECLARE_ENUM_FLAG_OPERATORS(ExternalSemaphoreFeatureFlags, ExternalSemaphoreFeatureFlagBits, VkExternalSemaphoreFeatureFlags)
+DECLARE_ENUM_FLAG_OPERATORS(ExternalSemaphoreFeatureFlags, ExternalSemaphoreFeatureFlagBits, VkExternalSemaphoreFeatureFlags, uint32_t)
 using ExternalSemaphoreFeatureFlagsKHR = ExternalSemaphoreFeatureFlags;
-DECLARE_ENUM_FLAG_OPERATORS(SemaphoreImportFlags, SemaphoreImportFlagBits, VkSemaphoreImportFlags)
+DECLARE_ENUM_FLAG_OPERATORS(SemaphoreImportFlags, SemaphoreImportFlagBits, VkSemaphoreImportFlags, uint32_t)
 using SemaphoreImportFlagsKHR = SemaphoreImportFlags;
-DECLARE_ENUM_FLAG_OPERATORS(ExternalFenceHandleTypeFlags, ExternalFenceHandleTypeFlagBits, VkExternalFenceHandleTypeFlags)
+DECLARE_ENUM_FLAG_OPERATORS(ExternalFenceHandleTypeFlags, ExternalFenceHandleTypeFlagBits, VkExternalFenceHandleTypeFlags, uint32_t)
 using ExternalFenceHandleTypeFlagsKHR = ExternalFenceHandleTypeFlags;
-DECLARE_ENUM_FLAG_OPERATORS(ExternalFenceFeatureFlags, ExternalFenceFeatureFlagBits, VkExternalFenceFeatureFlags)
+DECLARE_ENUM_FLAG_OPERATORS(ExternalFenceFeatureFlags, ExternalFenceFeatureFlagBits, VkExternalFenceFeatureFlags, uint32_t)
 using ExternalFenceFeatureFlagsKHR = ExternalFenceFeatureFlags;
-DECLARE_ENUM_FLAG_OPERATORS(FenceImportFlags, FenceImportFlagBits, VkFenceImportFlags)
+DECLARE_ENUM_FLAG_OPERATORS(FenceImportFlags, FenceImportFlagBits, VkFenceImportFlags, uint32_t)
 using FenceImportFlagsKHR = FenceImportFlags;
-DECLARE_ENUM_FLAG_OPERATORS(SurfaceCounterFlagsEXT, SurfaceCounterFlagBitsEXT, VkSurfaceCounterFlagsEXT)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineViewportSwizzleStateCreateFlagsNV, PipelineViewportSwizzleStateCreateFlagBitsNV, VkPipelineViewportSwizzleStateCreateFlagsNV)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineDiscardRectangleStateCreateFlagsEXT, PipelineDiscardRectangleStateCreateFlagBitsEXT, VkPipelineDiscardRectangleStateCreateFlagsEXT)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineCoverageToColorStateCreateFlagsNV, PipelineCoverageToColorStateCreateFlagBitsNV, VkPipelineCoverageToColorStateCreateFlagsNV)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineCoverageModulationStateCreateFlagsNV, PipelineCoverageModulationStateCreateFlagBitsNV, VkPipelineCoverageModulationStateCreateFlagsNV)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineCoverageReductionStateCreateFlagsNV, PipelineCoverageReductionStateCreateFlagBitsNV, VkPipelineCoverageReductionStateCreateFlagsNV)
-DECLARE_ENUM_FLAG_OPERATORS(ValidationCacheCreateFlagsEXT, ValidationCacheCreateFlagBitsEXT, VkValidationCacheCreateFlagsEXT)
-DECLARE_ENUM_FLAG_OPERATORS(DebugUtilsMessageSeverityFlagsEXT, DebugUtilsMessageSeverityFlagBitsEXT, VkDebugUtilsMessageSeverityFlagsEXT)
-DECLARE_ENUM_FLAG_OPERATORS(DebugUtilsMessageTypeFlagsEXT, DebugUtilsMessageTypeFlagBitsEXT, VkDebugUtilsMessageTypeFlagsEXT)
-DECLARE_ENUM_FLAG_OPERATORS(DebugUtilsMessengerCreateFlagsEXT, DebugUtilsMessengerCreateFlagBitsEXT, VkDebugUtilsMessengerCreateFlagsEXT)
-DECLARE_ENUM_FLAG_OPERATORS(DebugUtilsMessengerCallbackDataFlagsEXT, DebugUtilsMessengerCallbackDataFlagBitsEXT, VkDebugUtilsMessengerCallbackDataFlagsEXT)
-DECLARE_ENUM_FLAG_OPERATORS(DeviceMemoryReportFlagsEXT, DeviceMemoryReportFlagBitsEXT, VkDeviceMemoryReportFlagsEXT)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationConservativeStateCreateFlagsEXT, PipelineRasterizationConservativeStateCreateFlagBitsEXT, VkPipelineRasterizationConservativeStateCreateFlagsEXT)
-DECLARE_ENUM_FLAG_OPERATORS(DescriptorBindingFlags, DescriptorBindingFlagBits, VkDescriptorBindingFlags)
+DECLARE_ENUM_FLAG_OPERATORS(SurfaceCounterFlagsEXT, SurfaceCounterFlagBitsEXT, VkSurfaceCounterFlagsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineViewportSwizzleStateCreateFlagsNV, PipelineViewportSwizzleStateCreateFlagBitsNV, VkPipelineViewportSwizzleStateCreateFlagsNV, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineDiscardRectangleStateCreateFlagsEXT, PipelineDiscardRectangleStateCreateFlagBitsEXT, VkPipelineDiscardRectangleStateCreateFlagsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineCoverageToColorStateCreateFlagsNV, PipelineCoverageToColorStateCreateFlagBitsNV, VkPipelineCoverageToColorStateCreateFlagsNV, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineCoverageModulationStateCreateFlagsNV, PipelineCoverageModulationStateCreateFlagBitsNV, VkPipelineCoverageModulationStateCreateFlagsNV, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineCoverageReductionStateCreateFlagsNV, PipelineCoverageReductionStateCreateFlagBitsNV, VkPipelineCoverageReductionStateCreateFlagsNV, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ValidationCacheCreateFlagsEXT, ValidationCacheCreateFlagBitsEXT, VkValidationCacheCreateFlagsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DebugUtilsMessageSeverityFlagsEXT, DebugUtilsMessageSeverityFlagBitsEXT, VkDebugUtilsMessageSeverityFlagsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DebugUtilsMessageTypeFlagsEXT, DebugUtilsMessageTypeFlagBitsEXT, VkDebugUtilsMessageTypeFlagsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DebugUtilsMessengerCreateFlagsEXT, DebugUtilsMessengerCreateFlagBitsEXT, VkDebugUtilsMessengerCreateFlagsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DebugUtilsMessengerCallbackDataFlagsEXT, DebugUtilsMessengerCallbackDataFlagBitsEXT, VkDebugUtilsMessengerCallbackDataFlagsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DeviceMemoryReportFlagsEXT, DeviceMemoryReportFlagBitsEXT, VkDeviceMemoryReportFlagsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationConservativeStateCreateFlagsEXT, PipelineRasterizationConservativeStateCreateFlagBitsEXT, VkPipelineRasterizationConservativeStateCreateFlagsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DescriptorBindingFlags, DescriptorBindingFlagBits, VkDescriptorBindingFlags, uint32_t)
 using DescriptorBindingFlagsEXT = DescriptorBindingFlags;
-DECLARE_ENUM_FLAG_OPERATORS(ConditionalRenderingFlagsEXT, ConditionalRenderingFlagBitsEXT, VkConditionalRenderingFlagsEXT)
-DECLARE_ENUM_FLAG_OPERATORS(ResolveModeFlags, ResolveModeFlagBits, VkResolveModeFlags)
+DECLARE_ENUM_FLAG_OPERATORS(ConditionalRenderingFlagsEXT, ConditionalRenderingFlagBitsEXT, VkConditionalRenderingFlagsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ResolveModeFlags, ResolveModeFlagBits, VkResolveModeFlags, uint32_t)
 using ResolveModeFlagsKHR = ResolveModeFlags;
-DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationStateStreamCreateFlagsEXT, PipelineRasterizationStateStreamCreateFlagBitsEXT, VkPipelineRasterizationStateStreamCreateFlagsEXT)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationDepthClipStateCreateFlagsEXT, PipelineRasterizationDepthClipStateCreateFlagBitsEXT, VkPipelineRasterizationDepthClipStateCreateFlagsEXT)
-DECLARE_ENUM_FLAG_OPERATORS(ToolPurposeFlagsEXT, ToolPurposeFlagBitsEXT, VkToolPurposeFlagsEXT)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationStateStreamCreateFlagsEXT, PipelineRasterizationStateStreamCreateFlagBitsEXT, VkPipelineRasterizationStateStreamCreateFlagsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationDepthClipStateCreateFlagsEXT, PipelineRasterizationDepthClipStateCreateFlagBitsEXT, VkPipelineRasterizationDepthClipStateCreateFlagsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ToolPurposeFlagsEXT, ToolPurposeFlagBitsEXT, VkToolPurposeFlagsEXT, uint32_t)
 class Instance {
     VkInstance handle = VK_NULL_HANDLE;
     public:

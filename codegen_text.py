@@ -5,6 +5,24 @@ fixed_vector_text = '''
 #include <new>
 
 namespace vk::detail {
+template <typename T>
+struct remove_reference { using type = T; };
+
+template <typename T>
+struct remove_reference<T&> { using type = T; };
+
+template <typename T>
+struct remove_reference<T&&> { using type = T; };
+
+template <typename T>
+using remove_reference_t = typename remove_reference<T>::type;
+
+template <typename Type>
+inline constexpr remove_reference_t<Type>&& move(Type&& t) noexcept
+{
+    return static_cast<remove_reference_t<Type>&&>(t);
+}
+
 /* Array data structure where the length is determined at construction time.
  * Cannot resize, add, or delete elements from.
  * Used for returning a collection from the Vulkan API
@@ -89,12 +107,17 @@ vulkan_expected_type = '''
 template<typename T>
 struct expected {
 	explicit expected (T const& value, Result result) noexcept: _value{ value}, _result{ result } {}
-	explicit expected (T&& value, Result result) noexcept: _value{ std::move (value) }, _result{ result } {}
+	explicit expected (T&& value, Result result) noexcept: _value{ detail::move(value) }, _result{ result } {}
 
+    const T* operator-> () const noexcept { assert (_result == Result::Success); return &_value; }
+	T*       operator-> ()       noexcept { assert (_result == Result::Success); return &_value; }
+	const T& operator* () const& noexcept { assert (_result == Result::Success); return _value; }
+	T&       operator* () &      noexcept { assert (_result == Result::Success); return _value; }
+	T&&      operator* () &&	 noexcept { assert (_result == Result::Success); return detail::move (_value); }
 	const T&  value () const&    noexcept { assert (_result == Result::Success); return _value; }
 	T&        value () &         noexcept { assert (_result == Result::Success); return _value; }
-	const T&& value () const&&   noexcept { assert (_result == Result::Success); return std::move (_value); }
-	T&&       value () &&        noexcept { assert (_result == Result::Success); return std::move (_value); }
+	const T&& value () const&&   noexcept { assert (_result == Result::Success); return detail::move(_value); }
+	T&&       value () &&        noexcept { assert (_result == Result::Success); return detail::move(_value); }
 
     Result error() const noexcept { assert (_result != Result::Success); return _result; }
     Result raw_result() const noexcept { return _result; }
@@ -110,64 +133,59 @@ private:
 '''
 
 bitmask_flags_macro = '''
-#define DECLARE_ENUM_FLAG_OPERATORS(FLAG_TYPE, FLAG_BITS, BASE_NAME)                \\
-                                                                                    \\
-struct FLAG_TYPE {                                                                  \\
-    using base_type = typename std::underlying_type_t<FLAG_BITS>;                   \\
-    base_type flags = static_cast<base_type>(0);                                    \\
-                                                                                    \\
-    constexpr explicit FLAG_TYPE() noexcept = default;                              \\
-    constexpr explicit FLAG_TYPE(base_type in) noexcept: flags(in){ }               \\
-    constexpr FLAG_TYPE(FLAG_BITS in) noexcept: flags(static_cast<base_type>(in)){ }\\
+#define DECLARE_ENUM_FLAG_OPERATORS(FLAG_TYPE, FLAG_BITS, BASE_NAME, BASE_TYPE)            \\
+                                                                                           \\
+struct FLAG_TYPE {                                                                         \\
+    BASE_TYPE flags = static_cast<BASE_TYPE>(0);                                           \\
+                                                                                           \\
+    constexpr explicit FLAG_TYPE() noexcept = default;                                     \\
+    constexpr explicit FLAG_TYPE(BASE_TYPE in) noexcept: flags(in){ }                      \\
+    constexpr FLAG_TYPE(FLAG_BITS in) noexcept: flags(static_cast<BASE_TYPE>(in)){ }       \\
     constexpr bool operator==(FLAG_TYPE const& right) const { return flags == right.flags;}\\
     constexpr bool operator!=(FLAG_TYPE const& right) const { return flags != right.flags;}\\
-    constexpr explicit operator bool() const noexcept {                             \\
-      return flags != 0;                                                            \\
-    }                                                                               \\
-    constexpr explicit operator BASE_NAME() const noexcept {                        \\
-        return static_cast<BASE_NAME>(flags);                                       \\
-    }                                                                               \\
-};                                                                                  \\
-constexpr FLAG_TYPE operator|(FLAG_TYPE a, FLAG_TYPE b) noexcept {                  \\
-    return static_cast<FLAG_TYPE>(a.flags | b.flags);                               \\
-}                                                                                   \\
-constexpr FLAG_TYPE operator&(FLAG_TYPE a, FLAG_TYPE b) noexcept {                  \\
-    return static_cast<FLAG_TYPE>(a.flags & b.flags);                               \\
-}                                                                                   \\
-constexpr FLAG_TYPE operator^(FLAG_TYPE a, FLAG_TYPE b) noexcept {                  \\
-    return static_cast<FLAG_TYPE>(a.flags ^ b.flags);                               \\
-}                                                                                   \\
-constexpr FLAG_TYPE operator~(FLAG_TYPE a) noexcept {                               \\
-    return static_cast<FLAG_TYPE>(~a.flags);                                        \\
-}                                                                                   \\
-constexpr FLAG_TYPE& operator|=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {               \\
-    a.flags = (a.flags | b.flags);                                                  \\
-    return a;                                                                       \\
-}                                                                                   \\
-constexpr FLAG_TYPE& operator&=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {               \\
-    a.flags = (a.flags & b.flags);                                                  \\
-    return a;                                                                       \\
-}                                                                                   \\
-constexpr FLAG_TYPE operator^=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {                \\
-    a.flags = (a.flags ^ b.flags);                                                  \\
-    return a;                                                                       \\
-}                                                                                   \\
-constexpr FLAG_TYPE operator|(FLAG_BITS a, FLAG_BITS b) noexcept {                  \\
-    using T = FLAG_TYPE::base_type;                                                 \\
-    return static_cast<FLAG_TYPE>(static_cast<T>(a) | static_cast<T>(b));           \\
-}                                                                                   \\
-constexpr FLAG_TYPE operator&(FLAG_BITS a, FLAG_BITS b) noexcept {                  \\
-    using T = FLAG_TYPE::base_type;                                                 \\
-    return static_cast<FLAG_TYPE>(static_cast<T>(a) & static_cast<T>(b));           \\
-}                                                                                   \\
-constexpr FLAG_TYPE operator~(FLAG_BITS key) noexcept {                             \\
-    using T = FLAG_TYPE::base_type;                                                 \\
-    return static_cast<FLAG_TYPE>(~static_cast<T>(key));                            \\
-}                                                                                   \\
-constexpr FLAG_TYPE operator^(FLAG_BITS a, FLAG_BITS b) noexcept {                  \\
-    using T = FLAG_TYPE::base_type;                                                 \\
-    return static_cast<FLAG_TYPE>(static_cast<T>(a) ^ static_cast<T>(b));           \\
-}                                                                                   \\
+    constexpr explicit operator bool() const noexcept {                                    \\
+      return flags != 0;                                                                   \\
+    }                                                                                      \\
+    constexpr explicit operator BASE_NAME() const noexcept {                               \\
+        return static_cast<BASE_NAME>(flags);                                              \\
+    }                                                                                      \\
+};                                                                                         \\
+constexpr FLAG_TYPE operator|(FLAG_TYPE a, FLAG_TYPE b) noexcept {                         \\
+    return static_cast<FLAG_TYPE>(a.flags | b.flags);                                      \\
+}                                                                                          \\
+constexpr FLAG_TYPE operator&(FLAG_TYPE a, FLAG_TYPE b) noexcept {                         \\
+    return static_cast<FLAG_TYPE>(a.flags & b.flags);                                      \\
+}                                                                                          \\
+constexpr FLAG_TYPE operator^(FLAG_TYPE a, FLAG_TYPE b) noexcept {                         \\
+    return static_cast<FLAG_TYPE>(a.flags ^ b.flags);                                      \\
+}                                                                                          \\
+constexpr FLAG_TYPE operator~(FLAG_TYPE a) noexcept {                                      \\
+    return static_cast<FLAG_TYPE>(~a.flags);                                               \\
+}                                                                                          \\
+constexpr FLAG_TYPE& operator|=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {                      \\
+    a.flags = (a.flags | b.flags);                                                         \\
+    return a;                                                                              \\
+}                                                                                          \\
+constexpr FLAG_TYPE& operator&=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {                      \\
+    a.flags = (a.flags & b.flags);                                                         \\
+    return a;                                                                              \\
+}                                                                                          \\
+constexpr FLAG_TYPE operator^=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {                       \\
+    a.flags = (a.flags ^ b.flags);                                                         \\
+    return a;                                                                              \\
+}                                                                                          \\
+constexpr FLAG_TYPE operator|(FLAG_BITS a, FLAG_BITS b) noexcept {                         \\
+    return static_cast<FLAG_TYPE>(static_cast<BASE_TYPE>(a) | static_cast<BASE_TYPE>(b));  \\
+}                                                                                          \\
+constexpr FLAG_TYPE operator&(FLAG_BITS a, FLAG_BITS b) noexcept {                         \\
+    return static_cast<FLAG_TYPE>(static_cast<BASE_TYPE>(a) & static_cast<BASE_TYPE>(b));  \\
+}                                                                                          \\
+constexpr FLAG_TYPE operator~(FLAG_BITS key) noexcept {                                    \\
+    return static_cast<FLAG_TYPE>(~static_cast<BASE_TYPE>(key));                           \\
+}                                                                                          \\
+constexpr FLAG_TYPE operator^(FLAG_BITS a, FLAG_BITS b) noexcept {                         \\
+    return static_cast<FLAG_TYPE>(static_cast<BASE_TYPE>(a) ^ static_cast<BASE_TYPE>(b));  \\
+}                                                                                          \\
 '''
 
 vulkan_library_text = '''
