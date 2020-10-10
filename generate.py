@@ -1236,7 +1236,6 @@ class BindingGenerator:
                                 if function.name == command:
                                     self.functions.remove(function)
 
-    
         for feature in root.findall('feature'):
             feat_level = VulkanFeatureLevel(feature)
             for require in feat_level.requires:
@@ -1315,6 +1314,11 @@ def print_vkm_string(bindings, cpp20mode, cpp20str):
         [ bitmask.print_string_defs(string_def) for bitmask in bindings.bitmask_dict.values()]
         string_def.write('} // namespace vk\n// clang-format on\n')
     
+def print_bindings_version(bindings, cpp20mode, cpp20str):
+    print_vkm_main(bindings, cpp20mode, cpp20str)
+    print_vkm_core(bindings, cpp20mode, cpp20str)
+    print_vkm_function(bindings, cpp20mode, cpp20str)
+    print_vkm_string(bindings, cpp20mode, cpp20str)
 
 def main():
     tree = xml.etree.ElementTree.parse('registry/vk.xml')
@@ -1324,16 +1328,8 @@ def main():
         vendor_abbreviations.append(tag.get('name'))
 
     bindings = BindingGenerator(root)
-
-    print_vkm_main(bindings, False, '17')
-    print_vkm_core(bindings, False, '17')
-    print_vkm_function(bindings, False, '17')
-    print_vkm_string(bindings, False, '17')
-
-    print_vkm_main(bindings, True, '20')
-    print_vkm_core(bindings, True, '20')
-    print_vkm_function(bindings, True, '20')
-    print_vkm_string(bindings, True, '20')
+    print_bindings_version(bindings, False, '17')
+    print_bindings_version(bindings, True, '20')
 
     with open('tests/static_asserts.h', 'w') as static_asserts:
         static_asserts.write('#pragma once\n')
