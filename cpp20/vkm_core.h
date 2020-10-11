@@ -40,13 +40,13 @@ enum class AttachmentLoadOp : uint32_t {
     Clear = 1,
     DontCare = 2,
 };
-constexpr inline VkAttachmentLoadOp c_enum(AttachmentLoadOp val) { return static_cast<VkAttachmentLoadOp>(val);}
+constexpr VkAttachmentLoadOp c_enum(AttachmentLoadOp val) { return static_cast<VkAttachmentLoadOp>(val);}
 enum class AttachmentStoreOp : uint32_t {
     Store = 0,
     DontCare = 1,
     NoneQCOM = 1000301000,
 };
-constexpr inline VkAttachmentStoreOp c_enum(AttachmentStoreOp val) { return static_cast<VkAttachmentStoreOp>(val);}
+constexpr VkAttachmentStoreOp c_enum(AttachmentStoreOp val) { return static_cast<VkAttachmentStoreOp>(val);}
 enum class BlendFactor : uint32_t {
     Zero = 0,
     One = 1,
@@ -68,7 +68,7 @@ enum class BlendFactor : uint32_t {
     Src1Alpha = 17,
     OneMinusSrc1Alpha = 18,
 };
-constexpr inline VkBlendFactor c_enum(BlendFactor val) { return static_cast<VkBlendFactor>(val);}
+constexpr VkBlendFactor c_enum(BlendFactor val) { return static_cast<VkBlendFactor>(val);}
 enum class BlendOp : uint32_t {
     Add = 0,
     Subtract = 1,
@@ -122,7 +122,7 @@ enum class BlendOp : uint32_t {
     GreenEXT = 1000148044,
     BlueEXT = 1000148045,
 };
-constexpr inline VkBlendOp c_enum(BlendOp val) { return static_cast<VkBlendOp>(val);}
+constexpr VkBlendOp c_enum(BlendOp val) { return static_cast<VkBlendOp>(val);}
 enum class BorderColor : uint32_t {
     FloatTransparentBlack = 0,
     IntTransparentBlack = 1,
@@ -133,11 +133,11 @@ enum class BorderColor : uint32_t {
     FloatCustomEXT = 1000287003,
     IntCustomEXT = 1000287004,
 };
-constexpr inline VkBorderColor c_enum(BorderColor val) { return static_cast<VkBorderColor>(val);}
+constexpr VkBorderColor c_enum(BorderColor val) { return static_cast<VkBorderColor>(val);}
 enum class PipelineCacheHeaderVersion : uint32_t {
     One = 1,
 };
-constexpr inline VkPipelineCacheHeaderVersion c_enum(PipelineCacheHeaderVersion val) { return static_cast<VkPipelineCacheHeaderVersion>(val);}
+constexpr VkPipelineCacheHeaderVersion c_enum(PipelineCacheHeaderVersion val) { return static_cast<VkPipelineCacheHeaderVersion>(val);}
 enum class ComponentSwizzle : uint32_t {
     Identity = 0,
     Zero = 1,
@@ -147,12 +147,12 @@ enum class ComponentSwizzle : uint32_t {
     B = 5,
     A = 6,
 };
-constexpr inline VkComponentSwizzle c_enum(ComponentSwizzle val) { return static_cast<VkComponentSwizzle>(val);}
+constexpr VkComponentSwizzle c_enum(ComponentSwizzle val) { return static_cast<VkComponentSwizzle>(val);}
 enum class CommandBufferLevel : uint32_t {
     Primary = 0,
     Secondary = 1,
 };
-constexpr inline VkCommandBufferLevel c_enum(CommandBufferLevel val) { return static_cast<VkCommandBufferLevel>(val);}
+constexpr VkCommandBufferLevel c_enum(CommandBufferLevel val) { return static_cast<VkCommandBufferLevel>(val);}
 enum class CompareOp : uint32_t {
     Never = 0,
     Less = 1,
@@ -163,7 +163,7 @@ enum class CompareOp : uint32_t {
     GreaterOrEqual = 6,
     Always = 7,
 };
-constexpr inline VkCompareOp c_enum(CompareOp val) { return static_cast<VkCompareOp>(val);}
+constexpr VkCompareOp c_enum(CompareOp val) { return static_cast<VkCompareOp>(val);}
 enum class DescriptorType : uint32_t {
     Sampler = 0,
     CombinedImageSampler = 1,
@@ -179,7 +179,7 @@ enum class DescriptorType : uint32_t {
     InlineUniformBlockEXT = 1000138000,
     AccelerationStructureKHR = 1000165000,
 };
-constexpr inline VkDescriptorType c_enum(DescriptorType val) { return static_cast<VkDescriptorType>(val);}
+constexpr VkDescriptorType c_enum(DescriptorType val) { return static_cast<VkDescriptorType>(val);}
 enum class DynamicState : uint32_t {
     Viewport = 0,
     Scissor = 1,
@@ -210,14 +210,14 @@ enum class DynamicState : uint32_t {
     StencilTestEnableEXT = 1000267010,
     StencilOpEXT = 1000267011,
 };
-constexpr inline VkDynamicState c_enum(DynamicState val) { return static_cast<VkDynamicState>(val);}
+constexpr VkDynamicState c_enum(DynamicState val) { return static_cast<VkDynamicState>(val);}
 enum class PolygonMode : uint32_t {
     Fill = 0,
     Line = 1,
     Point = 2,
     FillRectangleNV = 1000153000,
 };
-constexpr inline VkPolygonMode c_enum(PolygonMode val) { return static_cast<VkPolygonMode>(val);}
+constexpr VkPolygonMode c_enum(PolygonMode val) { return static_cast<VkPolygonMode>(val);}
 enum class Format : uint32_t {
     Undefined = 0,
     R4G4UnormPack8 = 1,
@@ -463,12 +463,12 @@ enum class Format : uint32_t {
     G16B16R162Plane422Unorm = 1000156032,
     G16B16R163Plane444Unorm = 1000156033,
 };
-constexpr inline VkFormat c_enum(Format val) { return static_cast<VkFormat>(val);}
+constexpr VkFormat c_enum(Format val) { return static_cast<VkFormat>(val);}
 enum class FrontFace : uint32_t {
     CounterClockwise = 0,
     Clockwise = 1,
 };
-constexpr inline VkFrontFace c_enum(FrontFace val) { return static_cast<VkFrontFace>(val);}
+constexpr VkFrontFace c_enum(FrontFace val) { return static_cast<VkFrontFace>(val);}
 enum class ImageLayout : uint32_t {
     Undefined = 0,
     General = 1,
@@ -490,19 +490,19 @@ enum class ImageLayout : uint32_t {
     StencilAttachmentOptimal = 1000241002,
     StencilReadOnlyOptimal = 1000241003,
 };
-constexpr inline VkImageLayout c_enum(ImageLayout val) { return static_cast<VkImageLayout>(val);}
+constexpr VkImageLayout c_enum(ImageLayout val) { return static_cast<VkImageLayout>(val);}
 enum class ImageTiling : uint32_t {
     Optimal = 0,
     Linear = 1,
     DrmFormatModifierEXT = 1000158000,
 };
-constexpr inline VkImageTiling c_enum(ImageTiling val) { return static_cast<VkImageTiling>(val);}
+constexpr VkImageTiling c_enum(ImageTiling val) { return static_cast<VkImageTiling>(val);}
 enum class ImageType : uint32_t {
     e1D = 0,
     e2D = 1,
     e3D = 2,
 };
-constexpr inline VkImageType c_enum(ImageType val) { return static_cast<VkImageType>(val);}
+constexpr VkImageType c_enum(ImageType val) { return static_cast<VkImageType>(val);}
 enum class ImageViewType : uint32_t {
     e1D = 0,
     e2D = 1,
@@ -512,19 +512,19 @@ enum class ImageViewType : uint32_t {
     e2DArray = 5,
     CubeArray = 6,
 };
-constexpr inline VkImageViewType c_enum(ImageViewType val) { return static_cast<VkImageViewType>(val);}
+constexpr VkImageViewType c_enum(ImageViewType val) { return static_cast<VkImageViewType>(val);}
 enum class SharingMode : uint32_t {
     Exclusive = 0,
     Concurrent = 1,
 };
-constexpr inline VkSharingMode c_enum(SharingMode val) { return static_cast<VkSharingMode>(val);}
+constexpr VkSharingMode c_enum(SharingMode val) { return static_cast<VkSharingMode>(val);}
 enum class IndexType : uint32_t {
     Uint16 = 0,
     Uint32 = 1,
     NoneKHR = 1000165000,
     Uint8EXT = 1000265000,
 };
-constexpr inline VkIndexType c_enum(IndexType val) { return static_cast<VkIndexType>(val);}
+constexpr VkIndexType c_enum(IndexType val) { return static_cast<VkIndexType>(val);}
 enum class LogicOp : uint32_t {
     Clear = 0,
     And = 1,
@@ -543,7 +543,7 @@ enum class LogicOp : uint32_t {
     Nand = 14,
     Set = 15,
 };
-constexpr inline VkLogicOp c_enum(LogicOp val) { return static_cast<VkLogicOp>(val);}
+constexpr VkLogicOp c_enum(LogicOp val) { return static_cast<VkLogicOp>(val);}
 enum class PhysicalDeviceType : uint32_t {
     Other = 0,
     IntegratedGpu = 1,
@@ -551,13 +551,13 @@ enum class PhysicalDeviceType : uint32_t {
     VirtualGpu = 3,
     Cpu = 4,
 };
-constexpr inline VkPhysicalDeviceType c_enum(PhysicalDeviceType val) { return static_cast<VkPhysicalDeviceType>(val);}
+constexpr VkPhysicalDeviceType c_enum(PhysicalDeviceType val) { return static_cast<VkPhysicalDeviceType>(val);}
 enum class PipelineBindPoint : uint32_t {
     Graphics = 0,
     Compute = 1,
     RayTracingKHR = 1000165000,
 };
-constexpr inline VkPipelineBindPoint c_enum(PipelineBindPoint val) { return static_cast<VkPipelineBindPoint>(val);}
+constexpr VkPipelineBindPoint c_enum(PipelineBindPoint val) { return static_cast<VkPipelineBindPoint>(val);}
 enum class PrimitiveTopology : uint32_t {
     PointList = 0,
     LineList = 1,
@@ -571,7 +571,7 @@ enum class PrimitiveTopology : uint32_t {
     TriangleStripWithAdjacency = 9,
     PatchList = 10,
 };
-constexpr inline VkPrimitiveTopology c_enum(PrimitiveTopology val) { return static_cast<VkPrimitiveTopology>(val);}
+constexpr VkPrimitiveTopology c_enum(PrimitiveTopology val) { return static_cast<VkPrimitiveTopology>(val);}
 enum class QueryType : uint32_t {
     Occlusion = 0,
     PipelineStatistics = 1,
@@ -582,12 +582,12 @@ enum class QueryType : uint32_t {
     AccelerationStructureSerializationSizeKHR = 1000150000,
     PerformanceQueryINTEL = 1000210000,
 };
-constexpr inline VkQueryType c_enum(QueryType val) { return static_cast<VkQueryType>(val);}
+constexpr VkQueryType c_enum(QueryType val) { return static_cast<VkQueryType>(val);}
 enum class SubpassContents : uint32_t {
     Inline = 0,
     SecondaryCommandBuffers = 1,
 };
-constexpr inline VkSubpassContents c_enum(SubpassContents val) { return static_cast<VkSubpassContents>(val);}
+constexpr VkSubpassContents c_enum(SubpassContents val) { return static_cast<VkSubpassContents>(val);}
 enum class Result : int32_t {
     Success = 0,
     NotReady = 1,
@@ -629,8 +629,8 @@ enum class Result : int32_t {
     ErrorFragmentation = -1000161000,
     ErrorInvalidOpaqueCaptureAddress = -1000257000,
 };
-constexpr inline VkResult c_enum(Result val) { return static_cast<VkResult>(val);}
-const char * to_string(Result val) {
+constexpr VkResult c_enum(Result val) { return static_cast<VkResult>(val);}
+inline const char * to_string(Result val) {
     switch(val) {
         case(Result::Success): return "Success";
         case(Result::NotReady): return "NotReady";
@@ -674,7 +674,7 @@ const char * to_string(Result val) {
         default: return "UNKNOWN";
     }
 }
-bool operator !(Result res) { return res != Result::Success; }
+constexpr bool operator !(Result res) { return res != Result::Success; }
 enum class StencilOp : uint32_t {
     Keep = 0,
     Zero = 1,
@@ -685,7 +685,7 @@ enum class StencilOp : uint32_t {
     IncrementAndWrap = 6,
     DecrementAndWrap = 7,
 };
-constexpr inline VkStencilOp c_enum(StencilOp val) { return static_cast<VkStencilOp>(val);}
+constexpr VkStencilOp c_enum(StencilOp val) { return static_cast<VkStencilOp>(val);}
 enum class StructureType : uint32_t {
     ApplicationInfo = 0,
     InstanceCreateInfo = 1,
@@ -1148,7 +1148,7 @@ enum class StructureType : uint32_t {
     MemoryOpaqueCaptureAddressAllocateInfo = 1000257003,
     DeviceMemoryOpaqueCaptureAddressInfo = 1000257004,
 };
-constexpr inline VkStructureType c_enum(StructureType val) { return static_cast<VkStructureType>(val);}
+constexpr VkStructureType c_enum(StructureType val) { return static_cast<VkStructureType>(val);}
 enum class SystemAllocationScope : uint32_t {
     Command = 0,
     Object = 1,
@@ -1156,11 +1156,11 @@ enum class SystemAllocationScope : uint32_t {
     Device = 3,
     Instance = 4,
 };
-constexpr inline VkSystemAllocationScope c_enum(SystemAllocationScope val) { return static_cast<VkSystemAllocationScope>(val);}
+constexpr VkSystemAllocationScope c_enum(SystemAllocationScope val) { return static_cast<VkSystemAllocationScope>(val);}
 enum class InternalAllocationType : uint32_t {
     Executable = 0,
 };
-constexpr inline VkInternalAllocationType c_enum(InternalAllocationType val) { return static_cast<VkInternalAllocationType>(val);}
+constexpr VkInternalAllocationType c_enum(InternalAllocationType val) { return static_cast<VkInternalAllocationType>(val);}
 enum class SamplerAddressMode : uint32_t {
     Repeat = 0,
     MirroredRepeat = 1,
@@ -1168,23 +1168,23 @@ enum class SamplerAddressMode : uint32_t {
     ClampToBorder = 3,
     MirrorClampToEdge = 4,
 };
-constexpr inline VkSamplerAddressMode c_enum(SamplerAddressMode val) { return static_cast<VkSamplerAddressMode>(val);}
+constexpr VkSamplerAddressMode c_enum(SamplerAddressMode val) { return static_cast<VkSamplerAddressMode>(val);}
 enum class Filter : uint32_t {
     Nearest = 0,
     Linear = 1,
     CubicIMG = 1000015000,
 };
-constexpr inline VkFilter c_enum(Filter val) { return static_cast<VkFilter>(val);}
+constexpr VkFilter c_enum(Filter val) { return static_cast<VkFilter>(val);}
 enum class SamplerMipmapMode : uint32_t {
     Nearest = 0,
     Linear = 1,
 };
-constexpr inline VkSamplerMipmapMode c_enum(SamplerMipmapMode val) { return static_cast<VkSamplerMipmapMode>(val);}
+constexpr VkSamplerMipmapMode c_enum(SamplerMipmapMode val) { return static_cast<VkSamplerMipmapMode>(val);}
 enum class VertexInputRate : uint32_t {
     Vertex = 0,
     Instance = 1,
 };
-constexpr inline VkVertexInputRate c_enum(VertexInputRate val) { return static_cast<VkVertexInputRate>(val);}
+constexpr VkVertexInputRate c_enum(VertexInputRate val) { return static_cast<VkVertexInputRate>(val);}
 enum class ObjectType : uint32_t {
     Unknown = 0,
     Instance = 1,
@@ -1227,7 +1227,7 @@ enum class ObjectType : uint32_t {
     SamplerYcbcrConversion = 1000156000,
     DescriptorUpdateTemplate = 1000085000,
 };
-constexpr inline VkObjectType c_enum(ObjectType val) { return static_cast<VkObjectType>(val);}
+constexpr VkObjectType c_enum(ObjectType val) { return static_cast<VkObjectType>(val);}
 enum class IndirectCommandsTokenTypeNV : uint32_t {
     ShaderGroupNV = 0,
     StateFlagsNV = 1,
@@ -1238,12 +1238,12 @@ enum class IndirectCommandsTokenTypeNV : uint32_t {
     DrawNV = 6,
     DrawTasksNV = 7,
 };
-constexpr inline VkIndirectCommandsTokenTypeNV c_enum(IndirectCommandsTokenTypeNV val) { return static_cast<VkIndirectCommandsTokenTypeNV>(val);}
+constexpr VkIndirectCommandsTokenTypeNV c_enum(IndirectCommandsTokenTypeNV val) { return static_cast<VkIndirectCommandsTokenTypeNV>(val);}
 enum class DescriptorUpdateTemplateType : uint32_t {
     DescriptorSet = 0,
     PushDescriptorsKHR = 1,
 };
-constexpr inline VkDescriptorUpdateTemplateType c_enum(DescriptorUpdateTemplateType val) { return static_cast<VkDescriptorUpdateTemplateType>(val);}
+constexpr VkDescriptorUpdateTemplateType c_enum(DescriptorUpdateTemplateType val) { return static_cast<VkDescriptorUpdateTemplateType>(val);}
 using DescriptorUpdateTemplateTypeKHR = DescriptorUpdateTemplateType;
 enum class ViewportCoordinateSwizzleNV : uint32_t {
     PositiveXNV = 0,
@@ -1255,17 +1255,17 @@ enum class ViewportCoordinateSwizzleNV : uint32_t {
     PositiveWNV = 6,
     NegativeWNV = 7,
 };
-constexpr inline VkViewportCoordinateSwizzleNV c_enum(ViewportCoordinateSwizzleNV val) { return static_cast<VkViewportCoordinateSwizzleNV>(val);}
+constexpr VkViewportCoordinateSwizzleNV c_enum(ViewportCoordinateSwizzleNV val) { return static_cast<VkViewportCoordinateSwizzleNV>(val);}
 enum class DiscardRectangleModeEXT : uint32_t {
     InclusiveEXT = 0,
     ExclusiveEXT = 1,
 };
-constexpr inline VkDiscardRectangleModeEXT c_enum(DiscardRectangleModeEXT val) { return static_cast<VkDiscardRectangleModeEXT>(val);}
+constexpr VkDiscardRectangleModeEXT c_enum(DiscardRectangleModeEXT val) { return static_cast<VkDiscardRectangleModeEXT>(val);}
 enum class PointClippingBehavior : uint32_t {
     AllClipPlanes = 0,
     UserClipPlanesOnly = 1,
 };
-constexpr inline VkPointClippingBehavior c_enum(PointClippingBehavior val) { return static_cast<VkPointClippingBehavior>(val);}
+constexpr VkPointClippingBehavior c_enum(PointClippingBehavior val) { return static_cast<VkPointClippingBehavior>(val);}
 using PointClippingBehaviorKHR = PointClippingBehavior;
 enum class CoverageModulationModeNV : uint32_t {
     NoneNV = 0,
@@ -1273,47 +1273,47 @@ enum class CoverageModulationModeNV : uint32_t {
     AlphaNV = 2,
     RgbaNV = 3,
 };
-constexpr inline VkCoverageModulationModeNV c_enum(CoverageModulationModeNV val) { return static_cast<VkCoverageModulationModeNV>(val);}
+constexpr VkCoverageModulationModeNV c_enum(CoverageModulationModeNV val) { return static_cast<VkCoverageModulationModeNV>(val);}
 enum class CoverageReductionModeNV : uint32_t {
     MergeNV = 0,
     TruncateNV = 1,
 };
-constexpr inline VkCoverageReductionModeNV c_enum(CoverageReductionModeNV val) { return static_cast<VkCoverageReductionModeNV>(val);}
+constexpr VkCoverageReductionModeNV c_enum(CoverageReductionModeNV val) { return static_cast<VkCoverageReductionModeNV>(val);}
 enum class ValidationCacheHeaderVersionEXT : uint32_t {
     OneEXT = 1,
 };
-constexpr inline VkValidationCacheHeaderVersionEXT c_enum(ValidationCacheHeaderVersionEXT val) { return static_cast<VkValidationCacheHeaderVersionEXT>(val);}
+constexpr VkValidationCacheHeaderVersionEXT c_enum(ValidationCacheHeaderVersionEXT val) { return static_cast<VkValidationCacheHeaderVersionEXT>(val);}
 enum class ShaderInfoTypeAMD : uint32_t {
     StatisticsAMD = 0,
     BinaryAMD = 1,
     DisassemblyAMD = 2,
 };
-constexpr inline VkShaderInfoTypeAMD c_enum(ShaderInfoTypeAMD val) { return static_cast<VkShaderInfoTypeAMD>(val);}
+constexpr VkShaderInfoTypeAMD c_enum(ShaderInfoTypeAMD val) { return static_cast<VkShaderInfoTypeAMD>(val);}
 enum class QueueGlobalPriorityEXT : uint32_t {
     LowEXT = 128,
     MediumEXT = 256,
     HighEXT = 512,
     RealtimeEXT = 1024,
 };
-constexpr inline VkQueueGlobalPriorityEXT c_enum(QueueGlobalPriorityEXT val) { return static_cast<VkQueueGlobalPriorityEXT>(val);}
+constexpr VkQueueGlobalPriorityEXT c_enum(QueueGlobalPriorityEXT val) { return static_cast<VkQueueGlobalPriorityEXT>(val);}
 enum class TimeDomainEXT : uint32_t {
     DeviceEXT = 0,
     ClockMonotonicEXT = 1,
     ClockMonotonicRawEXT = 2,
     QueryPerformanceCounterEXT = 3,
 };
-constexpr inline VkTimeDomainEXT c_enum(TimeDomainEXT val) { return static_cast<VkTimeDomainEXT>(val);}
+constexpr VkTimeDomainEXT c_enum(TimeDomainEXT val) { return static_cast<VkTimeDomainEXT>(val);}
 enum class ConservativeRasterizationModeEXT : uint32_t {
     DisabledEXT = 0,
     OverestimateEXT = 1,
     UnderestimateEXT = 2,
 };
-constexpr inline VkConservativeRasterizationModeEXT c_enum(ConservativeRasterizationModeEXT val) { return static_cast<VkConservativeRasterizationModeEXT>(val);}
+constexpr VkConservativeRasterizationModeEXT c_enum(ConservativeRasterizationModeEXT val) { return static_cast<VkConservativeRasterizationModeEXT>(val);}
 enum class SemaphoreType : uint32_t {
     Binary = 0,
     Timeline = 1,
 };
-constexpr inline VkSemaphoreType c_enum(SemaphoreType val) { return static_cast<VkSemaphoreType>(val);}
+constexpr VkSemaphoreType c_enum(SemaphoreType val) { return static_cast<VkSemaphoreType>(val);}
 using SemaphoreTypeKHR = SemaphoreType;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 enum class CopyAccelerationStructureModeKHR : uint32_t {
@@ -1322,7 +1322,7 @@ enum class CopyAccelerationStructureModeKHR : uint32_t {
     SerializeKHR = 2,
     DeserializeKHR = 3,
 };
-constexpr inline VkCopyAccelerationStructureModeKHR c_enum(CopyAccelerationStructureModeKHR val) { return static_cast<VkCopyAccelerationStructureModeKHR>(val);}
+constexpr VkCopyAccelerationStructureModeKHR c_enum(CopyAccelerationStructureModeKHR val) { return static_cast<VkCopyAccelerationStructureModeKHR>(val);}
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using CopyAccelerationStructureModeNV = CopyAccelerationStructureModeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
@@ -1330,7 +1330,7 @@ enum class AccelerationStructureTypeKHR : uint32_t {
     TopLevelKHR = 0,
     BottomLevelKHR = 1,
 };
-constexpr inline VkAccelerationStructureTypeKHR c_enum(AccelerationStructureTypeKHR val) { return static_cast<VkAccelerationStructureTypeKHR>(val);}
+constexpr VkAccelerationStructureTypeKHR c_enum(AccelerationStructureTypeKHR val) { return static_cast<VkAccelerationStructureTypeKHR>(val);}
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using AccelerationStructureTypeNV = AccelerationStructureTypeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
@@ -1339,7 +1339,7 @@ enum class GeometryTypeKHR : uint32_t {
     AabbsKHR = 1,
     InstancesKHR = 1000150000,
 };
-constexpr inline VkGeometryTypeKHR c_enum(GeometryTypeKHR val) { return static_cast<VkGeometryTypeKHR>(val);}
+constexpr VkGeometryTypeKHR c_enum(GeometryTypeKHR val) { return static_cast<VkGeometryTypeKHR>(val);}
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using GeometryTypeNV = GeometryTypeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
@@ -1348,7 +1348,7 @@ enum class RayTracingShaderGroupTypeKHR : uint32_t {
     TrianglesHitGroupKHR = 1,
     ProceduralHitGroupKHR = 2,
 };
-constexpr inline VkRayTracingShaderGroupTypeKHR c_enum(RayTracingShaderGroupTypeKHR val) { return static_cast<VkRayTracingShaderGroupTypeKHR>(val);}
+constexpr VkRayTracingShaderGroupTypeKHR c_enum(RayTracingShaderGroupTypeKHR val) { return static_cast<VkRayTracingShaderGroupTypeKHR>(val);}
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using RayTracingShaderGroupTypeNV = RayTracingShaderGroupTypeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
@@ -1357,7 +1357,7 @@ enum class AccelerationStructureMemoryRequirementsTypeKHR : uint32_t {
     BuildScratchKHR = 1,
     UpdateScratchKHR = 2,
 };
-constexpr inline VkAccelerationStructureMemoryRequirementsTypeKHR c_enum(AccelerationStructureMemoryRequirementsTypeKHR val) { return static_cast<VkAccelerationStructureMemoryRequirementsTypeKHR>(val);}
+constexpr VkAccelerationStructureMemoryRequirementsTypeKHR c_enum(AccelerationStructureMemoryRequirementsTypeKHR val) { return static_cast<VkAccelerationStructureMemoryRequirementsTypeKHR>(val);}
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using AccelerationStructureMemoryRequirementsTypeNV = AccelerationStructureMemoryRequirementsTypeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
@@ -1366,21 +1366,21 @@ enum class AccelerationStructureBuildTypeKHR : uint32_t {
     DeviceKHR = 1,
     HostOrDeviceKHR = 2,
 };
-constexpr inline VkAccelerationStructureBuildTypeKHR c_enum(AccelerationStructureBuildTypeKHR val) { return static_cast<VkAccelerationStructureBuildTypeKHR>(val);}
+constexpr VkAccelerationStructureBuildTypeKHR c_enum(AccelerationStructureBuildTypeKHR val) { return static_cast<VkAccelerationStructureBuildTypeKHR>(val);}
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 enum class MemoryOverallocationBehaviorAMD : uint32_t {
     DefaultAMD = 0,
     AllowedAMD = 1,
     DisallowedAMD = 2,
 };
-constexpr inline VkMemoryOverallocationBehaviorAMD c_enum(MemoryOverallocationBehaviorAMD val) { return static_cast<VkMemoryOverallocationBehaviorAMD>(val);}
+constexpr VkMemoryOverallocationBehaviorAMD c_enum(MemoryOverallocationBehaviorAMD val) { return static_cast<VkMemoryOverallocationBehaviorAMD>(val);}
 enum class ScopeNV : uint32_t {
     DeviceNV = 1,
     WorkgroupNV = 2,
     SubgroupNV = 3,
     QueueFamilyNV = 5,
 };
-constexpr inline VkScopeNV c_enum(ScopeNV val) { return static_cast<VkScopeNV>(val);}
+constexpr VkScopeNV c_enum(ScopeNV val) { return static_cast<VkScopeNV>(val);}
 enum class ComponentTypeNV : uint32_t {
     Float16NV = 0,
     Float32NV = 1,
@@ -1394,13 +1394,13 @@ enum class ComponentTypeNV : uint32_t {
     Uint32NV = 9,
     Uint64NV = 10,
 };
-constexpr inline VkComponentTypeNV c_enum(ComponentTypeNV val) { return static_cast<VkComponentTypeNV>(val);}
+constexpr VkComponentTypeNV c_enum(ComponentTypeNV val) { return static_cast<VkComponentTypeNV>(val);}
 enum class PerformanceCounterScopeKHR : uint32_t {
     CommandBufferKHR = 0,
     RenderPassKHR = 1,
     CommandKHR = 2,
 };
-constexpr inline VkPerformanceCounterScopeKHR c_enum(PerformanceCounterScopeKHR val) { return static_cast<VkPerformanceCounterScopeKHR>(val);}
+constexpr VkPerformanceCounterScopeKHR c_enum(PerformanceCounterScopeKHR val) { return static_cast<VkPerformanceCounterScopeKHR>(val);}
 enum class PerformanceCounterUnitKHR : uint32_t {
     GenericKHR = 0,
     PercentageKHR = 1,
@@ -1414,7 +1414,7 @@ enum class PerformanceCounterUnitKHR : uint32_t {
     HertzKHR = 9,
     CyclesKHR = 10,
 };
-constexpr inline VkPerformanceCounterUnitKHR c_enum(PerformanceCounterUnitKHR val) { return static_cast<VkPerformanceCounterUnitKHR>(val);}
+constexpr VkPerformanceCounterUnitKHR c_enum(PerformanceCounterUnitKHR val) { return static_cast<VkPerformanceCounterUnitKHR>(val);}
 enum class PerformanceCounterStorageKHR : uint32_t {
     Int32KHR = 0,
     Int64KHR = 1,
@@ -1423,25 +1423,25 @@ enum class PerformanceCounterStorageKHR : uint32_t {
     Float32KHR = 4,
     Float64KHR = 5,
 };
-constexpr inline VkPerformanceCounterStorageKHR c_enum(PerformanceCounterStorageKHR val) { return static_cast<VkPerformanceCounterStorageKHR>(val);}
+constexpr VkPerformanceCounterStorageKHR c_enum(PerformanceCounterStorageKHR val) { return static_cast<VkPerformanceCounterStorageKHR>(val);}
 enum class PerformanceConfigurationTypeINTEL : uint32_t {
     CommandQueueMetricsDiscoveryActivatedINTEL = 0,
 };
-constexpr inline VkPerformanceConfigurationTypeINTEL c_enum(PerformanceConfigurationTypeINTEL val) { return static_cast<VkPerformanceConfigurationTypeINTEL>(val);}
+constexpr VkPerformanceConfigurationTypeINTEL c_enum(PerformanceConfigurationTypeINTEL val) { return static_cast<VkPerformanceConfigurationTypeINTEL>(val);}
 enum class QueryPoolSamplingModeINTEL : uint32_t {
     ManualINTEL = 0,
 };
-constexpr inline VkQueryPoolSamplingModeINTEL c_enum(QueryPoolSamplingModeINTEL val) { return static_cast<VkQueryPoolSamplingModeINTEL>(val);}
+constexpr VkQueryPoolSamplingModeINTEL c_enum(QueryPoolSamplingModeINTEL val) { return static_cast<VkQueryPoolSamplingModeINTEL>(val);}
 enum class PerformanceOverrideTypeINTEL : uint32_t {
     NullHardwareINTEL = 0,
     FlushGpuCachesINTEL = 1,
 };
-constexpr inline VkPerformanceOverrideTypeINTEL c_enum(PerformanceOverrideTypeINTEL val) { return static_cast<VkPerformanceOverrideTypeINTEL>(val);}
+constexpr VkPerformanceOverrideTypeINTEL c_enum(PerformanceOverrideTypeINTEL val) { return static_cast<VkPerformanceOverrideTypeINTEL>(val);}
 enum class PerformanceParameterTypeINTEL : uint32_t {
     HwCountersSupportedINTEL = 0,
     StreamMarkerValidBitsINTEL = 1,
 };
-constexpr inline VkPerformanceParameterTypeINTEL c_enum(PerformanceParameterTypeINTEL val) { return static_cast<VkPerformanceParameterTypeINTEL>(val);}
+constexpr VkPerformanceParameterTypeINTEL c_enum(PerformanceParameterTypeINTEL val) { return static_cast<VkPerformanceParameterTypeINTEL>(val);}
 enum class PerformanceValueTypeINTEL : uint32_t {
     Uint32INTEL = 0,
     Uint64INTEL = 1,
@@ -1449,14 +1449,14 @@ enum class PerformanceValueTypeINTEL : uint32_t {
     BoolINTEL = 3,
     StringINTEL = 4,
 };
-constexpr inline VkPerformanceValueTypeINTEL c_enum(PerformanceValueTypeINTEL val) { return static_cast<VkPerformanceValueTypeINTEL>(val);}
+constexpr VkPerformanceValueTypeINTEL c_enum(PerformanceValueTypeINTEL val) { return static_cast<VkPerformanceValueTypeINTEL>(val);}
 enum class LineRasterizationModeEXT : uint32_t {
     DefaultEXT = 0,
     RectangularEXT = 1,
     BresenhamEXT = 2,
     RectangularSmoothEXT = 3,
 };
-constexpr inline VkLineRasterizationModeEXT c_enum(LineRasterizationModeEXT val) { return static_cast<VkLineRasterizationModeEXT>(val);}
+constexpr VkLineRasterizationModeEXT c_enum(LineRasterizationModeEXT val) { return static_cast<VkLineRasterizationModeEXT>(val);}
 enum class ColorSpaceKHR : uint32_t {
     SrgbNonlinearKHR = 0,
     DisplayP3NonlinearEXT = 1000104001,
@@ -1475,7 +1475,7 @@ enum class ColorSpaceKHR : uint32_t {
     ExtendedSrgbNonlinearEXT = 1000104014,
     DisplayNativeAMD = 1000213000,
 };
-constexpr inline VkColorSpaceKHR c_enum(ColorSpaceKHR val) { return static_cast<VkColorSpaceKHR>(val);}
+constexpr VkColorSpaceKHR c_enum(ColorSpaceKHR val) { return static_cast<VkColorSpaceKHR>(val);}
 enum class PresentModeKHR : uint32_t {
     ImmediateKHR = 0,
     MailboxKHR = 1,
@@ -1484,7 +1484,7 @@ enum class PresentModeKHR : uint32_t {
     SharedDemandRefreshKHR = 1000111000,
     SharedContinuousRefreshKHR = 1000111001,
 };
-constexpr inline VkPresentModeKHR c_enum(PresentModeKHR val) { return static_cast<VkPresentModeKHR>(val);}
+constexpr VkPresentModeKHR c_enum(PresentModeKHR val) { return static_cast<VkPresentModeKHR>(val);}
 enum class DebugReportObjectTypeEXT : uint32_t {
     UnknownEXT = 0,
     InstanceEXT = 1,
@@ -1522,7 +1522,7 @@ enum class DebugReportObjectTypeEXT : uint32_t {
     DescriptorUpdateTemplateEXT = 1000085000,
     AccelerationStructureKhrEXT = 1000165000,
 };
-constexpr inline VkDebugReportObjectTypeEXT c_enum(DebugReportObjectTypeEXT val) { return static_cast<VkDebugReportObjectTypeEXT>(val);}
+constexpr VkDebugReportObjectTypeEXT c_enum(DebugReportObjectTypeEXT val) { return static_cast<VkDebugReportObjectTypeEXT>(val);}
 enum class DeviceMemoryReportEventTypeEXT : uint32_t {
     AllocateEXT = 0,
     FreeEXT = 1,
@@ -1530,17 +1530,17 @@ enum class DeviceMemoryReportEventTypeEXT : uint32_t {
     UnimportEXT = 3,
     AllocationFailedEXT = 4,
 };
-constexpr inline VkDeviceMemoryReportEventTypeEXT c_enum(DeviceMemoryReportEventTypeEXT val) { return static_cast<VkDeviceMemoryReportEventTypeEXT>(val);}
+constexpr VkDeviceMemoryReportEventTypeEXT c_enum(DeviceMemoryReportEventTypeEXT val) { return static_cast<VkDeviceMemoryReportEventTypeEXT>(val);}
 enum class RasterizationOrderAMD : uint32_t {
     StrictAMD = 0,
     RelaxedAMD = 1,
 };
-constexpr inline VkRasterizationOrderAMD c_enum(RasterizationOrderAMD val) { return static_cast<VkRasterizationOrderAMD>(val);}
+constexpr VkRasterizationOrderAMD c_enum(RasterizationOrderAMD val) { return static_cast<VkRasterizationOrderAMD>(val);}
 enum class ValidationCheckEXT : uint32_t {
     AllEXT = 0,
     ShadersEXT = 1,
 };
-constexpr inline VkValidationCheckEXT c_enum(ValidationCheckEXT val) { return static_cast<VkValidationCheckEXT>(val);}
+constexpr VkValidationCheckEXT c_enum(ValidationCheckEXT val) { return static_cast<VkValidationCheckEXT>(val);}
 enum class ValidationFeatureEnableEXT : uint32_t {
     GpuAssistedEXT = 0,
     GpuAssistedReserveBindingSlotEXT = 1,
@@ -1548,7 +1548,7 @@ enum class ValidationFeatureEnableEXT : uint32_t {
     DebugPrintfEXT = 3,
     SynchronizationValidationEXT = 4,
 };
-constexpr inline VkValidationFeatureEnableEXT c_enum(ValidationFeatureEnableEXT val) { return static_cast<VkValidationFeatureEnableEXT>(val);}
+constexpr VkValidationFeatureEnableEXT c_enum(ValidationFeatureEnableEXT val) { return static_cast<VkValidationFeatureEnableEXT>(val);}
 enum class ValidationFeatureDisableEXT : uint32_t {
     AllEXT = 0,
     ShadersEXT = 1,
@@ -1558,26 +1558,26 @@ enum class ValidationFeatureDisableEXT : uint32_t {
     CoreChecksEXT = 5,
     UniqueHandlesEXT = 6,
 };
-constexpr inline VkValidationFeatureDisableEXT c_enum(ValidationFeatureDisableEXT val) { return static_cast<VkValidationFeatureDisableEXT>(val);}
+constexpr VkValidationFeatureDisableEXT c_enum(ValidationFeatureDisableEXT val) { return static_cast<VkValidationFeatureDisableEXT>(val);}
 enum class DisplayPowerStateEXT : uint32_t {
     OffEXT = 0,
     SuspendEXT = 1,
     OnEXT = 2,
 };
-constexpr inline VkDisplayPowerStateEXT c_enum(DisplayPowerStateEXT val) { return static_cast<VkDisplayPowerStateEXT>(val);}
+constexpr VkDisplayPowerStateEXT c_enum(DisplayPowerStateEXT val) { return static_cast<VkDisplayPowerStateEXT>(val);}
 enum class DeviceEventTypeEXT : uint32_t {
     DisplayHotplugEXT = 0,
 };
-constexpr inline VkDeviceEventTypeEXT c_enum(DeviceEventTypeEXT val) { return static_cast<VkDeviceEventTypeEXT>(val);}
+constexpr VkDeviceEventTypeEXT c_enum(DeviceEventTypeEXT val) { return static_cast<VkDeviceEventTypeEXT>(val);}
 enum class DisplayEventTypeEXT : uint32_t {
     FirstPixelOutEXT = 0,
 };
-constexpr inline VkDisplayEventTypeEXT c_enum(DisplayEventTypeEXT val) { return static_cast<VkDisplayEventTypeEXT>(val);}
+constexpr VkDisplayEventTypeEXT c_enum(DisplayEventTypeEXT val) { return static_cast<VkDisplayEventTypeEXT>(val);}
 enum class TessellationDomainOrigin : uint32_t {
     UpperLeft = 0,
     LowerLeft = 1,
 };
-constexpr inline VkTessellationDomainOrigin c_enum(TessellationDomainOrigin val) { return static_cast<VkTessellationDomainOrigin>(val);}
+constexpr VkTessellationDomainOrigin c_enum(TessellationDomainOrigin val) { return static_cast<VkTessellationDomainOrigin>(val);}
 using TessellationDomainOriginKHR = TessellationDomainOrigin;
 enum class SamplerYcbcrModelConversion : uint32_t {
     RgbIdentity = 0,
@@ -1586,33 +1586,33 @@ enum class SamplerYcbcrModelConversion : uint32_t {
     Ycbcr601 = 3,
     Ycbcr2020 = 4,
 };
-constexpr inline VkSamplerYcbcrModelConversion c_enum(SamplerYcbcrModelConversion val) { return static_cast<VkSamplerYcbcrModelConversion>(val);}
+constexpr VkSamplerYcbcrModelConversion c_enum(SamplerYcbcrModelConversion val) { return static_cast<VkSamplerYcbcrModelConversion>(val);}
 using SamplerYcbcrModelConversionKHR = SamplerYcbcrModelConversion;
 enum class SamplerYcbcrRange : uint32_t {
     ItuFull = 0,
     ItuNarrow = 1,
 };
-constexpr inline VkSamplerYcbcrRange c_enum(SamplerYcbcrRange val) { return static_cast<VkSamplerYcbcrRange>(val);}
+constexpr VkSamplerYcbcrRange c_enum(SamplerYcbcrRange val) { return static_cast<VkSamplerYcbcrRange>(val);}
 using SamplerYcbcrRangeKHR = SamplerYcbcrRange;
 enum class ChromaLocation : uint32_t {
     CositedEven = 0,
     Midpoint = 1,
 };
-constexpr inline VkChromaLocation c_enum(ChromaLocation val) { return static_cast<VkChromaLocation>(val);}
+constexpr VkChromaLocation c_enum(ChromaLocation val) { return static_cast<VkChromaLocation>(val);}
 using ChromaLocationKHR = ChromaLocation;
 enum class SamplerReductionMode : uint32_t {
     WeightedAverage = 0,
     Min = 1,
     Max = 2,
 };
-constexpr inline VkSamplerReductionMode c_enum(SamplerReductionMode val) { return static_cast<VkSamplerReductionMode>(val);}
+constexpr VkSamplerReductionMode c_enum(SamplerReductionMode val) { return static_cast<VkSamplerReductionMode>(val);}
 using SamplerReductionModeEXT = SamplerReductionMode;
 enum class BlendOverlapEXT : uint32_t {
     UncorrelatedEXT = 0,
     DisjointEXT = 1,
     ConjointEXT = 2,
 };
-constexpr inline VkBlendOverlapEXT c_enum(BlendOverlapEXT val) { return static_cast<VkBlendOverlapEXT>(val);}
+constexpr VkBlendOverlapEXT c_enum(BlendOverlapEXT val) { return static_cast<VkBlendOverlapEXT>(val);}
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 enum class FullScreenExclusiveEXT : uint32_t {
     DefaultEXT = 0,
@@ -1620,14 +1620,14 @@ enum class FullScreenExclusiveEXT : uint32_t {
     DisallowedEXT = 2,
     ApplicationControlledEXT = 3,
 };
-constexpr inline VkFullScreenExclusiveEXT c_enum(FullScreenExclusiveEXT val) { return static_cast<VkFullScreenExclusiveEXT>(val);}
+constexpr VkFullScreenExclusiveEXT c_enum(FullScreenExclusiveEXT val) { return static_cast<VkFullScreenExclusiveEXT>(val);}
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 enum class ShaderFloatControlsIndependence : uint32_t {
     e32BitOnly = 0,
     All = 1,
     None = 2,
 };
-constexpr inline VkShaderFloatControlsIndependence c_enum(ShaderFloatControlsIndependence val) { return static_cast<VkShaderFloatControlsIndependence>(val);}
+constexpr VkShaderFloatControlsIndependence c_enum(ShaderFloatControlsIndependence val) { return static_cast<VkShaderFloatControlsIndependence>(val);}
 using ShaderFloatControlsIndependenceKHR = ShaderFloatControlsIndependence;
 enum class VendorId : uint32_t {
     VIV = 0x10001,
@@ -1636,7 +1636,7 @@ enum class VendorId : uint32_t {
     Codeplay = 0x10004,
     MESA = 0x10005,
 };
-constexpr inline VkVendorId c_enum(VendorId val) { return static_cast<VkVendorId>(val);}
+constexpr VkVendorId c_enum(VendorId val) { return static_cast<VkVendorId>(val);}
 enum class DriverId : uint32_t {
     AmdProprietary = 1,
     AmdOpenSource = 2,
@@ -1653,7 +1653,7 @@ enum class DriverId : uint32_t {
     MesaLlvmpipe = 13,
     Moltenvk = 14,
 };
-constexpr inline VkDriverId c_enum(DriverId val) { return static_cast<VkDriverId>(val);}
+constexpr VkDriverId c_enum(DriverId val) { return static_cast<VkDriverId>(val);}
 using DriverIdKHR = DriverId;
 enum class ShadingRatePaletteEntryNV : uint32_t {
     NoInvocationsNV = 0,
@@ -1669,21 +1669,21 @@ enum class ShadingRatePaletteEntryNV : uint32_t {
     e1InvocationPer2X4PixelsNV = 10,
     e1InvocationPer4X4PixelsNV = 11,
 };
-constexpr inline VkShadingRatePaletteEntryNV c_enum(ShadingRatePaletteEntryNV val) { return static_cast<VkShadingRatePaletteEntryNV>(val);}
+constexpr VkShadingRatePaletteEntryNV c_enum(ShadingRatePaletteEntryNV val) { return static_cast<VkShadingRatePaletteEntryNV>(val);}
 enum class CoarseSampleOrderTypeNV : uint32_t {
     DefaultNV = 0,
     CustomNV = 1,
     PixelMajorNV = 2,
     SampleMajorNV = 3,
 };
-constexpr inline VkCoarseSampleOrderTypeNV c_enum(CoarseSampleOrderTypeNV val) { return static_cast<VkCoarseSampleOrderTypeNV>(val);}
+constexpr VkCoarseSampleOrderTypeNV c_enum(CoarseSampleOrderTypeNV val) { return static_cast<VkCoarseSampleOrderTypeNV>(val);}
 enum class PipelineExecutableStatisticFormatKHR : uint32_t {
     Bool32KHR = 0,
     Int64KHR = 1,
     Uint64KHR = 2,
     Float64KHR = 3,
 };
-constexpr inline VkPipelineExecutableStatisticFormatKHR c_enum(PipelineExecutableStatisticFormatKHR val) { return static_cast<VkPipelineExecutableStatisticFormatKHR>(val);}
+constexpr VkPipelineExecutableStatisticFormatKHR c_enum(PipelineExecutableStatisticFormatKHR val) { return static_cast<VkPipelineExecutableStatisticFormatKHR>(val);}
 enum class PipelineCacheCreateFlagBits: uint32_t {
     ExternallySynchronizedBitEXT = 1,
 };

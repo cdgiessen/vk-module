@@ -131,10 +131,11 @@ class Enum:
                     out_name = f'e{out_name}'
                 file.write(f'    {out_name} = {str(value)},\n')
             file.write('};\n')
-            file.write(f'constexpr inline {self.name} c_enum({self.name[2:]} val) {{ return static_cast<{self.name}>(val);}}\n')
+            file.write(f'constexpr {self.name} c_enum({self.name[2:]} val) {{ return static_cast<{self.name}>(val);}}\n')
             if self.name == "VkResult":
+                file.write('inline ')
                 self.print_string_defs(file, False)
-                file.write('bool operator !(Result res) { return res != Result::Success; }\n')
+                file.write('constexpr bool operator !(Result res) { return res != Result::Success; }\n')
         
     def print_string(self, file, skip_result):
         if self.alias is not None or self.name == 'VkResult' and skip_result:
@@ -1006,7 +1007,7 @@ class DispatchTable:
         file.write(f'struct {self.name}Functions {{\n')
         #function pointers
         if self.dispatch_type != 'global':
-            file.write(f'    {self.dispatch_type.title()} const {self.dispatch_type};\n')
+            file.write(f'    {self.dispatch_type.title()} {self.dispatch_type};\n')
         for guard, functions in self.guarded_functions.items():
             file.write(f'#if {guard}\n')
             for function in functions:
@@ -1066,8 +1067,9 @@ class DispatchableHandleDispatchTable:
         command_buffer_return_type = f'{type_name}Functions const&' if type_name == 'CommandBuffer' else None
         file.write(f'struct {type_name}Functions {{\n')
         file.write(f'    {functions_type} const* {functions_name};\n')
-        file.write(f'    {type_name} const {var_name};\n')   
-        file.write(f'    {type_name}Functions({functions_type} const& {functions_name}, {type_name} const {var_name})\n')
+        file.write(f'    {type_name} {var_name};\n')   
+        file.write(f'    {type_name}Functions() noexcept {{}}\n')
+        file.write(f'    {type_name}Functions({functions_type} const& {functions_name}, {type_name} const {var_name}) noexcept\n')
         file.write(f'        :{functions_name}(&{functions_name}), {var_name}({var_name}){{}}\n')
         prev_platform = None
         for func in self.functions:

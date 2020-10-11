@@ -299,7 +299,7 @@ struct GlobalFunctions {
     };
 };
 struct InstanceFunctions {
-    Instance const instance;
+    Instance instance;
 #if defined(VK_VERSION_1_0)
     PFN_vkDestroyInstance pfn_DestroyInstance;
     PFN_vkEnumeratePhysicalDevices pfn_EnumeratePhysicalDevices;
@@ -1484,7 +1484,7 @@ struct InstanceFunctions {
     };
 };
 struct DeviceFunctions {
-    Device const device;
+    Device device;
 #if defined(VK_VERSION_1_0)
     PFN_vkDestroyDevice pfn_DestroyDevice;
     PFN_vkGetDeviceQueue pfn_GetDeviceQueue;
@@ -4924,8 +4924,9 @@ struct DeviceFunctions {
 };
 struct PhysicalDeviceFunctions {
     InstanceFunctions const* instance_functions;
-    PhysicalDevice const physicaldevice;
-    PhysicalDeviceFunctions(InstanceFunctions const& instance_functions, PhysicalDevice const physicaldevice)
+    PhysicalDevice physicaldevice;
+    PhysicalDeviceFunctions() noexcept {}
+    PhysicalDeviceFunctions(InstanceFunctions const& instance_functions, PhysicalDevice const physicaldevice) noexcept
         :instance_functions(&instance_functions), physicaldevice(physicaldevice){}
     [[nodiscard]] PhysicalDeviceProperties GetProperties() const {
         return instance_functions->GetPhysicalDeviceProperties(physicaldevice); }
@@ -5052,8 +5053,9 @@ struct PhysicalDeviceFunctions {
 };
 struct QueueFunctions {
     DeviceFunctions const* device_functions;
-    Queue const queue;
-    QueueFunctions(DeviceFunctions const& device_functions, Queue const queue)
+    Queue queue;
+    QueueFunctions() noexcept {}
+    QueueFunctions(DeviceFunctions const& device_functions, Queue const queue) noexcept
         :device_functions(&device_functions), queue(queue){}
     [[nodiscard]] Result Submit(uint32_t submitCount, const SubmitInfo* pSubmits, Fence fence) const {
         return device_functions->QueueSubmit(queue, submitCount, pSubmits, fence); }
@@ -5076,8 +5078,9 @@ struct QueueFunctions {
 };
 struct CommandBufferFunctions {
     DeviceFunctions const* device_functions;
-    CommandBuffer const commandbuffer;
-    CommandBufferFunctions(DeviceFunctions const& device_functions, CommandBuffer const commandbuffer)
+    CommandBuffer commandbuffer;
+    CommandBufferFunctions() noexcept {}
+    CommandBufferFunctions(DeviceFunctions const& device_functions, CommandBuffer const commandbuffer) noexcept
         :device_functions(&device_functions), commandbuffer(commandbuffer){}
     [[nodiscard]] Result Begin(const CommandBufferBeginInfo&  pBeginInfo) const {
         return device_functions->BeginCommandBuffer(commandbuffer, pBeginInfo); }

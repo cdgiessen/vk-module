@@ -25,23 +25,23 @@ add_library(vk-module-compiler-warnings INTERFACE)
 # Determine whether we're compiling with clang++
 string(FIND "${CMAKE_CXX_COMPILER}" "clang++" VK_MODULE_COMPILER_CLANGPP)
 if(VK_MODULE_COMPILER_CLANGPP GREATER -1)
-  set(VK_MODULE_COMPILER_CLANGPP 1)
+    set(VK_MODULE_COMPILER_CLANGPP 1)
 else()
-  set(VK_MODULE_COMPILER_CLANGPP 0)
+    set(VK_MODULE_COMPILER_CLANGPP 0)
 endif()
 
 target_compile_options(vk-module-compiler-warnings
-        INTERFACE
-        $<$<OR:$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>,${VK_MODULE_COMPILER_CLANGPP}>:
-        -Wall
-        -Wextra
-        -pedantic-errors
-        -Wconversion
-        -Wsign-conversion>
-        $<$<CXX_COMPILER_ID:MSVC>:
-        /WX
-        /W4>
-        )
+    INTERFACE
+    $<$<OR:$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>,${VK_MODULE_COMPILER_CLANGPP}>:
+    -Wall
+    -Wextra
+    -pedantic-errors
+    -Wconversion
+    -Wsign-conversion>
+    $<$<CXX_COMPILER_ID:MSVC>:
+    /WX
+    /W4>
+    )
 
 add_custom_target(generate_source copy-xml)
 
@@ -54,10 +54,14 @@ target_compile_options(vkm17_string PUBLIC -ftime-trace)
 target_compile_options(vkm20_string PUBLIC -ftime-trace)
 endif(SET_COMPILE_TIME_TRACE)
 
-add_subdirectory(sample)
-
+option(VK_MODULE_SAMPLES "Build samples for the bindings, will download glfw" off)
 option(VK_MODULE_TESTS "Build tests for the bindings, will download catch2" off)
 
+if (VK_MODULE_SAMPLES)
+    add_subdirectory(sample)
+endif(VK_MODULE_SAMPLES)
+
 if (VK_MODULE_TESTS)
-add_subdirectory(tests)
+    add_subdirectory(tests)
 endif (VK_MODULE_TESTS)
+
