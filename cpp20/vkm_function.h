@@ -113,71 +113,13 @@ private:
 };
 
 
-/* Return type for Vulkan Module API functions which return a value or values
- * Holds a T value or a vk::Result for indicating the error 
- * Do not use with success codes other than zero
- * Example in function definition
- * vk::expected<vk::Buffer> CreateBuffer(const BufferCreateInfo& pCreateInfo, const AllocationCallbacks* pAllocator = nullptr) { ... }
- * Example usage:
- * auto buffer_return  = CreateBuffer( ... );
- * if (!buffer_return)
- *     error_exit("Failed to create buffer", buffer_return.error());
- * vk::Buffer buffer = buffer_return.value(); //Get value now that we've check for errors
- */
-template<typename T>
-struct expected {
-	explicit expected (T const& value, Result result) noexcept: _value{ value}, _result{ result } {}
-	explicit expected (T&& value, Result result) noexcept: _value{ detail::move(value) }, _result{ result } {}
-
-    const T* operator-> () const noexcept { assert (_result == Result::Success); return &_value; }
-	T*       operator-> ()       noexcept { assert (_result == Result::Success); return &_value; }
-	const T& operator* () const& noexcept { assert (_result == Result::Success); return _value; }
-	T&       operator* () &      noexcept { assert (_result == Result::Success); return _value; }
-	T&&      operator* () &&	 noexcept { assert (_result == Result::Success); return detail::move (_value); }
-	const T&  value () const&    noexcept { assert (_result == Result::Success); return _value; }
-	T&        value () &         noexcept { assert (_result == Result::Success); return _value; }
-	const T&& value () const&&   noexcept { assert (_result == Result::Success); return detail::move(_value); }
-	T&&       value () &&        noexcept { assert (_result == Result::Success); return detail::move(_value); }
-
-    Result error() const noexcept { assert (_result != Result::Success); return _result; }
-    Result raw_result() const noexcept { return _result; }
-
-    bool has_value () const noexcept { return _result == Result::Success; }
-	explicit operator bool () const noexcept { return has_value (); }
-
-    void ignore() const noexcept{};
-
-private:
-    T _value;
-    Result _result = Result::Success;
-};
-
-
-
 } // namespace vk
 
 #include <stdint.h>
 #include <new>
+#include <utility>
 
 namespace vk::detail {
-template <typename T>
-struct remove_reference { using type = T; };
-
-template <typename T>
-struct remove_reference<T&> { using type = T; };
-
-template <typename T>
-struct remove_reference<T&&> { using type = T; };
-
-template <typename T>
-using remove_reference_t = typename remove_reference<T>::type;
-
-template <typename Type>
-inline constexpr remove_reference_t<Type>&& move(Type&& t) noexcept
-{
-    return static_cast<remove_reference_t<Type>&&>(t);
-}
-
 /* Array data structure where the length is determined at construction time.
  * Cannot resize, add, or delete elements from.
  * Used for returning a collection from the Vulkan API
@@ -245,6 +187,45 @@ struct fixed_vector
 };
 } // namespace vk::detail
 namespace vk {
+
+
+/* Return type for Vulkan Module API functions which return a value or values
+ * Holds a T value or a vk::Result for indicating the error
+ * Do not use with success codes other than zero
+ * Example in function definition
+ * vk::expected<vk::Buffer> CreateBuffer(const BufferCreateInfo& pCreateInfo, const AllocationCallbacks* pAllocator = nullptr) { ... }
+ * Example usage:
+ * auto buffer_return  = CreateBuffer( ... );
+ * if (!buffer_return)
+ *     error_exit("Failed to create buffer", buffer_return.error());
+ * vk::Buffer buffer = buffer_return.value(); //Get value now that we've check for errors
+ */
+template<typename T>
+struct expected {
+	explicit expected (T const& value, Result result) noexcept: _value{ value}, _result{ result } {}
+	explicit expected (T&& value, Result result) noexcept: _value{ std::move(value) }, _result{ result } {}
+
+    const T* operator-> () const noexcept { assert (_result); return &_value; }
+	T*       operator-> ()       noexcept { assert (_result); return &_value; }
+	const T& operator* () const& noexcept { assert (_result); return _value; }
+	T&       operator* () &      noexcept { assert (_result); return _value; }
+	T&&      operator* () &&	 noexcept { assert (_result); return std::move (_value); }
+	const T&  value () const&    noexcept { assert (_result); return _value; }
+	T&        value () &         noexcept { assert (_result); return _value; }
+	const T&& value () const&&   noexcept { assert (_result); return std::move(_value); }
+	T&&       value () &&        noexcept { assert (_result); return std::move(_value); }
+
+    Result error() const noexcept { assert (_result != Result::Success); return _result; }
+    Result raw_result() const noexcept { return _result; }
+
+    bool has_value () const noexcept { return _result == Result::Success; }
+	explicit operator bool () const noexcept { return _result == Result::Success; }
+
+private:
+    T _value;
+    Result _result = Result::Success;
+};
+
 
 struct GlobalFunctions {
 #if defined(VK_VERSION_1_0)

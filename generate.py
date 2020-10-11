@@ -69,7 +69,6 @@ class MacroDefine:
     def print_base(self, file):
         file.write(self.text)
 
-
 def MorphVkEnumName(name, enum_name_len):
     n_part = name.title().split('_')[enum_name_len:]
     if n_part[-1] == "Bit":
@@ -124,7 +123,7 @@ class Enum:
     def print_base(self, file):
         if self.alias is not None:
             file.write(f'using {self.name[2:]} = {self.alias[2:]};\n')
-        else: 
+        else:
             file.write(f"enum class {self.name[2:]} : {self.underlying_type} {{\n")
             for name, value in self.values.items():
                 out_name = MorphVkEnumName(name, self.enum_name_len)
@@ -133,30 +132,30 @@ class Enum:
                 file.write(f'    {out_name} = {str(value)},\n')
             file.write('};\n')
             file.write(f'constexpr inline {self.name} c_enum({self.name[2:]} val) {{ return static_cast<{self.name}>(val);}}\n')
+            if self.name == "VkResult":
+                self.print_string_defs(file, False)
+                file.write('bool operator !(Result res) { return res != Result::Success; }\n')
+        
+    def print_string(self, file, skip_result):
+        if self.alias is not None or self.name == 'VkResult' and skip_result:
+            return
+        PlatformGuardHeader(file, self.platform)
+        file.write(f'const char * to_string({self.name[2:]} val);\n')
+        PlatformGuardFooter(file, self.platform)
 
-            if self.name == 'VkResult':
-                file.write(f'inline bool operator!(Result result) {{ return result < static_cast<Result>(0); }}\n')
-                file.write('inline ')
-                self.print_string_defs(file, skip=True)
-    
-    def print_string(self, file):
-        if self.alias is None and self.name != 'VkResult':
-            PlatformGuardHeader(file, self.platform)
-            file.write(f'const char * to_string({self.name[2:]} val);\n')
-            PlatformGuardFooter(file, self.platform)
-
-    def print_string_defs(self, file, skip=False):
-        if self.alias is None and (skip or self.name != 'VkResult'):
-            PlatformGuardHeader(file, self.platform)
-            file.write(f'const char * to_string({self.name[2:]} val) {{\n')
-            file.write('    switch(val) {\n')
-            for name in self.values.keys():
-                out_name = MorphVkEnumName(name, self.enum_name_len)
-                if out_name[0].isnumeric():
-                    out_name = f'e{out_name}'
-                file.write(f'        case({self.name[2:]}::{out_name}): return \"{out_name}\";\n')
-            file.write('        default: return "UNKNOWN";\n    }\n}\n')
-            PlatformGuardFooter(file, self.platform)
+    def print_string_defs(self, file, skip_result):
+        if self.alias is not None or self.name == 'VkResult' and skip_result:
+            return
+        PlatformGuardHeader(file, self.platform)
+        file.write(f'const char * to_string({self.name[2:]} val) {{\n')
+        file.write(f'    switch(val) {{\n')
+        for name in self.values.keys():
+            out_name = MorphVkEnumName(name, self.enum_name_len)
+            if out_name[0].isnumeric():
+                out_name = f'e{out_name}'
+            file.write(f'        case({self.name[2:]}::{out_name}): return \"{out_name}\";\n')
+        file.write('        default: return "UNKNOWN";\n    }\n}\n')
+        PlatformGuardFooter(file, self.platform)
 
 def RepresentsIntOrHex(s):
     try: 
@@ -1235,7 +1234,6 @@ class BindingGenerator:
                             for function in self.functions:
                                 if function.name == command:
                                     self.functions.remove(function)
-
         for feature in root.findall('feature'):
             feat_level = VulkanFeatureLevel(feature)
             for require in feat_level.requires:
@@ -1258,6 +1256,8 @@ class BindingGenerator:
         self.dispatchable_handle_tables.append(DispatchableHandleDispatchTable('VkQueue', 'device',{'Queue': ''}, self.functions))
         self.dispatchable_handle_tables.append(DispatchableHandleDispatchTable('VkCommandBuffer', 'device',{'Cmd': '', 'CommandBuffer':''}, self.functions))
   
+
+
 def print_vkm_main(bindings, cpp20mode, cpp20str):
     with open(f'cpp{cpp20str}/vkm.h', 'w') as vkm:
         vkm.write('#pragma once\n')
@@ -1287,8 +1287,8 @@ def print_vkm_function(bindings, cpp20mode, cpp20str):
         vkm_function.write('#pragma once\n// clang-format off\n')
         vkm_function.write('#include "vkm_core.h"\n')
         vkm_function.write(vulkan_library_text + '\n') #defines namespace vk here
-        vkm_function.write(vulkan_expected_type + '\n')
         vkm_function.write(fixed_vector_text + '\n')
+        vkm_function.write(vulkan_expected_type + '\n')
         [ dispatch_table.print_base(vkm_function) for dispatch_table in bindings.dispatch_tables ]
         [ table.print_base(vkm_function) for table in bindings.dispatchable_handle_tables ]
         vkm_function.write('} // namespace vk\n// clang-format on\n')
@@ -1299,7 +1299,7 @@ def print_vkm_string(bindings, cpp20mode, cpp20str):
         string_decl.write('#include "vkm_core.h"\n')
         string_decl.write('#include <string>\n')
         string_decl.write('namespace vk {\n')
-        [ enum.print_string(string_decl) for enum in bindings.enum_dict.values()]
+        [ enum.print_string(string_decl, True) for enum in bindings.enum_dict.values()]
         [ bitmask.print_string(string_decl) for bitmask in bindings.bitmask_dict.values()]
         string_decl.write('} // namespace vk\n// clang-format on\n')
 
@@ -1310,7 +1310,7 @@ def print_vkm_string(bindings, cpp20mode, cpp20str):
         string_def.write('#if defined(WIN32)\n')
         string_def.write('#pragma warning( disable : 4065 )\n')
         string_def.write('#endif //defined(WIN32)\n')
-        [ enum.print_string_defs(string_def) for enum in bindings.enum_dict.values()]
+        [ enum.print_string_defs(string_def, True) for enum in bindings.enum_dict.values()]
         [ bitmask.print_string_defs(string_def) for bitmask in bindings.bitmask_dict.values()]
         string_def.write('} // namespace vk\n// clang-format on\n')
     

@@ -630,8 +630,7 @@ enum class Result : int32_t {
     ErrorInvalidOpaqueCaptureAddress = -1000257000,
 };
 constexpr inline VkResult c_enum(Result val) { return static_cast<VkResult>(val);}
-inline bool operator!(Result result) { return result < static_cast<Result>(0); }
-inline const char * to_string(Result val) {
+const char * to_string(Result val) {
     switch(val) {
         case(Result::Success): return "Success";
         case(Result::NotReady): return "NotReady";
@@ -675,6 +674,7 @@ inline const char * to_string(Result val) {
         default: return "UNKNOWN";
     }
 }
+bool operator !(Result res) { return res != Result::Success; }
 enum class StencilOp : uint32_t {
     Keep = 0,
     Zero = 1,

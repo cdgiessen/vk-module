@@ -7,13 +7,17 @@ int main()
 {
     vk::DynamicLibrary library;
     vk::Result res = library.init();
-    if (res != vk::Result::Success)
+    if (res != vk::Result::Success) {
+        std::cout << "couldn't init vulkan library\n";
         return -1;
+    }
     vk::GlobalFunctions free_funcs(library);
 
     auto layer_props_ret = free_funcs.EnumerateInstanceLayerProperties();
-    if (!layer_props_ret)
+    if (!layer_props_ret) {
+        std::cout << "couldn't get layer props: " << vk::to_string(layer_props_ret.raw_result()) << "\n";
         return -1;
+    }
     std::cout << "count " << layer_props_ret.value().size() << "\n";
     for (auto& prop : layer_props_ret.value())
         std::cout << prop.layerName << "\n";
@@ -114,8 +118,11 @@ int main()
                  .BindVertexBuffers(0, 1, &buffer, { 0 })
                  .BindIndexBuffer(buffer, 0, vk::IndexType::Uint16)
                  .Draw(10, 1, 0, 0)
+                 .EndRenderPass()
                  .End();
-    if (!ret) {
+    if (ret == vk::Result::Success) {
+        std::cout << "success recording command buffer\n";
+    } else {
         std::cout << "error: " << vk::to_string(ret) << '\n';
         return -1;
     }
