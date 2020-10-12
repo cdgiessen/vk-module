@@ -154,13 +154,11 @@ void create_device_context(RendererContext& render_context, DeviceContext& devic
     queue_info.queueCount = 1;
     queue_info.pQueuePriorities = &priority;
     const char* enabled_exts[] = { "VK_KHR_swapchain" };
-    vk::DeviceCreateInfo dev_create_info{
-        .queueCreateInfoCount = 1,
-        .pQueueCreateInfos = &queue_info,
-        .enabledExtensionCount = 1,
-        .ppEnabledExtensionNames = enabled_exts,
-    };
-    auto device_ret = render_context.functions.CreateDevice(render_context.physical_device, dev_create_info);
+    auto device_ret = render_context.functions.CreateDevice(render_context.physical_device,
+                                                            { .queueCreateInfoCount = 1,
+                                                              .pQueueCreateInfos = &queue_info,
+                                                              .enabledExtensionCount = 1,
+                                                              .ppEnabledExtensionNames = enabled_exts });
     check_res(device_ret, "Failed to create a vulkan device");
 
     device_context.device = device_ret.value();
@@ -187,22 +185,21 @@ void setup_queues(DeviceContext& device, vk::PhysicalDeviceFunctions const& phys
 
 void setup_swapchain(DeviceContext& device)
 {
-    uint32_t queue_family_indices = 0;
-    vk::SwapchainCreateInfoKHR swap_info{
-        .surface = device.surface,
-        .minImageCount = 3,
-        .imageFormat = vk::Format::R8G8B8A8Srgb,
-        .imageColorSpace = vk::ColorSpaceKHR::SrgbNonlinearKHR,
-        .imageExtent = { width, height },
-        .imageArrayLayers = 1,
-        .imageUsage = vk::ImageUsageFlagBits::ColorAttachment,
-        .imageSharingMode = vk::SharingMode::Exclusive,
-        .queueFamilyIndexCount = 1,
-        .pQueueFamilyIndices = &queue_family_indices,
-        .presentMode = vk::PresentModeKHR::FifoRelaxedKHR,
-    };
     device.image_count = 3;
-    auto swap_ret = device.functions.CreateSwapchainKHR(swap_info);
+    uint32_t queue_family_indices = 0;
+    auto swap_ret = device.functions.CreateSwapchainKHR({
+      .surface = device.surface,
+      .minImageCount = 3,
+      .imageFormat = vk::Format::R8G8B8A8Srgb,
+      .imageColorSpace = vk::ColorSpaceKHR::SrgbNonlinearKHR,
+      .imageExtent = { width, height },
+      .imageArrayLayers = 1,
+      .imageUsage = vk::ImageUsageFlagBits::ColorAttachment,
+      .imageSharingMode = vk::SharingMode::Exclusive,
+      .queueFamilyIndexCount = 1,
+      .pQueueFamilyIndices = &queue_family_indices,
+      .presentMode = vk::PresentModeKHR::FifoRelaxedKHR,
+    });
     check_res(swap_ret, "Unable to create Swapchain");
 
     device.swapchain = swap_ret.value();
@@ -281,7 +278,6 @@ void create_framebuffers(DeviceContext& device)
 void read_file(const std::string& filename, std::vector<char>& buffer)
 {
     std::ifstream file(filename, std::ios::ate | std::ios::binary);
-
     check_res(file.is_open(), "Failed to open shader file");
 
     size_t file_size = (size_t)file.tellg();

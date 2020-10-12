@@ -244,7 +244,7 @@ struct GlobalFunctions {
         vk::Result result = static_cast<Result>(pfn_CreateInstance(reinterpret_cast<const VkInstanceCreateInfo*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkInstance*>(&pInstance)));
-        return expected<Instance>(pInstance, result);
+    return expected<Instance>(pInstance, result);
     }
     [[nodiscard]] PFN_vkVoidFunction GetInstanceProcAddr(Instance instance, 
         const char* pName) const {
@@ -281,7 +281,7 @@ struct GlobalFunctions {
         if (pfn_EnumerateInstanceVersion == 0) return expected<uint32_t>(VK_MAKE_VERSION(1,0,0), Result::Success);
         uint32_t pApiVersion;
         vk::Result result = static_cast<Result>(pfn_EnumerateInstanceVersion(&pApiVersion));
-        return expected<uint32_t>(pApiVersion, result);
+    return expected<uint32_t>(pApiVersion, result);
     }
 #endif //defined(VK_VERSION_1_1)
     explicit GlobalFunctions() noexcept {}
@@ -477,7 +477,7 @@ struct InstanceFunctions {
         PhysicalDeviceProperties pProperties;
         pfn_GetPhysicalDeviceProperties(physicalDevice.get(),
             reinterpret_cast<VkPhysicalDeviceProperties*>(&pProperties));
-        return pProperties;
+    return pProperties;
     }
     [[nodiscard]] detail::fixed_vector<QueueFamilyProperties> GetPhysicalDeviceQueueFamilyProperties(PhysicalDevice physicalDevice) const {
         uint32_t pQueueFamilyPropertyCount = 0;
@@ -495,13 +495,13 @@ struct InstanceFunctions {
         PhysicalDeviceMemoryProperties pMemoryProperties;
         pfn_GetPhysicalDeviceMemoryProperties(physicalDevice.get(),
             reinterpret_cast<VkPhysicalDeviceMemoryProperties*>(&pMemoryProperties));
-        return pMemoryProperties;
+    return pMemoryProperties;
     }
     [[nodiscard]] PhysicalDeviceFeatures GetPhysicalDeviceFeatures(PhysicalDevice physicalDevice) const {
         PhysicalDeviceFeatures pFeatures;
         pfn_GetPhysicalDeviceFeatures(physicalDevice.get(),
             reinterpret_cast<VkPhysicalDeviceFeatures*>(&pFeatures));
-        return pFeatures;
+    return pFeatures;
     }
     [[nodiscard]] FormatProperties GetPhysicalDeviceFormatProperties(PhysicalDevice physicalDevice, 
         Format format) const {
@@ -509,7 +509,7 @@ struct InstanceFunctions {
         pfn_GetPhysicalDeviceFormatProperties(physicalDevice.get(),
             static_cast<VkFormat>(format),
             reinterpret_cast<VkFormatProperties*>(&pFormatProperties));
-        return pFormatProperties;
+    return pFormatProperties;
     }
     [[nodiscard]] expected<ImageFormatProperties> GetPhysicalDeviceImageFormatProperties(PhysicalDevice physicalDevice, 
         Format format, 
@@ -525,7 +525,7 @@ struct InstanceFunctions {
             static_cast<VkImageUsageFlags>(usage),
             static_cast<VkImageCreateFlags>(flags),
             reinterpret_cast<VkImageFormatProperties*>(&pImageFormatProperties)));
-        return expected<ImageFormatProperties>(pImageFormatProperties, result);
+    return expected<ImageFormatProperties>(pImageFormatProperties, result);
     }
     [[nodiscard]] expected<Device> CreateDevice(PhysicalDevice physicalDevice, 
         const DeviceCreateInfo&  pCreateInfo, 
@@ -535,7 +535,7 @@ struct InstanceFunctions {
             reinterpret_cast<const VkDeviceCreateInfo*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkDevice*>(&pDevice)));
-        return expected<Device>(pDevice, result);
+    return expected<Device>(pDevice, result);
     }
     [[nodiscard]] expected<detail::fixed_vector<ExtensionProperties>> EnumerateDeviceExtensionProperties(PhysicalDevice physicalDevice, 
         const char* pLayerName) const {
@@ -599,13 +599,13 @@ struct InstanceFunctions {
         PhysicalDeviceFeatures2 pFeatures;
         pfn_GetPhysicalDeviceFeatures2(physicalDevice.get(),
             reinterpret_cast<VkPhysicalDeviceFeatures2*>(&pFeatures));
-        return pFeatures;
+    return pFeatures;
     }
     [[nodiscard]] PhysicalDeviceProperties2 GetPhysicalDeviceProperties2(PhysicalDevice physicalDevice) const {
         PhysicalDeviceProperties2 pProperties;
         pfn_GetPhysicalDeviceProperties2(physicalDevice.get(),
             reinterpret_cast<VkPhysicalDeviceProperties2*>(&pProperties));
-        return pProperties;
+    return pProperties;
     }
     [[nodiscard]] FormatProperties2 GetPhysicalDeviceFormatProperties2(PhysicalDevice physicalDevice, 
         Format format) const {
@@ -613,7 +613,7 @@ struct InstanceFunctions {
         pfn_GetPhysicalDeviceFormatProperties2(physicalDevice.get(),
             static_cast<VkFormat>(format),
             reinterpret_cast<VkFormatProperties2*>(&pFormatProperties));
-        return pFormatProperties;
+    return pFormatProperties;
     }
     [[nodiscard]] expected<ImageFormatProperties2> GetPhysicalDeviceImageFormatProperties2(PhysicalDevice physicalDevice, 
         const PhysicalDeviceImageFormatInfo2&  pImageFormatInfo) const {
@@ -621,7 +621,7 @@ struct InstanceFunctions {
         vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceImageFormatProperties2(physicalDevice.get(),
             reinterpret_cast<const VkPhysicalDeviceImageFormatInfo2*>(&pImageFormatInfo),
             reinterpret_cast<VkImageFormatProperties2*>(&pImageFormatProperties)));
-        return expected<ImageFormatProperties2>(pImageFormatProperties, result);
+    return expected<ImageFormatProperties2>(pImageFormatProperties, result);
     }
     [[nodiscard]] detail::fixed_vector<QueueFamilyProperties2> GetPhysicalDeviceQueueFamilyProperties2(PhysicalDevice physicalDevice) const {
         uint32_t pQueueFamilyPropertyCount = 0;
@@ -639,7 +639,7 @@ struct InstanceFunctions {
         PhysicalDeviceMemoryProperties2 pMemoryProperties;
         pfn_GetPhysicalDeviceMemoryProperties2(physicalDevice.get(),
             reinterpret_cast<VkPhysicalDeviceMemoryProperties2*>(&pMemoryProperties));
-        return pMemoryProperties;
+    return pMemoryProperties;
     }
     [[nodiscard]] detail::fixed_vector<SparseImageFormatProperties2> GetPhysicalDeviceSparseImageFormatProperties2(PhysicalDevice physicalDevice, 
         const PhysicalDeviceSparseImageFormatInfo2&  pFormatInfo) const {
@@ -662,7 +662,7 @@ struct InstanceFunctions {
         pfn_GetPhysicalDeviceExternalBufferProperties(physicalDevice.get(),
             reinterpret_cast<const VkPhysicalDeviceExternalBufferInfo*>(&pExternalBufferInfo),
             reinterpret_cast<VkExternalBufferProperties*>(&pExternalBufferProperties));
-        return pExternalBufferProperties;
+    return pExternalBufferProperties;
     }
     [[nodiscard]] ExternalFenceProperties GetPhysicalDeviceExternalFenceProperties(PhysicalDevice physicalDevice, 
         const PhysicalDeviceExternalFenceInfo&  pExternalFenceInfo) const {
@@ -670,7 +670,7 @@ struct InstanceFunctions {
         pfn_GetPhysicalDeviceExternalFenceProperties(physicalDevice.get(),
             reinterpret_cast<const VkPhysicalDeviceExternalFenceInfo*>(&pExternalFenceInfo),
             reinterpret_cast<VkExternalFenceProperties*>(&pExternalFenceProperties));
-        return pExternalFenceProperties;
+    return pExternalFenceProperties;
     }
     [[nodiscard]] ExternalSemaphoreProperties GetPhysicalDeviceExternalSemaphoreProperties(PhysicalDevice physicalDevice, 
         const PhysicalDeviceExternalSemaphoreInfo&  pExternalSemaphoreInfo) const {
@@ -678,7 +678,7 @@ struct InstanceFunctions {
         pfn_GetPhysicalDeviceExternalSemaphoreProperties(physicalDevice.get(),
             reinterpret_cast<const VkPhysicalDeviceExternalSemaphoreInfo*>(&pExternalSemaphoreInfo),
             reinterpret_cast<VkExternalSemaphoreProperties*>(&pExternalSemaphoreProperties));
-        return pExternalSemaphoreProperties;
+    return pExternalSemaphoreProperties;
     }
 #endif //defined(VK_VERSION_1_1)
 #if defined(VK_KHR_surface)
@@ -696,7 +696,7 @@ struct InstanceFunctions {
             queueFamilyIndex,
             surface.get(),
             &pSupported));
-        return expected<Bool32>(pSupported, result);
+    return expected<Bool32>(pSupported, result);
     }
     [[nodiscard]] expected<SurfaceCapabilitiesKHR> GetPhysicalDeviceSurfaceCapabilitiesKHR(PhysicalDevice physicalDevice, 
         SurfaceKHR surface) const {
@@ -704,7 +704,7 @@ struct InstanceFunctions {
         vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice.get(),
             surface.get(),
             reinterpret_cast<VkSurfaceCapabilitiesKHR*>(&pSurfaceCapabilities)));
-        return expected<SurfaceCapabilitiesKHR>(pSurfaceCapabilities, result);
+    return expected<SurfaceCapabilitiesKHR>(pSurfaceCapabilities, result);
     }
     [[nodiscard]] expected<detail::fixed_vector<SurfaceFormatKHR>> GetPhysicalDeviceSurfaceFormatsKHR(PhysicalDevice physicalDevice, 
         SurfaceKHR surface) const {
@@ -826,7 +826,7 @@ struct InstanceFunctions {
             reinterpret_cast<const VkDisplayModeCreateInfoKHR*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkDisplayModeKHR*>(&pMode)));
-        return expected<DisplayModeKHR>(pMode, result);
+    return expected<DisplayModeKHR>(pMode, result);
     }
     [[nodiscard]] expected<DisplayPlaneCapabilitiesKHR> GetDisplayPlaneCapabilitiesKHR(PhysicalDevice physicalDevice, 
         DisplayModeKHR mode, 
@@ -836,7 +836,7 @@ struct InstanceFunctions {
             mode.get(),
             planeIndex,
             reinterpret_cast<VkDisplayPlaneCapabilitiesKHR*>(&pCapabilities)));
-        return expected<DisplayPlaneCapabilitiesKHR>(pCapabilities, result);
+    return expected<DisplayPlaneCapabilitiesKHR>(pCapabilities, result);
     }
     [[nodiscard]] expected<SurfaceKHR> CreateDisplayPlaneSurfaceKHR(const DisplaySurfaceCreateInfoKHR&  pCreateInfo, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -845,7 +845,7 @@ struct InstanceFunctions {
             reinterpret_cast<const VkDisplaySurfaceCreateInfoKHR*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
-        return expected<SurfaceKHR>(pSurface, result);
+    return expected<SurfaceKHR>(pSurface, result);
     }
 #endif //defined(VK_KHR_display)
 #if defined(VK_USE_PLATFORM_XLIB_KHR) && (defined(VK_KHR_xlib_surface))
@@ -856,7 +856,7 @@ struct InstanceFunctions {
             reinterpret_cast<const VkXlibSurfaceCreateInfoKHR*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
-        return expected<SurfaceKHR>(pSurface, result);
+    return expected<SurfaceKHR>(pSurface, result);
     }
     [[nodiscard]] VkBool32 GetPhysicalDeviceXlibPresentationSupportKHR(PhysicalDevice physicalDevice, 
         uint32_t queueFamilyIndex, 
@@ -876,7 +876,7 @@ struct InstanceFunctions {
             reinterpret_cast<const VkXcbSurfaceCreateInfoKHR*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
-        return expected<SurfaceKHR>(pSurface, result);
+    return expected<SurfaceKHR>(pSurface, result);
     }
     [[nodiscard]] VkBool32 GetPhysicalDeviceXcbPresentationSupportKHR(PhysicalDevice physicalDevice, 
         uint32_t queueFamilyIndex, 
@@ -896,7 +896,7 @@ struct InstanceFunctions {
             reinterpret_cast<const VkWaylandSurfaceCreateInfoKHR*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
-        return expected<SurfaceKHR>(pSurface, result);
+    return expected<SurfaceKHR>(pSurface, result);
     }
     [[nodiscard]] wl_display GetPhysicalDeviceWaylandPresentationSupportKHR(PhysicalDevice physicalDevice, 
         uint32_t queueFamilyIndex) const {
@@ -904,7 +904,7 @@ struct InstanceFunctions {
         vk::Result result = pfn_GetPhysicalDeviceWaylandPresentationSupportKHR(physicalDevice.get(),
             queueFamilyIndex,
             reinterpret_cast<wl_display*>(&display));
-        return expected<wl_display>(display, result);
+    return display;
     }
 #endif //defined(VK_USE_PLATFORM_WAYLAND_KHR) && (defined(VK_KHR_wayland_surface))
 #if defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_KHR_android_surface))
@@ -915,7 +915,7 @@ struct InstanceFunctions {
             reinterpret_cast<const VkAndroidSurfaceCreateInfoKHR*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
-        return expected<SurfaceKHR>(pSurface, result);
+    return expected<SurfaceKHR>(pSurface, result);
     }
 #endif //defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_KHR_android_surface))
 #if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_win32_surface))
@@ -926,7 +926,7 @@ struct InstanceFunctions {
             reinterpret_cast<const VkWin32SurfaceCreateInfoKHR*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
-        return expected<SurfaceKHR>(pSurface, result);
+    return expected<SurfaceKHR>(pSurface, result);
     }
     [[nodiscard]] VkBool32 GetPhysicalDeviceWin32PresentationSupportKHR(PhysicalDevice physicalDevice, 
         uint32_t queueFamilyIndex) const {
@@ -942,7 +942,7 @@ struct InstanceFunctions {
             reinterpret_cast<const VkDebugReportCallbackCreateInfoEXT*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkDebugReportCallbackEXT*>(&pCallback)));
-        return expected<DebugReportCallbackEXT>(pCallback, result);
+    return expected<DebugReportCallbackEXT>(pCallback, result);
     }
     void DestroyDebugReportCallbackEXT(DebugReportCallbackEXT callback, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -975,7 +975,7 @@ struct InstanceFunctions {
             reinterpret_cast<const VkStreamDescriptorSurfaceCreateInfoGGP*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
-        return expected<SurfaceKHR>(pSurface, result);
+    return expected<SurfaceKHR>(pSurface, result);
     }
 #endif //defined(VK_USE_PLATFORM_GGP) && (defined(VK_GGP_stream_descriptor_surface))
 #if defined(VK_NV_external_memory_capabilities)
@@ -995,7 +995,7 @@ struct InstanceFunctions {
             static_cast<VkImageCreateFlags>(flags),
             static_cast<VkExternalMemoryHandleTypeFlagsNV>(externalHandleType),
             reinterpret_cast<VkExternalImageFormatPropertiesNV*>(&pExternalImageFormatProperties)));
-        return expected<ExternalImageFormatPropertiesNV>(pExternalImageFormatProperties, result);
+    return expected<ExternalImageFormatPropertiesNV>(pExternalImageFormatProperties, result);
     }
 #endif //defined(VK_NV_external_memory_capabilities)
 #if defined(VK_USE_PLATFORM_VI_NN) && (defined(VK_NN_vi_surface))
@@ -1006,7 +1006,7 @@ struct InstanceFunctions {
             reinterpret_cast<const VkViSurfaceCreateInfoNN*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
-        return expected<SurfaceKHR>(pSurface, result);
+    return expected<SurfaceKHR>(pSurface, result);
     }
 #endif //defined(VK_USE_PLATFORM_VI_NN) && (defined(VK_NN_vi_surface))
 #if defined(VK_EXT_direct_mode_display)
@@ -1032,7 +1032,7 @@ struct InstanceFunctions {
             reinterpret_cast<Display*>(&dpy),
             static_cast<RROutput>(rrOutput),
             reinterpret_cast<VkDisplayKHR*>(&pDisplay)));
-        return expected<DisplayKHR>(pDisplay, result);
+    return expected<DisplayKHR>(pDisplay, result);
     }
 #endif //defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT) && (defined(VK_EXT_acquire_xlib_display))
 #if defined(VK_EXT_display_surface_counter)
@@ -1042,7 +1042,7 @@ struct InstanceFunctions {
         vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceSurfaceCapabilities2EXT(physicalDevice.get(),
             surface.get(),
             reinterpret_cast<VkSurfaceCapabilities2EXT*>(&pSurfaceCapabilities)));
-        return expected<SurfaceCapabilities2EXT>(pSurfaceCapabilities, result);
+    return expected<SurfaceCapabilities2EXT>(pSurfaceCapabilities, result);
     }
 #endif //defined(VK_EXT_display_surface_counter)
 #if defined(VK_KHR_performance_query)
@@ -1063,7 +1063,7 @@ struct InstanceFunctions {
         pfn_GetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR(physicalDevice.get(),
             reinterpret_cast<const VkQueryPoolPerformanceCreateInfoKHR*>(&pPerformanceQueryCreateInfo),
             &pNumPasses);
-        return pNumPasses;
+    return pNumPasses;
     }
 #endif //defined(VK_KHR_performance_query)
 #if defined(VK_KHR_get_surface_capabilities2)
@@ -1073,7 +1073,7 @@ struct InstanceFunctions {
         vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceSurfaceCapabilities2KHR(physicalDevice.get(),
             reinterpret_cast<const VkPhysicalDeviceSurfaceInfo2KHR*>(&pSurfaceInfo),
             reinterpret_cast<VkSurfaceCapabilities2KHR*>(&pSurfaceCapabilities)));
-        return expected<SurfaceCapabilities2KHR>(pSurfaceCapabilities, result);
+    return expected<SurfaceCapabilities2KHR>(pSurfaceCapabilities, result);
     }
     [[nodiscard]] expected<detail::fixed_vector<SurfaceFormat2KHR>> GetPhysicalDeviceSurfaceFormats2KHR(PhysicalDevice physicalDevice, 
         const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) const {
@@ -1141,7 +1141,7 @@ struct InstanceFunctions {
         vk::Result result = static_cast<Result>(pfn_GetDisplayPlaneCapabilities2KHR(physicalDevice.get(),
             reinterpret_cast<const VkDisplayPlaneInfo2KHR*>(&pDisplayPlaneInfo),
             reinterpret_cast<VkDisplayPlaneCapabilities2KHR*>(&pCapabilities)));
-        return expected<DisplayPlaneCapabilities2KHR>(pCapabilities, result);
+    return expected<DisplayPlaneCapabilities2KHR>(pCapabilities, result);
     }
 #endif //defined(VK_KHR_get_display_properties2)
 #if defined(VK_USE_PLATFORM_IOS_MVK) && (defined(VK_MVK_ios_surface))
@@ -1152,7 +1152,7 @@ struct InstanceFunctions {
             reinterpret_cast<const VkIOSSurfaceCreateInfoMVK*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
-        return expected<SurfaceKHR>(pSurface, result);
+    return expected<SurfaceKHR>(pSurface, result);
     }
 #endif //defined(VK_USE_PLATFORM_IOS_MVK) && (defined(VK_MVK_ios_surface))
 #if defined(VK_USE_PLATFORM_MACOS_MVK) && (defined(VK_MVK_macos_surface))
@@ -1163,7 +1163,7 @@ struct InstanceFunctions {
             reinterpret_cast<const VkMacOSSurfaceCreateInfoMVK*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
-        return expected<SurfaceKHR>(pSurface, result);
+    return expected<SurfaceKHR>(pSurface, result);
     }
 #endif //defined(VK_USE_PLATFORM_MACOS_MVK) && (defined(VK_MVK_macos_surface))
 #if defined(VK_EXT_debug_utils)
@@ -1174,7 +1174,7 @@ struct InstanceFunctions {
             reinterpret_cast<const VkDebugUtilsMessengerCreateInfoEXT*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkDebugUtilsMessengerEXT*>(&pMessenger)));
-        return expected<DebugUtilsMessengerEXT>(pMessenger, result);
+    return expected<DebugUtilsMessengerEXT>(pMessenger, result);
     }
     void DestroyDebugUtilsMessengerEXT(DebugUtilsMessengerEXT messenger, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -1198,7 +1198,7 @@ struct InstanceFunctions {
         pfn_GetPhysicalDeviceMultisamplePropertiesEXT(physicalDevice.get(),
             static_cast<VkSampleCountFlagBits>(samples),
             reinterpret_cast<VkMultisamplePropertiesEXT*>(&pMultisampleProperties));
-        return pMultisampleProperties;
+    return pMultisampleProperties;
     }
 #endif //defined(VK_EXT_sample_locations)
 #if defined(VK_EXT_calibrated_timestamps)
@@ -1224,7 +1224,7 @@ struct InstanceFunctions {
             reinterpret_cast<const VkImagePipeSurfaceCreateInfoFUCHSIA*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
-        return expected<SurfaceKHR>(pSurface, result);
+    return expected<SurfaceKHR>(pSurface, result);
     }
 #endif //defined(VK_USE_PLATFORM_FUCHSIA) && (defined(VK_FUCHSIA_imagepipe_surface))
 #if defined(VK_USE_PLATFORM_METAL_EXT) && (defined(VK_EXT_metal_surface))
@@ -1235,7 +1235,7 @@ struct InstanceFunctions {
             reinterpret_cast<const VkMetalSurfaceCreateInfoEXT*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
-        return expected<SurfaceKHR>(pSurface, result);
+    return expected<SurfaceKHR>(pSurface, result);
     }
 #endif //defined(VK_USE_PLATFORM_METAL_EXT) && (defined(VK_EXT_metal_surface))
 #if defined(VK_EXT_tooling_info)
@@ -1309,7 +1309,7 @@ struct InstanceFunctions {
             reinterpret_cast<const VkHeadlessSurfaceCreateInfoEXT*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
-        return expected<SurfaceKHR>(pSurface, result);
+    return expected<SurfaceKHR>(pSurface, result);
     }
 #endif //defined(VK_EXT_headless_surface)
 #if defined(VK_USE_PLATFORM_DIRECTFB_EXT) && (defined(VK_EXT_directfb_surface))
@@ -1320,7 +1320,7 @@ struct InstanceFunctions {
             reinterpret_cast<const VkDirectFBSurfaceCreateInfoEXT*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
-        return expected<SurfaceKHR>(pSurface, result);
+    return expected<SurfaceKHR>(pSurface, result);
     }
     [[nodiscard]] IDirectFB GetPhysicalDeviceDirectFBPresentationSupportEXT(PhysicalDevice physicalDevice, 
         uint32_t queueFamilyIndex) const {
@@ -1328,7 +1328,7 @@ struct InstanceFunctions {
         vk::Result result = pfn_GetPhysicalDeviceDirectFBPresentationSupportEXT(physicalDevice.get(),
             queueFamilyIndex,
             reinterpret_cast<IDirectFB*>(&dfb));
-        return expected<IDirectFB>(dfb, result);
+    return dfb;
     }
 #endif //defined(VK_USE_PLATFORM_DIRECTFB_EXT) && (defined(VK_EXT_directfb_surface))
     explicit InstanceFunctions() noexcept {}
@@ -1912,7 +1912,7 @@ struct DeviceFunctions {
             queueFamilyIndex,
             queueIndex,
             reinterpret_cast<VkQueue*>(&pQueue));
-        return pQueue;
+    return pQueue;
     }
     [[nodiscard]] Result QueueSubmit(Queue queue, 
         uint32_t submitCount, 
@@ -1936,7 +1936,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkMemoryAllocateInfo*>(&pAllocateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkDeviceMemory*>(&pMemory)));
-        return expected<DeviceMemory>(pMemory, result);
+    return expected<DeviceMemory>(pMemory, result);
     }
     void FreeMemory(DeviceMemory memory, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -1955,7 +1955,7 @@ struct DeviceFunctions {
             size,
             static_cast<VkMemoryMapFlags>(flags),
             reinterpret_cast<void**>(&ppData)));
-        return expected<void*>(ppData, result);
+    return expected<void*>(ppData, result);
     }
     void UnmapMemory(DeviceMemory memory) const {
         pfn_UnmapMemory(device.get(),
@@ -1978,14 +1978,14 @@ struct DeviceFunctions {
         pfn_GetDeviceMemoryCommitment(device.get(),
             memory.get(),
             &pCommittedMemoryInBytes);
-        return pCommittedMemoryInBytes;
+    return pCommittedMemoryInBytes;
     }
     [[nodiscard]] MemoryRequirements GetBufferMemoryRequirements(Buffer buffer) const {
         MemoryRequirements pMemoryRequirements;
         pfn_GetBufferMemoryRequirements(device.get(),
             buffer.get(),
             reinterpret_cast<VkMemoryRequirements*>(&pMemoryRequirements));
-        return pMemoryRequirements;
+    return pMemoryRequirements;
     }
     [[nodiscard]] Result BindBufferMemory(Buffer buffer, 
         DeviceMemory memory, 
@@ -2000,7 +2000,7 @@ struct DeviceFunctions {
         pfn_GetImageMemoryRequirements(device.get(),
             image.get(),
             reinterpret_cast<VkMemoryRequirements*>(&pMemoryRequirements));
-        return pMemoryRequirements;
+    return pMemoryRequirements;
     }
     [[nodiscard]] Result BindImageMemory(Image image, 
         DeviceMemory memory, 
@@ -2040,7 +2040,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkFenceCreateInfo*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkFence*>(&pFence)));
-        return expected<Fence>(pFence, result);
+    return expected<Fence>(pFence, result);
     }
     void DestroyFence(Fence fence, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -2075,7 +2075,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkSemaphoreCreateInfo*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkSemaphore*>(&pSemaphore)));
-        return expected<Semaphore>(pSemaphore, result);
+    return expected<Semaphore>(pSemaphore, result);
     }
     void DestroySemaphore(Semaphore semaphore, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -2090,7 +2090,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkEventCreateInfo*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkEvent*>(&pEvent)));
-        return expected<Event>(pEvent, result);
+    return expected<Event>(pEvent, result);
     }
     void DestroyEvent(Event event, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -2117,7 +2117,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkQueryPoolCreateInfo*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkQueryPool*>(&pQueryPool)));
-        return expected<QueryPool>(pQueryPool, result);
+    return expected<QueryPool>(pQueryPool, result);
     }
     void DestroyQueryPool(QueryPool queryPool, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -2148,7 +2148,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkBufferCreateInfo*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkBuffer*>(&pBuffer)));
-        return expected<Buffer>(pBuffer, result);
+    return expected<Buffer>(pBuffer, result);
     }
     void DestroyBuffer(Buffer buffer, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -2163,7 +2163,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkBufferViewCreateInfo*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkBufferView*>(&pView)));
-        return expected<BufferView>(pView, result);
+    return expected<BufferView>(pView, result);
     }
     void DestroyBufferView(BufferView bufferView, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -2178,7 +2178,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkImageCreateInfo*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkImage*>(&pImage)));
-        return expected<Image>(pImage, result);
+    return expected<Image>(pImage, result);
     }
     void DestroyImage(Image image, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -2193,7 +2193,7 @@ struct DeviceFunctions {
             image.get(),
             reinterpret_cast<const VkImageSubresource*>(&pSubresource),
             reinterpret_cast<VkSubresourceLayout*>(&pLayout));
-        return pLayout;
+    return pLayout;
     }
     [[nodiscard]] expected<ImageView> CreateImageView(const ImageViewCreateInfo&  pCreateInfo, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -2202,7 +2202,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkImageViewCreateInfo*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkImageView*>(&pView)));
-        return expected<ImageView>(pView, result);
+    return expected<ImageView>(pView, result);
     }
     void DestroyImageView(ImageView imageView, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -2217,7 +2217,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkShaderModuleCreateInfo*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkShaderModule*>(&pShaderModule)));
-        return expected<ShaderModule>(pShaderModule, result);
+    return expected<ShaderModule>(pShaderModule, result);
     }
     void DestroyShaderModule(ShaderModule shaderModule, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -2232,7 +2232,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkPipelineCacheCreateInfo*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkPipelineCache*>(&pPipelineCache)));
-        return expected<PipelineCache>(pPipelineCache, result);
+    return expected<PipelineCache>(pPipelineCache, result);
     }
     void DestroyPipelineCache(PipelineCache pipelineCache, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -2300,7 +2300,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkPipelineLayoutCreateInfo*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkPipelineLayout*>(&pPipelineLayout)));
-        return expected<PipelineLayout>(pPipelineLayout, result);
+    return expected<PipelineLayout>(pPipelineLayout, result);
     }
     void DestroyPipelineLayout(PipelineLayout pipelineLayout, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -2315,7 +2315,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkSamplerCreateInfo*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkSampler*>(&pSampler)));
-        return expected<Sampler>(pSampler, result);
+    return expected<Sampler>(pSampler, result);
     }
     void DestroySampler(Sampler sampler, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -2330,7 +2330,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkDescriptorSetLayoutCreateInfo*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkDescriptorSetLayout*>(&pSetLayout)));
-        return expected<DescriptorSetLayout>(pSetLayout, result);
+    return expected<DescriptorSetLayout>(pSetLayout, result);
     }
     void DestroyDescriptorSetLayout(DescriptorSetLayout descriptorSetLayout, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -2345,7 +2345,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkDescriptorPoolCreateInfo*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkDescriptorPool*>(&pDescriptorPool)));
-        return expected<DescriptorPool>(pDescriptorPool, result);
+    return expected<DescriptorPool>(pDescriptorPool, result);
     }
     void DestroyDescriptorPool(DescriptorPool descriptorPool, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -2390,7 +2390,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkFramebufferCreateInfo*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkFramebuffer*>(&pFramebuffer)));
-        return expected<Framebuffer>(pFramebuffer, result);
+    return expected<Framebuffer>(pFramebuffer, result);
     }
     void DestroyFramebuffer(Framebuffer framebuffer, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -2405,7 +2405,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkRenderPassCreateInfo*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkRenderPass*>(&pRenderPass)));
-        return expected<RenderPass>(pRenderPass, result);
+    return expected<RenderPass>(pRenderPass, result);
     }
     void DestroyRenderPass(RenderPass renderPass, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -2418,7 +2418,7 @@ struct DeviceFunctions {
         pfn_GetRenderAreaGranularity(device.get(),
             renderPass.get(),
             reinterpret_cast<VkExtent2D*>(&pGranularity));
-        return pGranularity;
+    return pGranularity;
     }
     [[nodiscard]] expected<CommandPool> CreateCommandPool(const CommandPoolCreateInfo&  pCreateInfo, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -2427,7 +2427,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkCommandPoolCreateInfo*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkCommandPool*>(&pCommandPool)));
-        return expected<CommandPool>(pCommandPool, result);
+    return expected<CommandPool>(pCommandPool, result);
     }
     void DestroyCommandPool(CommandPool commandPool, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -2949,7 +2949,7 @@ struct DeviceFunctions {
             localDeviceIndex,
             remoteDeviceIndex,
             reinterpret_cast<VkPeerMemoryFeatureFlags*>(&pPeerMemoryFeatures));
-        return pPeerMemoryFeatures;
+    return pPeerMemoryFeatures;
     }
     void CmdSetDeviceMask(CommandBuffer commandBuffer, 
         uint32_t deviceMask) const {
@@ -2976,14 +2976,14 @@ struct DeviceFunctions {
         pfn_GetBufferMemoryRequirements2(device.get(),
             reinterpret_cast<const VkBufferMemoryRequirementsInfo2*>(&pInfo),
             reinterpret_cast<VkMemoryRequirements2*>(&pMemoryRequirements));
-        return pMemoryRequirements;
+    return pMemoryRequirements;
     }
     [[nodiscard]] MemoryRequirements2 GetImageMemoryRequirements2(const ImageMemoryRequirementsInfo2&  pInfo) const {
         MemoryRequirements2 pMemoryRequirements;
         pfn_GetImageMemoryRequirements2(device.get(),
             reinterpret_cast<const VkImageMemoryRequirementsInfo2*>(&pInfo),
             reinterpret_cast<VkMemoryRequirements2*>(&pMemoryRequirements));
-        return pMemoryRequirements;
+    return pMemoryRequirements;
     }
     [[nodiscard]] detail::fixed_vector<SparseImageMemoryRequirements2> GetImageSparseMemoryRequirements2(const ImageSparseMemoryRequirementsInfo2&  pInfo) const {
         uint32_t pSparseMemoryRequirementCount = 0;
@@ -3010,7 +3010,7 @@ struct DeviceFunctions {
         pfn_GetDeviceQueue2(device.get(),
             reinterpret_cast<const VkDeviceQueueInfo2*>(&pQueueInfo),
             reinterpret_cast<VkQueue*>(&pQueue));
-        return pQueue;
+    return pQueue;
     }
     [[nodiscard]] expected<SamplerYcbcrConversion> CreateSamplerYcbcrConversion(const SamplerYcbcrConversionCreateInfo&  pCreateInfo, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -3019,7 +3019,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkSamplerYcbcrConversionCreateInfo*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkSamplerYcbcrConversion*>(&pYcbcrConversion)));
-        return expected<SamplerYcbcrConversion>(pYcbcrConversion, result);
+    return expected<SamplerYcbcrConversion>(pYcbcrConversion, result);
     }
     void DestroySamplerYcbcrConversion(SamplerYcbcrConversion ycbcrConversion, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -3034,7 +3034,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkDescriptorUpdateTemplateCreateInfo*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkDescriptorUpdateTemplate*>(&pDescriptorUpdateTemplate)));
-        return expected<DescriptorUpdateTemplate>(pDescriptorUpdateTemplate, result);
+    return expected<DescriptorUpdateTemplate>(pDescriptorUpdateTemplate, result);
     }
     void DestroyDescriptorUpdateTemplate(DescriptorUpdateTemplate descriptorUpdateTemplate, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -3055,7 +3055,7 @@ struct DeviceFunctions {
         pfn_GetDescriptorSetLayoutSupport(device.get(),
             reinterpret_cast<const VkDescriptorSetLayoutCreateInfo*>(&pCreateInfo),
             reinterpret_cast<VkDescriptorSetLayoutSupport*>(&pSupport));
-        return pSupport;
+    return pSupport;
     }
 #endif //defined(VK_VERSION_1_1)
 #if defined(VK_VERSION_1_2)
@@ -3096,7 +3096,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkRenderPassCreateInfo2*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkRenderPass*>(&pRenderPass)));
-        return expected<RenderPass>(pRenderPass, result);
+    return expected<RenderPass>(pRenderPass, result);
     }
     void CmdBeginRenderPass2(CommandBuffer commandBuffer, 
         const RenderPassBeginInfo&  pRenderPassBegin, 
@@ -3130,7 +3130,7 @@ struct DeviceFunctions {
         vk::Result result = static_cast<Result>(pfn_GetSemaphoreCounterValue(device.get(),
             semaphore.get(),
             &pValue));
-        return expected<uint64_t>(pValue, result);
+    return expected<uint64_t>(pValue, result);
     }
     [[nodiscard]] Result WaitSemaphores(const SemaphoreWaitInfo&  pWaitInfo, 
         uint64_t timeout) const {
@@ -3163,7 +3163,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkSwapchainCreateInfoKHR*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkSwapchainKHR*>(&pSwapchain)));
-        return expected<SwapchainKHR>(pSwapchain, result);
+    return expected<SwapchainKHR>(pSwapchain, result);
     }
     void DestroySwapchainKHR(SwapchainKHR swapchain, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -3197,7 +3197,7 @@ struct DeviceFunctions {
             semaphore.get(),
             fence.get(),
             &pImageIndex));
-        return expected<uint32_t>(pImageIndex, result);
+    return expected<uint32_t>(pImageIndex, result);
     }
     [[nodiscard]] Result QueuePresentKHR(Queue queue, 
         const PresentInfoKHR&  pPresentInfo) const {
@@ -3210,14 +3210,14 @@ struct DeviceFunctions {
         DeviceGroupPresentCapabilitiesKHR pDeviceGroupPresentCapabilities;
         vk::Result result = static_cast<Result>(pfn_GetDeviceGroupPresentCapabilitiesKHR(device.get(),
             reinterpret_cast<VkDeviceGroupPresentCapabilitiesKHR*>(&pDeviceGroupPresentCapabilities)));
-        return expected<DeviceGroupPresentCapabilitiesKHR>(pDeviceGroupPresentCapabilities, result);
+    return expected<DeviceGroupPresentCapabilitiesKHR>(pDeviceGroupPresentCapabilities, result);
     }
     [[nodiscard]] expected<DeviceGroupPresentModeFlagsKHR> GetDeviceGroupSurfacePresentModesKHR(SurfaceKHR surface) const {
         DeviceGroupPresentModeFlagsKHR pModes;
         vk::Result result = static_cast<Result>(pfn_GetDeviceGroupSurfacePresentModesKHR(device.get(),
             surface.get(),
             reinterpret_cast<VkDeviceGroupPresentModeFlagsKHR*>(&pModes)));
-        return expected<DeviceGroupPresentModeFlagsKHR>(pModes, result);
+    return expected<DeviceGroupPresentModeFlagsKHR>(pModes, result);
     }
 #endif //(defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
 #if (defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_swapchain))
@@ -3226,7 +3226,7 @@ struct DeviceFunctions {
         vk::Result result = static_cast<Result>(pfn_AcquireNextImage2KHR(device.get(),
             reinterpret_cast<const VkAcquireNextImageInfoKHR*>(&pAcquireInfo),
             &pImageIndex));
-        return expected<uint32_t>(pImageIndex, result);
+    return expected<uint32_t>(pImageIndex, result);
     }
 #endif //(defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_swapchain))
 #if defined(VK_KHR_display_swapchain)
@@ -3346,7 +3346,7 @@ struct DeviceFunctions {
         vk::Result result = static_cast<Result>(pfn_GetImageViewAddressNVX(device.get(),
             imageView.get(),
             reinterpret_cast<VkImageViewAddressPropertiesNVX*>(&pProperties)));
-        return expected<ImageViewAddressPropertiesNVX>(pProperties, result);
+    return expected<ImageViewAddressPropertiesNVX>(pProperties, result);
     }
 #endif //defined(VK_NVX_image_view_handle)
 #if defined(VK_AMD_shader_info)
@@ -3380,7 +3380,7 @@ struct DeviceFunctions {
             memory.get(),
             static_cast<VkExternalMemoryHandleTypeFlagsNV>(handleType),
             reinterpret_cast<HANDLE*>(&pHandle)));
-        return expected<HANDLE>(pHandle, result);
+    return expected<HANDLE>(pHandle, result);
     }
 #endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_NV_external_memory_win32))
 #if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_memory_win32))
@@ -3389,7 +3389,7 @@ struct DeviceFunctions {
         vk::Result result = static_cast<Result>(pfn_GetMemoryWin32HandleKHR(device.get(),
             reinterpret_cast<const VkMemoryGetWin32HandleInfoKHR*>(&pGetWin32HandleInfo),
             reinterpret_cast<HANDLE*>(&pHandle)));
-        return expected<HANDLE>(pHandle, result);
+    return expected<HANDLE>(pHandle, result);
     }
     [[nodiscard]] expected<MemoryWin32HandlePropertiesKHR> GetMemoryWin32HandlePropertiesKHR(ExternalMemoryHandleTypeFlagBits handleType, 
         HANDLE handle) const {
@@ -3398,7 +3398,7 @@ struct DeviceFunctions {
             static_cast<VkExternalMemoryHandleTypeFlagBits>(handleType),
             static_cast<HANDLE>(handle),
             reinterpret_cast<VkMemoryWin32HandlePropertiesKHR*>(&pMemoryWin32HandleProperties)));
-        return expected<MemoryWin32HandlePropertiesKHR>(pMemoryWin32HandleProperties, result);
+    return expected<MemoryWin32HandlePropertiesKHR>(pMemoryWin32HandleProperties, result);
     }
 #endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_memory_win32))
 #if defined(VK_KHR_external_memory_fd)
@@ -3407,7 +3407,7 @@ struct DeviceFunctions {
         vk::Result result = static_cast<Result>(pfn_GetMemoryFdKHR(device.get(),
             reinterpret_cast<const VkMemoryGetFdInfoKHR*>(&pGetFdInfo),
             &pFd));
-        return expected<int>(pFd, result);
+    return expected<int>(pFd, result);
     }
     [[nodiscard]] expected<MemoryFdPropertiesKHR> GetMemoryFdPropertiesKHR(ExternalMemoryHandleTypeFlagBits handleType, 
         int fd) const {
@@ -3416,7 +3416,7 @@ struct DeviceFunctions {
             static_cast<VkExternalMemoryHandleTypeFlagBits>(handleType),
             fd,
             reinterpret_cast<VkMemoryFdPropertiesKHR*>(&pMemoryFdProperties)));
-        return expected<MemoryFdPropertiesKHR>(pMemoryFdProperties, result);
+    return expected<MemoryFdPropertiesKHR>(pMemoryFdProperties, result);
     }
 #endif //defined(VK_KHR_external_memory_fd)
 #if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_semaphore_win32))
@@ -3425,7 +3425,7 @@ struct DeviceFunctions {
         vk::Result result = static_cast<Result>(pfn_GetSemaphoreWin32HandleKHR(device.get(),
             reinterpret_cast<const VkSemaphoreGetWin32HandleInfoKHR*>(&pGetWin32HandleInfo),
             reinterpret_cast<HANDLE*>(&pHandle)));
-        return expected<HANDLE>(pHandle, result);
+    return expected<HANDLE>(pHandle, result);
     }
     [[nodiscard]] Result ImportSemaphoreWin32HandleKHR(const ImportSemaphoreWin32HandleInfoKHR&  pImportSemaphoreWin32HandleInfo) const {
         return static_cast<Result>(pfn_ImportSemaphoreWin32HandleKHR(device.get(),
@@ -3438,7 +3438,7 @@ struct DeviceFunctions {
         vk::Result result = static_cast<Result>(pfn_GetSemaphoreFdKHR(device.get(),
             reinterpret_cast<const VkSemaphoreGetFdInfoKHR*>(&pGetFdInfo),
             &pFd));
-        return expected<int>(pFd, result);
+    return expected<int>(pFd, result);
     }
     [[nodiscard]] Result ImportSemaphoreFdKHR(const ImportSemaphoreFdInfoKHR&  pImportSemaphoreFdInfo) const {
         return static_cast<Result>(pfn_ImportSemaphoreFdKHR(device.get(),
@@ -3508,7 +3508,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkDeviceEventInfoEXT*>(&pDeviceEventInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkFence*>(&pFence)));
-        return expected<Fence>(pFence, result);
+    return expected<Fence>(pFence, result);
     }
     [[nodiscard]] expected<Fence> RegisterDisplayEventEXT(DisplayKHR display, 
         const DisplayEventInfoEXT&  pDisplayEventInfo, 
@@ -3519,7 +3519,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkDisplayEventInfoEXT*>(&pDisplayEventInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkFence*>(&pFence)));
-        return expected<Fence>(pFence, result);
+    return expected<Fence>(pFence, result);
     }
     [[nodiscard]] expected<uint64_t> GetSwapchainCounterEXT(SwapchainKHR swapchain, 
         SurfaceCounterFlagBitsEXT counter) const {
@@ -3528,7 +3528,7 @@ struct DeviceFunctions {
             swapchain.get(),
             static_cast<VkSurfaceCounterFlagBitsEXT>(counter),
             &pCounterValue));
-        return expected<uint64_t>(pCounterValue, result);
+    return expected<uint64_t>(pCounterValue, result);
     }
 #endif //defined(VK_EXT_display_control)
 #if defined(VK_GOOGLE_display_timing)
@@ -3537,7 +3537,7 @@ struct DeviceFunctions {
         vk::Result result = static_cast<Result>(pfn_GetRefreshCycleDurationGOOGLE(device.get(),
             swapchain.get(),
             reinterpret_cast<VkRefreshCycleDurationGOOGLE*>(&pDisplayTimingProperties)));
-        return expected<RefreshCycleDurationGOOGLE>(pDisplayTimingProperties, result);
+    return expected<RefreshCycleDurationGOOGLE>(pDisplayTimingProperties, result);
     }
     [[nodiscard]] expected<detail::fixed_vector<PastPresentationTimingGOOGLE>> GetPastPresentationTimingGOOGLE(SwapchainKHR swapchain) const {
         uint32_t pPresentationTimingCount = 0;
@@ -3588,7 +3588,7 @@ struct DeviceFunctions {
         vk::Result result = static_cast<Result>(pfn_GetFenceWin32HandleKHR(device.get(),
             reinterpret_cast<const VkFenceGetWin32HandleInfoKHR*>(&pGetWin32HandleInfo),
             reinterpret_cast<HANDLE*>(&pHandle)));
-        return expected<HANDLE>(pHandle, result);
+    return expected<HANDLE>(pHandle, result);
     }
     [[nodiscard]] Result ImportFenceWin32HandleKHR(const ImportFenceWin32HandleInfoKHR&  pImportFenceWin32HandleInfo) const {
         return static_cast<Result>(pfn_ImportFenceWin32HandleKHR(device.get(),
@@ -3601,7 +3601,7 @@ struct DeviceFunctions {
         vk::Result result = static_cast<Result>(pfn_GetFenceFdKHR(device.get(),
             reinterpret_cast<const VkFenceGetFdInfoKHR*>(&pGetFdInfo),
             &pFd));
-        return expected<int>(pFd, result);
+    return expected<int>(pFd, result);
     }
     [[nodiscard]] Result ImportFenceFdKHR(const ImportFenceFdInfoKHR&  pImportFenceFdInfo) const {
         return static_cast<Result>(pfn_ImportFenceFdKHR(device.get(),
@@ -3659,14 +3659,14 @@ struct DeviceFunctions {
         vk::Result result = static_cast<Result>(pfn_GetAndroidHardwareBufferPropertiesANDROID(device.get(),
             &buffer,
             reinterpret_cast<VkAndroidHardwareBufferPropertiesANDROID*>(&pProperties)));
-        return expected<AndroidHardwareBufferPropertiesANDROID>(pProperties, result);
+    return expected<AndroidHardwareBufferPropertiesANDROID>(pProperties, result);
     }
     [[nodiscard]] expected<AHardwareBuffer*> GetMemoryAndroidHardwareBufferANDROID(const MemoryGetAndroidHardwareBufferInfoANDROID&  pInfo) const {
         AHardwareBuffer* pBuffer;
         vk::Result result = static_cast<Result>(pfn_GetMemoryAndroidHardwareBufferANDROID(device.get(),
             reinterpret_cast<const VkMemoryGetAndroidHardwareBufferInfoANDROID*>(&pInfo),
             &pBuffer));
-        return expected<AHardwareBuffer*>(pBuffer, result);
+    return expected<AHardwareBuffer*>(pBuffer, result);
     }
 #endif //defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_ANDROID_external_memory_android_hardware_buffer))
 #if defined(VK_EXT_sample_locations)
@@ -3688,7 +3688,7 @@ struct DeviceFunctions {
         pfn_GetAccelerationStructureMemoryRequirementsKHR(device.get(),
             reinterpret_cast<const VkAccelerationStructureMemoryRequirementsInfoKHR*>(&pInfo),
             reinterpret_cast<VkMemoryRequirements2*>(&pMemoryRequirements));
-        return pMemoryRequirements;
+    return pMemoryRequirements;
     }
     [[nodiscard]] Result BindAccelerationStructureMemoryKHR(uint32_t bindInfoCount, 
         const BindAccelerationStructureMemoryInfoKHR* pBindInfos) const {
@@ -3829,7 +3829,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkAccelerationStructureCreateInfoKHR*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkAccelerationStructureKHR*>(&pAccelerationStructure)));
-        return expected<AccelerationStructureKHR>(pAccelerationStructure, result);
+    return expected<AccelerationStructureKHR>(pAccelerationStructure, result);
     }
     void CmdBuildAccelerationStructureKHR(CommandBuffer commandBuffer, 
         uint32_t infoCount, 
@@ -3870,7 +3870,7 @@ struct DeviceFunctions {
         vk::Result result = static_cast<Result>(pfn_GetImageDrmFormatModifierPropertiesEXT(device.get(),
             image.get(),
             reinterpret_cast<VkImageDrmFormatModifierPropertiesEXT*>(&pProperties)));
-        return expected<ImageDrmFormatModifierPropertiesEXT>(pProperties, result);
+    return expected<ImageDrmFormatModifierPropertiesEXT>(pProperties, result);
     }
 #endif //defined(VK_EXT_image_drm_format_modifier)
 #if defined(VK_EXT_validation_cache)
@@ -3881,7 +3881,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkValidationCacheCreateInfoEXT*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkValidationCacheEXT*>(&pValidationCache)));
-        return expected<ValidationCacheEXT>(pValidationCache, result);
+    return expected<ValidationCacheEXT>(pValidationCache, result);
     }
     void DestroyValidationCacheEXT(ValidationCacheEXT validationCache, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -3954,14 +3954,14 @@ struct DeviceFunctions {
             reinterpret_cast<const VkAccelerationStructureCreateInfoNV*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkAccelerationStructureNV*>(&pAccelerationStructure)));
-        return expected<AccelerationStructureNV>(pAccelerationStructure, result);
+    return expected<AccelerationStructureNV>(pAccelerationStructure, result);
     }
     [[nodiscard]] MemoryRequirements2KHR GetAccelerationStructureMemoryRequirementsNV(const AccelerationStructureMemoryRequirementsInfoNV&  pInfo) const {
         MemoryRequirements2KHR pMemoryRequirements;
         pfn_GetAccelerationStructureMemoryRequirementsNV(device.get(),
             reinterpret_cast<const VkAccelerationStructureMemoryRequirementsInfoNV*>(&pInfo),
             reinterpret_cast<VkMemoryRequirements2KHR*>(&pMemoryRequirements));
-        return pMemoryRequirements;
+    return pMemoryRequirements;
     }
     void CmdCopyAccelerationStructureNV(CommandBuffer commandBuffer, 
         AccelerationStructureKHR dst, 
@@ -4051,7 +4051,7 @@ struct DeviceFunctions {
             static_cast<VkExternalMemoryHandleTypeFlagBits>(handleType),
             reinterpret_cast<const void*>(pHostPointer),
             reinterpret_cast<VkMemoryHostPointerPropertiesEXT*>(&pMemoryHostPointerProperties)));
-        return expected<MemoryHostPointerPropertiesEXT>(pMemoryHostPointerProperties, result);
+    return expected<MemoryHostPointerPropertiesEXT>(pMemoryHostPointerProperties, result);
     }
 #endif //defined(VK_EXT_external_memory_host)
 #if defined(VK_AMD_buffer_marker)
@@ -4077,7 +4077,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkCalibratedTimestampInfoEXT*>(pTimestampInfos),
             pTimestamps,
             &pMaxDeviation));
-        return expected<uint64_t>(pMaxDeviation, result);
+    return expected<uint64_t>(pMaxDeviation, result);
     }
 #endif //defined(VK_EXT_calibrated_timestamps)
 #if defined(VK_NV_mesh_shader)
@@ -4173,7 +4173,7 @@ struct DeviceFunctions {
         vk::Result result = static_cast<Result>(pfn_AcquirePerformanceConfigurationINTEL(device.get(),
             reinterpret_cast<const VkPerformanceConfigurationAcquireInfoINTEL*>(&pAcquireInfo),
             reinterpret_cast<VkPerformanceConfigurationINTEL*>(&pConfiguration)));
-        return expected<PerformanceConfigurationINTEL>(pConfiguration, result);
+    return expected<PerformanceConfigurationINTEL>(pConfiguration, result);
     }
     [[nodiscard]] Result ReleasePerformanceConfigurationINTEL(PerformanceConfigurationINTEL configuration) const {
         return static_cast<Result>(pfn_ReleasePerformanceConfigurationINTEL(device.get(),
@@ -4189,7 +4189,7 @@ struct DeviceFunctions {
         vk::Result result = static_cast<Result>(pfn_GetPerformanceParameterINTEL(device.get(),
             static_cast<VkPerformanceParameterTypeINTEL>(parameter),
             reinterpret_cast<VkPerformanceValueINTEL*>(&pValue)));
-        return expected<PerformanceValueINTEL>(pValue, result);
+    return expected<PerformanceValueINTEL>(pValue, result);
     }
 #endif //defined(VK_INTEL_performance_query)
 #if defined(VK_AMD_display_native_hdr)
@@ -4216,7 +4216,7 @@ struct DeviceFunctions {
         vk::Result result = static_cast<Result>(pfn_GetDeviceGroupSurfacePresentModes2EXT(device.get(),
             reinterpret_cast<const VkPhysicalDeviceSurfaceInfo2KHR*>(&pSurfaceInfo),
             reinterpret_cast<VkDeviceGroupPresentModeFlagsKHR*>(&pModes)));
-        return expected<DeviceGroupPresentModeFlagsKHR>(pModes, result);
+    return expected<DeviceGroupPresentModeFlagsKHR>(pModes, result);
     }
 #endif //defined(VK_USE_PLATFORM_WIN32_KHR) && ((defined(VK_EXT_full_screen_exclusive) && defined(VK_KHR_device_group)) || (defined(VK_EXT_full_screen_exclusive) && defined(VK_VERSION_1_1)))
 #if defined(VK_EXT_line_rasterization)
@@ -4318,7 +4318,7 @@ struct DeviceFunctions {
         vk::Result result = static_cast<Result>(pfn_CreateDeferredOperationKHR(device.get(),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkDeferredOperationKHR*>(&pDeferredOperation)));
-        return expected<DeferredOperationKHR>(pDeferredOperation, result);
+    return expected<DeferredOperationKHR>(pDeferredOperation, result);
     }
     void DestroyDeferredOperationKHR(DeferredOperationKHR operation, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -4413,7 +4413,7 @@ struct DeviceFunctions {
         pfn_GetGeneratedCommandsMemoryRequirementsNV(device.get(),
             reinterpret_cast<const VkGeneratedCommandsMemoryRequirementsInfoNV*>(&pInfo),
             reinterpret_cast<VkMemoryRequirements2*>(&pMemoryRequirements));
-        return pMemoryRequirements;
+    return pMemoryRequirements;
     }
     [[nodiscard]] expected<IndirectCommandsLayoutNV> CreateIndirectCommandsLayoutNV(const IndirectCommandsLayoutCreateInfoNV&  pCreateInfo, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -4422,7 +4422,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkIndirectCommandsLayoutCreateInfoNV*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkIndirectCommandsLayoutNV*>(&pIndirectCommandsLayout)));
-        return expected<IndirectCommandsLayoutNV>(pIndirectCommandsLayout, result);
+    return expected<IndirectCommandsLayoutNV>(pIndirectCommandsLayout, result);
     }
     void DestroyIndirectCommandsLayoutNV(IndirectCommandsLayoutNV indirectCommandsLayout, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -4439,7 +4439,7 @@ struct DeviceFunctions {
             reinterpret_cast<const VkPrivateDataSlotCreateInfoEXT*>(&pCreateInfo),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkPrivateDataSlotEXT*>(&pPrivateDataSlot)));
-        return expected<PrivateDataSlotEXT>(pPrivateDataSlot, result);
+    return expected<PrivateDataSlotEXT>(pPrivateDataSlot, result);
     }
     void DestroyPrivateDataSlotEXT(PrivateDataSlotEXT privateDataSlot, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -4466,7 +4466,7 @@ struct DeviceFunctions {
             objectHandle,
             privateDataSlot.get(),
             &pData);
-        return pData;
+    return pData;
     }
 #endif //defined(VK_EXT_private_data)
 #if defined(VK_KHR_copy_commands2)

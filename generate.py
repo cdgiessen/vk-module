@@ -612,41 +612,41 @@ class Function:
         if node.get('errorcodes') is not None:
             self.error_codes = node.get('errorcodes').split(',')
 
-        self.alias = None
-        self.return_type = None
         self.platform = None
         proto = node.find('proto')
-        if proto is not None:
-            self.name = proto.find('name').text
-            self.return_type = proto.find('type').text
-        else:
-            self.name = node.get('name')
-            self.alias = node.get('alias')
-        
+        self.name = proto.find('name').text if proto is not None else node.get('name')
+        self.alias = node.get('alias') if proto is None else None
+        self.return_type = proto.find('type').text if proto is not None else None
+
+        if self.name is not None:
+            self.func_prototype = f'PFN_{self.name}'
+
         self.parameters = []
         for param in node.findall('param'):
             self.parameters.append( Variable(param, handles, default_values))
         self.dispatch_type = None
-        self.dispatch_handle = None
         if len(self.parameters) > 0:
             self.free_function = self.parameters[0].base_type not in dispatchable_handles
             
             if self.name == 'vkGetInstanceProcAddr' or self.free_function:
                 self.dispatch_type = 'global'
             elif self.name == 'vkGetDeviceProcAddr' or self.parameters[0].base_type in ['VkInstance', 'VkPhysicalDevice']:
-                self.dispatch_type = "instance"
+                self.dispatch_type = 'instance'
             else:
-                self.dispatch_type = "device"
+                self.dispatch_type = 'device'
 
-            if self.parameters[0].base_type in dispatchable_handles:
-                self.dispatch_handle = self.parameters[0].base_type
-        if self.name is not None:
-            self.func_prototype = f'PFN_{self.name}'
-
-        self.span_val = set()
+        self.dispatch_handle = None
+        if len(self.parameters) > 0 and self.parameters[0].base_type in dispatchable_handles:
+            self.dispatch_handle = self.parameters[0].base_type
+        
+        self.span_params = set()
         for param in self.parameters:
             if param.len_attrib is not None and param.len_attrib != "null-terminated" and param.optional is None:
-                self.span_val.add(param.len_attrib)
+                len_attrib = param.len_attrib
+                for inner_param in self.parameters:
+                    if len_attrib == inner_param.name:
+                        self.span_params.add(inner_param.len_attrib)
+        self.has_span_params = len(self.span_params) > 0
 
         self.is_value_query = len(self.parameters) > 0 and self.parameters[-1].is_ptr() \
             and not self.parameters[-1].is_const and self.parameters[-1].len_attrib is None
@@ -655,16 +655,21 @@ class Function:
         self.query_type = None
         self.query_name = None
         self.full_return_type = None
+        self.modified_param_list = self.parameters
         if self.is_value_query:
+            self.modified_param_list = self.parameters[:-1]
             self.query_type = self.parameters[-1].get_base_type(downgrade_ptr_type=True)
             if self.query_type[:2] == 'vk':
                 self.query_type = self.query_type[:2]
             self.query_name = self.parameters[-1].name
             if self.return_type == 'VkResult':
                 self.full_return_type = f'expected<{self.query_type}>'
+                self.return_statement = f'return expected<{self.query_type}>({self.query_name}, result);\n'
             else:
                 self.full_return_type = f'{self.query_type}'
+                self.return_statement = f'return {self.query_name};\n'
         if self.is_enumeration_function:
+            self.modified_param_list = self.parameters[:-2]
             self.query_type = self.parameters[-1].get_base_type(downgrade_ptr_type=self.parameters[-1].base_type != 'void')
             self.base_query_type =self.parameters[-1].get_base_type(use_vk_type=False)
             self.query_name = self.parameters[-1].name
@@ -674,6 +679,7 @@ class Function:
                 self.full_return_type = f'expected<detail::fixed_vector<{self.query_type}>>'
             else: # void
                 self.full_return_type = f'detail::fixed_vector<{self.query_type}>'
+        
     def check_platform(self, platform, ext_functions):
         if self.name in ext_functions:
             self.platform = platform
@@ -750,14 +756,10 @@ class Function:
             PlatformGuardFooter(file, self.platform, guard)
             return
         self.print_return_type(file, indent, replace_dict, self.full_return_type)
-        file.write('(')
-        parameter_list = self.parameters
+        parameter_list = self.modified_param_list
         if dispatch_handle is not None and f'{dispatch_handle}' == self.dispatch_handle:
             parameter_list = parameter_list[1:]
-        if self.is_value_query:
-            parameter_list = parameter_list[:-1]
-        if self.is_enumeration_function:
-            parameter_list = parameter_list[:-2]
+        file.write('(')
         self.print_parameters(file, parameter_list, indent)
         file.write(') const {\n')
         if self.name == 'vkEnumerateInstanceVersion':
@@ -768,10 +770,7 @@ class Function:
             if self.return_type != 'void':
                 file.write(f'vk::Result result = ')
             self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source)
-            if self.return_type != 'void':
-                file.write(f'{indent}    return expected<{self.query_type}>({self.query_name}, result);\n')
-            else:
-                file.write(f'{indent}    return {self.query_name};\n')
+            file.write(f'{indent}{self.return_statement}')
         elif self.is_enumeration_function:
             if self.return_type == 'void':
                 file.write(f'{indent}    {self.count_type} {self.count_name} = 0;\n{indent}    ')
@@ -813,19 +812,15 @@ class Function:
             self.print_return_type(file, indent, replace_dict, self.full_return_type)    
 
         file.write('(')
-        parameter_list = self.parameters
-        if self.is_value_query:
-            parameter_list = parameter_list[:-1]
-        if self.is_enumeration_function:
-            parameter_list = parameter_list[:-2]
-        self.print_parameters(file, parameter_list[1:], indent, break_between=False)
+       
+        self.print_parameters(file, self.modified_param_list[1:], indent, break_between=False)
         file.write(') const {\n')
         file.write(f'{indent}    ')
         if self.return_type != 'void' or self.full_return_type != None:
             file.write(f'return ')
         file.write(f'{pfn_source}->{self.name[2:]}(')
-        for param in parameter_list:
-            if param == parameter_list[0]:
+        for param in self.modified_param_list:
+            if param == self.modified_param_list[0]:
                 file.write(f'{dispatch_handle_name}')
             else:
                 file.write(f', {param.name}')
