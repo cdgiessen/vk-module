@@ -336,6 +336,7 @@ class Handle:
             file.write(f'    public:\n')
             file.write(f'    explicit {self.name[2:]}() = default;\n')
             file.write(f'    explicit {self.name[2:]}({self.name} handle):handle(handle){{}}\n')
+            file.write(f'    {self.name[2:]}([[maybe_unused]] std::nullptr_t none){{}}\n')
             file.write(f'    {self.name} get() const {{ return handle; }}\n')
             file.write(f'    explicit operator bool() const {{return handle != VK_NULL_HANDLE;}};\n')
             file.write(f'    bool operator!() {{ return handle == VK_NULL_HANDLE; }}\n')

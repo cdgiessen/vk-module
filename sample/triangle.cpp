@@ -26,6 +26,7 @@ struct DeviceContext
 {
     vk::Device device;
     vk::DeviceFunctions functions;
+    vk::PhysicalDeviceFunctions physical_device_functions;
     vk::Queue graphics_queue;
     vk::QueueFunctions queue_functions;
     vk::SurfaceKHR surface;
@@ -33,14 +34,15 @@ struct DeviceContext
     std::vector<vk::Image> swapchain_images;
     uint32_t image_count = 0;
     std::vector<vk::ImageView> swapchain_image_views;
+    vk::Format swapchain_img_format;
     vk::RenderPass render_pass;
     std::vector<vk::Framebuffer> framebuffers;
     vk::PipelineLayout pipeline_layout;
     vk::Pipeline pipeline;
     vk::CommandPool cmd_pool;
     std::vector<vk::CommandBuffer> cmd_buffers;
-    vk::Fence fence;
     uint32_t current_frame = 0;
+    std::vector<vk::Fence> fences;
     std::vector<vk::Semaphore> available_semaphores;
     std::vector<vk::Semaphore> finished_semaphores;
 };
@@ -145,11 +147,15 @@ void create_renderer_context(RendererContext& context)
 
     context.physical_device = physical_devices_ret.value()[0]; // get first physical device returned
     context.physical_device_functions = vk::PhysicalDeviceFunctions(context.functions, context.physical_device);
+
+    auto query_support = context.physical_device_functions.GetSurfaceSupportKHR(0, context.surface);
+    check_res(query_support, "Failed to query surface support");
+    check_res(query_support.value(), "Surface doesn't support present");
 }
 
 void create_device_context(RendererContext& render_context, DeviceContext& device_context)
 {
-    float priority;
+    float priority = 0.f;
     vk::DeviceQueueCreateInfo queue_info;
     queue_info.queueCount = 1;
     queue_info.pQueuePriorities = &priority;
@@ -164,6 +170,7 @@ void create_device_context(RendererContext& render_context, DeviceContext& devic
     device_context.device = device_ret.value();
     device_context.functions = vk::DeviceFunctions(render_context.functions, device_context.device);
     device_context.surface = render_context.surface;
+    device_context.physical_device_functions = render_context.physical_device_functions;
 }
 
 void setup_queues(DeviceContext& device, vk::PhysicalDeviceFunctions const& phys_dev_funcs)
@@ -185,19 +192,28 @@ void setup_queues(DeviceContext& device, vk::PhysicalDeviceFunctions const& phys
 
 void setup_swapchain(DeviceContext& device)
 {
+    auto surf_formats_ret = device.physical_device_functions.GetSurfaceFormatsKHR(device.surface);
+    check_res(surf_formats_ret, "Failed to get surface formats");
+    check_res(surf_formats_ret.value().size() > 0, "No surface formats available");
+
+    device.swapchain_img_format = surf_formats_ret.value()[0].format;
+    vk::ColorSpaceKHR img_color_space = surf_formats_ret.value()[0].colorSpace;
+
     device.image_count = 3;
     uint32_t queue_family_indices = 0;
     auto swap_ret = device.functions.CreateSwapchainKHR({
       .surface = device.surface,
       .minImageCount = 3,
-      .imageFormat = vk::Format::R8G8B8A8Srgb,
-      .imageColorSpace = vk::ColorSpaceKHR::SrgbNonlinearKHR,
+      .imageFormat = device.swapchain_img_format,
+      .imageColorSpace = img_color_space,
       .imageExtent = { width, height },
       .imageArrayLayers = 1,
       .imageUsage = vk::ImageUsageFlagBits::ColorAttachment,
       .imageSharingMode = vk::SharingMode::Exclusive,
       .queueFamilyIndexCount = 1,
       .pQueueFamilyIndices = &queue_family_indices,
+      .preTransform = vk::SurfaceTransformFlagBitsKHR::IdentityBitKHR,
+      .compositeAlpha = vk::CompositeAlphaFlagBitsKHR::OpaqueBitKHR,
       .presentMode = vk::PresentModeKHR::FifoRelaxedKHR,
     });
     check_res(swap_ret, "Unable to create Swapchain");
@@ -209,10 +225,11 @@ void setup_swapchain(DeviceContext& device)
 
     for (auto& image : swap_images_ret.value()) {
         device.swapchain_images.push_back(image);
-        auto view_ret = device.functions.CreateImageView({ .image = image,
-                                                           .viewType = vk::ImageViewType::e2D,
-                                                           .format = vk::Format::R8G8B8A8Srgb,
-                                                           .subresourceRange = { .levelCount = 1, .layerCount = 1 } });
+        auto view_ret = device.functions.CreateImageView(
+          { .image = image,
+            .viewType = vk::ImageViewType::e2D,
+            .format = device.swapchain_img_format,
+            .subresourceRange = { .aspectMask = vk::ImageAspectFlagBits::Color, .levelCount = 1, .layerCount = 1 } });
         check_res(view_ret, "Failed to create swapchain image view");
 
         device.swapchain_image_views.push_back(view_ret.value());
@@ -222,7 +239,7 @@ void setup_swapchain(DeviceContext& device)
 void setup_renderpass(DeviceContext& device)
 {
     vk::AttachmentDescription color_attachment = {
-        .format = vk::Format::R8G8B8A8Srgb,
+        .format = device.swapchain_img_format,
         .samples = vk::SampleCountFlagBits::e1,
         .loadOp = vk::AttachmentLoadOp::Clear,
         .storeOp = vk::AttachmentStoreOp::Store,
@@ -348,7 +365,7 @@ void create_pipeline(DeviceContext& device)
         .layout = pipeline_layout_ret.value(),
         .renderPass = device.render_pass,
     };
-    auto pipeline_ret = device.functions.CreateGraphicsPipelines(vk::PipelineCache{}, 1, &pipe_info, nullptr, &device.pipeline);
+    auto pipeline_ret = device.functions.CreateGraphicsPipelines(nullptr, 1, &pipe_info, nullptr, &device.pipeline);
     check_res(pipeline_ret, "Failed to create graphipcs pipeline");
 
     device.functions.DestroyShaderModule(vert);
@@ -394,14 +411,13 @@ void create_command_buffers(DeviceContext& device)
 
 void setup_sync_objects(DeviceContext& device)
 {
-    auto fence_ret = device.functions.CreateFence({ .flags = vk::FenceCreateFlagBits::Signaled });
-    check_res(fence_ret, "Failed to create fence");
 
-    device.fence = fence_ret.value();
-
+    device.fences.resize(device.image_count);
     device.available_semaphores.resize(device.image_count);
     device.finished_semaphores.resize(device.image_count);
     for (uint32_t i = 0; i < device.image_count; i++) {
+        auto fence_ret = device.functions.CreateFence({ .flags = vk::FenceCreateFlagBits::Signaled });
+        check_res(fence_ret, "Failed to create fence");
         auto ret1 = device.functions.CreateSemaphore({});
         check_res(ret1, "Failed to create semaphore");
         auto ret2 = device.functions.CreateSemaphore({});
@@ -409,17 +425,13 @@ void setup_sync_objects(DeviceContext& device)
 
         device.available_semaphores[i] = ret1.value();
         device.finished_semaphores[i] = ret2.value();
+        device.fences[i] = fence_ret.value();
     }
 }
 
 void recreate_swapchain(DeviceContext& device)
 {
-    auto fence_ret = device.functions.WaitForFences(1, &device.fence, true, UINT64_MAX);
-    check_res(fence_ret, "Failed to wait for fence");
-
-    fence_ret = device.functions.ResetFences(1, &device.fence);
-    check_res(fence_ret, "Failed to reset fence");
-
+    check_res(device.queue_functions.WaitIdle(), "");
     device.functions.DestroyCommandPool(device.cmd_pool);
 
     for (auto& framebuffer : device.framebuffers) {
@@ -436,14 +448,14 @@ void recreate_swapchain(DeviceContext& device)
 
 void draw_frame(DeviceContext& device)
 {
-    auto fence_ret = device.functions.WaitForFences(1, &device.fence, true, UINT64_MAX);
+    auto fence_ret = device.functions.WaitForFences(1, &device.fences[device.current_frame], true, UINT64_MAX);
     check_res(fence_ret, "Failed to wait for fence");
 
-    fence_ret = device.functions.ResetFences(1, &device.fence);
+    fence_ret = device.functions.ResetFences(1, &device.fences[device.current_frame]);
     check_res(fence_ret, "Failed to reset fence");
 
     auto image_index_ret = device.functions.AcquireNextImageKHR(
-      device.swapchain, UINT64_MAX, device.available_semaphores[device.current_frame], device.fence);
+      device.swapchain, UINT64_MAX, device.available_semaphores[device.current_frame], nullptr);
     if (image_index_ret.raw_result() == vk::Result::ErrorOutOfDateKHR) {
         return recreate_swapchain(device);
     } else if (image_index_ret.raw_result() != vk::Result::Success && image_index_ret.raw_result() != vk::Result::SuboptimalKHR) {
@@ -456,11 +468,11 @@ void draw_frame(DeviceContext& device)
         .pWaitSemaphores = &device.available_semaphores[device.current_frame],
         .pWaitDstStageMask = &wait_mask,
         .commandBufferCount = 1,
-        .pCommandBuffers = &device.cmd_buffers[device.current_frame],
+        .pCommandBuffers = &device.cmd_buffers[image_index_ret.value()],
         .signalSemaphoreCount = 1,
         .pSignalSemaphores = &device.finished_semaphores[device.current_frame],
     };
-    auto submit_ret = device.queue_functions.Submit(1, &submit_info, device.fence);
+    auto submit_ret = device.queue_functions.Submit(1, &submit_info, device.fences[device.current_frame]);
     check_res(submit_ret, "Failed to submit command buffer");
 
     auto present_ret = device.queue_functions.PresentKHR({
@@ -486,7 +498,9 @@ void destroy_device(DeviceContext& device)
     for (auto& sem : device.finished_semaphores) {
         device.functions.DestroySemaphore(sem);
     }
-    device.functions.DestroyFence(device.fence);
+    for (auto& fence : device.fences) {
+        device.functions.DestroyFence(fence);
+    }
     device.functions.DestroyCommandPool(device.cmd_pool);
     for (auto& framebuffer : device.framebuffers) {
         device.functions.DestroyFramebuffer(framebuffer);
@@ -527,8 +541,7 @@ int main()
         glfwPollEvents();
         draw_frame(device);
     }
-    auto wait_ret = device.queue_functions.WaitIdle();
-    check_res(wait_ret, "Couldn't wait to shut down");
+    check_res(device.queue_functions.WaitIdle(), "Couldn't wait to shut down");
     destroy_device(device);
     destroy_renderer(context);
     return 0;

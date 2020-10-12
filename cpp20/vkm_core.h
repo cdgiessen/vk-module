@@ -2608,6 +2608,7 @@ class Instance {
     public:
     explicit Instance() = default;
     explicit Instance(VkInstance handle):handle(handle){}
+    Instance([[maybe_unused]] std::nullptr_t none){}
     VkInstance get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2617,6 +2618,7 @@ class PhysicalDevice {
     public:
     explicit PhysicalDevice() = default;
     explicit PhysicalDevice(VkPhysicalDevice handle):handle(handle){}
+    PhysicalDevice([[maybe_unused]] std::nullptr_t none){}
     VkPhysicalDevice get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2626,6 +2628,7 @@ class Device {
     public:
     explicit Device() = default;
     explicit Device(VkDevice handle):handle(handle){}
+    Device([[maybe_unused]] std::nullptr_t none){}
     VkDevice get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2635,6 +2638,7 @@ class Queue {
     public:
     explicit Queue() = default;
     explicit Queue(VkQueue handle):handle(handle){}
+    Queue([[maybe_unused]] std::nullptr_t none){}
     VkQueue get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2644,6 +2648,7 @@ class CommandBuffer {
     public:
     explicit CommandBuffer() = default;
     explicit CommandBuffer(VkCommandBuffer handle):handle(handle){}
+    CommandBuffer([[maybe_unused]] std::nullptr_t none){}
     VkCommandBuffer get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2653,6 +2658,7 @@ class DeviceMemory {
     public:
     explicit DeviceMemory() = default;
     explicit DeviceMemory(VkDeviceMemory handle):handle(handle){}
+    DeviceMemory([[maybe_unused]] std::nullptr_t none){}
     VkDeviceMemory get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2662,6 +2668,7 @@ class CommandPool {
     public:
     explicit CommandPool() = default;
     explicit CommandPool(VkCommandPool handle):handle(handle){}
+    CommandPool([[maybe_unused]] std::nullptr_t none){}
     VkCommandPool get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2671,6 +2678,7 @@ class Buffer {
     public:
     explicit Buffer() = default;
     explicit Buffer(VkBuffer handle):handle(handle){}
+    Buffer([[maybe_unused]] std::nullptr_t none){}
     VkBuffer get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2680,6 +2688,7 @@ class BufferView {
     public:
     explicit BufferView() = default;
     explicit BufferView(VkBufferView handle):handle(handle){}
+    BufferView([[maybe_unused]] std::nullptr_t none){}
     VkBufferView get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2689,6 +2698,7 @@ class Image {
     public:
     explicit Image() = default;
     explicit Image(VkImage handle):handle(handle){}
+    Image([[maybe_unused]] std::nullptr_t none){}
     VkImage get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2698,6 +2708,7 @@ class ImageView {
     public:
     explicit ImageView() = default;
     explicit ImageView(VkImageView handle):handle(handle){}
+    ImageView([[maybe_unused]] std::nullptr_t none){}
     VkImageView get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2707,6 +2718,7 @@ class ShaderModule {
     public:
     explicit ShaderModule() = default;
     explicit ShaderModule(VkShaderModule handle):handle(handle){}
+    ShaderModule([[maybe_unused]] std::nullptr_t none){}
     VkShaderModule get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2716,6 +2728,7 @@ class Pipeline {
     public:
     explicit Pipeline() = default;
     explicit Pipeline(VkPipeline handle):handle(handle){}
+    Pipeline([[maybe_unused]] std::nullptr_t none){}
     VkPipeline get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2725,6 +2738,7 @@ class PipelineLayout {
     public:
     explicit PipelineLayout() = default;
     explicit PipelineLayout(VkPipelineLayout handle):handle(handle){}
+    PipelineLayout([[maybe_unused]] std::nullptr_t none){}
     VkPipelineLayout get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2734,6 +2748,7 @@ class Sampler {
     public:
     explicit Sampler() = default;
     explicit Sampler(VkSampler handle):handle(handle){}
+    Sampler([[maybe_unused]] std::nullptr_t none){}
     VkSampler get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2743,6 +2758,7 @@ class DescriptorSet {
     public:
     explicit DescriptorSet() = default;
     explicit DescriptorSet(VkDescriptorSet handle):handle(handle){}
+    DescriptorSet([[maybe_unused]] std::nullptr_t none){}
     VkDescriptorSet get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2752,6 +2768,7 @@ class DescriptorSetLayout {
     public:
     explicit DescriptorSetLayout() = default;
     explicit DescriptorSetLayout(VkDescriptorSetLayout handle):handle(handle){}
+    DescriptorSetLayout([[maybe_unused]] std::nullptr_t none){}
     VkDescriptorSetLayout get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2761,6 +2778,7 @@ class DescriptorPool {
     public:
     explicit DescriptorPool() = default;
     explicit DescriptorPool(VkDescriptorPool handle):handle(handle){}
+    DescriptorPool([[maybe_unused]] std::nullptr_t none){}
     VkDescriptorPool get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2770,6 +2788,7 @@ class Fence {
     public:
     explicit Fence() = default;
     explicit Fence(VkFence handle):handle(handle){}
+    Fence([[maybe_unused]] std::nullptr_t none){}
     VkFence get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2779,6 +2798,7 @@ class Semaphore {
     public:
     explicit Semaphore() = default;
     explicit Semaphore(VkSemaphore handle):handle(handle){}
+    Semaphore([[maybe_unused]] std::nullptr_t none){}
     VkSemaphore get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2788,6 +2808,7 @@ class Event {
     public:
     explicit Event() = default;
     explicit Event(VkEvent handle):handle(handle){}
+    Event([[maybe_unused]] std::nullptr_t none){}
     VkEvent get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2797,6 +2818,7 @@ class QueryPool {
     public:
     explicit QueryPool() = default;
     explicit QueryPool(VkQueryPool handle):handle(handle){}
+    QueryPool([[maybe_unused]] std::nullptr_t none){}
     VkQueryPool get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2806,6 +2828,7 @@ class Framebuffer {
     public:
     explicit Framebuffer() = default;
     explicit Framebuffer(VkFramebuffer handle):handle(handle){}
+    Framebuffer([[maybe_unused]] std::nullptr_t none){}
     VkFramebuffer get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2815,6 +2838,7 @@ class RenderPass {
     public:
     explicit RenderPass() = default;
     explicit RenderPass(VkRenderPass handle):handle(handle){}
+    RenderPass([[maybe_unused]] std::nullptr_t none){}
     VkRenderPass get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2824,6 +2848,7 @@ class PipelineCache {
     public:
     explicit PipelineCache() = default;
     explicit PipelineCache(VkPipelineCache handle):handle(handle){}
+    PipelineCache([[maybe_unused]] std::nullptr_t none){}
     VkPipelineCache get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2833,6 +2858,7 @@ class IndirectCommandsLayoutNV {
     public:
     explicit IndirectCommandsLayoutNV() = default;
     explicit IndirectCommandsLayoutNV(VkIndirectCommandsLayoutNV handle):handle(handle){}
+    IndirectCommandsLayoutNV([[maybe_unused]] std::nullptr_t none){}
     VkIndirectCommandsLayoutNV get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2842,6 +2868,7 @@ class DescriptorUpdateTemplate {
     public:
     explicit DescriptorUpdateTemplate() = default;
     explicit DescriptorUpdateTemplate(VkDescriptorUpdateTemplate handle):handle(handle){}
+    DescriptorUpdateTemplate([[maybe_unused]] std::nullptr_t none){}
     VkDescriptorUpdateTemplate get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2852,6 +2879,7 @@ class SamplerYcbcrConversion {
     public:
     explicit SamplerYcbcrConversion() = default;
     explicit SamplerYcbcrConversion(VkSamplerYcbcrConversion handle):handle(handle){}
+    SamplerYcbcrConversion([[maybe_unused]] std::nullptr_t none){}
     VkSamplerYcbcrConversion get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2862,6 +2890,7 @@ class ValidationCacheEXT {
     public:
     explicit ValidationCacheEXT() = default;
     explicit ValidationCacheEXT(VkValidationCacheEXT handle):handle(handle){}
+    ValidationCacheEXT([[maybe_unused]] std::nullptr_t none){}
     VkValidationCacheEXT get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2871,6 +2900,7 @@ class AccelerationStructureKHR {
     public:
     explicit AccelerationStructureKHR() = default;
     explicit AccelerationStructureKHR(VkAccelerationStructureKHR handle):handle(handle){}
+    AccelerationStructureKHR([[maybe_unused]] std::nullptr_t none){}
     VkAccelerationStructureKHR get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2881,6 +2911,7 @@ class PerformanceConfigurationINTEL {
     public:
     explicit PerformanceConfigurationINTEL() = default;
     explicit PerformanceConfigurationINTEL(VkPerformanceConfigurationINTEL handle):handle(handle){}
+    PerformanceConfigurationINTEL([[maybe_unused]] std::nullptr_t none){}
     VkPerformanceConfigurationINTEL get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2890,6 +2921,7 @@ class DeferredOperationKHR {
     public:
     explicit DeferredOperationKHR() = default;
     explicit DeferredOperationKHR(VkDeferredOperationKHR handle):handle(handle){}
+    DeferredOperationKHR([[maybe_unused]] std::nullptr_t none){}
     VkDeferredOperationKHR get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2899,6 +2931,7 @@ class PrivateDataSlotEXT {
     public:
     explicit PrivateDataSlotEXT() = default;
     explicit PrivateDataSlotEXT(VkPrivateDataSlotEXT handle):handle(handle){}
+    PrivateDataSlotEXT([[maybe_unused]] std::nullptr_t none){}
     VkPrivateDataSlotEXT get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2908,6 +2941,7 @@ class DisplayKHR {
     public:
     explicit DisplayKHR() = default;
     explicit DisplayKHR(VkDisplayKHR handle):handle(handle){}
+    DisplayKHR([[maybe_unused]] std::nullptr_t none){}
     VkDisplayKHR get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2917,6 +2951,7 @@ class DisplayModeKHR {
     public:
     explicit DisplayModeKHR() = default;
     explicit DisplayModeKHR(VkDisplayModeKHR handle):handle(handle){}
+    DisplayModeKHR([[maybe_unused]] std::nullptr_t none){}
     VkDisplayModeKHR get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2926,6 +2961,7 @@ class SurfaceKHR {
     public:
     explicit SurfaceKHR() = default;
     explicit SurfaceKHR(VkSurfaceKHR handle):handle(handle){}
+    SurfaceKHR([[maybe_unused]] std::nullptr_t none){}
     VkSurfaceKHR get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2935,6 +2971,7 @@ class SwapchainKHR {
     public:
     explicit SwapchainKHR() = default;
     explicit SwapchainKHR(VkSwapchainKHR handle):handle(handle){}
+    SwapchainKHR([[maybe_unused]] std::nullptr_t none){}
     VkSwapchainKHR get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2944,6 +2981,7 @@ class DebugReportCallbackEXT {
     public:
     explicit DebugReportCallbackEXT() = default;
     explicit DebugReportCallbackEXT(VkDebugReportCallbackEXT handle):handle(handle){}
+    DebugReportCallbackEXT([[maybe_unused]] std::nullptr_t none){}
     VkDebugReportCallbackEXT get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
@@ -2953,6 +2991,7 @@ class DebugUtilsMessengerEXT {
     public:
     explicit DebugUtilsMessengerEXT() = default;
     explicit DebugUtilsMessengerEXT(VkDebugUtilsMessengerEXT handle):handle(handle){}
+    DebugUtilsMessengerEXT([[maybe_unused]] std::nullptr_t none){}
     VkDebugUtilsMessengerEXT get() const { return handle; }
     explicit operator bool() const {return handle != VK_NULL_HANDLE;};
     bool operator!() { return handle == VK_NULL_HANDLE; }
