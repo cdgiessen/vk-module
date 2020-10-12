@@ -123,14 +123,14 @@ void create_renderer_context(RendererContext& context)
     std::vector<const char*> layers_to_enable;
     bool found_validation = false;
     for (auto& layer : layers_ret.value()) {
-        found_validation = strncmp(layer.layerName, "VK_LAYER_KHRONOS_validation", vk::MAX_EXTENSION_NAME_SIZE) == 0;
+        found_validation = std::string(layer.layerName) == std::string("VK_LAYER_KHRONOS_validation");
         layers_to_enable.push_back("VK_LAYER_KHRONOS_validation");
     }
 
     auto instance_ret = global_functions.CreateInstance({
-      .enabledLayerCount = layers_to_enable.size(),
+      .enabledLayerCount = static_cast<uint32_t>(layers_to_enable.size()),
       .ppEnabledLayerNames = layers_to_enable.data(),
-      .enabledExtensionCount = exts_to_enable.size(),
+      .enabledExtensionCount = static_cast<uint32_t>(exts_to_enable.size()),
       .ppEnabledExtensionNames = exts_to_enable.data(),
     });
     check_res(instance_ret, "Failed to init Vulkan Instance");
@@ -362,6 +362,7 @@ void create_pipeline(DeviceContext& device)
         .pRasterizationState = &rasterizer,
         .pMultisampleState = &multisample,
         .pColorBlendState = &color_blend,
+        .pDynamicState = &dynamic_state,
         .layout = pipeline_layout_ret.value(),
         .renderPass = device.render_pass,
     };
@@ -389,7 +390,7 @@ void create_command_buffers(DeviceContext& device)
         cmd_ret = funcs.Begin({});
         check_res(cmd_ret, "Failed to begin command buffer");
 
-        vk::ClearValue clear{ .color = { 0.f, 0.f, 0.f, 1.f } };
+        vk::ClearValue clear{ .color = { { 0.f, 0.f, 0.f, 1.f } } };
         vk::Viewport viewport = { 0.f, 0.f, static_cast<float>(width), static_cast<float>(height), 0.f, 1.f };
         vk::Rect2D scissor = { .offset = { 0, 0 }, .extent = { width, height } };
         funcs

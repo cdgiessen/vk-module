@@ -1267,6 +1267,7 @@ def print_vkm_core(bindings, cpp20mode, cpp20str):
     with open(f'cpp{cpp20str}/vkm_core.h', 'w') as vkm_core:
         vkm_core.write('#pragma once\n// clang-format off\n')
         vkm_core.write('#include <stdint.h>\n')
+        vkm_core.write('#include <cstddef>\n')
         vkm_core.write('#define VK_ENABLE_BETA_EXTENSIONS\n')
         vkm_core.write('#include <vulkan/vulkan.h>\n')
         vkm_core.write('namespace vk {\n')

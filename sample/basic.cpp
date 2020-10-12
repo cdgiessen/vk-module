@@ -102,10 +102,10 @@ int main()
 
     vk::RenderPass renderpass;
     vk::Framebuffer framebuffer;
-    vk::ClearValue clear_color{ .color = vk::ClearColorValue{ 0, 0, 0, 1 } };
+    vk::ClearValue clear_color{ .color = { { 0, 0, 0, 1 } } };
     vk::Viewport viewport{ 0, 0, 1, 1, 0, 1 };
-    vk::Rect2D scissor{ 0, 0, 100, 100 };
-
+    vk::Rect2D scissor{ { 0, 0 }, { 100, 100 } };
+    vk::DeviceSize dev_size= 0;
     auto ret = cmd_buf_functions
                  .BeginRenderPass({ .renderPass = renderpass,
                                     .framebuffer = framebuffer,
@@ -115,7 +115,7 @@ int main()
                                   vk::SubpassContents::Inline)
                  .SetViewport(0, 1, &viewport)
                  .SetScissor(0, 1, &scissor)
-                 .BindVertexBuffers(0, 1, &buffer, { 0 })
+                 .BindVertexBuffers(0, 1, &buffer, &dev_size)
                  .BindIndexBuffer(buffer, 0, vk::IndexType::Uint16)
                  .Draw(10, 1, 0, 0)
                  .EndRenderPass()
