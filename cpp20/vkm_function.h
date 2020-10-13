@@ -1,5 +1,6 @@
 #pragma once
 // clang-format off
+#include <span>
 #include "vkm_core.h"
 
 #if !defined(VULKAN_CUSTOM_ASSERT)
@@ -1923,6 +1924,15 @@ struct DeviceFunctions {
             reinterpret_cast<const VkSubmitInfo*>(pSubmits),
             fence.get()));
     }
+    [[nodiscard]] Result QueueSubmit(Queue queue, 
+        std::span<SubmitInfo> Submits, 
+        Fence fence) const {
+        uint32_t submitCount = Submits.size();
+        return static_cast<Result>(pfn_QueueSubmit(queue.get(),
+            submitCount,
+            reinterpret_cast<const VkSubmitInfo*>(Submits.data()),
+            fence.get()));
+    }
     [[nodiscard]] Result QueueWaitIdle(Queue queue) const {
         return static_cast<Result>(pfn_QueueWaitIdle(queue.get()));
     }
@@ -1967,11 +1977,23 @@ struct DeviceFunctions {
             memoryRangeCount,
             reinterpret_cast<const VkMappedMemoryRange*>(pMemoryRanges)));
     }
+    [[nodiscard]] Result FlushMappedMemoryRanges(std::span<MappedMemoryRange> MemoryRanges) const {
+        uint32_t memoryRangeCount = MemoryRanges.size();
+        return static_cast<Result>(pfn_FlushMappedMemoryRanges(device.get(),
+            memoryRangeCount,
+            reinterpret_cast<const VkMappedMemoryRange*>(MemoryRanges.data())));
+    }
     [[nodiscard]] Result InvalidateMappedMemoryRanges(uint32_t memoryRangeCount, 
         const MappedMemoryRange* pMemoryRanges) const {
         return static_cast<Result>(pfn_InvalidateMappedMemoryRanges(device.get(),
             memoryRangeCount,
             reinterpret_cast<const VkMappedMemoryRange*>(pMemoryRanges)));
+    }
+    [[nodiscard]] Result InvalidateMappedMemoryRanges(std::span<MappedMemoryRange> MemoryRanges) const {
+        uint32_t memoryRangeCount = MemoryRanges.size();
+        return static_cast<Result>(pfn_InvalidateMappedMemoryRanges(device.get(),
+            memoryRangeCount,
+            reinterpret_cast<const VkMappedMemoryRange*>(MemoryRanges.data())));
     }
     [[nodiscard]] DeviceSize GetDeviceMemoryCommitment(DeviceMemory memory) const {
         DeviceSize pCommittedMemoryInBytes;
@@ -2033,6 +2055,15 @@ struct DeviceFunctions {
             reinterpret_cast<const VkBindSparseInfo*>(pBindInfo),
             fence.get()));
     }
+    [[nodiscard]] Result QueueBindSparse(Queue queue, 
+        std::span<BindSparseInfo> BindInfo, 
+        Fence fence) const {
+        uint32_t bindInfoCount = BindInfo.size();
+        return static_cast<Result>(pfn_QueueBindSparse(queue.get(),
+            bindInfoCount,
+            reinterpret_cast<const VkBindSparseInfo*>(BindInfo.data()),
+            fence.get()));
+    }
     [[nodiscard]] expected<Fence> CreateFence(const FenceCreateInfo&  pCreateInfo, 
         const AllocationCallbacks* pAllocator = nullptr) const {
         Fence pFence;
@@ -2054,6 +2085,12 @@ struct DeviceFunctions {
             fenceCount,
             reinterpret_cast<const VkFence*>(pFences)));
     }
+    [[nodiscard]] Result ResetFences(std::span<Fence> Fences) const {
+        uint32_t fenceCount = Fences.size();
+        return static_cast<Result>(pfn_ResetFences(device.get(),
+            fenceCount,
+            reinterpret_cast<const VkFence*>(Fences.data())));
+    }
     [[nodiscard]] Result GetFenceStatus(Fence fence) const {
         return static_cast<Result>(pfn_GetFenceStatus(device.get(),
             fence.get()));
@@ -2065,6 +2102,16 @@ struct DeviceFunctions {
         return static_cast<Result>(pfn_WaitForFences(device.get(),
             fenceCount,
             reinterpret_cast<const VkFence*>(pFences),
+            waitAll,
+            timeout));
+    }
+    [[nodiscard]] Result WaitForFences(std::span<Fence> Fences, 
+        Bool32 waitAll, 
+        uint64_t timeout) const {
+        uint32_t fenceCount = Fences.size();
+        return static_cast<Result>(pfn_WaitForFences(device.get(),
+            fenceCount,
+            reinterpret_cast<const VkFence*>(Fences.data()),
             waitAll,
             timeout));
     }
@@ -2138,6 +2185,22 @@ struct DeviceFunctions {
             queryCount,
             dataSize,
             reinterpret_cast<void*>(pData),
+            stride,
+            static_cast<VkQueryResultFlags>(flags)));
+    }
+    [[nodiscard]] Result GetQueryPoolResults(QueryPool queryPool, 
+        uint32_t firstQuery, 
+        uint32_t queryCount, 
+        std::span<std::byte> Data, 
+        DeviceSize stride, 
+        QueryResultFlags flags) const {
+        size_t dataSize = Data.size();
+        return static_cast<Result>(pfn_GetQueryPoolResults(device.get(),
+            queryPool.get(),
+            firstQuery,
+            queryCount,
+            dataSize,
+            reinterpret_cast<void*>(Data.data()),
             stride,
             static_cast<VkQueryResultFlags>(flags)));
     }
@@ -2263,6 +2326,14 @@ struct DeviceFunctions {
             srcCacheCount,
             reinterpret_cast<const VkPipelineCache*>(pSrcCaches)));
     }
+    [[nodiscard]] Result MergePipelineCaches(PipelineCache dstCache, 
+        std::span<PipelineCache> SrcCaches) const {
+        uint32_t srcCacheCount = SrcCaches.size();
+        return static_cast<Result>(pfn_MergePipelineCaches(device.get(),
+            dstCache.get(),
+            srcCacheCount,
+            reinterpret_cast<const VkPipelineCache*>(SrcCaches.data())));
+    }
     [[nodiscard]] Result CreateGraphicsPipelines(PipelineCache pipelineCache, 
         uint32_t createInfoCount, 
         const GraphicsPipelineCreateInfo* pCreateInfos, 
@@ -2275,6 +2346,18 @@ struct DeviceFunctions {
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkPipeline*>(pPipelines)));
     }
+    [[nodiscard]] Result CreateGraphicsPipelines(PipelineCache pipelineCache, 
+        std::span<GraphicsPipelineCreateInfo> CreateInfos, 
+        const AllocationCallbacks* pAllocator, 
+        std::span<Pipeline> Pipelines) const {
+        uint32_t createInfoCount = CreateInfos.size();
+        return static_cast<Result>(pfn_CreateGraphicsPipelines(device.get(),
+            pipelineCache.get(),
+            createInfoCount,
+            reinterpret_cast<const VkGraphicsPipelineCreateInfo*>(CreateInfos.data()),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkPipeline*>(Pipelines.data())));
+    }
     [[nodiscard]] Result CreateComputePipelines(PipelineCache pipelineCache, 
         uint32_t createInfoCount, 
         const ComputePipelineCreateInfo* pCreateInfos, 
@@ -2286,6 +2369,18 @@ struct DeviceFunctions {
             reinterpret_cast<const VkComputePipelineCreateInfo*>(pCreateInfos),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkPipeline*>(pPipelines)));
+    }
+    [[nodiscard]] Result CreateComputePipelines(PipelineCache pipelineCache, 
+        std::span<ComputePipelineCreateInfo> CreateInfos, 
+        const AllocationCallbacks* pAllocator, 
+        std::span<Pipeline> Pipelines) const {
+        uint32_t createInfoCount = CreateInfos.size();
+        return static_cast<Result>(pfn_CreateComputePipelines(device.get(),
+            pipelineCache.get(),
+            createInfoCount,
+            reinterpret_cast<const VkComputePipelineCreateInfo*>(CreateInfos.data()),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkPipeline*>(Pipelines.data())));
     }
     void DestroyPipeline(Pipeline pipeline, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -2373,6 +2468,14 @@ struct DeviceFunctions {
             descriptorSetCount,
             reinterpret_cast<const VkDescriptorSet*>(pDescriptorSets)));
     }
+    [[nodiscard]] Result FreeDescriptorSets(DescriptorPool descriptorPool, 
+        std::span<DescriptorSet> DescriptorSets) const {
+        uint32_t descriptorSetCount = DescriptorSets.size();
+        return static_cast<Result>(pfn_FreeDescriptorSets(device.get(),
+            descriptorPool.get(),
+            descriptorSetCount,
+            reinterpret_cast<const VkDescriptorSet*>(DescriptorSets.data())));
+    }
     void UpdateDescriptorSets(uint32_t descriptorWriteCount, 
         const WriteDescriptorSet* pDescriptorWrites, 
         uint32_t descriptorCopyCount, 
@@ -2382,6 +2485,16 @@ struct DeviceFunctions {
             reinterpret_cast<const VkWriteDescriptorSet*>(pDescriptorWrites),
             descriptorCopyCount,
             reinterpret_cast<const VkCopyDescriptorSet*>(pDescriptorCopies));
+    }
+    void UpdateDescriptorSets(std::span<WriteDescriptorSet> DescriptorWrites, 
+        std::span<CopyDescriptorSet> DescriptorCopies) const {
+        uint32_t descriptorWriteCount = DescriptorWrites.size();
+        uint32_t descriptorCopyCount = DescriptorCopies.size();
+        pfn_UpdateDescriptorSets(device.get(),
+            descriptorWriteCount,
+            reinterpret_cast<const VkWriteDescriptorSet*>(DescriptorWrites.data()),
+            descriptorCopyCount,
+            reinterpret_cast<const VkCopyDescriptorSet*>(DescriptorCopies.data()));
     }
     [[nodiscard]] expected<Framebuffer> CreateFramebuffer(const FramebufferCreateInfo&  pCreateInfo, 
         const AllocationCallbacks* pAllocator = nullptr) const {
@@ -2455,6 +2568,14 @@ struct DeviceFunctions {
             commandBufferCount,
             reinterpret_cast<const VkCommandBuffer*>(pCommandBuffers));
     }
+    void FreeCommandBuffers(CommandPool commandPool, 
+        std::span<CommandBuffer> CommandBuffers) const {
+        uint32_t commandBufferCount = CommandBuffers.size();
+        pfn_FreeCommandBuffers(device.get(),
+            commandPool.get(),
+            commandBufferCount,
+            reinterpret_cast<const VkCommandBuffer*>(CommandBuffers.data()));
+    }
     [[nodiscard]] Result BeginCommandBuffer(CommandBuffer commandBuffer, 
         const CommandBufferBeginInfo&  pBeginInfo) const {
         return static_cast<Result>(pfn_BeginCommandBuffer(commandBuffer.get(),
@@ -2484,6 +2605,25 @@ struct DeviceFunctions {
             viewportCount,
             reinterpret_cast<const VkViewport*>(pViewports));
     }
+    void CmdSetViewport(CommandBuffer commandBuffer, 
+        uint32_t firstViewport, 
+        std::span<Viewport> Viewports) const {
+        uint32_t viewportCount = Viewports.size();
+        pfn_CmdSetViewport(commandBuffer.get(),
+            firstViewport,
+            viewportCount,
+            reinterpret_cast<const VkViewport*>(Viewports.data()));
+    }
+    template<typename... Ts>
+    //requires (std::is_convertible_v<Viewport, Ts> && ...)
+    void CmdSetViewport(CommandBuffer commandBuffer, uint32_t firstViewport, Ts... viewports) { 
+        auto viewportCount = sizeof...(Ts);
+        Viewport _viewports[] = { viewports... };
+        pfn_CmdSetViewport(commandBuffer.get(),
+            firstViewport,
+            viewportCount,
+            reinterpret_cast<const VkViewport*>(_viewports));
+    } 
     void CmdSetScissor(CommandBuffer commandBuffer, 
         uint32_t firstScissor, 
         uint32_t scissorCount, 
@@ -2492,6 +2632,15 @@ struct DeviceFunctions {
             firstScissor,
             scissorCount,
             reinterpret_cast<const VkRect2D*>(pScissors));
+    }
+    void CmdSetScissor(CommandBuffer commandBuffer, 
+        uint32_t firstScissor, 
+        std::span<Rect2D> Scissors) const {
+        uint32_t scissorCount = Scissors.size();
+        pfn_CmdSetScissor(commandBuffer.get(),
+            firstScissor,
+            scissorCount,
+            reinterpret_cast<const VkRect2D*>(Scissors.data()));
     }
     void CmdSetLineWidth(CommandBuffer commandBuffer, 
         float lineWidth) const {
@@ -2557,6 +2706,23 @@ struct DeviceFunctions {
             dynamicOffsetCount,
             pDynamicOffsets);
     }
+    void CmdBindDescriptorSets(CommandBuffer commandBuffer, 
+        PipelineBindPoint pipelineBindPoint, 
+        PipelineLayout layout, 
+        uint32_t firstSet, 
+        std::span<DescriptorSet> DescriptorSets, 
+        std::span<uint32_t> DynamicOffsets) const {
+        uint32_t descriptorSetCount = DescriptorSets.size();
+        uint32_t dynamicOffsetCount = DynamicOffsets.size();
+        pfn_CmdBindDescriptorSets(commandBuffer.get(),
+            static_cast<VkPipelineBindPoint>(pipelineBindPoint),
+            layout.get(),
+            firstSet,
+            descriptorSetCount,
+            reinterpret_cast<const VkDescriptorSet*>(DescriptorSets.data()),
+            dynamicOffsetCount,
+            DynamicOffsets.data());
+    }
     void CmdBindIndexBuffer(CommandBuffer commandBuffer, 
         Buffer buffer, 
         DeviceSize offset, 
@@ -2576,6 +2742,17 @@ struct DeviceFunctions {
             bindingCount,
             reinterpret_cast<const VkBuffer*>(pBuffers),
             pOffsets);
+    }
+    void CmdBindVertexBuffers(CommandBuffer commandBuffer, 
+        uint32_t firstBinding, 
+        std::span<Buffer> Buffers, 
+        std::span<DeviceSize> Offsets) const {
+        uint32_t bindingCount = Buffers.size();
+        pfn_CmdBindVertexBuffers(commandBuffer.get(),
+            firstBinding,
+            bindingCount,
+            reinterpret_cast<const VkBuffer*>(Buffers.data()),
+            Offsets.data());
     }
     void CmdDraw(CommandBuffer commandBuffer, 
         uint32_t vertexCount, 
@@ -2650,6 +2827,17 @@ struct DeviceFunctions {
             regionCount,
             reinterpret_cast<const VkBufferCopy*>(pRegions));
     }
+    void CmdCopyBuffer(CommandBuffer commandBuffer, 
+        Buffer srcBuffer, 
+        Buffer dstBuffer, 
+        std::span<BufferCopy> Regions) const {
+        uint32_t regionCount = Regions.size();
+        pfn_CmdCopyBuffer(commandBuffer.get(),
+            srcBuffer.get(),
+            dstBuffer.get(),
+            regionCount,
+            reinterpret_cast<const VkBufferCopy*>(Regions.data()));
+    }
     void CmdCopyImage(CommandBuffer commandBuffer, 
         Image srcImage, 
         ImageLayout srcImageLayout, 
@@ -2664,6 +2852,21 @@ struct DeviceFunctions {
             static_cast<VkImageLayout>(dstImageLayout),
             regionCount,
             reinterpret_cast<const VkImageCopy*>(pRegions));
+    }
+    void CmdCopyImage(CommandBuffer commandBuffer, 
+        Image srcImage, 
+        ImageLayout srcImageLayout, 
+        Image dstImage, 
+        ImageLayout dstImageLayout, 
+        std::span<ImageCopy> Regions) const {
+        uint32_t regionCount = Regions.size();
+        pfn_CmdCopyImage(commandBuffer.get(),
+            srcImage.get(),
+            static_cast<VkImageLayout>(srcImageLayout),
+            dstImage.get(),
+            static_cast<VkImageLayout>(dstImageLayout),
+            regionCount,
+            reinterpret_cast<const VkImageCopy*>(Regions.data()));
     }
     void CmdBlitImage(CommandBuffer commandBuffer, 
         Image srcImage, 
@@ -2682,6 +2885,23 @@ struct DeviceFunctions {
             reinterpret_cast<const VkImageBlit*>(pRegions),
             static_cast<VkFilter>(filter));
     }
+    void CmdBlitImage(CommandBuffer commandBuffer, 
+        Image srcImage, 
+        ImageLayout srcImageLayout, 
+        Image dstImage, 
+        ImageLayout dstImageLayout, 
+        std::span<ImageBlit> Regions, 
+        Filter filter) const {
+        uint32_t regionCount = Regions.size();
+        pfn_CmdBlitImage(commandBuffer.get(),
+            srcImage.get(),
+            static_cast<VkImageLayout>(srcImageLayout),
+            dstImage.get(),
+            static_cast<VkImageLayout>(dstImageLayout),
+            regionCount,
+            reinterpret_cast<const VkImageBlit*>(Regions.data()),
+            static_cast<VkFilter>(filter));
+    }
     void CmdCopyBufferToImage(CommandBuffer commandBuffer, 
         Buffer srcBuffer, 
         Image dstImage, 
@@ -2694,6 +2914,19 @@ struct DeviceFunctions {
             static_cast<VkImageLayout>(dstImageLayout),
             regionCount,
             reinterpret_cast<const VkBufferImageCopy*>(pRegions));
+    }
+    void CmdCopyBufferToImage(CommandBuffer commandBuffer, 
+        Buffer srcBuffer, 
+        Image dstImage, 
+        ImageLayout dstImageLayout, 
+        std::span<BufferImageCopy> Regions) const {
+        uint32_t regionCount = Regions.size();
+        pfn_CmdCopyBufferToImage(commandBuffer.get(),
+            srcBuffer.get(),
+            dstImage.get(),
+            static_cast<VkImageLayout>(dstImageLayout),
+            regionCount,
+            reinterpret_cast<const VkBufferImageCopy*>(Regions.data()));
     }
     void CmdCopyImageToBuffer(CommandBuffer commandBuffer, 
         Image srcImage, 
@@ -2708,6 +2941,19 @@ struct DeviceFunctions {
             regionCount,
             reinterpret_cast<const VkBufferImageCopy*>(pRegions));
     }
+    void CmdCopyImageToBuffer(CommandBuffer commandBuffer, 
+        Image srcImage, 
+        ImageLayout srcImageLayout, 
+        Buffer dstBuffer, 
+        std::span<BufferImageCopy> Regions) const {
+        uint32_t regionCount = Regions.size();
+        pfn_CmdCopyImageToBuffer(commandBuffer.get(),
+            srcImage.get(),
+            static_cast<VkImageLayout>(srcImageLayout),
+            dstBuffer.get(),
+            regionCount,
+            reinterpret_cast<const VkBufferImageCopy*>(Regions.data()));
+    }
     void CmdUpdateBuffer(CommandBuffer commandBuffer, 
         Buffer dstBuffer, 
         DeviceSize dstOffset, 
@@ -2718,6 +2964,17 @@ struct DeviceFunctions {
             dstOffset,
             dataSize,
             reinterpret_cast<const void*>(pData));
+    }
+    void CmdUpdateBuffer(CommandBuffer commandBuffer, 
+        Buffer dstBuffer, 
+        DeviceSize dstOffset, 
+        std::span<std::byte> Data) const {
+        DeviceSize dataSize = Data.size();
+        pfn_CmdUpdateBuffer(commandBuffer.get(),
+            dstBuffer.get(),
+            dstOffset,
+            dataSize,
+            reinterpret_cast<const void*>(Data.data()));
     }
     void CmdFillBuffer(CommandBuffer commandBuffer, 
         Buffer dstBuffer, 
@@ -2743,6 +3000,19 @@ struct DeviceFunctions {
             rangeCount,
             reinterpret_cast<const VkImageSubresourceRange*>(pRanges));
     }
+    void CmdClearColorImage(CommandBuffer commandBuffer, 
+        Image image, 
+        ImageLayout imageLayout, 
+        const ClearColorValue&  pColor, 
+        std::span<ImageSubresourceRange> Ranges) const {
+        uint32_t rangeCount = Ranges.size();
+        pfn_CmdClearColorImage(commandBuffer.get(),
+            image.get(),
+            static_cast<VkImageLayout>(imageLayout),
+            reinterpret_cast<const VkClearColorValue*>(&pColor),
+            rangeCount,
+            reinterpret_cast<const VkImageSubresourceRange*>(Ranges.data()));
+    }
     void CmdClearDepthStencilImage(CommandBuffer commandBuffer, 
         Image image, 
         ImageLayout imageLayout, 
@@ -2756,6 +3026,19 @@ struct DeviceFunctions {
             rangeCount,
             reinterpret_cast<const VkImageSubresourceRange*>(pRanges));
     }
+    void CmdClearDepthStencilImage(CommandBuffer commandBuffer, 
+        Image image, 
+        ImageLayout imageLayout, 
+        const ClearDepthStencilValue&  pDepthStencil, 
+        std::span<ImageSubresourceRange> Ranges) const {
+        uint32_t rangeCount = Ranges.size();
+        pfn_CmdClearDepthStencilImage(commandBuffer.get(),
+            image.get(),
+            static_cast<VkImageLayout>(imageLayout),
+            reinterpret_cast<const VkClearDepthStencilValue*>(&pDepthStencil),
+            rangeCount,
+            reinterpret_cast<const VkImageSubresourceRange*>(Ranges.data()));
+    }
     void CmdClearAttachments(CommandBuffer commandBuffer, 
         uint32_t attachmentCount, 
         const ClearAttachment* pAttachments, 
@@ -2766,6 +3049,17 @@ struct DeviceFunctions {
             reinterpret_cast<const VkClearAttachment*>(pAttachments),
             rectCount,
             reinterpret_cast<const VkClearRect*>(pRects));
+    }
+    void CmdClearAttachments(CommandBuffer commandBuffer, 
+        std::span<ClearAttachment> Attachments, 
+        std::span<ClearRect> Rects) const {
+        uint32_t attachmentCount = Attachments.size();
+        uint32_t rectCount = Rects.size();
+        pfn_CmdClearAttachments(commandBuffer.get(),
+            attachmentCount,
+            reinterpret_cast<const VkClearAttachment*>(Attachments.data()),
+            rectCount,
+            reinterpret_cast<const VkClearRect*>(Rects.data()));
     }
     void CmdResolveImage(CommandBuffer commandBuffer, 
         Image srcImage, 
@@ -2781,6 +3075,21 @@ struct DeviceFunctions {
             static_cast<VkImageLayout>(dstImageLayout),
             regionCount,
             reinterpret_cast<const VkImageResolve*>(pRegions));
+    }
+    void CmdResolveImage(CommandBuffer commandBuffer, 
+        Image srcImage, 
+        ImageLayout srcImageLayout, 
+        Image dstImage, 
+        ImageLayout dstImageLayout, 
+        std::span<ImageResolve> Regions) const {
+        uint32_t regionCount = Regions.size();
+        pfn_CmdResolveImage(commandBuffer.get(),
+            srcImage.get(),
+            static_cast<VkImageLayout>(srcImageLayout),
+            dstImage.get(),
+            static_cast<VkImageLayout>(dstImageLayout),
+            regionCount,
+            reinterpret_cast<const VkImageResolve*>(Regions.data()));
     }
     void CmdSetEvent(CommandBuffer commandBuffer, 
         Event event, 
@@ -2819,6 +3128,29 @@ struct DeviceFunctions {
             imageMemoryBarrierCount,
             reinterpret_cast<const VkImageMemoryBarrier*>(pImageMemoryBarriers));
     }
+    void CmdWaitEvents(CommandBuffer commandBuffer, 
+        std::span<Event> Events, 
+        PipelineStageFlags srcStageMask, 
+        PipelineStageFlags dstStageMask, 
+        std::span<MemoryBarrier> MemoryBarriers, 
+        std::span<BufferMemoryBarrier> BufferMemoryBarriers, 
+        std::span<ImageMemoryBarrier> ImageMemoryBarriers) const {
+        uint32_t eventCount = Events.size();
+        uint32_t memoryBarrierCount = MemoryBarriers.size();
+        uint32_t bufferMemoryBarrierCount = BufferMemoryBarriers.size();
+        uint32_t imageMemoryBarrierCount = ImageMemoryBarriers.size();
+        pfn_CmdWaitEvents(commandBuffer.get(),
+            eventCount,
+            reinterpret_cast<const VkEvent*>(Events.data()),
+            static_cast<VkPipelineStageFlags>(srcStageMask),
+            static_cast<VkPipelineStageFlags>(dstStageMask),
+            memoryBarrierCount,
+            reinterpret_cast<const VkMemoryBarrier*>(MemoryBarriers.data()),
+            bufferMemoryBarrierCount,
+            reinterpret_cast<const VkBufferMemoryBarrier*>(BufferMemoryBarriers.data()),
+            imageMemoryBarrierCount,
+            reinterpret_cast<const VkImageMemoryBarrier*>(ImageMemoryBarriers.data()));
+    }
     void CmdPipelineBarrier(CommandBuffer commandBuffer, 
         PipelineStageFlags srcStageMask, 
         PipelineStageFlags dstStageMask, 
@@ -2839,6 +3171,27 @@ struct DeviceFunctions {
             reinterpret_cast<const VkBufferMemoryBarrier*>(pBufferMemoryBarriers),
             imageMemoryBarrierCount,
             reinterpret_cast<const VkImageMemoryBarrier*>(pImageMemoryBarriers));
+    }
+    void CmdPipelineBarrier(CommandBuffer commandBuffer, 
+        PipelineStageFlags srcStageMask, 
+        PipelineStageFlags dstStageMask, 
+        DependencyFlags dependencyFlags, 
+        std::span<MemoryBarrier> MemoryBarriers, 
+        std::span<BufferMemoryBarrier> BufferMemoryBarriers, 
+        std::span<ImageMemoryBarrier> ImageMemoryBarriers) const {
+        uint32_t memoryBarrierCount = MemoryBarriers.size();
+        uint32_t bufferMemoryBarrierCount = BufferMemoryBarriers.size();
+        uint32_t imageMemoryBarrierCount = ImageMemoryBarriers.size();
+        pfn_CmdPipelineBarrier(commandBuffer.get(),
+            static_cast<VkPipelineStageFlags>(srcStageMask),
+            static_cast<VkPipelineStageFlags>(dstStageMask),
+            static_cast<VkDependencyFlags>(dependencyFlags),
+            memoryBarrierCount,
+            reinterpret_cast<const VkMemoryBarrier*>(MemoryBarriers.data()),
+            bufferMemoryBarrierCount,
+            reinterpret_cast<const VkBufferMemoryBarrier*>(BufferMemoryBarriers.data()),
+            imageMemoryBarrierCount,
+            reinterpret_cast<const VkImageMemoryBarrier*>(ImageMemoryBarriers.data()));
     }
     void CmdBeginQuery(CommandBuffer commandBuffer, 
         QueryPool queryPool, 
@@ -2904,6 +3257,19 @@ struct DeviceFunctions {
             size,
             reinterpret_cast<const void*>(pValues));
     }
+    void CmdPushConstants(CommandBuffer commandBuffer, 
+        PipelineLayout layout, 
+        ShaderStageFlags stageFlags, 
+        uint32_t offset, 
+        std::span<std::byte> Values) const {
+        uint32_t size = Values.size();
+        pfn_CmdPushConstants(commandBuffer.get(),
+            layout.get(),
+            static_cast<VkShaderStageFlags>(stageFlags),
+            offset,
+            size,
+            reinterpret_cast<const void*>(Values.data()));
+    }
     void CmdBeginRenderPass(CommandBuffer commandBuffer, 
         const RenderPassBeginInfo&  pRenderPassBegin, 
         SubpassContents contents) const {
@@ -2926,6 +3292,13 @@ struct DeviceFunctions {
             commandBufferCount,
             reinterpret_cast<const VkCommandBuffer*>(pCommandBuffers));
     }
+    void CmdExecuteCommands(CommandBuffer commandBuffer, 
+        std::span<CommandBuffer> CommandBuffers) const {
+        uint32_t commandBufferCount = CommandBuffers.size();
+        pfn_CmdExecuteCommands(commandBuffer.get(),
+            commandBufferCount,
+            reinterpret_cast<const VkCommandBuffer*>(CommandBuffers.data()));
+    }
 #endif //defined(VK_VERSION_1_0)
 #if defined(VK_VERSION_1_1)
     [[nodiscard]] Result BindBufferMemory2(uint32_t bindInfoCount, 
@@ -2934,11 +3307,23 @@ struct DeviceFunctions {
             bindInfoCount,
             reinterpret_cast<const VkBindBufferMemoryInfo*>(pBindInfos)));
     }
+    [[nodiscard]] Result BindBufferMemory2(std::span<BindBufferMemoryInfo> BindInfos) const {
+        uint32_t bindInfoCount = BindInfos.size();
+        return static_cast<Result>(pfn_BindBufferMemory2(device.get(),
+            bindInfoCount,
+            reinterpret_cast<const VkBindBufferMemoryInfo*>(BindInfos.data())));
+    }
     [[nodiscard]] Result BindImageMemory2(uint32_t bindInfoCount, 
         const BindImageMemoryInfo* pBindInfos) const {
         return static_cast<Result>(pfn_BindImageMemory2(device.get(),
             bindInfoCount,
             reinterpret_cast<const VkBindImageMemoryInfo*>(pBindInfos)));
+    }
+    [[nodiscard]] Result BindImageMemory2(std::span<BindImageMemoryInfo> BindInfos) const {
+        uint32_t bindInfoCount = BindInfos.size();
+        return static_cast<Result>(pfn_BindImageMemory2(device.get(),
+            bindInfoCount,
+            reinterpret_cast<const VkBindImageMemoryInfo*>(BindInfos.data())));
     }
     [[nodiscard]] PeerMemoryFeatureFlags GetDeviceGroupPeerMemoryFeatures(uint32_t heapIndex, 
         uint32_t localDeviceIndex, 
@@ -3240,6 +3625,16 @@ struct DeviceFunctions {
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkSwapchainKHR*>(pSwapchains)));
     }
+    [[nodiscard]] Result CreateSharedSwapchainsKHR(std::span<SwapchainCreateInfoKHR> CreateInfos, 
+        const AllocationCallbacks* pAllocator, 
+        std::span<SwapchainKHR> Swapchains) const {
+        uint32_t swapchainCount = CreateInfos.size();
+        return static_cast<Result>(pfn_CreateSharedSwapchainsKHR(device.get(),
+            swapchainCount,
+            reinterpret_cast<const VkSwapchainCreateInfoKHR*>(CreateInfos.data()),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkSwapchainKHR*>(Swapchains.data())));
+    }
 #endif //defined(VK_KHR_display_swapchain)
 #if defined(VK_EXT_debug_marker)
     [[nodiscard]] Result DebugMarkerSetObjectNameEXT(const DebugMarkerObjectNameInfoEXT&  pNameInfo) const {
@@ -3278,6 +3673,19 @@ struct DeviceFunctions {
             pOffsets,
             pSizes);
     }
+    void CmdBindTransformFeedbackBuffersEXT(CommandBuffer commandBuffer, 
+        uint32_t firstBinding, 
+        std::span<Buffer> Buffers, 
+        std::span<DeviceSize> Offsets, 
+        std::span<DeviceSize> Sizes) const {
+        uint32_t bindingCount = Buffers.size();
+        pfn_CmdBindTransformFeedbackBuffersEXT(commandBuffer.get(),
+            firstBinding,
+            bindingCount,
+            reinterpret_cast<const VkBuffer*>(Buffers.data()),
+            Offsets.data(),
+            Sizes.data());
+    }
     void CmdBeginTransformFeedbackEXT(CommandBuffer commandBuffer, 
         uint32_t firstCounterBuffer, 
         uint32_t counterBufferCount, 
@@ -3289,6 +3697,17 @@ struct DeviceFunctions {
             reinterpret_cast<const VkBuffer*>(pCounterBuffers),
             pCounterBufferOffsets);
     }
+    void CmdBeginTransformFeedbackEXT(CommandBuffer commandBuffer, 
+        uint32_t firstCounterBuffer, 
+        std::span<Buffer> CounterBuffers, 
+        std::span<DeviceSize> CounterBufferOffsets) const {
+        uint32_t counterBufferCount = CounterBuffers.size();
+        pfn_CmdBeginTransformFeedbackEXT(commandBuffer.get(),
+            firstCounterBuffer,
+            counterBufferCount,
+            reinterpret_cast<const VkBuffer*>(CounterBuffers.data()),
+            CounterBufferOffsets.data());
+    }
     void CmdEndTransformFeedbackEXT(CommandBuffer commandBuffer, 
         uint32_t firstCounterBuffer, 
         uint32_t counterBufferCount, 
@@ -3299,6 +3718,17 @@ struct DeviceFunctions {
             counterBufferCount,
             reinterpret_cast<const VkBuffer*>(pCounterBuffers),
             pCounterBufferOffsets);
+    }
+    void CmdEndTransformFeedbackEXT(CommandBuffer commandBuffer, 
+        uint32_t firstCounterBuffer, 
+        std::span<Buffer> CounterBuffers, 
+        std::span<DeviceSize> CounterBufferOffsets) const {
+        uint32_t counterBufferCount = CounterBuffers.size();
+        pfn_CmdEndTransformFeedbackEXT(commandBuffer.get(),
+            firstCounterBuffer,
+            counterBufferCount,
+            reinterpret_cast<const VkBuffer*>(CounterBuffers.data()),
+            CounterBufferOffsets.data());
     }
     void CmdBeginQueryIndexedEXT(CommandBuffer commandBuffer, 
         QueryPool queryPool, 
@@ -3459,6 +3889,19 @@ struct DeviceFunctions {
             descriptorWriteCount,
             reinterpret_cast<const VkWriteDescriptorSet*>(pDescriptorWrites));
     }
+    void CmdPushDescriptorSetKHR(CommandBuffer commandBuffer, 
+        PipelineBindPoint pipelineBindPoint, 
+        PipelineLayout layout, 
+        uint32_t set, 
+        std::span<WriteDescriptorSet> DescriptorWrites) const {
+        uint32_t descriptorWriteCount = DescriptorWrites.size();
+        pfn_CmdPushDescriptorSetKHR(commandBuffer.get(),
+            static_cast<VkPipelineBindPoint>(pipelineBindPoint),
+            layout.get(),
+            set,
+            descriptorWriteCount,
+            reinterpret_cast<const VkWriteDescriptorSet*>(DescriptorWrites.data()));
+    }
 #endif //defined(VK_KHR_push_descriptor)
 #if (defined(VK_KHR_push_descriptor) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_push_descriptor) && defined(VK_KHR_descriptor_update_template)) || (defined(VK_KHR_descriptor_update_template) && defined(VK_KHR_push_descriptor))
     void CmdPushDescriptorSetWithTemplateKHR(CommandBuffer commandBuffer, 
@@ -3492,6 +3935,15 @@ struct DeviceFunctions {
             firstViewport,
             viewportCount,
             reinterpret_cast<const VkViewportWScalingNV*>(pViewportWScalings));
+    }
+    void CmdSetViewportWScalingNV(CommandBuffer commandBuffer, 
+        uint32_t firstViewport, 
+        std::span<ViewportWScalingNV> ViewportWScalings) const {
+        uint32_t viewportCount = ViewportWScalings.size();
+        pfn_CmdSetViewportWScalingNV(commandBuffer.get(),
+            firstViewport,
+            viewportCount,
+            reinterpret_cast<const VkViewportWScalingNV*>(ViewportWScalings.data()));
     }
 #endif //defined(VK_NV_clip_space_w_scaling)
 #if defined(VK_EXT_display_control)
@@ -3565,6 +4017,15 @@ struct DeviceFunctions {
             discardRectangleCount,
             reinterpret_cast<const VkRect2D*>(pDiscardRectangles));
     }
+    void CmdSetDiscardRectangleEXT(CommandBuffer commandBuffer, 
+        uint32_t firstDiscardRectangle, 
+        std::span<Rect2D> DiscardRectangles) const {
+        uint32_t discardRectangleCount = DiscardRectangles.size();
+        pfn_CmdSetDiscardRectangleEXT(commandBuffer.get(),
+            firstDiscardRectangle,
+            discardRectangleCount,
+            reinterpret_cast<const VkRect2D*>(DiscardRectangles.data()));
+    }
 #endif //defined(VK_EXT_discard_rectangles)
 #if defined(VK_EXT_hdr_metadata)
     void SetHdrMetadataEXT(uint32_t swapchainCount, 
@@ -3574,6 +4035,14 @@ struct DeviceFunctions {
             swapchainCount,
             reinterpret_cast<const VkSwapchainKHR*>(pSwapchains),
             reinterpret_cast<const VkHdrMetadataEXT*>(pMetadata));
+    }
+    void SetHdrMetadataEXT(std::span<SwapchainKHR> Swapchains, 
+        std::span<HdrMetadataEXT> Metadata) const {
+        uint32_t swapchainCount = Swapchains.size();
+        pfn_SetHdrMetadataEXT(device.get(),
+            swapchainCount,
+            reinterpret_cast<const VkSwapchainKHR*>(Swapchains.data()),
+            reinterpret_cast<const VkHdrMetadataEXT*>(Metadata.data()));
     }
 #endif //defined(VK_EXT_hdr_metadata)
 #if defined(VK_KHR_shared_presentable_image)
@@ -3696,6 +4165,12 @@ struct DeviceFunctions {
             bindInfoCount,
             reinterpret_cast<const VkBindAccelerationStructureMemoryInfoKHR*>(pBindInfos)));
     }
+    [[nodiscard]] Result BindAccelerationStructureMemoryKHR(std::span<BindAccelerationStructureMemoryInfoKHR> BindInfos) const {
+        uint32_t bindInfoCount = BindInfos.size();
+        return static_cast<Result>(pfn_BindAccelerationStructureMemoryKHR(device.get(),
+            bindInfoCount,
+            reinterpret_cast<const VkBindAccelerationStructureMemoryInfoKHR*>(BindInfos.data())));
+    }
     void CmdCopyAccelerationStructureKHR(CommandBuffer commandBuffer, 
         const CopyAccelerationStructureInfoKHR&  pInfo) const {
         pfn_CmdCopyAccelerationStructureKHR(commandBuffer.get(),
@@ -3736,6 +4211,19 @@ struct DeviceFunctions {
             queryPool.get(),
             firstQuery);
     }
+    void CmdWriteAccelerationStructuresPropertiesKHR(CommandBuffer commandBuffer, 
+        std::span<AccelerationStructureKHR> AccelerationStructures, 
+        QueryType queryType, 
+        QueryPool queryPool, 
+        uint32_t firstQuery) const {
+        uint32_t accelerationStructureCount = AccelerationStructures.size();
+        pfn_CmdWriteAccelerationStructuresPropertiesKHR(commandBuffer.get(),
+            accelerationStructureCount,
+            reinterpret_cast<const VkAccelerationStructureKHR*>(AccelerationStructures.data()),
+            static_cast<VkQueryType>(queryType),
+            queryPool.get(),
+            firstQuery);
+    }
     [[nodiscard]] Result WriteAccelerationStructuresPropertiesKHR(uint32_t accelerationStructureCount, 
         const AccelerationStructureKHR* pAccelerationStructures, 
         QueryType queryType, 
@@ -3748,6 +4236,20 @@ struct DeviceFunctions {
             static_cast<VkQueryType>(queryType),
             dataSize,
             reinterpret_cast<void*>(pData),
+            stride));
+    }
+    [[nodiscard]] Result WriteAccelerationStructuresPropertiesKHR(std::span<AccelerationStructureKHR> AccelerationStructures, 
+        QueryType queryType, 
+        std::span<std::byte> Data, 
+        size_t stride) const {
+        uint32_t accelerationStructureCount = AccelerationStructures.size();
+        size_t dataSize = Data.size();
+        return static_cast<Result>(pfn_WriteAccelerationStructuresPropertiesKHR(device.get(),
+            accelerationStructureCount,
+            reinterpret_cast<const VkAccelerationStructureKHR*>(AccelerationStructures.data()),
+            static_cast<VkQueryType>(queryType),
+            dataSize,
+            reinterpret_cast<void*>(Data.data()),
             stride));
     }
     void CmdTraceRaysKHR(CommandBuffer commandBuffer, 
@@ -3779,6 +4281,18 @@ struct DeviceFunctions {
             dataSize,
             reinterpret_cast<void*>(pData)));
     }
+    [[nodiscard]] Result GetRayTracingShaderGroupHandlesKHR(Pipeline pipeline, 
+        uint32_t firstGroup, 
+        uint32_t groupCount, 
+        std::span<std::byte> Data) const {
+        size_t dataSize = Data.size();
+        return static_cast<Result>(pfn_GetRayTracingShaderGroupHandlesKHR(device.get(),
+            pipeline.get(),
+            firstGroup,
+            groupCount,
+            dataSize,
+            reinterpret_cast<void*>(Data.data())));
+    }
     [[nodiscard]] Result GetRayTracingCaptureReplayShaderGroupHandlesKHR(Pipeline pipeline, 
         uint32_t firstGroup, 
         uint32_t groupCount, 
@@ -3791,6 +4305,18 @@ struct DeviceFunctions {
             dataSize,
             reinterpret_cast<void*>(pData)));
     }
+    [[nodiscard]] Result GetRayTracingCaptureReplayShaderGroupHandlesKHR(Pipeline pipeline, 
+        uint32_t firstGroup, 
+        uint32_t groupCount, 
+        std::span<std::byte> Data) const {
+        size_t dataSize = Data.size();
+        return static_cast<Result>(pfn_GetRayTracingCaptureReplayShaderGroupHandlesKHR(device.get(),
+            pipeline.get(),
+            firstGroup,
+            groupCount,
+            dataSize,
+            reinterpret_cast<void*>(Data.data())));
+    }
     [[nodiscard]] Result CreateRayTracingPipelinesKHR(PipelineCache pipelineCache, 
         uint32_t createInfoCount, 
         const RayTracingPipelineCreateInfoKHR* pCreateInfos, 
@@ -3802,6 +4328,18 @@ struct DeviceFunctions {
             reinterpret_cast<const VkRayTracingPipelineCreateInfoKHR*>(pCreateInfos),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkPipeline*>(pPipelines)));
+    }
+    [[nodiscard]] Result CreateRayTracingPipelinesKHR(PipelineCache pipelineCache, 
+        std::span<RayTracingPipelineCreateInfoKHR> CreateInfos, 
+        const AllocationCallbacks* pAllocator, 
+        std::span<Pipeline> Pipelines) const {
+        uint32_t createInfoCount = CreateInfos.size();
+        return static_cast<Result>(pfn_CreateRayTracingPipelinesKHR(device.get(),
+            pipelineCache.get(),
+            createInfoCount,
+            reinterpret_cast<const VkRayTracingPipelineCreateInfoKHR*>(CreateInfos.data()),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkPipeline*>(Pipelines.data())));
     }
     void CmdTraceRaysIndirectKHR(CommandBuffer commandBuffer, 
         const StridedBufferRegionKHR&  pRaygenShaderBindingTable, 
@@ -3840,6 +4378,15 @@ struct DeviceFunctions {
             reinterpret_cast<const VkAccelerationStructureBuildGeometryInfoKHR*>(pInfos),
             reinterpret_cast<const VkAccelerationStructureBuildOffsetInfoKHR* const*>(ppOffsetInfos));
     }
+    void CmdBuildAccelerationStructureKHR(CommandBuffer commandBuffer, 
+        std::span<AccelerationStructureBuildGeometryInfoKHR> Infos, 
+        std::span<AccelerationStructureBuildOffsetInfoKHR> pOffsetInfos) const {
+        uint32_t infoCount = Infos.size();
+        pfn_CmdBuildAccelerationStructureKHR(commandBuffer.get(),
+            infoCount,
+            reinterpret_cast<const VkAccelerationStructureBuildGeometryInfoKHR*>(Infos.data()),
+            reinterpret_cast<const VkAccelerationStructureBuildOffsetInfoKHR* const*>(pOffsetInfos.data()));
+    }
     void CmdBuildAccelerationStructureIndirectKHR(CommandBuffer commandBuffer, 
         const AccelerationStructureBuildGeometryInfoKHR&  pInfo, 
         Buffer indirectBuffer, 
@@ -3858,6 +4405,14 @@ struct DeviceFunctions {
             infoCount,
             reinterpret_cast<const VkAccelerationStructureBuildGeometryInfoKHR*>(pInfos),
             reinterpret_cast<const VkAccelerationStructureBuildOffsetInfoKHR* const*>(ppOffsetInfos)));
+    }
+    [[nodiscard]] Result BuildAccelerationStructureKHR(std::span<AccelerationStructureBuildGeometryInfoKHR> Infos, 
+        std::span<AccelerationStructureBuildOffsetInfoKHR> pOffsetInfos) const {
+        uint32_t infoCount = Infos.size();
+        return static_cast<Result>(pfn_BuildAccelerationStructureKHR(device.get(),
+            infoCount,
+            reinterpret_cast<const VkAccelerationStructureBuildGeometryInfoKHR*>(Infos.data()),
+            reinterpret_cast<const VkAccelerationStructureBuildOffsetInfoKHR* const*>(pOffsetInfos.data())));
     }
     [[nodiscard]] VkDeviceAddress GetAccelerationStructureDeviceAddressKHR(const AccelerationStructureDeviceAddressInfoKHR&  pInfo) const {
         return pfn_GetAccelerationStructureDeviceAddressKHR(device.get(),
@@ -3912,6 +4467,14 @@ struct DeviceFunctions {
             srcCacheCount,
             reinterpret_cast<const VkValidationCacheEXT*>(pSrcCaches)));
     }
+    [[nodiscard]] Result MergeValidationCachesEXT(ValidationCacheEXT dstCache, 
+        std::span<ValidationCacheEXT> SrcCaches) const {
+        uint32_t srcCacheCount = SrcCaches.size();
+        return static_cast<Result>(pfn_MergeValidationCachesEXT(device.get(),
+            dstCache.get(),
+            srcCacheCount,
+            reinterpret_cast<const VkValidationCacheEXT*>(SrcCaches.data())));
+    }
 #endif //defined(VK_EXT_validation_cache)
 #if defined(VK_NV_shading_rate_image)
     void CmdBindShadingRateImageNV(CommandBuffer commandBuffer, 
@@ -3930,6 +4493,15 @@ struct DeviceFunctions {
             viewportCount,
             reinterpret_cast<const VkShadingRatePaletteNV*>(pShadingRatePalettes));
     }
+    void CmdSetViewportShadingRatePaletteNV(CommandBuffer commandBuffer, 
+        uint32_t firstViewport, 
+        std::span<ShadingRatePaletteNV> ShadingRatePalettes) const {
+        uint32_t viewportCount = ShadingRatePalettes.size();
+        pfn_CmdSetViewportShadingRatePaletteNV(commandBuffer.get(),
+            firstViewport,
+            viewportCount,
+            reinterpret_cast<const VkShadingRatePaletteNV*>(ShadingRatePalettes.data()));
+    }
     void CmdSetCoarseSampleOrderNV(CommandBuffer commandBuffer, 
         CoarseSampleOrderTypeNV sampleOrderType, 
         uint32_t customSampleOrderCount, 
@@ -3938,6 +4510,15 @@ struct DeviceFunctions {
             static_cast<VkCoarseSampleOrderTypeNV>(sampleOrderType),
             customSampleOrderCount,
             reinterpret_cast<const VkCoarseSampleOrderCustomNV*>(pCustomSampleOrders));
+    }
+    void CmdSetCoarseSampleOrderNV(CommandBuffer commandBuffer, 
+        CoarseSampleOrderTypeNV sampleOrderType, 
+        std::span<CoarseSampleOrderCustomNV> CustomSampleOrders) const {
+        uint32_t customSampleOrderCount = CustomSampleOrders.size();
+        pfn_CmdSetCoarseSampleOrderNV(commandBuffer.get(),
+            static_cast<VkCoarseSampleOrderTypeNV>(sampleOrderType),
+            customSampleOrderCount,
+            reinterpret_cast<const VkCoarseSampleOrderCustomNV*>(CustomSampleOrders.data()));
     }
 #endif //defined(VK_NV_shading_rate_image)
 #if defined(VK_NV_ray_tracing)
@@ -4030,6 +4611,14 @@ struct DeviceFunctions {
             dataSize,
             reinterpret_cast<void*>(pData)));
     }
+    [[nodiscard]] Result GetAccelerationStructureHandleNV(AccelerationStructureKHR accelerationStructure, 
+        std::span<std::byte> Data) const {
+        size_t dataSize = Data.size();
+        return static_cast<Result>(pfn_GetAccelerationStructureHandleNV(device.get(),
+            accelerationStructure.get(),
+            dataSize,
+            reinterpret_cast<void*>(Data.data())));
+    }
     [[nodiscard]] Result CreateRayTracingPipelinesNV(PipelineCache pipelineCache, 
         uint32_t createInfoCount, 
         const RayTracingPipelineCreateInfoNV* pCreateInfos, 
@@ -4041,6 +4630,18 @@ struct DeviceFunctions {
             reinterpret_cast<const VkRayTracingPipelineCreateInfoNV*>(pCreateInfos),
             reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
             reinterpret_cast<VkPipeline*>(pPipelines)));
+    }
+    [[nodiscard]] Result CreateRayTracingPipelinesNV(PipelineCache pipelineCache, 
+        std::span<RayTracingPipelineCreateInfoNV> CreateInfos, 
+        const AllocationCallbacks* pAllocator, 
+        std::span<Pipeline> Pipelines) const {
+        uint32_t createInfoCount = CreateInfos.size();
+        return static_cast<Result>(pfn_CreateRayTracingPipelinesNV(device.get(),
+            pipelineCache.get(),
+            createInfoCount,
+            reinterpret_cast<const VkRayTracingPipelineCreateInfoNV*>(CreateInfos.data()),
+            reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
+            reinterpret_cast<VkPipeline*>(Pipelines.data())));
     }
 #endif //defined(VK_NV_ray_tracing)
 #if defined(VK_EXT_external_memory_host)
@@ -4076,6 +4677,17 @@ struct DeviceFunctions {
             timestampCount,
             reinterpret_cast<const VkCalibratedTimestampInfoEXT*>(pTimestampInfos),
             pTimestamps,
+            &pMaxDeviation));
+    return expected<uint64_t>(pMaxDeviation, result);
+    }
+    [[nodiscard]] expected<uint64_t> GetCalibratedTimestampsEXT(std::span<CalibratedTimestampInfoEXT> TimestampInfos, 
+        std::span<uint64_t> Timestamps) const {
+        uint32_t timestampCount = TimestampInfos.size();
+        uint64_t pMaxDeviation;
+        vk::Result result = static_cast<Result>(pfn_GetCalibratedTimestampsEXT(device.get(),
+            timestampCount,
+            reinterpret_cast<const VkCalibratedTimestampInfoEXT*>(TimestampInfos.data()),
+            Timestamps.data(),
             &pMaxDeviation));
     return expected<uint64_t>(pMaxDeviation, result);
     }
@@ -4124,6 +4736,15 @@ struct DeviceFunctions {
             firstExclusiveScissor,
             exclusiveScissorCount,
             reinterpret_cast<const VkRect2D*>(pExclusiveScissors));
+    }
+    void CmdSetExclusiveScissorNV(CommandBuffer commandBuffer, 
+        uint32_t firstExclusiveScissor, 
+        std::span<Rect2D> ExclusiveScissors) const {
+        uint32_t exclusiveScissorCount = ExclusiveScissors.size();
+        pfn_CmdSetExclusiveScissorNV(commandBuffer.get(),
+            firstExclusiveScissor,
+            exclusiveScissorCount,
+            reinterpret_cast<const VkRect2D*>(ExclusiveScissors.data()));
     }
 #endif //defined(VK_NV_scissor_exclusive)
 #if defined(VK_NV_device_diagnostic_checkpoints)
@@ -4251,12 +4872,26 @@ struct DeviceFunctions {
             viewportCount,
             reinterpret_cast<const VkViewport*>(pViewports));
     }
+    void CmdSetViewportWithCountEXT(CommandBuffer commandBuffer, 
+        std::span<Viewport> Viewports) const {
+        uint32_t viewportCount = Viewports.size();
+        pfn_CmdSetViewportWithCountEXT(commandBuffer.get(),
+            viewportCount,
+            reinterpret_cast<const VkViewport*>(Viewports.data()));
+    }
     void CmdSetScissorWithCountEXT(CommandBuffer commandBuffer, 
         uint32_t scissorCount, 
         const Rect2D* pScissors) const {
         pfn_CmdSetScissorWithCountEXT(commandBuffer.get(),
             scissorCount,
             reinterpret_cast<const VkRect2D*>(pScissors));
+    }
+    void CmdSetScissorWithCountEXT(CommandBuffer commandBuffer, 
+        std::span<Rect2D> Scissors) const {
+        uint32_t scissorCount = Scissors.size();
+        pfn_CmdSetScissorWithCountEXT(commandBuffer.get(),
+            scissorCount,
+            reinterpret_cast<const VkRect2D*>(Scissors.data()));
     }
     void CmdBindVertexBuffers2EXT(CommandBuffer commandBuffer, 
         uint32_t firstBinding, 
@@ -4272,6 +4907,21 @@ struct DeviceFunctions {
             pOffsets,
             pSizes,
             pStrides);
+    }
+    void CmdBindVertexBuffers2EXT(CommandBuffer commandBuffer, 
+        uint32_t firstBinding, 
+        std::span<Buffer> Buffers, 
+        std::span<DeviceSize> Offsets, 
+        std::span<DeviceSize> Sizes, 
+        std::span<DeviceSize> Strides) const {
+        uint32_t bindingCount = Buffers.size();
+        pfn_CmdBindVertexBuffers2EXT(commandBuffer.get(),
+            firstBinding,
+            bindingCount,
+            reinterpret_cast<const VkBuffer*>(Buffers.data()),
+            Offsets.data(),
+            Sizes.data(),
+            Strides.data());
     }
     void CmdSetDepthTestEnableEXT(CommandBuffer commandBuffer, 
         Bool32 depthTestEnable) const {
@@ -5059,10 +5709,14 @@ struct QueueFunctions {
         :device_functions(&device_functions), queue(queue){}
     [[nodiscard]] Result Submit(uint32_t submitCount, const SubmitInfo* pSubmits, Fence fence) const {
         return device_functions->QueueSubmit(queue, submitCount, pSubmits, fence); }
+    [[nodiscard]] Result Submit(std::span<SubmitInfo> Submits, Fence fence) const {
+        return device_functions->QueueSubmit(queue, Submits, fence); }
     [[nodiscard]] Result WaitIdle() const {
         return device_functions->QueueWaitIdle(queue); }
     [[nodiscard]] Result BindSparse(uint32_t bindInfoCount, const BindSparseInfo* pBindInfo, Fence fence) const {
         return device_functions->QueueBindSparse(queue, bindInfoCount, pBindInfo, fence); }
+    [[nodiscard]] Result BindSparse(std::span<BindSparseInfo> BindInfo, Fence fence) const {
+        return device_functions->QueueBindSparse(queue, BindInfo, fence); }
     [[nodiscard]] Result PresentKHR(const PresentInfoKHR&  pPresentInfo) const {
         return device_functions->QueuePresentKHR(queue, pPresentInfo); }
     void BeginDebugUtilsLabelEXT(const DebugUtilsLabelEXT&  pLabelInfo) const {
@@ -5094,8 +5748,19 @@ struct CommandBufferFunctions {
     CommandBufferFunctions const& SetViewport(uint32_t firstViewport, uint32_t viewportCount, const Viewport* pViewports) const {
         device_functions->CmdSetViewport(commandbuffer, firstViewport, viewportCount, pViewports);
         return *this; }
+    CommandBufferFunctions const& SetViewport(uint32_t firstViewport, std::span<Viewport> Viewports) const {
+        device_functions->CmdSetViewport(commandbuffer, firstViewport, Viewports);
+        return *this; }
+    template<typename... Ts>
+    requires (std::is_same_v<Viewport, Ts> && ...)
+    CommandBufferFunctions const& SetViewport(uint32_t firstViewport, Ts... viewports) { 
+        device_functions->CmdSetViewport(commandbuffer, firstViewport, std::forward<Params>(viewports)...);
+        return *this; } 
     CommandBufferFunctions const& SetScissor(uint32_t firstScissor, uint32_t scissorCount, const Rect2D* pScissors) const {
         device_functions->CmdSetScissor(commandbuffer, firstScissor, scissorCount, pScissors);
+        return *this; }
+    CommandBufferFunctions const& SetScissor(uint32_t firstScissor, std::span<Rect2D> Scissors) const {
+        device_functions->CmdSetScissor(commandbuffer, firstScissor, Scissors);
         return *this; }
     CommandBufferFunctions const& SetLineWidth(float lineWidth) const {
         device_functions->CmdSetLineWidth(commandbuffer, lineWidth);
@@ -5121,11 +5786,17 @@ struct CommandBufferFunctions {
     CommandBufferFunctions const& BindDescriptorSets(PipelineBindPoint pipelineBindPoint, PipelineLayout layout, uint32_t firstSet, uint32_t descriptorSetCount, const DescriptorSet* pDescriptorSets, uint32_t dynamicOffsetCount, const uint32_t* pDynamicOffsets) const {
         device_functions->CmdBindDescriptorSets(commandbuffer, pipelineBindPoint, layout, firstSet, descriptorSetCount, pDescriptorSets, dynamicOffsetCount, pDynamicOffsets);
         return *this; }
+    CommandBufferFunctions const& BindDescriptorSets(PipelineBindPoint pipelineBindPoint, PipelineLayout layout, uint32_t firstSet, std::span<DescriptorSet> DescriptorSets, std::span<uint32_t> DynamicOffsets) const {
+        device_functions->CmdBindDescriptorSets(commandbuffer, pipelineBindPoint, layout, firstSet, DescriptorSets, DynamicOffsets);
+        return *this; }
     CommandBufferFunctions const& BindIndexBuffer(Buffer buffer, DeviceSize offset, IndexType indexType) const {
         device_functions->CmdBindIndexBuffer(commandbuffer, buffer, offset, indexType);
         return *this; }
     CommandBufferFunctions const& BindVertexBuffers(uint32_t firstBinding, uint32_t bindingCount, const Buffer* pBuffers, const DeviceSize* pOffsets) const {
         device_functions->CmdBindVertexBuffers(commandbuffer, firstBinding, bindingCount, pBuffers, pOffsets);
+        return *this; }
+    CommandBufferFunctions const& BindVertexBuffers(uint32_t firstBinding, std::span<Buffer> Buffers, std::span<DeviceSize> Offsets) const {
+        device_functions->CmdBindVertexBuffers(commandbuffer, firstBinding, Buffers, Offsets);
         return *this; }
     CommandBufferFunctions const& Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance) const {
         device_functions->CmdDraw(commandbuffer, vertexCount, instanceCount, firstVertex, firstInstance);
@@ -5148,20 +5819,38 @@ struct CommandBufferFunctions {
     CommandBufferFunctions const& CopyBuffer(Buffer srcBuffer, Buffer dstBuffer, uint32_t regionCount, const BufferCopy* pRegions) const {
         device_functions->CmdCopyBuffer(commandbuffer, srcBuffer, dstBuffer, regionCount, pRegions);
         return *this; }
+    CommandBufferFunctions const& CopyBuffer(Buffer srcBuffer, Buffer dstBuffer, std::span<BufferCopy> Regions) const {
+        device_functions->CmdCopyBuffer(commandbuffer, srcBuffer, dstBuffer, Regions);
+        return *this; }
     CommandBufferFunctions const& CopyImage(Image srcImage, ImageLayout srcImageLayout, Image dstImage, ImageLayout dstImageLayout, uint32_t regionCount, const ImageCopy* pRegions) const {
         device_functions->CmdCopyImage(commandbuffer, srcImage, srcImageLayout, dstImage, dstImageLayout, regionCount, pRegions);
+        return *this; }
+    CommandBufferFunctions const& CopyImage(Image srcImage, ImageLayout srcImageLayout, Image dstImage, ImageLayout dstImageLayout, std::span<ImageCopy> Regions) const {
+        device_functions->CmdCopyImage(commandbuffer, srcImage, srcImageLayout, dstImage, dstImageLayout, Regions);
         return *this; }
     CommandBufferFunctions const& BlitImage(Image srcImage, ImageLayout srcImageLayout, Image dstImage, ImageLayout dstImageLayout, uint32_t regionCount, const ImageBlit* pRegions, Filter filter) const {
         device_functions->CmdBlitImage(commandbuffer, srcImage, srcImageLayout, dstImage, dstImageLayout, regionCount, pRegions, filter);
         return *this; }
+    CommandBufferFunctions const& BlitImage(Image srcImage, ImageLayout srcImageLayout, Image dstImage, ImageLayout dstImageLayout, std::span<ImageBlit> Regions, Filter filter) const {
+        device_functions->CmdBlitImage(commandbuffer, srcImage, srcImageLayout, dstImage, dstImageLayout, Regions, filter);
+        return *this; }
     CommandBufferFunctions const& CopyBufferToImage(Buffer srcBuffer, Image dstImage, ImageLayout dstImageLayout, uint32_t regionCount, const BufferImageCopy* pRegions) const {
         device_functions->CmdCopyBufferToImage(commandbuffer, srcBuffer, dstImage, dstImageLayout, regionCount, pRegions);
+        return *this; }
+    CommandBufferFunctions const& CopyBufferToImage(Buffer srcBuffer, Image dstImage, ImageLayout dstImageLayout, std::span<BufferImageCopy> Regions) const {
+        device_functions->CmdCopyBufferToImage(commandbuffer, srcBuffer, dstImage, dstImageLayout, Regions);
         return *this; }
     CommandBufferFunctions const& CopyImageToBuffer(Image srcImage, ImageLayout srcImageLayout, Buffer dstBuffer, uint32_t regionCount, const BufferImageCopy* pRegions) const {
         device_functions->CmdCopyImageToBuffer(commandbuffer, srcImage, srcImageLayout, dstBuffer, regionCount, pRegions);
         return *this; }
+    CommandBufferFunctions const& CopyImageToBuffer(Image srcImage, ImageLayout srcImageLayout, Buffer dstBuffer, std::span<BufferImageCopy> Regions) const {
+        device_functions->CmdCopyImageToBuffer(commandbuffer, srcImage, srcImageLayout, dstBuffer, Regions);
+        return *this; }
     CommandBufferFunctions const& UpdateBuffer(Buffer dstBuffer, DeviceSize dstOffset, DeviceSize dataSize, const void* pData) const {
         device_functions->CmdUpdateBuffer(commandbuffer, dstBuffer, dstOffset, dataSize, pData);
+        return *this; }
+    CommandBufferFunctions const& UpdateBuffer(Buffer dstBuffer, DeviceSize dstOffset, std::span<std::byte> Data) const {
+        device_functions->CmdUpdateBuffer(commandbuffer, dstBuffer, dstOffset, Data);
         return *this; }
     CommandBufferFunctions const& FillBuffer(Buffer dstBuffer, DeviceSize dstOffset, DeviceSize size, uint32_t data) const {
         device_functions->CmdFillBuffer(commandbuffer, dstBuffer, dstOffset, size, data);
@@ -5169,14 +5858,26 @@ struct CommandBufferFunctions {
     CommandBufferFunctions const& ClearColorImage(Image image, ImageLayout imageLayout, const ClearColorValue&  pColor, uint32_t rangeCount, const ImageSubresourceRange* pRanges) const {
         device_functions->CmdClearColorImage(commandbuffer, image, imageLayout, pColor, rangeCount, pRanges);
         return *this; }
+    CommandBufferFunctions const& ClearColorImage(Image image, ImageLayout imageLayout, const ClearColorValue&  pColor, std::span<ImageSubresourceRange> Ranges) const {
+        device_functions->CmdClearColorImage(commandbuffer, image, imageLayout, pColor, Ranges);
+        return *this; }
     CommandBufferFunctions const& ClearDepthStencilImage(Image image, ImageLayout imageLayout, const ClearDepthStencilValue&  pDepthStencil, uint32_t rangeCount, const ImageSubresourceRange* pRanges) const {
         device_functions->CmdClearDepthStencilImage(commandbuffer, image, imageLayout, pDepthStencil, rangeCount, pRanges);
+        return *this; }
+    CommandBufferFunctions const& ClearDepthStencilImage(Image image, ImageLayout imageLayout, const ClearDepthStencilValue&  pDepthStencil, std::span<ImageSubresourceRange> Ranges) const {
+        device_functions->CmdClearDepthStencilImage(commandbuffer, image, imageLayout, pDepthStencil, Ranges);
         return *this; }
     CommandBufferFunctions const& ClearAttachments(uint32_t attachmentCount, const ClearAttachment* pAttachments, uint32_t rectCount, const ClearRect* pRects) const {
         device_functions->CmdClearAttachments(commandbuffer, attachmentCount, pAttachments, rectCount, pRects);
         return *this; }
+    CommandBufferFunctions const& ClearAttachments(std::span<ClearAttachment> Attachments, std::span<ClearRect> Rects) const {
+        device_functions->CmdClearAttachments(commandbuffer, Attachments, Rects);
+        return *this; }
     CommandBufferFunctions const& ResolveImage(Image srcImage, ImageLayout srcImageLayout, Image dstImage, ImageLayout dstImageLayout, uint32_t regionCount, const ImageResolve* pRegions) const {
         device_functions->CmdResolveImage(commandbuffer, srcImage, srcImageLayout, dstImage, dstImageLayout, regionCount, pRegions);
+        return *this; }
+    CommandBufferFunctions const& ResolveImage(Image srcImage, ImageLayout srcImageLayout, Image dstImage, ImageLayout dstImageLayout, std::span<ImageResolve> Regions) const {
+        device_functions->CmdResolveImage(commandbuffer, srcImage, srcImageLayout, dstImage, dstImageLayout, Regions);
         return *this; }
     CommandBufferFunctions const& SetEvent(Event event, PipelineStageFlags stageMask) const {
         device_functions->CmdSetEvent(commandbuffer, event, stageMask);
@@ -5187,8 +5888,14 @@ struct CommandBufferFunctions {
     CommandBufferFunctions const& WaitEvents(uint32_t eventCount, const Event* pEvents, PipelineStageFlags srcStageMask, PipelineStageFlags dstStageMask, uint32_t memoryBarrierCount, const MemoryBarrier* pMemoryBarriers, uint32_t bufferMemoryBarrierCount, const BufferMemoryBarrier* pBufferMemoryBarriers, uint32_t imageMemoryBarrierCount, const ImageMemoryBarrier* pImageMemoryBarriers) const {
         device_functions->CmdWaitEvents(commandbuffer, eventCount, pEvents, srcStageMask, dstStageMask, memoryBarrierCount, pMemoryBarriers, bufferMemoryBarrierCount, pBufferMemoryBarriers, imageMemoryBarrierCount, pImageMemoryBarriers);
         return *this; }
+    CommandBufferFunctions const& WaitEvents(std::span<Event> Events, PipelineStageFlags srcStageMask, PipelineStageFlags dstStageMask, std::span<MemoryBarrier> MemoryBarriers, std::span<BufferMemoryBarrier> BufferMemoryBarriers, std::span<ImageMemoryBarrier> ImageMemoryBarriers) const {
+        device_functions->CmdWaitEvents(commandbuffer, Events, srcStageMask, dstStageMask, MemoryBarriers, BufferMemoryBarriers, ImageMemoryBarriers);
+        return *this; }
     CommandBufferFunctions const& PipelineBarrier(PipelineStageFlags srcStageMask, PipelineStageFlags dstStageMask, DependencyFlags dependencyFlags, uint32_t memoryBarrierCount, const MemoryBarrier* pMemoryBarriers, uint32_t bufferMemoryBarrierCount, const BufferMemoryBarrier* pBufferMemoryBarriers, uint32_t imageMemoryBarrierCount, const ImageMemoryBarrier* pImageMemoryBarriers) const {
         device_functions->CmdPipelineBarrier(commandbuffer, srcStageMask, dstStageMask, dependencyFlags, memoryBarrierCount, pMemoryBarriers, bufferMemoryBarrierCount, pBufferMemoryBarriers, imageMemoryBarrierCount, pImageMemoryBarriers);
+        return *this; }
+    CommandBufferFunctions const& PipelineBarrier(PipelineStageFlags srcStageMask, PipelineStageFlags dstStageMask, DependencyFlags dependencyFlags, std::span<MemoryBarrier> MemoryBarriers, std::span<BufferMemoryBarrier> BufferMemoryBarriers, std::span<ImageMemoryBarrier> ImageMemoryBarriers) const {
+        device_functions->CmdPipelineBarrier(commandbuffer, srcStageMask, dstStageMask, dependencyFlags, MemoryBarriers, BufferMemoryBarriers, ImageMemoryBarriers);
         return *this; }
     CommandBufferFunctions const& BeginQuery(QueryPool queryPool, uint32_t query, QueryControlFlags flags) const {
         device_functions->CmdBeginQuery(commandbuffer, queryPool, query, flags);
@@ -5214,6 +5921,9 @@ struct CommandBufferFunctions {
     CommandBufferFunctions const& PushConstants(PipelineLayout layout, ShaderStageFlags stageFlags, uint32_t offset, uint32_t size, const void* pValues) const {
         device_functions->CmdPushConstants(commandbuffer, layout, stageFlags, offset, size, pValues);
         return *this; }
+    CommandBufferFunctions const& PushConstants(PipelineLayout layout, ShaderStageFlags stageFlags, uint32_t offset, std::span<std::byte> Values) const {
+        device_functions->CmdPushConstants(commandbuffer, layout, stageFlags, offset, Values);
+        return *this; }
     CommandBufferFunctions const& BeginRenderPass(const RenderPassBeginInfo&  pRenderPassBegin, SubpassContents contents) const {
         device_functions->CmdBeginRenderPass(commandbuffer, pRenderPassBegin, contents);
         return *this; }
@@ -5225,6 +5935,9 @@ struct CommandBufferFunctions {
         return *this; }
     CommandBufferFunctions const& ExecuteCommands(uint32_t commandBufferCount, const CommandBuffer* pCommandBuffers) const {
         device_functions->CmdExecuteCommands(commandbuffer, commandBufferCount, pCommandBuffers);
+        return *this; }
+    CommandBufferFunctions const& ExecuteCommands(std::span<CommandBuffer> CommandBuffers) const {
+        device_functions->CmdExecuteCommands(commandbuffer, CommandBuffers);
         return *this; }
     CommandBufferFunctions const& DebugMarkerBeginEXT(const DebugMarkerMarkerInfoEXT&  pMarkerInfo) const {
         device_functions->CmdDebugMarkerBeginEXT(commandbuffer, pMarkerInfo);
@@ -5247,6 +5960,9 @@ struct CommandBufferFunctions {
     CommandBufferFunctions const& PushDescriptorSetKHR(PipelineBindPoint pipelineBindPoint, PipelineLayout layout, uint32_t set, uint32_t descriptorWriteCount, const WriteDescriptorSet* pDescriptorWrites) const {
         device_functions->CmdPushDescriptorSetKHR(commandbuffer, pipelineBindPoint, layout, set, descriptorWriteCount, pDescriptorWrites);
         return *this; }
+    CommandBufferFunctions const& PushDescriptorSetKHR(PipelineBindPoint pipelineBindPoint, PipelineLayout layout, uint32_t set, std::span<WriteDescriptorSet> DescriptorWrites) const {
+        device_functions->CmdPushDescriptorSetKHR(commandbuffer, pipelineBindPoint, layout, set, DescriptorWrites);
+        return *this; }
     CommandBufferFunctions const& SetDeviceMask(uint32_t deviceMask) const {
         device_functions->CmdSetDeviceMask(commandbuffer, deviceMask);
         return *this; }
@@ -5259,8 +5975,14 @@ struct CommandBufferFunctions {
     CommandBufferFunctions const& SetViewportWScalingNV(uint32_t firstViewport, uint32_t viewportCount, const ViewportWScalingNV* pViewportWScalings) const {
         device_functions->CmdSetViewportWScalingNV(commandbuffer, firstViewport, viewportCount, pViewportWScalings);
         return *this; }
+    CommandBufferFunctions const& SetViewportWScalingNV(uint32_t firstViewport, std::span<ViewportWScalingNV> ViewportWScalings) const {
+        device_functions->CmdSetViewportWScalingNV(commandbuffer, firstViewport, ViewportWScalings);
+        return *this; }
     CommandBufferFunctions const& SetDiscardRectangleEXT(uint32_t firstDiscardRectangle, uint32_t discardRectangleCount, const Rect2D* pDiscardRectangles) const {
         device_functions->CmdSetDiscardRectangleEXT(commandbuffer, firstDiscardRectangle, discardRectangleCount, pDiscardRectangles);
+        return *this; }
+    CommandBufferFunctions const& SetDiscardRectangleEXT(uint32_t firstDiscardRectangle, std::span<Rect2D> DiscardRectangles) const {
+        device_functions->CmdSetDiscardRectangleEXT(commandbuffer, firstDiscardRectangle, DiscardRectangles);
         return *this; }
     CommandBufferFunctions const& SetSampleLocationsEXT(const SampleLocationsInfoEXT&  pSampleLocationsInfo) const {
         device_functions->CmdSetSampleLocationsEXT(commandbuffer, pSampleLocationsInfo);
@@ -5298,11 +6020,20 @@ struct CommandBufferFunctions {
     CommandBufferFunctions const& BindTransformFeedbackBuffersEXT(uint32_t firstBinding, uint32_t bindingCount, const Buffer* pBuffers, const DeviceSize* pOffsets, const DeviceSize* pSizes) const {
         device_functions->CmdBindTransformFeedbackBuffersEXT(commandbuffer, firstBinding, bindingCount, pBuffers, pOffsets, pSizes);
         return *this; }
+    CommandBufferFunctions const& BindTransformFeedbackBuffersEXT(uint32_t firstBinding, std::span<Buffer> Buffers, std::span<DeviceSize> Offsets, std::span<DeviceSize> Sizes) const {
+        device_functions->CmdBindTransformFeedbackBuffersEXT(commandbuffer, firstBinding, Buffers, Offsets, Sizes);
+        return *this; }
     CommandBufferFunctions const& BeginTransformFeedbackEXT(uint32_t firstCounterBuffer, uint32_t counterBufferCount, const Buffer* pCounterBuffers, const DeviceSize* pCounterBufferOffsets) const {
         device_functions->CmdBeginTransformFeedbackEXT(commandbuffer, firstCounterBuffer, counterBufferCount, pCounterBuffers, pCounterBufferOffsets);
         return *this; }
+    CommandBufferFunctions const& BeginTransformFeedbackEXT(uint32_t firstCounterBuffer, std::span<Buffer> CounterBuffers, std::span<DeviceSize> CounterBufferOffsets) const {
+        device_functions->CmdBeginTransformFeedbackEXT(commandbuffer, firstCounterBuffer, CounterBuffers, CounterBufferOffsets);
+        return *this; }
     CommandBufferFunctions const& EndTransformFeedbackEXT(uint32_t firstCounterBuffer, uint32_t counterBufferCount, const Buffer* pCounterBuffers, const DeviceSize* pCounterBufferOffsets) const {
         device_functions->CmdEndTransformFeedbackEXT(commandbuffer, firstCounterBuffer, counterBufferCount, pCounterBuffers, pCounterBufferOffsets);
+        return *this; }
+    CommandBufferFunctions const& EndTransformFeedbackEXT(uint32_t firstCounterBuffer, std::span<Buffer> CounterBuffers, std::span<DeviceSize> CounterBufferOffsets) const {
+        device_functions->CmdEndTransformFeedbackEXT(commandbuffer, firstCounterBuffer, CounterBuffers, CounterBufferOffsets);
         return *this; }
     CommandBufferFunctions const& BeginQueryIndexedEXT(QueryPool queryPool, uint32_t query, QueryControlFlags flags, uint32_t index) const {
         device_functions->CmdBeginQueryIndexedEXT(commandbuffer, queryPool, query, flags, index);
@@ -5316,14 +6047,23 @@ struct CommandBufferFunctions {
     CommandBufferFunctions const& SetExclusiveScissorNV(uint32_t firstExclusiveScissor, uint32_t exclusiveScissorCount, const Rect2D* pExclusiveScissors) const {
         device_functions->CmdSetExclusiveScissorNV(commandbuffer, firstExclusiveScissor, exclusiveScissorCount, pExclusiveScissors);
         return *this; }
+    CommandBufferFunctions const& SetExclusiveScissorNV(uint32_t firstExclusiveScissor, std::span<Rect2D> ExclusiveScissors) const {
+        device_functions->CmdSetExclusiveScissorNV(commandbuffer, firstExclusiveScissor, ExclusiveScissors);
+        return *this; }
     CommandBufferFunctions const& BindShadingRateImageNV(ImageView imageView, ImageLayout imageLayout) const {
         device_functions->CmdBindShadingRateImageNV(commandbuffer, imageView, imageLayout);
         return *this; }
     CommandBufferFunctions const& SetViewportShadingRatePaletteNV(uint32_t firstViewport, uint32_t viewportCount, const ShadingRatePaletteNV* pShadingRatePalettes) const {
         device_functions->CmdSetViewportShadingRatePaletteNV(commandbuffer, firstViewport, viewportCount, pShadingRatePalettes);
         return *this; }
+    CommandBufferFunctions const& SetViewportShadingRatePaletteNV(uint32_t firstViewport, std::span<ShadingRatePaletteNV> ShadingRatePalettes) const {
+        device_functions->CmdSetViewportShadingRatePaletteNV(commandbuffer, firstViewport, ShadingRatePalettes);
+        return *this; }
     CommandBufferFunctions const& SetCoarseSampleOrderNV(CoarseSampleOrderTypeNV sampleOrderType, uint32_t customSampleOrderCount, const CoarseSampleOrderCustomNV* pCustomSampleOrders) const {
         device_functions->CmdSetCoarseSampleOrderNV(commandbuffer, sampleOrderType, customSampleOrderCount, pCustomSampleOrders);
+        return *this; }
+    CommandBufferFunctions const& SetCoarseSampleOrderNV(CoarseSampleOrderTypeNV sampleOrderType, std::span<CoarseSampleOrderCustomNV> CustomSampleOrders) const {
+        device_functions->CmdSetCoarseSampleOrderNV(commandbuffer, sampleOrderType, CustomSampleOrders);
         return *this; }
     CommandBufferFunctions const& DrawMeshTasksNV(uint32_t taskCount, uint32_t firstTask) const {
         device_functions->CmdDrawMeshTasksNV(commandbuffer, taskCount, firstTask);
@@ -5349,6 +6089,9 @@ struct CommandBufferFunctions {
         return *this; }
     CommandBufferFunctions const& WriteAccelerationStructuresPropertiesKHR(uint32_t accelerationStructureCount, const AccelerationStructureKHR* pAccelerationStructures, QueryType queryType, QueryPool queryPool, uint32_t firstQuery) const {
         device_functions->CmdWriteAccelerationStructuresPropertiesKHR(commandbuffer, accelerationStructureCount, pAccelerationStructures, queryType, queryPool, firstQuery);
+        return *this; }
+    CommandBufferFunctions const& WriteAccelerationStructuresPropertiesKHR(std::span<AccelerationStructureKHR> AccelerationStructures, QueryType queryType, QueryPool queryPool, uint32_t firstQuery) const {
+        device_functions->CmdWriteAccelerationStructuresPropertiesKHR(commandbuffer, AccelerationStructures, queryType, queryPool, firstQuery);
         return *this; }
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
     CommandBufferFunctions const& BuildAccelerationStructureNV(const AccelerationStructureInfoNV&  pInfo, Buffer instanceData, DeviceSize instanceOffset, Bool32 update, AccelerationStructureKHR dst, AccelerationStructureKHR src, Buffer scratch, DeviceSize scratchOffset) const {
@@ -5380,6 +6123,9 @@ struct CommandBufferFunctions {
     CommandBufferFunctions const& BuildAccelerationStructureKHR(uint32_t infoCount, const AccelerationStructureBuildGeometryInfoKHR* pInfos, const AccelerationStructureBuildOffsetInfoKHR* const* ppOffsetInfos) const {
         device_functions->CmdBuildAccelerationStructureKHR(commandbuffer, infoCount, pInfos, ppOffsetInfos);
         return *this; }
+    CommandBufferFunctions const& BuildAccelerationStructureKHR(std::span<AccelerationStructureBuildGeometryInfoKHR> Infos, std::span<AccelerationStructureBuildOffsetInfoKHR> pOffsetInfos) const {
+        device_functions->CmdBuildAccelerationStructureKHR(commandbuffer, Infos, pOffsetInfos);
+        return *this; }
     CommandBufferFunctions const& BuildAccelerationStructureIndirectKHR(const AccelerationStructureBuildGeometryInfoKHR&  pInfo, Buffer indirectBuffer, DeviceSize indirectOffset, uint32_t indirectStride) const {
         device_functions->CmdBuildAccelerationStructureIndirectKHR(commandbuffer, pInfo, indirectBuffer, indirectOffset, indirectStride);
         return *this; }
@@ -5396,11 +6142,20 @@ struct CommandBufferFunctions {
     CommandBufferFunctions const& SetViewportWithCountEXT(uint32_t viewportCount, const Viewport* pViewports) const {
         device_functions->CmdSetViewportWithCountEXT(commandbuffer, viewportCount, pViewports);
         return *this; }
+    CommandBufferFunctions const& SetViewportWithCountEXT(std::span<Viewport> Viewports) const {
+        device_functions->CmdSetViewportWithCountEXT(commandbuffer, Viewports);
+        return *this; }
     CommandBufferFunctions const& SetScissorWithCountEXT(uint32_t scissorCount, const Rect2D* pScissors) const {
         device_functions->CmdSetScissorWithCountEXT(commandbuffer, scissorCount, pScissors);
         return *this; }
+    CommandBufferFunctions const& SetScissorWithCountEXT(std::span<Rect2D> Scissors) const {
+        device_functions->CmdSetScissorWithCountEXT(commandbuffer, Scissors);
+        return *this; }
     CommandBufferFunctions const& BindVertexBuffers2EXT(uint32_t firstBinding, uint32_t bindingCount, const Buffer* pBuffers, const DeviceSize* pOffsets, const DeviceSize* pSizes, const DeviceSize* pStrides) const {
         device_functions->CmdBindVertexBuffers2EXT(commandbuffer, firstBinding, bindingCount, pBuffers, pOffsets, pSizes, pStrides);
+        return *this; }
+    CommandBufferFunctions const& BindVertexBuffers2EXT(uint32_t firstBinding, std::span<Buffer> Buffers, std::span<DeviceSize> Offsets, std::span<DeviceSize> Sizes, std::span<DeviceSize> Strides) const {
+        device_functions->CmdBindVertexBuffers2EXT(commandbuffer, firstBinding, Buffers, Offsets, Sizes, Strides);
         return *this; }
     CommandBufferFunctions const& SetDepthTestEnableEXT(Bool32 depthTestEnable) const {
         device_functions->CmdSetDepthTestEnableEXT(commandbuffer, depthTestEnable);

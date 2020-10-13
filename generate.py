@@ -450,7 +450,12 @@ class Variable:
     def is_ptr(self):
         return self.is_single_ptr or self.is_double_ptr or self.is_const_double_ptr
 
-    def get_base_type(self, use_vk_type=True, use_references=False, downgrade_ptr_type=False):
+    def get_base_type(self):
+        if self.base_type == 'void' and self.is_ptr():
+            return 'std::byte'
+        return self.base_type_modified
+
+    def get_type_decl(self, use_vk_type=True, use_references=False, downgrade_ptr_type=False):
         type_decl = ''
         if self.is_const:
             type_decl += 'const '
@@ -485,15 +490,15 @@ class Variable:
         else:
             return '{}'
 
-    def get_base_type_only(self):
-        type_decl = self.get_base_type(use_vk_type=False)
+    def get_type_decl_w_arr(self):
+        type_decl = self.get_type_decl(use_vk_type=False)
         for arr in self.array_lengths:
             type_decl += f'[{arr}]'
         return type_decl
 
     def get_full_type(self, use_references = False):
         local_use_refs = use_references
-        type_decl = f'{self.get_base_type(use_references=local_use_refs)} '
+        type_decl = f'{self.get_type_decl(use_references=local_use_refs)} '
         type_decl += self.name
         if self.bitfield is not None:
             type_decl += f':{self.bitfield}'
@@ -645,9 +650,8 @@ class Function:
             if param.len_attrib is not None and param.len_attrib != "null-terminated" and param.optional is None:
                 len_attrib = param.len_attrib
                 for inner_param in self.parameters:
-                    if len_attrib == inner_param.name:
-                        self.span_params.add(inner_param.len_attrib)
-        self.has_span_params = len(self.span_params) > 0
+                    if inner_param.name == len_attrib:
+                        self.span_params.add(len_attrib)
 
         self.is_value_query = len(self.parameters) > 0 and self.parameters[-1].is_ptr() \
             and not self.parameters[-1].is_const and self.parameters[-1].len_attrib is None
@@ -659,7 +663,7 @@ class Function:
         self.modified_param_list = self.parameters
         if self.is_value_query:
             self.modified_param_list = self.parameters[:-1]
-            self.query_type = self.parameters[-1].get_base_type(downgrade_ptr_type=True)
+            self.query_type = self.parameters[-1].get_type_decl(downgrade_ptr_type=True)
             if self.query_type[:2] == 'vk':
                 self.query_type = self.query_type[:2]
             self.query_name = self.parameters[-1].name
@@ -671,8 +675,8 @@ class Function:
                 self.return_statement = f'return {self.query_name};\n'
         if self.is_enumeration_function:
             self.modified_param_list = self.parameters[:-2]
-            self.query_type = self.parameters[-1].get_base_type(downgrade_ptr_type=self.parameters[-1].base_type != 'void')
-            self.base_query_type =self.parameters[-1].get_base_type(use_vk_type=False)
+            self.query_type = self.parameters[-1].get_type_decl(downgrade_ptr_type=self.parameters[-1].base_type != 'void')
+            self.base_query_type =self.parameters[-1].get_type_decl(use_vk_type=False)
             self.query_name = self.parameters[-1].name
             self.count_type = self.parameters[-2].base_type
             self.count_name = self.parameters[-2].name
@@ -702,32 +706,44 @@ class Function:
         else:
             file.write(f'{self.return_type} {print_function_name}')
 
-    def print_parameters(self, file, parameter_list, indent='', break_between=True):
+    def print_parameters(self, file, parameter_list, indent='', break_between=True, condense_spans=False):
+        should_print_comma = False #prevents printing of a comma before the first real parameter
         for param in parameter_list:
             if param != parameter_list[0]:
-                file.write(', ')
-                if break_between:
-                    file.write(f'\n{indent}    ')
-            file.write(f'{param.get_full_type(use_references=True)}')
+                if condense_spans == False or param.name not in self.span_params: 
+                    if should_print_comma:
+                        file.write(', ')
+                        if break_between:
+                            file.write(f'\n{indent}    ')
+                
+            if condense_spans and param.name in self.span_params: 
+                continue            
+            elif condense_spans and param.len_attrib is not None and param.len_attrib in self.span_params:
+                file.write(f'std::span<{param.get_base_type()}> {param.name[1:]}')
+            else:
+                file.write(f'{param.get_full_type(use_references=True)}')
             if param.name == 'pAllocator' and param == parameter_list[-1]:
                 file.write(f' = nullptr')
+            should_print_comma = True
 
-    def print_c_api_call(self, file, dispatch_handle = None, dispatch_handle_name = None, indent='', pfn_source=None, last_arg=None):              
+    def print_c_api_call(self, file, dispatch_handle = None, dispatch_handle_name = None, indent='', pfn_source=None, last_arg=None, condense_spans=False):              
         if self.return_type == 'VkResult':
             file.write('static_cast<Result>(')
         if pfn_source is not None:
             file.write(f'{pfn_source}->')
         file.write(f'pfn_{self.name[2:]}(')
 
-        is_first = True
         for param in self.parameters:
-            if not is_first:
-                file.write(f',\n{indent}        ')
-            else:
-                is_first = False
+            if param == self.parameters[0]:
                 if dispatch_handle is not None and f'{dispatch_handle}' == self.dispatch_handle:
                     file.write(f'{dispatch_handle_name}.get()')
                     continue
+            else:
+                file.write(f',\n{indent}        ')
+
+            param_name = f'{param.name}'
+            if condense_spans and param.len_attrib in self.span_params:
+                param_name = f'{param_name[1:]}.data()' 
             # the last argument
             if last_arg is not None and param == self.parameters[-1]:
                 file.write(last_arg)
@@ -735,22 +751,22 @@ class Function:
                 file.write(param.name + '.get()')
             elif param.base_type not in base_type_default_values.keys() and param.base_type not in base_type_implicit_conversions:
                 if param.is_ptr():
-                    file.write(f'reinterpret_cast<{param.get_base_type_only()}>(')
+                    file.write(f'reinterpret_cast<{param.get_type_decl_w_arr()}>(')
                     if param.is_ref_eligible:
                         file.write('&')
-                    file.write(f'{param.name})')
+                    file.write(f'{param_name})')
                 else:
-                    file.write(f'static_cast<{param.get_base_type_only()}>({param.name})')
+                    file.write(f'static_cast<{param.get_type_decl_w_arr()}>({param_name})')
             else:
                 if param.is_ref_eligible:
                     file.write('&')
-                file.write(param.name)
+                file.write(param_name)
         if self.return_type == 'VkResult':
             file.write(')')
         file.write(');\n')
 
-    def print_function(self, file, dispatch_handle = None, dispatch_handle_name = None, indent='', replace_dict=None, \
-            pfn_source=None, guard=True, make_void_return_this=None):
+    def inner_print_function(self, file, dispatch_handle = None, dispatch_handle_name = None, indent='', replace_dict=None, \
+            pfn_source=None, guard=True, make_void_return_this=None, print_spans=False):
         PlatformGuardHeader(file, self.platform, guard)
         if self.alias is not None:
             file.write(f'const auto {self.name[2:]} = {self.alias[2:]};\n')
@@ -761,23 +777,32 @@ class Function:
         if dispatch_handle is not None and f'{dispatch_handle}' == self.dispatch_handle:
             parameter_list = parameter_list[1:]
         file.write('(')
-        self.print_parameters(file, parameter_list, indent)
+        self.print_parameters(file, parameter_list, indent, condense_spans=print_spans)
         file.write(') const {\n')
         if self.name == 'vkEnumerateInstanceVersion':
             #early return because 1.0 doesn't support the function, will be null and shouldn't cause a crash
             file.write(f'{indent}    if (pfn_EnumerateInstanceVersion == 0) return expected<uint32_t>(VK_MAKE_VERSION(1,0,0), Result::Success);\n')
+        if print_spans:
+            for param in self.parameters:
+                if param.name in self.span_params:
+                    file.write(f'{indent}    {param.get_base_type()} {param.name} = ')
+                    for inner_param in self.parameters:
+                        if inner_param.len_attrib is not None and inner_param.len_attrib == param.name:
+                            file.write(f'{inner_param.name[1:]}.size();\n')
+                            break
+        
         if self.is_value_query:
             file.write(f'{indent}    {self.query_type} {self.query_name};\n{indent}    ')
             if self.return_type != 'void':
                 file.write(f'vk::Result result = ')
-            self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source)
+            self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source, condense_spans=print_spans)
             file.write(f'{indent}{self.return_statement}')
         elif self.is_enumeration_function:
             if self.return_type == 'void':
                 file.write(f'{indent}    {self.count_type} {self.count_name} = 0;\n{indent}    ')
                 self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source, 'nullptr')
                 file.write(f'{indent}    detail::fixed_vector<{self.query_type}> {self.query_name}{{{self.count_name}}};\n{indent}    ')
-                self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source, f'reinterpret_cast<{self.base_query_type}>({self.query_name}.data())')
+                self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source, f'reinterpret_cast<{self.base_query_type}>({self.query_name}.data())', condense_spans=print_spans)
                 file.write(f'{indent}    if ({self.count_name} < {self.query_name}.size()) {self.query_name}.shrink({self.count_name});\n')
                 file.write(f'{indent}    return {self.query_name};\n')
             else:
@@ -787,21 +812,40 @@ class Function:
                 file.write(f'{indent}    if (result < Result::Success) return expected(detail::fixed_vector<{self.query_type}>{{}}, result);\n')
                 file.write(f'{indent}    detail::fixed_vector<{self.query_type}> {self.query_name}{{{self.count_name}}};\n')
                 file.write(f'{indent}    result = ')
-                self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source, f'reinterpret_cast<{self.base_query_type}>({self.query_name}.data())')
+                self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, indent, pfn_source, f'reinterpret_cast<{self.base_query_type}>({self.query_name}.data())', condense_spans=print_spans)
                 file.write(f'{indent}    if ({self.count_name} < {self.query_name}.size()) {self.query_name}.shrink({self.count_name});\n')
                 file.write(f'{indent}    return expected(std::move({self.query_name}), result);\n')
         else:
             file.write(f'{indent}    ')
             if self.return_type != 'void':
                 file.write(f'return ')
-            self.print_c_api_call(file, dispatch_handle, dispatch_handle_name,indent, pfn_source)
+            self.print_c_api_call(file, dispatch_handle, dispatch_handle_name,indent, pfn_source, condense_spans=print_spans)
 
         file.write(f'{indent}}}\n')
 
         PlatformGuardFooter(file, self.platform, guard)
 
-    def print_forwarding_function(self, file, dispatch_handle = None, dispatch_handle_name = None, indent='', replace_dict=None, \
-            pfn_source=None, guard=True, make_void_return_this=None):
+    def print_function(self, file, dispatch_handle = None, dispatch_handle_name = None, indent='', replace_dict=None, \
+            pfn_source=None, guard=True, make_void_return_this=None, cpp20mode=False):
+        self.inner_print_function(file, dispatch_handle, dispatch_handle_name, indent, replace_dict, pfn_source, guard, make_void_return_this, print_spans=False)
+        if cpp20mode and len(self.span_params) > 0:
+            self.inner_print_function(file, dispatch_handle, dispatch_handle_name, indent, replace_dict, pfn_source, guard, make_void_return_this, print_spans=True)
+
+    def print_forwarding_function_call(self, file, parameter_list, dispatch_handle_name, print_spans):
+        for param in parameter_list:
+            if param == parameter_list[0]:
+                file.write(f'{dispatch_handle_name}')
+            else:
+                if print_spans:
+                    if param.name in self.span_params:
+                        continue
+                    elif param.len_attrib is not None and param.len_attrib in self.span_params:
+                        file.write(f', {param.name[1:]}')
+                        continue
+                file.write(f', {param.name}')
+
+    def inner_print_forwarding_function(self, file, dispatch_handle = None, dispatch_handle_name = None, indent='', replace_dict=None, \
+            pfn_source=None, guard=True, make_void_return_this=None, print_spans=False):
         PlatformGuardHeader(file, self.platform, guard)
         if self.alias is not None:
             file.write(f'const auto {self.name[2:]} = {self.alias[2:]};\n')
@@ -814,22 +858,26 @@ class Function:
 
         file.write('(')
        
-        self.print_parameters(file, self.modified_param_list[1:], indent, break_between=False)
+        self.print_parameters(file, self.modified_param_list[1:], indent, break_between=False, condense_spans=print_spans)
         file.write(') const {\n')
         file.write(f'{indent}    ')
         if self.return_type != 'void' or self.full_return_type != None:
             file.write(f'return ')
         file.write(f'{pfn_source}->{self.name[2:]}(')
-        for param in self.modified_param_list:
-            if param == self.modified_param_list[0]:
-                file.write(f'{dispatch_handle_name}')
-            else:
-                file.write(f', {param.name}')
+        self.print_forwarding_function_call(file, self.modified_param_list, dispatch_handle_name, print_spans)
         file.write(f');')
         if self.return_type == 'void' and make_void_return_this is not None:
             file.write(f'\n{indent}    return *this;')
         file.write(f' }}\n')
         PlatformGuardFooter(file, self.platform, guard)
+
+    def print_forwarding_function(self, file, dispatch_handle = None, dispatch_handle_name = None, indent='', replace_dict=None, \
+            pfn_source=None, guard=True, make_void_return_this=None, cpp20mode=False):
+        self.inner_print_forwarding_function(file, dispatch_handle, dispatch_handle_name, indent, replace_dict, pfn_source, guard, make_void_return_this, print_spans=False)
+        if cpp20mode and len(self.span_params) > 0:
+            self.inner_print_forwarding_function(file, dispatch_handle, dispatch_handle_name, indent, replace_dict, pfn_source, guard, make_void_return_this, print_spans=True)
+
+
 
 class ExtEnum:
     def __init__(self, name, value):
@@ -975,7 +1023,7 @@ class DispatchTable:
             else:
                 self.guarded_functions[guard_str].append(func)
 
-    def print_base(self, file):
+    def print_base(self, file, cpp20mode):
         if len(self.guarded_functions.keys()) == 0:
             return
 
@@ -1014,7 +1062,7 @@ class DispatchTable:
             file.write(f'#if {guard}\n')
             for func in functions:               
                 func.print_function(file, dispatch_handle=dispatch_handle, dispatch_handle_name=self.dispatch_type,\
-                    indent='    ', guard=False)
+                    indent='    ', guard=False, cpp20mode=cpp20mode)
             file.write(f'#endif //{guard}\n')
              
         #constructor
@@ -1055,7 +1103,7 @@ class DispatchableHandleDispatchTable:
             if function.dispatch_handle == name:
                 self.functions.append(function)
 
-    def print_base(self, file):
+    def print_base(self, file, cpp20mode):
         functions_type = f'{self.dispatch_type.title()}Functions'
         functions_name = f'{self.dispatch_type}_functions'
         type_name = self.name[2:]
@@ -1076,7 +1124,7 @@ class DispatchableHandleDispatchTable:
                     file.write(f'#if defined({func.platform})\n')
             prev_platform = func.platform
             func.print_forwarding_function(file, dispatch_handle=self.name, dispatch_handle_name=var_name, indent='    ', replace_dict=self.replace_dict, \
-                pfn_source=functions_name, guard=False, make_void_return_this=command_buffer_return_type)
+                pfn_source=functions_name, guard=False, make_void_return_this=command_buffer_return_type, cpp20mode=cpp20mode)
         if prev_platform is not None:
             file.write(f'#endif // defined({prev_platform})\n')
         file.write('};\n')
@@ -1284,12 +1332,14 @@ def print_vkm_core(bindings, cpp20mode, cpp20str):
 def print_vkm_function(bindings, cpp20mode, cpp20str):
     with open(f'cpp{cpp20str}/vkm_function.h', 'w') as vkm_function:
         vkm_function.write('#pragma once\n// clang-format off\n')
+        if cpp20mode:
+            vkm_function.write('#include <span>\n')
         vkm_function.write('#include "vkm_core.h"\n')
         vkm_function.write(vulkan_library_text + '\n') #defines namespace vk here
         vkm_function.write(fixed_vector_text + '\n')
         vkm_function.write(vulkan_expected_type + '\n')
-        [ dispatch_table.print_base(vkm_function) for dispatch_table in bindings.dispatch_tables ]
-        [ table.print_base(vkm_function) for table in bindings.dispatchable_handle_tables ]
+        [ dispatch_table.print_base(vkm_function, cpp20mode) for dispatch_table in bindings.dispatch_tables ]
+        [ table.print_base(vkm_function, cpp20mode) for table in bindings.dispatchable_handle_tables ]
         vkm_function.write('} // namespace vk\n// clang-format on\n')
 
 def print_vkm_string(bindings, cpp20mode, cpp20str):

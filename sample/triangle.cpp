@@ -402,6 +402,7 @@ void create_command_buffers(DeviceContext& device)
                            vk::SubpassContents::Inline)
           .BindPipeline(vk::PipelineBindPoint::Graphics, device.pipeline)
           .SetViewport(0, 1, &viewport)
+          .SetViewport(0, { &viewport, 1 })
           .SetScissor(0, 1, &scissor)
           .Draw(3, 1, 0, 0)
           .EndRenderPass();

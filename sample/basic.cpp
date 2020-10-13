@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <array>
 #include "vkm.h"
 #include "vkm_string.h"
 
@@ -104,8 +105,10 @@ int main()
     vk::Framebuffer framebuffer;
     vk::ClearValue clear_color{ .color = { { 0, 0, 0, 1 } } };
     vk::Viewport viewport{ 0, 0, 1, 1, 0, 1 };
+    std::array<vk::Viewport, 2> viewports = { viewport, { 0.f, 0.f, 1.f, 1.f, 0.f, 1.f } };
     vk::Rect2D scissor{ { 0, 0 }, { 100, 100 } };
-    vk::DeviceSize dev_size= 0;
+    std::array buffers = { buffer };
+    std::array dev_size = { vk::DeviceSize{} };
     auto ret = cmd_buf_functions
                  .BeginRenderPass({ .renderPass = renderpass,
                                     .framebuffer = framebuffer,
@@ -113,9 +116,9 @@ int main()
                                     .clearValueCount = 1,
                                     .pClearValues = &clear_color },
                                   vk::SubpassContents::Inline)
-                 .SetViewport(0, 1, &viewport)
+                 .SetViewport(0, viewports)
                  .SetScissor(0, 1, &scissor)
-                 .BindVertexBuffers(0, 1, &buffer, &dev_size)
+                 .BindVertexBuffers(0, buffers, dev_size)
                  .BindIndexBuffer(buffer, 0, vk::IndexType::Uint16)
                  .Draw(10, 1, 0, 0)
                  .EndRenderPass()
