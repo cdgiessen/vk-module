@@ -1,4 +1,4 @@
-#include "vkm.h"
+#include "vkm_function.h"
 
 #include <array>
 #include <vector>
@@ -344,7 +344,8 @@ void create_pipeline(DeviceContext& device)
                                                               vk::ColorComponentFlagBits::B | vk::ColorComponentFlagBits::A };
     vk::PipelineColorBlendStateCreateInfo color_blend{ .logicOpEnable = false,
                                                        .attachmentCount = 1,
-                                                       .pAttachments = &blend_attachment };
+                                                       .pAttachments = &blend_attachment,
+                                                       .blendConstants = {0.f,0.f,0.f,0.f} };
     auto pipeline_layout_ret = device.functions.CreatePipelineLayout({ .setLayoutCount = 0, .pushConstantRangeCount = 0 });
     check_res(pipeline_layout_ret, "Failed to create pipeline layout");
 

@@ -29,7 +29,7 @@ TEST_CASE("test static vector", "[vk-module.fixed_vector]")
     for (uint32_t i = 0; i < c.size(); i++) {
         REQUIRE(c[i] == i);
     }
-    int counter = 0;
+    uint32_t counter = 0;
     for (auto& x : c) {
         counter += x;
     }

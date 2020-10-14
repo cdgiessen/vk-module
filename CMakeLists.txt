@@ -1,6 +1,13 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 project(vulkan-module CXX)
 
+option(VK_MODULE_SAMPLES "Build samples for the bindings, will download glfw" off)
+option(VK_MODULE_TESTS "Build tests for the bindings, will download catch2" off)
+
+if (VK_MODULE_TESTS)
+option(SET_COMPILE_TIME_TRACE "enable clang's -ftime-trace " OFF)
+endif(VK_MODULE_TESTS)
+
 find_package(PythonInterp 3 QUIET)
 
 include(FetchContent)
@@ -17,7 +24,6 @@ if(NOT vulkan_headers_POPULATED)
         COMMAND ${CMAKE_COMMAND} -E copy ${vulkan_headers_SOURCE_DIR}/registry/vk.xml ${CMAKE_SOURCE_DIR}/registry/vk.xml)
     add_custom_target(run_python_generator
         COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_SOURCE_DIR}/generate.py)
-    
 endif()
 
 add_library(vk-module-compiler-warnings INTERFACE)
@@ -47,15 +53,6 @@ add_custom_target(generate_source copy-xml)
 
 add_subdirectory(cpp17)
 add_subdirectory(cpp20)
-
-
-if (SET_COMPILE_TIME_TRACE)
-target_compile_options(vkm17_string PUBLIC -ftime-trace)
-target_compile_options(vkm20_string PUBLIC -ftime-trace)
-endif(SET_COMPILE_TIME_TRACE)
-
-option(VK_MODULE_SAMPLES "Build samples for the bindings, will download glfw" off)
-option(VK_MODULE_TESTS "Build tests for the bindings, will download catch2" off)
 
 if (VK_MODULE_SAMPLES)
     add_subdirectory(sample)

@@ -45,8 +45,8 @@ struct fixed_vector
     {
         if (this != &other) {
             delete _data;
-            _count(std::exchange(other._count, 0));
-            _data(std::exchange(other._data, nullptr));
+            _count = std::exchange(other._count, 0);
+            _data = std::exchange(other._data, nullptr);
         }
         return *this;
     }
@@ -92,15 +92,15 @@ struct expected {
 	explicit expected (T const& value, Result result) noexcept: _value{ value}, _result{ result } {}
 	explicit expected (T&& value, Result result) noexcept: _value{ std::move(value) }, _result{ result } {}
 
-    const T* operator-> () const noexcept { assert (_result); return &_value; }
-	T*       operator-> ()       noexcept { assert (_result); return &_value; }
-	const T& operator* () const& noexcept { assert (_result); return _value; }
-	T&       operator* () &      noexcept { assert (_result); return _value; }
-	T&&      operator* () &&	 noexcept { assert (_result); return std::move (_value); }
-	const T&  value () const&    noexcept { assert (_result); return _value; }
-	T&        value () &         noexcept { assert (_result); return _value; }
-	const T&& value () const&&   noexcept { assert (_result); return std::move(_value); }
-	T&&       value () &&        noexcept { assert (_result); return std::move(_value); }
+    const T* operator-> () const noexcept { assert (_result == Result::Success); return &_value; }
+	T*       operator-> ()       noexcept { assert (_result == Result::Success); return &_value; }
+	const T& operator* () const& noexcept { assert (_result == Result::Success); return _value; }
+	T&       operator* () &      noexcept { assert (_result == Result::Success); return _value; }
+	T&&      operator* () &&	 noexcept { assert (_result == Result::Success); return std::move (_value); }
+	const T&  value () const&    noexcept { assert (_result == Result::Success); return _value; }
+	T&        value () &         noexcept { assert (_result == Result::Success); return _value; }
+	const T&& value () const&&   noexcept { assert (_result == Result::Success); return std::move(_value); }
+	T&&       value () &&        noexcept { assert (_result == Result::Success); return std::move(_value); }
 
     Result error() const noexcept { assert (_result != Result::Success); return _result; }
     Result raw_result() const noexcept { return _result; }

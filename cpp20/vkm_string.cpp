@@ -1742,7 +1742,7 @@ std::string to_string(PipelineCacheCreateFlags flag){
     std::string out;
     if (flag & PipelineCacheCreateFlagBits::ExternallySynchronizedBitEXT) out += "ExternallySynchronizedBitEXT | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(QueueFlagBits val) {
     switch(val) {
         case(QueueFlagBits::Graphics): return "Graphics";
@@ -1762,7 +1762,7 @@ std::string to_string(QueueFlags flag){
     if (flag & QueueFlagBits::SparseBinding) out += "SparseBinding | ";
     if (flag & QueueFlagBits::Protected) out += "Protected | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(CullModeFlagBits val) {
     switch(val) {
         case(CullModeFlagBits::None): return "None";
@@ -1778,7 +1778,7 @@ std::string to_string(CullModeFlags flag){
     if (flag & CullModeFlagBits::Front) out += "Front | ";
     if (flag & CullModeFlagBits::Back) out += "Back | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(RenderPassCreateFlagBits val) {
     switch(val) {
         case(RenderPassCreateFlagBits::TransformBitQCOM): return "TransformBitQCOM";
@@ -1790,7 +1790,7 @@ std::string to_string(RenderPassCreateFlags flag){
     std::string out;
     if (flag & RenderPassCreateFlagBits::TransformBitQCOM) out += "TransformBitQCOM | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(DeviceQueueCreateFlagBits val) {
     switch(val) {
         case(DeviceQueueCreateFlagBits::Protected): return "Protected";
@@ -1802,7 +1802,7 @@ std::string to_string(DeviceQueueCreateFlags flag){
     std::string out;
     if (flag & DeviceQueueCreateFlagBits::Protected) out += "Protected | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(MemoryPropertyFlagBits val) {
     switch(val) {
         case(MemoryPropertyFlagBits::DeviceLocal): return "DeviceLocal";
@@ -1828,7 +1828,7 @@ std::string to_string(MemoryPropertyFlags flag){
     if (flag & MemoryPropertyFlagBits::DeviceUncachedBitAMD) out += "DeviceUncachedBitAMD | ";
     if (flag & MemoryPropertyFlagBits::Protected) out += "Protected | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(MemoryHeapFlagBits val) {
     switch(val) {
         case(MemoryHeapFlagBits::DeviceLocal): return "DeviceLocal";
@@ -1842,7 +1842,7 @@ std::string to_string(MemoryHeapFlags flag){
     if (flag & MemoryHeapFlagBits::DeviceLocal) out += "DeviceLocal | ";
     if (flag & MemoryHeapFlagBits::MultiInstance) out += "MultiInstance | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(AccessFlagBits val) {
     switch(val) {
         case(AccessFlagBits::IndirectCommandRead): return "IndirectCommandRead";
@@ -1908,7 +1908,7 @@ std::string to_string(AccessFlags flag){
     if (flag & AccessFlagBits::CommandPreprocessReadBitNV) out += "CommandPreprocessReadBitNV | ";
     if (flag & AccessFlagBits::CommandPreprocessWriteBitNV) out += "CommandPreprocessWriteBitNV | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(BufferUsageFlagBits val) {
     switch(val) {
         case(BufferUsageFlagBits::TransferSrc): return "TransferSrc";
@@ -1946,7 +1946,7 @@ std::string to_string(BufferUsageFlags flag){
     if (flag & BufferUsageFlagBits::RayTracingBitKHR) out += "RayTracingBitKHR | ";
     if (flag & BufferUsageFlagBits::ShaderDeviceAddress) out += "ShaderDeviceAddress | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(BufferCreateFlagBits val) {
     switch(val) {
         case(BufferCreateFlagBits::SparseBinding): return "SparseBinding";
@@ -1966,7 +1966,7 @@ std::string to_string(BufferCreateFlags flag){
     if (flag & BufferCreateFlagBits::Protected) out += "Protected | ";
     if (flag & BufferCreateFlagBits::DeviceAddressCaptureReplay) out += "DeviceAddressCaptureReplay | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(ShaderStageFlagBits val) {
     switch(val) {
         case(ShaderStageFlagBits::Vertex): return "Vertex";
@@ -2004,7 +2004,7 @@ std::string to_string(ShaderStageFlags flag){
     if (flag & ShaderStageFlagBits::TaskBitNV) out += "TaskBitNV | ";
     if (flag & ShaderStageFlagBits::MeshBitNV) out += "MeshBitNV | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(ImageUsageFlagBits val) {
     switch(val) {
         case(ImageUsageFlagBits::TransferSrc): return "TransferSrc";
@@ -2034,7 +2034,7 @@ std::string to_string(ImageUsageFlags flag){
     if (flag & ImageUsageFlagBits::ShadingRateImageBitNV) out += "ShadingRateImageBitNV | ";
     if (flag & ImageUsageFlagBits::FragmentDensityMapBitEXT) out += "FragmentDensityMapBitEXT | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(ImageCreateFlagBits val) {
     switch(val) {
         case(ImageCreateFlagBits::SparseBinding): return "SparseBinding";
@@ -2074,7 +2074,7 @@ std::string to_string(ImageCreateFlags flag){
     if (flag & ImageCreateFlagBits::Protected) out += "Protected | ";
     if (flag & ImageCreateFlagBits::Disjoint) out += "Disjoint | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(ImageViewCreateFlagBits val) {
     switch(val) {
         case(ImageViewCreateFlagBits::FragmentDensityMapDynamicBitEXT): return "FragmentDensityMapDynamicBitEXT";
@@ -2088,7 +2088,7 @@ std::string to_string(ImageViewCreateFlags flag){
     if (flag & ImageViewCreateFlagBits::FragmentDensityMapDynamicBitEXT) out += "FragmentDensityMapDynamicBitEXT | ";
     if (flag & ImageViewCreateFlagBits::FragmentDensityMapDeferredBitEXT) out += "FragmentDensityMapDeferredBitEXT | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(SamplerCreateFlagBits val) {
     switch(val) {
         case(SamplerCreateFlagBits::SubsampledBitEXT): return "SubsampledBitEXT";
@@ -2102,7 +2102,7 @@ std::string to_string(SamplerCreateFlags flag){
     if (flag & SamplerCreateFlagBits::SubsampledBitEXT) out += "SubsampledBitEXT | ";
     if (flag & SamplerCreateFlagBits::SubsampledCoarseReconstructionBitEXT) out += "SubsampledCoarseReconstructionBitEXT | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(PipelineCreateFlagBits val) {
     switch(val) {
         case(PipelineCreateFlagBits::DisableOptimization): return "DisableOptimization";
@@ -2148,7 +2148,7 @@ std::string to_string(PipelineCreateFlags flag){
     if (flag & PipelineCreateFlagBits::ViewIndexFromDeviceIndex) out += "ViewIndexFromDeviceIndex | ";
     if (flag & PipelineCreateFlagBits::DispatchBase) out += "DispatchBase | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(PipelineShaderStageCreateFlagBits val) {
     switch(val) {
         case(PipelineShaderStageCreateFlagBits::AllowVaryingSubgroupSizeBitEXT): return "AllowVaryingSubgroupSizeBitEXT";
@@ -2162,7 +2162,7 @@ std::string to_string(PipelineShaderStageCreateFlags flag){
     if (flag & PipelineShaderStageCreateFlagBits::AllowVaryingSubgroupSizeBitEXT) out += "AllowVaryingSubgroupSizeBitEXT | ";
     if (flag & PipelineShaderStageCreateFlagBits::RequireFullSubgroupsBitEXT) out += "RequireFullSubgroupsBitEXT | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(ColorComponentFlagBits val) {
     switch(val) {
         case(ColorComponentFlagBits::R): return "R";
@@ -2180,7 +2180,7 @@ std::string to_string(ColorComponentFlags flag){
     if (flag & ColorComponentFlagBits::B) out += "B | ";
     if (flag & ColorComponentFlagBits::A) out += "A | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(FenceCreateFlagBits val) {
     switch(val) {
         case(FenceCreateFlagBits::Signaled): return "Signaled";
@@ -2192,7 +2192,7 @@ std::string to_string(FenceCreateFlags flag){
     std::string out;
     if (flag & FenceCreateFlagBits::Signaled) out += "Signaled | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(SemaphoreCreateFlagBits val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -2202,7 +2202,7 @@ std::string to_string(SemaphoreCreateFlags flag){
     if (flag.flags == 0) return "None";
     std::string out;
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(FormatFeatureFlagBits val) {
     switch(val) {
         case(FormatFeatureFlagBits::SampledImage): return "SampledImage";
@@ -2264,7 +2264,7 @@ std::string to_string(FormatFeatureFlags flag){
     if (flag & FormatFeatureFlagBits::CositedChromaSamples) out += "CositedChromaSamples | ";
     if (flag & FormatFeatureFlagBits::SampledImageFilterMinmax) out += "SampledImageFilterMinmax | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(QueryControlFlagBits val) {
     switch(val) {
         case(QueryControlFlagBits::Precise): return "Precise";
@@ -2276,7 +2276,7 @@ std::string to_string(QueryControlFlags flag){
     std::string out;
     if (flag & QueryControlFlagBits::Precise) out += "Precise | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(QueryResultFlagBits val) {
     switch(val) {
         case(QueryResultFlagBits::e64): return "e64";
@@ -2294,7 +2294,7 @@ std::string to_string(QueryResultFlags flag){
     if (flag & QueryResultFlagBits::WithAvailability) out += "WithAvailability | ";
     if (flag & QueryResultFlagBits::Partial) out += "Partial | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(CommandBufferUsageFlagBits val) {
     switch(val) {
         case(CommandBufferUsageFlagBits::OneTimeSubmit): return "OneTimeSubmit";
@@ -2310,7 +2310,7 @@ std::string to_string(CommandBufferUsageFlags flag){
     if (flag & CommandBufferUsageFlagBits::RenderPassContinue) out += "RenderPassContinue | ";
     if (flag & CommandBufferUsageFlagBits::SimultaneousUse) out += "SimultaneousUse | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(QueryPipelineStatisticFlagBits val) {
     switch(val) {
         case(QueryPipelineStatisticFlagBits::InputAssemblyVertices): return "InputAssemblyVertices";
@@ -2342,7 +2342,7 @@ std::string to_string(QueryPipelineStatisticFlags flag){
     if (flag & QueryPipelineStatisticFlagBits::TessellationEvaluationShaderInvocations) out += "TessellationEvaluationShaderInvocations | ";
     if (flag & QueryPipelineStatisticFlagBits::ComputeShaderInvocations) out += "ComputeShaderInvocations | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(ImageAspectFlagBits val) {
     switch(val) {
         case(ImageAspectFlagBits::Color): return "Color";
@@ -2374,7 +2374,7 @@ std::string to_string(ImageAspectFlags flag){
     if (flag & ImageAspectFlagBits::Plane1) out += "Plane1 | ";
     if (flag & ImageAspectFlagBits::Plane2) out += "Plane2 | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(SparseImageFormatFlagBits val) {
     switch(val) {
         case(SparseImageFormatFlagBits::SingleMiptail): return "SingleMiptail";
@@ -2390,7 +2390,7 @@ std::string to_string(SparseImageFormatFlags flag){
     if (flag & SparseImageFormatFlagBits::AlignedMipSize) out += "AlignedMipSize | ";
     if (flag & SparseImageFormatFlagBits::NonstandardBlockSize) out += "NonstandardBlockSize | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(SparseMemoryBindFlagBits val) {
     switch(val) {
         case(SparseMemoryBindFlagBits::Metadata): return "Metadata";
@@ -2402,7 +2402,7 @@ std::string to_string(SparseMemoryBindFlags flag){
     std::string out;
     if (flag & SparseMemoryBindFlagBits::Metadata) out += "Metadata | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(PipelineStageFlagBits val) {
     switch(val) {
         case(PipelineStageFlagBits::TopOfPipe): return "TopOfPipe";
@@ -2464,7 +2464,7 @@ std::string to_string(PipelineStageFlags flag){
     if (flag & PipelineStageFlagBits::FragmentDensityProcessBitEXT) out += "FragmentDensityProcessBitEXT | ";
     if (flag & PipelineStageFlagBits::CommandPreprocessBitNV) out += "CommandPreprocessBitNV | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(CommandPoolCreateFlagBits val) {
     switch(val) {
         case(CommandPoolCreateFlagBits::Transient): return "Transient";
@@ -2480,7 +2480,7 @@ std::string to_string(CommandPoolCreateFlags flag){
     if (flag & CommandPoolCreateFlagBits::ResetCommandBuffer) out += "ResetCommandBuffer | ";
     if (flag & CommandPoolCreateFlagBits::Protected) out += "Protected | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(CommandPoolResetFlagBits val) {
     switch(val) {
         case(CommandPoolResetFlagBits::ReleaseResources): return "ReleaseResources";
@@ -2492,7 +2492,7 @@ std::string to_string(CommandPoolResetFlags flag){
     std::string out;
     if (flag & CommandPoolResetFlagBits::ReleaseResources) out += "ReleaseResources | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(CommandBufferResetFlagBits val) {
     switch(val) {
         case(CommandBufferResetFlagBits::ReleaseResources): return "ReleaseResources";
@@ -2504,7 +2504,7 @@ std::string to_string(CommandBufferResetFlags flag){
     std::string out;
     if (flag & CommandBufferResetFlagBits::ReleaseResources) out += "ReleaseResources | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(SampleCountFlagBits val) {
     switch(val) {
         case(SampleCountFlagBits::e1): return "e1";
@@ -2528,7 +2528,7 @@ std::string to_string(SampleCountFlags flag){
     if (flag & SampleCountFlagBits::e32) out += "e32 | ";
     if (flag & SampleCountFlagBits::e64) out += "e64 | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(AttachmentDescriptionFlagBits val) {
     switch(val) {
         case(AttachmentDescriptionFlagBits::MayAlias): return "MayAlias";
@@ -2540,7 +2540,7 @@ std::string to_string(AttachmentDescriptionFlags flag){
     std::string out;
     if (flag & AttachmentDescriptionFlagBits::MayAlias) out += "MayAlias | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(StencilFaceFlagBits val) {
     switch(val) {
         case(StencilFaceFlagBits::Front): return "Front";
@@ -2554,7 +2554,7 @@ std::string to_string(StencilFaceFlags flag){
     if (flag & StencilFaceFlagBits::Front) out += "Front | ";
     if (flag & StencilFaceFlagBits::Back) out += "Back | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(DescriptorPoolCreateFlagBits val) {
     switch(val) {
         case(DescriptorPoolCreateFlagBits::FreeDescriptorSet): return "FreeDescriptorSet";
@@ -2568,7 +2568,7 @@ std::string to_string(DescriptorPoolCreateFlags flag){
     if (flag & DescriptorPoolCreateFlagBits::FreeDescriptorSet) out += "FreeDescriptorSet | ";
     if (flag & DescriptorPoolCreateFlagBits::UpdateAfterBind) out += "UpdateAfterBind | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(DependencyFlagBits val) {
     switch(val) {
         case(DependencyFlagBits::ByRegion): return "ByRegion";
@@ -2584,7 +2584,7 @@ std::string to_string(DependencyFlags flag){
     if (flag & DependencyFlagBits::DeviceGroup) out += "DeviceGroup | ";
     if (flag & DependencyFlagBits::ViewLocal) out += "ViewLocal | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(SemaphoreWaitFlagBits val) {
     switch(val) {
         case(SemaphoreWaitFlagBits::Any): return "Any";
@@ -2596,7 +2596,7 @@ std::string to_string(SemaphoreWaitFlags flag){
     std::string out;
     if (flag & SemaphoreWaitFlagBits::Any) out += "Any | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(DisplayPlaneAlphaFlagBitsKHR val) {
     switch(val) {
         case(DisplayPlaneAlphaFlagBitsKHR::OpaqueBitKHR): return "OpaqueBitKHR";
@@ -2614,7 +2614,7 @@ std::string to_string(DisplayPlaneAlphaFlagsKHR flag){
     if (flag & DisplayPlaneAlphaFlagBitsKHR::PerPixelBitKHR) out += "PerPixelBitKHR | ";
     if (flag & DisplayPlaneAlphaFlagBitsKHR::PerPixelPremultipliedBitKHR) out += "PerPixelPremultipliedBitKHR | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(CompositeAlphaFlagBitsKHR val) {
     switch(val) {
         case(CompositeAlphaFlagBitsKHR::OpaqueBitKHR): return "OpaqueBitKHR";
@@ -2632,7 +2632,7 @@ std::string to_string(CompositeAlphaFlagsKHR flag){
     if (flag & CompositeAlphaFlagBitsKHR::PostMultipliedBitKHR) out += "PostMultipliedBitKHR | ";
     if (flag & CompositeAlphaFlagBitsKHR::InheritBitKHR) out += "InheritBitKHR | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(SurfaceTransformFlagBitsKHR val) {
     switch(val) {
         case(SurfaceTransformFlagBitsKHR::IdentityBitKHR): return "IdentityBitKHR";
@@ -2660,7 +2660,7 @@ std::string to_string(SurfaceTransformFlagsKHR flag){
     if (flag & SurfaceTransformFlagBitsKHR::HorizontalMirrorRotate270BitKHR) out += "HorizontalMirrorRotate270BitKHR | ";
     if (flag & SurfaceTransformFlagBitsKHR::InheritBitKHR) out += "InheritBitKHR | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(DebugReportFlagBitsEXT val) {
     switch(val) {
         case(DebugReportFlagBitsEXT::InformationBitEXT): return "InformationBitEXT";
@@ -2680,7 +2680,7 @@ std::string to_string(DebugReportFlagsEXT flag){
     if (flag & DebugReportFlagBitsEXT::ErrorBitEXT) out += "ErrorBitEXT | ";
     if (flag & DebugReportFlagBitsEXT::DebugBitEXT) out += "DebugBitEXT | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(ExternalMemoryHandleTypeFlagBitsNV val) {
     switch(val) {
         case(ExternalMemoryHandleTypeFlagBitsNV::OpaqueWin32BitNV): return "OpaqueWin32BitNV";
@@ -2698,7 +2698,7 @@ std::string to_string(ExternalMemoryHandleTypeFlagsNV flag){
     if (flag & ExternalMemoryHandleTypeFlagBitsNV::D3D11ImageBitNV) out += "D3D11ImageBitNV | ";
     if (flag & ExternalMemoryHandleTypeFlagBitsNV::D3D11ImageKmtBitNV) out += "D3D11ImageKmtBitNV | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(ExternalMemoryFeatureFlagBitsNV val) {
     switch(val) {
         case(ExternalMemoryFeatureFlagBitsNV::DedicatedOnlyBitNV): return "DedicatedOnlyBitNV";
@@ -2714,7 +2714,7 @@ std::string to_string(ExternalMemoryFeatureFlagsNV flag){
     if (flag & ExternalMemoryFeatureFlagBitsNV::ExportableBitNV) out += "ExportableBitNV | ";
     if (flag & ExternalMemoryFeatureFlagBitsNV::ImportableBitNV) out += "ImportableBitNV | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(SubgroupFeatureFlagBits val) {
     switch(val) {
         case(SubgroupFeatureFlagBits::Basic): return "Basic";
@@ -2742,7 +2742,7 @@ std::string to_string(SubgroupFeatureFlags flag){
     if (flag & SubgroupFeatureFlagBits::Quad) out += "Quad | ";
     if (flag & SubgroupFeatureFlagBits::PartitionedBitNV) out += "PartitionedBitNV | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(IndirectCommandsLayoutUsageFlagBitsNV val) {
     switch(val) {
         case(IndirectCommandsLayoutUsageFlagBitsNV::ExplicitPreprocessBitNV): return "ExplicitPreprocessBitNV";
@@ -2758,7 +2758,7 @@ std::string to_string(IndirectCommandsLayoutUsageFlagsNV flag){
     if (flag & IndirectCommandsLayoutUsageFlagBitsNV::IndexedSequencesBitNV) out += "IndexedSequencesBitNV | ";
     if (flag & IndirectCommandsLayoutUsageFlagBitsNV::UnorderedSequencesBitNV) out += "UnorderedSequencesBitNV | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(IndirectStateFlagBitsNV val) {
     switch(val) {
         case(IndirectStateFlagBitsNV::FlagFrontfaceBitNV): return "FlagFrontfaceBitNV";
@@ -2770,7 +2770,7 @@ std::string to_string(IndirectStateFlagsNV flag){
     std::string out;
     if (flag & IndirectStateFlagBitsNV::FlagFrontfaceBitNV) out += "FlagFrontfaceBitNV | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(PrivateDataSlotCreateFlagBitsEXT val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -2780,7 +2780,7 @@ std::string to_string(PrivateDataSlotCreateFlagsEXT flag){
     if (flag.flags == 0) return "None";
     std::string out;
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(DescriptorSetLayoutCreateFlagBits val) {
     switch(val) {
         case(DescriptorSetLayoutCreateFlagBits::PushDescriptorBitKHR): return "PushDescriptorBitKHR";
@@ -2794,7 +2794,7 @@ std::string to_string(DescriptorSetLayoutCreateFlags flag){
     if (flag & DescriptorSetLayoutCreateFlagBits::PushDescriptorBitKHR) out += "PushDescriptorBitKHR | ";
     if (flag & DescriptorSetLayoutCreateFlagBits::UpdateAfterBindPool) out += "UpdateAfterBindPool | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(ExternalMemoryHandleTypeFlagBits val) {
     switch(val) {
         case(ExternalMemoryHandleTypeFlagBits::OpaqueFd): return "OpaqueFd";
@@ -2826,7 +2826,7 @@ std::string to_string(ExternalMemoryHandleTypeFlags flag){
     if (flag & ExternalMemoryHandleTypeFlagBits::HostAllocationBitEXT) out += "HostAllocationBitEXT | ";
     if (flag & ExternalMemoryHandleTypeFlagBits::HostMappedForeignMemoryBitEXT) out += "HostMappedForeignMemoryBitEXT | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(ExternalMemoryFeatureFlagBits val) {
     switch(val) {
         case(ExternalMemoryFeatureFlagBits::DedicatedOnly): return "DedicatedOnly";
@@ -2842,7 +2842,7 @@ std::string to_string(ExternalMemoryFeatureFlags flag){
     if (flag & ExternalMemoryFeatureFlagBits::Exportable) out += "Exportable | ";
     if (flag & ExternalMemoryFeatureFlagBits::Importable) out += "Importable | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(ExternalSemaphoreHandleTypeFlagBits val) {
     switch(val) {
         case(ExternalSemaphoreHandleTypeFlagBits::OpaqueFd): return "OpaqueFd";
@@ -2862,7 +2862,7 @@ std::string to_string(ExternalSemaphoreHandleTypeFlags flag){
     if (flag & ExternalSemaphoreHandleTypeFlagBits::D3D12Fence) out += "D3D12Fence | ";
     if (flag & ExternalSemaphoreHandleTypeFlagBits::SyncFd) out += "SyncFd | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(ExternalSemaphoreFeatureFlagBits val) {
     switch(val) {
         case(ExternalSemaphoreFeatureFlagBits::Exportable): return "Exportable";
@@ -2876,7 +2876,7 @@ std::string to_string(ExternalSemaphoreFeatureFlags flag){
     if (flag & ExternalSemaphoreFeatureFlagBits::Exportable) out += "Exportable | ";
     if (flag & ExternalSemaphoreFeatureFlagBits::Importable) out += "Importable | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(SemaphoreImportFlagBits val) {
     switch(val) {
         case(SemaphoreImportFlagBits::Temporary): return "Temporary";
@@ -2888,7 +2888,7 @@ std::string to_string(SemaphoreImportFlags flag){
     std::string out;
     if (flag & SemaphoreImportFlagBits::Temporary) out += "Temporary | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(ExternalFenceHandleTypeFlagBits val) {
     switch(val) {
         case(ExternalFenceHandleTypeFlagBits::OpaqueFd): return "OpaqueFd";
@@ -2906,7 +2906,7 @@ std::string to_string(ExternalFenceHandleTypeFlags flag){
     if (flag & ExternalFenceHandleTypeFlagBits::OpaqueWin32Kmt) out += "OpaqueWin32Kmt | ";
     if (flag & ExternalFenceHandleTypeFlagBits::SyncFd) out += "SyncFd | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(ExternalFenceFeatureFlagBits val) {
     switch(val) {
         case(ExternalFenceFeatureFlagBits::Exportable): return "Exportable";
@@ -2920,7 +2920,7 @@ std::string to_string(ExternalFenceFeatureFlags flag){
     if (flag & ExternalFenceFeatureFlagBits::Exportable) out += "Exportable | ";
     if (flag & ExternalFenceFeatureFlagBits::Importable) out += "Importable | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(FenceImportFlagBits val) {
     switch(val) {
         case(FenceImportFlagBits::Temporary): return "Temporary";
@@ -2932,7 +2932,7 @@ std::string to_string(FenceImportFlags flag){
     std::string out;
     if (flag & FenceImportFlagBits::Temporary) out += "Temporary | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(SurfaceCounterFlagBitsEXT val) {
     switch(val) {
         case(SurfaceCounterFlagBitsEXT::VblankEXT): return "VblankEXT";
@@ -2944,7 +2944,7 @@ std::string to_string(SurfaceCounterFlagsEXT flag){
     std::string out;
     if (flag & SurfaceCounterFlagBitsEXT::VblankEXT) out += "VblankEXT | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(PeerMemoryFeatureFlagBits val) {
     switch(val) {
         case(PeerMemoryFeatureFlagBits::CopySrc): return "CopySrc";
@@ -2962,7 +2962,7 @@ std::string to_string(PeerMemoryFeatureFlags flag){
     if (flag & PeerMemoryFeatureFlagBits::GenericSrc) out += "GenericSrc | ";
     if (flag & PeerMemoryFeatureFlagBits::GenericDst) out += "GenericDst | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(MemoryAllocateFlagBits val) {
     switch(val) {
         case(MemoryAllocateFlagBits::DeviceMask): return "DeviceMask";
@@ -2978,7 +2978,7 @@ std::string to_string(MemoryAllocateFlags flag){
     if (flag & MemoryAllocateFlagBits::DeviceAddress) out += "DeviceAddress | ";
     if (flag & MemoryAllocateFlagBits::DeviceAddressCaptureReplay) out += "DeviceAddressCaptureReplay | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(DeviceGroupPresentModeFlagBitsKHR val) {
     switch(val) {
         case(DeviceGroupPresentModeFlagBitsKHR::LocalBitKHR): return "LocalBitKHR";
@@ -2996,7 +2996,7 @@ std::string to_string(DeviceGroupPresentModeFlagsKHR flag){
     if (flag & DeviceGroupPresentModeFlagBitsKHR::SumBitKHR) out += "SumBitKHR | ";
     if (flag & DeviceGroupPresentModeFlagBitsKHR::LocalMultiDeviceBitKHR) out += "LocalMultiDeviceBitKHR | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(SwapchainCreateFlagBitsKHR val) {
     switch(val) {
         case(SwapchainCreateFlagBitsKHR::SplitInstanceBindRegionsBitKHR): return "SplitInstanceBindRegionsBitKHR";
@@ -3012,7 +3012,7 @@ std::string to_string(SwapchainCreateFlagsKHR flag){
     if (flag & SwapchainCreateFlagBitsKHR::ProtectedBitKHR) out += "ProtectedBitKHR | ";
     if (flag & SwapchainCreateFlagBitsKHR::MutableFormatBitKHR) out += "MutableFormatBitKHR | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(SubpassDescriptionFlagBits val) {
     switch(val) {
         case(SubpassDescriptionFlagBits::PerViewAttributesBitNVX): return "PerViewAttributesBitNVX";
@@ -3030,7 +3030,7 @@ std::string to_string(SubpassDescriptionFlags flag){
     if (flag & SubpassDescriptionFlagBits::FragmentRegionBitQCOM) out += "FragmentRegionBitQCOM | ";
     if (flag & SubpassDescriptionFlagBits::ShaderResolveBitQCOM) out += "ShaderResolveBitQCOM | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(DebugUtilsMessageSeverityFlagBitsEXT val) {
     switch(val) {
         case(DebugUtilsMessageSeverityFlagBitsEXT::VerboseBitEXT): return "VerboseBitEXT";
@@ -3048,7 +3048,7 @@ std::string to_string(DebugUtilsMessageSeverityFlagsEXT flag){
     if (flag & DebugUtilsMessageSeverityFlagBitsEXT::WarningBitEXT) out += "WarningBitEXT | ";
     if (flag & DebugUtilsMessageSeverityFlagBitsEXT::ErrorBitEXT) out += "ErrorBitEXT | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(DebugUtilsMessageTypeFlagBitsEXT val) {
     switch(val) {
         case(DebugUtilsMessageTypeFlagBitsEXT::GeneralBitEXT): return "GeneralBitEXT";
@@ -3064,7 +3064,7 @@ std::string to_string(DebugUtilsMessageTypeFlagsEXT flag){
     if (flag & DebugUtilsMessageTypeFlagBitsEXT::ValidationBitEXT) out += "ValidationBitEXT | ";
     if (flag & DebugUtilsMessageTypeFlagBitsEXT::PerformanceBitEXT) out += "PerformanceBitEXT | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(DescriptorBindingFlagBits val) {
     switch(val) {
         case(DescriptorBindingFlagBits::UpdateAfterBind): return "UpdateAfterBind";
@@ -3082,7 +3082,7 @@ std::string to_string(DescriptorBindingFlags flag){
     if (flag & DescriptorBindingFlagBits::PartiallyBound) out += "PartiallyBound | ";
     if (flag & DescriptorBindingFlagBits::VariableDescriptorCount) out += "VariableDescriptorCount | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(ConditionalRenderingFlagBitsEXT val) {
     switch(val) {
         case(ConditionalRenderingFlagBitsEXT::InvertedBitEXT): return "InvertedBitEXT";
@@ -3094,7 +3094,7 @@ std::string to_string(ConditionalRenderingFlagsEXT flag){
     std::string out;
     if (flag & ConditionalRenderingFlagBitsEXT::InvertedBitEXT) out += "InvertedBitEXT | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(ResolveModeFlagBits val) {
     switch(val) {
         case(ResolveModeFlagBits::None): return "None";
@@ -3114,7 +3114,7 @@ std::string to_string(ResolveModeFlags flag){
     if (flag & ResolveModeFlagBits::Min) out += "Min | ";
     if (flag & ResolveModeFlagBits::Max) out += "Max | ";
     return out.substr(0, out.size() - 3);
-};
+}
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 const char * to_string(GeometryInstanceFlagBitsKHR val) {
     switch(val) {
@@ -3133,7 +3133,7 @@ std::string to_string(GeometryInstanceFlagsKHR flag){
     if (flag & GeometryInstanceFlagBitsKHR::ForceOpaqueBitKHR) out += "ForceOpaqueBitKHR | ";
     if (flag & GeometryInstanceFlagBitsKHR::ForceNoOpaqueBitKHR) out += "ForceNoOpaqueBitKHR | ";
     return out.substr(0, out.size() - 3);
-};
+}
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 const char * to_string(GeometryFlagBitsKHR val) {
@@ -3149,7 +3149,7 @@ std::string to_string(GeometryFlagsKHR flag){
     if (flag & GeometryFlagBitsKHR::OpaqueBitKHR) out += "OpaqueBitKHR | ";
     if (flag & GeometryFlagBitsKHR::NoDuplicateAnyHitInvocationBitKHR) out += "NoDuplicateAnyHitInvocationBitKHR | ";
     return out.substr(0, out.size() - 3);
-};
+}
 #endif // VK_ENABLE_BETA_EXTENSIONS
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 const char * to_string(BuildAccelerationStructureFlagBitsKHR val) {
@@ -3171,7 +3171,7 @@ std::string to_string(BuildAccelerationStructureFlagsKHR flag){
     if (flag & BuildAccelerationStructureFlagBitsKHR::PreferFastBuildBitKHR) out += "PreferFastBuildBitKHR | ";
     if (flag & BuildAccelerationStructureFlagBitsKHR::LowMemoryBitKHR) out += "LowMemoryBitKHR | ";
     return out.substr(0, out.size() - 3);
-};
+}
 #endif // VK_ENABLE_BETA_EXTENSIONS
 const char * to_string(FramebufferCreateFlagBits val) {
     switch(val) {
@@ -3184,7 +3184,7 @@ std::string to_string(FramebufferCreateFlags flag){
     std::string out;
     if (flag & FramebufferCreateFlagBits::Imageless) out += "Imageless | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(DeviceDiagnosticsConfigFlagBitsNV val) {
     switch(val) {
         case(DeviceDiagnosticsConfigFlagBitsNV::EnableShaderDebugInfoBitNV): return "EnableShaderDebugInfoBitNV";
@@ -3200,7 +3200,7 @@ std::string to_string(DeviceDiagnosticsConfigFlagsNV flag){
     if (flag & DeviceDiagnosticsConfigFlagBitsNV::EnableResourceTrackingBitNV) out += "EnableResourceTrackingBitNV | ";
     if (flag & DeviceDiagnosticsConfigFlagBitsNV::EnableAutomaticCheckpointsBitNV) out += "EnableAutomaticCheckpointsBitNV | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(PipelineCreationFeedbackFlagBitsEXT val) {
     switch(val) {
         case(PipelineCreationFeedbackFlagBitsEXT::ValidBitEXT): return "ValidBitEXT";
@@ -3216,7 +3216,7 @@ std::string to_string(PipelineCreationFeedbackFlagsEXT flag){
     if (flag & PipelineCreationFeedbackFlagBitsEXT::ApplicationPipelineCacheHitBitEXT) out += "ApplicationPipelineCacheHitBitEXT | ";
     if (flag & PipelineCreationFeedbackFlagBitsEXT::BasePipelineAccelerationBitEXT) out += "BasePipelineAccelerationBitEXT | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(PerformanceCounterDescriptionFlagBitsKHR val) {
     switch(val) {
         case(PerformanceCounterDescriptionFlagBitsKHR::PerformanceImpactingKHR): return "PerformanceImpactingKHR";
@@ -3230,7 +3230,7 @@ std::string to_string(PerformanceCounterDescriptionFlagsKHR flag){
     if (flag & PerformanceCounterDescriptionFlagBitsKHR::PerformanceImpactingKHR) out += "PerformanceImpactingKHR | ";
     if (flag & PerformanceCounterDescriptionFlagBitsKHR::ConcurrentlyImpactedKHR) out += "ConcurrentlyImpactedKHR | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(AcquireProfilingLockFlagBitsKHR val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3240,7 +3240,7 @@ std::string to_string(AcquireProfilingLockFlagsKHR flag){
     if (flag.flags == 0) return "None";
     std::string out;
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(ShaderCorePropertiesFlagBitsAMD val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3250,7 +3250,7 @@ std::string to_string(ShaderCorePropertiesFlagsAMD flag){
     if (flag.flags == 0) return "None";
     std::string out;
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(ShaderModuleCreateFlagBits val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3260,7 +3260,7 @@ std::string to_string(ShaderModuleCreateFlags flag){
     if (flag.flags == 0) return "None";
     std::string out;
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(PipelineCompilerControlFlagBitsAMD val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3270,7 +3270,7 @@ std::string to_string(PipelineCompilerControlFlagsAMD flag){
     if (flag.flags == 0) return "None";
     std::string out;
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(ToolPurposeFlagBitsEXT val) {
     switch(val) {
         case(ToolPurposeFlagBitsEXT::ValidationBitEXT): return "ValidationBitEXT";
@@ -3294,7 +3294,7 @@ std::string to_string(ToolPurposeFlagsEXT flag){
     if (flag & ToolPurposeFlagBitsEXT::DebugReportingBitEXT) out += "DebugReportingBitEXT | ";
     if (flag & ToolPurposeFlagBitsEXT::DebugMarkersBitEXT) out += "DebugMarkersBitEXT | ";
     return out.substr(0, out.size() - 3);
-};
+}
 const char * to_string(QueryPoolCreateFlagBits val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3303,7 +3303,7 @@ const char * to_string(QueryPoolCreateFlagBits val) {
 std::string to_string(QueryPoolCreateFlags flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(PipelineLayoutCreateFlagBits val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3312,7 +3312,7 @@ const char * to_string(PipelineLayoutCreateFlagBits val) {
 std::string to_string(PipelineLayoutCreateFlags flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(PipelineDepthStencilStateCreateFlagBits val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3321,7 +3321,7 @@ const char * to_string(PipelineDepthStencilStateCreateFlagBits val) {
 std::string to_string(PipelineDepthStencilStateCreateFlags flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(PipelineDynamicStateCreateFlagBits val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3330,7 +3330,7 @@ const char * to_string(PipelineDynamicStateCreateFlagBits val) {
 std::string to_string(PipelineDynamicStateCreateFlags flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(PipelineColorBlendStateCreateFlagBits val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3339,7 +3339,7 @@ const char * to_string(PipelineColorBlendStateCreateFlagBits val) {
 std::string to_string(PipelineColorBlendStateCreateFlags flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(PipelineMultisampleStateCreateFlagBits val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3348,7 +3348,7 @@ const char * to_string(PipelineMultisampleStateCreateFlagBits val) {
 std::string to_string(PipelineMultisampleStateCreateFlags flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(PipelineRasterizationStateCreateFlagBits val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3357,7 +3357,7 @@ const char * to_string(PipelineRasterizationStateCreateFlagBits val) {
 std::string to_string(PipelineRasterizationStateCreateFlags flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(PipelineViewportStateCreateFlagBits val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3366,7 +3366,7 @@ const char * to_string(PipelineViewportStateCreateFlagBits val) {
 std::string to_string(PipelineViewportStateCreateFlags flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(PipelineTessellationStateCreateFlagBits val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3375,7 +3375,7 @@ const char * to_string(PipelineTessellationStateCreateFlagBits val) {
 std::string to_string(PipelineTessellationStateCreateFlags flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(PipelineInputAssemblyStateCreateFlagBits val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3384,7 +3384,7 @@ const char * to_string(PipelineInputAssemblyStateCreateFlagBits val) {
 std::string to_string(PipelineInputAssemblyStateCreateFlags flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(PipelineVertexInputStateCreateFlagBits val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3393,7 +3393,7 @@ const char * to_string(PipelineVertexInputStateCreateFlagBits val) {
 std::string to_string(PipelineVertexInputStateCreateFlags flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(BufferViewCreateFlagBits val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3402,7 +3402,7 @@ const char * to_string(BufferViewCreateFlagBits val) {
 std::string to_string(BufferViewCreateFlags flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(InstanceCreateFlagBits val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3411,7 +3411,7 @@ const char * to_string(InstanceCreateFlagBits val) {
 std::string to_string(InstanceCreateFlags flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(DeviceCreateFlagBits val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3420,7 +3420,7 @@ const char * to_string(DeviceCreateFlagBits val) {
 std::string to_string(DeviceCreateFlags flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(EventCreateFlagBits val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3429,7 +3429,7 @@ const char * to_string(EventCreateFlagBits val) {
 std::string to_string(EventCreateFlags flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(MemoryMapFlagBits val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3438,7 +3438,7 @@ const char * to_string(MemoryMapFlagBits val) {
 std::string to_string(MemoryMapFlags flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(DescriptorPoolResetFlagBits val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3447,7 +3447,7 @@ const char * to_string(DescriptorPoolResetFlagBits val) {
 std::string to_string(DescriptorPoolResetFlags flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(DescriptorUpdateTemplateCreateFlagBits val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3456,7 +3456,7 @@ const char * to_string(DescriptorUpdateTemplateCreateFlagBits val) {
 std::string to_string(DescriptorUpdateTemplateCreateFlags flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(DisplayModeCreateFlagBitsKHR val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3465,7 +3465,7 @@ const char * to_string(DisplayModeCreateFlagBitsKHR val) {
 std::string to_string(DisplayModeCreateFlagsKHR flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(DisplaySurfaceCreateFlagBitsKHR val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3474,7 +3474,7 @@ const char * to_string(DisplaySurfaceCreateFlagBitsKHR val) {
 std::string to_string(DisplaySurfaceCreateFlagsKHR flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 const char * to_string(AndroidSurfaceCreateFlagBitsKHR val) {
     switch(val) {
@@ -3484,7 +3484,7 @@ const char * to_string(AndroidSurfaceCreateFlagBitsKHR val) {
 std::string to_string(AndroidSurfaceCreateFlagsKHR flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 #endif // VK_USE_PLATFORM_ANDROID_KHR
 #if defined(VK_USE_PLATFORM_VI_NN)
 const char * to_string(ViSurfaceCreateFlagBitsNN val) {
@@ -3495,7 +3495,7 @@ const char * to_string(ViSurfaceCreateFlagBitsNN val) {
 std::string to_string(ViSurfaceCreateFlagsNN flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 #endif // VK_USE_PLATFORM_VI_NN
 #if defined(VK_USE_PLATFORM_WAYLAND_KHR)
 const char * to_string(WaylandSurfaceCreateFlagBitsKHR val) {
@@ -3506,7 +3506,7 @@ const char * to_string(WaylandSurfaceCreateFlagBitsKHR val) {
 std::string to_string(WaylandSurfaceCreateFlagsKHR flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 #endif // VK_USE_PLATFORM_WAYLAND_KHR
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 const char * to_string(Win32SurfaceCreateFlagBitsKHR val) {
@@ -3517,7 +3517,7 @@ const char * to_string(Win32SurfaceCreateFlagBitsKHR val) {
 std::string to_string(Win32SurfaceCreateFlagsKHR flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 #endif // VK_USE_PLATFORM_WIN32_KHR
 #if defined(VK_USE_PLATFORM_XLIB_KHR)
 const char * to_string(XlibSurfaceCreateFlagBitsKHR val) {
@@ -3528,7 +3528,7 @@ const char * to_string(XlibSurfaceCreateFlagBitsKHR val) {
 std::string to_string(XlibSurfaceCreateFlagsKHR flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 #endif // VK_USE_PLATFORM_XLIB_KHR
 #if defined(VK_USE_PLATFORM_XCB_KHR)
 const char * to_string(XcbSurfaceCreateFlagBitsKHR val) {
@@ -3539,7 +3539,7 @@ const char * to_string(XcbSurfaceCreateFlagBitsKHR val) {
 std::string to_string(XcbSurfaceCreateFlagsKHR flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 #endif // VK_USE_PLATFORM_XCB_KHR
 #if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
 const char * to_string(DirectFBSurfaceCreateFlagBitsEXT val) {
@@ -3550,7 +3550,7 @@ const char * to_string(DirectFBSurfaceCreateFlagBitsEXT val) {
 std::string to_string(DirectFBSurfaceCreateFlagsEXT flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 #endif // VK_USE_PLATFORM_DIRECTFB_EXT
 #if defined(VK_USE_PLATFORM_IOS_MVK)
 const char * to_string(IOSSurfaceCreateFlagBitsMVK val) {
@@ -3561,7 +3561,7 @@ const char * to_string(IOSSurfaceCreateFlagBitsMVK val) {
 std::string to_string(IOSSurfaceCreateFlagsMVK flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 #endif // VK_USE_PLATFORM_IOS_MVK
 #if defined(VK_USE_PLATFORM_MACOS_MVK)
 const char * to_string(MacOSSurfaceCreateFlagBitsMVK val) {
@@ -3572,7 +3572,7 @@ const char * to_string(MacOSSurfaceCreateFlagBitsMVK val) {
 std::string to_string(MacOSSurfaceCreateFlagsMVK flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 #endif // VK_USE_PLATFORM_MACOS_MVK
 #if defined(VK_USE_PLATFORM_METAL_EXT)
 const char * to_string(MetalSurfaceCreateFlagBitsEXT val) {
@@ -3583,7 +3583,7 @@ const char * to_string(MetalSurfaceCreateFlagBitsEXT val) {
 std::string to_string(MetalSurfaceCreateFlagsEXT flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 #endif // VK_USE_PLATFORM_METAL_EXT
 #if defined(VK_USE_PLATFORM_FUCHSIA)
 const char * to_string(ImagePipeSurfaceCreateFlagBitsFUCHSIA val) {
@@ -3594,7 +3594,7 @@ const char * to_string(ImagePipeSurfaceCreateFlagBitsFUCHSIA val) {
 std::string to_string(ImagePipeSurfaceCreateFlagsFUCHSIA flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 #endif // VK_USE_PLATFORM_FUCHSIA
 #if defined(VK_USE_PLATFORM_GGP)
 const char * to_string(StreamDescriptorSurfaceCreateFlagBitsGGP val) {
@@ -3605,7 +3605,7 @@ const char * to_string(StreamDescriptorSurfaceCreateFlagBitsGGP val) {
 std::string to_string(StreamDescriptorSurfaceCreateFlagsGGP flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 #endif // VK_USE_PLATFORM_GGP
 const char * to_string(HeadlessSurfaceCreateFlagBitsEXT val) {
     switch(val) {
@@ -3615,7 +3615,7 @@ const char * to_string(HeadlessSurfaceCreateFlagBitsEXT val) {
 std::string to_string(HeadlessSurfaceCreateFlagsEXT flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(CommandPoolTrimFlagBits val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3624,7 +3624,7 @@ const char * to_string(CommandPoolTrimFlagBits val) {
 std::string to_string(CommandPoolTrimFlags flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(PipelineViewportSwizzleStateCreateFlagBitsNV val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3633,7 +3633,7 @@ const char * to_string(PipelineViewportSwizzleStateCreateFlagBitsNV val) {
 std::string to_string(PipelineViewportSwizzleStateCreateFlagsNV flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(PipelineDiscardRectangleStateCreateFlagBitsEXT val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3642,7 +3642,7 @@ const char * to_string(PipelineDiscardRectangleStateCreateFlagBitsEXT val) {
 std::string to_string(PipelineDiscardRectangleStateCreateFlagsEXT flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(PipelineCoverageToColorStateCreateFlagBitsNV val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3651,7 +3651,7 @@ const char * to_string(PipelineCoverageToColorStateCreateFlagBitsNV val) {
 std::string to_string(PipelineCoverageToColorStateCreateFlagsNV flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(PipelineCoverageModulationStateCreateFlagBitsNV val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3660,7 +3660,7 @@ const char * to_string(PipelineCoverageModulationStateCreateFlagBitsNV val) {
 std::string to_string(PipelineCoverageModulationStateCreateFlagsNV flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(PipelineCoverageReductionStateCreateFlagBitsNV val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3669,7 +3669,7 @@ const char * to_string(PipelineCoverageReductionStateCreateFlagBitsNV val) {
 std::string to_string(PipelineCoverageReductionStateCreateFlagsNV flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(ValidationCacheCreateFlagBitsEXT val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3678,7 +3678,7 @@ const char * to_string(ValidationCacheCreateFlagBitsEXT val) {
 std::string to_string(ValidationCacheCreateFlagsEXT flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(DebugUtilsMessengerCreateFlagBitsEXT val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3687,7 +3687,7 @@ const char * to_string(DebugUtilsMessengerCreateFlagBitsEXT val) {
 std::string to_string(DebugUtilsMessengerCreateFlagsEXT flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(DebugUtilsMessengerCallbackDataFlagBitsEXT val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3696,7 +3696,7 @@ const char * to_string(DebugUtilsMessengerCallbackDataFlagBitsEXT val) {
 std::string to_string(DebugUtilsMessengerCallbackDataFlagsEXT flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(DeviceMemoryReportFlagBitsEXT val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3705,7 +3705,7 @@ const char * to_string(DeviceMemoryReportFlagBitsEXT val) {
 std::string to_string(DeviceMemoryReportFlagsEXT flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(PipelineRasterizationConservativeStateCreateFlagBitsEXT val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3714,7 +3714,7 @@ const char * to_string(PipelineRasterizationConservativeStateCreateFlagBitsEXT v
 std::string to_string(PipelineRasterizationConservativeStateCreateFlagsEXT flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(PipelineRasterizationStateStreamCreateFlagBitsEXT val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3723,7 +3723,7 @@ const char * to_string(PipelineRasterizationStateStreamCreateFlagBitsEXT val) {
 std::string to_string(PipelineRasterizationStateStreamCreateFlagsEXT flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 const char * to_string(PipelineRasterizationDepthClipStateCreateFlagBitsEXT val) {
     switch(val) {
         default: return "UNKNOWN";
@@ -3732,6 +3732,6 @@ const char * to_string(PipelineRasterizationDepthClipStateCreateFlagBitsEXT val)
 std::string to_string(PipelineRasterizationDepthClipStateCreateFlagsEXT flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
-};
+}
 } // namespace vk
 // clang-format on
