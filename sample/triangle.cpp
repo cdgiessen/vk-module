@@ -117,17 +117,17 @@ void create_renderer_context(RendererContext& context)
         exts_to_enable.push_back(glfw_extensions[i]);
     }
 
-    auto layers_ret = global_functions.EnumerateInstanceLayerProperties();
+    auto [layers, layers_ret] = global_functions.EnumerateInstanceLayerProperties();
     check_res(layers_ret, "Couldn't get layers\n");
 
     std::vector<const char*> layers_to_enable;
     bool found_validation = false;
-    for (auto& layer : layers_ret.value()) {
+    for (auto& layer : layers) {
         found_validation = std::string(layer.layerName) == std::string("VK_LAYER_KHRONOS_validation");
         layers_to_enable.push_back("VK_LAYER_KHRONOS_validation");
     }
 
-    auto instance_ret = global_functions.CreateInstance({
+    auto [instance, instance_ret] = global_functions.CreateInstance({
       .enabledLayerCount = static_cast<uint32_t>(layers_to_enable.size()),
       .ppEnabledLayerNames = layers_to_enable.data(),
       .enabledExtensionCount = static_cast<uint32_t>(exts_to_enable.size()),
@@ -135,22 +135,22 @@ void create_renderer_context(RendererContext& context)
     });
     check_res(instance_ret, "Failed to init Vulkan Instance");
 
-    context.instance = instance_ret.value();
+    context.instance = instance;
     context.functions = vk::InstanceFunctions(global_functions, context.instance);
 
-    context.surface = create_surface_glfw(context.instance.get(), context.window);
+    context.surface = create_surface_glfw(instance.get(), context.window);
     check_res(!!context.surface, "Failed to create glfw surface");
 
-    auto physical_devices_ret = context.functions.EnumeratePhysicalDevices();
+    auto [physical_devices, physical_devices_ret] = context.functions.EnumeratePhysicalDevices();
     check_res(physical_devices_ret, "Failed to  get physical devices");
-    check_res(physical_devices_ret.value().size() > 0, "No capable physical devices found");
+    check_res(physical_devices.size() > 0, "No capable physical devices found");
 
-    context.physical_device = physical_devices_ret.value()[0]; // get first physical device returned
+    context.physical_device = physical_devices[0]; // get first physical device returned
     context.physical_device_functions = vk::PhysicalDeviceFunctions(context.functions, context.physical_device);
 
-    auto query_support = context.physical_device_functions.GetSurfaceSupportKHR(0, context.surface);
-    check_res(query_support, "Failed to query surface support");
-    check_res(query_support.value(), "Surface doesn't support present");
+    auto [surface_supported, support_ret] = context.physical_device_functions.GetSurfaceSupportKHR(0, context.surface);
+    check_res(support_ret, "Failed to query surface support");
+    check_res(surface_supported, "Surface doesn't support present");
 }
 
 void create_device_context(RendererContext& render_context, DeviceContext& device_context)
@@ -192,16 +192,16 @@ void setup_queues(DeviceContext& device, vk::PhysicalDeviceFunctions const& phys
 
 void setup_swapchain(DeviceContext& device)
 {
-    auto surf_formats_ret = device.physical_device_functions.GetSurfaceFormatsKHR(device.surface);
+    auto [surf_formats, surf_formats_ret] = device.physical_device_functions.GetSurfaceFormatsKHR(device.surface);
     check_res(surf_formats_ret, "Failed to get surface formats");
-    check_res(surf_formats_ret.value().size() > 0, "No surface formats available");
+    check_res(surf_formats.size() > 0, "No surface formats available");
 
-    device.swapchain_img_format = surf_formats_ret.value()[0].format;
-    vk::ColorSpaceKHR img_color_space = surf_formats_ret.value()[0].colorSpace;
+    device.swapchain_img_format = surf_formats[0].format;
+    vk::ColorSpaceKHR img_color_space = surf_formats[0].colorSpace;
 
     device.image_count = 3;
     uint32_t queue_family_indices = 0;
-    auto swap_ret = device.functions.CreateSwapchainKHR({
+    auto [swapchain, swap_ret] = device.functions.CreateSwapchainKHR({
       .surface = device.surface,
       .minImageCount = 3,
       .imageFormat = device.swapchain_img_format,
@@ -218,21 +218,21 @@ void setup_swapchain(DeviceContext& device)
     });
     check_res(swap_ret, "Unable to create Swapchain");
 
-    device.swapchain = swap_ret.value();
+    device.swapchain = swapchain;
 
     auto swap_images_ret = device.functions.GetSwapchainImagesKHR(device.swapchain);
     check_res(swap_images_ret, "Failed to get swapchain Images");
 
     for (auto& image : swap_images_ret.value()) {
         device.swapchain_images.push_back(image);
-        auto view_ret = device.functions.CreateImageView(
+        auto [view, ret] = device.functions.CreateImageView(
           { .image = image,
             .viewType = vk::ImageViewType::e2D,
             .format = device.swapchain_img_format,
             .subresourceRange = { .aspectMask = vk::ImageAspectFlagBits::Color, .levelCount = 1, .layerCount = 1 } });
-        check_res(view_ret, "Failed to create swapchain image view");
+        check_res(ret, "Failed to create swapchain image view");
 
-        device.swapchain_image_views.push_back(view_ret.value());
+        device.swapchain_image_views.push_back(view);
     }
 }
 
@@ -292,34 +292,32 @@ void create_framebuffers(DeviceContext& device)
     }
 }
 
-void read_file(const std::string& filename, std::vector<char>& buffer)
+std::vector<char> read_file(const std::string& filename)
 {
     std::ifstream file(filename, std::ios::ate | std::ios::binary);
     check_res(file.is_open(), "Failed to open shader file");
 
     size_t file_size = (size_t)file.tellg();
-    buffer.resize(file_size);
+    std::vector<char> buffer(file_size);
     file.seekg(0);
     file.read(buffer.data(), static_cast<std::streamsize>(file_size));
     file.close();
+    return buffer;
 }
 
-void create_shader_module(DeviceContext& device, std::string const& filename, vk::ShaderModule& module)
+vk::ShaderModule create_shader_module(DeviceContext& device, std::string const& filename)
 {
-    std::vector<char> code;
-    read_file(filename, code);
-    auto ret =
+    auto code = read_file(filename);
+    auto [module, ret] =
       device.functions.CreateShaderModule({ .codeSize = code.size(), .pCode = reinterpret_cast<const uint32_t*>(code.data()) });
     check_res(ret, "Failed to create shader module");
-    module = ret.value();
+    return module;
 }
 
 void create_pipeline(DeviceContext& device)
 {
-    vk::ShaderModule vert;
-    vk::ShaderModule frag;
-    create_shader_module(device, "vert.spv", vert);
-    create_shader_module(device, "frag.spv", frag);
+    vk::ShaderModule vert = create_shader_module(device, "vert.spv");
+    vk::ShaderModule frag = create_shader_module(device, "frag.spv");
 
     vk::PipelineShaderStageCreateInfo vert_stage{ .stage = vk::ShaderStageFlagBits::Vertex, .module = vert, .pName = "main" };
     vk::PipelineShaderStageCreateInfo frag_stage{ .stage = vk::ShaderStageFlagBits::Fragment, .module = frag, .pName = "main" };
@@ -342,10 +340,9 @@ void create_pipeline(DeviceContext& device)
                                                             .colorWriteMask =
                                                               vk::ColorComponentFlagBits::R | vk::ColorComponentFlagBits::G |
                                                               vk::ColorComponentFlagBits::B | vk::ColorComponentFlagBits::A };
-    vk::PipelineColorBlendStateCreateInfo color_blend{ .logicOpEnable = false,
-                                                       .attachmentCount = 1,
-                                                       .pAttachments = &blend_attachment,
-                                                       .blendConstants = {0.f,0.f,0.f,0.f} };
+    vk::PipelineColorBlendStateCreateInfo color_blend{
+        .logicOpEnable = false, .attachmentCount = 1, .pAttachments = &blend_attachment, .blendConstants = { 0.f, 0.f, 0.f, 0.f }
+    };
     auto pipeline_layout_ret = device.functions.CreatePipelineLayout({ .setLayoutCount = 0, .pushConstantRangeCount = 0 });
     check_res(pipeline_layout_ret, "Failed to create pipeline layout");
 
@@ -419,16 +416,16 @@ void setup_sync_objects(DeviceContext& device)
     device.available_semaphores.resize(device.image_count);
     device.finished_semaphores.resize(device.image_count);
     for (uint32_t i = 0; i < device.image_count; i++) {
-        auto fence_ret = device.functions.CreateFence({ .flags = vk::FenceCreateFlagBits::Signaled });
+        auto [fence, fence_ret] = device.functions.CreateFence({ .flags = vk::FenceCreateFlagBits::Signaled });
         check_res(fence_ret, "Failed to create fence");
-        auto ret1 = device.functions.CreateSemaphore({});
-        check_res(ret1, "Failed to create semaphore");
-        auto ret2 = device.functions.CreateSemaphore({});
-        check_res(ret2, "Failed to create semaphore");
+        auto [avail_sem, avail_sem_ret] = device.functions.CreateSemaphore({});
+        check_res(avail_sem_ret, "Failed to create semaphore");
+        auto [finish_sem, finish_sem_ret] = device.functions.CreateSemaphore({});
+        check_res(finish_sem_ret, "Failed to create semaphore");
 
-        device.available_semaphores[i] = ret1.value();
-        device.finished_semaphores[i] = ret2.value();
-        device.fences[i] = fence_ret.value();
+        device.fences[i] = fence;
+        device.available_semaphores[i] = avail_sem;
+        device.finished_semaphores[i] = finish_sem;
     }
 }
 

@@ -129,5 +129,8 @@ int main()
         std::cout << "error: " << vk::to_string(ret) << '\n';
         return -1;
     }
+
+    auto [fence, fence_ret] = device_functions.CreateFence({});
+
     return 0;
 }

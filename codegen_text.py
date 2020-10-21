@@ -4,6 +4,7 @@ fixed_vector_text = '''
 #include <stdint.h>
 #include <new>
 #include <utility>
+#include <tuple>
 
 namespace vk::detail {
 /* Array data structure where the length is determined at construction time.
@@ -76,6 +77,7 @@ namespace vk {
 '''
 
 vulkan_expected_type = '''
+
 /* Return type for Vulkan Module API functions which return a value or values
  * Holds a T value or a vk::Result for indicating the error
  * Do not use with success codes other than zero
@@ -107,12 +109,34 @@ struct expected {
 
     bool has_value () const noexcept { return _result == Result::Success; }
 	explicit operator bool () const noexcept { return _result == Result::Success; }
+    bool operator!() const noexcept { return _result != Result::Success; }
+
+    template <size_t N>
+    auto const& get() const noexcept {
+       if constexpr (N == 0) return _value;
+       else if constexpr (N == 1) return _result;
+    }
+    template <size_t N>
+    auto& get() noexcept {
+       if constexpr (N == 0) return _value;
+       else if constexpr (N == 1) return _result;
+    }
 
 private:
     T _value;
     Result _result = Result::Success;
 };
 
+}; //namespace vk
+
+namespace std {
+    template<typename T>
+    struct tuple_size<vk::expected<T>>: std::integral_constant<size_t, 2> {};
+    template<typename T> struct tuple_element<0, vk::expected<T>> { using type = T; };
+    template<typename T> struct tuple_element<1, vk::expected<T>> { using type = vk::Result; };
+}
+
+namespace vk {
 '''
 
 bitmask_flags_macro = '''
