@@ -139,6 +139,78 @@ namespace std {
 namespace vk {
 '''
 
+unique_handle_def = '''
+// Unique Handle wrapper for RAII handle types
+// DispatchableHandle is a `VkInstance` or `VkDevice` handle
+// HandleType is a `vk::Handle` type
+// Delete is a PFN_vk*** function that matches the desired type
+template <typename DispatchableHandle, typename HandleType, typename Deleter>
+class unique_handle
+{
+public:
+    unique_handle() = default;
+    explicit unique_handle(DispatchableHandle dispatch_handle, HandleType handle, Deleter deleter) noexcept
+        : device(device), handle(handle), deleter(deleter) { }
+    ~unique_handle() noexcept { reset(); };
+    unique_handle(unique_handle const& other) = delete;
+    unique_handle& operator=(unique_handle const& other) = delete;
+
+    unique_handle(unique_handle&& other) noexcept
+        : dispatch_handle{other.dispatch_handle}, 
+          handle{std::exchange(other.handle, nullptr)}, 
+          deleter{other.deleter} { }
+    unique_handle& operator=(unique_handle&& other) noexcept
+    {
+        if (this != &other)
+        {
+            reset();
+            device = other.device;
+            handle = std::exchange(other.handle, nullptr); 
+            deleter = other.deleter;
+        }
+        return *this;
+    }
+
+    HandleType release() noexcept {
+        return std::exchange(handle, HandleType());
+    }
+
+    void reset() noexcept {
+        if (handle)
+        {
+            deleter(device, handle.get(), nullptr);
+        }
+    }
+
+    const HandleType address() const noexcept {
+        return std::addressof(handle.get());
+    }
+
+    Type operator*() const noexcept {
+        return handle.get();
+    }
+
+    Type operator->() const noexcept {
+        return handle.get();
+    }
+
+    explicit operator bool() const noexcept {
+        return handle != nullptr;
+    }
+
+    [[nodiscard]] HandleType get() const noexcept {
+        return handle.get();
+    }
+
+    DispatchableHandle dispatch_handle = VK_NULL_HANDLE;
+    HandleType handle = HandleType();
+    Deleter deleter;
+};
+
+// Add special case for VkInstance
+
+'''
+
 bitmask_flags_macro = '''
 #define DECLARE_ENUM_FLAG_OPERATORS(FLAG_TYPE, FLAG_BITS, BASE_NAME, BASE_TYPE)            \\
                                                                                            \\
