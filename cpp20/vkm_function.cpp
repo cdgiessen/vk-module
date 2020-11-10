@@ -1,6 +1,5 @@
 #include "vkm_function.h"
 namespace vk {
-#if defined(VK_VERSION_1_0)
 [[nodiscard]] expected<Instance> GlobalFunctions::CreateInstance(const InstanceCreateInfo&  pCreateInfo, 
     const AllocationCallbacks* pAllocator) const {
     Instance pInstance;
@@ -38,29 +37,21 @@ namespace vk {
     if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
     return expected(std::move(pProperties), result);
 }
-#endif //defined(VK_VERSION_1_0)
-#if defined(VK_VERSION_1_1)
 [[nodiscard]] expected<uint32_t> GlobalFunctions::EnumerateInstanceVersion() const {
     if (pfn_EnumerateInstanceVersion == 0) return expected<uint32_t>(VK_MAKE_VERSION(1,0,0), Result::Success);
     uint32_t pApiVersion;
     vk::Result result = static_cast<Result>(pfn_EnumerateInstanceVersion(&pApiVersion));
     return expected<uint32_t>(pApiVersion, result);
 }
-#endif //defined(VK_VERSION_1_1)
 GlobalFunctions::GlobalFunctions() noexcept {}
 GlobalFunctions::GlobalFunctions(DynamicLibrary const& library) noexcept {
-    PFN_vkGetInstanceProcAddr get_instance_proc_addr = library.get();
-#if defined(VK_VERSION_1_0)
-    pfn_CreateInstance = reinterpret_cast<PFN_vkCreateInstance>(get_instance_proc_addr(nullptr,"vkCreateInstance"));
+    detail::PFN_vkGetInstanceProcAddr get_instance_proc_addr = library.get();
+    pfn_CreateInstance = reinterpret_cast<detail::PFN_vkCreateInstance>(get_instance_proc_addr(nullptr,"vkCreateInstance"));
     pfn_GetInstanceProcAddr = get_instance_proc_addr;
-    pfn_EnumerateInstanceExtensionProperties = reinterpret_cast<PFN_vkEnumerateInstanceExtensionProperties>(get_instance_proc_addr(nullptr,"vkEnumerateInstanceExtensionProperties"));
-    pfn_EnumerateInstanceLayerProperties = reinterpret_cast<PFN_vkEnumerateInstanceLayerProperties>(get_instance_proc_addr(nullptr,"vkEnumerateInstanceLayerProperties"));
-#endif //defined(VK_VERSION_1_0)
-#if defined(VK_VERSION_1_1)
-    pfn_EnumerateInstanceVersion = reinterpret_cast<PFN_vkEnumerateInstanceVersion>(get_instance_proc_addr(nullptr,"vkEnumerateInstanceVersion"));
-#endif //defined(VK_VERSION_1_1)
+    pfn_EnumerateInstanceExtensionProperties = reinterpret_cast<detail::PFN_vkEnumerateInstanceExtensionProperties>(get_instance_proc_addr(nullptr,"vkEnumerateInstanceExtensionProperties"));
+    pfn_EnumerateInstanceLayerProperties = reinterpret_cast<detail::PFN_vkEnumerateInstanceLayerProperties>(get_instance_proc_addr(nullptr,"vkEnumerateInstanceLayerProperties"));
+    pfn_EnumerateInstanceVersion = reinterpret_cast<detail::PFN_vkEnumerateInstanceVersion>(get_instance_proc_addr(nullptr,"vkEnumerateInstanceVersion"));
 }
-#if defined(VK_VERSION_1_0)
 void InstanceFunctions::DestroyInstance(const AllocationCallbacks* pAllocator) const {
     pfn_DestroyInstance(instance.get(),
         reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
@@ -194,8 +185,6 @@ void InstanceFunctions::DestroyInstance(const AllocationCallbacks* pAllocator) c
     if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
     return pProperties;
 }
-#endif //defined(VK_VERSION_1_0)
-#if defined(VK_VERSION_1_1)
 [[nodiscard]] expected<detail::fixed_vector<PhysicalDeviceGroupProperties>> InstanceFunctions::EnumeratePhysicalDeviceGroups() const {
     uint32_t pPhysicalDeviceGroupCount = 0;
     vk::Result result = static_cast<Result>(pfn_EnumeratePhysicalDeviceGroups(instance.get(),
@@ -294,8 +283,6 @@ void InstanceFunctions::DestroyInstance(const AllocationCallbacks* pAllocator) c
         reinterpret_cast<VkExternalSemaphoreProperties*>(&pExternalSemaphoreProperties));
     return pExternalSemaphoreProperties;
 }
-#endif //defined(VK_VERSION_1_1)
-#if defined(VK_KHR_surface)
 void InstanceFunctions::DestroySurfaceKHR(SurfaceKHR surface, 
     const AllocationCallbacks* pAllocator) const {
     pfn_DestroySurfaceKHR(instance.get(),
@@ -352,8 +339,6 @@ void InstanceFunctions::DestroySurfaceKHR(SurfaceKHR surface,
     if (pPresentModeCount < pPresentModes.size()) pPresentModes.shrink(pPresentModeCount);
     return expected(std::move(pPresentModes), result);
 }
-#endif //defined(VK_KHR_surface)
-#if (defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
 [[nodiscard]] expected<detail::fixed_vector<Rect2D>> InstanceFunctions::GetPhysicalDevicePresentRectanglesKHR(PhysicalDevice physicalDevice, 
     SurfaceKHR surface) const {
     uint32_t pRectCount = 0;
@@ -370,8 +355,6 @@ void InstanceFunctions::DestroySurfaceKHR(SurfaceKHR surface,
     if (pRectCount < pRects.size()) pRects.shrink(pRectCount);
     return expected(std::move(pRects), result);
 }
-#endif //(defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
-#if defined(VK_KHR_display)
 [[nodiscard]] expected<detail::fixed_vector<DisplayPropertiesKHR>> InstanceFunctions::GetPhysicalDeviceDisplayPropertiesKHR(PhysicalDevice physicalDevice) const {
     uint32_t pPropertyCount = 0;
     vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceDisplayPropertiesKHR(physicalDevice.get(),
@@ -461,8 +444,7 @@ void InstanceFunctions::DestroySurfaceKHR(SurfaceKHR surface,
         reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
     return expected<SurfaceKHR>(pSurface, result);
 }
-#endif //defined(VK_KHR_display)
-#if defined(VK_USE_PLATFORM_XLIB_KHR) && (defined(VK_KHR_xlib_surface))
+#if defined(VK_USE_PLATFORM_XLIB_KHR)
 [[nodiscard]] expected<SurfaceKHR> InstanceFunctions::CreateXlibSurfaceKHR(const XlibSurfaceCreateInfoKHR&  pCreateInfo, 
     const AllocationCallbacks* pAllocator) const {
     SurfaceKHR pSurface;
@@ -472,6 +454,8 @@ void InstanceFunctions::DestroySurfaceKHR(SurfaceKHR surface,
         reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
     return expected<SurfaceKHR>(pSurface, result);
 }
+#endif // VK_USE_PLATFORM_XLIB_KHR
+#if defined(VK_USE_PLATFORM_XLIB_KHR)
 [[nodiscard]] VkBool32 InstanceFunctions::GetPhysicalDeviceXlibPresentationSupportKHR(PhysicalDevice physicalDevice, 
     uint32_t queueFamilyIndex, 
     Display&  dpy, 
@@ -481,8 +465,8 @@ void InstanceFunctions::DestroySurfaceKHR(SurfaceKHR surface,
         reinterpret_cast<Display*>(&dpy),
         static_cast<VisualID>(visualID));
 }
-#endif //defined(VK_USE_PLATFORM_XLIB_KHR) && (defined(VK_KHR_xlib_surface))
-#if defined(VK_USE_PLATFORM_XCB_KHR) && (defined(VK_KHR_xcb_surface))
+#endif // VK_USE_PLATFORM_XLIB_KHR
+#if defined(VK_USE_PLATFORM_XCB_KHR)
 [[nodiscard]] expected<SurfaceKHR> InstanceFunctions::CreateXcbSurfaceKHR(const XcbSurfaceCreateInfoKHR&  pCreateInfo, 
     const AllocationCallbacks* pAllocator) const {
     SurfaceKHR pSurface;
@@ -492,6 +476,8 @@ void InstanceFunctions::DestroySurfaceKHR(SurfaceKHR surface,
         reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
     return expected<SurfaceKHR>(pSurface, result);
 }
+#endif // VK_USE_PLATFORM_XCB_KHR
+#if defined(VK_USE_PLATFORM_XCB_KHR)
 [[nodiscard]] VkBool32 InstanceFunctions::GetPhysicalDeviceXcbPresentationSupportKHR(PhysicalDevice physicalDevice, 
     uint32_t queueFamilyIndex, 
     xcb_connection_t&  connection, 
@@ -501,8 +487,8 @@ void InstanceFunctions::DestroySurfaceKHR(SurfaceKHR surface,
         reinterpret_cast<xcb_connection_t*>(&connection),
         static_cast<xcb_visualid_t>(visual_id));
 }
-#endif //defined(VK_USE_PLATFORM_XCB_KHR) && (defined(VK_KHR_xcb_surface))
-#if defined(VK_USE_PLATFORM_WAYLAND_KHR) && (defined(VK_KHR_wayland_surface))
+#endif // VK_USE_PLATFORM_XCB_KHR
+#if defined(VK_USE_PLATFORM_WAYLAND_KHR)
 [[nodiscard]] expected<SurfaceKHR> InstanceFunctions::CreateWaylandSurfaceKHR(const WaylandSurfaceCreateInfoKHR&  pCreateInfo, 
     const AllocationCallbacks* pAllocator) const {
     SurfaceKHR pSurface;
@@ -512,6 +498,8 @@ void InstanceFunctions::DestroySurfaceKHR(SurfaceKHR surface,
         reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
     return expected<SurfaceKHR>(pSurface, result);
 }
+#endif // VK_USE_PLATFORM_WAYLAND_KHR
+#if defined(VK_USE_PLATFORM_WAYLAND_KHR)
 [[nodiscard]] wl_display InstanceFunctions::GetPhysicalDeviceWaylandPresentationSupportKHR(PhysicalDevice physicalDevice, 
     uint32_t queueFamilyIndex) const {
     wl_display display;
@@ -520,8 +508,8 @@ void InstanceFunctions::DestroySurfaceKHR(SurfaceKHR surface,
         reinterpret_cast<wl_display*>(&display));
     return display;
 }
-#endif //defined(VK_USE_PLATFORM_WAYLAND_KHR) && (defined(VK_KHR_wayland_surface))
-#if defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_KHR_android_surface))
+#endif // VK_USE_PLATFORM_WAYLAND_KHR
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
 [[nodiscard]] expected<SurfaceKHR> InstanceFunctions::CreateAndroidSurfaceKHR(const AndroidSurfaceCreateInfoKHR&  pCreateInfo, 
     const AllocationCallbacks* pAllocator) const {
     SurfaceKHR pSurface;
@@ -531,8 +519,8 @@ void InstanceFunctions::DestroySurfaceKHR(SurfaceKHR surface,
         reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
     return expected<SurfaceKHR>(pSurface, result);
 }
-#endif //defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_KHR_android_surface))
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_win32_surface))
+#endif // VK_USE_PLATFORM_ANDROID_KHR
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] expected<SurfaceKHR> InstanceFunctions::CreateWin32SurfaceKHR(const Win32SurfaceCreateInfoKHR&  pCreateInfo, 
     const AllocationCallbacks* pAllocator) const {
     SurfaceKHR pSurface;
@@ -542,13 +530,14 @@ void InstanceFunctions::DestroySurfaceKHR(SurfaceKHR surface,
         reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
     return expected<SurfaceKHR>(pSurface, result);
 }
+#endif // VK_USE_PLATFORM_WIN32_KHR
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] VkBool32 InstanceFunctions::GetPhysicalDeviceWin32PresentationSupportKHR(PhysicalDevice physicalDevice, 
     uint32_t queueFamilyIndex) const {
     return pfn_GetPhysicalDeviceWin32PresentationSupportKHR(physicalDevice.get(),
         queueFamilyIndex);
 }
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_win32_surface))
-#if defined(VK_EXT_debug_report)
+#endif // VK_USE_PLATFORM_WIN32_KHR
 [[nodiscard]] expected<DebugReportCallbackEXT> InstanceFunctions::CreateDebugReportCallbackEXT(const DebugReportCallbackCreateInfoEXT&  pCreateInfo, 
     const AllocationCallbacks* pAllocator) const {
     DebugReportCallbackEXT pCallback;
@@ -580,8 +569,7 @@ void InstanceFunctions::DebugReportMessageEXT(DebugReportFlagsEXT flags,
         pLayerPrefix,
         pMessage);
 }
-#endif //defined(VK_EXT_debug_report)
-#if defined(VK_USE_PLATFORM_GGP) && (defined(VK_GGP_stream_descriptor_surface))
+#if defined(VK_USE_PLATFORM_GGP)
 [[nodiscard]] expected<SurfaceKHR> InstanceFunctions::CreateStreamDescriptorSurfaceGGP(const StreamDescriptorSurfaceCreateInfoGGP&  pCreateInfo, 
     const AllocationCallbacks* pAllocator) const {
     SurfaceKHR pSurface;
@@ -591,8 +579,7 @@ void InstanceFunctions::DebugReportMessageEXT(DebugReportFlagsEXT flags,
         reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
     return expected<SurfaceKHR>(pSurface, result);
 }
-#endif //defined(VK_USE_PLATFORM_GGP) && (defined(VK_GGP_stream_descriptor_surface))
-#if defined(VK_NV_external_memory_capabilities)
+#endif // VK_USE_PLATFORM_GGP
 [[nodiscard]] expected<ExternalImageFormatPropertiesNV> InstanceFunctions::GetPhysicalDeviceExternalImageFormatPropertiesNV(PhysicalDevice physicalDevice, 
     Format format, 
     ImageType type, 
@@ -611,8 +598,7 @@ void InstanceFunctions::DebugReportMessageEXT(DebugReportFlagsEXT flags,
         reinterpret_cast<VkExternalImageFormatPropertiesNV*>(&pExternalImageFormatProperties)));
     return expected<ExternalImageFormatPropertiesNV>(pExternalImageFormatProperties, result);
 }
-#endif //defined(VK_NV_external_memory_capabilities)
-#if defined(VK_USE_PLATFORM_VI_NN) && (defined(VK_NN_vi_surface))
+#if defined(VK_USE_PLATFORM_VI_NN)
 [[nodiscard]] expected<SurfaceKHR> InstanceFunctions::CreateViSurfaceNN(const ViSurfaceCreateInfoNN&  pCreateInfo, 
     const AllocationCallbacks* pAllocator) const {
     SurfaceKHR pSurface;
@@ -622,15 +608,13 @@ void InstanceFunctions::DebugReportMessageEXT(DebugReportFlagsEXT flags,
         reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
     return expected<SurfaceKHR>(pSurface, result);
 }
-#endif //defined(VK_USE_PLATFORM_VI_NN) && (defined(VK_NN_vi_surface))
-#if defined(VK_EXT_direct_mode_display)
+#endif // VK_USE_PLATFORM_VI_NN
 [[nodiscard]] Result InstanceFunctions::ReleaseDisplayEXT(PhysicalDevice physicalDevice, 
     DisplayKHR display) const {
     return static_cast<Result>(pfn_ReleaseDisplayEXT(physicalDevice.get(),
         display.get()));
 }
-#endif //defined(VK_EXT_direct_mode_display)
-#if defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT) && (defined(VK_EXT_acquire_xlib_display))
+#if defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT)
 [[nodiscard]] Result InstanceFunctions::AcquireXlibDisplayEXT(PhysicalDevice physicalDevice, 
     Display&  dpy, 
     DisplayKHR display) const {
@@ -638,6 +622,8 @@ void InstanceFunctions::DebugReportMessageEXT(DebugReportFlagsEXT flags,
         reinterpret_cast<Display*>(&dpy),
         display.get()));
 }
+#endif // VK_USE_PLATFORM_XLIB_XRANDR_EXT
+#if defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT)
 [[nodiscard]] expected<DisplayKHR> InstanceFunctions::GetRandROutputDisplayEXT(PhysicalDevice physicalDevice, 
     Display&  dpy, 
     RROutput rrOutput) const {
@@ -648,8 +634,7 @@ void InstanceFunctions::DebugReportMessageEXT(DebugReportFlagsEXT flags,
         reinterpret_cast<VkDisplayKHR*>(&pDisplay)));
     return expected<DisplayKHR>(pDisplay, result);
 }
-#endif //defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT) && (defined(VK_EXT_acquire_xlib_display))
-#if defined(VK_EXT_display_surface_counter)
+#endif // VK_USE_PLATFORM_XLIB_XRANDR_EXT
 [[nodiscard]] expected<SurfaceCapabilities2EXT> InstanceFunctions::GetPhysicalDeviceSurfaceCapabilities2EXT(PhysicalDevice physicalDevice, 
     SurfaceKHR surface) const {
     SurfaceCapabilities2EXT pSurfaceCapabilities;
@@ -658,8 +643,6 @@ void InstanceFunctions::DebugReportMessageEXT(DebugReportFlagsEXT flags,
         reinterpret_cast<VkSurfaceCapabilities2EXT*>(&pSurfaceCapabilities)));
     return expected<SurfaceCapabilities2EXT>(pSurfaceCapabilities, result);
 }
-#endif //defined(VK_EXT_display_surface_counter)
-#if defined(VK_KHR_performance_query)
 [[nodiscard]] Result InstanceFunctions::EnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR(PhysicalDevice physicalDevice, 
     uint32_t queueFamilyIndex, 
     uint32_t&  pCounterCount, 
@@ -679,8 +662,6 @@ void InstanceFunctions::DebugReportMessageEXT(DebugReportFlagsEXT flags,
         &pNumPasses);
     return pNumPasses;
 }
-#endif //defined(VK_KHR_performance_query)
-#if defined(VK_KHR_get_surface_capabilities2)
 [[nodiscard]] expected<SurfaceCapabilities2KHR> InstanceFunctions::GetPhysicalDeviceSurfaceCapabilities2KHR(PhysicalDevice physicalDevice, 
     const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) const {
     SurfaceCapabilities2KHR pSurfaceCapabilities;
@@ -705,8 +686,6 @@ void InstanceFunctions::DebugReportMessageEXT(DebugReportFlagsEXT flags,
     if (pSurfaceFormatCount < pSurfaceFormats.size()) pSurfaceFormats.shrink(pSurfaceFormatCount);
     return expected(std::move(pSurfaceFormats), result);
 }
-#endif //defined(VK_KHR_get_surface_capabilities2)
-#if defined(VK_KHR_get_display_properties2)
 [[nodiscard]] expected<detail::fixed_vector<DisplayProperties2KHR>> InstanceFunctions::GetPhysicalDeviceDisplayProperties2KHR(PhysicalDevice physicalDevice) const {
     uint32_t pPropertyCount = 0;
     vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceDisplayProperties2KHR(physicalDevice.get(),
@@ -757,8 +736,7 @@ void InstanceFunctions::DebugReportMessageEXT(DebugReportFlagsEXT flags,
         reinterpret_cast<VkDisplayPlaneCapabilities2KHR*>(&pCapabilities)));
     return expected<DisplayPlaneCapabilities2KHR>(pCapabilities, result);
 }
-#endif //defined(VK_KHR_get_display_properties2)
-#if defined(VK_USE_PLATFORM_IOS_MVK) && (defined(VK_MVK_ios_surface))
+#if defined(VK_USE_PLATFORM_IOS_MVK)
 [[nodiscard]] expected<SurfaceKHR> InstanceFunctions::CreateIOSSurfaceMVK(const IOSSurfaceCreateInfoMVK&  pCreateInfo, 
     const AllocationCallbacks* pAllocator) const {
     SurfaceKHR pSurface;
@@ -768,8 +746,8 @@ void InstanceFunctions::DebugReportMessageEXT(DebugReportFlagsEXT flags,
         reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
     return expected<SurfaceKHR>(pSurface, result);
 }
-#endif //defined(VK_USE_PLATFORM_IOS_MVK) && (defined(VK_MVK_ios_surface))
-#if defined(VK_USE_PLATFORM_MACOS_MVK) && (defined(VK_MVK_macos_surface))
+#endif // VK_USE_PLATFORM_IOS_MVK
+#if defined(VK_USE_PLATFORM_MACOS_MVK)
 [[nodiscard]] expected<SurfaceKHR> InstanceFunctions::CreateMacOSSurfaceMVK(const MacOSSurfaceCreateInfoMVK&  pCreateInfo, 
     const AllocationCallbacks* pAllocator) const {
     SurfaceKHR pSurface;
@@ -779,8 +757,7 @@ void InstanceFunctions::DebugReportMessageEXT(DebugReportFlagsEXT flags,
         reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
     return expected<SurfaceKHR>(pSurface, result);
 }
-#endif //defined(VK_USE_PLATFORM_MACOS_MVK) && (defined(VK_MVK_macos_surface))
-#if defined(VK_EXT_debug_utils)
+#endif // VK_USE_PLATFORM_MACOS_MVK
 [[nodiscard]] expected<DebugUtilsMessengerEXT> InstanceFunctions::CreateDebugUtilsMessengerEXT(const DebugUtilsMessengerCreateInfoEXT&  pCreateInfo, 
     const AllocationCallbacks* pAllocator) const {
     DebugUtilsMessengerEXT pMessenger;
@@ -804,8 +781,6 @@ void InstanceFunctions::SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlag
         static_cast<VkDebugUtilsMessageTypeFlagsEXT>(messageTypes),
         reinterpret_cast<const VkDebugUtilsMessengerCallbackDataEXT*>(&pCallbackData));
 }
-#endif //defined(VK_EXT_debug_utils)
-#if defined(VK_EXT_sample_locations)
 [[nodiscard]] MultisamplePropertiesEXT InstanceFunctions::GetPhysicalDeviceMultisamplePropertiesEXT(PhysicalDevice physicalDevice, 
     SampleCountFlagBits samples) const {
     MultisamplePropertiesEXT pMultisampleProperties;
@@ -814,8 +789,6 @@ void InstanceFunctions::SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlag
         reinterpret_cast<VkMultisamplePropertiesEXT*>(&pMultisampleProperties));
     return pMultisampleProperties;
 }
-#endif //defined(VK_EXT_sample_locations)
-#if defined(VK_EXT_calibrated_timestamps)
 [[nodiscard]] expected<detail::fixed_vector<TimeDomainEXT>> InstanceFunctions::GetPhysicalDeviceCalibrateableTimeDomainsEXT(PhysicalDevice physicalDevice) const {
     uint32_t pTimeDomainCount = 0;
     vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceCalibrateableTimeDomainsEXT(physicalDevice.get(),
@@ -829,8 +802,7 @@ void InstanceFunctions::SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlag
     if (pTimeDomainCount < pTimeDomains.size()) pTimeDomains.shrink(pTimeDomainCount);
     return expected(std::move(pTimeDomains), result);
 }
-#endif //defined(VK_EXT_calibrated_timestamps)
-#if defined(VK_USE_PLATFORM_FUCHSIA) && (defined(VK_FUCHSIA_imagepipe_surface))
+#if defined(VK_USE_PLATFORM_FUCHSIA)
 [[nodiscard]] expected<SurfaceKHR> InstanceFunctions::CreateImagePipeSurfaceFUCHSIA(const ImagePipeSurfaceCreateInfoFUCHSIA&  pCreateInfo, 
     const AllocationCallbacks* pAllocator) const {
     SurfaceKHR pSurface;
@@ -840,8 +812,8 @@ void InstanceFunctions::SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlag
         reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
     return expected<SurfaceKHR>(pSurface, result);
 }
-#endif //defined(VK_USE_PLATFORM_FUCHSIA) && (defined(VK_FUCHSIA_imagepipe_surface))
-#if defined(VK_USE_PLATFORM_METAL_EXT) && (defined(VK_EXT_metal_surface))
+#endif // VK_USE_PLATFORM_FUCHSIA
+#if defined(VK_USE_PLATFORM_METAL_EXT)
 [[nodiscard]] expected<SurfaceKHR> InstanceFunctions::CreateMetalSurfaceEXT(const MetalSurfaceCreateInfoEXT&  pCreateInfo, 
     const AllocationCallbacks* pAllocator) const {
     SurfaceKHR pSurface;
@@ -851,8 +823,7 @@ void InstanceFunctions::SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlag
         reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
     return expected<SurfaceKHR>(pSurface, result);
 }
-#endif //defined(VK_USE_PLATFORM_METAL_EXT) && (defined(VK_EXT_metal_surface))
-#if defined(VK_EXT_tooling_info)
+#endif // VK_USE_PLATFORM_METAL_EXT
 [[nodiscard]] expected<detail::fixed_vector<PhysicalDeviceToolPropertiesEXT>> InstanceFunctions::GetPhysicalDeviceToolPropertiesEXT(PhysicalDevice physicalDevice) const {
     uint32_t pToolCount = 0;
     vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceToolPropertiesEXT(physicalDevice.get(),
@@ -866,8 +837,6 @@ void InstanceFunctions::SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlag
     if (pToolCount < pToolProperties.size()) pToolProperties.shrink(pToolCount);
     return expected(std::move(pToolProperties), result);
 }
-#endif //defined(VK_EXT_tooling_info)
-#if defined(VK_NV_cooperative_matrix)
 [[nodiscard]] expected<detail::fixed_vector<CooperativeMatrixPropertiesNV>> InstanceFunctions::GetPhysicalDeviceCooperativeMatrixPropertiesNV(PhysicalDevice physicalDevice) const {
     uint32_t pPropertyCount = 0;
     vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceCooperativeMatrixPropertiesNV(physicalDevice.get(),
@@ -881,8 +850,6 @@ void InstanceFunctions::SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlag
     if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
     return expected(std::move(pProperties), result);
 }
-#endif //defined(VK_NV_cooperative_matrix)
-#if defined(VK_NV_coverage_reduction_mode)
 [[nodiscard]] expected<detail::fixed_vector<FramebufferMixedSamplesCombinationNV>> InstanceFunctions::GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(PhysicalDevice physicalDevice) const {
     uint32_t pCombinationCount = 0;
     vk::Result result = static_cast<Result>(pfn_GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(physicalDevice.get(),
@@ -896,8 +863,7 @@ void InstanceFunctions::SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlag
     if (pCombinationCount < pCombinations.size()) pCombinations.shrink(pCombinationCount);
     return expected(std::move(pCombinations), result);
 }
-#endif //defined(VK_NV_coverage_reduction_mode)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] expected<detail::fixed_vector<PresentModeKHR>> InstanceFunctions::GetPhysicalDeviceSurfacePresentModes2EXT(PhysicalDevice physicalDevice, 
     const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) const {
     uint32_t pPresentModeCount = 0;
@@ -914,8 +880,7 @@ void InstanceFunctions::SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlag
     if (pPresentModeCount < pPresentModes.size()) pPresentModes.shrink(pPresentModeCount);
     return expected(std::move(pPresentModes), result);
 }
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
-#if defined(VK_EXT_headless_surface)
+#endif // VK_USE_PLATFORM_WIN32_KHR
 [[nodiscard]] expected<SurfaceKHR> InstanceFunctions::CreateHeadlessSurfaceEXT(const HeadlessSurfaceCreateInfoEXT&  pCreateInfo, 
     const AllocationCallbacks* pAllocator) const {
     SurfaceKHR pSurface;
@@ -925,8 +890,7 @@ void InstanceFunctions::SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlag
         reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
     return expected<SurfaceKHR>(pSurface, result);
 }
-#endif //defined(VK_EXT_headless_surface)
-#if defined(VK_USE_PLATFORM_DIRECTFB_EXT) && (defined(VK_EXT_directfb_surface))
+#if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
 [[nodiscard]] expected<SurfaceKHR> InstanceFunctions::CreateDirectFBSurfaceEXT(const DirectFBSurfaceCreateInfoEXT&  pCreateInfo, 
     const AllocationCallbacks* pAllocator) const {
     SurfaceKHR pSurface;
@@ -936,6 +900,8 @@ void InstanceFunctions::SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlag
         reinterpret_cast<VkSurfaceKHR*>(&pSurface)));
     return expected<SurfaceKHR>(pSurface, result);
 }
+#endif // VK_USE_PLATFORM_DIRECTFB_EXT
+#if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
 [[nodiscard]] IDirectFB InstanceFunctions::GetPhysicalDeviceDirectFBPresentationSupportEXT(PhysicalDevice physicalDevice, 
     uint32_t queueFamilyIndex) const {
     IDirectFB dfb;
@@ -944,159 +910,132 @@ void InstanceFunctions::SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlag
         reinterpret_cast<IDirectFB*>(&dfb));
     return dfb;
 }
-#endif //defined(VK_USE_PLATFORM_DIRECTFB_EXT) && (defined(VK_EXT_directfb_surface))
+#endif // VK_USE_PLATFORM_DIRECTFB_EXT
 InstanceFunctions::InstanceFunctions() noexcept {}
 InstanceFunctions::InstanceFunctions(GlobalFunctions const& global_functions, Instance instance) noexcept 
     :instance(instance) { 
-    PFN_vkGetInstanceProcAddr get_instance_proc_addr = global_functions.pfn_GetInstanceProcAddr;
-#if defined(VK_VERSION_1_0)
-    pfn_DestroyInstance = reinterpret_cast<PFN_vkDestroyInstance>(get_instance_proc_addr(instance.get(),"vkDestroyInstance"));
-    pfn_EnumeratePhysicalDevices = reinterpret_cast<PFN_vkEnumeratePhysicalDevices>(get_instance_proc_addr(instance.get(),"vkEnumeratePhysicalDevices"));
-    pfn_GetDeviceProcAddr = reinterpret_cast<PFN_vkGetDeviceProcAddr>(get_instance_proc_addr(instance.get(),"vkGetDeviceProcAddr"));
+    detail::PFN_vkGetInstanceProcAddr get_instance_proc_addr = global_functions.pfn_GetInstanceProcAddr;
+    pfn_DestroyInstance = reinterpret_cast<detail::PFN_vkDestroyInstance>(get_instance_proc_addr(instance.get(),"vkDestroyInstance"));
+    pfn_EnumeratePhysicalDevices = reinterpret_cast<detail::PFN_vkEnumeratePhysicalDevices>(get_instance_proc_addr(instance.get(),"vkEnumeratePhysicalDevices"));
+    pfn_GetDeviceProcAddr = reinterpret_cast<detail::PFN_vkGetDeviceProcAddr>(get_instance_proc_addr(instance.get(),"vkGetDeviceProcAddr"));
     pfn_GetInstanceProcAddr = get_instance_proc_addr;
-    pfn_GetPhysicalDeviceProperties = reinterpret_cast<PFN_vkGetPhysicalDeviceProperties>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceProperties"));
-    pfn_GetPhysicalDeviceQueueFamilyProperties = reinterpret_cast<PFN_vkGetPhysicalDeviceQueueFamilyProperties>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceQueueFamilyProperties"));
-    pfn_GetPhysicalDeviceMemoryProperties = reinterpret_cast<PFN_vkGetPhysicalDeviceMemoryProperties>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceMemoryProperties"));
-    pfn_GetPhysicalDeviceFeatures = reinterpret_cast<PFN_vkGetPhysicalDeviceFeatures>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceFeatures"));
-    pfn_GetPhysicalDeviceFormatProperties = reinterpret_cast<PFN_vkGetPhysicalDeviceFormatProperties>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceFormatProperties"));
-    pfn_GetPhysicalDeviceImageFormatProperties = reinterpret_cast<PFN_vkGetPhysicalDeviceImageFormatProperties>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceImageFormatProperties"));
-    pfn_CreateDevice = reinterpret_cast<PFN_vkCreateDevice>(get_instance_proc_addr(instance.get(),"vkCreateDevice"));
-    pfn_EnumerateDeviceExtensionProperties = reinterpret_cast<PFN_vkEnumerateDeviceExtensionProperties>(get_instance_proc_addr(instance.get(),"vkEnumerateDeviceExtensionProperties"));
-    pfn_GetPhysicalDeviceSparseImageFormatProperties = reinterpret_cast<PFN_vkGetPhysicalDeviceSparseImageFormatProperties>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceSparseImageFormatProperties"));
-#endif //defined(VK_VERSION_1_0)
-#if defined(VK_VERSION_1_1)
-    pfn_EnumeratePhysicalDeviceGroups = reinterpret_cast<PFN_vkEnumeratePhysicalDeviceGroups>(get_instance_proc_addr(instance.get(),"vkEnumeratePhysicalDeviceGroups"));
-    pfn_GetPhysicalDeviceFeatures2 = reinterpret_cast<PFN_vkGetPhysicalDeviceFeatures2>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceFeatures2"));
-    pfn_GetPhysicalDeviceProperties2 = reinterpret_cast<PFN_vkGetPhysicalDeviceProperties2>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceProperties2"));
-    pfn_GetPhysicalDeviceFormatProperties2 = reinterpret_cast<PFN_vkGetPhysicalDeviceFormatProperties2>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceFormatProperties2"));
-    pfn_GetPhysicalDeviceImageFormatProperties2 = reinterpret_cast<PFN_vkGetPhysicalDeviceImageFormatProperties2>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceImageFormatProperties2"));
-    pfn_GetPhysicalDeviceQueueFamilyProperties2 = reinterpret_cast<PFN_vkGetPhysicalDeviceQueueFamilyProperties2>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceQueueFamilyProperties2"));
-    pfn_GetPhysicalDeviceMemoryProperties2 = reinterpret_cast<PFN_vkGetPhysicalDeviceMemoryProperties2>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceMemoryProperties2"));
-    pfn_GetPhysicalDeviceSparseImageFormatProperties2 = reinterpret_cast<PFN_vkGetPhysicalDeviceSparseImageFormatProperties2>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceSparseImageFormatProperties2"));
-    pfn_GetPhysicalDeviceExternalBufferProperties = reinterpret_cast<PFN_vkGetPhysicalDeviceExternalBufferProperties>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceExternalBufferProperties"));
-    pfn_GetPhysicalDeviceExternalFenceProperties = reinterpret_cast<PFN_vkGetPhysicalDeviceExternalFenceProperties>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceExternalFenceProperties"));
-    pfn_GetPhysicalDeviceExternalSemaphoreProperties = reinterpret_cast<PFN_vkGetPhysicalDeviceExternalSemaphoreProperties>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceExternalSemaphoreProperties"));
-#endif //defined(VK_VERSION_1_1)
-#if defined(VK_KHR_surface)
-    pfn_DestroySurfaceKHR = reinterpret_cast<PFN_vkDestroySurfaceKHR>(get_instance_proc_addr(instance.get(),"vkDestroySurfaceKHR"));
-    pfn_GetPhysicalDeviceSurfaceSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceSupportKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceSurfaceSupportKHR"));
-    pfn_GetPhysicalDeviceSurfaceCapabilitiesKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceSurfaceCapabilitiesKHR"));
-    pfn_GetPhysicalDeviceSurfaceFormatsKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceFormatsKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceSurfaceFormatsKHR"));
-    pfn_GetPhysicalDeviceSurfacePresentModesKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfacePresentModesKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceSurfacePresentModesKHR"));
-#endif //defined(VK_KHR_surface)
-#if (defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
-    pfn_GetPhysicalDevicePresentRectanglesKHR = reinterpret_cast<PFN_vkGetPhysicalDevicePresentRectanglesKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDevicePresentRectanglesKHR"));
-#endif //(defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
-#if defined(VK_KHR_display)
-    pfn_GetPhysicalDeviceDisplayPropertiesKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceDisplayPropertiesKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceDisplayPropertiesKHR"));
-    pfn_GetPhysicalDeviceDisplayPlanePropertiesKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceDisplayPlanePropertiesKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceDisplayPlanePropertiesKHR"));
-    pfn_GetDisplayPlaneSupportedDisplaysKHR = reinterpret_cast<PFN_vkGetDisplayPlaneSupportedDisplaysKHR>(get_instance_proc_addr(instance.get(),"vkGetDisplayPlaneSupportedDisplaysKHR"));
-    pfn_GetDisplayModePropertiesKHR = reinterpret_cast<PFN_vkGetDisplayModePropertiesKHR>(get_instance_proc_addr(instance.get(),"vkGetDisplayModePropertiesKHR"));
-    pfn_CreateDisplayModeKHR = reinterpret_cast<PFN_vkCreateDisplayModeKHR>(get_instance_proc_addr(instance.get(),"vkCreateDisplayModeKHR"));
-    pfn_GetDisplayPlaneCapabilitiesKHR = reinterpret_cast<PFN_vkGetDisplayPlaneCapabilitiesKHR>(get_instance_proc_addr(instance.get(),"vkGetDisplayPlaneCapabilitiesKHR"));
-    pfn_CreateDisplayPlaneSurfaceKHR = reinterpret_cast<PFN_vkCreateDisplayPlaneSurfaceKHR>(get_instance_proc_addr(instance.get(),"vkCreateDisplayPlaneSurfaceKHR"));
-#endif //defined(VK_KHR_display)
-#if defined(VK_USE_PLATFORM_XLIB_KHR) && (defined(VK_KHR_xlib_surface))
-    pfn_CreateXlibSurfaceKHR = reinterpret_cast<PFN_vkCreateXlibSurfaceKHR>(get_instance_proc_addr(instance.get(),"vkCreateXlibSurfaceKHR"));
-    pfn_GetPhysicalDeviceXlibPresentationSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceXlibPresentationSupportKHR"));
-#endif //defined(VK_USE_PLATFORM_XLIB_KHR) && (defined(VK_KHR_xlib_surface))
-#if defined(VK_USE_PLATFORM_XCB_KHR) && (defined(VK_KHR_xcb_surface))
-    pfn_CreateXcbSurfaceKHR = reinterpret_cast<PFN_vkCreateXcbSurfaceKHR>(get_instance_proc_addr(instance.get(),"vkCreateXcbSurfaceKHR"));
-    pfn_GetPhysicalDeviceXcbPresentationSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceXcbPresentationSupportKHR"));
-#endif //defined(VK_USE_PLATFORM_XCB_KHR) && (defined(VK_KHR_xcb_surface))
-#if defined(VK_USE_PLATFORM_WAYLAND_KHR) && (defined(VK_KHR_wayland_surface))
-    pfn_CreateWaylandSurfaceKHR = reinterpret_cast<PFN_vkCreateWaylandSurfaceKHR>(get_instance_proc_addr(instance.get(),"vkCreateWaylandSurfaceKHR"));
-    pfn_GetPhysicalDeviceWaylandPresentationSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceWaylandPresentationSupportKHR"));
-#endif //defined(VK_USE_PLATFORM_WAYLAND_KHR) && (defined(VK_KHR_wayland_surface))
-#if defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_KHR_android_surface))
-    pfn_CreateAndroidSurfaceKHR = reinterpret_cast<PFN_vkCreateAndroidSurfaceKHR>(get_instance_proc_addr(instance.get(),"vkCreateAndroidSurfaceKHR"));
-#endif //defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_KHR_android_surface))
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_win32_surface))
-    pfn_CreateWin32SurfaceKHR = reinterpret_cast<PFN_vkCreateWin32SurfaceKHR>(get_instance_proc_addr(instance.get(),"vkCreateWin32SurfaceKHR"));
-    pfn_GetPhysicalDeviceWin32PresentationSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceWin32PresentationSupportKHR"));
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_win32_surface))
-#if defined(VK_EXT_debug_report)
-    pfn_CreateDebugReportCallbackEXT = reinterpret_cast<PFN_vkCreateDebugReportCallbackEXT>(get_instance_proc_addr(instance.get(),"vkCreateDebugReportCallbackEXT"));
-    pfn_DestroyDebugReportCallbackEXT = reinterpret_cast<PFN_vkDestroyDebugReportCallbackEXT>(get_instance_proc_addr(instance.get(),"vkDestroyDebugReportCallbackEXT"));
-    pfn_DebugReportMessageEXT = reinterpret_cast<PFN_vkDebugReportMessageEXT>(get_instance_proc_addr(instance.get(),"vkDebugReportMessageEXT"));
-#endif //defined(VK_EXT_debug_report)
-#if defined(VK_USE_PLATFORM_GGP) && (defined(VK_GGP_stream_descriptor_surface))
-    pfn_CreateStreamDescriptorSurfaceGGP = reinterpret_cast<PFN_vkCreateStreamDescriptorSurfaceGGP>(get_instance_proc_addr(instance.get(),"vkCreateStreamDescriptorSurfaceGGP"));
-#endif //defined(VK_USE_PLATFORM_GGP) && (defined(VK_GGP_stream_descriptor_surface))
-#if defined(VK_NV_external_memory_capabilities)
-    pfn_GetPhysicalDeviceExternalImageFormatPropertiesNV = reinterpret_cast<PFN_vkGetPhysicalDeviceExternalImageFormatPropertiesNV>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceExternalImageFormatPropertiesNV"));
-#endif //defined(VK_NV_external_memory_capabilities)
-#if defined(VK_USE_PLATFORM_VI_NN) && (defined(VK_NN_vi_surface))
-    pfn_CreateViSurfaceNN = reinterpret_cast<PFN_vkCreateViSurfaceNN>(get_instance_proc_addr(instance.get(),"vkCreateViSurfaceNN"));
-#endif //defined(VK_USE_PLATFORM_VI_NN) && (defined(VK_NN_vi_surface))
-#if defined(VK_EXT_direct_mode_display)
-    pfn_ReleaseDisplayEXT = reinterpret_cast<PFN_vkReleaseDisplayEXT>(get_instance_proc_addr(instance.get(),"vkReleaseDisplayEXT"));
-#endif //defined(VK_EXT_direct_mode_display)
-#if defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT) && (defined(VK_EXT_acquire_xlib_display))
-    pfn_AcquireXlibDisplayEXT = reinterpret_cast<PFN_vkAcquireXlibDisplayEXT>(get_instance_proc_addr(instance.get(),"vkAcquireXlibDisplayEXT"));
-    pfn_GetRandROutputDisplayEXT = reinterpret_cast<PFN_vkGetRandROutputDisplayEXT>(get_instance_proc_addr(instance.get(),"vkGetRandROutputDisplayEXT"));
-#endif //defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT) && (defined(VK_EXT_acquire_xlib_display))
-#if defined(VK_EXT_display_surface_counter)
-    pfn_GetPhysicalDeviceSurfaceCapabilities2EXT = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceCapabilities2EXT>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceSurfaceCapabilities2EXT"));
-#endif //defined(VK_EXT_display_surface_counter)
-#if defined(VK_KHR_performance_query)
-    pfn_EnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR = reinterpret_cast<PFN_vkEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR>(get_instance_proc_addr(instance.get(),"vkEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR"));
-    pfn_GetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR"));
-#endif //defined(VK_KHR_performance_query)
-#if defined(VK_KHR_get_surface_capabilities2)
-    pfn_GetPhysicalDeviceSurfaceCapabilities2KHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceCapabilities2KHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceSurfaceCapabilities2KHR"));
-    pfn_GetPhysicalDeviceSurfaceFormats2KHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceFormats2KHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceSurfaceFormats2KHR"));
-#endif //defined(VK_KHR_get_surface_capabilities2)
-#if defined(VK_KHR_get_display_properties2)
-    pfn_GetPhysicalDeviceDisplayProperties2KHR = reinterpret_cast<PFN_vkGetPhysicalDeviceDisplayProperties2KHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceDisplayProperties2KHR"));
-    pfn_GetPhysicalDeviceDisplayPlaneProperties2KHR = reinterpret_cast<PFN_vkGetPhysicalDeviceDisplayPlaneProperties2KHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceDisplayPlaneProperties2KHR"));
-    pfn_GetDisplayModeProperties2KHR = reinterpret_cast<PFN_vkGetDisplayModeProperties2KHR>(get_instance_proc_addr(instance.get(),"vkGetDisplayModeProperties2KHR"));
-    pfn_GetDisplayPlaneCapabilities2KHR = reinterpret_cast<PFN_vkGetDisplayPlaneCapabilities2KHR>(get_instance_proc_addr(instance.get(),"vkGetDisplayPlaneCapabilities2KHR"));
-#endif //defined(VK_KHR_get_display_properties2)
-#if defined(VK_USE_PLATFORM_IOS_MVK) && (defined(VK_MVK_ios_surface))
-    pfn_CreateIOSSurfaceMVK = reinterpret_cast<PFN_vkCreateIOSSurfaceMVK>(get_instance_proc_addr(instance.get(),"vkCreateIOSSurfaceMVK"));
-#endif //defined(VK_USE_PLATFORM_IOS_MVK) && (defined(VK_MVK_ios_surface))
-#if defined(VK_USE_PLATFORM_MACOS_MVK) && (defined(VK_MVK_macos_surface))
-    pfn_CreateMacOSSurfaceMVK = reinterpret_cast<PFN_vkCreateMacOSSurfaceMVK>(get_instance_proc_addr(instance.get(),"vkCreateMacOSSurfaceMVK"));
-#endif //defined(VK_USE_PLATFORM_MACOS_MVK) && (defined(VK_MVK_macos_surface))
-#if defined(VK_EXT_debug_utils)
-    pfn_CreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(get_instance_proc_addr(instance.get(),"vkCreateDebugUtilsMessengerEXT"));
-    pfn_DestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(get_instance_proc_addr(instance.get(),"vkDestroyDebugUtilsMessengerEXT"));
-    pfn_SubmitDebugUtilsMessageEXT = reinterpret_cast<PFN_vkSubmitDebugUtilsMessageEXT>(get_instance_proc_addr(instance.get(),"vkSubmitDebugUtilsMessageEXT"));
-#endif //defined(VK_EXT_debug_utils)
-#if defined(VK_EXT_sample_locations)
-    pfn_GetPhysicalDeviceMultisamplePropertiesEXT = reinterpret_cast<PFN_vkGetPhysicalDeviceMultisamplePropertiesEXT>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceMultisamplePropertiesEXT"));
-#endif //defined(VK_EXT_sample_locations)
-#if defined(VK_EXT_calibrated_timestamps)
-    pfn_GetPhysicalDeviceCalibrateableTimeDomainsEXT = reinterpret_cast<PFN_vkGetPhysicalDeviceCalibrateableTimeDomainsEXT>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceCalibrateableTimeDomainsEXT"));
-#endif //defined(VK_EXT_calibrated_timestamps)
-#if defined(VK_USE_PLATFORM_FUCHSIA) && (defined(VK_FUCHSIA_imagepipe_surface))
-    pfn_CreateImagePipeSurfaceFUCHSIA = reinterpret_cast<PFN_vkCreateImagePipeSurfaceFUCHSIA>(get_instance_proc_addr(instance.get(),"vkCreateImagePipeSurfaceFUCHSIA"));
-#endif //defined(VK_USE_PLATFORM_FUCHSIA) && (defined(VK_FUCHSIA_imagepipe_surface))
-#if defined(VK_USE_PLATFORM_METAL_EXT) && (defined(VK_EXT_metal_surface))
-    pfn_CreateMetalSurfaceEXT = reinterpret_cast<PFN_vkCreateMetalSurfaceEXT>(get_instance_proc_addr(instance.get(),"vkCreateMetalSurfaceEXT"));
-#endif //defined(VK_USE_PLATFORM_METAL_EXT) && (defined(VK_EXT_metal_surface))
-#if defined(VK_EXT_tooling_info)
-    pfn_GetPhysicalDeviceToolPropertiesEXT = reinterpret_cast<PFN_vkGetPhysicalDeviceToolPropertiesEXT>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceToolPropertiesEXT"));
-#endif //defined(VK_EXT_tooling_info)
-#if defined(VK_NV_cooperative_matrix)
-    pfn_GetPhysicalDeviceCooperativeMatrixPropertiesNV = reinterpret_cast<PFN_vkGetPhysicalDeviceCooperativeMatrixPropertiesNV>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceCooperativeMatrixPropertiesNV"));
-#endif //defined(VK_NV_cooperative_matrix)
-#if defined(VK_NV_coverage_reduction_mode)
-    pfn_GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV = reinterpret_cast<PFN_vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV"));
-#endif //defined(VK_NV_coverage_reduction_mode)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
-    pfn_GetPhysicalDeviceSurfacePresentModes2EXT = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfacePresentModes2EXT>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceSurfacePresentModes2EXT"));
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
-#if defined(VK_EXT_headless_surface)
-    pfn_CreateHeadlessSurfaceEXT = reinterpret_cast<PFN_vkCreateHeadlessSurfaceEXT>(get_instance_proc_addr(instance.get(),"vkCreateHeadlessSurfaceEXT"));
-#endif //defined(VK_EXT_headless_surface)
-#if defined(VK_USE_PLATFORM_DIRECTFB_EXT) && (defined(VK_EXT_directfb_surface))
-    pfn_CreateDirectFBSurfaceEXT = reinterpret_cast<PFN_vkCreateDirectFBSurfaceEXT>(get_instance_proc_addr(instance.get(),"vkCreateDirectFBSurfaceEXT"));
-    pfn_GetPhysicalDeviceDirectFBPresentationSupportEXT = reinterpret_cast<PFN_vkGetPhysicalDeviceDirectFBPresentationSupportEXT>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceDirectFBPresentationSupportEXT"));
-#endif //defined(VK_USE_PLATFORM_DIRECTFB_EXT) && (defined(VK_EXT_directfb_surface))
+    pfn_GetPhysicalDeviceProperties = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceProperties>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceProperties"));
+    pfn_GetPhysicalDeviceQueueFamilyProperties = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceQueueFamilyProperties>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceQueueFamilyProperties"));
+    pfn_GetPhysicalDeviceMemoryProperties = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceMemoryProperties>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceMemoryProperties"));
+    pfn_GetPhysicalDeviceFeatures = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceFeatures>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceFeatures"));
+    pfn_GetPhysicalDeviceFormatProperties = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceFormatProperties>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceFormatProperties"));
+    pfn_GetPhysicalDeviceImageFormatProperties = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceImageFormatProperties>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceImageFormatProperties"));
+    pfn_CreateDevice = reinterpret_cast<detail::PFN_vkCreateDevice>(get_instance_proc_addr(instance.get(),"vkCreateDevice"));
+    pfn_EnumerateDeviceExtensionProperties = reinterpret_cast<detail::PFN_vkEnumerateDeviceExtensionProperties>(get_instance_proc_addr(instance.get(),"vkEnumerateDeviceExtensionProperties"));
+    pfn_GetPhysicalDeviceSparseImageFormatProperties = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceSparseImageFormatProperties>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceSparseImageFormatProperties"));
+    pfn_EnumeratePhysicalDeviceGroups = reinterpret_cast<detail::PFN_vkEnumeratePhysicalDeviceGroups>(get_instance_proc_addr(instance.get(),"vkEnumeratePhysicalDeviceGroups"));
+    pfn_GetPhysicalDeviceFeatures2 = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceFeatures2>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceFeatures2"));
+    pfn_GetPhysicalDeviceProperties2 = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceProperties2>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceProperties2"));
+    pfn_GetPhysicalDeviceFormatProperties2 = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceFormatProperties2>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceFormatProperties2"));
+    pfn_GetPhysicalDeviceImageFormatProperties2 = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceImageFormatProperties2>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceImageFormatProperties2"));
+    pfn_GetPhysicalDeviceQueueFamilyProperties2 = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceQueueFamilyProperties2>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceQueueFamilyProperties2"));
+    pfn_GetPhysicalDeviceMemoryProperties2 = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceMemoryProperties2>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceMemoryProperties2"));
+    pfn_GetPhysicalDeviceSparseImageFormatProperties2 = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceSparseImageFormatProperties2>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceSparseImageFormatProperties2"));
+    pfn_GetPhysicalDeviceExternalBufferProperties = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceExternalBufferProperties>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceExternalBufferProperties"));
+    pfn_GetPhysicalDeviceExternalFenceProperties = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceExternalFenceProperties>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceExternalFenceProperties"));
+    pfn_GetPhysicalDeviceExternalSemaphoreProperties = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceExternalSemaphoreProperties>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceExternalSemaphoreProperties"));
+    pfn_DestroySurfaceKHR = reinterpret_cast<detail::PFN_vkDestroySurfaceKHR>(get_instance_proc_addr(instance.get(),"vkDestroySurfaceKHR"));
+    pfn_GetPhysicalDeviceSurfaceSupportKHR = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceSurfaceSupportKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceSurfaceSupportKHR"));
+    pfn_GetPhysicalDeviceSurfaceCapabilitiesKHR = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceSurfaceCapabilitiesKHR"));
+    pfn_GetPhysicalDeviceSurfaceFormatsKHR = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceSurfaceFormatsKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceSurfaceFormatsKHR"));
+    pfn_GetPhysicalDeviceSurfacePresentModesKHR = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceSurfacePresentModesKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceSurfacePresentModesKHR"));
+    pfn_GetPhysicalDevicePresentRectanglesKHR = reinterpret_cast<detail::PFN_vkGetPhysicalDevicePresentRectanglesKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDevicePresentRectanglesKHR"));
+    pfn_GetPhysicalDeviceDisplayPropertiesKHR = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceDisplayPropertiesKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceDisplayPropertiesKHR"));
+    pfn_GetPhysicalDeviceDisplayPlanePropertiesKHR = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceDisplayPlanePropertiesKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceDisplayPlanePropertiesKHR"));
+    pfn_GetDisplayPlaneSupportedDisplaysKHR = reinterpret_cast<detail::PFN_vkGetDisplayPlaneSupportedDisplaysKHR>(get_instance_proc_addr(instance.get(),"vkGetDisplayPlaneSupportedDisplaysKHR"));
+    pfn_GetDisplayModePropertiesKHR = reinterpret_cast<detail::PFN_vkGetDisplayModePropertiesKHR>(get_instance_proc_addr(instance.get(),"vkGetDisplayModePropertiesKHR"));
+    pfn_CreateDisplayModeKHR = reinterpret_cast<detail::PFN_vkCreateDisplayModeKHR>(get_instance_proc_addr(instance.get(),"vkCreateDisplayModeKHR"));
+    pfn_GetDisplayPlaneCapabilitiesKHR = reinterpret_cast<detail::PFN_vkGetDisplayPlaneCapabilitiesKHR>(get_instance_proc_addr(instance.get(),"vkGetDisplayPlaneCapabilitiesKHR"));
+    pfn_CreateDisplayPlaneSurfaceKHR = reinterpret_cast<detail::PFN_vkCreateDisplayPlaneSurfaceKHR>(get_instance_proc_addr(instance.get(),"vkCreateDisplayPlaneSurfaceKHR"));
+#if defined(VK_USE_PLATFORM_XLIB_KHR)
+    pfn_CreateXlibSurfaceKHR = reinterpret_cast<detail::PFN_vkCreateXlibSurfaceKHR>(get_instance_proc_addr(instance.get(),"vkCreateXlibSurfaceKHR"));
+#endif // VK_USE_PLATFORM_XLIB_KHR
+#if defined(VK_USE_PLATFORM_XLIB_KHR)
+    pfn_GetPhysicalDeviceXlibPresentationSupportKHR = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceXlibPresentationSupportKHR"));
+#endif // VK_USE_PLATFORM_XLIB_KHR
+#if defined(VK_USE_PLATFORM_XCB_KHR)
+    pfn_CreateXcbSurfaceKHR = reinterpret_cast<detail::PFN_vkCreateXcbSurfaceKHR>(get_instance_proc_addr(instance.get(),"vkCreateXcbSurfaceKHR"));
+#endif // VK_USE_PLATFORM_XCB_KHR
+#if defined(VK_USE_PLATFORM_XCB_KHR)
+    pfn_GetPhysicalDeviceXcbPresentationSupportKHR = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceXcbPresentationSupportKHR"));
+#endif // VK_USE_PLATFORM_XCB_KHR
+#if defined(VK_USE_PLATFORM_WAYLAND_KHR)
+    pfn_CreateWaylandSurfaceKHR = reinterpret_cast<detail::PFN_vkCreateWaylandSurfaceKHR>(get_instance_proc_addr(instance.get(),"vkCreateWaylandSurfaceKHR"));
+#endif // VK_USE_PLATFORM_WAYLAND_KHR
+#if defined(VK_USE_PLATFORM_WAYLAND_KHR)
+    pfn_GetPhysicalDeviceWaylandPresentationSupportKHR = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceWaylandPresentationSupportKHR"));
+#endif // VK_USE_PLATFORM_WAYLAND_KHR
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
+    pfn_CreateAndroidSurfaceKHR = reinterpret_cast<detail::PFN_vkCreateAndroidSurfaceKHR>(get_instance_proc_addr(instance.get(),"vkCreateAndroidSurfaceKHR"));
+#endif // VK_USE_PLATFORM_ANDROID_KHR
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    pfn_CreateWin32SurfaceKHR = reinterpret_cast<detail::PFN_vkCreateWin32SurfaceKHR>(get_instance_proc_addr(instance.get(),"vkCreateWin32SurfaceKHR"));
+#endif // VK_USE_PLATFORM_WIN32_KHR
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    pfn_GetPhysicalDeviceWin32PresentationSupportKHR = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceWin32PresentationSupportKHR"));
+#endif // VK_USE_PLATFORM_WIN32_KHR
+    pfn_CreateDebugReportCallbackEXT = reinterpret_cast<detail::PFN_vkCreateDebugReportCallbackEXT>(get_instance_proc_addr(instance.get(),"vkCreateDebugReportCallbackEXT"));
+    pfn_DestroyDebugReportCallbackEXT = reinterpret_cast<detail::PFN_vkDestroyDebugReportCallbackEXT>(get_instance_proc_addr(instance.get(),"vkDestroyDebugReportCallbackEXT"));
+    pfn_DebugReportMessageEXT = reinterpret_cast<detail::PFN_vkDebugReportMessageEXT>(get_instance_proc_addr(instance.get(),"vkDebugReportMessageEXT"));
+#if defined(VK_USE_PLATFORM_GGP)
+    pfn_CreateStreamDescriptorSurfaceGGP = reinterpret_cast<detail::PFN_vkCreateStreamDescriptorSurfaceGGP>(get_instance_proc_addr(instance.get(),"vkCreateStreamDescriptorSurfaceGGP"));
+#endif // VK_USE_PLATFORM_GGP
+    pfn_GetPhysicalDeviceExternalImageFormatPropertiesNV = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceExternalImageFormatPropertiesNV>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceExternalImageFormatPropertiesNV"));
+#if defined(VK_USE_PLATFORM_VI_NN)
+    pfn_CreateViSurfaceNN = reinterpret_cast<detail::PFN_vkCreateViSurfaceNN>(get_instance_proc_addr(instance.get(),"vkCreateViSurfaceNN"));
+#endif // VK_USE_PLATFORM_VI_NN
+    pfn_ReleaseDisplayEXT = reinterpret_cast<detail::PFN_vkReleaseDisplayEXT>(get_instance_proc_addr(instance.get(),"vkReleaseDisplayEXT"));
+#if defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT)
+    pfn_AcquireXlibDisplayEXT = reinterpret_cast<detail::PFN_vkAcquireXlibDisplayEXT>(get_instance_proc_addr(instance.get(),"vkAcquireXlibDisplayEXT"));
+#endif // VK_USE_PLATFORM_XLIB_XRANDR_EXT
+#if defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT)
+    pfn_GetRandROutputDisplayEXT = reinterpret_cast<detail::PFN_vkGetRandROutputDisplayEXT>(get_instance_proc_addr(instance.get(),"vkGetRandROutputDisplayEXT"));
+#endif // VK_USE_PLATFORM_XLIB_XRANDR_EXT
+    pfn_GetPhysicalDeviceSurfaceCapabilities2EXT = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceSurfaceCapabilities2EXT>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceSurfaceCapabilities2EXT"));
+    pfn_EnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR = reinterpret_cast<detail::PFN_vkEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR>(get_instance_proc_addr(instance.get(),"vkEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR"));
+    pfn_GetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR"));
+    pfn_GetPhysicalDeviceSurfaceCapabilities2KHR = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceSurfaceCapabilities2KHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceSurfaceCapabilities2KHR"));
+    pfn_GetPhysicalDeviceSurfaceFormats2KHR = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceSurfaceFormats2KHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceSurfaceFormats2KHR"));
+    pfn_GetPhysicalDeviceDisplayProperties2KHR = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceDisplayProperties2KHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceDisplayProperties2KHR"));
+    pfn_GetPhysicalDeviceDisplayPlaneProperties2KHR = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceDisplayPlaneProperties2KHR>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceDisplayPlaneProperties2KHR"));
+    pfn_GetDisplayModeProperties2KHR = reinterpret_cast<detail::PFN_vkGetDisplayModeProperties2KHR>(get_instance_proc_addr(instance.get(),"vkGetDisplayModeProperties2KHR"));
+    pfn_GetDisplayPlaneCapabilities2KHR = reinterpret_cast<detail::PFN_vkGetDisplayPlaneCapabilities2KHR>(get_instance_proc_addr(instance.get(),"vkGetDisplayPlaneCapabilities2KHR"));
+#if defined(VK_USE_PLATFORM_IOS_MVK)
+    pfn_CreateIOSSurfaceMVK = reinterpret_cast<detail::PFN_vkCreateIOSSurfaceMVK>(get_instance_proc_addr(instance.get(),"vkCreateIOSSurfaceMVK"));
+#endif // VK_USE_PLATFORM_IOS_MVK
+#if defined(VK_USE_PLATFORM_MACOS_MVK)
+    pfn_CreateMacOSSurfaceMVK = reinterpret_cast<detail::PFN_vkCreateMacOSSurfaceMVK>(get_instance_proc_addr(instance.get(),"vkCreateMacOSSurfaceMVK"));
+#endif // VK_USE_PLATFORM_MACOS_MVK
+    pfn_CreateDebugUtilsMessengerEXT = reinterpret_cast<detail::PFN_vkCreateDebugUtilsMessengerEXT>(get_instance_proc_addr(instance.get(),"vkCreateDebugUtilsMessengerEXT"));
+    pfn_DestroyDebugUtilsMessengerEXT = reinterpret_cast<detail::PFN_vkDestroyDebugUtilsMessengerEXT>(get_instance_proc_addr(instance.get(),"vkDestroyDebugUtilsMessengerEXT"));
+    pfn_SubmitDebugUtilsMessageEXT = reinterpret_cast<detail::PFN_vkSubmitDebugUtilsMessageEXT>(get_instance_proc_addr(instance.get(),"vkSubmitDebugUtilsMessageEXT"));
+    pfn_GetPhysicalDeviceMultisamplePropertiesEXT = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceMultisamplePropertiesEXT>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceMultisamplePropertiesEXT"));
+    pfn_GetPhysicalDeviceCalibrateableTimeDomainsEXT = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceCalibrateableTimeDomainsEXT>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceCalibrateableTimeDomainsEXT"));
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+    pfn_CreateImagePipeSurfaceFUCHSIA = reinterpret_cast<detail::PFN_vkCreateImagePipeSurfaceFUCHSIA>(get_instance_proc_addr(instance.get(),"vkCreateImagePipeSurfaceFUCHSIA"));
+#endif // VK_USE_PLATFORM_FUCHSIA
+#if defined(VK_USE_PLATFORM_METAL_EXT)
+    pfn_CreateMetalSurfaceEXT = reinterpret_cast<detail::PFN_vkCreateMetalSurfaceEXT>(get_instance_proc_addr(instance.get(),"vkCreateMetalSurfaceEXT"));
+#endif // VK_USE_PLATFORM_METAL_EXT
+    pfn_GetPhysicalDeviceToolPropertiesEXT = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceToolPropertiesEXT>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceToolPropertiesEXT"));
+    pfn_GetPhysicalDeviceCooperativeMatrixPropertiesNV = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceCooperativeMatrixPropertiesNV>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceCooperativeMatrixPropertiesNV"));
+    pfn_GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV"));
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    pfn_GetPhysicalDeviceSurfacePresentModes2EXT = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceSurfacePresentModes2EXT>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceSurfacePresentModes2EXT"));
+#endif // VK_USE_PLATFORM_WIN32_KHR
+    pfn_CreateHeadlessSurfaceEXT = reinterpret_cast<detail::PFN_vkCreateHeadlessSurfaceEXT>(get_instance_proc_addr(instance.get(),"vkCreateHeadlessSurfaceEXT"));
+#if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
+    pfn_CreateDirectFBSurfaceEXT = reinterpret_cast<detail::PFN_vkCreateDirectFBSurfaceEXT>(get_instance_proc_addr(instance.get(),"vkCreateDirectFBSurfaceEXT"));
+#endif // VK_USE_PLATFORM_DIRECTFB_EXT
+#if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
+    pfn_GetPhysicalDeviceDirectFBPresentationSupportEXT = reinterpret_cast<detail::PFN_vkGetPhysicalDeviceDirectFBPresentationSupportEXT>(get_instance_proc_addr(instance.get(),"vkGetPhysicalDeviceDirectFBPresentationSupportEXT"));
+#endif // VK_USE_PLATFORM_DIRECTFB_EXT
 }
-#if defined(VK_VERSION_1_0)
 void DeviceFunctions::DestroyDevice(const AllocationCallbacks* pAllocator) const {
     pfn_DestroyDevice(device.get(),
         reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
@@ -2484,8 +2423,6 @@ void DeviceFunctions::CmdExecuteCommands(CommandBuffer commandBuffer,
         commandBufferCount,
         reinterpret_cast<const VkCommandBuffer*>(CommandBuffers.data()));
 }
-#endif //defined(VK_VERSION_1_0)
-#if defined(VK_VERSION_1_1)
 [[nodiscard]] Result DeviceFunctions::BindBufferMemory2(uint32_t bindInfoCount, 
     const BindBufferMemoryInfo* pBindInfos) const {
     return static_cast<Result>(pfn_BindBufferMemory2(device.get(),
@@ -2627,8 +2564,6 @@ void DeviceFunctions::UpdateDescriptorSetWithTemplate(DescriptorSet descriptorSe
         reinterpret_cast<VkDescriptorSetLayoutSupport*>(&pSupport));
     return pSupport;
 }
-#endif //defined(VK_VERSION_1_1)
-#if defined(VK_VERSION_1_2)
 void DeviceFunctions::CmdDrawIndirectCount(CommandBuffer commandBuffer, 
     Buffer buffer, 
     DeviceSize offset, 
@@ -2724,8 +2659,6 @@ void DeviceFunctions::ResetQueryPool(QueryPool queryPool,
     return pfn_GetDeviceMemoryOpaqueCaptureAddress(device.get(),
         reinterpret_cast<const VkDeviceMemoryOpaqueCaptureAddressInfo*>(&pInfo));
 }
-#endif //defined(VK_VERSION_1_2)
-#if defined(VK_KHR_swapchain)
 [[nodiscard]] expected<SwapchainKHR> DeviceFunctions::CreateSwapchainKHR(const SwapchainCreateInfoKHR&  pCreateInfo, 
     const AllocationCallbacks* pAllocator) const {
     SwapchainKHR pSwapchain;
@@ -2774,8 +2707,6 @@ void DeviceFunctions::DestroySwapchainKHR(SwapchainKHR swapchain,
     return static_cast<Result>(pfn_QueuePresentKHR(queue.get(),
         reinterpret_cast<const VkPresentInfoKHR*>(&pPresentInfo)));
 }
-#endif //defined(VK_KHR_swapchain)
-#if (defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
 [[nodiscard]] expected<DeviceGroupPresentCapabilitiesKHR> DeviceFunctions::GetDeviceGroupPresentCapabilitiesKHR() const {
     DeviceGroupPresentCapabilitiesKHR pDeviceGroupPresentCapabilities;
     vk::Result result = static_cast<Result>(pfn_GetDeviceGroupPresentCapabilitiesKHR(device.get(),
@@ -2789,8 +2720,6 @@ void DeviceFunctions::DestroySwapchainKHR(SwapchainKHR swapchain,
         reinterpret_cast<VkDeviceGroupPresentModeFlagsKHR*>(&pModes)));
     return expected<DeviceGroupPresentModeFlagsKHR>(pModes, result);
 }
-#endif //(defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
-#if (defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_swapchain))
 [[nodiscard]] expected<uint32_t> DeviceFunctions::AcquireNextImage2KHR(const AcquireNextImageInfoKHR&  pAcquireInfo) const {
     uint32_t pImageIndex;
     vk::Result result = static_cast<Result>(pfn_AcquireNextImage2KHR(device.get(),
@@ -2798,8 +2727,6 @@ void DeviceFunctions::DestroySwapchainKHR(SwapchainKHR swapchain,
         &pImageIndex));
     return expected<uint32_t>(pImageIndex, result);
 }
-#endif //(defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_swapchain))
-#if defined(VK_KHR_display_swapchain)
 [[nodiscard]] Result DeviceFunctions::CreateSharedSwapchainsKHR(uint32_t swapchainCount, 
     const SwapchainCreateInfoKHR* pCreateInfos, 
     const AllocationCallbacks* pAllocator, 
@@ -2820,8 +2747,6 @@ void DeviceFunctions::DestroySwapchainKHR(SwapchainKHR swapchain,
         reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
         reinterpret_cast<VkSwapchainKHR*>(Swapchains.data())));
 }
-#endif //defined(VK_KHR_display_swapchain)
-#if defined(VK_EXT_debug_marker)
 [[nodiscard]] Result DeviceFunctions::DebugMarkerSetObjectNameEXT(const DebugMarkerObjectNameInfoEXT&  pNameInfo) const {
     return static_cast<Result>(pfn_DebugMarkerSetObjectNameEXT(device.get(),
         reinterpret_cast<const VkDebugMarkerObjectNameInfoEXT*>(&pNameInfo)));
@@ -2843,8 +2768,6 @@ void DeviceFunctions::CmdDebugMarkerInsertEXT(CommandBuffer commandBuffer,
     pfn_CmdDebugMarkerInsertEXT(commandBuffer.get(),
         reinterpret_cast<const VkDebugMarkerMarkerInfoEXT*>(&pMarkerInfo));
 }
-#endif //defined(VK_EXT_debug_marker)
-#if defined(VK_EXT_transform_feedback)
 void DeviceFunctions::CmdBindTransformFeedbackBuffersEXT(CommandBuffer commandBuffer, 
     uint32_t firstBinding, 
     uint32_t bindingCount, 
@@ -2950,8 +2873,6 @@ void DeviceFunctions::CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer,
         counterOffset,
         vertexStride);
 }
-#endif //defined(VK_EXT_transform_feedback)
-#if defined(VK_NVX_image_view_handle)
 [[nodiscard]] uint32_t DeviceFunctions::GetImageViewHandleNVX(const ImageViewHandleInfoNVX&  pInfo) const {
     return pfn_GetImageViewHandleNVX(device.get(),
         reinterpret_cast<const VkImageViewHandleInfoNVX*>(&pInfo));
@@ -2963,8 +2884,6 @@ void DeviceFunctions::CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer,
         reinterpret_cast<VkImageViewAddressPropertiesNVX*>(&pProperties)));
     return expected<ImageViewAddressPropertiesNVX>(pProperties, result);
 }
-#endif //defined(VK_NVX_image_view_handle)
-#if defined(VK_AMD_shader_info)
 [[nodiscard]] expected<detail::fixed_vector<void*>> DeviceFunctions::GetShaderInfoAMD(Pipeline pipeline, 
     ShaderStageFlagBits shaderStage, 
     ShaderInfoTypeAMD infoType) const {
@@ -2986,8 +2905,7 @@ void DeviceFunctions::CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer,
     if (pInfoSize < pInfo.size()) pInfo.shrink(pInfoSize);
     return expected(std::move(pInfo), result);
 }
-#endif //defined(VK_AMD_shader_info)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_NV_external_memory_win32))
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] expected<HANDLE> DeviceFunctions::GetMemoryWin32HandleNV(DeviceMemory memory, 
     ExternalMemoryHandleTypeFlagsNV handleType) const {
     HANDLE pHandle;
@@ -2997,8 +2915,8 @@ void DeviceFunctions::CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer,
         reinterpret_cast<HANDLE*>(&pHandle)));
     return expected<HANDLE>(pHandle, result);
 }
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_NV_external_memory_win32))
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_memory_win32))
+#endif // VK_USE_PLATFORM_WIN32_KHR
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] expected<HANDLE> DeviceFunctions::GetMemoryWin32HandleKHR(const MemoryGetWin32HandleInfoKHR&  pGetWin32HandleInfo) const {
     HANDLE pHandle;
     vk::Result result = static_cast<Result>(pfn_GetMemoryWin32HandleKHR(device.get(),
@@ -3006,6 +2924,8 @@ void DeviceFunctions::CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer,
         reinterpret_cast<HANDLE*>(&pHandle)));
     return expected<HANDLE>(pHandle, result);
 }
+#endif // VK_USE_PLATFORM_WIN32_KHR
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] expected<MemoryWin32HandlePropertiesKHR> DeviceFunctions::GetMemoryWin32HandlePropertiesKHR(ExternalMemoryHandleTypeFlagBits handleType, 
     HANDLE handle) const {
     MemoryWin32HandlePropertiesKHR pMemoryWin32HandleProperties;
@@ -3015,8 +2935,7 @@ void DeviceFunctions::CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer,
         reinterpret_cast<VkMemoryWin32HandlePropertiesKHR*>(&pMemoryWin32HandleProperties)));
     return expected<MemoryWin32HandlePropertiesKHR>(pMemoryWin32HandleProperties, result);
 }
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_memory_win32))
-#if defined(VK_KHR_external_memory_fd)
+#endif // VK_USE_PLATFORM_WIN32_KHR
 [[nodiscard]] expected<int> DeviceFunctions::GetMemoryFdKHR(const MemoryGetFdInfoKHR&  pGetFdInfo) const {
     int pFd;
     vk::Result result = static_cast<Result>(pfn_GetMemoryFdKHR(device.get(),
@@ -3033,8 +2952,7 @@ void DeviceFunctions::CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer,
         reinterpret_cast<VkMemoryFdPropertiesKHR*>(&pMemoryFdProperties)));
     return expected<MemoryFdPropertiesKHR>(pMemoryFdProperties, result);
 }
-#endif //defined(VK_KHR_external_memory_fd)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_semaphore_win32))
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] expected<HANDLE> DeviceFunctions::GetSemaphoreWin32HandleKHR(const SemaphoreGetWin32HandleInfoKHR&  pGetWin32HandleInfo) const {
     HANDLE pHandle;
     vk::Result result = static_cast<Result>(pfn_GetSemaphoreWin32HandleKHR(device.get(),
@@ -3042,12 +2960,13 @@ void DeviceFunctions::CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer,
         reinterpret_cast<HANDLE*>(&pHandle)));
     return expected<HANDLE>(pHandle, result);
 }
+#endif // VK_USE_PLATFORM_WIN32_KHR
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] Result DeviceFunctions::ImportSemaphoreWin32HandleKHR(const ImportSemaphoreWin32HandleInfoKHR&  pImportSemaphoreWin32HandleInfo) const {
     return static_cast<Result>(pfn_ImportSemaphoreWin32HandleKHR(device.get(),
         reinterpret_cast<const VkImportSemaphoreWin32HandleInfoKHR*>(&pImportSemaphoreWin32HandleInfo)));
 }
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_semaphore_win32))
-#if defined(VK_KHR_external_semaphore_fd)
+#endif // VK_USE_PLATFORM_WIN32_KHR
 [[nodiscard]] expected<int> DeviceFunctions::GetSemaphoreFdKHR(const SemaphoreGetFdInfoKHR&  pGetFdInfo) const {
     int pFd;
     vk::Result result = static_cast<Result>(pfn_GetSemaphoreFdKHR(device.get(),
@@ -3059,8 +2978,6 @@ void DeviceFunctions::CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer,
     return static_cast<Result>(pfn_ImportSemaphoreFdKHR(device.get(),
         reinterpret_cast<const VkImportSemaphoreFdInfoKHR*>(&pImportSemaphoreFdInfo)));
 }
-#endif //defined(VK_KHR_external_semaphore_fd)
-#if defined(VK_KHR_push_descriptor)
 void DeviceFunctions::CmdPushDescriptorSetKHR(CommandBuffer commandBuffer, 
     PipelineBindPoint pipelineBindPoint, 
     PipelineLayout layout, 
@@ -3087,8 +3004,6 @@ void DeviceFunctions::CmdPushDescriptorSetKHR(CommandBuffer commandBuffer,
         descriptorWriteCount,
         reinterpret_cast<const VkWriteDescriptorSet*>(DescriptorWrites.data()));
 }
-#endif //defined(VK_KHR_push_descriptor)
-#if (defined(VK_KHR_push_descriptor) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_push_descriptor) && defined(VK_KHR_descriptor_update_template)) || (defined(VK_KHR_descriptor_update_template) && defined(VK_KHR_push_descriptor))
 void DeviceFunctions::CmdPushDescriptorSetWithTemplateKHR(CommandBuffer commandBuffer, 
     DescriptorUpdateTemplate descriptorUpdateTemplate, 
     PipelineLayout layout, 
@@ -3100,8 +3015,6 @@ void DeviceFunctions::CmdPushDescriptorSetWithTemplateKHR(CommandBuffer commandB
         set,
         reinterpret_cast<const void*>(pData));
 }
-#endif //(defined(VK_KHR_push_descriptor) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_push_descriptor) && defined(VK_KHR_descriptor_update_template)) || (defined(VK_KHR_descriptor_update_template) && defined(VK_KHR_push_descriptor))
-#if defined(VK_EXT_conditional_rendering)
 void DeviceFunctions::CmdBeginConditionalRenderingEXT(CommandBuffer commandBuffer, 
     const ConditionalRenderingBeginInfoEXT&  pConditionalRenderingBegin) const {
     pfn_CmdBeginConditionalRenderingEXT(commandBuffer.get(),
@@ -3110,8 +3023,6 @@ void DeviceFunctions::CmdBeginConditionalRenderingEXT(CommandBuffer commandBuffe
 void DeviceFunctions::CmdEndConditionalRenderingEXT(CommandBuffer commandBuffer) const {
     pfn_CmdEndConditionalRenderingEXT(commandBuffer.get());
 }
-#endif //defined(VK_EXT_conditional_rendering)
-#if defined(VK_NV_clip_space_w_scaling)
 void DeviceFunctions::CmdSetViewportWScalingNV(CommandBuffer commandBuffer, 
     uint32_t firstViewport, 
     uint32_t viewportCount, 
@@ -3130,8 +3041,6 @@ void DeviceFunctions::CmdSetViewportWScalingNV(CommandBuffer commandBuffer,
         viewportCount,
         reinterpret_cast<const VkViewportWScalingNV*>(ViewportWScalings.data()));
 }
-#endif //defined(VK_NV_clip_space_w_scaling)
-#if defined(VK_EXT_display_control)
 [[nodiscard]] Result DeviceFunctions::DisplayPowerControlEXT(DisplayKHR display, 
     const DisplayPowerInfoEXT&  pDisplayPowerInfo) const {
     return static_cast<Result>(pfn_DisplayPowerControlEXT(device.get(),
@@ -3167,8 +3076,6 @@ void DeviceFunctions::CmdSetViewportWScalingNV(CommandBuffer commandBuffer,
         &pCounterValue));
     return expected<uint64_t>(pCounterValue, result);
 }
-#endif //defined(VK_EXT_display_control)
-#if defined(VK_GOOGLE_display_timing)
 [[nodiscard]] expected<RefreshCycleDurationGOOGLE> DeviceFunctions::GetRefreshCycleDurationGOOGLE(SwapchainKHR swapchain) const {
     RefreshCycleDurationGOOGLE pDisplayTimingProperties;
     vk::Result result = static_cast<Result>(pfn_GetRefreshCycleDurationGOOGLE(device.get(),
@@ -3191,8 +3098,6 @@ void DeviceFunctions::CmdSetViewportWScalingNV(CommandBuffer commandBuffer,
     if (pPresentationTimingCount < pPresentationTimings.size()) pPresentationTimings.shrink(pPresentationTimingCount);
     return expected(std::move(pPresentationTimings), result);
 }
-#endif //defined(VK_GOOGLE_display_timing)
-#if defined(VK_EXT_discard_rectangles)
 void DeviceFunctions::CmdSetDiscardRectangleEXT(CommandBuffer commandBuffer, 
     uint32_t firstDiscardRectangle, 
     uint32_t discardRectangleCount, 
@@ -3211,8 +3116,6 @@ void DeviceFunctions::CmdSetDiscardRectangleEXT(CommandBuffer commandBuffer,
         discardRectangleCount,
         reinterpret_cast<const VkRect2D*>(DiscardRectangles.data()));
 }
-#endif //defined(VK_EXT_discard_rectangles)
-#if defined(VK_EXT_hdr_metadata)
 void DeviceFunctions::SetHdrMetadataEXT(uint32_t swapchainCount, 
     const SwapchainKHR* pSwapchains, 
     const HdrMetadataEXT* pMetadata) const {
@@ -3229,14 +3132,11 @@ void DeviceFunctions::SetHdrMetadataEXT(std::span<SwapchainKHR> Swapchains,
         reinterpret_cast<const VkSwapchainKHR*>(Swapchains.data()),
         reinterpret_cast<const VkHdrMetadataEXT*>(Metadata.data()));
 }
-#endif //defined(VK_EXT_hdr_metadata)
-#if defined(VK_KHR_shared_presentable_image)
 [[nodiscard]] Result DeviceFunctions::GetSwapchainStatusKHR(SwapchainKHR swapchain) const {
     return static_cast<Result>(pfn_GetSwapchainStatusKHR(device.get(),
         swapchain.get()));
 }
-#endif //defined(VK_KHR_shared_presentable_image)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_fence_win32))
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] expected<HANDLE> DeviceFunctions::GetFenceWin32HandleKHR(const FenceGetWin32HandleInfoKHR&  pGetWin32HandleInfo) const {
     HANDLE pHandle;
     vk::Result result = static_cast<Result>(pfn_GetFenceWin32HandleKHR(device.get(),
@@ -3244,12 +3144,13 @@ void DeviceFunctions::SetHdrMetadataEXT(std::span<SwapchainKHR> Swapchains,
         reinterpret_cast<HANDLE*>(&pHandle)));
     return expected<HANDLE>(pHandle, result);
 }
+#endif // VK_USE_PLATFORM_WIN32_KHR
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] Result DeviceFunctions::ImportFenceWin32HandleKHR(const ImportFenceWin32HandleInfoKHR&  pImportFenceWin32HandleInfo) const {
     return static_cast<Result>(pfn_ImportFenceWin32HandleKHR(device.get(),
         reinterpret_cast<const VkImportFenceWin32HandleInfoKHR*>(&pImportFenceWin32HandleInfo)));
 }
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_fence_win32))
-#if defined(VK_KHR_external_fence_fd)
+#endif // VK_USE_PLATFORM_WIN32_KHR
 [[nodiscard]] expected<int> DeviceFunctions::GetFenceFdKHR(const FenceGetFdInfoKHR&  pGetFdInfo) const {
     int pFd;
     vk::Result result = static_cast<Result>(pfn_GetFenceFdKHR(device.get(),
@@ -3261,8 +3162,6 @@ void DeviceFunctions::SetHdrMetadataEXT(std::span<SwapchainKHR> Swapchains,
     return static_cast<Result>(pfn_ImportFenceFdKHR(device.get(),
         reinterpret_cast<const VkImportFenceFdInfoKHR*>(&pImportFenceFdInfo)));
 }
-#endif //defined(VK_KHR_external_fence_fd)
-#if defined(VK_KHR_performance_query)
 [[nodiscard]] Result DeviceFunctions::AcquireProfilingLockKHR(const AcquireProfilingLockInfoKHR&  pInfo) const {
     return static_cast<Result>(pfn_AcquireProfilingLockKHR(device.get(),
         reinterpret_cast<const VkAcquireProfilingLockInfoKHR*>(&pInfo)));
@@ -3270,8 +3169,6 @@ void DeviceFunctions::SetHdrMetadataEXT(std::span<SwapchainKHR> Swapchains,
 void DeviceFunctions::ReleaseProfilingLockKHR() const {
     pfn_ReleaseProfilingLockKHR(device.get());
 }
-#endif //defined(VK_KHR_performance_query)
-#if defined(VK_EXT_debug_utils)
 [[nodiscard]] Result DeviceFunctions::SetDebugUtilsObjectNameEXT(const DebugUtilsObjectNameInfoEXT&  pNameInfo) const {
     return static_cast<Result>(pfn_SetDebugUtilsObjectNameEXT(device.get(),
         reinterpret_cast<const VkDebugUtilsObjectNameInfoEXT*>(&pNameInfo)));
@@ -3306,8 +3203,7 @@ void DeviceFunctions::CmdInsertDebugUtilsLabelEXT(CommandBuffer commandBuffer,
     pfn_CmdInsertDebugUtilsLabelEXT(commandBuffer.get(),
         reinterpret_cast<const VkDebugUtilsLabelEXT*>(&pLabelInfo));
 }
-#endif //defined(VK_EXT_debug_utils)
-#if defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_ANDROID_external_memory_android_hardware_buffer))
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
 [[nodiscard]] expected<AndroidHardwareBufferPropertiesANDROID> DeviceFunctions::GetAndroidHardwareBufferPropertiesANDROID(const AHardwareBuffer&  buffer) const {
     AndroidHardwareBufferPropertiesANDROID pProperties;
     vk::Result result = static_cast<Result>(pfn_GetAndroidHardwareBufferPropertiesANDROID(device.get(),
@@ -3315,6 +3211,8 @@ void DeviceFunctions::CmdInsertDebugUtilsLabelEXT(CommandBuffer commandBuffer,
         reinterpret_cast<VkAndroidHardwareBufferPropertiesANDROID*>(&pProperties)));
     return expected<AndroidHardwareBufferPropertiesANDROID>(pProperties, result);
 }
+#endif // VK_USE_PLATFORM_ANDROID_KHR
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
 [[nodiscard]] expected<AHardwareBuffer*> DeviceFunctions::GetMemoryAndroidHardwareBufferANDROID(const MemoryGetAndroidHardwareBufferInfoANDROID&  pInfo) const {
     AHardwareBuffer* pBuffer;
     vk::Result result = static_cast<Result>(pfn_GetMemoryAndroidHardwareBufferANDROID(device.get(),
@@ -3322,21 +3220,21 @@ void DeviceFunctions::CmdInsertDebugUtilsLabelEXT(CommandBuffer commandBuffer,
         &pBuffer));
     return expected<AHardwareBuffer*>(pBuffer, result);
 }
-#endif //defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_ANDROID_external_memory_android_hardware_buffer))
-#if defined(VK_EXT_sample_locations)
+#endif // VK_USE_PLATFORM_ANDROID_KHR
 void DeviceFunctions::CmdSetSampleLocationsEXT(CommandBuffer commandBuffer, 
     const SampleLocationsInfoEXT&  pSampleLocationsInfo) const {
     pfn_CmdSetSampleLocationsEXT(commandBuffer.get(),
         reinterpret_cast<const VkSampleLocationsInfoEXT*>(&pSampleLocationsInfo));
 }
-#endif //defined(VK_EXT_sample_locations)
-#if defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_ray_tracing))
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 void DeviceFunctions::DestroyAccelerationStructureKHR(AccelerationStructureKHR accelerationStructure, 
     const AllocationCallbacks* pAllocator) const {
     pfn_DestroyAccelerationStructureKHR(device.get(),
         accelerationStructure.get(),
         reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
 }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 [[nodiscard]] MemoryRequirements2 DeviceFunctions::GetAccelerationStructureMemoryRequirementsKHR(const AccelerationStructureMemoryRequirementsInfoKHR&  pInfo) const {
     MemoryRequirements2 pMemoryRequirements;
     pfn_GetAccelerationStructureMemoryRequirementsKHR(device.get(),
@@ -3344,6 +3242,8 @@ void DeviceFunctions::DestroyAccelerationStructureKHR(AccelerationStructureKHR a
         reinterpret_cast<VkMemoryRequirements2*>(&pMemoryRequirements));
     return pMemoryRequirements;
 }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 [[nodiscard]] Result DeviceFunctions::BindAccelerationStructureMemoryKHR(uint32_t bindInfoCount, 
     const BindAccelerationStructureMemoryInfoKHR* pBindInfos) const {
     return static_cast<Result>(pfn_BindAccelerationStructureMemoryKHR(device.get(),
@@ -3356,33 +3256,47 @@ void DeviceFunctions::DestroyAccelerationStructureKHR(AccelerationStructureKHR a
         bindInfoCount,
         reinterpret_cast<const VkBindAccelerationStructureMemoryInfoKHR*>(BindInfos.data())));
 }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 void DeviceFunctions::CmdCopyAccelerationStructureKHR(CommandBuffer commandBuffer, 
     const CopyAccelerationStructureInfoKHR&  pInfo) const {
     pfn_CmdCopyAccelerationStructureKHR(commandBuffer.get(),
         reinterpret_cast<const VkCopyAccelerationStructureInfoKHR*>(&pInfo));
 }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 [[nodiscard]] Result DeviceFunctions::CopyAccelerationStructureKHR(const CopyAccelerationStructureInfoKHR&  pInfo) const {
     return static_cast<Result>(pfn_CopyAccelerationStructureKHR(device.get(),
         reinterpret_cast<const VkCopyAccelerationStructureInfoKHR*>(&pInfo)));
 }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 void DeviceFunctions::CmdCopyAccelerationStructureToMemoryKHR(CommandBuffer commandBuffer, 
     const CopyAccelerationStructureToMemoryInfoKHR&  pInfo) const {
     pfn_CmdCopyAccelerationStructureToMemoryKHR(commandBuffer.get(),
         reinterpret_cast<const VkCopyAccelerationStructureToMemoryInfoKHR*>(&pInfo));
 }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 [[nodiscard]] Result DeviceFunctions::CopyAccelerationStructureToMemoryKHR(const CopyAccelerationStructureToMemoryInfoKHR&  pInfo) const {
     return static_cast<Result>(pfn_CopyAccelerationStructureToMemoryKHR(device.get(),
         reinterpret_cast<const VkCopyAccelerationStructureToMemoryInfoKHR*>(&pInfo)));
 }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 void DeviceFunctions::CmdCopyMemoryToAccelerationStructureKHR(CommandBuffer commandBuffer, 
     const CopyMemoryToAccelerationStructureInfoKHR&  pInfo) const {
     pfn_CmdCopyMemoryToAccelerationStructureKHR(commandBuffer.get(),
         reinterpret_cast<const VkCopyMemoryToAccelerationStructureInfoKHR*>(&pInfo));
 }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 [[nodiscard]] Result DeviceFunctions::CopyMemoryToAccelerationStructureKHR(const CopyMemoryToAccelerationStructureInfoKHR&  pInfo) const {
     return static_cast<Result>(pfn_CopyMemoryToAccelerationStructureKHR(device.get(),
         reinterpret_cast<const VkCopyMemoryToAccelerationStructureInfoKHR*>(&pInfo)));
 }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 void DeviceFunctions::CmdWriteAccelerationStructuresPropertiesKHR(CommandBuffer commandBuffer, 
     uint32_t accelerationStructureCount, 
     const AccelerationStructureKHR* pAccelerationStructures, 
@@ -3409,6 +3323,8 @@ void DeviceFunctions::CmdWriteAccelerationStructuresPropertiesKHR(CommandBuffer 
         queryPool.get(),
         firstQuery);
 }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 [[nodiscard]] Result DeviceFunctions::WriteAccelerationStructuresPropertiesKHR(uint32_t accelerationStructureCount, 
     const AccelerationStructureKHR* pAccelerationStructures, 
     QueryType queryType, 
@@ -3437,6 +3353,8 @@ void DeviceFunctions::CmdWriteAccelerationStructuresPropertiesKHR(CommandBuffer 
         reinterpret_cast<void*>(Data.data()),
         stride));
 }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 void DeviceFunctions::CmdTraceRaysKHR(CommandBuffer commandBuffer, 
     const StridedBufferRegionKHR&  pRaygenShaderBindingTable, 
     const StridedBufferRegionKHR&  pMissShaderBindingTable, 
@@ -3454,6 +3372,8 @@ void DeviceFunctions::CmdTraceRaysKHR(CommandBuffer commandBuffer,
         height,
         depth);
 }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 [[nodiscard]] Result DeviceFunctions::GetRayTracingShaderGroupHandlesKHR(Pipeline pipeline, 
     uint32_t firstGroup, 
     uint32_t groupCount, 
@@ -3478,6 +3398,8 @@ void DeviceFunctions::CmdTraceRaysKHR(CommandBuffer commandBuffer,
         dataSize,
         reinterpret_cast<void*>(Data.data())));
 }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 [[nodiscard]] Result DeviceFunctions::GetRayTracingCaptureReplayShaderGroupHandlesKHR(Pipeline pipeline, 
     uint32_t firstGroup, 
     uint32_t groupCount, 
@@ -3502,6 +3424,8 @@ void DeviceFunctions::CmdTraceRaysKHR(CommandBuffer commandBuffer,
         dataSize,
         reinterpret_cast<void*>(Data.data())));
 }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 [[nodiscard]] Result DeviceFunctions::CreateRayTracingPipelinesKHR(PipelineCache pipelineCache, 
     uint32_t createInfoCount, 
     const RayTracingPipelineCreateInfoKHR* pCreateInfos, 
@@ -3526,6 +3450,8 @@ void DeviceFunctions::CmdTraceRaysKHR(CommandBuffer commandBuffer,
         reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
         reinterpret_cast<VkPipeline*>(Pipelines.data())));
 }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 void DeviceFunctions::CmdTraceRaysIndirectKHR(CommandBuffer commandBuffer, 
     const StridedBufferRegionKHR&  pRaygenShaderBindingTable, 
     const StridedBufferRegionKHR&  pMissShaderBindingTable, 
@@ -3541,10 +3467,14 @@ void DeviceFunctions::CmdTraceRaysIndirectKHR(CommandBuffer commandBuffer,
         buffer.get(),
         offset);
 }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 [[nodiscard]] Result DeviceFunctions::GetDeviceAccelerationStructureCompatibilityKHR(const AccelerationStructureVersionKHR&  version) const {
     return static_cast<Result>(pfn_GetDeviceAccelerationStructureCompatibilityKHR(device.get(),
         reinterpret_cast<const VkAccelerationStructureVersionKHR*>(&version)));
 }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 [[nodiscard]] expected<AccelerationStructureKHR> DeviceFunctions::CreateAccelerationStructureKHR(const AccelerationStructureCreateInfoKHR&  pCreateInfo, 
     const AllocationCallbacks* pAllocator) const {
     AccelerationStructureKHR pAccelerationStructure;
@@ -3554,6 +3484,8 @@ void DeviceFunctions::CmdTraceRaysIndirectKHR(CommandBuffer commandBuffer,
         reinterpret_cast<VkAccelerationStructureKHR*>(&pAccelerationStructure)));
     return expected<AccelerationStructureKHR>(pAccelerationStructure, result);
 }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 void DeviceFunctions::CmdBuildAccelerationStructureKHR(CommandBuffer commandBuffer, 
     uint32_t infoCount, 
     const AccelerationStructureBuildGeometryInfoKHR* pInfos, 
@@ -3572,6 +3504,8 @@ void DeviceFunctions::CmdBuildAccelerationStructureKHR(CommandBuffer commandBuff
         reinterpret_cast<const VkAccelerationStructureBuildGeometryInfoKHR*>(Infos.data()),
         reinterpret_cast<const VkAccelerationStructureBuildOffsetInfoKHR* const*>(pOffsetInfos.data()));
 }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 void DeviceFunctions::CmdBuildAccelerationStructureIndirectKHR(CommandBuffer commandBuffer, 
     const AccelerationStructureBuildGeometryInfoKHR&  pInfo, 
     Buffer indirectBuffer, 
@@ -3583,6 +3517,8 @@ void DeviceFunctions::CmdBuildAccelerationStructureIndirectKHR(CommandBuffer com
         indirectOffset,
         indirectStride);
 }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 [[nodiscard]] Result DeviceFunctions::BuildAccelerationStructureKHR(uint32_t infoCount, 
     const AccelerationStructureBuildGeometryInfoKHR* pInfos, 
     const AccelerationStructureBuildOffsetInfoKHR* const* ppOffsetInfos) const {
@@ -3599,12 +3535,13 @@ void DeviceFunctions::CmdBuildAccelerationStructureIndirectKHR(CommandBuffer com
         reinterpret_cast<const VkAccelerationStructureBuildGeometryInfoKHR*>(Infos.data()),
         reinterpret_cast<const VkAccelerationStructureBuildOffsetInfoKHR* const*>(pOffsetInfos.data())));
 }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 [[nodiscard]] VkDeviceAddress DeviceFunctions::GetAccelerationStructureDeviceAddressKHR(const AccelerationStructureDeviceAddressInfoKHR&  pInfo) const {
     return pfn_GetAccelerationStructureDeviceAddressKHR(device.get(),
         reinterpret_cast<const VkAccelerationStructureDeviceAddressInfoKHR*>(&pInfo));
 }
-#endif //defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_ray_tracing))
-#if defined(VK_EXT_image_drm_format_modifier)
+#endif // VK_ENABLE_BETA_EXTENSIONS
 [[nodiscard]] expected<ImageDrmFormatModifierPropertiesEXT> DeviceFunctions::GetImageDrmFormatModifierPropertiesEXT(Image image) const {
     ImageDrmFormatModifierPropertiesEXT pProperties;
     vk::Result result = static_cast<Result>(pfn_GetImageDrmFormatModifierPropertiesEXT(device.get(),
@@ -3612,8 +3549,6 @@ void DeviceFunctions::CmdBuildAccelerationStructureIndirectKHR(CommandBuffer com
         reinterpret_cast<VkImageDrmFormatModifierPropertiesEXT*>(&pProperties)));
     return expected<ImageDrmFormatModifierPropertiesEXT>(pProperties, result);
 }
-#endif //defined(VK_EXT_image_drm_format_modifier)
-#if defined(VK_EXT_validation_cache)
 [[nodiscard]] expected<ValidationCacheEXT> DeviceFunctions::CreateValidationCacheEXT(const ValidationCacheCreateInfoEXT&  pCreateInfo, 
     const AllocationCallbacks* pAllocator) const {
     ValidationCacheEXT pValidationCache;
@@ -3660,8 +3595,6 @@ void DeviceFunctions::DestroyValidationCacheEXT(ValidationCacheEXT validationCac
         srcCacheCount,
         reinterpret_cast<const VkValidationCacheEXT*>(SrcCaches.data())));
 }
-#endif //defined(VK_EXT_validation_cache)
-#if defined(VK_NV_shading_rate_image)
 void DeviceFunctions::CmdBindShadingRateImageNV(CommandBuffer commandBuffer, 
     ImageView imageView, 
     ImageLayout imageLayout) const {
@@ -3705,8 +3638,6 @@ void DeviceFunctions::CmdSetCoarseSampleOrderNV(CommandBuffer commandBuffer,
         customSampleOrderCount,
         reinterpret_cast<const VkCoarseSampleOrderCustomNV*>(CustomSampleOrders.data()));
 }
-#endif //defined(VK_NV_shading_rate_image)
-#if defined(VK_NV_ray_tracing)
 [[nodiscard]] Result DeviceFunctions::CompileDeferredNV(Pipeline pipeline, 
     uint32_t shader) const {
     return static_cast<Result>(pfn_CompileDeferredNV(device.get(),
@@ -3828,8 +3759,6 @@ void DeviceFunctions::CmdTraceRaysNV(CommandBuffer commandBuffer,
         reinterpret_cast<const VkAllocationCallbacks*>(pAllocator),
         reinterpret_cast<VkPipeline*>(Pipelines.data())));
 }
-#endif //defined(VK_NV_ray_tracing)
-#if defined(VK_EXT_external_memory_host)
 [[nodiscard]] expected<MemoryHostPointerPropertiesEXT> DeviceFunctions::GetMemoryHostPointerPropertiesEXT(ExternalMemoryHandleTypeFlagBits handleType, 
     const void* pHostPointer) const {
     MemoryHostPointerPropertiesEXT pMemoryHostPointerProperties;
@@ -3839,8 +3768,6 @@ void DeviceFunctions::CmdTraceRaysNV(CommandBuffer commandBuffer,
         reinterpret_cast<VkMemoryHostPointerPropertiesEXT*>(&pMemoryHostPointerProperties)));
     return expected<MemoryHostPointerPropertiesEXT>(pMemoryHostPointerProperties, result);
 }
-#endif //defined(VK_EXT_external_memory_host)
-#if defined(VK_AMD_buffer_marker)
 void DeviceFunctions::CmdWriteBufferMarkerAMD(CommandBuffer commandBuffer, 
     PipelineStageFlagBits pipelineStage, 
     Buffer dstBuffer, 
@@ -3852,8 +3779,6 @@ void DeviceFunctions::CmdWriteBufferMarkerAMD(CommandBuffer commandBuffer,
         dstOffset,
         marker);
 }
-#endif //defined(VK_AMD_buffer_marker)
-#if defined(VK_EXT_calibrated_timestamps)
 [[nodiscard]] expected<uint64_t> DeviceFunctions::GetCalibratedTimestampsEXT(uint32_t timestampCount, 
     const CalibratedTimestampInfoEXT* pTimestampInfos, 
     uint64_t* pTimestamps) const {
@@ -3876,8 +3801,6 @@ void DeviceFunctions::CmdWriteBufferMarkerAMD(CommandBuffer commandBuffer,
         &pMaxDeviation));
     return expected<uint64_t>(pMaxDeviation, result);
 }
-#endif //defined(VK_EXT_calibrated_timestamps)
-#if defined(VK_NV_mesh_shader)
 void DeviceFunctions::CmdDrawMeshTasksNV(CommandBuffer commandBuffer, 
     uint32_t taskCount, 
     uint32_t firstTask) const {
@@ -3911,8 +3834,6 @@ void DeviceFunctions::CmdDrawMeshTasksIndirectCountNV(CommandBuffer commandBuffe
         maxDrawCount,
         stride);
 }
-#endif //defined(VK_NV_mesh_shader)
-#if defined(VK_NV_scissor_exclusive)
 void DeviceFunctions::CmdSetExclusiveScissorNV(CommandBuffer commandBuffer, 
     uint32_t firstExclusiveScissor, 
     uint32_t exclusiveScissorCount, 
@@ -3931,8 +3852,6 @@ void DeviceFunctions::CmdSetExclusiveScissorNV(CommandBuffer commandBuffer,
         exclusiveScissorCount,
         reinterpret_cast<const VkRect2D*>(ExclusiveScissors.data()));
 }
-#endif //defined(VK_NV_scissor_exclusive)
-#if defined(VK_NV_device_diagnostic_checkpoints)
 void DeviceFunctions::CmdSetCheckpointNV(CommandBuffer commandBuffer, 
     const void* pCheckpointMarker) const {
     pfn_CmdSetCheckpointNV(commandBuffer.get(),
@@ -3950,8 +3869,6 @@ void DeviceFunctions::CmdSetCheckpointNV(CommandBuffer commandBuffer,
     if (pCheckpointDataCount < pCheckpointData.size()) pCheckpointData.shrink(pCheckpointDataCount);
     return pCheckpointData;
 }
-#endif //defined(VK_NV_device_diagnostic_checkpoints)
-#if defined(VK_INTEL_performance_query)
 [[nodiscard]] Result DeviceFunctions::InitializePerformanceApiINTEL(const InitializePerformanceApiInfoINTEL&  pInitializeInfo) const {
     return static_cast<Result>(pfn_InitializePerformanceApiINTEL(device.get(),
         reinterpret_cast<const VkInitializePerformanceApiInfoINTEL*>(&pInitializeInfo)));
@@ -3997,26 +3914,25 @@ void DeviceFunctions::UninitializePerformanceApiINTEL() const {
         reinterpret_cast<VkPerformanceValueINTEL*>(&pValue)));
     return expected<PerformanceValueINTEL>(pValue, result);
 }
-#endif //defined(VK_INTEL_performance_query)
-#if defined(VK_AMD_display_native_hdr)
 void DeviceFunctions::SetLocalDimmingAMD(SwapchainKHR swapChain, 
     Bool32 localDimmingEnable) const {
     pfn_SetLocalDimmingAMD(device.get(),
         swapChain.get(),
         localDimmingEnable);
 }
-#endif //defined(VK_AMD_display_native_hdr)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] Result DeviceFunctions::AcquireFullScreenExclusiveModeEXT(SwapchainKHR swapchain) const {
     return static_cast<Result>(pfn_AcquireFullScreenExclusiveModeEXT(device.get(),
         swapchain.get()));
 }
+#endif // VK_USE_PLATFORM_WIN32_KHR
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] Result DeviceFunctions::ReleaseFullScreenExclusiveModeEXT(SwapchainKHR swapchain) const {
     return static_cast<Result>(pfn_ReleaseFullScreenExclusiveModeEXT(device.get(),
         swapchain.get()));
 }
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && ((defined(VK_EXT_full_screen_exclusive) && defined(VK_KHR_device_group)) || (defined(VK_EXT_full_screen_exclusive) && defined(VK_VERSION_1_1)))
+#endif // VK_USE_PLATFORM_WIN32_KHR
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] expected<DeviceGroupPresentModeFlagsKHR> DeviceFunctions::GetDeviceGroupSurfacePresentModes2EXT(const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) const {
     DeviceGroupPresentModeFlagsKHR pModes;
     vk::Result result = static_cast<Result>(pfn_GetDeviceGroupSurfacePresentModes2EXT(device.get(),
@@ -4024,8 +3940,7 @@ void DeviceFunctions::SetLocalDimmingAMD(SwapchainKHR swapChain,
         reinterpret_cast<VkDeviceGroupPresentModeFlagsKHR*>(&pModes)));
     return expected<DeviceGroupPresentModeFlagsKHR>(pModes, result);
 }
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && ((defined(VK_EXT_full_screen_exclusive) && defined(VK_KHR_device_group)) || (defined(VK_EXT_full_screen_exclusive) && defined(VK_VERSION_1_1)))
-#if defined(VK_EXT_line_rasterization)
+#endif // VK_USE_PLATFORM_WIN32_KHR
 void DeviceFunctions::CmdSetLineStippleEXT(CommandBuffer commandBuffer, 
     uint32_t lineStippleFactor, 
     uint16_t lineStipplePattern) const {
@@ -4033,8 +3948,6 @@ void DeviceFunctions::CmdSetLineStippleEXT(CommandBuffer commandBuffer,
         lineStippleFactor,
         lineStipplePattern);
 }
-#endif //defined(VK_EXT_line_rasterization)
-#if defined(VK_EXT_extended_dynamic_state)
 void DeviceFunctions::CmdSetCullModeEXT(CommandBuffer commandBuffer, 
     CullModeFlags cullMode) const {
     pfn_CmdSetCullModeEXT(commandBuffer.get(),
@@ -4146,8 +4059,7 @@ void DeviceFunctions::CmdSetStencilOpEXT(CommandBuffer commandBuffer,
         static_cast<VkStencilOp>(depthFailOp),
         static_cast<VkCompareOp>(compareOp));
 }
-#endif //defined(VK_EXT_extended_dynamic_state)
-#if defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_deferred_host_operations))
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 [[nodiscard]] expected<DeferredOperationKHR> DeviceFunctions::CreateDeferredOperationKHR(const AllocationCallbacks* pAllocator) const {
     DeferredOperationKHR pDeferredOperation;
     vk::Result result = static_cast<Result>(pfn_CreateDeferredOperationKHR(device.get(),
@@ -4155,26 +4067,33 @@ void DeviceFunctions::CmdSetStencilOpEXT(CommandBuffer commandBuffer,
         reinterpret_cast<VkDeferredOperationKHR*>(&pDeferredOperation)));
     return expected<DeferredOperationKHR>(pDeferredOperation, result);
 }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 void DeviceFunctions::DestroyDeferredOperationKHR(DeferredOperationKHR operation, 
     const AllocationCallbacks* pAllocator) const {
     pfn_DestroyDeferredOperationKHR(device.get(),
         operation.get(),
         reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
 }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 [[nodiscard]] uint32_t DeviceFunctions::GetDeferredOperationMaxConcurrencyKHR(DeferredOperationKHR operation) const {
     return pfn_GetDeferredOperationMaxConcurrencyKHR(device.get(),
         operation.get());
 }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 [[nodiscard]] Result DeviceFunctions::GetDeferredOperationResultKHR(DeferredOperationKHR operation) const {
     return static_cast<Result>(pfn_GetDeferredOperationResultKHR(device.get(),
         operation.get()));
 }
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
 [[nodiscard]] Result DeviceFunctions::DeferredOperationJoinKHR(DeferredOperationKHR operation) const {
     return static_cast<Result>(pfn_DeferredOperationJoinKHR(device.get(),
         operation.get()));
 }
-#endif //defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_deferred_host_operations))
-#if defined(VK_KHR_pipeline_executable_properties)
+#endif // VK_ENABLE_BETA_EXTENSIONS
 [[nodiscard]] expected<detail::fixed_vector<PipelineExecutablePropertiesKHR>> DeviceFunctions::GetPipelineExecutablePropertiesKHR(const PipelineInfoKHR&  pPipelineInfo) const {
     uint32_t pExecutableCount = 0;
     vk::Result result = static_cast<Result>(pfn_GetPipelineExecutablePropertiesKHR(device.get(),
@@ -4220,8 +4139,6 @@ void DeviceFunctions::DestroyDeferredOperationKHR(DeferredOperationKHR operation
     if (pInternalRepresentationCount < pInternalRepresentations.size()) pInternalRepresentations.shrink(pInternalRepresentationCount);
     return expected(std::move(pInternalRepresentations), result);
 }
-#endif //defined(VK_KHR_pipeline_executable_properties)
-#if defined(VK_NV_device_generated_commands)
 void DeviceFunctions::CmdExecuteGeneratedCommandsNV(CommandBuffer commandBuffer, 
     Bool32 isPreprocessed, 
     const GeneratedCommandsInfoNV&  pGeneratedCommandsInfo) const {
@@ -4265,8 +4182,6 @@ void DeviceFunctions::DestroyIndirectCommandsLayoutNV(IndirectCommandsLayoutNV i
         indirectCommandsLayout.get(),
         reinterpret_cast<const VkAllocationCallbacks*>(pAllocator));
 }
-#endif //defined(VK_NV_device_generated_commands)
-#if defined(VK_EXT_private_data)
 [[nodiscard]] expected<PrivateDataSlotEXT> DeviceFunctions::CreatePrivateDataSlotEXT(const PrivateDataSlotCreateInfoEXT&  pCreateInfo, 
     const AllocationCallbacks* pAllocator) const {
     PrivateDataSlotEXT pPrivateDataSlot;
@@ -4303,8 +4218,6 @@ void DeviceFunctions::DestroyPrivateDataSlotEXT(PrivateDataSlotEXT privateDataSl
         &pData);
     return pData;
 }
-#endif //defined(VK_EXT_private_data)
-#if defined(VK_KHR_copy_commands2)
 void DeviceFunctions::CmdCopyBuffer2KHR(CommandBuffer commandBuffer, 
     const CopyBufferInfo2KHR&  pCopyBufferInfo) const {
     pfn_CmdCopyBuffer2KHR(commandBuffer.get(),
@@ -4335,426 +4248,397 @@ void DeviceFunctions::CmdResolveImage2KHR(CommandBuffer commandBuffer,
     pfn_CmdResolveImage2KHR(commandBuffer.get(),
         reinterpret_cast<const VkResolveImageInfo2KHR*>(&pResolveImageInfo));
 }
-#endif //defined(VK_KHR_copy_commands2)
 DeviceFunctions::DeviceFunctions() noexcept {}
 DeviceFunctions::DeviceFunctions(InstanceFunctions const& instance_functions, Device device) noexcept 
     :device(device) {
-    PFN_vkGetDeviceProcAddr get_device_proc_addr = instance_functions.pfn_GetDeviceProcAddr;
-#if defined(VK_VERSION_1_0)
-    pfn_DestroyDevice = reinterpret_cast<PFN_vkDestroyDevice>(get_device_proc_addr(device.get(),"vkDestroyDevice"));
-    pfn_GetDeviceQueue = reinterpret_cast<PFN_vkGetDeviceQueue>(get_device_proc_addr(device.get(),"vkGetDeviceQueue"));
-    pfn_QueueSubmit = reinterpret_cast<PFN_vkQueueSubmit>(get_device_proc_addr(device.get(),"vkQueueSubmit"));
-    pfn_QueueWaitIdle = reinterpret_cast<PFN_vkQueueWaitIdle>(get_device_proc_addr(device.get(),"vkQueueWaitIdle"));
-    pfn_DeviceWaitIdle = reinterpret_cast<PFN_vkDeviceWaitIdle>(get_device_proc_addr(device.get(),"vkDeviceWaitIdle"));
-    pfn_AllocateMemory = reinterpret_cast<PFN_vkAllocateMemory>(get_device_proc_addr(device.get(),"vkAllocateMemory"));
-    pfn_FreeMemory = reinterpret_cast<PFN_vkFreeMemory>(get_device_proc_addr(device.get(),"vkFreeMemory"));
-    pfn_MapMemory = reinterpret_cast<PFN_vkMapMemory>(get_device_proc_addr(device.get(),"vkMapMemory"));
-    pfn_UnmapMemory = reinterpret_cast<PFN_vkUnmapMemory>(get_device_proc_addr(device.get(),"vkUnmapMemory"));
-    pfn_FlushMappedMemoryRanges = reinterpret_cast<PFN_vkFlushMappedMemoryRanges>(get_device_proc_addr(device.get(),"vkFlushMappedMemoryRanges"));
-    pfn_InvalidateMappedMemoryRanges = reinterpret_cast<PFN_vkInvalidateMappedMemoryRanges>(get_device_proc_addr(device.get(),"vkInvalidateMappedMemoryRanges"));
-    pfn_GetDeviceMemoryCommitment = reinterpret_cast<PFN_vkGetDeviceMemoryCommitment>(get_device_proc_addr(device.get(),"vkGetDeviceMemoryCommitment"));
-    pfn_GetBufferMemoryRequirements = reinterpret_cast<PFN_vkGetBufferMemoryRequirements>(get_device_proc_addr(device.get(),"vkGetBufferMemoryRequirements"));
-    pfn_BindBufferMemory = reinterpret_cast<PFN_vkBindBufferMemory>(get_device_proc_addr(device.get(),"vkBindBufferMemory"));
-    pfn_GetImageMemoryRequirements = reinterpret_cast<PFN_vkGetImageMemoryRequirements>(get_device_proc_addr(device.get(),"vkGetImageMemoryRequirements"));
-    pfn_BindImageMemory = reinterpret_cast<PFN_vkBindImageMemory>(get_device_proc_addr(device.get(),"vkBindImageMemory"));
-    pfn_GetImageSparseMemoryRequirements = reinterpret_cast<PFN_vkGetImageSparseMemoryRequirements>(get_device_proc_addr(device.get(),"vkGetImageSparseMemoryRequirements"));
-    pfn_QueueBindSparse = reinterpret_cast<PFN_vkQueueBindSparse>(get_device_proc_addr(device.get(),"vkQueueBindSparse"));
-    pfn_CreateFence = reinterpret_cast<PFN_vkCreateFence>(get_device_proc_addr(device.get(),"vkCreateFence"));
-    pfn_DestroyFence = reinterpret_cast<PFN_vkDestroyFence>(get_device_proc_addr(device.get(),"vkDestroyFence"));
-    pfn_ResetFences = reinterpret_cast<PFN_vkResetFences>(get_device_proc_addr(device.get(),"vkResetFences"));
-    pfn_GetFenceStatus = reinterpret_cast<PFN_vkGetFenceStatus>(get_device_proc_addr(device.get(),"vkGetFenceStatus"));
-    pfn_WaitForFences = reinterpret_cast<PFN_vkWaitForFences>(get_device_proc_addr(device.get(),"vkWaitForFences"));
-    pfn_CreateSemaphore = reinterpret_cast<PFN_vkCreateSemaphore>(get_device_proc_addr(device.get(),"vkCreateSemaphore"));
-    pfn_DestroySemaphore = reinterpret_cast<PFN_vkDestroySemaphore>(get_device_proc_addr(device.get(),"vkDestroySemaphore"));
-    pfn_CreateEvent = reinterpret_cast<PFN_vkCreateEvent>(get_device_proc_addr(device.get(),"vkCreateEvent"));
-    pfn_DestroyEvent = reinterpret_cast<PFN_vkDestroyEvent>(get_device_proc_addr(device.get(),"vkDestroyEvent"));
-    pfn_GetEventStatus = reinterpret_cast<PFN_vkGetEventStatus>(get_device_proc_addr(device.get(),"vkGetEventStatus"));
-    pfn_SetEvent = reinterpret_cast<PFN_vkSetEvent>(get_device_proc_addr(device.get(),"vkSetEvent"));
-    pfn_ResetEvent = reinterpret_cast<PFN_vkResetEvent>(get_device_proc_addr(device.get(),"vkResetEvent"));
-    pfn_CreateQueryPool = reinterpret_cast<PFN_vkCreateQueryPool>(get_device_proc_addr(device.get(),"vkCreateQueryPool"));
-    pfn_DestroyQueryPool = reinterpret_cast<PFN_vkDestroyQueryPool>(get_device_proc_addr(device.get(),"vkDestroyQueryPool"));
-    pfn_GetQueryPoolResults = reinterpret_cast<PFN_vkGetQueryPoolResults>(get_device_proc_addr(device.get(),"vkGetQueryPoolResults"));
-    pfn_CreateBuffer = reinterpret_cast<PFN_vkCreateBuffer>(get_device_proc_addr(device.get(),"vkCreateBuffer"));
-    pfn_DestroyBuffer = reinterpret_cast<PFN_vkDestroyBuffer>(get_device_proc_addr(device.get(),"vkDestroyBuffer"));
-    pfn_CreateBufferView = reinterpret_cast<PFN_vkCreateBufferView>(get_device_proc_addr(device.get(),"vkCreateBufferView"));
-    pfn_DestroyBufferView = reinterpret_cast<PFN_vkDestroyBufferView>(get_device_proc_addr(device.get(),"vkDestroyBufferView"));
-    pfn_CreateImage = reinterpret_cast<PFN_vkCreateImage>(get_device_proc_addr(device.get(),"vkCreateImage"));
-    pfn_DestroyImage = reinterpret_cast<PFN_vkDestroyImage>(get_device_proc_addr(device.get(),"vkDestroyImage"));
-    pfn_GetImageSubresourceLayout = reinterpret_cast<PFN_vkGetImageSubresourceLayout>(get_device_proc_addr(device.get(),"vkGetImageSubresourceLayout"));
-    pfn_CreateImageView = reinterpret_cast<PFN_vkCreateImageView>(get_device_proc_addr(device.get(),"vkCreateImageView"));
-    pfn_DestroyImageView = reinterpret_cast<PFN_vkDestroyImageView>(get_device_proc_addr(device.get(),"vkDestroyImageView"));
-    pfn_CreateShaderModule = reinterpret_cast<PFN_vkCreateShaderModule>(get_device_proc_addr(device.get(),"vkCreateShaderModule"));
-    pfn_DestroyShaderModule = reinterpret_cast<PFN_vkDestroyShaderModule>(get_device_proc_addr(device.get(),"vkDestroyShaderModule"));
-    pfn_CreatePipelineCache = reinterpret_cast<PFN_vkCreatePipelineCache>(get_device_proc_addr(device.get(),"vkCreatePipelineCache"));
-    pfn_DestroyPipelineCache = reinterpret_cast<PFN_vkDestroyPipelineCache>(get_device_proc_addr(device.get(),"vkDestroyPipelineCache"));
-    pfn_GetPipelineCacheData = reinterpret_cast<PFN_vkGetPipelineCacheData>(get_device_proc_addr(device.get(),"vkGetPipelineCacheData"));
-    pfn_MergePipelineCaches = reinterpret_cast<PFN_vkMergePipelineCaches>(get_device_proc_addr(device.get(),"vkMergePipelineCaches"));
-    pfn_CreateGraphicsPipelines = reinterpret_cast<PFN_vkCreateGraphicsPipelines>(get_device_proc_addr(device.get(),"vkCreateGraphicsPipelines"));
-    pfn_CreateComputePipelines = reinterpret_cast<PFN_vkCreateComputePipelines>(get_device_proc_addr(device.get(),"vkCreateComputePipelines"));
-    pfn_DestroyPipeline = reinterpret_cast<PFN_vkDestroyPipeline>(get_device_proc_addr(device.get(),"vkDestroyPipeline"));
-    pfn_CreatePipelineLayout = reinterpret_cast<PFN_vkCreatePipelineLayout>(get_device_proc_addr(device.get(),"vkCreatePipelineLayout"));
-    pfn_DestroyPipelineLayout = reinterpret_cast<PFN_vkDestroyPipelineLayout>(get_device_proc_addr(device.get(),"vkDestroyPipelineLayout"));
-    pfn_CreateSampler = reinterpret_cast<PFN_vkCreateSampler>(get_device_proc_addr(device.get(),"vkCreateSampler"));
-    pfn_DestroySampler = reinterpret_cast<PFN_vkDestroySampler>(get_device_proc_addr(device.get(),"vkDestroySampler"));
-    pfn_CreateDescriptorSetLayout = reinterpret_cast<PFN_vkCreateDescriptorSetLayout>(get_device_proc_addr(device.get(),"vkCreateDescriptorSetLayout"));
-    pfn_DestroyDescriptorSetLayout = reinterpret_cast<PFN_vkDestroyDescriptorSetLayout>(get_device_proc_addr(device.get(),"vkDestroyDescriptorSetLayout"));
-    pfn_CreateDescriptorPool = reinterpret_cast<PFN_vkCreateDescriptorPool>(get_device_proc_addr(device.get(),"vkCreateDescriptorPool"));
-    pfn_DestroyDescriptorPool = reinterpret_cast<PFN_vkDestroyDescriptorPool>(get_device_proc_addr(device.get(),"vkDestroyDescriptorPool"));
-    pfn_ResetDescriptorPool = reinterpret_cast<PFN_vkResetDescriptorPool>(get_device_proc_addr(device.get(),"vkResetDescriptorPool"));
-    pfn_AllocateDescriptorSets = reinterpret_cast<PFN_vkAllocateDescriptorSets>(get_device_proc_addr(device.get(),"vkAllocateDescriptorSets"));
-    pfn_FreeDescriptorSets = reinterpret_cast<PFN_vkFreeDescriptorSets>(get_device_proc_addr(device.get(),"vkFreeDescriptorSets"));
-    pfn_UpdateDescriptorSets = reinterpret_cast<PFN_vkUpdateDescriptorSets>(get_device_proc_addr(device.get(),"vkUpdateDescriptorSets"));
-    pfn_CreateFramebuffer = reinterpret_cast<PFN_vkCreateFramebuffer>(get_device_proc_addr(device.get(),"vkCreateFramebuffer"));
-    pfn_DestroyFramebuffer = reinterpret_cast<PFN_vkDestroyFramebuffer>(get_device_proc_addr(device.get(),"vkDestroyFramebuffer"));
-    pfn_CreateRenderPass = reinterpret_cast<PFN_vkCreateRenderPass>(get_device_proc_addr(device.get(),"vkCreateRenderPass"));
-    pfn_DestroyRenderPass = reinterpret_cast<PFN_vkDestroyRenderPass>(get_device_proc_addr(device.get(),"vkDestroyRenderPass"));
-    pfn_GetRenderAreaGranularity = reinterpret_cast<PFN_vkGetRenderAreaGranularity>(get_device_proc_addr(device.get(),"vkGetRenderAreaGranularity"));
-    pfn_CreateCommandPool = reinterpret_cast<PFN_vkCreateCommandPool>(get_device_proc_addr(device.get(),"vkCreateCommandPool"));
-    pfn_DestroyCommandPool = reinterpret_cast<PFN_vkDestroyCommandPool>(get_device_proc_addr(device.get(),"vkDestroyCommandPool"));
-    pfn_ResetCommandPool = reinterpret_cast<PFN_vkResetCommandPool>(get_device_proc_addr(device.get(),"vkResetCommandPool"));
-    pfn_AllocateCommandBuffers = reinterpret_cast<PFN_vkAllocateCommandBuffers>(get_device_proc_addr(device.get(),"vkAllocateCommandBuffers"));
-    pfn_FreeCommandBuffers = reinterpret_cast<PFN_vkFreeCommandBuffers>(get_device_proc_addr(device.get(),"vkFreeCommandBuffers"));
-    pfn_BeginCommandBuffer = reinterpret_cast<PFN_vkBeginCommandBuffer>(get_device_proc_addr(device.get(),"vkBeginCommandBuffer"));
-    pfn_EndCommandBuffer = reinterpret_cast<PFN_vkEndCommandBuffer>(get_device_proc_addr(device.get(),"vkEndCommandBuffer"));
-    pfn_ResetCommandBuffer = reinterpret_cast<PFN_vkResetCommandBuffer>(get_device_proc_addr(device.get(),"vkResetCommandBuffer"));
-    pfn_CmdBindPipeline = reinterpret_cast<PFN_vkCmdBindPipeline>(get_device_proc_addr(device.get(),"vkCmdBindPipeline"));
-    pfn_CmdSetViewport = reinterpret_cast<PFN_vkCmdSetViewport>(get_device_proc_addr(device.get(),"vkCmdSetViewport"));
-    pfn_CmdSetScissor = reinterpret_cast<PFN_vkCmdSetScissor>(get_device_proc_addr(device.get(),"vkCmdSetScissor"));
-    pfn_CmdSetLineWidth = reinterpret_cast<PFN_vkCmdSetLineWidth>(get_device_proc_addr(device.get(),"vkCmdSetLineWidth"));
-    pfn_CmdSetDepthBias = reinterpret_cast<PFN_vkCmdSetDepthBias>(get_device_proc_addr(device.get(),"vkCmdSetDepthBias"));
-    pfn_CmdSetBlendConstants = reinterpret_cast<PFN_vkCmdSetBlendConstants>(get_device_proc_addr(device.get(),"vkCmdSetBlendConstants"));
-    pfn_CmdSetDepthBounds = reinterpret_cast<PFN_vkCmdSetDepthBounds>(get_device_proc_addr(device.get(),"vkCmdSetDepthBounds"));
-    pfn_CmdSetStencilCompareMask = reinterpret_cast<PFN_vkCmdSetStencilCompareMask>(get_device_proc_addr(device.get(),"vkCmdSetStencilCompareMask"));
-    pfn_CmdSetStencilWriteMask = reinterpret_cast<PFN_vkCmdSetStencilWriteMask>(get_device_proc_addr(device.get(),"vkCmdSetStencilWriteMask"));
-    pfn_CmdSetStencilReference = reinterpret_cast<PFN_vkCmdSetStencilReference>(get_device_proc_addr(device.get(),"vkCmdSetStencilReference"));
-    pfn_CmdBindDescriptorSets = reinterpret_cast<PFN_vkCmdBindDescriptorSets>(get_device_proc_addr(device.get(),"vkCmdBindDescriptorSets"));
-    pfn_CmdBindIndexBuffer = reinterpret_cast<PFN_vkCmdBindIndexBuffer>(get_device_proc_addr(device.get(),"vkCmdBindIndexBuffer"));
-    pfn_CmdBindVertexBuffers = reinterpret_cast<PFN_vkCmdBindVertexBuffers>(get_device_proc_addr(device.get(),"vkCmdBindVertexBuffers"));
-    pfn_CmdDraw = reinterpret_cast<PFN_vkCmdDraw>(get_device_proc_addr(device.get(),"vkCmdDraw"));
-    pfn_CmdDrawIndexed = reinterpret_cast<PFN_vkCmdDrawIndexed>(get_device_proc_addr(device.get(),"vkCmdDrawIndexed"));
-    pfn_CmdDrawIndirect = reinterpret_cast<PFN_vkCmdDrawIndirect>(get_device_proc_addr(device.get(),"vkCmdDrawIndirect"));
-    pfn_CmdDrawIndexedIndirect = reinterpret_cast<PFN_vkCmdDrawIndexedIndirect>(get_device_proc_addr(device.get(),"vkCmdDrawIndexedIndirect"));
-    pfn_CmdDispatch = reinterpret_cast<PFN_vkCmdDispatch>(get_device_proc_addr(device.get(),"vkCmdDispatch"));
-    pfn_CmdDispatchIndirect = reinterpret_cast<PFN_vkCmdDispatchIndirect>(get_device_proc_addr(device.get(),"vkCmdDispatchIndirect"));
-    pfn_CmdCopyBuffer = reinterpret_cast<PFN_vkCmdCopyBuffer>(get_device_proc_addr(device.get(),"vkCmdCopyBuffer"));
-    pfn_CmdCopyImage = reinterpret_cast<PFN_vkCmdCopyImage>(get_device_proc_addr(device.get(),"vkCmdCopyImage"));
-    pfn_CmdBlitImage = reinterpret_cast<PFN_vkCmdBlitImage>(get_device_proc_addr(device.get(),"vkCmdBlitImage"));
-    pfn_CmdCopyBufferToImage = reinterpret_cast<PFN_vkCmdCopyBufferToImage>(get_device_proc_addr(device.get(),"vkCmdCopyBufferToImage"));
-    pfn_CmdCopyImageToBuffer = reinterpret_cast<PFN_vkCmdCopyImageToBuffer>(get_device_proc_addr(device.get(),"vkCmdCopyImageToBuffer"));
-    pfn_CmdUpdateBuffer = reinterpret_cast<PFN_vkCmdUpdateBuffer>(get_device_proc_addr(device.get(),"vkCmdUpdateBuffer"));
-    pfn_CmdFillBuffer = reinterpret_cast<PFN_vkCmdFillBuffer>(get_device_proc_addr(device.get(),"vkCmdFillBuffer"));
-    pfn_CmdClearColorImage = reinterpret_cast<PFN_vkCmdClearColorImage>(get_device_proc_addr(device.get(),"vkCmdClearColorImage"));
-    pfn_CmdClearDepthStencilImage = reinterpret_cast<PFN_vkCmdClearDepthStencilImage>(get_device_proc_addr(device.get(),"vkCmdClearDepthStencilImage"));
-    pfn_CmdClearAttachments = reinterpret_cast<PFN_vkCmdClearAttachments>(get_device_proc_addr(device.get(),"vkCmdClearAttachments"));
-    pfn_CmdResolveImage = reinterpret_cast<PFN_vkCmdResolveImage>(get_device_proc_addr(device.get(),"vkCmdResolveImage"));
-    pfn_CmdSetEvent = reinterpret_cast<PFN_vkCmdSetEvent>(get_device_proc_addr(device.get(),"vkCmdSetEvent"));
-    pfn_CmdResetEvent = reinterpret_cast<PFN_vkCmdResetEvent>(get_device_proc_addr(device.get(),"vkCmdResetEvent"));
-    pfn_CmdWaitEvents = reinterpret_cast<PFN_vkCmdWaitEvents>(get_device_proc_addr(device.get(),"vkCmdWaitEvents"));
-    pfn_CmdPipelineBarrier = reinterpret_cast<PFN_vkCmdPipelineBarrier>(get_device_proc_addr(device.get(),"vkCmdPipelineBarrier"));
-    pfn_CmdBeginQuery = reinterpret_cast<PFN_vkCmdBeginQuery>(get_device_proc_addr(device.get(),"vkCmdBeginQuery"));
-    pfn_CmdEndQuery = reinterpret_cast<PFN_vkCmdEndQuery>(get_device_proc_addr(device.get(),"vkCmdEndQuery"));
-    pfn_CmdResetQueryPool = reinterpret_cast<PFN_vkCmdResetQueryPool>(get_device_proc_addr(device.get(),"vkCmdResetQueryPool"));
-    pfn_CmdWriteTimestamp = reinterpret_cast<PFN_vkCmdWriteTimestamp>(get_device_proc_addr(device.get(),"vkCmdWriteTimestamp"));
-    pfn_CmdCopyQueryPoolResults = reinterpret_cast<PFN_vkCmdCopyQueryPoolResults>(get_device_proc_addr(device.get(),"vkCmdCopyQueryPoolResults"));
-    pfn_CmdPushConstants = reinterpret_cast<PFN_vkCmdPushConstants>(get_device_proc_addr(device.get(),"vkCmdPushConstants"));
-    pfn_CmdBeginRenderPass = reinterpret_cast<PFN_vkCmdBeginRenderPass>(get_device_proc_addr(device.get(),"vkCmdBeginRenderPass"));
-    pfn_CmdNextSubpass = reinterpret_cast<PFN_vkCmdNextSubpass>(get_device_proc_addr(device.get(),"vkCmdNextSubpass"));
-    pfn_CmdEndRenderPass = reinterpret_cast<PFN_vkCmdEndRenderPass>(get_device_proc_addr(device.get(),"vkCmdEndRenderPass"));
-    pfn_CmdExecuteCommands = reinterpret_cast<PFN_vkCmdExecuteCommands>(get_device_proc_addr(device.get(),"vkCmdExecuteCommands"));
-#endif //defined(VK_VERSION_1_0)
-#if defined(VK_VERSION_1_1)
-    pfn_BindBufferMemory2 = reinterpret_cast<PFN_vkBindBufferMemory2>(get_device_proc_addr(device.get(),"vkBindBufferMemory2"));
-    pfn_BindImageMemory2 = reinterpret_cast<PFN_vkBindImageMemory2>(get_device_proc_addr(device.get(),"vkBindImageMemory2"));
-    pfn_GetDeviceGroupPeerMemoryFeatures = reinterpret_cast<PFN_vkGetDeviceGroupPeerMemoryFeatures>(get_device_proc_addr(device.get(),"vkGetDeviceGroupPeerMemoryFeatures"));
-    pfn_CmdSetDeviceMask = reinterpret_cast<PFN_vkCmdSetDeviceMask>(get_device_proc_addr(device.get(),"vkCmdSetDeviceMask"));
-    pfn_CmdDispatchBase = reinterpret_cast<PFN_vkCmdDispatchBase>(get_device_proc_addr(device.get(),"vkCmdDispatchBase"));
-    pfn_GetBufferMemoryRequirements2 = reinterpret_cast<PFN_vkGetBufferMemoryRequirements2>(get_device_proc_addr(device.get(),"vkGetBufferMemoryRequirements2"));
-    pfn_GetImageMemoryRequirements2 = reinterpret_cast<PFN_vkGetImageMemoryRequirements2>(get_device_proc_addr(device.get(),"vkGetImageMemoryRequirements2"));
-    pfn_GetImageSparseMemoryRequirements2 = reinterpret_cast<PFN_vkGetImageSparseMemoryRequirements2>(get_device_proc_addr(device.get(),"vkGetImageSparseMemoryRequirements2"));
-    pfn_TrimCommandPool = reinterpret_cast<PFN_vkTrimCommandPool>(get_device_proc_addr(device.get(),"vkTrimCommandPool"));
-    pfn_GetDeviceQueue2 = reinterpret_cast<PFN_vkGetDeviceQueue2>(get_device_proc_addr(device.get(),"vkGetDeviceQueue2"));
-    pfn_CreateSamplerYcbcrConversion = reinterpret_cast<PFN_vkCreateSamplerYcbcrConversion>(get_device_proc_addr(device.get(),"vkCreateSamplerYcbcrConversion"));
-    pfn_DestroySamplerYcbcrConversion = reinterpret_cast<PFN_vkDestroySamplerYcbcrConversion>(get_device_proc_addr(device.get(),"vkDestroySamplerYcbcrConversion"));
-    pfn_CreateDescriptorUpdateTemplate = reinterpret_cast<PFN_vkCreateDescriptorUpdateTemplate>(get_device_proc_addr(device.get(),"vkCreateDescriptorUpdateTemplate"));
-    pfn_DestroyDescriptorUpdateTemplate = reinterpret_cast<PFN_vkDestroyDescriptorUpdateTemplate>(get_device_proc_addr(device.get(),"vkDestroyDescriptorUpdateTemplate"));
-    pfn_UpdateDescriptorSetWithTemplate = reinterpret_cast<PFN_vkUpdateDescriptorSetWithTemplate>(get_device_proc_addr(device.get(),"vkUpdateDescriptorSetWithTemplate"));
-    pfn_GetDescriptorSetLayoutSupport = reinterpret_cast<PFN_vkGetDescriptorSetLayoutSupport>(get_device_proc_addr(device.get(),"vkGetDescriptorSetLayoutSupport"));
-#endif //defined(VK_VERSION_1_1)
-#if defined(VK_VERSION_1_2)
-    pfn_CmdDrawIndirectCount = reinterpret_cast<PFN_vkCmdDrawIndirectCount>(get_device_proc_addr(device.get(),"vkCmdDrawIndirectCount"));
-    pfn_CmdDrawIndexedIndirectCount = reinterpret_cast<PFN_vkCmdDrawIndexedIndirectCount>(get_device_proc_addr(device.get(),"vkCmdDrawIndexedIndirectCount"));
-    pfn_CreateRenderPass2 = reinterpret_cast<PFN_vkCreateRenderPass2>(get_device_proc_addr(device.get(),"vkCreateRenderPass2"));
-    pfn_CmdBeginRenderPass2 = reinterpret_cast<PFN_vkCmdBeginRenderPass2>(get_device_proc_addr(device.get(),"vkCmdBeginRenderPass2"));
-    pfn_CmdNextSubpass2 = reinterpret_cast<PFN_vkCmdNextSubpass2>(get_device_proc_addr(device.get(),"vkCmdNextSubpass2"));
-    pfn_CmdEndRenderPass2 = reinterpret_cast<PFN_vkCmdEndRenderPass2>(get_device_proc_addr(device.get(),"vkCmdEndRenderPass2"));
-    pfn_ResetQueryPool = reinterpret_cast<PFN_vkResetQueryPool>(get_device_proc_addr(device.get(),"vkResetQueryPool"));
-    pfn_GetSemaphoreCounterValue = reinterpret_cast<PFN_vkGetSemaphoreCounterValue>(get_device_proc_addr(device.get(),"vkGetSemaphoreCounterValue"));
-    pfn_WaitSemaphores = reinterpret_cast<PFN_vkWaitSemaphores>(get_device_proc_addr(device.get(),"vkWaitSemaphores"));
-    pfn_SignalSemaphore = reinterpret_cast<PFN_vkSignalSemaphore>(get_device_proc_addr(device.get(),"vkSignalSemaphore"));
-    pfn_GetBufferOpaqueCaptureAddress = reinterpret_cast<PFN_vkGetBufferOpaqueCaptureAddress>(get_device_proc_addr(device.get(),"vkGetBufferOpaqueCaptureAddress"));
-    pfn_GetBufferDeviceAddress = reinterpret_cast<PFN_vkGetBufferDeviceAddress>(get_device_proc_addr(device.get(),"vkGetBufferDeviceAddress"));
-    pfn_GetDeviceMemoryOpaqueCaptureAddress = reinterpret_cast<PFN_vkGetDeviceMemoryOpaqueCaptureAddress>(get_device_proc_addr(device.get(),"vkGetDeviceMemoryOpaqueCaptureAddress"));
-#endif //defined(VK_VERSION_1_2)
-#if defined(VK_KHR_swapchain)
-    pfn_CreateSwapchainKHR = reinterpret_cast<PFN_vkCreateSwapchainKHR>(get_device_proc_addr(device.get(),"vkCreateSwapchainKHR"));
-    pfn_DestroySwapchainKHR = reinterpret_cast<PFN_vkDestroySwapchainKHR>(get_device_proc_addr(device.get(),"vkDestroySwapchainKHR"));
-    pfn_GetSwapchainImagesKHR = reinterpret_cast<PFN_vkGetSwapchainImagesKHR>(get_device_proc_addr(device.get(),"vkGetSwapchainImagesKHR"));
-    pfn_AcquireNextImageKHR = reinterpret_cast<PFN_vkAcquireNextImageKHR>(get_device_proc_addr(device.get(),"vkAcquireNextImageKHR"));
-    pfn_QueuePresentKHR = reinterpret_cast<PFN_vkQueuePresentKHR>(get_device_proc_addr(device.get(),"vkQueuePresentKHR"));
-#endif //defined(VK_KHR_swapchain)
-#if (defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
-    pfn_GetDeviceGroupPresentCapabilitiesKHR = reinterpret_cast<PFN_vkGetDeviceGroupPresentCapabilitiesKHR>(get_device_proc_addr(device.get(),"vkGetDeviceGroupPresentCapabilitiesKHR"));
-    pfn_GetDeviceGroupSurfacePresentModesKHR = reinterpret_cast<PFN_vkGetDeviceGroupSurfacePresentModesKHR>(get_device_proc_addr(device.get(),"vkGetDeviceGroupSurfacePresentModesKHR"));
-#endif //(defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_surface))
-#if (defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_swapchain))
-    pfn_AcquireNextImage2KHR = reinterpret_cast<PFN_vkAcquireNextImage2KHR>(get_device_proc_addr(device.get(),"vkAcquireNextImage2KHR"));
-#endif //(defined(VK_KHR_swapchain) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_device_group) && defined(VK_KHR_swapchain))
-#if defined(VK_KHR_display_swapchain)
-    pfn_CreateSharedSwapchainsKHR = reinterpret_cast<PFN_vkCreateSharedSwapchainsKHR>(get_device_proc_addr(device.get(),"vkCreateSharedSwapchainsKHR"));
-#endif //defined(VK_KHR_display_swapchain)
-#if defined(VK_EXT_debug_marker)
-    pfn_DebugMarkerSetObjectNameEXT = reinterpret_cast<PFN_vkDebugMarkerSetObjectNameEXT>(get_device_proc_addr(device.get(),"vkDebugMarkerSetObjectNameEXT"));
-    pfn_DebugMarkerSetObjectTagEXT = reinterpret_cast<PFN_vkDebugMarkerSetObjectTagEXT>(get_device_proc_addr(device.get(),"vkDebugMarkerSetObjectTagEXT"));
-    pfn_CmdDebugMarkerBeginEXT = reinterpret_cast<PFN_vkCmdDebugMarkerBeginEXT>(get_device_proc_addr(device.get(),"vkCmdDebugMarkerBeginEXT"));
-    pfn_CmdDebugMarkerEndEXT = reinterpret_cast<PFN_vkCmdDebugMarkerEndEXT>(get_device_proc_addr(device.get(),"vkCmdDebugMarkerEndEXT"));
-    pfn_CmdDebugMarkerInsertEXT = reinterpret_cast<PFN_vkCmdDebugMarkerInsertEXT>(get_device_proc_addr(device.get(),"vkCmdDebugMarkerInsertEXT"));
-#endif //defined(VK_EXT_debug_marker)
-#if defined(VK_EXT_transform_feedback)
-    pfn_CmdBindTransformFeedbackBuffersEXT = reinterpret_cast<PFN_vkCmdBindTransformFeedbackBuffersEXT>(get_device_proc_addr(device.get(),"vkCmdBindTransformFeedbackBuffersEXT"));
-    pfn_CmdBeginTransformFeedbackEXT = reinterpret_cast<PFN_vkCmdBeginTransformFeedbackEXT>(get_device_proc_addr(device.get(),"vkCmdBeginTransformFeedbackEXT"));
-    pfn_CmdEndTransformFeedbackEXT = reinterpret_cast<PFN_vkCmdEndTransformFeedbackEXT>(get_device_proc_addr(device.get(),"vkCmdEndTransformFeedbackEXT"));
-    pfn_CmdBeginQueryIndexedEXT = reinterpret_cast<PFN_vkCmdBeginQueryIndexedEXT>(get_device_proc_addr(device.get(),"vkCmdBeginQueryIndexedEXT"));
-    pfn_CmdEndQueryIndexedEXT = reinterpret_cast<PFN_vkCmdEndQueryIndexedEXT>(get_device_proc_addr(device.get(),"vkCmdEndQueryIndexedEXT"));
-    pfn_CmdDrawIndirectByteCountEXT = reinterpret_cast<PFN_vkCmdDrawIndirectByteCountEXT>(get_device_proc_addr(device.get(),"vkCmdDrawIndirectByteCountEXT"));
-#endif //defined(VK_EXT_transform_feedback)
-#if defined(VK_NVX_image_view_handle)
-    pfn_GetImageViewHandleNVX = reinterpret_cast<PFN_vkGetImageViewHandleNVX>(get_device_proc_addr(device.get(),"vkGetImageViewHandleNVX"));
-    pfn_GetImageViewAddressNVX = reinterpret_cast<PFN_vkGetImageViewAddressNVX>(get_device_proc_addr(device.get(),"vkGetImageViewAddressNVX"));
-#endif //defined(VK_NVX_image_view_handle)
-#if defined(VK_AMD_shader_info)
-    pfn_GetShaderInfoAMD = reinterpret_cast<PFN_vkGetShaderInfoAMD>(get_device_proc_addr(device.get(),"vkGetShaderInfoAMD"));
-#endif //defined(VK_AMD_shader_info)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_NV_external_memory_win32))
-    pfn_GetMemoryWin32HandleNV = reinterpret_cast<PFN_vkGetMemoryWin32HandleNV>(get_device_proc_addr(device.get(),"vkGetMemoryWin32HandleNV"));
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_NV_external_memory_win32))
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_memory_win32))
-    pfn_GetMemoryWin32HandleKHR = reinterpret_cast<PFN_vkGetMemoryWin32HandleKHR>(get_device_proc_addr(device.get(),"vkGetMemoryWin32HandleKHR"));
-    pfn_GetMemoryWin32HandlePropertiesKHR = reinterpret_cast<PFN_vkGetMemoryWin32HandlePropertiesKHR>(get_device_proc_addr(device.get(),"vkGetMemoryWin32HandlePropertiesKHR"));
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_memory_win32))
-#if defined(VK_KHR_external_memory_fd)
-    pfn_GetMemoryFdKHR = reinterpret_cast<PFN_vkGetMemoryFdKHR>(get_device_proc_addr(device.get(),"vkGetMemoryFdKHR"));
-    pfn_GetMemoryFdPropertiesKHR = reinterpret_cast<PFN_vkGetMemoryFdPropertiesKHR>(get_device_proc_addr(device.get(),"vkGetMemoryFdPropertiesKHR"));
-#endif //defined(VK_KHR_external_memory_fd)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_semaphore_win32))
-    pfn_GetSemaphoreWin32HandleKHR = reinterpret_cast<PFN_vkGetSemaphoreWin32HandleKHR>(get_device_proc_addr(device.get(),"vkGetSemaphoreWin32HandleKHR"));
-    pfn_ImportSemaphoreWin32HandleKHR = reinterpret_cast<PFN_vkImportSemaphoreWin32HandleKHR>(get_device_proc_addr(device.get(),"vkImportSemaphoreWin32HandleKHR"));
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_semaphore_win32))
-#if defined(VK_KHR_external_semaphore_fd)
-    pfn_GetSemaphoreFdKHR = reinterpret_cast<PFN_vkGetSemaphoreFdKHR>(get_device_proc_addr(device.get(),"vkGetSemaphoreFdKHR"));
-    pfn_ImportSemaphoreFdKHR = reinterpret_cast<PFN_vkImportSemaphoreFdKHR>(get_device_proc_addr(device.get(),"vkImportSemaphoreFdKHR"));
-#endif //defined(VK_KHR_external_semaphore_fd)
-#if defined(VK_KHR_push_descriptor)
-    pfn_CmdPushDescriptorSetKHR = reinterpret_cast<PFN_vkCmdPushDescriptorSetKHR>(get_device_proc_addr(device.get(),"vkCmdPushDescriptorSetKHR"));
-#endif //defined(VK_KHR_push_descriptor)
-#if (defined(VK_KHR_push_descriptor) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_push_descriptor) && defined(VK_KHR_descriptor_update_template)) || (defined(VK_KHR_descriptor_update_template) && defined(VK_KHR_push_descriptor))
-    pfn_CmdPushDescriptorSetWithTemplateKHR = reinterpret_cast<PFN_vkCmdPushDescriptorSetWithTemplateKHR>(get_device_proc_addr(device.get(),"vkCmdPushDescriptorSetWithTemplateKHR"));
-#endif //(defined(VK_KHR_push_descriptor) && defined(VK_VERSION_1_1)) || (defined(VK_KHR_push_descriptor) && defined(VK_KHR_descriptor_update_template)) || (defined(VK_KHR_descriptor_update_template) && defined(VK_KHR_push_descriptor))
-#if defined(VK_EXT_conditional_rendering)
-    pfn_CmdBeginConditionalRenderingEXT = reinterpret_cast<PFN_vkCmdBeginConditionalRenderingEXT>(get_device_proc_addr(device.get(),"vkCmdBeginConditionalRenderingEXT"));
-    pfn_CmdEndConditionalRenderingEXT = reinterpret_cast<PFN_vkCmdEndConditionalRenderingEXT>(get_device_proc_addr(device.get(),"vkCmdEndConditionalRenderingEXT"));
-#endif //defined(VK_EXT_conditional_rendering)
-#if defined(VK_NV_clip_space_w_scaling)
-    pfn_CmdSetViewportWScalingNV = reinterpret_cast<PFN_vkCmdSetViewportWScalingNV>(get_device_proc_addr(device.get(),"vkCmdSetViewportWScalingNV"));
-#endif //defined(VK_NV_clip_space_w_scaling)
-#if defined(VK_EXT_display_control)
-    pfn_DisplayPowerControlEXT = reinterpret_cast<PFN_vkDisplayPowerControlEXT>(get_device_proc_addr(device.get(),"vkDisplayPowerControlEXT"));
-    pfn_RegisterDeviceEventEXT = reinterpret_cast<PFN_vkRegisterDeviceEventEXT>(get_device_proc_addr(device.get(),"vkRegisterDeviceEventEXT"));
-    pfn_RegisterDisplayEventEXT = reinterpret_cast<PFN_vkRegisterDisplayEventEXT>(get_device_proc_addr(device.get(),"vkRegisterDisplayEventEXT"));
-    pfn_GetSwapchainCounterEXT = reinterpret_cast<PFN_vkGetSwapchainCounterEXT>(get_device_proc_addr(device.get(),"vkGetSwapchainCounterEXT"));
-#endif //defined(VK_EXT_display_control)
-#if defined(VK_GOOGLE_display_timing)
-    pfn_GetRefreshCycleDurationGOOGLE = reinterpret_cast<PFN_vkGetRefreshCycleDurationGOOGLE>(get_device_proc_addr(device.get(),"vkGetRefreshCycleDurationGOOGLE"));
-    pfn_GetPastPresentationTimingGOOGLE = reinterpret_cast<PFN_vkGetPastPresentationTimingGOOGLE>(get_device_proc_addr(device.get(),"vkGetPastPresentationTimingGOOGLE"));
-#endif //defined(VK_GOOGLE_display_timing)
-#if defined(VK_EXT_discard_rectangles)
-    pfn_CmdSetDiscardRectangleEXT = reinterpret_cast<PFN_vkCmdSetDiscardRectangleEXT>(get_device_proc_addr(device.get(),"vkCmdSetDiscardRectangleEXT"));
-#endif //defined(VK_EXT_discard_rectangles)
-#if defined(VK_EXT_hdr_metadata)
-    pfn_SetHdrMetadataEXT = reinterpret_cast<PFN_vkSetHdrMetadataEXT>(get_device_proc_addr(device.get(),"vkSetHdrMetadataEXT"));
-#endif //defined(VK_EXT_hdr_metadata)
-#if defined(VK_KHR_shared_presentable_image)
-    pfn_GetSwapchainStatusKHR = reinterpret_cast<PFN_vkGetSwapchainStatusKHR>(get_device_proc_addr(device.get(),"vkGetSwapchainStatusKHR"));
-#endif //defined(VK_KHR_shared_presentable_image)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_fence_win32))
-    pfn_GetFenceWin32HandleKHR = reinterpret_cast<PFN_vkGetFenceWin32HandleKHR>(get_device_proc_addr(device.get(),"vkGetFenceWin32HandleKHR"));
-    pfn_ImportFenceWin32HandleKHR = reinterpret_cast<PFN_vkImportFenceWin32HandleKHR>(get_device_proc_addr(device.get(),"vkImportFenceWin32HandleKHR"));
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_KHR_external_fence_win32))
-#if defined(VK_KHR_external_fence_fd)
-    pfn_GetFenceFdKHR = reinterpret_cast<PFN_vkGetFenceFdKHR>(get_device_proc_addr(device.get(),"vkGetFenceFdKHR"));
-    pfn_ImportFenceFdKHR = reinterpret_cast<PFN_vkImportFenceFdKHR>(get_device_proc_addr(device.get(),"vkImportFenceFdKHR"));
-#endif //defined(VK_KHR_external_fence_fd)
-#if defined(VK_KHR_performance_query)
-    pfn_AcquireProfilingLockKHR = reinterpret_cast<PFN_vkAcquireProfilingLockKHR>(get_device_proc_addr(device.get(),"vkAcquireProfilingLockKHR"));
-    pfn_ReleaseProfilingLockKHR = reinterpret_cast<PFN_vkReleaseProfilingLockKHR>(get_device_proc_addr(device.get(),"vkReleaseProfilingLockKHR"));
-#endif //defined(VK_KHR_performance_query)
-#if defined(VK_EXT_debug_utils)
-    pfn_SetDebugUtilsObjectNameEXT = reinterpret_cast<PFN_vkSetDebugUtilsObjectNameEXT>(get_device_proc_addr(device.get(),"vkSetDebugUtilsObjectNameEXT"));
-    pfn_SetDebugUtilsObjectTagEXT = reinterpret_cast<PFN_vkSetDebugUtilsObjectTagEXT>(get_device_proc_addr(device.get(),"vkSetDebugUtilsObjectTagEXT"));
-    pfn_QueueBeginDebugUtilsLabelEXT = reinterpret_cast<PFN_vkQueueBeginDebugUtilsLabelEXT>(get_device_proc_addr(device.get(),"vkQueueBeginDebugUtilsLabelEXT"));
-    pfn_QueueEndDebugUtilsLabelEXT = reinterpret_cast<PFN_vkQueueEndDebugUtilsLabelEXT>(get_device_proc_addr(device.get(),"vkQueueEndDebugUtilsLabelEXT"));
-    pfn_QueueInsertDebugUtilsLabelEXT = reinterpret_cast<PFN_vkQueueInsertDebugUtilsLabelEXT>(get_device_proc_addr(device.get(),"vkQueueInsertDebugUtilsLabelEXT"));
-    pfn_CmdBeginDebugUtilsLabelEXT = reinterpret_cast<PFN_vkCmdBeginDebugUtilsLabelEXT>(get_device_proc_addr(device.get(),"vkCmdBeginDebugUtilsLabelEXT"));
-    pfn_CmdEndDebugUtilsLabelEXT = reinterpret_cast<PFN_vkCmdEndDebugUtilsLabelEXT>(get_device_proc_addr(device.get(),"vkCmdEndDebugUtilsLabelEXT"));
-    pfn_CmdInsertDebugUtilsLabelEXT = reinterpret_cast<PFN_vkCmdInsertDebugUtilsLabelEXT>(get_device_proc_addr(device.get(),"vkCmdInsertDebugUtilsLabelEXT"));
-#endif //defined(VK_EXT_debug_utils)
-#if defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_ANDROID_external_memory_android_hardware_buffer))
-    pfn_GetAndroidHardwareBufferPropertiesANDROID = reinterpret_cast<PFN_vkGetAndroidHardwareBufferPropertiesANDROID>(get_device_proc_addr(device.get(),"vkGetAndroidHardwareBufferPropertiesANDROID"));
-    pfn_GetMemoryAndroidHardwareBufferANDROID = reinterpret_cast<PFN_vkGetMemoryAndroidHardwareBufferANDROID>(get_device_proc_addr(device.get(),"vkGetMemoryAndroidHardwareBufferANDROID"));
-#endif //defined(VK_USE_PLATFORM_ANDROID_KHR) && (defined(VK_ANDROID_external_memory_android_hardware_buffer))
-#if defined(VK_EXT_sample_locations)
-    pfn_CmdSetSampleLocationsEXT = reinterpret_cast<PFN_vkCmdSetSampleLocationsEXT>(get_device_proc_addr(device.get(),"vkCmdSetSampleLocationsEXT"));
-#endif //defined(VK_EXT_sample_locations)
-#if defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_ray_tracing))
-    pfn_DestroyAccelerationStructureKHR = reinterpret_cast<PFN_vkDestroyAccelerationStructureKHR>(get_device_proc_addr(device.get(),"vkDestroyAccelerationStructureKHR"));
-    pfn_GetAccelerationStructureMemoryRequirementsKHR = reinterpret_cast<PFN_vkGetAccelerationStructureMemoryRequirementsKHR>(get_device_proc_addr(device.get(),"vkGetAccelerationStructureMemoryRequirementsKHR"));
-    pfn_BindAccelerationStructureMemoryKHR = reinterpret_cast<PFN_vkBindAccelerationStructureMemoryKHR>(get_device_proc_addr(device.get(),"vkBindAccelerationStructureMemoryKHR"));
-    pfn_CmdCopyAccelerationStructureKHR = reinterpret_cast<PFN_vkCmdCopyAccelerationStructureKHR>(get_device_proc_addr(device.get(),"vkCmdCopyAccelerationStructureKHR"));
-    pfn_CopyAccelerationStructureKHR = reinterpret_cast<PFN_vkCopyAccelerationStructureKHR>(get_device_proc_addr(device.get(),"vkCopyAccelerationStructureKHR"));
-    pfn_CmdCopyAccelerationStructureToMemoryKHR = reinterpret_cast<PFN_vkCmdCopyAccelerationStructureToMemoryKHR>(get_device_proc_addr(device.get(),"vkCmdCopyAccelerationStructureToMemoryKHR"));
-    pfn_CopyAccelerationStructureToMemoryKHR = reinterpret_cast<PFN_vkCopyAccelerationStructureToMemoryKHR>(get_device_proc_addr(device.get(),"vkCopyAccelerationStructureToMemoryKHR"));
-    pfn_CmdCopyMemoryToAccelerationStructureKHR = reinterpret_cast<PFN_vkCmdCopyMemoryToAccelerationStructureKHR>(get_device_proc_addr(device.get(),"vkCmdCopyMemoryToAccelerationStructureKHR"));
-    pfn_CopyMemoryToAccelerationStructureKHR = reinterpret_cast<PFN_vkCopyMemoryToAccelerationStructureKHR>(get_device_proc_addr(device.get(),"vkCopyMemoryToAccelerationStructureKHR"));
-    pfn_CmdWriteAccelerationStructuresPropertiesKHR = reinterpret_cast<PFN_vkCmdWriteAccelerationStructuresPropertiesKHR>(get_device_proc_addr(device.get(),"vkCmdWriteAccelerationStructuresPropertiesKHR"));
-    pfn_WriteAccelerationStructuresPropertiesKHR = reinterpret_cast<PFN_vkWriteAccelerationStructuresPropertiesKHR>(get_device_proc_addr(device.get(),"vkWriteAccelerationStructuresPropertiesKHR"));
-    pfn_CmdTraceRaysKHR = reinterpret_cast<PFN_vkCmdTraceRaysKHR>(get_device_proc_addr(device.get(),"vkCmdTraceRaysKHR"));
-    pfn_GetRayTracingShaderGroupHandlesKHR = reinterpret_cast<PFN_vkGetRayTracingShaderGroupHandlesKHR>(get_device_proc_addr(device.get(),"vkGetRayTracingShaderGroupHandlesKHR"));
-    pfn_GetRayTracingCaptureReplayShaderGroupHandlesKHR = reinterpret_cast<PFN_vkGetRayTracingCaptureReplayShaderGroupHandlesKHR>(get_device_proc_addr(device.get(),"vkGetRayTracingCaptureReplayShaderGroupHandlesKHR"));
-    pfn_CreateRayTracingPipelinesKHR = reinterpret_cast<PFN_vkCreateRayTracingPipelinesKHR>(get_device_proc_addr(device.get(),"vkCreateRayTracingPipelinesKHR"));
-    pfn_CmdTraceRaysIndirectKHR = reinterpret_cast<PFN_vkCmdTraceRaysIndirectKHR>(get_device_proc_addr(device.get(),"vkCmdTraceRaysIndirectKHR"));
-    pfn_GetDeviceAccelerationStructureCompatibilityKHR = reinterpret_cast<PFN_vkGetDeviceAccelerationStructureCompatibilityKHR>(get_device_proc_addr(device.get(),"vkGetDeviceAccelerationStructureCompatibilityKHR"));
-    pfn_CreateAccelerationStructureKHR = reinterpret_cast<PFN_vkCreateAccelerationStructureKHR>(get_device_proc_addr(device.get(),"vkCreateAccelerationStructureKHR"));
-    pfn_CmdBuildAccelerationStructureKHR = reinterpret_cast<PFN_vkCmdBuildAccelerationStructureKHR>(get_device_proc_addr(device.get(),"vkCmdBuildAccelerationStructureKHR"));
-    pfn_CmdBuildAccelerationStructureIndirectKHR = reinterpret_cast<PFN_vkCmdBuildAccelerationStructureIndirectKHR>(get_device_proc_addr(device.get(),"vkCmdBuildAccelerationStructureIndirectKHR"));
-    pfn_BuildAccelerationStructureKHR = reinterpret_cast<PFN_vkBuildAccelerationStructureKHR>(get_device_proc_addr(device.get(),"vkBuildAccelerationStructureKHR"));
-    pfn_GetAccelerationStructureDeviceAddressKHR = reinterpret_cast<PFN_vkGetAccelerationStructureDeviceAddressKHR>(get_device_proc_addr(device.get(),"vkGetAccelerationStructureDeviceAddressKHR"));
-#endif //defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_ray_tracing))
-#if defined(VK_EXT_image_drm_format_modifier)
-    pfn_GetImageDrmFormatModifierPropertiesEXT = reinterpret_cast<PFN_vkGetImageDrmFormatModifierPropertiesEXT>(get_device_proc_addr(device.get(),"vkGetImageDrmFormatModifierPropertiesEXT"));
-#endif //defined(VK_EXT_image_drm_format_modifier)
-#if defined(VK_EXT_validation_cache)
-    pfn_CreateValidationCacheEXT = reinterpret_cast<PFN_vkCreateValidationCacheEXT>(get_device_proc_addr(device.get(),"vkCreateValidationCacheEXT"));
-    pfn_DestroyValidationCacheEXT = reinterpret_cast<PFN_vkDestroyValidationCacheEXT>(get_device_proc_addr(device.get(),"vkDestroyValidationCacheEXT"));
-    pfn_GetValidationCacheDataEXT = reinterpret_cast<PFN_vkGetValidationCacheDataEXT>(get_device_proc_addr(device.get(),"vkGetValidationCacheDataEXT"));
-    pfn_MergeValidationCachesEXT = reinterpret_cast<PFN_vkMergeValidationCachesEXT>(get_device_proc_addr(device.get(),"vkMergeValidationCachesEXT"));
-#endif //defined(VK_EXT_validation_cache)
-#if defined(VK_NV_shading_rate_image)
-    pfn_CmdBindShadingRateImageNV = reinterpret_cast<PFN_vkCmdBindShadingRateImageNV>(get_device_proc_addr(device.get(),"vkCmdBindShadingRateImageNV"));
-    pfn_CmdSetViewportShadingRatePaletteNV = reinterpret_cast<PFN_vkCmdSetViewportShadingRatePaletteNV>(get_device_proc_addr(device.get(),"vkCmdSetViewportShadingRatePaletteNV"));
-    pfn_CmdSetCoarseSampleOrderNV = reinterpret_cast<PFN_vkCmdSetCoarseSampleOrderNV>(get_device_proc_addr(device.get(),"vkCmdSetCoarseSampleOrderNV"));
-#endif //defined(VK_NV_shading_rate_image)
-#if defined(VK_NV_ray_tracing)
-    pfn_CompileDeferredNV = reinterpret_cast<PFN_vkCompileDeferredNV>(get_device_proc_addr(device.get(),"vkCompileDeferredNV"));
-    pfn_CreateAccelerationStructureNV = reinterpret_cast<PFN_vkCreateAccelerationStructureNV>(get_device_proc_addr(device.get(),"vkCreateAccelerationStructureNV"));
-    pfn_GetAccelerationStructureMemoryRequirementsNV = reinterpret_cast<PFN_vkGetAccelerationStructureMemoryRequirementsNV>(get_device_proc_addr(device.get(),"vkGetAccelerationStructureMemoryRequirementsNV"));
-    pfn_CmdCopyAccelerationStructureNV = reinterpret_cast<PFN_vkCmdCopyAccelerationStructureNV>(get_device_proc_addr(device.get(),"vkCmdCopyAccelerationStructureNV"));
-    pfn_CmdBuildAccelerationStructureNV = reinterpret_cast<PFN_vkCmdBuildAccelerationStructureNV>(get_device_proc_addr(device.get(),"vkCmdBuildAccelerationStructureNV"));
-    pfn_CmdTraceRaysNV = reinterpret_cast<PFN_vkCmdTraceRaysNV>(get_device_proc_addr(device.get(),"vkCmdTraceRaysNV"));
-    pfn_GetAccelerationStructureHandleNV = reinterpret_cast<PFN_vkGetAccelerationStructureHandleNV>(get_device_proc_addr(device.get(),"vkGetAccelerationStructureHandleNV"));
-    pfn_CreateRayTracingPipelinesNV = reinterpret_cast<PFN_vkCreateRayTracingPipelinesNV>(get_device_proc_addr(device.get(),"vkCreateRayTracingPipelinesNV"));
-#endif //defined(VK_NV_ray_tracing)
-#if defined(VK_EXT_external_memory_host)
-    pfn_GetMemoryHostPointerPropertiesEXT = reinterpret_cast<PFN_vkGetMemoryHostPointerPropertiesEXT>(get_device_proc_addr(device.get(),"vkGetMemoryHostPointerPropertiesEXT"));
-#endif //defined(VK_EXT_external_memory_host)
-#if defined(VK_AMD_buffer_marker)
-    pfn_CmdWriteBufferMarkerAMD = reinterpret_cast<PFN_vkCmdWriteBufferMarkerAMD>(get_device_proc_addr(device.get(),"vkCmdWriteBufferMarkerAMD"));
-#endif //defined(VK_AMD_buffer_marker)
-#if defined(VK_EXT_calibrated_timestamps)
-    pfn_GetCalibratedTimestampsEXT = reinterpret_cast<PFN_vkGetCalibratedTimestampsEXT>(get_device_proc_addr(device.get(),"vkGetCalibratedTimestampsEXT"));
-#endif //defined(VK_EXT_calibrated_timestamps)
-#if defined(VK_NV_mesh_shader)
-    pfn_CmdDrawMeshTasksNV = reinterpret_cast<PFN_vkCmdDrawMeshTasksNV>(get_device_proc_addr(device.get(),"vkCmdDrawMeshTasksNV"));
-    pfn_CmdDrawMeshTasksIndirectNV = reinterpret_cast<PFN_vkCmdDrawMeshTasksIndirectNV>(get_device_proc_addr(device.get(),"vkCmdDrawMeshTasksIndirectNV"));
-    pfn_CmdDrawMeshTasksIndirectCountNV = reinterpret_cast<PFN_vkCmdDrawMeshTasksIndirectCountNV>(get_device_proc_addr(device.get(),"vkCmdDrawMeshTasksIndirectCountNV"));
-#endif //defined(VK_NV_mesh_shader)
-#if defined(VK_NV_scissor_exclusive)
-    pfn_CmdSetExclusiveScissorNV = reinterpret_cast<PFN_vkCmdSetExclusiveScissorNV>(get_device_proc_addr(device.get(),"vkCmdSetExclusiveScissorNV"));
-#endif //defined(VK_NV_scissor_exclusive)
-#if defined(VK_NV_device_diagnostic_checkpoints)
-    pfn_CmdSetCheckpointNV = reinterpret_cast<PFN_vkCmdSetCheckpointNV>(get_device_proc_addr(device.get(),"vkCmdSetCheckpointNV"));
-    pfn_GetQueueCheckpointDataNV = reinterpret_cast<PFN_vkGetQueueCheckpointDataNV>(get_device_proc_addr(device.get(),"vkGetQueueCheckpointDataNV"));
-#endif //defined(VK_NV_device_diagnostic_checkpoints)
-#if defined(VK_INTEL_performance_query)
-    pfn_InitializePerformanceApiINTEL = reinterpret_cast<PFN_vkInitializePerformanceApiINTEL>(get_device_proc_addr(device.get(),"vkInitializePerformanceApiINTEL"));
-    pfn_UninitializePerformanceApiINTEL = reinterpret_cast<PFN_vkUninitializePerformanceApiINTEL>(get_device_proc_addr(device.get(),"vkUninitializePerformanceApiINTEL"));
-    pfn_CmdSetPerformanceMarkerINTEL = reinterpret_cast<PFN_vkCmdSetPerformanceMarkerINTEL>(get_device_proc_addr(device.get(),"vkCmdSetPerformanceMarkerINTEL"));
-    pfn_CmdSetPerformanceStreamMarkerINTEL = reinterpret_cast<PFN_vkCmdSetPerformanceStreamMarkerINTEL>(get_device_proc_addr(device.get(),"vkCmdSetPerformanceStreamMarkerINTEL"));
-    pfn_CmdSetPerformanceOverrideINTEL = reinterpret_cast<PFN_vkCmdSetPerformanceOverrideINTEL>(get_device_proc_addr(device.get(),"vkCmdSetPerformanceOverrideINTEL"));
-    pfn_AcquirePerformanceConfigurationINTEL = reinterpret_cast<PFN_vkAcquirePerformanceConfigurationINTEL>(get_device_proc_addr(device.get(),"vkAcquirePerformanceConfigurationINTEL"));
-    pfn_ReleasePerformanceConfigurationINTEL = reinterpret_cast<PFN_vkReleasePerformanceConfigurationINTEL>(get_device_proc_addr(device.get(),"vkReleasePerformanceConfigurationINTEL"));
-    pfn_QueueSetPerformanceConfigurationINTEL = reinterpret_cast<PFN_vkQueueSetPerformanceConfigurationINTEL>(get_device_proc_addr(device.get(),"vkQueueSetPerformanceConfigurationINTEL"));
-    pfn_GetPerformanceParameterINTEL = reinterpret_cast<PFN_vkGetPerformanceParameterINTEL>(get_device_proc_addr(device.get(),"vkGetPerformanceParameterINTEL"));
-#endif //defined(VK_INTEL_performance_query)
-#if defined(VK_AMD_display_native_hdr)
-    pfn_SetLocalDimmingAMD = reinterpret_cast<PFN_vkSetLocalDimmingAMD>(get_device_proc_addr(device.get(),"vkSetLocalDimmingAMD"));
-#endif //defined(VK_AMD_display_native_hdr)
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
-    pfn_AcquireFullScreenExclusiveModeEXT = reinterpret_cast<PFN_vkAcquireFullScreenExclusiveModeEXT>(get_device_proc_addr(device.get(),"vkAcquireFullScreenExclusiveModeEXT"));
-    pfn_ReleaseFullScreenExclusiveModeEXT = reinterpret_cast<PFN_vkReleaseFullScreenExclusiveModeEXT>(get_device_proc_addr(device.get(),"vkReleaseFullScreenExclusiveModeEXT"));
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && (defined(VK_EXT_full_screen_exclusive))
-#if defined(VK_USE_PLATFORM_WIN32_KHR) && ((defined(VK_EXT_full_screen_exclusive) && defined(VK_KHR_device_group)) || (defined(VK_EXT_full_screen_exclusive) && defined(VK_VERSION_1_1)))
-    pfn_GetDeviceGroupSurfacePresentModes2EXT = reinterpret_cast<PFN_vkGetDeviceGroupSurfacePresentModes2EXT>(get_device_proc_addr(device.get(),"vkGetDeviceGroupSurfacePresentModes2EXT"));
-#endif //defined(VK_USE_PLATFORM_WIN32_KHR) && ((defined(VK_EXT_full_screen_exclusive) && defined(VK_KHR_device_group)) || (defined(VK_EXT_full_screen_exclusive) && defined(VK_VERSION_1_1)))
-#if defined(VK_EXT_line_rasterization)
-    pfn_CmdSetLineStippleEXT = reinterpret_cast<PFN_vkCmdSetLineStippleEXT>(get_device_proc_addr(device.get(),"vkCmdSetLineStippleEXT"));
-#endif //defined(VK_EXT_line_rasterization)
-#if defined(VK_EXT_extended_dynamic_state)
-    pfn_CmdSetCullModeEXT = reinterpret_cast<PFN_vkCmdSetCullModeEXT>(get_device_proc_addr(device.get(),"vkCmdSetCullModeEXT"));
-    pfn_CmdSetFrontFaceEXT = reinterpret_cast<PFN_vkCmdSetFrontFaceEXT>(get_device_proc_addr(device.get(),"vkCmdSetFrontFaceEXT"));
-    pfn_CmdSetPrimitiveTopologyEXT = reinterpret_cast<PFN_vkCmdSetPrimitiveTopologyEXT>(get_device_proc_addr(device.get(),"vkCmdSetPrimitiveTopologyEXT"));
-    pfn_CmdSetViewportWithCountEXT = reinterpret_cast<PFN_vkCmdSetViewportWithCountEXT>(get_device_proc_addr(device.get(),"vkCmdSetViewportWithCountEXT"));
-    pfn_CmdSetScissorWithCountEXT = reinterpret_cast<PFN_vkCmdSetScissorWithCountEXT>(get_device_proc_addr(device.get(),"vkCmdSetScissorWithCountEXT"));
-    pfn_CmdBindVertexBuffers2EXT = reinterpret_cast<PFN_vkCmdBindVertexBuffers2EXT>(get_device_proc_addr(device.get(),"vkCmdBindVertexBuffers2EXT"));
-    pfn_CmdSetDepthTestEnableEXT = reinterpret_cast<PFN_vkCmdSetDepthTestEnableEXT>(get_device_proc_addr(device.get(),"vkCmdSetDepthTestEnableEXT"));
-    pfn_CmdSetDepthWriteEnableEXT = reinterpret_cast<PFN_vkCmdSetDepthWriteEnableEXT>(get_device_proc_addr(device.get(),"vkCmdSetDepthWriteEnableEXT"));
-    pfn_CmdSetDepthCompareOpEXT = reinterpret_cast<PFN_vkCmdSetDepthCompareOpEXT>(get_device_proc_addr(device.get(),"vkCmdSetDepthCompareOpEXT"));
-    pfn_CmdSetDepthBoundsTestEnableEXT = reinterpret_cast<PFN_vkCmdSetDepthBoundsTestEnableEXT>(get_device_proc_addr(device.get(),"vkCmdSetDepthBoundsTestEnableEXT"));
-    pfn_CmdSetStencilTestEnableEXT = reinterpret_cast<PFN_vkCmdSetStencilTestEnableEXT>(get_device_proc_addr(device.get(),"vkCmdSetStencilTestEnableEXT"));
-    pfn_CmdSetStencilOpEXT = reinterpret_cast<PFN_vkCmdSetStencilOpEXT>(get_device_proc_addr(device.get(),"vkCmdSetStencilOpEXT"));
-#endif //defined(VK_EXT_extended_dynamic_state)
-#if defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_deferred_host_operations))
-    pfn_CreateDeferredOperationKHR = reinterpret_cast<PFN_vkCreateDeferredOperationKHR>(get_device_proc_addr(device.get(),"vkCreateDeferredOperationKHR"));
-    pfn_DestroyDeferredOperationKHR = reinterpret_cast<PFN_vkDestroyDeferredOperationKHR>(get_device_proc_addr(device.get(),"vkDestroyDeferredOperationKHR"));
-    pfn_GetDeferredOperationMaxConcurrencyKHR = reinterpret_cast<PFN_vkGetDeferredOperationMaxConcurrencyKHR>(get_device_proc_addr(device.get(),"vkGetDeferredOperationMaxConcurrencyKHR"));
-    pfn_GetDeferredOperationResultKHR = reinterpret_cast<PFN_vkGetDeferredOperationResultKHR>(get_device_proc_addr(device.get(),"vkGetDeferredOperationResultKHR"));
-    pfn_DeferredOperationJoinKHR = reinterpret_cast<PFN_vkDeferredOperationJoinKHR>(get_device_proc_addr(device.get(),"vkDeferredOperationJoinKHR"));
-#endif //defined(VK_ENABLE_BETA_EXTENSIONS) && (defined(VK_KHR_deferred_host_operations))
-#if defined(VK_KHR_pipeline_executable_properties)
-    pfn_GetPipelineExecutablePropertiesKHR = reinterpret_cast<PFN_vkGetPipelineExecutablePropertiesKHR>(get_device_proc_addr(device.get(),"vkGetPipelineExecutablePropertiesKHR"));
-    pfn_GetPipelineExecutableStatisticsKHR = reinterpret_cast<PFN_vkGetPipelineExecutableStatisticsKHR>(get_device_proc_addr(device.get(),"vkGetPipelineExecutableStatisticsKHR"));
-    pfn_GetPipelineExecutableInternalRepresentationsKHR = reinterpret_cast<PFN_vkGetPipelineExecutableInternalRepresentationsKHR>(get_device_proc_addr(device.get(),"vkGetPipelineExecutableInternalRepresentationsKHR"));
-#endif //defined(VK_KHR_pipeline_executable_properties)
-#if defined(VK_NV_device_generated_commands)
-    pfn_CmdExecuteGeneratedCommandsNV = reinterpret_cast<PFN_vkCmdExecuteGeneratedCommandsNV>(get_device_proc_addr(device.get(),"vkCmdExecuteGeneratedCommandsNV"));
-    pfn_CmdPreprocessGeneratedCommandsNV = reinterpret_cast<PFN_vkCmdPreprocessGeneratedCommandsNV>(get_device_proc_addr(device.get(),"vkCmdPreprocessGeneratedCommandsNV"));
-    pfn_CmdBindPipelineShaderGroupNV = reinterpret_cast<PFN_vkCmdBindPipelineShaderGroupNV>(get_device_proc_addr(device.get(),"vkCmdBindPipelineShaderGroupNV"));
-    pfn_GetGeneratedCommandsMemoryRequirementsNV = reinterpret_cast<PFN_vkGetGeneratedCommandsMemoryRequirementsNV>(get_device_proc_addr(device.get(),"vkGetGeneratedCommandsMemoryRequirementsNV"));
-    pfn_CreateIndirectCommandsLayoutNV = reinterpret_cast<PFN_vkCreateIndirectCommandsLayoutNV>(get_device_proc_addr(device.get(),"vkCreateIndirectCommandsLayoutNV"));
-    pfn_DestroyIndirectCommandsLayoutNV = reinterpret_cast<PFN_vkDestroyIndirectCommandsLayoutNV>(get_device_proc_addr(device.get(),"vkDestroyIndirectCommandsLayoutNV"));
-#endif //defined(VK_NV_device_generated_commands)
-#if defined(VK_EXT_private_data)
-    pfn_CreatePrivateDataSlotEXT = reinterpret_cast<PFN_vkCreatePrivateDataSlotEXT>(get_device_proc_addr(device.get(),"vkCreatePrivateDataSlotEXT"));
-    pfn_DestroyPrivateDataSlotEXT = reinterpret_cast<PFN_vkDestroyPrivateDataSlotEXT>(get_device_proc_addr(device.get(),"vkDestroyPrivateDataSlotEXT"));
-    pfn_SetPrivateDataEXT = reinterpret_cast<PFN_vkSetPrivateDataEXT>(get_device_proc_addr(device.get(),"vkSetPrivateDataEXT"));
-    pfn_GetPrivateDataEXT = reinterpret_cast<PFN_vkGetPrivateDataEXT>(get_device_proc_addr(device.get(),"vkGetPrivateDataEXT"));
-#endif //defined(VK_EXT_private_data)
-#if defined(VK_KHR_copy_commands2)
-    pfn_CmdCopyBuffer2KHR = reinterpret_cast<PFN_vkCmdCopyBuffer2KHR>(get_device_proc_addr(device.get(),"vkCmdCopyBuffer2KHR"));
-    pfn_CmdCopyImage2KHR = reinterpret_cast<PFN_vkCmdCopyImage2KHR>(get_device_proc_addr(device.get(),"vkCmdCopyImage2KHR"));
-    pfn_CmdBlitImage2KHR = reinterpret_cast<PFN_vkCmdBlitImage2KHR>(get_device_proc_addr(device.get(),"vkCmdBlitImage2KHR"));
-    pfn_CmdCopyBufferToImage2KHR = reinterpret_cast<PFN_vkCmdCopyBufferToImage2KHR>(get_device_proc_addr(device.get(),"vkCmdCopyBufferToImage2KHR"));
-    pfn_CmdCopyImageToBuffer2KHR = reinterpret_cast<PFN_vkCmdCopyImageToBuffer2KHR>(get_device_proc_addr(device.get(),"vkCmdCopyImageToBuffer2KHR"));
-    pfn_CmdResolveImage2KHR = reinterpret_cast<PFN_vkCmdResolveImage2KHR>(get_device_proc_addr(device.get(),"vkCmdResolveImage2KHR"));
-#endif //defined(VK_KHR_copy_commands2)
+    detail::PFN_vkGetDeviceProcAddr get_device_proc_addr = instance_functions.pfn_GetDeviceProcAddr;
+    pfn_DestroyDevice = reinterpret_cast<detail::PFN_vkDestroyDevice>(get_device_proc_addr(device.get(),"vkDestroyDevice"));
+    pfn_GetDeviceQueue = reinterpret_cast<detail::PFN_vkGetDeviceQueue>(get_device_proc_addr(device.get(),"vkGetDeviceQueue"));
+    pfn_QueueSubmit = reinterpret_cast<detail::PFN_vkQueueSubmit>(get_device_proc_addr(device.get(),"vkQueueSubmit"));
+    pfn_QueueWaitIdle = reinterpret_cast<detail::PFN_vkQueueWaitIdle>(get_device_proc_addr(device.get(),"vkQueueWaitIdle"));
+    pfn_DeviceWaitIdle = reinterpret_cast<detail::PFN_vkDeviceWaitIdle>(get_device_proc_addr(device.get(),"vkDeviceWaitIdle"));
+    pfn_AllocateMemory = reinterpret_cast<detail::PFN_vkAllocateMemory>(get_device_proc_addr(device.get(),"vkAllocateMemory"));
+    pfn_FreeMemory = reinterpret_cast<detail::PFN_vkFreeMemory>(get_device_proc_addr(device.get(),"vkFreeMemory"));
+    pfn_MapMemory = reinterpret_cast<detail::PFN_vkMapMemory>(get_device_proc_addr(device.get(),"vkMapMemory"));
+    pfn_UnmapMemory = reinterpret_cast<detail::PFN_vkUnmapMemory>(get_device_proc_addr(device.get(),"vkUnmapMemory"));
+    pfn_FlushMappedMemoryRanges = reinterpret_cast<detail::PFN_vkFlushMappedMemoryRanges>(get_device_proc_addr(device.get(),"vkFlushMappedMemoryRanges"));
+    pfn_InvalidateMappedMemoryRanges = reinterpret_cast<detail::PFN_vkInvalidateMappedMemoryRanges>(get_device_proc_addr(device.get(),"vkInvalidateMappedMemoryRanges"));
+    pfn_GetDeviceMemoryCommitment = reinterpret_cast<detail::PFN_vkGetDeviceMemoryCommitment>(get_device_proc_addr(device.get(),"vkGetDeviceMemoryCommitment"));
+    pfn_GetBufferMemoryRequirements = reinterpret_cast<detail::PFN_vkGetBufferMemoryRequirements>(get_device_proc_addr(device.get(),"vkGetBufferMemoryRequirements"));
+    pfn_BindBufferMemory = reinterpret_cast<detail::PFN_vkBindBufferMemory>(get_device_proc_addr(device.get(),"vkBindBufferMemory"));
+    pfn_GetImageMemoryRequirements = reinterpret_cast<detail::PFN_vkGetImageMemoryRequirements>(get_device_proc_addr(device.get(),"vkGetImageMemoryRequirements"));
+    pfn_BindImageMemory = reinterpret_cast<detail::PFN_vkBindImageMemory>(get_device_proc_addr(device.get(),"vkBindImageMemory"));
+    pfn_GetImageSparseMemoryRequirements = reinterpret_cast<detail::PFN_vkGetImageSparseMemoryRequirements>(get_device_proc_addr(device.get(),"vkGetImageSparseMemoryRequirements"));
+    pfn_QueueBindSparse = reinterpret_cast<detail::PFN_vkQueueBindSparse>(get_device_proc_addr(device.get(),"vkQueueBindSparse"));
+    pfn_CreateFence = reinterpret_cast<detail::PFN_vkCreateFence>(get_device_proc_addr(device.get(),"vkCreateFence"));
+    pfn_DestroyFence = reinterpret_cast<detail::PFN_vkDestroyFence>(get_device_proc_addr(device.get(),"vkDestroyFence"));
+    pfn_ResetFences = reinterpret_cast<detail::PFN_vkResetFences>(get_device_proc_addr(device.get(),"vkResetFences"));
+    pfn_GetFenceStatus = reinterpret_cast<detail::PFN_vkGetFenceStatus>(get_device_proc_addr(device.get(),"vkGetFenceStatus"));
+    pfn_WaitForFences = reinterpret_cast<detail::PFN_vkWaitForFences>(get_device_proc_addr(device.get(),"vkWaitForFences"));
+    pfn_CreateSemaphore = reinterpret_cast<detail::PFN_vkCreateSemaphore>(get_device_proc_addr(device.get(),"vkCreateSemaphore"));
+    pfn_DestroySemaphore = reinterpret_cast<detail::PFN_vkDestroySemaphore>(get_device_proc_addr(device.get(),"vkDestroySemaphore"));
+    pfn_CreateEvent = reinterpret_cast<detail::PFN_vkCreateEvent>(get_device_proc_addr(device.get(),"vkCreateEvent"));
+    pfn_DestroyEvent = reinterpret_cast<detail::PFN_vkDestroyEvent>(get_device_proc_addr(device.get(),"vkDestroyEvent"));
+    pfn_GetEventStatus = reinterpret_cast<detail::PFN_vkGetEventStatus>(get_device_proc_addr(device.get(),"vkGetEventStatus"));
+    pfn_SetEvent = reinterpret_cast<detail::PFN_vkSetEvent>(get_device_proc_addr(device.get(),"vkSetEvent"));
+    pfn_ResetEvent = reinterpret_cast<detail::PFN_vkResetEvent>(get_device_proc_addr(device.get(),"vkResetEvent"));
+    pfn_CreateQueryPool = reinterpret_cast<detail::PFN_vkCreateQueryPool>(get_device_proc_addr(device.get(),"vkCreateQueryPool"));
+    pfn_DestroyQueryPool = reinterpret_cast<detail::PFN_vkDestroyQueryPool>(get_device_proc_addr(device.get(),"vkDestroyQueryPool"));
+    pfn_GetQueryPoolResults = reinterpret_cast<detail::PFN_vkGetQueryPoolResults>(get_device_proc_addr(device.get(),"vkGetQueryPoolResults"));
+    pfn_CreateBuffer = reinterpret_cast<detail::PFN_vkCreateBuffer>(get_device_proc_addr(device.get(),"vkCreateBuffer"));
+    pfn_DestroyBuffer = reinterpret_cast<detail::PFN_vkDestroyBuffer>(get_device_proc_addr(device.get(),"vkDestroyBuffer"));
+    pfn_CreateBufferView = reinterpret_cast<detail::PFN_vkCreateBufferView>(get_device_proc_addr(device.get(),"vkCreateBufferView"));
+    pfn_DestroyBufferView = reinterpret_cast<detail::PFN_vkDestroyBufferView>(get_device_proc_addr(device.get(),"vkDestroyBufferView"));
+    pfn_CreateImage = reinterpret_cast<detail::PFN_vkCreateImage>(get_device_proc_addr(device.get(),"vkCreateImage"));
+    pfn_DestroyImage = reinterpret_cast<detail::PFN_vkDestroyImage>(get_device_proc_addr(device.get(),"vkDestroyImage"));
+    pfn_GetImageSubresourceLayout = reinterpret_cast<detail::PFN_vkGetImageSubresourceLayout>(get_device_proc_addr(device.get(),"vkGetImageSubresourceLayout"));
+    pfn_CreateImageView = reinterpret_cast<detail::PFN_vkCreateImageView>(get_device_proc_addr(device.get(),"vkCreateImageView"));
+    pfn_DestroyImageView = reinterpret_cast<detail::PFN_vkDestroyImageView>(get_device_proc_addr(device.get(),"vkDestroyImageView"));
+    pfn_CreateShaderModule = reinterpret_cast<detail::PFN_vkCreateShaderModule>(get_device_proc_addr(device.get(),"vkCreateShaderModule"));
+    pfn_DestroyShaderModule = reinterpret_cast<detail::PFN_vkDestroyShaderModule>(get_device_proc_addr(device.get(),"vkDestroyShaderModule"));
+    pfn_CreatePipelineCache = reinterpret_cast<detail::PFN_vkCreatePipelineCache>(get_device_proc_addr(device.get(),"vkCreatePipelineCache"));
+    pfn_DestroyPipelineCache = reinterpret_cast<detail::PFN_vkDestroyPipelineCache>(get_device_proc_addr(device.get(),"vkDestroyPipelineCache"));
+    pfn_GetPipelineCacheData = reinterpret_cast<detail::PFN_vkGetPipelineCacheData>(get_device_proc_addr(device.get(),"vkGetPipelineCacheData"));
+    pfn_MergePipelineCaches = reinterpret_cast<detail::PFN_vkMergePipelineCaches>(get_device_proc_addr(device.get(),"vkMergePipelineCaches"));
+    pfn_CreateGraphicsPipelines = reinterpret_cast<detail::PFN_vkCreateGraphicsPipelines>(get_device_proc_addr(device.get(),"vkCreateGraphicsPipelines"));
+    pfn_CreateComputePipelines = reinterpret_cast<detail::PFN_vkCreateComputePipelines>(get_device_proc_addr(device.get(),"vkCreateComputePipelines"));
+    pfn_DestroyPipeline = reinterpret_cast<detail::PFN_vkDestroyPipeline>(get_device_proc_addr(device.get(),"vkDestroyPipeline"));
+    pfn_CreatePipelineLayout = reinterpret_cast<detail::PFN_vkCreatePipelineLayout>(get_device_proc_addr(device.get(),"vkCreatePipelineLayout"));
+    pfn_DestroyPipelineLayout = reinterpret_cast<detail::PFN_vkDestroyPipelineLayout>(get_device_proc_addr(device.get(),"vkDestroyPipelineLayout"));
+    pfn_CreateSampler = reinterpret_cast<detail::PFN_vkCreateSampler>(get_device_proc_addr(device.get(),"vkCreateSampler"));
+    pfn_DestroySampler = reinterpret_cast<detail::PFN_vkDestroySampler>(get_device_proc_addr(device.get(),"vkDestroySampler"));
+    pfn_CreateDescriptorSetLayout = reinterpret_cast<detail::PFN_vkCreateDescriptorSetLayout>(get_device_proc_addr(device.get(),"vkCreateDescriptorSetLayout"));
+    pfn_DestroyDescriptorSetLayout = reinterpret_cast<detail::PFN_vkDestroyDescriptorSetLayout>(get_device_proc_addr(device.get(),"vkDestroyDescriptorSetLayout"));
+    pfn_CreateDescriptorPool = reinterpret_cast<detail::PFN_vkCreateDescriptorPool>(get_device_proc_addr(device.get(),"vkCreateDescriptorPool"));
+    pfn_DestroyDescriptorPool = reinterpret_cast<detail::PFN_vkDestroyDescriptorPool>(get_device_proc_addr(device.get(),"vkDestroyDescriptorPool"));
+    pfn_ResetDescriptorPool = reinterpret_cast<detail::PFN_vkResetDescriptorPool>(get_device_proc_addr(device.get(),"vkResetDescriptorPool"));
+    pfn_AllocateDescriptorSets = reinterpret_cast<detail::PFN_vkAllocateDescriptorSets>(get_device_proc_addr(device.get(),"vkAllocateDescriptorSets"));
+    pfn_FreeDescriptorSets = reinterpret_cast<detail::PFN_vkFreeDescriptorSets>(get_device_proc_addr(device.get(),"vkFreeDescriptorSets"));
+    pfn_UpdateDescriptorSets = reinterpret_cast<detail::PFN_vkUpdateDescriptorSets>(get_device_proc_addr(device.get(),"vkUpdateDescriptorSets"));
+    pfn_CreateFramebuffer = reinterpret_cast<detail::PFN_vkCreateFramebuffer>(get_device_proc_addr(device.get(),"vkCreateFramebuffer"));
+    pfn_DestroyFramebuffer = reinterpret_cast<detail::PFN_vkDestroyFramebuffer>(get_device_proc_addr(device.get(),"vkDestroyFramebuffer"));
+    pfn_CreateRenderPass = reinterpret_cast<detail::PFN_vkCreateRenderPass>(get_device_proc_addr(device.get(),"vkCreateRenderPass"));
+    pfn_DestroyRenderPass = reinterpret_cast<detail::PFN_vkDestroyRenderPass>(get_device_proc_addr(device.get(),"vkDestroyRenderPass"));
+    pfn_GetRenderAreaGranularity = reinterpret_cast<detail::PFN_vkGetRenderAreaGranularity>(get_device_proc_addr(device.get(),"vkGetRenderAreaGranularity"));
+    pfn_CreateCommandPool = reinterpret_cast<detail::PFN_vkCreateCommandPool>(get_device_proc_addr(device.get(),"vkCreateCommandPool"));
+    pfn_DestroyCommandPool = reinterpret_cast<detail::PFN_vkDestroyCommandPool>(get_device_proc_addr(device.get(),"vkDestroyCommandPool"));
+    pfn_ResetCommandPool = reinterpret_cast<detail::PFN_vkResetCommandPool>(get_device_proc_addr(device.get(),"vkResetCommandPool"));
+    pfn_AllocateCommandBuffers = reinterpret_cast<detail::PFN_vkAllocateCommandBuffers>(get_device_proc_addr(device.get(),"vkAllocateCommandBuffers"));
+    pfn_FreeCommandBuffers = reinterpret_cast<detail::PFN_vkFreeCommandBuffers>(get_device_proc_addr(device.get(),"vkFreeCommandBuffers"));
+    pfn_BeginCommandBuffer = reinterpret_cast<detail::PFN_vkBeginCommandBuffer>(get_device_proc_addr(device.get(),"vkBeginCommandBuffer"));
+    pfn_EndCommandBuffer = reinterpret_cast<detail::PFN_vkEndCommandBuffer>(get_device_proc_addr(device.get(),"vkEndCommandBuffer"));
+    pfn_ResetCommandBuffer = reinterpret_cast<detail::PFN_vkResetCommandBuffer>(get_device_proc_addr(device.get(),"vkResetCommandBuffer"));
+    pfn_CmdBindPipeline = reinterpret_cast<detail::PFN_vkCmdBindPipeline>(get_device_proc_addr(device.get(),"vkCmdBindPipeline"));
+    pfn_CmdSetViewport = reinterpret_cast<detail::PFN_vkCmdSetViewport>(get_device_proc_addr(device.get(),"vkCmdSetViewport"));
+    pfn_CmdSetScissor = reinterpret_cast<detail::PFN_vkCmdSetScissor>(get_device_proc_addr(device.get(),"vkCmdSetScissor"));
+    pfn_CmdSetLineWidth = reinterpret_cast<detail::PFN_vkCmdSetLineWidth>(get_device_proc_addr(device.get(),"vkCmdSetLineWidth"));
+    pfn_CmdSetDepthBias = reinterpret_cast<detail::PFN_vkCmdSetDepthBias>(get_device_proc_addr(device.get(),"vkCmdSetDepthBias"));
+    pfn_CmdSetBlendConstants = reinterpret_cast<detail::PFN_vkCmdSetBlendConstants>(get_device_proc_addr(device.get(),"vkCmdSetBlendConstants"));
+    pfn_CmdSetDepthBounds = reinterpret_cast<detail::PFN_vkCmdSetDepthBounds>(get_device_proc_addr(device.get(),"vkCmdSetDepthBounds"));
+    pfn_CmdSetStencilCompareMask = reinterpret_cast<detail::PFN_vkCmdSetStencilCompareMask>(get_device_proc_addr(device.get(),"vkCmdSetStencilCompareMask"));
+    pfn_CmdSetStencilWriteMask = reinterpret_cast<detail::PFN_vkCmdSetStencilWriteMask>(get_device_proc_addr(device.get(),"vkCmdSetStencilWriteMask"));
+    pfn_CmdSetStencilReference = reinterpret_cast<detail::PFN_vkCmdSetStencilReference>(get_device_proc_addr(device.get(),"vkCmdSetStencilReference"));
+    pfn_CmdBindDescriptorSets = reinterpret_cast<detail::PFN_vkCmdBindDescriptorSets>(get_device_proc_addr(device.get(),"vkCmdBindDescriptorSets"));
+    pfn_CmdBindIndexBuffer = reinterpret_cast<detail::PFN_vkCmdBindIndexBuffer>(get_device_proc_addr(device.get(),"vkCmdBindIndexBuffer"));
+    pfn_CmdBindVertexBuffers = reinterpret_cast<detail::PFN_vkCmdBindVertexBuffers>(get_device_proc_addr(device.get(),"vkCmdBindVertexBuffers"));
+    pfn_CmdDraw = reinterpret_cast<detail::PFN_vkCmdDraw>(get_device_proc_addr(device.get(),"vkCmdDraw"));
+    pfn_CmdDrawIndexed = reinterpret_cast<detail::PFN_vkCmdDrawIndexed>(get_device_proc_addr(device.get(),"vkCmdDrawIndexed"));
+    pfn_CmdDrawIndirect = reinterpret_cast<detail::PFN_vkCmdDrawIndirect>(get_device_proc_addr(device.get(),"vkCmdDrawIndirect"));
+    pfn_CmdDrawIndexedIndirect = reinterpret_cast<detail::PFN_vkCmdDrawIndexedIndirect>(get_device_proc_addr(device.get(),"vkCmdDrawIndexedIndirect"));
+    pfn_CmdDispatch = reinterpret_cast<detail::PFN_vkCmdDispatch>(get_device_proc_addr(device.get(),"vkCmdDispatch"));
+    pfn_CmdDispatchIndirect = reinterpret_cast<detail::PFN_vkCmdDispatchIndirect>(get_device_proc_addr(device.get(),"vkCmdDispatchIndirect"));
+    pfn_CmdCopyBuffer = reinterpret_cast<detail::PFN_vkCmdCopyBuffer>(get_device_proc_addr(device.get(),"vkCmdCopyBuffer"));
+    pfn_CmdCopyImage = reinterpret_cast<detail::PFN_vkCmdCopyImage>(get_device_proc_addr(device.get(),"vkCmdCopyImage"));
+    pfn_CmdBlitImage = reinterpret_cast<detail::PFN_vkCmdBlitImage>(get_device_proc_addr(device.get(),"vkCmdBlitImage"));
+    pfn_CmdCopyBufferToImage = reinterpret_cast<detail::PFN_vkCmdCopyBufferToImage>(get_device_proc_addr(device.get(),"vkCmdCopyBufferToImage"));
+    pfn_CmdCopyImageToBuffer = reinterpret_cast<detail::PFN_vkCmdCopyImageToBuffer>(get_device_proc_addr(device.get(),"vkCmdCopyImageToBuffer"));
+    pfn_CmdUpdateBuffer = reinterpret_cast<detail::PFN_vkCmdUpdateBuffer>(get_device_proc_addr(device.get(),"vkCmdUpdateBuffer"));
+    pfn_CmdFillBuffer = reinterpret_cast<detail::PFN_vkCmdFillBuffer>(get_device_proc_addr(device.get(),"vkCmdFillBuffer"));
+    pfn_CmdClearColorImage = reinterpret_cast<detail::PFN_vkCmdClearColorImage>(get_device_proc_addr(device.get(),"vkCmdClearColorImage"));
+    pfn_CmdClearDepthStencilImage = reinterpret_cast<detail::PFN_vkCmdClearDepthStencilImage>(get_device_proc_addr(device.get(),"vkCmdClearDepthStencilImage"));
+    pfn_CmdClearAttachments = reinterpret_cast<detail::PFN_vkCmdClearAttachments>(get_device_proc_addr(device.get(),"vkCmdClearAttachments"));
+    pfn_CmdResolveImage = reinterpret_cast<detail::PFN_vkCmdResolveImage>(get_device_proc_addr(device.get(),"vkCmdResolveImage"));
+    pfn_CmdSetEvent = reinterpret_cast<detail::PFN_vkCmdSetEvent>(get_device_proc_addr(device.get(),"vkCmdSetEvent"));
+    pfn_CmdResetEvent = reinterpret_cast<detail::PFN_vkCmdResetEvent>(get_device_proc_addr(device.get(),"vkCmdResetEvent"));
+    pfn_CmdWaitEvents = reinterpret_cast<detail::PFN_vkCmdWaitEvents>(get_device_proc_addr(device.get(),"vkCmdWaitEvents"));
+    pfn_CmdPipelineBarrier = reinterpret_cast<detail::PFN_vkCmdPipelineBarrier>(get_device_proc_addr(device.get(),"vkCmdPipelineBarrier"));
+    pfn_CmdBeginQuery = reinterpret_cast<detail::PFN_vkCmdBeginQuery>(get_device_proc_addr(device.get(),"vkCmdBeginQuery"));
+    pfn_CmdEndQuery = reinterpret_cast<detail::PFN_vkCmdEndQuery>(get_device_proc_addr(device.get(),"vkCmdEndQuery"));
+    pfn_CmdResetQueryPool = reinterpret_cast<detail::PFN_vkCmdResetQueryPool>(get_device_proc_addr(device.get(),"vkCmdResetQueryPool"));
+    pfn_CmdWriteTimestamp = reinterpret_cast<detail::PFN_vkCmdWriteTimestamp>(get_device_proc_addr(device.get(),"vkCmdWriteTimestamp"));
+    pfn_CmdCopyQueryPoolResults = reinterpret_cast<detail::PFN_vkCmdCopyQueryPoolResults>(get_device_proc_addr(device.get(),"vkCmdCopyQueryPoolResults"));
+    pfn_CmdPushConstants = reinterpret_cast<detail::PFN_vkCmdPushConstants>(get_device_proc_addr(device.get(),"vkCmdPushConstants"));
+    pfn_CmdBeginRenderPass = reinterpret_cast<detail::PFN_vkCmdBeginRenderPass>(get_device_proc_addr(device.get(),"vkCmdBeginRenderPass"));
+    pfn_CmdNextSubpass = reinterpret_cast<detail::PFN_vkCmdNextSubpass>(get_device_proc_addr(device.get(),"vkCmdNextSubpass"));
+    pfn_CmdEndRenderPass = reinterpret_cast<detail::PFN_vkCmdEndRenderPass>(get_device_proc_addr(device.get(),"vkCmdEndRenderPass"));
+    pfn_CmdExecuteCommands = reinterpret_cast<detail::PFN_vkCmdExecuteCommands>(get_device_proc_addr(device.get(),"vkCmdExecuteCommands"));
+    pfn_BindBufferMemory2 = reinterpret_cast<detail::PFN_vkBindBufferMemory2>(get_device_proc_addr(device.get(),"vkBindBufferMemory2"));
+    pfn_BindImageMemory2 = reinterpret_cast<detail::PFN_vkBindImageMemory2>(get_device_proc_addr(device.get(),"vkBindImageMemory2"));
+    pfn_GetDeviceGroupPeerMemoryFeatures = reinterpret_cast<detail::PFN_vkGetDeviceGroupPeerMemoryFeatures>(get_device_proc_addr(device.get(),"vkGetDeviceGroupPeerMemoryFeatures"));
+    pfn_CmdSetDeviceMask = reinterpret_cast<detail::PFN_vkCmdSetDeviceMask>(get_device_proc_addr(device.get(),"vkCmdSetDeviceMask"));
+    pfn_CmdDispatchBase = reinterpret_cast<detail::PFN_vkCmdDispatchBase>(get_device_proc_addr(device.get(),"vkCmdDispatchBase"));
+    pfn_GetBufferMemoryRequirements2 = reinterpret_cast<detail::PFN_vkGetBufferMemoryRequirements2>(get_device_proc_addr(device.get(),"vkGetBufferMemoryRequirements2"));
+    pfn_GetImageMemoryRequirements2 = reinterpret_cast<detail::PFN_vkGetImageMemoryRequirements2>(get_device_proc_addr(device.get(),"vkGetImageMemoryRequirements2"));
+    pfn_GetImageSparseMemoryRequirements2 = reinterpret_cast<detail::PFN_vkGetImageSparseMemoryRequirements2>(get_device_proc_addr(device.get(),"vkGetImageSparseMemoryRequirements2"));
+    pfn_TrimCommandPool = reinterpret_cast<detail::PFN_vkTrimCommandPool>(get_device_proc_addr(device.get(),"vkTrimCommandPool"));
+    pfn_GetDeviceQueue2 = reinterpret_cast<detail::PFN_vkGetDeviceQueue2>(get_device_proc_addr(device.get(),"vkGetDeviceQueue2"));
+    pfn_CreateSamplerYcbcrConversion = reinterpret_cast<detail::PFN_vkCreateSamplerYcbcrConversion>(get_device_proc_addr(device.get(),"vkCreateSamplerYcbcrConversion"));
+    pfn_DestroySamplerYcbcrConversion = reinterpret_cast<detail::PFN_vkDestroySamplerYcbcrConversion>(get_device_proc_addr(device.get(),"vkDestroySamplerYcbcrConversion"));
+    pfn_CreateDescriptorUpdateTemplate = reinterpret_cast<detail::PFN_vkCreateDescriptorUpdateTemplate>(get_device_proc_addr(device.get(),"vkCreateDescriptorUpdateTemplate"));
+    pfn_DestroyDescriptorUpdateTemplate = reinterpret_cast<detail::PFN_vkDestroyDescriptorUpdateTemplate>(get_device_proc_addr(device.get(),"vkDestroyDescriptorUpdateTemplate"));
+    pfn_UpdateDescriptorSetWithTemplate = reinterpret_cast<detail::PFN_vkUpdateDescriptorSetWithTemplate>(get_device_proc_addr(device.get(),"vkUpdateDescriptorSetWithTemplate"));
+    pfn_GetDescriptorSetLayoutSupport = reinterpret_cast<detail::PFN_vkGetDescriptorSetLayoutSupport>(get_device_proc_addr(device.get(),"vkGetDescriptorSetLayoutSupport"));
+    pfn_CmdDrawIndirectCount = reinterpret_cast<detail::PFN_vkCmdDrawIndirectCount>(get_device_proc_addr(device.get(),"vkCmdDrawIndirectCount"));
+    pfn_CmdDrawIndexedIndirectCount = reinterpret_cast<detail::PFN_vkCmdDrawIndexedIndirectCount>(get_device_proc_addr(device.get(),"vkCmdDrawIndexedIndirectCount"));
+    pfn_CreateRenderPass2 = reinterpret_cast<detail::PFN_vkCreateRenderPass2>(get_device_proc_addr(device.get(),"vkCreateRenderPass2"));
+    pfn_CmdBeginRenderPass2 = reinterpret_cast<detail::PFN_vkCmdBeginRenderPass2>(get_device_proc_addr(device.get(),"vkCmdBeginRenderPass2"));
+    pfn_CmdNextSubpass2 = reinterpret_cast<detail::PFN_vkCmdNextSubpass2>(get_device_proc_addr(device.get(),"vkCmdNextSubpass2"));
+    pfn_CmdEndRenderPass2 = reinterpret_cast<detail::PFN_vkCmdEndRenderPass2>(get_device_proc_addr(device.get(),"vkCmdEndRenderPass2"));
+    pfn_ResetQueryPool = reinterpret_cast<detail::PFN_vkResetQueryPool>(get_device_proc_addr(device.get(),"vkResetQueryPool"));
+    pfn_GetSemaphoreCounterValue = reinterpret_cast<detail::PFN_vkGetSemaphoreCounterValue>(get_device_proc_addr(device.get(),"vkGetSemaphoreCounterValue"));
+    pfn_WaitSemaphores = reinterpret_cast<detail::PFN_vkWaitSemaphores>(get_device_proc_addr(device.get(),"vkWaitSemaphores"));
+    pfn_SignalSemaphore = reinterpret_cast<detail::PFN_vkSignalSemaphore>(get_device_proc_addr(device.get(),"vkSignalSemaphore"));
+    pfn_GetBufferOpaqueCaptureAddress = reinterpret_cast<detail::PFN_vkGetBufferOpaqueCaptureAddress>(get_device_proc_addr(device.get(),"vkGetBufferOpaqueCaptureAddress"));
+    pfn_GetBufferDeviceAddress = reinterpret_cast<detail::PFN_vkGetBufferDeviceAddress>(get_device_proc_addr(device.get(),"vkGetBufferDeviceAddress"));
+    pfn_GetDeviceMemoryOpaqueCaptureAddress = reinterpret_cast<detail::PFN_vkGetDeviceMemoryOpaqueCaptureAddress>(get_device_proc_addr(device.get(),"vkGetDeviceMemoryOpaqueCaptureAddress"));
+    pfn_CreateSwapchainKHR = reinterpret_cast<detail::PFN_vkCreateSwapchainKHR>(get_device_proc_addr(device.get(),"vkCreateSwapchainKHR"));
+    pfn_DestroySwapchainKHR = reinterpret_cast<detail::PFN_vkDestroySwapchainKHR>(get_device_proc_addr(device.get(),"vkDestroySwapchainKHR"));
+    pfn_GetSwapchainImagesKHR = reinterpret_cast<detail::PFN_vkGetSwapchainImagesKHR>(get_device_proc_addr(device.get(),"vkGetSwapchainImagesKHR"));
+    pfn_AcquireNextImageKHR = reinterpret_cast<detail::PFN_vkAcquireNextImageKHR>(get_device_proc_addr(device.get(),"vkAcquireNextImageKHR"));
+    pfn_QueuePresentKHR = reinterpret_cast<detail::PFN_vkQueuePresentKHR>(get_device_proc_addr(device.get(),"vkQueuePresentKHR"));
+    pfn_GetDeviceGroupPresentCapabilitiesKHR = reinterpret_cast<detail::PFN_vkGetDeviceGroupPresentCapabilitiesKHR>(get_device_proc_addr(device.get(),"vkGetDeviceGroupPresentCapabilitiesKHR"));
+    pfn_GetDeviceGroupSurfacePresentModesKHR = reinterpret_cast<detail::PFN_vkGetDeviceGroupSurfacePresentModesKHR>(get_device_proc_addr(device.get(),"vkGetDeviceGroupSurfacePresentModesKHR"));
+    pfn_AcquireNextImage2KHR = reinterpret_cast<detail::PFN_vkAcquireNextImage2KHR>(get_device_proc_addr(device.get(),"vkAcquireNextImage2KHR"));
+    pfn_CreateSharedSwapchainsKHR = reinterpret_cast<detail::PFN_vkCreateSharedSwapchainsKHR>(get_device_proc_addr(device.get(),"vkCreateSharedSwapchainsKHR"));
+    pfn_DebugMarkerSetObjectNameEXT = reinterpret_cast<detail::PFN_vkDebugMarkerSetObjectNameEXT>(get_device_proc_addr(device.get(),"vkDebugMarkerSetObjectNameEXT"));
+    pfn_DebugMarkerSetObjectTagEXT = reinterpret_cast<detail::PFN_vkDebugMarkerSetObjectTagEXT>(get_device_proc_addr(device.get(),"vkDebugMarkerSetObjectTagEXT"));
+    pfn_CmdDebugMarkerBeginEXT = reinterpret_cast<detail::PFN_vkCmdDebugMarkerBeginEXT>(get_device_proc_addr(device.get(),"vkCmdDebugMarkerBeginEXT"));
+    pfn_CmdDebugMarkerEndEXT = reinterpret_cast<detail::PFN_vkCmdDebugMarkerEndEXT>(get_device_proc_addr(device.get(),"vkCmdDebugMarkerEndEXT"));
+    pfn_CmdDebugMarkerInsertEXT = reinterpret_cast<detail::PFN_vkCmdDebugMarkerInsertEXT>(get_device_proc_addr(device.get(),"vkCmdDebugMarkerInsertEXT"));
+    pfn_CmdBindTransformFeedbackBuffersEXT = reinterpret_cast<detail::PFN_vkCmdBindTransformFeedbackBuffersEXT>(get_device_proc_addr(device.get(),"vkCmdBindTransformFeedbackBuffersEXT"));
+    pfn_CmdBeginTransformFeedbackEXT = reinterpret_cast<detail::PFN_vkCmdBeginTransformFeedbackEXT>(get_device_proc_addr(device.get(),"vkCmdBeginTransformFeedbackEXT"));
+    pfn_CmdEndTransformFeedbackEXT = reinterpret_cast<detail::PFN_vkCmdEndTransformFeedbackEXT>(get_device_proc_addr(device.get(),"vkCmdEndTransformFeedbackEXT"));
+    pfn_CmdBeginQueryIndexedEXT = reinterpret_cast<detail::PFN_vkCmdBeginQueryIndexedEXT>(get_device_proc_addr(device.get(),"vkCmdBeginQueryIndexedEXT"));
+    pfn_CmdEndQueryIndexedEXT = reinterpret_cast<detail::PFN_vkCmdEndQueryIndexedEXT>(get_device_proc_addr(device.get(),"vkCmdEndQueryIndexedEXT"));
+    pfn_CmdDrawIndirectByteCountEXT = reinterpret_cast<detail::PFN_vkCmdDrawIndirectByteCountEXT>(get_device_proc_addr(device.get(),"vkCmdDrawIndirectByteCountEXT"));
+    pfn_GetImageViewHandleNVX = reinterpret_cast<detail::PFN_vkGetImageViewHandleNVX>(get_device_proc_addr(device.get(),"vkGetImageViewHandleNVX"));
+    pfn_GetImageViewAddressNVX = reinterpret_cast<detail::PFN_vkGetImageViewAddressNVX>(get_device_proc_addr(device.get(),"vkGetImageViewAddressNVX"));
+    pfn_GetShaderInfoAMD = reinterpret_cast<detail::PFN_vkGetShaderInfoAMD>(get_device_proc_addr(device.get(),"vkGetShaderInfoAMD"));
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    pfn_GetMemoryWin32HandleNV = reinterpret_cast<detail::PFN_vkGetMemoryWin32HandleNV>(get_device_proc_addr(device.get(),"vkGetMemoryWin32HandleNV"));
+#endif // VK_USE_PLATFORM_WIN32_KHR
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    pfn_GetMemoryWin32HandleKHR = reinterpret_cast<detail::PFN_vkGetMemoryWin32HandleKHR>(get_device_proc_addr(device.get(),"vkGetMemoryWin32HandleKHR"));
+#endif // VK_USE_PLATFORM_WIN32_KHR
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    pfn_GetMemoryWin32HandlePropertiesKHR = reinterpret_cast<detail::PFN_vkGetMemoryWin32HandlePropertiesKHR>(get_device_proc_addr(device.get(),"vkGetMemoryWin32HandlePropertiesKHR"));
+#endif // VK_USE_PLATFORM_WIN32_KHR
+    pfn_GetMemoryFdKHR = reinterpret_cast<detail::PFN_vkGetMemoryFdKHR>(get_device_proc_addr(device.get(),"vkGetMemoryFdKHR"));
+    pfn_GetMemoryFdPropertiesKHR = reinterpret_cast<detail::PFN_vkGetMemoryFdPropertiesKHR>(get_device_proc_addr(device.get(),"vkGetMemoryFdPropertiesKHR"));
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    pfn_GetSemaphoreWin32HandleKHR = reinterpret_cast<detail::PFN_vkGetSemaphoreWin32HandleKHR>(get_device_proc_addr(device.get(),"vkGetSemaphoreWin32HandleKHR"));
+#endif // VK_USE_PLATFORM_WIN32_KHR
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    pfn_ImportSemaphoreWin32HandleKHR = reinterpret_cast<detail::PFN_vkImportSemaphoreWin32HandleKHR>(get_device_proc_addr(device.get(),"vkImportSemaphoreWin32HandleKHR"));
+#endif // VK_USE_PLATFORM_WIN32_KHR
+    pfn_GetSemaphoreFdKHR = reinterpret_cast<detail::PFN_vkGetSemaphoreFdKHR>(get_device_proc_addr(device.get(),"vkGetSemaphoreFdKHR"));
+    pfn_ImportSemaphoreFdKHR = reinterpret_cast<detail::PFN_vkImportSemaphoreFdKHR>(get_device_proc_addr(device.get(),"vkImportSemaphoreFdKHR"));
+    pfn_CmdPushDescriptorSetKHR = reinterpret_cast<detail::PFN_vkCmdPushDescriptorSetKHR>(get_device_proc_addr(device.get(),"vkCmdPushDescriptorSetKHR"));
+    pfn_CmdPushDescriptorSetWithTemplateKHR = reinterpret_cast<detail::PFN_vkCmdPushDescriptorSetWithTemplateKHR>(get_device_proc_addr(device.get(),"vkCmdPushDescriptorSetWithTemplateKHR"));
+    pfn_CmdBeginConditionalRenderingEXT = reinterpret_cast<detail::PFN_vkCmdBeginConditionalRenderingEXT>(get_device_proc_addr(device.get(),"vkCmdBeginConditionalRenderingEXT"));
+    pfn_CmdEndConditionalRenderingEXT = reinterpret_cast<detail::PFN_vkCmdEndConditionalRenderingEXT>(get_device_proc_addr(device.get(),"vkCmdEndConditionalRenderingEXT"));
+    pfn_CmdSetViewportWScalingNV = reinterpret_cast<detail::PFN_vkCmdSetViewportWScalingNV>(get_device_proc_addr(device.get(),"vkCmdSetViewportWScalingNV"));
+    pfn_DisplayPowerControlEXT = reinterpret_cast<detail::PFN_vkDisplayPowerControlEXT>(get_device_proc_addr(device.get(),"vkDisplayPowerControlEXT"));
+    pfn_RegisterDeviceEventEXT = reinterpret_cast<detail::PFN_vkRegisterDeviceEventEXT>(get_device_proc_addr(device.get(),"vkRegisterDeviceEventEXT"));
+    pfn_RegisterDisplayEventEXT = reinterpret_cast<detail::PFN_vkRegisterDisplayEventEXT>(get_device_proc_addr(device.get(),"vkRegisterDisplayEventEXT"));
+    pfn_GetSwapchainCounterEXT = reinterpret_cast<detail::PFN_vkGetSwapchainCounterEXT>(get_device_proc_addr(device.get(),"vkGetSwapchainCounterEXT"));
+    pfn_GetRefreshCycleDurationGOOGLE = reinterpret_cast<detail::PFN_vkGetRefreshCycleDurationGOOGLE>(get_device_proc_addr(device.get(),"vkGetRefreshCycleDurationGOOGLE"));
+    pfn_GetPastPresentationTimingGOOGLE = reinterpret_cast<detail::PFN_vkGetPastPresentationTimingGOOGLE>(get_device_proc_addr(device.get(),"vkGetPastPresentationTimingGOOGLE"));
+    pfn_CmdSetDiscardRectangleEXT = reinterpret_cast<detail::PFN_vkCmdSetDiscardRectangleEXT>(get_device_proc_addr(device.get(),"vkCmdSetDiscardRectangleEXT"));
+    pfn_SetHdrMetadataEXT = reinterpret_cast<detail::PFN_vkSetHdrMetadataEXT>(get_device_proc_addr(device.get(),"vkSetHdrMetadataEXT"));
+    pfn_GetSwapchainStatusKHR = reinterpret_cast<detail::PFN_vkGetSwapchainStatusKHR>(get_device_proc_addr(device.get(),"vkGetSwapchainStatusKHR"));
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    pfn_GetFenceWin32HandleKHR = reinterpret_cast<detail::PFN_vkGetFenceWin32HandleKHR>(get_device_proc_addr(device.get(),"vkGetFenceWin32HandleKHR"));
+#endif // VK_USE_PLATFORM_WIN32_KHR
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    pfn_ImportFenceWin32HandleKHR = reinterpret_cast<detail::PFN_vkImportFenceWin32HandleKHR>(get_device_proc_addr(device.get(),"vkImportFenceWin32HandleKHR"));
+#endif // VK_USE_PLATFORM_WIN32_KHR
+    pfn_GetFenceFdKHR = reinterpret_cast<detail::PFN_vkGetFenceFdKHR>(get_device_proc_addr(device.get(),"vkGetFenceFdKHR"));
+    pfn_ImportFenceFdKHR = reinterpret_cast<detail::PFN_vkImportFenceFdKHR>(get_device_proc_addr(device.get(),"vkImportFenceFdKHR"));
+    pfn_AcquireProfilingLockKHR = reinterpret_cast<detail::PFN_vkAcquireProfilingLockKHR>(get_device_proc_addr(device.get(),"vkAcquireProfilingLockKHR"));
+    pfn_ReleaseProfilingLockKHR = reinterpret_cast<detail::PFN_vkReleaseProfilingLockKHR>(get_device_proc_addr(device.get(),"vkReleaseProfilingLockKHR"));
+    pfn_SetDebugUtilsObjectNameEXT = reinterpret_cast<detail::PFN_vkSetDebugUtilsObjectNameEXT>(get_device_proc_addr(device.get(),"vkSetDebugUtilsObjectNameEXT"));
+    pfn_SetDebugUtilsObjectTagEXT = reinterpret_cast<detail::PFN_vkSetDebugUtilsObjectTagEXT>(get_device_proc_addr(device.get(),"vkSetDebugUtilsObjectTagEXT"));
+    pfn_QueueBeginDebugUtilsLabelEXT = reinterpret_cast<detail::PFN_vkQueueBeginDebugUtilsLabelEXT>(get_device_proc_addr(device.get(),"vkQueueBeginDebugUtilsLabelEXT"));
+    pfn_QueueEndDebugUtilsLabelEXT = reinterpret_cast<detail::PFN_vkQueueEndDebugUtilsLabelEXT>(get_device_proc_addr(device.get(),"vkQueueEndDebugUtilsLabelEXT"));
+    pfn_QueueInsertDebugUtilsLabelEXT = reinterpret_cast<detail::PFN_vkQueueInsertDebugUtilsLabelEXT>(get_device_proc_addr(device.get(),"vkQueueInsertDebugUtilsLabelEXT"));
+    pfn_CmdBeginDebugUtilsLabelEXT = reinterpret_cast<detail::PFN_vkCmdBeginDebugUtilsLabelEXT>(get_device_proc_addr(device.get(),"vkCmdBeginDebugUtilsLabelEXT"));
+    pfn_CmdEndDebugUtilsLabelEXT = reinterpret_cast<detail::PFN_vkCmdEndDebugUtilsLabelEXT>(get_device_proc_addr(device.get(),"vkCmdEndDebugUtilsLabelEXT"));
+    pfn_CmdInsertDebugUtilsLabelEXT = reinterpret_cast<detail::PFN_vkCmdInsertDebugUtilsLabelEXT>(get_device_proc_addr(device.get(),"vkCmdInsertDebugUtilsLabelEXT"));
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
+    pfn_GetAndroidHardwareBufferPropertiesANDROID = reinterpret_cast<detail::PFN_vkGetAndroidHardwareBufferPropertiesANDROID>(get_device_proc_addr(device.get(),"vkGetAndroidHardwareBufferPropertiesANDROID"));
+#endif // VK_USE_PLATFORM_ANDROID_KHR
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
+    pfn_GetMemoryAndroidHardwareBufferANDROID = reinterpret_cast<detail::PFN_vkGetMemoryAndroidHardwareBufferANDROID>(get_device_proc_addr(device.get(),"vkGetMemoryAndroidHardwareBufferANDROID"));
+#endif // VK_USE_PLATFORM_ANDROID_KHR
+    pfn_CmdSetSampleLocationsEXT = reinterpret_cast<detail::PFN_vkCmdSetSampleLocationsEXT>(get_device_proc_addr(device.get(),"vkCmdSetSampleLocationsEXT"));
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_DestroyAccelerationStructureKHR = reinterpret_cast<detail::PFN_vkDestroyAccelerationStructureKHR>(get_device_proc_addr(device.get(),"vkDestroyAccelerationStructureKHR"));
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_GetAccelerationStructureMemoryRequirementsKHR = reinterpret_cast<detail::PFN_vkGetAccelerationStructureMemoryRequirementsKHR>(get_device_proc_addr(device.get(),"vkGetAccelerationStructureMemoryRequirementsKHR"));
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_BindAccelerationStructureMemoryKHR = reinterpret_cast<detail::PFN_vkBindAccelerationStructureMemoryKHR>(get_device_proc_addr(device.get(),"vkBindAccelerationStructureMemoryKHR"));
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_CmdCopyAccelerationStructureKHR = reinterpret_cast<detail::PFN_vkCmdCopyAccelerationStructureKHR>(get_device_proc_addr(device.get(),"vkCmdCopyAccelerationStructureKHR"));
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_CopyAccelerationStructureKHR = reinterpret_cast<detail::PFN_vkCopyAccelerationStructureKHR>(get_device_proc_addr(device.get(),"vkCopyAccelerationStructureKHR"));
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_CmdCopyAccelerationStructureToMemoryKHR = reinterpret_cast<detail::PFN_vkCmdCopyAccelerationStructureToMemoryKHR>(get_device_proc_addr(device.get(),"vkCmdCopyAccelerationStructureToMemoryKHR"));
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_CopyAccelerationStructureToMemoryKHR = reinterpret_cast<detail::PFN_vkCopyAccelerationStructureToMemoryKHR>(get_device_proc_addr(device.get(),"vkCopyAccelerationStructureToMemoryKHR"));
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_CmdCopyMemoryToAccelerationStructureKHR = reinterpret_cast<detail::PFN_vkCmdCopyMemoryToAccelerationStructureKHR>(get_device_proc_addr(device.get(),"vkCmdCopyMemoryToAccelerationStructureKHR"));
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_CopyMemoryToAccelerationStructureKHR = reinterpret_cast<detail::PFN_vkCopyMemoryToAccelerationStructureKHR>(get_device_proc_addr(device.get(),"vkCopyMemoryToAccelerationStructureKHR"));
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_CmdWriteAccelerationStructuresPropertiesKHR = reinterpret_cast<detail::PFN_vkCmdWriteAccelerationStructuresPropertiesKHR>(get_device_proc_addr(device.get(),"vkCmdWriteAccelerationStructuresPropertiesKHR"));
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_WriteAccelerationStructuresPropertiesKHR = reinterpret_cast<detail::PFN_vkWriteAccelerationStructuresPropertiesKHR>(get_device_proc_addr(device.get(),"vkWriteAccelerationStructuresPropertiesKHR"));
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_CmdTraceRaysKHR = reinterpret_cast<detail::PFN_vkCmdTraceRaysKHR>(get_device_proc_addr(device.get(),"vkCmdTraceRaysKHR"));
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_GetRayTracingShaderGroupHandlesKHR = reinterpret_cast<detail::PFN_vkGetRayTracingShaderGroupHandlesKHR>(get_device_proc_addr(device.get(),"vkGetRayTracingShaderGroupHandlesKHR"));
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_GetRayTracingCaptureReplayShaderGroupHandlesKHR = reinterpret_cast<detail::PFN_vkGetRayTracingCaptureReplayShaderGroupHandlesKHR>(get_device_proc_addr(device.get(),"vkGetRayTracingCaptureReplayShaderGroupHandlesKHR"));
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_CreateRayTracingPipelinesKHR = reinterpret_cast<detail::PFN_vkCreateRayTracingPipelinesKHR>(get_device_proc_addr(device.get(),"vkCreateRayTracingPipelinesKHR"));
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_CmdTraceRaysIndirectKHR = reinterpret_cast<detail::PFN_vkCmdTraceRaysIndirectKHR>(get_device_proc_addr(device.get(),"vkCmdTraceRaysIndirectKHR"));
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_GetDeviceAccelerationStructureCompatibilityKHR = reinterpret_cast<detail::PFN_vkGetDeviceAccelerationStructureCompatibilityKHR>(get_device_proc_addr(device.get(),"vkGetDeviceAccelerationStructureCompatibilityKHR"));
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_CreateAccelerationStructureKHR = reinterpret_cast<detail::PFN_vkCreateAccelerationStructureKHR>(get_device_proc_addr(device.get(),"vkCreateAccelerationStructureKHR"));
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_CmdBuildAccelerationStructureKHR = reinterpret_cast<detail::PFN_vkCmdBuildAccelerationStructureKHR>(get_device_proc_addr(device.get(),"vkCmdBuildAccelerationStructureKHR"));
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_CmdBuildAccelerationStructureIndirectKHR = reinterpret_cast<detail::PFN_vkCmdBuildAccelerationStructureIndirectKHR>(get_device_proc_addr(device.get(),"vkCmdBuildAccelerationStructureIndirectKHR"));
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_BuildAccelerationStructureKHR = reinterpret_cast<detail::PFN_vkBuildAccelerationStructureKHR>(get_device_proc_addr(device.get(),"vkBuildAccelerationStructureKHR"));
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_GetAccelerationStructureDeviceAddressKHR = reinterpret_cast<detail::PFN_vkGetAccelerationStructureDeviceAddressKHR>(get_device_proc_addr(device.get(),"vkGetAccelerationStructureDeviceAddressKHR"));
+#endif // VK_ENABLE_BETA_EXTENSIONS
+    pfn_GetImageDrmFormatModifierPropertiesEXT = reinterpret_cast<detail::PFN_vkGetImageDrmFormatModifierPropertiesEXT>(get_device_proc_addr(device.get(),"vkGetImageDrmFormatModifierPropertiesEXT"));
+    pfn_CreateValidationCacheEXT = reinterpret_cast<detail::PFN_vkCreateValidationCacheEXT>(get_device_proc_addr(device.get(),"vkCreateValidationCacheEXT"));
+    pfn_DestroyValidationCacheEXT = reinterpret_cast<detail::PFN_vkDestroyValidationCacheEXT>(get_device_proc_addr(device.get(),"vkDestroyValidationCacheEXT"));
+    pfn_GetValidationCacheDataEXT = reinterpret_cast<detail::PFN_vkGetValidationCacheDataEXT>(get_device_proc_addr(device.get(),"vkGetValidationCacheDataEXT"));
+    pfn_MergeValidationCachesEXT = reinterpret_cast<detail::PFN_vkMergeValidationCachesEXT>(get_device_proc_addr(device.get(),"vkMergeValidationCachesEXT"));
+    pfn_CmdBindShadingRateImageNV = reinterpret_cast<detail::PFN_vkCmdBindShadingRateImageNV>(get_device_proc_addr(device.get(),"vkCmdBindShadingRateImageNV"));
+    pfn_CmdSetViewportShadingRatePaletteNV = reinterpret_cast<detail::PFN_vkCmdSetViewportShadingRatePaletteNV>(get_device_proc_addr(device.get(),"vkCmdSetViewportShadingRatePaletteNV"));
+    pfn_CmdSetCoarseSampleOrderNV = reinterpret_cast<detail::PFN_vkCmdSetCoarseSampleOrderNV>(get_device_proc_addr(device.get(),"vkCmdSetCoarseSampleOrderNV"));
+    pfn_CompileDeferredNV = reinterpret_cast<detail::PFN_vkCompileDeferredNV>(get_device_proc_addr(device.get(),"vkCompileDeferredNV"));
+    pfn_CreateAccelerationStructureNV = reinterpret_cast<detail::PFN_vkCreateAccelerationStructureNV>(get_device_proc_addr(device.get(),"vkCreateAccelerationStructureNV"));
+    pfn_GetAccelerationStructureMemoryRequirementsNV = reinterpret_cast<detail::PFN_vkGetAccelerationStructureMemoryRequirementsNV>(get_device_proc_addr(device.get(),"vkGetAccelerationStructureMemoryRequirementsNV"));
+    pfn_CmdCopyAccelerationStructureNV = reinterpret_cast<detail::PFN_vkCmdCopyAccelerationStructureNV>(get_device_proc_addr(device.get(),"vkCmdCopyAccelerationStructureNV"));
+    pfn_CmdBuildAccelerationStructureNV = reinterpret_cast<detail::PFN_vkCmdBuildAccelerationStructureNV>(get_device_proc_addr(device.get(),"vkCmdBuildAccelerationStructureNV"));
+    pfn_CmdTraceRaysNV = reinterpret_cast<detail::PFN_vkCmdTraceRaysNV>(get_device_proc_addr(device.get(),"vkCmdTraceRaysNV"));
+    pfn_GetAccelerationStructureHandleNV = reinterpret_cast<detail::PFN_vkGetAccelerationStructureHandleNV>(get_device_proc_addr(device.get(),"vkGetAccelerationStructureHandleNV"));
+    pfn_CreateRayTracingPipelinesNV = reinterpret_cast<detail::PFN_vkCreateRayTracingPipelinesNV>(get_device_proc_addr(device.get(),"vkCreateRayTracingPipelinesNV"));
+    pfn_GetMemoryHostPointerPropertiesEXT = reinterpret_cast<detail::PFN_vkGetMemoryHostPointerPropertiesEXT>(get_device_proc_addr(device.get(),"vkGetMemoryHostPointerPropertiesEXT"));
+    pfn_CmdWriteBufferMarkerAMD = reinterpret_cast<detail::PFN_vkCmdWriteBufferMarkerAMD>(get_device_proc_addr(device.get(),"vkCmdWriteBufferMarkerAMD"));
+    pfn_GetCalibratedTimestampsEXT = reinterpret_cast<detail::PFN_vkGetCalibratedTimestampsEXT>(get_device_proc_addr(device.get(),"vkGetCalibratedTimestampsEXT"));
+    pfn_CmdDrawMeshTasksNV = reinterpret_cast<detail::PFN_vkCmdDrawMeshTasksNV>(get_device_proc_addr(device.get(),"vkCmdDrawMeshTasksNV"));
+    pfn_CmdDrawMeshTasksIndirectNV = reinterpret_cast<detail::PFN_vkCmdDrawMeshTasksIndirectNV>(get_device_proc_addr(device.get(),"vkCmdDrawMeshTasksIndirectNV"));
+    pfn_CmdDrawMeshTasksIndirectCountNV = reinterpret_cast<detail::PFN_vkCmdDrawMeshTasksIndirectCountNV>(get_device_proc_addr(device.get(),"vkCmdDrawMeshTasksIndirectCountNV"));
+    pfn_CmdSetExclusiveScissorNV = reinterpret_cast<detail::PFN_vkCmdSetExclusiveScissorNV>(get_device_proc_addr(device.get(),"vkCmdSetExclusiveScissorNV"));
+    pfn_CmdSetCheckpointNV = reinterpret_cast<detail::PFN_vkCmdSetCheckpointNV>(get_device_proc_addr(device.get(),"vkCmdSetCheckpointNV"));
+    pfn_GetQueueCheckpointDataNV = reinterpret_cast<detail::PFN_vkGetQueueCheckpointDataNV>(get_device_proc_addr(device.get(),"vkGetQueueCheckpointDataNV"));
+    pfn_InitializePerformanceApiINTEL = reinterpret_cast<detail::PFN_vkInitializePerformanceApiINTEL>(get_device_proc_addr(device.get(),"vkInitializePerformanceApiINTEL"));
+    pfn_UninitializePerformanceApiINTEL = reinterpret_cast<detail::PFN_vkUninitializePerformanceApiINTEL>(get_device_proc_addr(device.get(),"vkUninitializePerformanceApiINTEL"));
+    pfn_CmdSetPerformanceMarkerINTEL = reinterpret_cast<detail::PFN_vkCmdSetPerformanceMarkerINTEL>(get_device_proc_addr(device.get(),"vkCmdSetPerformanceMarkerINTEL"));
+    pfn_CmdSetPerformanceStreamMarkerINTEL = reinterpret_cast<detail::PFN_vkCmdSetPerformanceStreamMarkerINTEL>(get_device_proc_addr(device.get(),"vkCmdSetPerformanceStreamMarkerINTEL"));
+    pfn_CmdSetPerformanceOverrideINTEL = reinterpret_cast<detail::PFN_vkCmdSetPerformanceOverrideINTEL>(get_device_proc_addr(device.get(),"vkCmdSetPerformanceOverrideINTEL"));
+    pfn_AcquirePerformanceConfigurationINTEL = reinterpret_cast<detail::PFN_vkAcquirePerformanceConfigurationINTEL>(get_device_proc_addr(device.get(),"vkAcquirePerformanceConfigurationINTEL"));
+    pfn_ReleasePerformanceConfigurationINTEL = reinterpret_cast<detail::PFN_vkReleasePerformanceConfigurationINTEL>(get_device_proc_addr(device.get(),"vkReleasePerformanceConfigurationINTEL"));
+    pfn_QueueSetPerformanceConfigurationINTEL = reinterpret_cast<detail::PFN_vkQueueSetPerformanceConfigurationINTEL>(get_device_proc_addr(device.get(),"vkQueueSetPerformanceConfigurationINTEL"));
+    pfn_GetPerformanceParameterINTEL = reinterpret_cast<detail::PFN_vkGetPerformanceParameterINTEL>(get_device_proc_addr(device.get(),"vkGetPerformanceParameterINTEL"));
+    pfn_SetLocalDimmingAMD = reinterpret_cast<detail::PFN_vkSetLocalDimmingAMD>(get_device_proc_addr(device.get(),"vkSetLocalDimmingAMD"));
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    pfn_AcquireFullScreenExclusiveModeEXT = reinterpret_cast<detail::PFN_vkAcquireFullScreenExclusiveModeEXT>(get_device_proc_addr(device.get(),"vkAcquireFullScreenExclusiveModeEXT"));
+#endif // VK_USE_PLATFORM_WIN32_KHR
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    pfn_ReleaseFullScreenExclusiveModeEXT = reinterpret_cast<detail::PFN_vkReleaseFullScreenExclusiveModeEXT>(get_device_proc_addr(device.get(),"vkReleaseFullScreenExclusiveModeEXT"));
+#endif // VK_USE_PLATFORM_WIN32_KHR
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    pfn_GetDeviceGroupSurfacePresentModes2EXT = reinterpret_cast<detail::PFN_vkGetDeviceGroupSurfacePresentModes2EXT>(get_device_proc_addr(device.get(),"vkGetDeviceGroupSurfacePresentModes2EXT"));
+#endif // VK_USE_PLATFORM_WIN32_KHR
+    pfn_CmdSetLineStippleEXT = reinterpret_cast<detail::PFN_vkCmdSetLineStippleEXT>(get_device_proc_addr(device.get(),"vkCmdSetLineStippleEXT"));
+    pfn_CmdSetCullModeEXT = reinterpret_cast<detail::PFN_vkCmdSetCullModeEXT>(get_device_proc_addr(device.get(),"vkCmdSetCullModeEXT"));
+    pfn_CmdSetFrontFaceEXT = reinterpret_cast<detail::PFN_vkCmdSetFrontFaceEXT>(get_device_proc_addr(device.get(),"vkCmdSetFrontFaceEXT"));
+    pfn_CmdSetPrimitiveTopologyEXT = reinterpret_cast<detail::PFN_vkCmdSetPrimitiveTopologyEXT>(get_device_proc_addr(device.get(),"vkCmdSetPrimitiveTopologyEXT"));
+    pfn_CmdSetViewportWithCountEXT = reinterpret_cast<detail::PFN_vkCmdSetViewportWithCountEXT>(get_device_proc_addr(device.get(),"vkCmdSetViewportWithCountEXT"));
+    pfn_CmdSetScissorWithCountEXT = reinterpret_cast<detail::PFN_vkCmdSetScissorWithCountEXT>(get_device_proc_addr(device.get(),"vkCmdSetScissorWithCountEXT"));
+    pfn_CmdBindVertexBuffers2EXT = reinterpret_cast<detail::PFN_vkCmdBindVertexBuffers2EXT>(get_device_proc_addr(device.get(),"vkCmdBindVertexBuffers2EXT"));
+    pfn_CmdSetDepthTestEnableEXT = reinterpret_cast<detail::PFN_vkCmdSetDepthTestEnableEXT>(get_device_proc_addr(device.get(),"vkCmdSetDepthTestEnableEXT"));
+    pfn_CmdSetDepthWriteEnableEXT = reinterpret_cast<detail::PFN_vkCmdSetDepthWriteEnableEXT>(get_device_proc_addr(device.get(),"vkCmdSetDepthWriteEnableEXT"));
+    pfn_CmdSetDepthCompareOpEXT = reinterpret_cast<detail::PFN_vkCmdSetDepthCompareOpEXT>(get_device_proc_addr(device.get(),"vkCmdSetDepthCompareOpEXT"));
+    pfn_CmdSetDepthBoundsTestEnableEXT = reinterpret_cast<detail::PFN_vkCmdSetDepthBoundsTestEnableEXT>(get_device_proc_addr(device.get(),"vkCmdSetDepthBoundsTestEnableEXT"));
+    pfn_CmdSetStencilTestEnableEXT = reinterpret_cast<detail::PFN_vkCmdSetStencilTestEnableEXT>(get_device_proc_addr(device.get(),"vkCmdSetStencilTestEnableEXT"));
+    pfn_CmdSetStencilOpEXT = reinterpret_cast<detail::PFN_vkCmdSetStencilOpEXT>(get_device_proc_addr(device.get(),"vkCmdSetStencilOpEXT"));
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_CreateDeferredOperationKHR = reinterpret_cast<detail::PFN_vkCreateDeferredOperationKHR>(get_device_proc_addr(device.get(),"vkCreateDeferredOperationKHR"));
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_DestroyDeferredOperationKHR = reinterpret_cast<detail::PFN_vkDestroyDeferredOperationKHR>(get_device_proc_addr(device.get(),"vkDestroyDeferredOperationKHR"));
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_GetDeferredOperationMaxConcurrencyKHR = reinterpret_cast<detail::PFN_vkGetDeferredOperationMaxConcurrencyKHR>(get_device_proc_addr(device.get(),"vkGetDeferredOperationMaxConcurrencyKHR"));
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_GetDeferredOperationResultKHR = reinterpret_cast<detail::PFN_vkGetDeferredOperationResultKHR>(get_device_proc_addr(device.get(),"vkGetDeferredOperationResultKHR"));
+#endif // VK_ENABLE_BETA_EXTENSIONS
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_DeferredOperationJoinKHR = reinterpret_cast<detail::PFN_vkDeferredOperationJoinKHR>(get_device_proc_addr(device.get(),"vkDeferredOperationJoinKHR"));
+#endif // VK_ENABLE_BETA_EXTENSIONS
+    pfn_GetPipelineExecutablePropertiesKHR = reinterpret_cast<detail::PFN_vkGetPipelineExecutablePropertiesKHR>(get_device_proc_addr(device.get(),"vkGetPipelineExecutablePropertiesKHR"));
+    pfn_GetPipelineExecutableStatisticsKHR = reinterpret_cast<detail::PFN_vkGetPipelineExecutableStatisticsKHR>(get_device_proc_addr(device.get(),"vkGetPipelineExecutableStatisticsKHR"));
+    pfn_GetPipelineExecutableInternalRepresentationsKHR = reinterpret_cast<detail::PFN_vkGetPipelineExecutableInternalRepresentationsKHR>(get_device_proc_addr(device.get(),"vkGetPipelineExecutableInternalRepresentationsKHR"));
+    pfn_CmdExecuteGeneratedCommandsNV = reinterpret_cast<detail::PFN_vkCmdExecuteGeneratedCommandsNV>(get_device_proc_addr(device.get(),"vkCmdExecuteGeneratedCommandsNV"));
+    pfn_CmdPreprocessGeneratedCommandsNV = reinterpret_cast<detail::PFN_vkCmdPreprocessGeneratedCommandsNV>(get_device_proc_addr(device.get(),"vkCmdPreprocessGeneratedCommandsNV"));
+    pfn_CmdBindPipelineShaderGroupNV = reinterpret_cast<detail::PFN_vkCmdBindPipelineShaderGroupNV>(get_device_proc_addr(device.get(),"vkCmdBindPipelineShaderGroupNV"));
+    pfn_GetGeneratedCommandsMemoryRequirementsNV = reinterpret_cast<detail::PFN_vkGetGeneratedCommandsMemoryRequirementsNV>(get_device_proc_addr(device.get(),"vkGetGeneratedCommandsMemoryRequirementsNV"));
+    pfn_CreateIndirectCommandsLayoutNV = reinterpret_cast<detail::PFN_vkCreateIndirectCommandsLayoutNV>(get_device_proc_addr(device.get(),"vkCreateIndirectCommandsLayoutNV"));
+    pfn_DestroyIndirectCommandsLayoutNV = reinterpret_cast<detail::PFN_vkDestroyIndirectCommandsLayoutNV>(get_device_proc_addr(device.get(),"vkDestroyIndirectCommandsLayoutNV"));
+    pfn_CreatePrivateDataSlotEXT = reinterpret_cast<detail::PFN_vkCreatePrivateDataSlotEXT>(get_device_proc_addr(device.get(),"vkCreatePrivateDataSlotEXT"));
+    pfn_DestroyPrivateDataSlotEXT = reinterpret_cast<detail::PFN_vkDestroyPrivateDataSlotEXT>(get_device_proc_addr(device.get(),"vkDestroyPrivateDataSlotEXT"));
+    pfn_SetPrivateDataEXT = reinterpret_cast<detail::PFN_vkSetPrivateDataEXT>(get_device_proc_addr(device.get(),"vkSetPrivateDataEXT"));
+    pfn_GetPrivateDataEXT = reinterpret_cast<detail::PFN_vkGetPrivateDataEXT>(get_device_proc_addr(device.get(),"vkGetPrivateDataEXT"));
+    pfn_CmdCopyBuffer2KHR = reinterpret_cast<detail::PFN_vkCmdCopyBuffer2KHR>(get_device_proc_addr(device.get(),"vkCmdCopyBuffer2KHR"));
+    pfn_CmdCopyImage2KHR = reinterpret_cast<detail::PFN_vkCmdCopyImage2KHR>(get_device_proc_addr(device.get(),"vkCmdCopyImage2KHR"));
+    pfn_CmdBlitImage2KHR = reinterpret_cast<detail::PFN_vkCmdBlitImage2KHR>(get_device_proc_addr(device.get(),"vkCmdBlitImage2KHR"));
+    pfn_CmdCopyBufferToImage2KHR = reinterpret_cast<detail::PFN_vkCmdCopyBufferToImage2KHR>(get_device_proc_addr(device.get(),"vkCmdCopyBufferToImage2KHR"));
+    pfn_CmdCopyImageToBuffer2KHR = reinterpret_cast<detail::PFN_vkCmdCopyImageToBuffer2KHR>(get_device_proc_addr(device.get(),"vkCmdCopyImageToBuffer2KHR"));
+    pfn_CmdResolveImage2KHR = reinterpret_cast<detail::PFN_vkCmdResolveImage2KHR>(get_device_proc_addr(device.get(),"vkCmdResolveImage2KHR"));
 }
 PhysicalDeviceFunctions::PhysicalDeviceFunctions() noexcept {}
 PhysicalDeviceFunctions::PhysicalDeviceFunctions(InstanceFunctions const& instance_functions, PhysicalDevice const physicaldevice) noexcept

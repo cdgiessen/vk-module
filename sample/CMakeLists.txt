@@ -15,11 +15,11 @@ FetchContent_MakeAvailable(glfw)
 find_package(Vulkan REQUIRED)
 
 add_executable(basic_sample_usage basic.cpp)
-target_link_libraries(basic_sample_usage Vulkan::Headers vkm20 Vulkan::Vulkan)
+target_link_libraries(basic_sample_usage vkm20 Vulkan::Vulkan)
 set_target_properties(basic_sample_usage PROPERTIES CXX_STANDARD 20)
 
 # add_executable(test_vkhpp_compilation test_vkhpp.cpp)
-# target_link_libraries(test_vkhpp_compilation Vulkan::Headers Vulkan::Vulkan)
+# target_link_libraries(test_vkhpp_compilation Vulkan::Vulkan)
 # set_target_properties(test_vkhpp_compilation PROPERTIES CXX_STANDARD 17)
 
 

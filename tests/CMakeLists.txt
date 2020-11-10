@@ -8,7 +8,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(catch2)
 
 add_executable(static_tests static_test.cpp)
-target_link_libraries(static_tests vkm17)
+target_link_libraries(static_tests vkm17 Vulkan::Headers)
 
 find_package(Vulkan REQUIRED)
 

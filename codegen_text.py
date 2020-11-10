@@ -1,3 +1,17 @@
+
+vk_macro_defines = '''
+#define VK_ENABLE_BETA_EXTENSIONS
+
+#define VK_VERSION_1_0 1
+
+#define VK_VERSION_1_1 1
+#define VK_API_VERSION_1_1 VK_MAKE_VERSION(1, 1, 0)// Patch version should always be set to 0
+
+#define VK_VERSION_1_2 1
+#define VK_API_VERSION_1_2 VK_MAKE_VERSION(1, 2, 0)// Patch version should always be set to 0
+
+'''
+
 fixed_vector_text = '''
 } // namespace vk
 
@@ -127,7 +141,7 @@ private:
     Result _result = Result::Success;
 };
 
-}; //namespace vk
+} //namespace vk
 
 namespace std {
     template<typename T>
@@ -212,7 +226,7 @@ public:
 '''
 
 bitmask_flags_macro = '''
-#define DECLARE_ENUM_FLAG_OPERATORS(FLAG_TYPE, FLAG_BITS, BASE_NAME, BASE_TYPE)            \\
+#define DECLARE_ENUM_FLAG_OPERATORS(FLAG_TYPE, FLAG_BITS, BASE_TYPE)                       \\
                                                                                            \\
 struct FLAG_TYPE {                                                                         \\
     BASE_TYPE flags = static_cast<BASE_TYPE>(0);                                           \\
@@ -224,9 +238,6 @@ struct FLAG_TYPE {                                                              
     constexpr bool operator!=(FLAG_TYPE const& right) const { return flags != right.flags;}\\
     constexpr explicit operator bool() const noexcept {                                    \\
       return flags != 0;                                                                   \\
-    }                                                                                      \\
-    constexpr explicit operator BASE_NAME() const noexcept {                               \\
-        return static_cast<BASE_NAME>(flags);                                              \\
     }                                                                                      \\
 };                                                                                         \\
 constexpr FLAG_TYPE operator|(FLAG_TYPE a, FLAG_TYPE b) noexcept {                         \\
@@ -296,7 +307,7 @@ class DynamicLibrary {
     explicit DynamicLibrary([[maybe_unused]] LoadAtConstruction load) noexcept {
         init();
     }
-    explicit DynamicLibrary(PFN_vkGetInstanceProcAddr GetInstanceProcAddr) noexcept : 
+    explicit DynamicLibrary(detail::PFN_vkGetInstanceProcAddr GetInstanceProcAddr) noexcept : 
         get_instance_proc_addr(GetInstanceProcAddr) { }
     ~DynamicLibrary() noexcept {
         close();
@@ -319,7 +330,7 @@ class DynamicLibrary {
         return *this;
     }
 
-    vk::Result init(PFN_vkGetInstanceProcAddr GetInstanceProcAddr = nullptr) noexcept {
+    vk::Result init(detail::PFN_vkGetInstanceProcAddr GetInstanceProcAddr = nullptr) noexcept {
         if (GetInstanceProcAddr != nullptr) {
             get_instance_proc_addr = GetInstanceProcAddr;
             return vk::Result::Success;
@@ -352,7 +363,7 @@ class DynamicLibrary {
     [[nodiscard]] bool is_init() const noexcept { return get_instance_proc_addr != 0; }
 
     // Get `vkGetInstanceProcAddr` if it was loaded, 0 if not
-    [[nodiscard]] PFN_vkGetInstanceProcAddr get() const noexcept {
+    [[nodiscard]] detail::PFN_vkGetInstanceProcAddr get() const noexcept {
         assert(get_instance_proc_addr != nullptr && "Must call init() before use");
         return get_instance_proc_addr;
     }
@@ -374,7 +385,7 @@ private:
     ::HINSTANCE library = nullptr;
 #endif
 
-    PFN_vkGetInstanceProcAddr get_instance_proc_addr = nullptr;
+    detail::PFN_vkGetInstanceProcAddr get_instance_proc_addr = nullptr;
     
 };
 '''

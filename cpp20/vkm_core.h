@@ -2,8 +2,47 @@
 // clang-format off
 #include <stdint.h>
 #include <cstddef>
+#include "vk_platform.h"
+#define VK_MAKE_VERSION(major, minor, patch) \
+    ((((uint32_t)(major)) << 22) | (((uint32_t)(minor)) << 12) | ((uint32_t)(patch)))
+#define VK_VERSION_MAJOR(version) ((uint32_t)(version) >> 22)
+#define VK_VERSION_MINOR(version) (((uint32_t)(version) >> 12) & 0x3ff)
+#define VK_VERSION_PATCH(version) ((uint32_t)(version) & 0xfff)
+// DEPRECATED: This define has been removed. Specific version defines (e.g. VK_API_VERSION_1_0), or the VK_MAKE_VERSION macro, should be used instead.
+//#define VK_API_VERSION VK_MAKE_VERSION(1, 0, 0) // Patch version should always be set to 0
+// Vulkan 1.0 version number
+#define VK_API_VERSION_1_0 VK_MAKE_VERSION(1, 0, 0)// Patch version should always be set to 0
+// Vulkan 1.1 version number
+#define VK_API_VERSION_1_1 VK_MAKE_VERSION(1, 1, 0)// Patch version should always be set to 0
+// Vulkan 1.2 version number
+#define VK_API_VERSION_1_2 VK_MAKE_VERSION(1, 2, 0)// Patch version should always be set to 0
+// Version of this file
+#define VK_HEADER_VERSION 156
+// Complete version of this file
+#define VK_HEADER_VERSION_COMPLETE VK_MAKE_VERSION(1, 2, VK_HEADER_VERSION)
+
+#define VK_DEFINE_HANDLE(object) typedef struct object##_T* object;
+
+#if !defined(VK_DEFINE_NON_DISPATCHABLE_HANDLE)
+#if defined(__LP64__) || defined(_WIN64) || (defined(__x86_64__) && !defined(__ILP32__) ) || defined(_M_X64) || defined(__ia64) || defined (_M_IA64) || defined(__aarch64__) || defined(__powerpc64__)
+        #define VK_DEFINE_NON_DISPATCHABLE_HANDLE(object) typedef struct object##_T *object;
+#else
+        #define VK_DEFINE_NON_DISPATCHABLE_HANDLE(object) typedef uint64_t object;
+#endif
+#endif
+
+#define VK_NULL_HANDLE 0
+
 #define VK_ENABLE_BETA_EXTENSIONS
-#include <vulkan/vulkan.h>
+
+#define VK_VERSION_1_0 1
+
+#define VK_VERSION_1_1 1
+#define VK_API_VERSION_1_1 VK_MAKE_VERSION(1, 1, 0)// Patch version should always be set to 0
+
+#define VK_VERSION_1_2 1
+#define VK_API_VERSION_1_2 VK_MAKE_VERSION(1, 2, 0)// Patch version should always be set to 0
+
 namespace vk {
 constexpr auto MAX_PHYSICAL_DEVICE_NAME_SIZE = 256;
 constexpr auto UUID_SIZE = 16;
@@ -36,18 +75,21 @@ using Bool32 = uint32_t;
 using Flags = uint32_t;
 using DeviceSize = uint64_t;
 using DeviceAddress = uint64_t;
+using VkSampleMask = uint32_t;
+using VkBool32 = uint32_t;
+using VkFlags = uint32_t;
+using VkDeviceSize = uint64_t;
+using VkDeviceAddress = uint64_t;
 enum class AttachmentLoadOp : uint32_t {
     Load = 0,
     Clear = 1,
     DontCare = 2,
 };
-constexpr VkAttachmentLoadOp c_enum(AttachmentLoadOp val) { return static_cast<VkAttachmentLoadOp>(val);}
 enum class AttachmentStoreOp : uint32_t {
     Store = 0,
     DontCare = 1,
     NoneQCOM = 1000301000,
 };
-constexpr VkAttachmentStoreOp c_enum(AttachmentStoreOp val) { return static_cast<VkAttachmentStoreOp>(val);}
 enum class BlendFactor : uint32_t {
     Zero = 0,
     One = 1,
@@ -69,7 +111,6 @@ enum class BlendFactor : uint32_t {
     Src1Alpha = 17,
     OneMinusSrc1Alpha = 18,
 };
-constexpr VkBlendFactor c_enum(BlendFactor val) { return static_cast<VkBlendFactor>(val);}
 enum class BlendOp : uint32_t {
     Add = 0,
     Subtract = 1,
@@ -123,7 +164,6 @@ enum class BlendOp : uint32_t {
     GreenEXT = 1000148044,
     BlueEXT = 1000148045,
 };
-constexpr VkBlendOp c_enum(BlendOp val) { return static_cast<VkBlendOp>(val);}
 enum class BorderColor : uint32_t {
     FloatTransparentBlack = 0,
     IntTransparentBlack = 1,
@@ -134,11 +174,9 @@ enum class BorderColor : uint32_t {
     FloatCustomEXT = 1000287003,
     IntCustomEXT = 1000287004,
 };
-constexpr VkBorderColor c_enum(BorderColor val) { return static_cast<VkBorderColor>(val);}
 enum class PipelineCacheHeaderVersion : uint32_t {
     One = 1,
 };
-constexpr VkPipelineCacheHeaderVersion c_enum(PipelineCacheHeaderVersion val) { return static_cast<VkPipelineCacheHeaderVersion>(val);}
 enum class ComponentSwizzle : uint32_t {
     Identity = 0,
     Zero = 1,
@@ -148,12 +186,10 @@ enum class ComponentSwizzle : uint32_t {
     B = 5,
     A = 6,
 };
-constexpr VkComponentSwizzle c_enum(ComponentSwizzle val) { return static_cast<VkComponentSwizzle>(val);}
 enum class CommandBufferLevel : uint32_t {
     Primary = 0,
     Secondary = 1,
 };
-constexpr VkCommandBufferLevel c_enum(CommandBufferLevel val) { return static_cast<VkCommandBufferLevel>(val);}
 enum class CompareOp : uint32_t {
     Never = 0,
     Less = 1,
@@ -164,7 +200,6 @@ enum class CompareOp : uint32_t {
     GreaterOrEqual = 6,
     Always = 7,
 };
-constexpr VkCompareOp c_enum(CompareOp val) { return static_cast<VkCompareOp>(val);}
 enum class DescriptorType : uint32_t {
     Sampler = 0,
     CombinedImageSampler = 1,
@@ -180,7 +215,6 @@ enum class DescriptorType : uint32_t {
     InlineUniformBlockEXT = 1000138000,
     AccelerationStructureKHR = 1000165000,
 };
-constexpr VkDescriptorType c_enum(DescriptorType val) { return static_cast<VkDescriptorType>(val);}
 enum class DynamicState : uint32_t {
     Viewport = 0,
     Scissor = 1,
@@ -211,14 +245,12 @@ enum class DynamicState : uint32_t {
     StencilTestEnableEXT = 1000267010,
     StencilOpEXT = 1000267011,
 };
-constexpr VkDynamicState c_enum(DynamicState val) { return static_cast<VkDynamicState>(val);}
 enum class PolygonMode : uint32_t {
     Fill = 0,
     Line = 1,
     Point = 2,
     FillRectangleNV = 1000153000,
 };
-constexpr VkPolygonMode c_enum(PolygonMode val) { return static_cast<VkPolygonMode>(val);}
 enum class Format : uint32_t {
     Undefined = 0,
     R4G4UnormPack8 = 1,
@@ -464,12 +496,10 @@ enum class Format : uint32_t {
     G16B16R162Plane422Unorm = 1000156032,
     G16B16R163Plane444Unorm = 1000156033,
 };
-constexpr VkFormat c_enum(Format val) { return static_cast<VkFormat>(val);}
 enum class FrontFace : uint32_t {
     CounterClockwise = 0,
     Clockwise = 1,
 };
-constexpr VkFrontFace c_enum(FrontFace val) { return static_cast<VkFrontFace>(val);}
 enum class ImageLayout : uint32_t {
     Undefined = 0,
     General = 1,
@@ -491,19 +521,16 @@ enum class ImageLayout : uint32_t {
     StencilAttachmentOptimal = 1000241002,
     StencilReadOnlyOptimal = 1000241003,
 };
-constexpr VkImageLayout c_enum(ImageLayout val) { return static_cast<VkImageLayout>(val);}
 enum class ImageTiling : uint32_t {
     Optimal = 0,
     Linear = 1,
     DrmFormatModifierEXT = 1000158000,
 };
-constexpr VkImageTiling c_enum(ImageTiling val) { return static_cast<VkImageTiling>(val);}
 enum class ImageType : uint32_t {
     e1D = 0,
     e2D = 1,
     e3D = 2,
 };
-constexpr VkImageType c_enum(ImageType val) { return static_cast<VkImageType>(val);}
 enum class ImageViewType : uint32_t {
     e1D = 0,
     e2D = 1,
@@ -513,19 +540,16 @@ enum class ImageViewType : uint32_t {
     e2DArray = 5,
     CubeArray = 6,
 };
-constexpr VkImageViewType c_enum(ImageViewType val) { return static_cast<VkImageViewType>(val);}
 enum class SharingMode : uint32_t {
     Exclusive = 0,
     Concurrent = 1,
 };
-constexpr VkSharingMode c_enum(SharingMode val) { return static_cast<VkSharingMode>(val);}
 enum class IndexType : uint32_t {
     Uint16 = 0,
     Uint32 = 1,
     NoneKHR = 1000165000,
     Uint8EXT = 1000265000,
 };
-constexpr VkIndexType c_enum(IndexType val) { return static_cast<VkIndexType>(val);}
 enum class LogicOp : uint32_t {
     Clear = 0,
     And = 1,
@@ -544,7 +568,6 @@ enum class LogicOp : uint32_t {
     Nand = 14,
     Set = 15,
 };
-constexpr VkLogicOp c_enum(LogicOp val) { return static_cast<VkLogicOp>(val);}
 enum class PhysicalDeviceType : uint32_t {
     Other = 0,
     IntegratedGpu = 1,
@@ -552,13 +575,11 @@ enum class PhysicalDeviceType : uint32_t {
     VirtualGpu = 3,
     Cpu = 4,
 };
-constexpr VkPhysicalDeviceType c_enum(PhysicalDeviceType val) { return static_cast<VkPhysicalDeviceType>(val);}
 enum class PipelineBindPoint : uint32_t {
     Graphics = 0,
     Compute = 1,
     RayTracingKHR = 1000165000,
 };
-constexpr VkPipelineBindPoint c_enum(PipelineBindPoint val) { return static_cast<VkPipelineBindPoint>(val);}
 enum class PrimitiveTopology : uint32_t {
     PointList = 0,
     LineList = 1,
@@ -572,7 +593,6 @@ enum class PrimitiveTopology : uint32_t {
     TriangleStripWithAdjacency = 9,
     PatchList = 10,
 };
-constexpr VkPrimitiveTopology c_enum(PrimitiveTopology val) { return static_cast<VkPrimitiveTopology>(val);}
 enum class QueryType : uint32_t {
     Occlusion = 0,
     PipelineStatistics = 1,
@@ -583,12 +603,10 @@ enum class QueryType : uint32_t {
     AccelerationStructureSerializationSizeKHR = 1000150000,
     PerformanceQueryINTEL = 1000210000,
 };
-constexpr VkQueryType c_enum(QueryType val) { return static_cast<VkQueryType>(val);}
 enum class SubpassContents : uint32_t {
     Inline = 0,
     SecondaryCommandBuffers = 1,
 };
-constexpr VkSubpassContents c_enum(SubpassContents val) { return static_cast<VkSubpassContents>(val);}
 enum class Result : int32_t {
     Success = 0,
     NotReady = 1,
@@ -630,7 +648,6 @@ enum class Result : int32_t {
     ErrorFragmentation = -1000161000,
     ErrorInvalidOpaqueCaptureAddress = -1000257000,
 };
-constexpr VkResult c_enum(Result val) { return static_cast<VkResult>(val);}
 inline const char * to_string(Result val) {
     switch(val) {
         case(Result::Success): return "Success";
@@ -686,7 +703,6 @@ enum class StencilOp : uint32_t {
     IncrementAndWrap = 6,
     DecrementAndWrap = 7,
 };
-constexpr VkStencilOp c_enum(StencilOp val) { return static_cast<VkStencilOp>(val);}
 enum class StructureType : uint32_t {
     ApplicationInfo = 0,
     InstanceCreateInfo = 1,
@@ -1149,7 +1165,6 @@ enum class StructureType : uint32_t {
     MemoryOpaqueCaptureAddressAllocateInfo = 1000257003,
     DeviceMemoryOpaqueCaptureAddressInfo = 1000257004,
 };
-constexpr VkStructureType c_enum(StructureType val) { return static_cast<VkStructureType>(val);}
 enum class SystemAllocationScope : uint32_t {
     Command = 0,
     Object = 1,
@@ -1157,11 +1172,9 @@ enum class SystemAllocationScope : uint32_t {
     Device = 3,
     Instance = 4,
 };
-constexpr VkSystemAllocationScope c_enum(SystemAllocationScope val) { return static_cast<VkSystemAllocationScope>(val);}
 enum class InternalAllocationType : uint32_t {
     Executable = 0,
 };
-constexpr VkInternalAllocationType c_enum(InternalAllocationType val) { return static_cast<VkInternalAllocationType>(val);}
 enum class SamplerAddressMode : uint32_t {
     Repeat = 0,
     MirroredRepeat = 1,
@@ -1169,23 +1182,19 @@ enum class SamplerAddressMode : uint32_t {
     ClampToBorder = 3,
     MirrorClampToEdge = 4,
 };
-constexpr VkSamplerAddressMode c_enum(SamplerAddressMode val) { return static_cast<VkSamplerAddressMode>(val);}
 enum class Filter : uint32_t {
     Nearest = 0,
     Linear = 1,
     CubicIMG = 1000015000,
 };
-constexpr VkFilter c_enum(Filter val) { return static_cast<VkFilter>(val);}
 enum class SamplerMipmapMode : uint32_t {
     Nearest = 0,
     Linear = 1,
 };
-constexpr VkSamplerMipmapMode c_enum(SamplerMipmapMode val) { return static_cast<VkSamplerMipmapMode>(val);}
 enum class VertexInputRate : uint32_t {
     Vertex = 0,
     Instance = 1,
 };
-constexpr VkVertexInputRate c_enum(VertexInputRate val) { return static_cast<VkVertexInputRate>(val);}
 enum class ObjectType : uint32_t {
     Unknown = 0,
     Instance = 1,
@@ -1228,7 +1237,6 @@ enum class ObjectType : uint32_t {
     SamplerYcbcrConversion = 1000156000,
     DescriptorUpdateTemplate = 1000085000,
 };
-constexpr VkObjectType c_enum(ObjectType val) { return static_cast<VkObjectType>(val);}
 enum class IndirectCommandsTokenTypeNV : uint32_t {
     ShaderGroupNV = 0,
     StateFlagsNV = 1,
@@ -1239,12 +1247,10 @@ enum class IndirectCommandsTokenTypeNV : uint32_t {
     DrawNV = 6,
     DrawTasksNV = 7,
 };
-constexpr VkIndirectCommandsTokenTypeNV c_enum(IndirectCommandsTokenTypeNV val) { return static_cast<VkIndirectCommandsTokenTypeNV>(val);}
 enum class DescriptorUpdateTemplateType : uint32_t {
     DescriptorSet = 0,
     PushDescriptorsKHR = 1,
 };
-constexpr VkDescriptorUpdateTemplateType c_enum(DescriptorUpdateTemplateType val) { return static_cast<VkDescriptorUpdateTemplateType>(val);}
 using DescriptorUpdateTemplateTypeKHR = DescriptorUpdateTemplateType;
 enum class ViewportCoordinateSwizzleNV : uint32_t {
     PositiveXNV = 0,
@@ -1256,17 +1262,14 @@ enum class ViewportCoordinateSwizzleNV : uint32_t {
     PositiveWNV = 6,
     NegativeWNV = 7,
 };
-constexpr VkViewportCoordinateSwizzleNV c_enum(ViewportCoordinateSwizzleNV val) { return static_cast<VkViewportCoordinateSwizzleNV>(val);}
 enum class DiscardRectangleModeEXT : uint32_t {
     InclusiveEXT = 0,
     ExclusiveEXT = 1,
 };
-constexpr VkDiscardRectangleModeEXT c_enum(DiscardRectangleModeEXT val) { return static_cast<VkDiscardRectangleModeEXT>(val);}
 enum class PointClippingBehavior : uint32_t {
     AllClipPlanes = 0,
     UserClipPlanesOnly = 1,
 };
-constexpr VkPointClippingBehavior c_enum(PointClippingBehavior val) { return static_cast<VkPointClippingBehavior>(val);}
 using PointClippingBehaviorKHR = PointClippingBehavior;
 enum class CoverageModulationModeNV : uint32_t {
     NoneNV = 0,
@@ -1274,47 +1277,39 @@ enum class CoverageModulationModeNV : uint32_t {
     AlphaNV = 2,
     RgbaNV = 3,
 };
-constexpr VkCoverageModulationModeNV c_enum(CoverageModulationModeNV val) { return static_cast<VkCoverageModulationModeNV>(val);}
 enum class CoverageReductionModeNV : uint32_t {
     MergeNV = 0,
     TruncateNV = 1,
 };
-constexpr VkCoverageReductionModeNV c_enum(CoverageReductionModeNV val) { return static_cast<VkCoverageReductionModeNV>(val);}
 enum class ValidationCacheHeaderVersionEXT : uint32_t {
     OneEXT = 1,
 };
-constexpr VkValidationCacheHeaderVersionEXT c_enum(ValidationCacheHeaderVersionEXT val) { return static_cast<VkValidationCacheHeaderVersionEXT>(val);}
 enum class ShaderInfoTypeAMD : uint32_t {
     StatisticsAMD = 0,
     BinaryAMD = 1,
     DisassemblyAMD = 2,
 };
-constexpr VkShaderInfoTypeAMD c_enum(ShaderInfoTypeAMD val) { return static_cast<VkShaderInfoTypeAMD>(val);}
 enum class QueueGlobalPriorityEXT : uint32_t {
     LowEXT = 128,
     MediumEXT = 256,
     HighEXT = 512,
     RealtimeEXT = 1024,
 };
-constexpr VkQueueGlobalPriorityEXT c_enum(QueueGlobalPriorityEXT val) { return static_cast<VkQueueGlobalPriorityEXT>(val);}
 enum class TimeDomainEXT : uint32_t {
     DeviceEXT = 0,
     ClockMonotonicEXT = 1,
     ClockMonotonicRawEXT = 2,
     QueryPerformanceCounterEXT = 3,
 };
-constexpr VkTimeDomainEXT c_enum(TimeDomainEXT val) { return static_cast<VkTimeDomainEXT>(val);}
 enum class ConservativeRasterizationModeEXT : uint32_t {
     DisabledEXT = 0,
     OverestimateEXT = 1,
     UnderestimateEXT = 2,
 };
-constexpr VkConservativeRasterizationModeEXT c_enum(ConservativeRasterizationModeEXT val) { return static_cast<VkConservativeRasterizationModeEXT>(val);}
 enum class SemaphoreType : uint32_t {
     Binary = 0,
     Timeline = 1,
 };
-constexpr VkSemaphoreType c_enum(SemaphoreType val) { return static_cast<VkSemaphoreType>(val);}
 using SemaphoreTypeKHR = SemaphoreType;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 enum class CopyAccelerationStructureModeKHR : uint32_t {
@@ -1323,7 +1318,6 @@ enum class CopyAccelerationStructureModeKHR : uint32_t {
     SerializeKHR = 2,
     DeserializeKHR = 3,
 };
-constexpr VkCopyAccelerationStructureModeKHR c_enum(CopyAccelerationStructureModeKHR val) { return static_cast<VkCopyAccelerationStructureModeKHR>(val);}
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using CopyAccelerationStructureModeNV = CopyAccelerationStructureModeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
@@ -1331,7 +1325,6 @@ enum class AccelerationStructureTypeKHR : uint32_t {
     TopLevelKHR = 0,
     BottomLevelKHR = 1,
 };
-constexpr VkAccelerationStructureTypeKHR c_enum(AccelerationStructureTypeKHR val) { return static_cast<VkAccelerationStructureTypeKHR>(val);}
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using AccelerationStructureTypeNV = AccelerationStructureTypeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
@@ -1340,7 +1333,6 @@ enum class GeometryTypeKHR : uint32_t {
     AabbsKHR = 1,
     InstancesKHR = 1000150000,
 };
-constexpr VkGeometryTypeKHR c_enum(GeometryTypeKHR val) { return static_cast<VkGeometryTypeKHR>(val);}
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using GeometryTypeNV = GeometryTypeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
@@ -1349,7 +1341,6 @@ enum class RayTracingShaderGroupTypeKHR : uint32_t {
     TrianglesHitGroupKHR = 1,
     ProceduralHitGroupKHR = 2,
 };
-constexpr VkRayTracingShaderGroupTypeKHR c_enum(RayTracingShaderGroupTypeKHR val) { return static_cast<VkRayTracingShaderGroupTypeKHR>(val);}
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using RayTracingShaderGroupTypeNV = RayTracingShaderGroupTypeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
@@ -1358,7 +1349,6 @@ enum class AccelerationStructureMemoryRequirementsTypeKHR : uint32_t {
     BuildScratchKHR = 1,
     UpdateScratchKHR = 2,
 };
-constexpr VkAccelerationStructureMemoryRequirementsTypeKHR c_enum(AccelerationStructureMemoryRequirementsTypeKHR val) { return static_cast<VkAccelerationStructureMemoryRequirementsTypeKHR>(val);}
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using AccelerationStructureMemoryRequirementsTypeNV = AccelerationStructureMemoryRequirementsTypeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
@@ -1367,21 +1357,18 @@ enum class AccelerationStructureBuildTypeKHR : uint32_t {
     DeviceKHR = 1,
     HostOrDeviceKHR = 2,
 };
-constexpr VkAccelerationStructureBuildTypeKHR c_enum(AccelerationStructureBuildTypeKHR val) { return static_cast<VkAccelerationStructureBuildTypeKHR>(val);}
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 enum class MemoryOverallocationBehaviorAMD : uint32_t {
     DefaultAMD = 0,
     AllowedAMD = 1,
     DisallowedAMD = 2,
 };
-constexpr VkMemoryOverallocationBehaviorAMD c_enum(MemoryOverallocationBehaviorAMD val) { return static_cast<VkMemoryOverallocationBehaviorAMD>(val);}
 enum class ScopeNV : uint32_t {
     DeviceNV = 1,
     WorkgroupNV = 2,
     SubgroupNV = 3,
     QueueFamilyNV = 5,
 };
-constexpr VkScopeNV c_enum(ScopeNV val) { return static_cast<VkScopeNV>(val);}
 enum class ComponentTypeNV : uint32_t {
     Float16NV = 0,
     Float32NV = 1,
@@ -1395,13 +1382,11 @@ enum class ComponentTypeNV : uint32_t {
     Uint32NV = 9,
     Uint64NV = 10,
 };
-constexpr VkComponentTypeNV c_enum(ComponentTypeNV val) { return static_cast<VkComponentTypeNV>(val);}
 enum class PerformanceCounterScopeKHR : uint32_t {
     CommandBufferKHR = 0,
     RenderPassKHR = 1,
     CommandKHR = 2,
 };
-constexpr VkPerformanceCounterScopeKHR c_enum(PerformanceCounterScopeKHR val) { return static_cast<VkPerformanceCounterScopeKHR>(val);}
 enum class PerformanceCounterUnitKHR : uint32_t {
     GenericKHR = 0,
     PercentageKHR = 1,
@@ -1415,7 +1400,6 @@ enum class PerformanceCounterUnitKHR : uint32_t {
     HertzKHR = 9,
     CyclesKHR = 10,
 };
-constexpr VkPerformanceCounterUnitKHR c_enum(PerformanceCounterUnitKHR val) { return static_cast<VkPerformanceCounterUnitKHR>(val);}
 enum class PerformanceCounterStorageKHR : uint32_t {
     Int32KHR = 0,
     Int64KHR = 1,
@@ -1424,25 +1408,20 @@ enum class PerformanceCounterStorageKHR : uint32_t {
     Float32KHR = 4,
     Float64KHR = 5,
 };
-constexpr VkPerformanceCounterStorageKHR c_enum(PerformanceCounterStorageKHR val) { return static_cast<VkPerformanceCounterStorageKHR>(val);}
 enum class PerformanceConfigurationTypeINTEL : uint32_t {
     CommandQueueMetricsDiscoveryActivatedINTEL = 0,
 };
-constexpr VkPerformanceConfigurationTypeINTEL c_enum(PerformanceConfigurationTypeINTEL val) { return static_cast<VkPerformanceConfigurationTypeINTEL>(val);}
 enum class QueryPoolSamplingModeINTEL : uint32_t {
     ManualINTEL = 0,
 };
-constexpr VkQueryPoolSamplingModeINTEL c_enum(QueryPoolSamplingModeINTEL val) { return static_cast<VkQueryPoolSamplingModeINTEL>(val);}
 enum class PerformanceOverrideTypeINTEL : uint32_t {
     NullHardwareINTEL = 0,
     FlushGpuCachesINTEL = 1,
 };
-constexpr VkPerformanceOverrideTypeINTEL c_enum(PerformanceOverrideTypeINTEL val) { return static_cast<VkPerformanceOverrideTypeINTEL>(val);}
 enum class PerformanceParameterTypeINTEL : uint32_t {
     HwCountersSupportedINTEL = 0,
     StreamMarkerValidBitsINTEL = 1,
 };
-constexpr VkPerformanceParameterTypeINTEL c_enum(PerformanceParameterTypeINTEL val) { return static_cast<VkPerformanceParameterTypeINTEL>(val);}
 enum class PerformanceValueTypeINTEL : uint32_t {
     Uint32INTEL = 0,
     Uint64INTEL = 1,
@@ -1450,14 +1429,12 @@ enum class PerformanceValueTypeINTEL : uint32_t {
     BoolINTEL = 3,
     StringINTEL = 4,
 };
-constexpr VkPerformanceValueTypeINTEL c_enum(PerformanceValueTypeINTEL val) { return static_cast<VkPerformanceValueTypeINTEL>(val);}
 enum class LineRasterizationModeEXT : uint32_t {
     DefaultEXT = 0,
     RectangularEXT = 1,
     BresenhamEXT = 2,
     RectangularSmoothEXT = 3,
 };
-constexpr VkLineRasterizationModeEXT c_enum(LineRasterizationModeEXT val) { return static_cast<VkLineRasterizationModeEXT>(val);}
 enum class ColorSpaceKHR : uint32_t {
     SrgbNonlinearKHR = 0,
     DisplayP3NonlinearEXT = 1000104001,
@@ -1476,7 +1453,6 @@ enum class ColorSpaceKHR : uint32_t {
     ExtendedSrgbNonlinearEXT = 1000104014,
     DisplayNativeAMD = 1000213000,
 };
-constexpr VkColorSpaceKHR c_enum(ColorSpaceKHR val) { return static_cast<VkColorSpaceKHR>(val);}
 enum class PresentModeKHR : uint32_t {
     ImmediateKHR = 0,
     MailboxKHR = 1,
@@ -1485,7 +1461,6 @@ enum class PresentModeKHR : uint32_t {
     SharedDemandRefreshKHR = 1000111000,
     SharedContinuousRefreshKHR = 1000111001,
 };
-constexpr VkPresentModeKHR c_enum(PresentModeKHR val) { return static_cast<VkPresentModeKHR>(val);}
 enum class DebugReportObjectTypeEXT : uint32_t {
     UnknownEXT = 0,
     InstanceEXT = 1,
@@ -1523,7 +1498,6 @@ enum class DebugReportObjectTypeEXT : uint32_t {
     DescriptorUpdateTemplateEXT = 1000085000,
     AccelerationStructureKhrEXT = 1000165000,
 };
-constexpr VkDebugReportObjectTypeEXT c_enum(DebugReportObjectTypeEXT val) { return static_cast<VkDebugReportObjectTypeEXT>(val);}
 enum class DeviceMemoryReportEventTypeEXT : uint32_t {
     AllocateEXT = 0,
     FreeEXT = 1,
@@ -1531,17 +1505,14 @@ enum class DeviceMemoryReportEventTypeEXT : uint32_t {
     UnimportEXT = 3,
     AllocationFailedEXT = 4,
 };
-constexpr VkDeviceMemoryReportEventTypeEXT c_enum(DeviceMemoryReportEventTypeEXT val) { return static_cast<VkDeviceMemoryReportEventTypeEXT>(val);}
 enum class RasterizationOrderAMD : uint32_t {
     StrictAMD = 0,
     RelaxedAMD = 1,
 };
-constexpr VkRasterizationOrderAMD c_enum(RasterizationOrderAMD val) { return static_cast<VkRasterizationOrderAMD>(val);}
 enum class ValidationCheckEXT : uint32_t {
     AllEXT = 0,
     ShadersEXT = 1,
 };
-constexpr VkValidationCheckEXT c_enum(ValidationCheckEXT val) { return static_cast<VkValidationCheckEXT>(val);}
 enum class ValidationFeatureEnableEXT : uint32_t {
     GpuAssistedEXT = 0,
     GpuAssistedReserveBindingSlotEXT = 1,
@@ -1549,7 +1520,6 @@ enum class ValidationFeatureEnableEXT : uint32_t {
     DebugPrintfEXT = 3,
     SynchronizationValidationEXT = 4,
 };
-constexpr VkValidationFeatureEnableEXT c_enum(ValidationFeatureEnableEXT val) { return static_cast<VkValidationFeatureEnableEXT>(val);}
 enum class ValidationFeatureDisableEXT : uint32_t {
     AllEXT = 0,
     ShadersEXT = 1,
@@ -1559,26 +1529,21 @@ enum class ValidationFeatureDisableEXT : uint32_t {
     CoreChecksEXT = 5,
     UniqueHandlesEXT = 6,
 };
-constexpr VkValidationFeatureDisableEXT c_enum(ValidationFeatureDisableEXT val) { return static_cast<VkValidationFeatureDisableEXT>(val);}
 enum class DisplayPowerStateEXT : uint32_t {
     OffEXT = 0,
     SuspendEXT = 1,
     OnEXT = 2,
 };
-constexpr VkDisplayPowerStateEXT c_enum(DisplayPowerStateEXT val) { return static_cast<VkDisplayPowerStateEXT>(val);}
 enum class DeviceEventTypeEXT : uint32_t {
     DisplayHotplugEXT = 0,
 };
-constexpr VkDeviceEventTypeEXT c_enum(DeviceEventTypeEXT val) { return static_cast<VkDeviceEventTypeEXT>(val);}
 enum class DisplayEventTypeEXT : uint32_t {
     FirstPixelOutEXT = 0,
 };
-constexpr VkDisplayEventTypeEXT c_enum(DisplayEventTypeEXT val) { return static_cast<VkDisplayEventTypeEXT>(val);}
 enum class TessellationDomainOrigin : uint32_t {
     UpperLeft = 0,
     LowerLeft = 1,
 };
-constexpr VkTessellationDomainOrigin c_enum(TessellationDomainOrigin val) { return static_cast<VkTessellationDomainOrigin>(val);}
 using TessellationDomainOriginKHR = TessellationDomainOrigin;
 enum class SamplerYcbcrModelConversion : uint32_t {
     RgbIdentity = 0,
@@ -1587,33 +1552,28 @@ enum class SamplerYcbcrModelConversion : uint32_t {
     Ycbcr601 = 3,
     Ycbcr2020 = 4,
 };
-constexpr VkSamplerYcbcrModelConversion c_enum(SamplerYcbcrModelConversion val) { return static_cast<VkSamplerYcbcrModelConversion>(val);}
 using SamplerYcbcrModelConversionKHR = SamplerYcbcrModelConversion;
 enum class SamplerYcbcrRange : uint32_t {
     ItuFull = 0,
     ItuNarrow = 1,
 };
-constexpr VkSamplerYcbcrRange c_enum(SamplerYcbcrRange val) { return static_cast<VkSamplerYcbcrRange>(val);}
 using SamplerYcbcrRangeKHR = SamplerYcbcrRange;
 enum class ChromaLocation : uint32_t {
     CositedEven = 0,
     Midpoint = 1,
 };
-constexpr VkChromaLocation c_enum(ChromaLocation val) { return static_cast<VkChromaLocation>(val);}
 using ChromaLocationKHR = ChromaLocation;
 enum class SamplerReductionMode : uint32_t {
     WeightedAverage = 0,
     Min = 1,
     Max = 2,
 };
-constexpr VkSamplerReductionMode c_enum(SamplerReductionMode val) { return static_cast<VkSamplerReductionMode>(val);}
 using SamplerReductionModeEXT = SamplerReductionMode;
 enum class BlendOverlapEXT : uint32_t {
     UncorrelatedEXT = 0,
     DisjointEXT = 1,
     ConjointEXT = 2,
 };
-constexpr VkBlendOverlapEXT c_enum(BlendOverlapEXT val) { return static_cast<VkBlendOverlapEXT>(val);}
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 enum class FullScreenExclusiveEXT : uint32_t {
     DefaultEXT = 0,
@@ -1621,14 +1581,12 @@ enum class FullScreenExclusiveEXT : uint32_t {
     DisallowedEXT = 2,
     ApplicationControlledEXT = 3,
 };
-constexpr VkFullScreenExclusiveEXT c_enum(FullScreenExclusiveEXT val) { return static_cast<VkFullScreenExclusiveEXT>(val);}
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 enum class ShaderFloatControlsIndependence : uint32_t {
     e32BitOnly = 0,
     All = 1,
     None = 2,
 };
-constexpr VkShaderFloatControlsIndependence c_enum(ShaderFloatControlsIndependence val) { return static_cast<VkShaderFloatControlsIndependence>(val);}
 using ShaderFloatControlsIndependenceKHR = ShaderFloatControlsIndependence;
 enum class VendorId : uint32_t {
     VIV = 0x10001,
@@ -1637,7 +1595,6 @@ enum class VendorId : uint32_t {
     Codeplay = 0x10004,
     MESA = 0x10005,
 };
-constexpr VkVendorId c_enum(VendorId val) { return static_cast<VkVendorId>(val);}
 enum class DriverId : uint32_t {
     AmdProprietary = 1,
     AmdOpenSource = 2,
@@ -1654,7 +1611,6 @@ enum class DriverId : uint32_t {
     MesaLlvmpipe = 13,
     Moltenvk = 14,
 };
-constexpr VkDriverId c_enum(DriverId val) { return static_cast<VkDriverId>(val);}
 using DriverIdKHR = DriverId;
 enum class ShadingRatePaletteEntryNV : uint32_t {
     NoInvocationsNV = 0,
@@ -1670,25 +1626,21 @@ enum class ShadingRatePaletteEntryNV : uint32_t {
     e1InvocationPer2X4PixelsNV = 10,
     e1InvocationPer4X4PixelsNV = 11,
 };
-constexpr VkShadingRatePaletteEntryNV c_enum(ShadingRatePaletteEntryNV val) { return static_cast<VkShadingRatePaletteEntryNV>(val);}
 enum class CoarseSampleOrderTypeNV : uint32_t {
     DefaultNV = 0,
     CustomNV = 1,
     PixelMajorNV = 2,
     SampleMajorNV = 3,
 };
-constexpr VkCoarseSampleOrderTypeNV c_enum(CoarseSampleOrderTypeNV val) { return static_cast<VkCoarseSampleOrderTypeNV>(val);}
 enum class PipelineExecutableStatisticFormatKHR : uint32_t {
     Bool32KHR = 0,
     Int64KHR = 1,
     Uint64KHR = 2,
     Float64KHR = 3,
 };
-constexpr VkPipelineExecutableStatisticFormatKHR c_enum(PipelineExecutableStatisticFormatKHR val) { return static_cast<VkPipelineExecutableStatisticFormatKHR>(val);}
 enum class PipelineCacheCreateFlagBits: uint32_t {
     ExternallySynchronizedBitEXT = 1,
 };
-inline VkPipelineCacheCreateFlagBits c_enum(PipelineCacheCreateFlagBits val) { return static_cast<VkPipelineCacheCreateFlagBits>(val);}
 enum class QueueFlagBits: uint32_t {
     Graphics = 1,
     Compute = 2,
@@ -1696,22 +1648,18 @@ enum class QueueFlagBits: uint32_t {
     SparseBinding = 8,
     Protected = 16,
 };
-inline VkQueueFlagBits c_enum(QueueFlagBits val) { return static_cast<VkQueueFlagBits>(val);}
 enum class CullModeFlagBits: uint32_t {
     None = 0,
     Front = 1,
     Back = 2,
     FrontAndBack = 0x00000003,
 };
-inline VkCullModeFlagBits c_enum(CullModeFlagBits val) { return static_cast<VkCullModeFlagBits>(val);}
 enum class RenderPassCreateFlagBits: uint32_t {
     TransformBitQCOM = 2,
 };
-inline VkRenderPassCreateFlagBits c_enum(RenderPassCreateFlagBits val) { return static_cast<VkRenderPassCreateFlagBits>(val);}
 enum class DeviceQueueCreateFlagBits: uint32_t {
     Protected = 1,
 };
-inline VkDeviceQueueCreateFlagBits c_enum(DeviceQueueCreateFlagBits val) { return static_cast<VkDeviceQueueCreateFlagBits>(val);}
 enum class MemoryPropertyFlagBits: uint32_t {
     DeviceLocal = 1,
     HostVisible = 2,
@@ -1722,12 +1670,10 @@ enum class MemoryPropertyFlagBits: uint32_t {
     DeviceUncachedBitAMD = 128,
     Protected = 32,
 };
-inline VkMemoryPropertyFlagBits c_enum(MemoryPropertyFlagBits val) { return static_cast<VkMemoryPropertyFlagBits>(val);}
 enum class MemoryHeapFlagBits: uint32_t {
     DeviceLocal = 1,
     MultiInstance = 2,
 };
-inline VkMemoryHeapFlagBits c_enum(MemoryHeapFlagBits val) { return static_cast<VkMemoryHeapFlagBits>(val);}
 enum class AccessFlagBits: uint32_t {
     IndirectCommandRead = 1,
     IndexRead = 2,
@@ -1758,7 +1704,6 @@ enum class AccessFlagBits: uint32_t {
     CommandPreprocessReadBitNV = 131072,
     CommandPreprocessWriteBitNV = 262144,
 };
-inline VkAccessFlagBits c_enum(AccessFlagBits val) { return static_cast<VkAccessFlagBits>(val);}
 enum class BufferUsageFlagBits: uint32_t {
     TransferSrc = 1,
     TransferDst = 2,
@@ -1775,7 +1720,6 @@ enum class BufferUsageFlagBits: uint32_t {
     RayTracingBitKHR = 1024,
     ShaderDeviceAddress = 131072,
 };
-inline VkBufferUsageFlagBits c_enum(BufferUsageFlagBits val) { return static_cast<VkBufferUsageFlagBits>(val);}
 enum class BufferCreateFlagBits: uint32_t {
     SparseBinding = 1,
     SparseResidency = 2,
@@ -1783,7 +1727,6 @@ enum class BufferCreateFlagBits: uint32_t {
     Protected = 8,
     DeviceAddressCaptureReplay = 16,
 };
-inline VkBufferCreateFlagBits c_enum(BufferCreateFlagBits val) { return static_cast<VkBufferCreateFlagBits>(val);}
 enum class ShaderStageFlagBits: uint32_t {
     Vertex = 1,
     TessellationControl = 2,
@@ -1802,7 +1745,6 @@ enum class ShaderStageFlagBits: uint32_t {
     TaskBitNV = 64,
     MeshBitNV = 128,
 };
-inline VkShaderStageFlagBits c_enum(ShaderStageFlagBits val) { return static_cast<VkShaderStageFlagBits>(val);}
 enum class ImageUsageFlagBits: uint32_t {
     TransferSrc = 1,
     TransferDst = 2,
@@ -1815,7 +1757,6 @@ enum class ImageUsageFlagBits: uint32_t {
     ShadingRateImageBitNV = 256,
     FragmentDensityMapBitEXT = 512,
 };
-inline VkImageUsageFlagBits c_enum(ImageUsageFlagBits val) { return static_cast<VkImageUsageFlagBits>(val);}
 enum class ImageCreateFlagBits: uint32_t {
     SparseBinding = 1,
     SparseResidency = 2,
@@ -1833,17 +1774,14 @@ enum class ImageCreateFlagBits: uint32_t {
     Protected = 2048,
     Disjoint = 512,
 };
-inline VkImageCreateFlagBits c_enum(ImageCreateFlagBits val) { return static_cast<VkImageCreateFlagBits>(val);}
 enum class ImageViewCreateFlagBits: uint32_t {
     FragmentDensityMapDynamicBitEXT = 1,
     FragmentDensityMapDeferredBitEXT = 2,
 };
-inline VkImageViewCreateFlagBits c_enum(ImageViewCreateFlagBits val) { return static_cast<VkImageViewCreateFlagBits>(val);}
 enum class SamplerCreateFlagBits: uint32_t {
     SubsampledBitEXT = 1,
     SubsampledCoarseReconstructionBitEXT = 2,
 };
-inline VkSamplerCreateFlagBits c_enum(SamplerCreateFlagBits val) { return static_cast<VkSamplerCreateFlagBits>(val);}
 enum class PipelineCreateFlagBits: uint32_t {
     DisableOptimization = 1,
     AllowDerivatives = 2,
@@ -1864,23 +1802,19 @@ enum class PipelineCreateFlagBits: uint32_t {
     ViewIndexFromDeviceIndex = 8,
     DispatchBase = 16,
 };
-inline VkPipelineCreateFlagBits c_enum(PipelineCreateFlagBits val) { return static_cast<VkPipelineCreateFlagBits>(val);}
 enum class PipelineShaderStageCreateFlagBits: uint32_t {
     AllowVaryingSubgroupSizeBitEXT = 1,
     RequireFullSubgroupsBitEXT = 2,
 };
-inline VkPipelineShaderStageCreateFlagBits c_enum(PipelineShaderStageCreateFlagBits val) { return static_cast<VkPipelineShaderStageCreateFlagBits>(val);}
 enum class ColorComponentFlagBits: uint32_t {
     R = 1,
     G = 2,
     B = 4,
     A = 8,
 };
-inline VkColorComponentFlagBits c_enum(ColorComponentFlagBits val) { return static_cast<VkColorComponentFlagBits>(val);}
 enum class FenceCreateFlagBits: uint32_t {
     Signaled = 1,
 };
-inline VkFenceCreateFlagBits c_enum(FenceCreateFlagBits val) { return static_cast<VkFenceCreateFlagBits>(val);}
 enum class SemaphoreCreateFlagBits: uint32_t {
 };
 enum class FormatFeatureFlagBits: uint32_t {
@@ -1911,24 +1845,20 @@ enum class FormatFeatureFlagBits: uint32_t {
     CositedChromaSamples = 8388608,
     SampledImageFilterMinmax = 65536,
 };
-inline VkFormatFeatureFlagBits c_enum(FormatFeatureFlagBits val) { return static_cast<VkFormatFeatureFlagBits>(val);}
 enum class QueryControlFlagBits: uint32_t {
     Precise = 1,
 };
-inline VkQueryControlFlagBits c_enum(QueryControlFlagBits val) { return static_cast<VkQueryControlFlagBits>(val);}
 enum class QueryResultFlagBits: uint32_t {
     e64 = 1,
     Wait = 2,
     WithAvailability = 4,
     Partial = 8,
 };
-inline VkQueryResultFlagBits c_enum(QueryResultFlagBits val) { return static_cast<VkQueryResultFlagBits>(val);}
 enum class CommandBufferUsageFlagBits: uint32_t {
     OneTimeSubmit = 1,
     RenderPassContinue = 2,
     SimultaneousUse = 4,
 };
-inline VkCommandBufferUsageFlagBits c_enum(CommandBufferUsageFlagBits val) { return static_cast<VkCommandBufferUsageFlagBits>(val);}
 enum class QueryPipelineStatisticFlagBits: uint32_t {
     InputAssemblyVertices = 1,
     InputAssemblyPrimitives = 2,
@@ -1942,7 +1872,6 @@ enum class QueryPipelineStatisticFlagBits: uint32_t {
     TessellationEvaluationShaderInvocations = 512,
     ComputeShaderInvocations = 1024,
 };
-inline VkQueryPipelineStatisticFlagBits c_enum(QueryPipelineStatisticFlagBits val) { return static_cast<VkQueryPipelineStatisticFlagBits>(val);}
 enum class ImageAspectFlagBits: uint32_t {
     Color = 1,
     Depth = 2,
@@ -1956,17 +1885,14 @@ enum class ImageAspectFlagBits: uint32_t {
     Plane1 = 32,
     Plane2 = 64,
 };
-inline VkImageAspectFlagBits c_enum(ImageAspectFlagBits val) { return static_cast<VkImageAspectFlagBits>(val);}
 enum class SparseImageFormatFlagBits: uint32_t {
     SingleMiptail = 1,
     AlignedMipSize = 2,
     NonstandardBlockSize = 4,
 };
-inline VkSparseImageFormatFlagBits c_enum(SparseImageFormatFlagBits val) { return static_cast<VkSparseImageFormatFlagBits>(val);}
 enum class SparseMemoryBindFlagBits: uint32_t {
     Metadata = 1,
 };
-inline VkSparseMemoryBindFlagBits c_enum(SparseMemoryBindFlagBits val) { return static_cast<VkSparseMemoryBindFlagBits>(val);}
 enum class PipelineStageFlagBits: uint32_t {
     TopOfPipe = 1,
     DrawIndirect = 2,
@@ -1995,21 +1921,17 @@ enum class PipelineStageFlagBits: uint32_t {
     FragmentDensityProcessBitEXT = 8388608,
     CommandPreprocessBitNV = 131072,
 };
-inline VkPipelineStageFlagBits c_enum(PipelineStageFlagBits val) { return static_cast<VkPipelineStageFlagBits>(val);}
 enum class CommandPoolCreateFlagBits: uint32_t {
     Transient = 1,
     ResetCommandBuffer = 2,
     Protected = 4,
 };
-inline VkCommandPoolCreateFlagBits c_enum(CommandPoolCreateFlagBits val) { return static_cast<VkCommandPoolCreateFlagBits>(val);}
 enum class CommandPoolResetFlagBits: uint32_t {
     ReleaseResources = 1,
 };
-inline VkCommandPoolResetFlagBits c_enum(CommandPoolResetFlagBits val) { return static_cast<VkCommandPoolResetFlagBits>(val);}
 enum class CommandBufferResetFlagBits: uint32_t {
     ReleaseResources = 1,
 };
-inline VkCommandBufferResetFlagBits c_enum(CommandBufferResetFlagBits val) { return static_cast<VkCommandBufferResetFlagBits>(val);}
 enum class SampleCountFlagBits: uint32_t {
     e1 = 1,
     e2 = 2,
@@ -2019,46 +1941,38 @@ enum class SampleCountFlagBits: uint32_t {
     e32 = 32,
     e64 = 64,
 };
-inline VkSampleCountFlagBits c_enum(SampleCountFlagBits val) { return static_cast<VkSampleCountFlagBits>(val);}
 enum class AttachmentDescriptionFlagBits: uint32_t {
     MayAlias = 1,
 };
-inline VkAttachmentDescriptionFlagBits c_enum(AttachmentDescriptionFlagBits val) { return static_cast<VkAttachmentDescriptionFlagBits>(val);}
 enum class StencilFaceFlagBits: uint32_t {
     Front = 1,
     Back = 2,
     FrontAndBack = 0x00000003,
 };
-inline VkStencilFaceFlagBits c_enum(StencilFaceFlagBits val) { return static_cast<VkStencilFaceFlagBits>(val);}
 enum class DescriptorPoolCreateFlagBits: uint32_t {
     FreeDescriptorSet = 1,
     UpdateAfterBind = 2,
 };
-inline VkDescriptorPoolCreateFlagBits c_enum(DescriptorPoolCreateFlagBits val) { return static_cast<VkDescriptorPoolCreateFlagBits>(val);}
 enum class DependencyFlagBits: uint32_t {
     ByRegion = 1,
     DeviceGroup = 4,
     ViewLocal = 2,
 };
-inline VkDependencyFlagBits c_enum(DependencyFlagBits val) { return static_cast<VkDependencyFlagBits>(val);}
 enum class SemaphoreWaitFlagBits: uint32_t {
     Any = 1,
 };
-inline VkSemaphoreWaitFlagBits c_enum(SemaphoreWaitFlagBits val) { return static_cast<VkSemaphoreWaitFlagBits>(val);}
 enum class DisplayPlaneAlphaFlagBitsKHR: uint32_t {
     OpaqueBitKHR = 1,
     GlobalBitKHR = 2,
     PerPixelBitKHR = 4,
     PerPixelPremultipliedBitKHR = 8,
 };
-inline VkDisplayPlaneAlphaFlagBitsKHR c_enum(DisplayPlaneAlphaFlagBitsKHR val) { return static_cast<VkDisplayPlaneAlphaFlagBitsKHR>(val);}
 enum class CompositeAlphaFlagBitsKHR: uint32_t {
     OpaqueBitKHR = 1,
     PreMultipliedBitKHR = 2,
     PostMultipliedBitKHR = 4,
     InheritBitKHR = 8,
 };
-inline VkCompositeAlphaFlagBitsKHR c_enum(CompositeAlphaFlagBitsKHR val) { return static_cast<VkCompositeAlphaFlagBitsKHR>(val);}
 enum class SurfaceTransformFlagBitsKHR: uint32_t {
     IdentityBitKHR = 1,
     Rotate90BitKHR = 2,
@@ -2070,7 +1984,6 @@ enum class SurfaceTransformFlagBitsKHR: uint32_t {
     HorizontalMirrorRotate270BitKHR = 128,
     InheritBitKHR = 256,
 };
-inline VkSurfaceTransformFlagBitsKHR c_enum(SurfaceTransformFlagBitsKHR val) { return static_cast<VkSurfaceTransformFlagBitsKHR>(val);}
 enum class DebugReportFlagBitsEXT: uint32_t {
     InformationBitEXT = 1,
     WarningBitEXT = 2,
@@ -2078,20 +1991,17 @@ enum class DebugReportFlagBitsEXT: uint32_t {
     ErrorBitEXT = 8,
     DebugBitEXT = 16,
 };
-inline VkDebugReportFlagBitsEXT c_enum(DebugReportFlagBitsEXT val) { return static_cast<VkDebugReportFlagBitsEXT>(val);}
 enum class ExternalMemoryHandleTypeFlagBitsNV: uint32_t {
     OpaqueWin32BitNV = 1,
     OpaqueWin32KmtBitNV = 2,
     D3D11ImageBitNV = 4,
     D3D11ImageKmtBitNV = 8,
 };
-inline VkExternalMemoryHandleTypeFlagBitsNV c_enum(ExternalMemoryHandleTypeFlagBitsNV val) { return static_cast<VkExternalMemoryHandleTypeFlagBitsNV>(val);}
 enum class ExternalMemoryFeatureFlagBitsNV: uint32_t {
     DedicatedOnlyBitNV = 1,
     ExportableBitNV = 2,
     ImportableBitNV = 4,
 };
-inline VkExternalMemoryFeatureFlagBitsNV c_enum(ExternalMemoryFeatureFlagBitsNV val) { return static_cast<VkExternalMemoryFeatureFlagBitsNV>(val);}
 enum class SubgroupFeatureFlagBits: uint32_t {
     Basic = 1,
     Vote = 2,
@@ -2103,24 +2013,20 @@ enum class SubgroupFeatureFlagBits: uint32_t {
     Quad = 128,
     PartitionedBitNV = 256,
 };
-inline VkSubgroupFeatureFlagBits c_enum(SubgroupFeatureFlagBits val) { return static_cast<VkSubgroupFeatureFlagBits>(val);}
 enum class IndirectCommandsLayoutUsageFlagBitsNV: uint32_t {
     ExplicitPreprocessBitNV = 1,
     IndexedSequencesBitNV = 2,
     UnorderedSequencesBitNV = 4,
 };
-inline VkIndirectCommandsLayoutUsageFlagBitsNV c_enum(IndirectCommandsLayoutUsageFlagBitsNV val) { return static_cast<VkIndirectCommandsLayoutUsageFlagBitsNV>(val);}
 enum class IndirectStateFlagBitsNV: uint32_t {
     FlagFrontfaceBitNV = 1,
 };
-inline VkIndirectStateFlagBitsNV c_enum(IndirectStateFlagBitsNV val) { return static_cast<VkIndirectStateFlagBitsNV>(val);}
 enum class PrivateDataSlotCreateFlagBitsEXT: uint32_t {
 };
 enum class DescriptorSetLayoutCreateFlagBits: uint32_t {
     PushDescriptorBitKHR = 1,
     UpdateAfterBindPool = 2,
 };
-inline VkDescriptorSetLayoutCreateFlagBits c_enum(DescriptorSetLayoutCreateFlagBits val) { return static_cast<VkDescriptorSetLayoutCreateFlagBits>(val);}
 enum class ExternalMemoryHandleTypeFlagBits: uint32_t {
     OpaqueFd = 1,
     OpaqueWin32 = 2,
@@ -2134,13 +2040,11 @@ enum class ExternalMemoryHandleTypeFlagBits: uint32_t {
     HostAllocationBitEXT = 128,
     HostMappedForeignMemoryBitEXT = 256,
 };
-inline VkExternalMemoryHandleTypeFlagBits c_enum(ExternalMemoryHandleTypeFlagBits val) { return static_cast<VkExternalMemoryHandleTypeFlagBits>(val);}
 enum class ExternalMemoryFeatureFlagBits: uint32_t {
     DedicatedOnly = 1,
     Exportable = 2,
     Importable = 4,
 };
-inline VkExternalMemoryFeatureFlagBits c_enum(ExternalMemoryFeatureFlagBits val) { return static_cast<VkExternalMemoryFeatureFlagBits>(val);}
 enum class ExternalSemaphoreHandleTypeFlagBits: uint32_t {
     OpaqueFd = 1,
     OpaqueWin32 = 2,
@@ -2149,93 +2053,77 @@ enum class ExternalSemaphoreHandleTypeFlagBits: uint32_t {
     D3D11Fence = D3D12Fence,
     SyncFd = 16,
 };
-inline VkExternalSemaphoreHandleTypeFlagBits c_enum(ExternalSemaphoreHandleTypeFlagBits val) { return static_cast<VkExternalSemaphoreHandleTypeFlagBits>(val);}
 enum class ExternalSemaphoreFeatureFlagBits: uint32_t {
     Exportable = 1,
     Importable = 2,
 };
-inline VkExternalSemaphoreFeatureFlagBits c_enum(ExternalSemaphoreFeatureFlagBits val) { return static_cast<VkExternalSemaphoreFeatureFlagBits>(val);}
 enum class SemaphoreImportFlagBits: uint32_t {
     Temporary = 1,
 };
-inline VkSemaphoreImportFlagBits c_enum(SemaphoreImportFlagBits val) { return static_cast<VkSemaphoreImportFlagBits>(val);}
 enum class ExternalFenceHandleTypeFlagBits: uint32_t {
     OpaqueFd = 1,
     OpaqueWin32 = 2,
     OpaqueWin32Kmt = 4,
     SyncFd = 8,
 };
-inline VkExternalFenceHandleTypeFlagBits c_enum(ExternalFenceHandleTypeFlagBits val) { return static_cast<VkExternalFenceHandleTypeFlagBits>(val);}
 enum class ExternalFenceFeatureFlagBits: uint32_t {
     Exportable = 1,
     Importable = 2,
 };
-inline VkExternalFenceFeatureFlagBits c_enum(ExternalFenceFeatureFlagBits val) { return static_cast<VkExternalFenceFeatureFlagBits>(val);}
 enum class FenceImportFlagBits: uint32_t {
     Temporary = 1,
 };
-inline VkFenceImportFlagBits c_enum(FenceImportFlagBits val) { return static_cast<VkFenceImportFlagBits>(val);}
 enum class SurfaceCounterFlagBitsEXT: uint32_t {
     VblankEXT = 1,
 };
-inline VkSurfaceCounterFlagBitsEXT c_enum(SurfaceCounterFlagBitsEXT val) { return static_cast<VkSurfaceCounterFlagBitsEXT>(val);}
 enum class PeerMemoryFeatureFlagBits: uint32_t {
     CopySrc = 1,
     CopyDst = 2,
     GenericSrc = 4,
     GenericDst = 8,
 };
-inline VkPeerMemoryFeatureFlagBits c_enum(PeerMemoryFeatureFlagBits val) { return static_cast<VkPeerMemoryFeatureFlagBits>(val);}
 enum class MemoryAllocateFlagBits: uint32_t {
     DeviceMask = 1,
     DeviceAddress = 2,
     DeviceAddressCaptureReplay = 4,
 };
-inline VkMemoryAllocateFlagBits c_enum(MemoryAllocateFlagBits val) { return static_cast<VkMemoryAllocateFlagBits>(val);}
 enum class DeviceGroupPresentModeFlagBitsKHR: uint32_t {
     LocalBitKHR = 1,
     RemoteBitKHR = 2,
     SumBitKHR = 4,
     LocalMultiDeviceBitKHR = 8,
 };
-inline VkDeviceGroupPresentModeFlagBitsKHR c_enum(DeviceGroupPresentModeFlagBitsKHR val) { return static_cast<VkDeviceGroupPresentModeFlagBitsKHR>(val);}
 enum class SwapchainCreateFlagBitsKHR: uint32_t {
     SplitInstanceBindRegionsBitKHR = 1,
     ProtectedBitKHR = 2,
     MutableFormatBitKHR = 4,
 };
-inline VkSwapchainCreateFlagBitsKHR c_enum(SwapchainCreateFlagBitsKHR val) { return static_cast<VkSwapchainCreateFlagBitsKHR>(val);}
 enum class SubpassDescriptionFlagBits: uint32_t {
     PerViewAttributesBitNVX = 1,
     PerViewPositionXOnlyBitNVX = 2,
     FragmentRegionBitQCOM = 4,
     ShaderResolveBitQCOM = 8,
 };
-inline VkSubpassDescriptionFlagBits c_enum(SubpassDescriptionFlagBits val) { return static_cast<VkSubpassDescriptionFlagBits>(val);}
 enum class DebugUtilsMessageSeverityFlagBitsEXT: uint32_t {
     VerboseBitEXT = 1,
     InfoBitEXT = 16,
     WarningBitEXT = 256,
     ErrorBitEXT = 4096,
 };
-inline VkDebugUtilsMessageSeverityFlagBitsEXT c_enum(DebugUtilsMessageSeverityFlagBitsEXT val) { return static_cast<VkDebugUtilsMessageSeverityFlagBitsEXT>(val);}
 enum class DebugUtilsMessageTypeFlagBitsEXT: uint32_t {
     GeneralBitEXT = 1,
     ValidationBitEXT = 2,
     PerformanceBitEXT = 4,
 };
-inline VkDebugUtilsMessageTypeFlagBitsEXT c_enum(DebugUtilsMessageTypeFlagBitsEXT val) { return static_cast<VkDebugUtilsMessageTypeFlagBitsEXT>(val);}
 enum class DescriptorBindingFlagBits: uint32_t {
     UpdateAfterBind = 1,
     UpdateUnusedWhilePending = 2,
     PartiallyBound = 4,
     VariableDescriptorCount = 8,
 };
-inline VkDescriptorBindingFlagBits c_enum(DescriptorBindingFlagBits val) { return static_cast<VkDescriptorBindingFlagBits>(val);}
 enum class ConditionalRenderingFlagBitsEXT: uint32_t {
     InvertedBitEXT = 1,
 };
-inline VkConditionalRenderingFlagBitsEXT c_enum(ConditionalRenderingFlagBitsEXT val) { return static_cast<VkConditionalRenderingFlagBitsEXT>(val);}
 enum class ResolveModeFlagBits: uint32_t {
     None = 0,
     SampleZero = 1,
@@ -2243,7 +2131,6 @@ enum class ResolveModeFlagBits: uint32_t {
     Min = 4,
     Max = 8,
 };
-inline VkResolveModeFlagBits c_enum(ResolveModeFlagBits val) { return static_cast<VkResolveModeFlagBits>(val);}
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 enum class GeometryInstanceFlagBitsKHR: uint32_t {
     TriangleFacingCullDisableBitKHR = 1,
@@ -2251,12 +2138,10 @@ enum class GeometryInstanceFlagBitsKHR: uint32_t {
     ForceOpaqueBitKHR = 4,
     ForceNoOpaqueBitKHR = 8,
 };
-inline VkGeometryInstanceFlagBitsKHR c_enum(GeometryInstanceFlagBitsKHR val) { return static_cast<VkGeometryInstanceFlagBitsKHR>(val);}
 enum class GeometryFlagBitsKHR: uint32_t {
     OpaqueBitKHR = 1,
     NoDuplicateAnyHitInvocationBitKHR = 2,
 };
-inline VkGeometryFlagBitsKHR c_enum(GeometryFlagBitsKHR val) { return static_cast<VkGeometryFlagBitsKHR>(val);}
 enum class BuildAccelerationStructureFlagBitsKHR: uint32_t {
     AllowUpdateBitKHR = 1,
     AllowCompactionBitKHR = 2,
@@ -2264,29 +2149,24 @@ enum class BuildAccelerationStructureFlagBitsKHR: uint32_t {
     PreferFastBuildBitKHR = 8,
     LowMemoryBitKHR = 16,
 };
-inline VkBuildAccelerationStructureFlagBitsKHR c_enum(BuildAccelerationStructureFlagBitsKHR val) { return static_cast<VkBuildAccelerationStructureFlagBitsKHR>(val);}
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 enum class FramebufferCreateFlagBits: uint32_t {
     Imageless = 1,
 };
-inline VkFramebufferCreateFlagBits c_enum(FramebufferCreateFlagBits val) { return static_cast<VkFramebufferCreateFlagBits>(val);}
 enum class DeviceDiagnosticsConfigFlagBitsNV: uint32_t {
     EnableShaderDebugInfoBitNV = 1,
     EnableResourceTrackingBitNV = 2,
     EnableAutomaticCheckpointsBitNV = 4,
 };
-inline VkDeviceDiagnosticsConfigFlagBitsNV c_enum(DeviceDiagnosticsConfigFlagBitsNV val) { return static_cast<VkDeviceDiagnosticsConfigFlagBitsNV>(val);}
 enum class PipelineCreationFeedbackFlagBitsEXT: uint32_t {
     ValidBitEXT = 1,
     ApplicationPipelineCacheHitBitEXT = 2,
     BasePipelineAccelerationBitEXT = 4,
 };
-inline VkPipelineCreationFeedbackFlagBitsEXT c_enum(PipelineCreationFeedbackFlagBitsEXT val) { return static_cast<VkPipelineCreationFeedbackFlagBitsEXT>(val);}
 enum class PerformanceCounterDescriptionFlagBitsKHR: uint32_t {
     PerformanceImpactingKHR = 1,
     ConcurrentlyImpactedKHR = 2,
 };
-inline VkPerformanceCounterDescriptionFlagBitsKHR c_enum(PerformanceCounterDescriptionFlagBitsKHR val) { return static_cast<VkPerformanceCounterDescriptionFlagBitsKHR>(val);}
 enum class AcquireProfilingLockFlagBitsKHR: uint32_t {
 };
 enum class ShaderCorePropertiesFlagBitsAMD: uint32_t {
@@ -2304,7 +2184,6 @@ enum class ToolPurposeFlagBitsEXT: uint32_t {
     DebugReportingBitEXT = 32,
     DebugMarkersBitEXT = 64,
 };
-inline VkToolPurposeFlagBitsEXT c_enum(ToolPurposeFlagBitsEXT val) { return static_cast<VkToolPurposeFlagBitsEXT>(val);}
 enum class QueryPoolCreateFlagBits: uint32_t { };
 enum class PipelineLayoutCreateFlagBits: uint32_t { };
 enum class PipelineDepthStencilStateCreateFlagBits: uint32_t { };
@@ -2376,7 +2255,7 @@ enum class PipelineRasterizationConservativeStateCreateFlagBitsEXT: uint32_t { }
 enum class PipelineRasterizationStateStreamCreateFlagBitsEXT: uint32_t { };
 enum class PipelineRasterizationDepthClipStateCreateFlagBitsEXT: uint32_t { };
 
-#define DECLARE_ENUM_FLAG_OPERATORS(FLAG_TYPE, FLAG_BITS, BASE_NAME, BASE_TYPE)            \
+#define DECLARE_ENUM_FLAG_OPERATORS(FLAG_TYPE, FLAG_BITS, BASE_TYPE)                       \
                                                                                            \
 struct FLAG_TYPE {                                                                         \
     BASE_TYPE flags = static_cast<BASE_TYPE>(0);                                           \
@@ -2388,9 +2267,6 @@ struct FLAG_TYPE {                                                              
     constexpr bool operator!=(FLAG_TYPE const& right) const { return flags != right.flags;}\
     constexpr explicit operator bool() const noexcept {                                    \
       return flags != 0;                                                                   \
-    }                                                                                      \
-    constexpr explicit operator BASE_NAME() const noexcept {                               \
-        return static_cast<BASE_NAME>(flags);                                              \
     }                                                                                      \
 };                                                                                         \
 constexpr FLAG_TYPE operator|(FLAG_TYPE a, FLAG_TYPE b) noexcept {                         \
@@ -2430,638 +2306,689 @@ constexpr FLAG_TYPE operator^(FLAG_BITS a, FLAG_BITS b) noexcept {              
     return static_cast<FLAG_TYPE>(static_cast<BASE_TYPE>(a) ^ static_cast<BASE_TYPE>(b));  \
 }                                                                                          \
 
-DECLARE_ENUM_FLAG_OPERATORS(FramebufferCreateFlags, FramebufferCreateFlagBits, VkFramebufferCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(QueryPoolCreateFlags, QueryPoolCreateFlagBits, VkQueryPoolCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(RenderPassCreateFlags, RenderPassCreateFlagBits, VkRenderPassCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(SamplerCreateFlags, SamplerCreateFlagBits, VkSamplerCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineLayoutCreateFlags, PipelineLayoutCreateFlagBits, VkPipelineLayoutCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineCacheCreateFlags, PipelineCacheCreateFlagBits, VkPipelineCacheCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineDepthStencilStateCreateFlags, PipelineDepthStencilStateCreateFlagBits, VkPipelineDepthStencilStateCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineDynamicStateCreateFlags, PipelineDynamicStateCreateFlagBits, VkPipelineDynamicStateCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineColorBlendStateCreateFlags, PipelineColorBlendStateCreateFlagBits, VkPipelineColorBlendStateCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineMultisampleStateCreateFlags, PipelineMultisampleStateCreateFlagBits, VkPipelineMultisampleStateCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationStateCreateFlags, PipelineRasterizationStateCreateFlagBits, VkPipelineRasterizationStateCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineViewportStateCreateFlags, PipelineViewportStateCreateFlagBits, VkPipelineViewportStateCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineTessellationStateCreateFlags, PipelineTessellationStateCreateFlagBits, VkPipelineTessellationStateCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineInputAssemblyStateCreateFlags, PipelineInputAssemblyStateCreateFlagBits, VkPipelineInputAssemblyStateCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineVertexInputStateCreateFlags, PipelineVertexInputStateCreateFlagBits, VkPipelineVertexInputStateCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineShaderStageCreateFlags, PipelineShaderStageCreateFlagBits, VkPipelineShaderStageCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DescriptorSetLayoutCreateFlags, DescriptorSetLayoutCreateFlagBits, VkDescriptorSetLayoutCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(BufferViewCreateFlags, BufferViewCreateFlagBits, VkBufferViewCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(InstanceCreateFlags, InstanceCreateFlagBits, VkInstanceCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DeviceCreateFlags, DeviceCreateFlagBits, VkDeviceCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DeviceQueueCreateFlags, DeviceQueueCreateFlagBits, VkDeviceQueueCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(QueueFlags, QueueFlagBits, VkQueueFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(MemoryPropertyFlags, MemoryPropertyFlagBits, VkMemoryPropertyFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(MemoryHeapFlags, MemoryHeapFlagBits, VkMemoryHeapFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(AccessFlags, AccessFlagBits, VkAccessFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(BufferUsageFlags, BufferUsageFlagBits, VkBufferUsageFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(BufferCreateFlags, BufferCreateFlagBits, VkBufferCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(ShaderStageFlags, ShaderStageFlagBits, VkShaderStageFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(ImageUsageFlags, ImageUsageFlagBits, VkImageUsageFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(ImageCreateFlags, ImageCreateFlagBits, VkImageCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(ImageViewCreateFlags, ImageViewCreateFlagBits, VkImageViewCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineCreateFlags, PipelineCreateFlagBits, VkPipelineCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(ColorComponentFlags, ColorComponentFlagBits, VkColorComponentFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(FenceCreateFlags, FenceCreateFlagBits, VkFenceCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(SemaphoreCreateFlags, SemaphoreCreateFlagBits, VkSemaphoreCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(FormatFeatureFlags, FormatFeatureFlagBits, VkFormatFeatureFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(QueryControlFlags, QueryControlFlagBits, VkQueryControlFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(QueryResultFlags, QueryResultFlagBits, VkQueryResultFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(ShaderModuleCreateFlags, ShaderModuleCreateFlagBits, VkShaderModuleCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(EventCreateFlags, EventCreateFlagBits, VkEventCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(CommandPoolCreateFlags, CommandPoolCreateFlagBits, VkCommandPoolCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(CommandPoolResetFlags, CommandPoolResetFlagBits, VkCommandPoolResetFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(CommandBufferResetFlags, CommandBufferResetFlagBits, VkCommandBufferResetFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(CommandBufferUsageFlags, CommandBufferUsageFlagBits, VkCommandBufferUsageFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(QueryPipelineStatisticFlags, QueryPipelineStatisticFlagBits, VkQueryPipelineStatisticFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(MemoryMapFlags, MemoryMapFlagBits, VkMemoryMapFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(ImageAspectFlags, ImageAspectFlagBits, VkImageAspectFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(SparseMemoryBindFlags, SparseMemoryBindFlagBits, VkSparseMemoryBindFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(SparseImageFormatFlags, SparseImageFormatFlagBits, VkSparseImageFormatFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(SubpassDescriptionFlags, SubpassDescriptionFlagBits, VkSubpassDescriptionFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineStageFlags, PipelineStageFlagBits, VkPipelineStageFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(SampleCountFlags, SampleCountFlagBits, VkSampleCountFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(AttachmentDescriptionFlags, AttachmentDescriptionFlagBits, VkAttachmentDescriptionFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(StencilFaceFlags, StencilFaceFlagBits, VkStencilFaceFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(CullModeFlags, CullModeFlagBits, VkCullModeFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DescriptorPoolCreateFlags, DescriptorPoolCreateFlagBits, VkDescriptorPoolCreateFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DescriptorPoolResetFlags, DescriptorPoolResetFlagBits, VkDescriptorPoolResetFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DependencyFlags, DependencyFlagBits, VkDependencyFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(SubgroupFeatureFlags, SubgroupFeatureFlagBits, VkSubgroupFeatureFlags, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(IndirectCommandsLayoutUsageFlagsNV, IndirectCommandsLayoutUsageFlagBitsNV, VkIndirectCommandsLayoutUsageFlagsNV, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(IndirectStateFlagsNV, IndirectStateFlagBitsNV, VkIndirectStateFlagsNV, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(FramebufferCreateFlags, FramebufferCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(QueryPoolCreateFlags, QueryPoolCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(RenderPassCreateFlags, RenderPassCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(SamplerCreateFlags, SamplerCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineLayoutCreateFlags, PipelineLayoutCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineCacheCreateFlags, PipelineCacheCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineDepthStencilStateCreateFlags, PipelineDepthStencilStateCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineDynamicStateCreateFlags, PipelineDynamicStateCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineColorBlendStateCreateFlags, PipelineColorBlendStateCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineMultisampleStateCreateFlags, PipelineMultisampleStateCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationStateCreateFlags, PipelineRasterizationStateCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineViewportStateCreateFlags, PipelineViewportStateCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineTessellationStateCreateFlags, PipelineTessellationStateCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineInputAssemblyStateCreateFlags, PipelineInputAssemblyStateCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineVertexInputStateCreateFlags, PipelineVertexInputStateCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineShaderStageCreateFlags, PipelineShaderStageCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DescriptorSetLayoutCreateFlags, DescriptorSetLayoutCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(BufferViewCreateFlags, BufferViewCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(InstanceCreateFlags, InstanceCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DeviceCreateFlags, DeviceCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DeviceQueueCreateFlags, DeviceQueueCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(QueueFlags, QueueFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(MemoryPropertyFlags, MemoryPropertyFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(MemoryHeapFlags, MemoryHeapFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(AccessFlags, AccessFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(BufferUsageFlags, BufferUsageFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(BufferCreateFlags, BufferCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ShaderStageFlags, ShaderStageFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ImageUsageFlags, ImageUsageFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ImageCreateFlags, ImageCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ImageViewCreateFlags, ImageViewCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineCreateFlags, PipelineCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ColorComponentFlags, ColorComponentFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(FenceCreateFlags, FenceCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(SemaphoreCreateFlags, SemaphoreCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(FormatFeatureFlags, FormatFeatureFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(QueryControlFlags, QueryControlFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(QueryResultFlags, QueryResultFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ShaderModuleCreateFlags, ShaderModuleCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(EventCreateFlags, EventCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(CommandPoolCreateFlags, CommandPoolCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(CommandPoolResetFlags, CommandPoolResetFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(CommandBufferResetFlags, CommandBufferResetFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(CommandBufferUsageFlags, CommandBufferUsageFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(QueryPipelineStatisticFlags, QueryPipelineStatisticFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(MemoryMapFlags, MemoryMapFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ImageAspectFlags, ImageAspectFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(SparseMemoryBindFlags, SparseMemoryBindFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(SparseImageFormatFlags, SparseImageFormatFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(SubpassDescriptionFlags, SubpassDescriptionFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineStageFlags, PipelineStageFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(SampleCountFlags, SampleCountFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(AttachmentDescriptionFlags, AttachmentDescriptionFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(StencilFaceFlags, StencilFaceFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(CullModeFlags, CullModeFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DescriptorPoolCreateFlags, DescriptorPoolCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DescriptorPoolResetFlags, DescriptorPoolResetFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DependencyFlags, DependencyFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(SubgroupFeatureFlags, SubgroupFeatureFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(IndirectCommandsLayoutUsageFlagsNV, IndirectCommandsLayoutUsageFlagBitsNV, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(IndirectStateFlagsNV, IndirectStateFlagBitsNV, uint32_t)
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-DECLARE_ENUM_FLAG_OPERATORS(GeometryFlagsKHR, GeometryFlagBitsKHR, VkGeometryFlagsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(GeometryFlagsKHR, GeometryFlagBitsKHR, uint32_t)
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using GeometryFlagsNV = GeometryFlagsKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-DECLARE_ENUM_FLAG_OPERATORS(GeometryInstanceFlagsKHR, GeometryInstanceFlagBitsKHR, VkGeometryInstanceFlagsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(GeometryInstanceFlagsKHR, GeometryInstanceFlagBitsKHR, uint32_t)
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using GeometryInstanceFlagsNV = GeometryInstanceFlagsKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-DECLARE_ENUM_FLAG_OPERATORS(BuildAccelerationStructureFlagsKHR, BuildAccelerationStructureFlagBitsKHR, VkBuildAccelerationStructureFlagsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(BuildAccelerationStructureFlagsKHR, BuildAccelerationStructureFlagBitsKHR, uint32_t)
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using BuildAccelerationStructureFlagsNV = BuildAccelerationStructureFlagsKHR;
-DECLARE_ENUM_FLAG_OPERATORS(PrivateDataSlotCreateFlagsEXT, PrivateDataSlotCreateFlagBitsEXT, VkPrivateDataSlotCreateFlagsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DescriptorUpdateTemplateCreateFlags, DescriptorUpdateTemplateCreateFlagBits, VkDescriptorUpdateTemplateCreateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PrivateDataSlotCreateFlagsEXT, PrivateDataSlotCreateFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DescriptorUpdateTemplateCreateFlags, DescriptorUpdateTemplateCreateFlagBits, uint32_t)
 using DescriptorUpdateTemplateCreateFlagsKHR = DescriptorUpdateTemplateCreateFlags;
-DECLARE_ENUM_FLAG_OPERATORS(PipelineCreationFeedbackFlagsEXT, PipelineCreationFeedbackFlagBitsEXT, VkPipelineCreationFeedbackFlagsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PerformanceCounterDescriptionFlagsKHR, PerformanceCounterDescriptionFlagBitsKHR, VkPerformanceCounterDescriptionFlagsKHR, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(AcquireProfilingLockFlagsKHR, AcquireProfilingLockFlagBitsKHR, VkAcquireProfilingLockFlagsKHR, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(SemaphoreWaitFlags, SemaphoreWaitFlagBits, VkSemaphoreWaitFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineCreationFeedbackFlagsEXT, PipelineCreationFeedbackFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PerformanceCounterDescriptionFlagsKHR, PerformanceCounterDescriptionFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(AcquireProfilingLockFlagsKHR, AcquireProfilingLockFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(SemaphoreWaitFlags, SemaphoreWaitFlagBits, uint32_t)
 using SemaphoreWaitFlagsKHR = SemaphoreWaitFlags;
-DECLARE_ENUM_FLAG_OPERATORS(PipelineCompilerControlFlagsAMD, PipelineCompilerControlFlagBitsAMD, VkPipelineCompilerControlFlagsAMD, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(ShaderCorePropertiesFlagsAMD, ShaderCorePropertiesFlagBitsAMD, VkShaderCorePropertiesFlagsAMD, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DeviceDiagnosticsConfigFlagsNV, DeviceDiagnosticsConfigFlagBitsNV, VkDeviceDiagnosticsConfigFlagsNV, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(CompositeAlphaFlagsKHR, CompositeAlphaFlagBitsKHR, VkCompositeAlphaFlagsKHR, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DisplayPlaneAlphaFlagsKHR, DisplayPlaneAlphaFlagBitsKHR, VkDisplayPlaneAlphaFlagsKHR, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(SurfaceTransformFlagsKHR, SurfaceTransformFlagBitsKHR, VkSurfaceTransformFlagsKHR, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(SwapchainCreateFlagsKHR, SwapchainCreateFlagBitsKHR, VkSwapchainCreateFlagsKHR, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DisplayModeCreateFlagsKHR, DisplayModeCreateFlagBitsKHR, VkDisplayModeCreateFlagsKHR, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DisplaySurfaceCreateFlagsKHR, DisplaySurfaceCreateFlagBitsKHR, VkDisplaySurfaceCreateFlagsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineCompilerControlFlagsAMD, PipelineCompilerControlFlagBitsAMD, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ShaderCorePropertiesFlagsAMD, ShaderCorePropertiesFlagBitsAMD, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DeviceDiagnosticsConfigFlagsNV, DeviceDiagnosticsConfigFlagBitsNV, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(CompositeAlphaFlagsKHR, CompositeAlphaFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DisplayPlaneAlphaFlagsKHR, DisplayPlaneAlphaFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(SurfaceTransformFlagsKHR, SurfaceTransformFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(SwapchainCreateFlagsKHR, SwapchainCreateFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DisplayModeCreateFlagsKHR, DisplayModeCreateFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DisplaySurfaceCreateFlagsKHR, DisplaySurfaceCreateFlagBitsKHR, uint32_t)
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
-DECLARE_ENUM_FLAG_OPERATORS(AndroidSurfaceCreateFlagsKHR, AndroidSurfaceCreateFlagBitsKHR, VkAndroidSurfaceCreateFlagsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(AndroidSurfaceCreateFlagsKHR, AndroidSurfaceCreateFlagBitsKHR, uint32_t)
 #endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
 #if defined(VK_USE_PLATFORM_VI_NN)
-DECLARE_ENUM_FLAG_OPERATORS(ViSurfaceCreateFlagsNN, ViSurfaceCreateFlagBitsNN, VkViSurfaceCreateFlagsNN, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ViSurfaceCreateFlagsNN, ViSurfaceCreateFlagBitsNN, uint32_t)
 #endif // defined(VK_USE_PLATFORM_VI_NN)
 #if defined(VK_USE_PLATFORM_WAYLAND_KHR)
-DECLARE_ENUM_FLAG_OPERATORS(WaylandSurfaceCreateFlagsKHR, WaylandSurfaceCreateFlagBitsKHR, VkWaylandSurfaceCreateFlagsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(WaylandSurfaceCreateFlagsKHR, WaylandSurfaceCreateFlagBitsKHR, uint32_t)
 #endif // defined(VK_USE_PLATFORM_WAYLAND_KHR)
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
-DECLARE_ENUM_FLAG_OPERATORS(Win32SurfaceCreateFlagsKHR, Win32SurfaceCreateFlagBitsKHR, VkWin32SurfaceCreateFlagsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(Win32SurfaceCreateFlagsKHR, Win32SurfaceCreateFlagBitsKHR, uint32_t)
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 #if defined(VK_USE_PLATFORM_XLIB_KHR)
-DECLARE_ENUM_FLAG_OPERATORS(XlibSurfaceCreateFlagsKHR, XlibSurfaceCreateFlagBitsKHR, VkXlibSurfaceCreateFlagsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(XlibSurfaceCreateFlagsKHR, XlibSurfaceCreateFlagBitsKHR, uint32_t)
 #endif // defined(VK_USE_PLATFORM_XLIB_KHR)
 #if defined(VK_USE_PLATFORM_XCB_KHR)
-DECLARE_ENUM_FLAG_OPERATORS(XcbSurfaceCreateFlagsKHR, XcbSurfaceCreateFlagBitsKHR, VkXcbSurfaceCreateFlagsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(XcbSurfaceCreateFlagsKHR, XcbSurfaceCreateFlagBitsKHR, uint32_t)
 #endif // defined(VK_USE_PLATFORM_XCB_KHR)
 #if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
-DECLARE_ENUM_FLAG_OPERATORS(DirectFBSurfaceCreateFlagsEXT, DirectFBSurfaceCreateFlagBitsEXT, VkDirectFBSurfaceCreateFlagsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DirectFBSurfaceCreateFlagsEXT, DirectFBSurfaceCreateFlagBitsEXT, uint32_t)
 #endif // defined(VK_USE_PLATFORM_DIRECTFB_EXT)
 #if defined(VK_USE_PLATFORM_IOS_MVK)
-DECLARE_ENUM_FLAG_OPERATORS(IOSSurfaceCreateFlagsMVK, IOSSurfaceCreateFlagBitsMVK, VkIOSSurfaceCreateFlagsMVK, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(IOSSurfaceCreateFlagsMVK, IOSSurfaceCreateFlagBitsMVK, uint32_t)
 #endif // defined(VK_USE_PLATFORM_IOS_MVK)
 #if defined(VK_USE_PLATFORM_MACOS_MVK)
-DECLARE_ENUM_FLAG_OPERATORS(MacOSSurfaceCreateFlagsMVK, MacOSSurfaceCreateFlagBitsMVK, VkMacOSSurfaceCreateFlagsMVK, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(MacOSSurfaceCreateFlagsMVK, MacOSSurfaceCreateFlagBitsMVK, uint32_t)
 #endif // defined(VK_USE_PLATFORM_MACOS_MVK)
 #if defined(VK_USE_PLATFORM_METAL_EXT)
-DECLARE_ENUM_FLAG_OPERATORS(MetalSurfaceCreateFlagsEXT, MetalSurfaceCreateFlagBitsEXT, VkMetalSurfaceCreateFlagsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(MetalSurfaceCreateFlagsEXT, MetalSurfaceCreateFlagBitsEXT, uint32_t)
 #endif // defined(VK_USE_PLATFORM_METAL_EXT)
 #if defined(VK_USE_PLATFORM_FUCHSIA)
-DECLARE_ENUM_FLAG_OPERATORS(ImagePipeSurfaceCreateFlagsFUCHSIA, ImagePipeSurfaceCreateFlagBitsFUCHSIA, VkImagePipeSurfaceCreateFlagsFUCHSIA, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ImagePipeSurfaceCreateFlagsFUCHSIA, ImagePipeSurfaceCreateFlagBitsFUCHSIA, uint32_t)
 #endif // defined(VK_USE_PLATFORM_FUCHSIA)
 #if defined(VK_USE_PLATFORM_GGP)
-DECLARE_ENUM_FLAG_OPERATORS(StreamDescriptorSurfaceCreateFlagsGGP, StreamDescriptorSurfaceCreateFlagBitsGGP, VkStreamDescriptorSurfaceCreateFlagsGGP, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(StreamDescriptorSurfaceCreateFlagsGGP, StreamDescriptorSurfaceCreateFlagBitsGGP, uint32_t)
 #endif // defined(VK_USE_PLATFORM_GGP)
-DECLARE_ENUM_FLAG_OPERATORS(HeadlessSurfaceCreateFlagsEXT, HeadlessSurfaceCreateFlagBitsEXT, VkHeadlessSurfaceCreateFlagsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PeerMemoryFeatureFlags, PeerMemoryFeatureFlagBits, VkPeerMemoryFeatureFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(HeadlessSurfaceCreateFlagsEXT, HeadlessSurfaceCreateFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PeerMemoryFeatureFlags, PeerMemoryFeatureFlagBits, uint32_t)
 using PeerMemoryFeatureFlagsKHR = PeerMemoryFeatureFlags;
-DECLARE_ENUM_FLAG_OPERATORS(MemoryAllocateFlags, MemoryAllocateFlagBits, VkMemoryAllocateFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(MemoryAllocateFlags, MemoryAllocateFlagBits, uint32_t)
 using MemoryAllocateFlagsKHR = MemoryAllocateFlags;
-DECLARE_ENUM_FLAG_OPERATORS(DeviceGroupPresentModeFlagsKHR, DeviceGroupPresentModeFlagBitsKHR, VkDeviceGroupPresentModeFlagsKHR, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DebugReportFlagsEXT, DebugReportFlagBitsEXT, VkDebugReportFlagsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(CommandPoolTrimFlags, CommandPoolTrimFlagBits, VkCommandPoolTrimFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DeviceGroupPresentModeFlagsKHR, DeviceGroupPresentModeFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DebugReportFlagsEXT, DebugReportFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(CommandPoolTrimFlags, CommandPoolTrimFlagBits, uint32_t)
 using CommandPoolTrimFlagsKHR = CommandPoolTrimFlags;
-DECLARE_ENUM_FLAG_OPERATORS(ExternalMemoryHandleTypeFlagsNV, ExternalMemoryHandleTypeFlagBitsNV, VkExternalMemoryHandleTypeFlagsNV, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(ExternalMemoryFeatureFlagsNV, ExternalMemoryFeatureFlagBitsNV, VkExternalMemoryFeatureFlagsNV, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(ExternalMemoryHandleTypeFlags, ExternalMemoryHandleTypeFlagBits, VkExternalMemoryHandleTypeFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ExternalMemoryHandleTypeFlagsNV, ExternalMemoryHandleTypeFlagBitsNV, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ExternalMemoryFeatureFlagsNV, ExternalMemoryFeatureFlagBitsNV, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ExternalMemoryHandleTypeFlags, ExternalMemoryHandleTypeFlagBits, uint32_t)
 using ExternalMemoryHandleTypeFlagsKHR = ExternalMemoryHandleTypeFlags;
-DECLARE_ENUM_FLAG_OPERATORS(ExternalMemoryFeatureFlags, ExternalMemoryFeatureFlagBits, VkExternalMemoryFeatureFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ExternalMemoryFeatureFlags, ExternalMemoryFeatureFlagBits, uint32_t)
 using ExternalMemoryFeatureFlagsKHR = ExternalMemoryFeatureFlags;
-DECLARE_ENUM_FLAG_OPERATORS(ExternalSemaphoreHandleTypeFlags, ExternalSemaphoreHandleTypeFlagBits, VkExternalSemaphoreHandleTypeFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ExternalSemaphoreHandleTypeFlags, ExternalSemaphoreHandleTypeFlagBits, uint32_t)
 using ExternalSemaphoreHandleTypeFlagsKHR = ExternalSemaphoreHandleTypeFlags;
-DECLARE_ENUM_FLAG_OPERATORS(ExternalSemaphoreFeatureFlags, ExternalSemaphoreFeatureFlagBits, VkExternalSemaphoreFeatureFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ExternalSemaphoreFeatureFlags, ExternalSemaphoreFeatureFlagBits, uint32_t)
 using ExternalSemaphoreFeatureFlagsKHR = ExternalSemaphoreFeatureFlags;
-DECLARE_ENUM_FLAG_OPERATORS(SemaphoreImportFlags, SemaphoreImportFlagBits, VkSemaphoreImportFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(SemaphoreImportFlags, SemaphoreImportFlagBits, uint32_t)
 using SemaphoreImportFlagsKHR = SemaphoreImportFlags;
-DECLARE_ENUM_FLAG_OPERATORS(ExternalFenceHandleTypeFlags, ExternalFenceHandleTypeFlagBits, VkExternalFenceHandleTypeFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ExternalFenceHandleTypeFlags, ExternalFenceHandleTypeFlagBits, uint32_t)
 using ExternalFenceHandleTypeFlagsKHR = ExternalFenceHandleTypeFlags;
-DECLARE_ENUM_FLAG_OPERATORS(ExternalFenceFeatureFlags, ExternalFenceFeatureFlagBits, VkExternalFenceFeatureFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ExternalFenceFeatureFlags, ExternalFenceFeatureFlagBits, uint32_t)
 using ExternalFenceFeatureFlagsKHR = ExternalFenceFeatureFlags;
-DECLARE_ENUM_FLAG_OPERATORS(FenceImportFlags, FenceImportFlagBits, VkFenceImportFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(FenceImportFlags, FenceImportFlagBits, uint32_t)
 using FenceImportFlagsKHR = FenceImportFlags;
-DECLARE_ENUM_FLAG_OPERATORS(SurfaceCounterFlagsEXT, SurfaceCounterFlagBitsEXT, VkSurfaceCounterFlagsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineViewportSwizzleStateCreateFlagsNV, PipelineViewportSwizzleStateCreateFlagBitsNV, VkPipelineViewportSwizzleStateCreateFlagsNV, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineDiscardRectangleStateCreateFlagsEXT, PipelineDiscardRectangleStateCreateFlagBitsEXT, VkPipelineDiscardRectangleStateCreateFlagsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineCoverageToColorStateCreateFlagsNV, PipelineCoverageToColorStateCreateFlagBitsNV, VkPipelineCoverageToColorStateCreateFlagsNV, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineCoverageModulationStateCreateFlagsNV, PipelineCoverageModulationStateCreateFlagBitsNV, VkPipelineCoverageModulationStateCreateFlagsNV, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineCoverageReductionStateCreateFlagsNV, PipelineCoverageReductionStateCreateFlagBitsNV, VkPipelineCoverageReductionStateCreateFlagsNV, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(ValidationCacheCreateFlagsEXT, ValidationCacheCreateFlagBitsEXT, VkValidationCacheCreateFlagsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DebugUtilsMessageSeverityFlagsEXT, DebugUtilsMessageSeverityFlagBitsEXT, VkDebugUtilsMessageSeverityFlagsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DebugUtilsMessageTypeFlagsEXT, DebugUtilsMessageTypeFlagBitsEXT, VkDebugUtilsMessageTypeFlagsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DebugUtilsMessengerCreateFlagsEXT, DebugUtilsMessengerCreateFlagBitsEXT, VkDebugUtilsMessengerCreateFlagsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DebugUtilsMessengerCallbackDataFlagsEXT, DebugUtilsMessengerCallbackDataFlagBitsEXT, VkDebugUtilsMessengerCallbackDataFlagsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DeviceMemoryReportFlagsEXT, DeviceMemoryReportFlagBitsEXT, VkDeviceMemoryReportFlagsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationConservativeStateCreateFlagsEXT, PipelineRasterizationConservativeStateCreateFlagBitsEXT, VkPipelineRasterizationConservativeStateCreateFlagsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DescriptorBindingFlags, DescriptorBindingFlagBits, VkDescriptorBindingFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(SurfaceCounterFlagsEXT, SurfaceCounterFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineViewportSwizzleStateCreateFlagsNV, PipelineViewportSwizzleStateCreateFlagBitsNV, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineDiscardRectangleStateCreateFlagsEXT, PipelineDiscardRectangleStateCreateFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineCoverageToColorStateCreateFlagsNV, PipelineCoverageToColorStateCreateFlagBitsNV, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineCoverageModulationStateCreateFlagsNV, PipelineCoverageModulationStateCreateFlagBitsNV, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineCoverageReductionStateCreateFlagsNV, PipelineCoverageReductionStateCreateFlagBitsNV, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ValidationCacheCreateFlagsEXT, ValidationCacheCreateFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DebugUtilsMessageSeverityFlagsEXT, DebugUtilsMessageSeverityFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DebugUtilsMessageTypeFlagsEXT, DebugUtilsMessageTypeFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DebugUtilsMessengerCreateFlagsEXT, DebugUtilsMessengerCreateFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DebugUtilsMessengerCallbackDataFlagsEXT, DebugUtilsMessengerCallbackDataFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DeviceMemoryReportFlagsEXT, DeviceMemoryReportFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationConservativeStateCreateFlagsEXT, PipelineRasterizationConservativeStateCreateFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DescriptorBindingFlags, DescriptorBindingFlagBits, uint32_t)
 using DescriptorBindingFlagsEXT = DescriptorBindingFlags;
-DECLARE_ENUM_FLAG_OPERATORS(ConditionalRenderingFlagsEXT, ConditionalRenderingFlagBitsEXT, VkConditionalRenderingFlagsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(ResolveModeFlags, ResolveModeFlagBits, VkResolveModeFlags, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ConditionalRenderingFlagsEXT, ConditionalRenderingFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ResolveModeFlags, ResolveModeFlagBits, uint32_t)
 using ResolveModeFlagsKHR = ResolveModeFlags;
-DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationStateStreamCreateFlagsEXT, PipelineRasterizationStateStreamCreateFlagBitsEXT, VkPipelineRasterizationStateStreamCreateFlagsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationDepthClipStateCreateFlagsEXT, PipelineRasterizationDepthClipStateCreateFlagBitsEXT, VkPipelineRasterizationDepthClipStateCreateFlagsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(ToolPurposeFlagsEXT, ToolPurposeFlagBitsEXT, VkToolPurposeFlagsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationStateStreamCreateFlagsEXT, PipelineRasterizationStateStreamCreateFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationDepthClipStateCreateFlagsEXT, PipelineRasterizationDepthClipStateCreateFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ToolPurposeFlagsEXT, ToolPurposeFlagBitsEXT, uint32_t)
+VK_DEFINE_HANDLE(VkInstance)
+VK_DEFINE_HANDLE(VkPhysicalDevice)
+VK_DEFINE_HANDLE(VkDevice)
+VK_DEFINE_HANDLE(VkQueue)
+VK_DEFINE_HANDLE(VkCommandBuffer)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDeviceMemory)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkCommandPool)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkBuffer)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkBufferView)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkImage)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkImageView)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkShaderModule)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkPipeline)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkPipelineLayout)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkSampler)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDescriptorSet)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDescriptorSetLayout)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDescriptorPool)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkFence)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkSemaphore)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkEvent)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkQueryPool)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkFramebuffer)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkRenderPass)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkPipelineCache)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkIndirectCommandsLayoutNV)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDescriptorUpdateTemplate)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkSamplerYcbcrConversion)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkValidationCacheEXT)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkAccelerationStructureKHR)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkPerformanceConfigurationINTEL)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDeferredOperationKHR)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkPrivateDataSlotEXT)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDisplayKHR)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDisplayModeKHR)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkSurfaceKHR)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkSwapchainKHR)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDebugReportCallbackEXT)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDebugUtilsMessengerEXT)
 class Instance {
-    VkInstance handle = VK_NULL_HANDLE;
+    VkInstance handle = 0;
     public:
     explicit Instance() = default;
     explicit Instance(VkInstance handle):handle(handle){}
     Instance([[maybe_unused]] std::nullptr_t none){}
     VkInstance get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class PhysicalDevice {
-    VkPhysicalDevice handle = VK_NULL_HANDLE;
+    VkPhysicalDevice handle = 0;
     public:
     explicit PhysicalDevice() = default;
     explicit PhysicalDevice(VkPhysicalDevice handle):handle(handle){}
     PhysicalDevice([[maybe_unused]] std::nullptr_t none){}
     VkPhysicalDevice get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class Device {
-    VkDevice handle = VK_NULL_HANDLE;
+    VkDevice handle = 0;
     public:
     explicit Device() = default;
     explicit Device(VkDevice handle):handle(handle){}
     Device([[maybe_unused]] std::nullptr_t none){}
     VkDevice get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class Queue {
-    VkQueue handle = VK_NULL_HANDLE;
+    VkQueue handle = 0;
     public:
     explicit Queue() = default;
     explicit Queue(VkQueue handle):handle(handle){}
     Queue([[maybe_unused]] std::nullptr_t none){}
     VkQueue get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class CommandBuffer {
-    VkCommandBuffer handle = VK_NULL_HANDLE;
+    VkCommandBuffer handle = 0;
     public:
     explicit CommandBuffer() = default;
     explicit CommandBuffer(VkCommandBuffer handle):handle(handle){}
     CommandBuffer([[maybe_unused]] std::nullptr_t none){}
     VkCommandBuffer get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class DeviceMemory {
-    VkDeviceMemory handle = VK_NULL_HANDLE;
+    VkDeviceMemory handle = 0;
     public:
     explicit DeviceMemory() = default;
     explicit DeviceMemory(VkDeviceMemory handle):handle(handle){}
     DeviceMemory([[maybe_unused]] std::nullptr_t none){}
     VkDeviceMemory get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class CommandPool {
-    VkCommandPool handle = VK_NULL_HANDLE;
+    VkCommandPool handle = 0;
     public:
     explicit CommandPool() = default;
     explicit CommandPool(VkCommandPool handle):handle(handle){}
     CommandPool([[maybe_unused]] std::nullptr_t none){}
     VkCommandPool get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class Buffer {
-    VkBuffer handle = VK_NULL_HANDLE;
+    VkBuffer handle = 0;
     public:
     explicit Buffer() = default;
     explicit Buffer(VkBuffer handle):handle(handle){}
     Buffer([[maybe_unused]] std::nullptr_t none){}
     VkBuffer get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class BufferView {
-    VkBufferView handle = VK_NULL_HANDLE;
+    VkBufferView handle = 0;
     public:
     explicit BufferView() = default;
     explicit BufferView(VkBufferView handle):handle(handle){}
     BufferView([[maybe_unused]] std::nullptr_t none){}
     VkBufferView get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class Image {
-    VkImage handle = VK_NULL_HANDLE;
+    VkImage handle = 0;
     public:
     explicit Image() = default;
     explicit Image(VkImage handle):handle(handle){}
     Image([[maybe_unused]] std::nullptr_t none){}
     VkImage get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class ImageView {
-    VkImageView handle = VK_NULL_HANDLE;
+    VkImageView handle = 0;
     public:
     explicit ImageView() = default;
     explicit ImageView(VkImageView handle):handle(handle){}
     ImageView([[maybe_unused]] std::nullptr_t none){}
     VkImageView get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class ShaderModule {
-    VkShaderModule handle = VK_NULL_HANDLE;
+    VkShaderModule handle = 0;
     public:
     explicit ShaderModule() = default;
     explicit ShaderModule(VkShaderModule handle):handle(handle){}
     ShaderModule([[maybe_unused]] std::nullptr_t none){}
     VkShaderModule get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class Pipeline {
-    VkPipeline handle = VK_NULL_HANDLE;
+    VkPipeline handle = 0;
     public:
     explicit Pipeline() = default;
     explicit Pipeline(VkPipeline handle):handle(handle){}
     Pipeline([[maybe_unused]] std::nullptr_t none){}
     VkPipeline get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class PipelineLayout {
-    VkPipelineLayout handle = VK_NULL_HANDLE;
+    VkPipelineLayout handle = 0;
     public:
     explicit PipelineLayout() = default;
     explicit PipelineLayout(VkPipelineLayout handle):handle(handle){}
     PipelineLayout([[maybe_unused]] std::nullptr_t none){}
     VkPipelineLayout get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class Sampler {
-    VkSampler handle = VK_NULL_HANDLE;
+    VkSampler handle = 0;
     public:
     explicit Sampler() = default;
     explicit Sampler(VkSampler handle):handle(handle){}
     Sampler([[maybe_unused]] std::nullptr_t none){}
     VkSampler get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class DescriptorSet {
-    VkDescriptorSet handle = VK_NULL_HANDLE;
+    VkDescriptorSet handle = 0;
     public:
     explicit DescriptorSet() = default;
     explicit DescriptorSet(VkDescriptorSet handle):handle(handle){}
     DescriptorSet([[maybe_unused]] std::nullptr_t none){}
     VkDescriptorSet get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class DescriptorSetLayout {
-    VkDescriptorSetLayout handle = VK_NULL_HANDLE;
+    VkDescriptorSetLayout handle = 0;
     public:
     explicit DescriptorSetLayout() = default;
     explicit DescriptorSetLayout(VkDescriptorSetLayout handle):handle(handle){}
     DescriptorSetLayout([[maybe_unused]] std::nullptr_t none){}
     VkDescriptorSetLayout get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class DescriptorPool {
-    VkDescriptorPool handle = VK_NULL_HANDLE;
+    VkDescriptorPool handle = 0;
     public:
     explicit DescriptorPool() = default;
     explicit DescriptorPool(VkDescriptorPool handle):handle(handle){}
     DescriptorPool([[maybe_unused]] std::nullptr_t none){}
     VkDescriptorPool get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class Fence {
-    VkFence handle = VK_NULL_HANDLE;
+    VkFence handle = 0;
     public:
     explicit Fence() = default;
     explicit Fence(VkFence handle):handle(handle){}
     Fence([[maybe_unused]] std::nullptr_t none){}
     VkFence get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class Semaphore {
-    VkSemaphore handle = VK_NULL_HANDLE;
+    VkSemaphore handle = 0;
     public:
     explicit Semaphore() = default;
     explicit Semaphore(VkSemaphore handle):handle(handle){}
     Semaphore([[maybe_unused]] std::nullptr_t none){}
     VkSemaphore get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class Event {
-    VkEvent handle = VK_NULL_HANDLE;
+    VkEvent handle = 0;
     public:
     explicit Event() = default;
     explicit Event(VkEvent handle):handle(handle){}
     Event([[maybe_unused]] std::nullptr_t none){}
     VkEvent get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class QueryPool {
-    VkQueryPool handle = VK_NULL_HANDLE;
+    VkQueryPool handle = 0;
     public:
     explicit QueryPool() = default;
     explicit QueryPool(VkQueryPool handle):handle(handle){}
     QueryPool([[maybe_unused]] std::nullptr_t none){}
     VkQueryPool get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class Framebuffer {
-    VkFramebuffer handle = VK_NULL_HANDLE;
+    VkFramebuffer handle = 0;
     public:
     explicit Framebuffer() = default;
     explicit Framebuffer(VkFramebuffer handle):handle(handle){}
     Framebuffer([[maybe_unused]] std::nullptr_t none){}
     VkFramebuffer get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class RenderPass {
-    VkRenderPass handle = VK_NULL_HANDLE;
+    VkRenderPass handle = 0;
     public:
     explicit RenderPass() = default;
     explicit RenderPass(VkRenderPass handle):handle(handle){}
     RenderPass([[maybe_unused]] std::nullptr_t none){}
     VkRenderPass get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class PipelineCache {
-    VkPipelineCache handle = VK_NULL_HANDLE;
+    VkPipelineCache handle = 0;
     public:
     explicit PipelineCache() = default;
     explicit PipelineCache(VkPipelineCache handle):handle(handle){}
     PipelineCache([[maybe_unused]] std::nullptr_t none){}
     VkPipelineCache get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class IndirectCommandsLayoutNV {
-    VkIndirectCommandsLayoutNV handle = VK_NULL_HANDLE;
+    VkIndirectCommandsLayoutNV handle = 0;
     public:
     explicit IndirectCommandsLayoutNV() = default;
     explicit IndirectCommandsLayoutNV(VkIndirectCommandsLayoutNV handle):handle(handle){}
     IndirectCommandsLayoutNV([[maybe_unused]] std::nullptr_t none){}
     VkIndirectCommandsLayoutNV get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class DescriptorUpdateTemplate {
-    VkDescriptorUpdateTemplate handle = VK_NULL_HANDLE;
+    VkDescriptorUpdateTemplate handle = 0;
     public:
     explicit DescriptorUpdateTemplate() = default;
     explicit DescriptorUpdateTemplate(VkDescriptorUpdateTemplate handle):handle(handle){}
     DescriptorUpdateTemplate([[maybe_unused]] std::nullptr_t none){}
     VkDescriptorUpdateTemplate get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 using DescriptorUpdateTemplateKHR = DescriptorUpdateTemplate;
+using VkDescriptorUpdateTemplateKHR = DescriptorUpdateTemplateKHR;
 class SamplerYcbcrConversion {
-    VkSamplerYcbcrConversion handle = VK_NULL_HANDLE;
+    VkSamplerYcbcrConversion handle = 0;
     public:
     explicit SamplerYcbcrConversion() = default;
     explicit SamplerYcbcrConversion(VkSamplerYcbcrConversion handle):handle(handle){}
     SamplerYcbcrConversion([[maybe_unused]] std::nullptr_t none){}
     VkSamplerYcbcrConversion get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 using SamplerYcbcrConversionKHR = SamplerYcbcrConversion;
+using VkSamplerYcbcrConversionKHR = SamplerYcbcrConversionKHR;
 class ValidationCacheEXT {
-    VkValidationCacheEXT handle = VK_NULL_HANDLE;
+    VkValidationCacheEXT handle = 0;
     public:
     explicit ValidationCacheEXT() = default;
     explicit ValidationCacheEXT(VkValidationCacheEXT handle):handle(handle){}
     ValidationCacheEXT([[maybe_unused]] std::nullptr_t none){}
     VkValidationCacheEXT get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class AccelerationStructureKHR {
-    VkAccelerationStructureKHR handle = VK_NULL_HANDLE;
+    VkAccelerationStructureKHR handle = 0;
     public:
     explicit AccelerationStructureKHR() = default;
     explicit AccelerationStructureKHR(VkAccelerationStructureKHR handle):handle(handle){}
     AccelerationStructureKHR([[maybe_unused]] std::nullptr_t none){}
     VkAccelerationStructureKHR get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 using AccelerationStructureNV = AccelerationStructureKHR;
+using VkAccelerationStructureNV = AccelerationStructureNV;
 class PerformanceConfigurationINTEL {
-    VkPerformanceConfigurationINTEL handle = VK_NULL_HANDLE;
+    VkPerformanceConfigurationINTEL handle = 0;
     public:
     explicit PerformanceConfigurationINTEL() = default;
     explicit PerformanceConfigurationINTEL(VkPerformanceConfigurationINTEL handle):handle(handle){}
     PerformanceConfigurationINTEL([[maybe_unused]] std::nullptr_t none){}
     VkPerformanceConfigurationINTEL get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class DeferredOperationKHR {
-    VkDeferredOperationKHR handle = VK_NULL_HANDLE;
+    VkDeferredOperationKHR handle = 0;
     public:
     explicit DeferredOperationKHR() = default;
     explicit DeferredOperationKHR(VkDeferredOperationKHR handle):handle(handle){}
     DeferredOperationKHR([[maybe_unused]] std::nullptr_t none){}
     VkDeferredOperationKHR get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class PrivateDataSlotEXT {
-    VkPrivateDataSlotEXT handle = VK_NULL_HANDLE;
+    VkPrivateDataSlotEXT handle = 0;
     public:
     explicit PrivateDataSlotEXT() = default;
     explicit PrivateDataSlotEXT(VkPrivateDataSlotEXT handle):handle(handle){}
     PrivateDataSlotEXT([[maybe_unused]] std::nullptr_t none){}
     VkPrivateDataSlotEXT get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class DisplayKHR {
-    VkDisplayKHR handle = VK_NULL_HANDLE;
+    VkDisplayKHR handle = 0;
     public:
     explicit DisplayKHR() = default;
     explicit DisplayKHR(VkDisplayKHR handle):handle(handle){}
     DisplayKHR([[maybe_unused]] std::nullptr_t none){}
     VkDisplayKHR get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class DisplayModeKHR {
-    VkDisplayModeKHR handle = VK_NULL_HANDLE;
+    VkDisplayModeKHR handle = 0;
     public:
     explicit DisplayModeKHR() = default;
     explicit DisplayModeKHR(VkDisplayModeKHR handle):handle(handle){}
     DisplayModeKHR([[maybe_unused]] std::nullptr_t none){}
     VkDisplayModeKHR get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class SurfaceKHR {
-    VkSurfaceKHR handle = VK_NULL_HANDLE;
+    VkSurfaceKHR handle = 0;
     public:
     explicit SurfaceKHR() = default;
     explicit SurfaceKHR(VkSurfaceKHR handle):handle(handle){}
     SurfaceKHR([[maybe_unused]] std::nullptr_t none){}
     VkSurfaceKHR get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class SwapchainKHR {
-    VkSwapchainKHR handle = VK_NULL_HANDLE;
+    VkSwapchainKHR handle = 0;
     public:
     explicit SwapchainKHR() = default;
     explicit SwapchainKHR(VkSwapchainKHR handle):handle(handle){}
     SwapchainKHR([[maybe_unused]] std::nullptr_t none){}
     VkSwapchainKHR get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class DebugReportCallbackEXT {
-    VkDebugReportCallbackEXT handle = VK_NULL_HANDLE;
+    VkDebugReportCallbackEXT handle = 0;
     public:
     explicit DebugReportCallbackEXT() = default;
     explicit DebugReportCallbackEXT(VkDebugReportCallbackEXT handle):handle(handle){}
     DebugReportCallbackEXT([[maybe_unused]] std::nullptr_t none){}
     VkDebugReportCallbackEXT get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
 class DebugUtilsMessengerEXT {
-    VkDebugUtilsMessengerEXT handle = VK_NULL_HANDLE;
+    VkDebugUtilsMessengerEXT handle = 0;
     public:
     explicit DebugUtilsMessengerEXT() = default;
     explicit DebugUtilsMessengerEXT(VkDebugUtilsMessengerEXT handle):handle(handle){}
     DebugUtilsMessengerEXT([[maybe_unused]] std::nullptr_t none){}
     VkDebugUtilsMessengerEXT get() const { return handle; }
-    explicit operator bool() const {return handle != VK_NULL_HANDLE;};
-    bool operator!() { return handle == VK_NULL_HANDLE; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
 };
+using VkBool32 = uint32_t;
+struct VkDebugUtilsMessengerCallbackDataEXT;
+struct VkDeviceMemoryReportCallbackDataEXT;
+typedef void (VKAPI_PTR *PFN_vkInternalAllocationNotification)(
+    void*                                       pUserData,
+    size_t                                      size,
+    VkInternalAllocationType                    allocationType,
+    VkSystemAllocationScope                     allocationScope);
+typedef void (VKAPI_PTR *PFN_vkInternalFreeNotification)(
+    void*                                       pUserData,
+    size_t                                      size,
+    VkInternalAllocationType                    allocationType,
+    VkSystemAllocationScope                     allocationScope);
+typedef void* (VKAPI_PTR *PFN_vkReallocationFunction)(
+    void*                                       pUserData,
+    void*                                       pOriginal,
+    size_t                                      size,
+    size_t                                      alignment,
+    VkSystemAllocationScope                     allocationScope);
+typedef void* (VKAPI_PTR *PFN_vkAllocationFunction)(
+    void*                                       pUserData,
+    size_t                                      size,
+    size_t                                      alignment,
+    VkSystemAllocationScope                     allocationScope);
+typedef void (VKAPI_PTR *PFN_vkFreeFunction)(
+    void*                                       pUserData,
+    void*                                       pMemory);
+typedef void (VKAPI_PTR *PFN_vkVoidFunction)(void);
+typedef VkBool32 (VKAPI_PTR *PFN_vkDebugReportCallbackEXT)(
+    VkDebugReportFlagsEXT                       flags,
+    VkDebugReportObjectTypeEXT                  objectType,
+    uint64_t                                    object,
+    size_t                                      location,
+    int32_t                                     messageCode,
+    const char*                                 pLayerPrefix,
+    const char*                                 pMessage,
+    void*                                       pUserData);
+typedef VkBool32 (VKAPI_PTR *PFN_vkDebugUtilsMessengerCallbackEXT)(
+    VkDebugUtilsMessageSeverityFlagBitsEXT           messageSeverity,
+    VkDebugUtilsMessageTypeFlagsEXT                  messageTypes,
+    const VkDebugUtilsMessengerCallbackDataEXT*      pCallbackData,
+    void*                                            pUserData);
+typedef void (VKAPI_PTR *PFN_vkDeviceMemoryReportCallbackEXT)(
+    const VkDeviceMemoryReportCallbackDataEXT*  pCallbackData,
+    void*                                       pUserData);
 struct BaseOutStructure {
     StructureType sType{static_cast<StructureType>(0)};
     BaseOutStructure* pNext = nullptr;
-    operator VkBaseOutStructure const &() const noexcept {
-        return *reinterpret_cast<const VkBaseOutStructure*>(this);
-    }
-    operator VkBaseOutStructure &() noexcept {
-        return *reinterpret_cast<VkBaseOutStructure*>(this);
-    }
 };
 struct BaseInStructure {
     StructureType sType{static_cast<StructureType>(0)};
     const BaseInStructure* pNext = nullptr;
-    operator VkBaseInStructure const &() const noexcept {
-        return *reinterpret_cast<const VkBaseInStructure*>(this);
-    }
-    operator VkBaseInStructure &() noexcept {
-        return *reinterpret_cast<VkBaseInStructure*>(this);
-    }
 };
 struct Offset2D {
     int32_t x{0};
     int32_t y{0};
     constexpr bool operator==(Offset2D const& other) const = default;
-    operator VkOffset2D const &() const noexcept {
-        return *reinterpret_cast<const VkOffset2D*>(this);
-    }
-    operator VkOffset2D &() noexcept {
-        return *reinterpret_cast<VkOffset2D*>(this);
-    }
 };
 struct Offset3D {
     int32_t x{0};
     int32_t y{0};
     int32_t z{0};
     constexpr bool operator==(Offset3D const& other) const = default;
-    operator VkOffset3D const &() const noexcept {
-        return *reinterpret_cast<const VkOffset3D*>(this);
-    }
-    operator VkOffset3D &() noexcept {
-        return *reinterpret_cast<VkOffset3D*>(this);
-    }
 };
 struct Extent2D {
     uint32_t width{0};
     uint32_t height{0};
     constexpr bool operator==(Extent2D const& other) const = default;
-    operator VkExtent2D const &() const noexcept {
-        return *reinterpret_cast<const VkExtent2D*>(this);
-    }
-    operator VkExtent2D &() noexcept {
-        return *reinterpret_cast<VkExtent2D*>(this);
-    }
 };
 struct Extent3D {
     uint32_t width{0};
     uint32_t height{0};
     uint32_t depth{0};
     constexpr bool operator==(Extent3D const& other) const = default;
-    operator VkExtent3D const &() const noexcept {
-        return *reinterpret_cast<const VkExtent3D*>(this);
-    }
-    operator VkExtent3D &() noexcept {
-        return *reinterpret_cast<VkExtent3D*>(this);
-    }
 };
 struct Viewport {
     float x{0.f};
@@ -3071,35 +2998,17 @@ struct Viewport {
     float minDepth{0.f};
     float maxDepth{0.f};
     constexpr bool operator==(Viewport const& other) const = default;
-    operator VkViewport const &() const noexcept {
-        return *reinterpret_cast<const VkViewport*>(this);
-    }
-    operator VkViewport &() noexcept {
-        return *reinterpret_cast<VkViewport*>(this);
-    }
 };
 struct Rect2D {
     Offset2D offset{};
     Extent2D extent{};
     constexpr bool operator==(Rect2D const& other) const = default;
-    operator VkRect2D const &() const noexcept {
-        return *reinterpret_cast<const VkRect2D*>(this);
-    }
-    operator VkRect2D &() noexcept {
-        return *reinterpret_cast<VkRect2D*>(this);
-    }
 };
 struct ClearRect {
     Rect2D rect{};
     uint32_t baseArrayLayer{0};
     uint32_t layerCount{0};
     constexpr bool operator==(ClearRect const& other) const = default;
-    operator VkClearRect const &() const noexcept {
-        return *reinterpret_cast<const VkClearRect*>(this);
-    }
-    operator VkClearRect &() noexcept {
-        return *reinterpret_cast<VkClearRect*>(this);
-    }
 };
 struct ComponentMapping {
     ComponentSwizzle r{static_cast<ComponentSwizzle>(0)};
@@ -3107,12 +3016,6 @@ struct ComponentMapping {
     ComponentSwizzle b{static_cast<ComponentSwizzle>(0)};
     ComponentSwizzle a{static_cast<ComponentSwizzle>(0)};
     constexpr bool operator==(ComponentMapping const& other) const = default;
-    operator VkComponentMapping const &() const noexcept {
-        return *reinterpret_cast<const VkComponentMapping*>(this);
-    }
-    operator VkComponentMapping &() noexcept {
-        return *reinterpret_cast<VkComponentMapping*>(this);
-    }
 };
 struct PhysicalDeviceSparseProperties {
     Bool32 residencyStandard2DBlockShape{0};
@@ -3121,12 +3024,6 @@ struct PhysicalDeviceSparseProperties {
     Bool32 residencyAlignedMipSize{0};
     Bool32 residencyNonResidentStrict{0};
     constexpr bool operator==(PhysicalDeviceSparseProperties const& other) const = default;
-    operator VkPhysicalDeviceSparseProperties const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceSparseProperties*>(this);
-    }
-    operator VkPhysicalDeviceSparseProperties &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceSparseProperties*>(this);
-    }
 };
 struct PhysicalDeviceLimits {
     uint32_t maxImageDimension1D{0};
@@ -3236,12 +3133,6 @@ struct PhysicalDeviceLimits {
     DeviceSize optimalBufferCopyRowPitchAlignment{0};
     DeviceSize nonCoherentAtomSize{0};
     constexpr bool operator==(PhysicalDeviceLimits const& other) const = default;
-    operator VkPhysicalDeviceLimits const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceLimits*>(this);
-    }
-    operator VkPhysicalDeviceLimits &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceLimits*>(this);
-    }
 };
 struct PhysicalDeviceProperties {
     uint32_t apiVersion{0};
@@ -3254,23 +3145,11 @@ struct PhysicalDeviceProperties {
     PhysicalDeviceLimits limits{};
     PhysicalDeviceSparseProperties sparseProperties{};
     constexpr bool operator==(PhysicalDeviceProperties const& other) const = default;
-    operator VkPhysicalDeviceProperties const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceProperties*>(this);
-    }
-    operator VkPhysicalDeviceProperties &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceProperties*>(this);
-    }
 };
 struct ExtensionProperties {
     char extensionName[MAX_EXTENSION_NAME_SIZE];
     uint32_t specVersion{0};
     constexpr bool operator==(ExtensionProperties const& other) const = default;
-    operator VkExtensionProperties const &() const noexcept {
-        return *reinterpret_cast<const VkExtensionProperties*>(this);
-    }
-    operator VkExtensionProperties &() noexcept {
-        return *reinterpret_cast<VkExtensionProperties*>(this);
-    }
 };
 struct LayerProperties {
     char layerName[MAX_EXTENSION_NAME_SIZE];
@@ -3278,12 +3157,6 @@ struct LayerProperties {
     uint32_t implementationVersion{0};
     char description[MAX_DESCRIPTION_SIZE];
     constexpr bool operator==(LayerProperties const& other) const = default;
-    operator VkLayerProperties const &() const noexcept {
-        return *reinterpret_cast<const VkLayerProperties*>(this);
-    }
-    operator VkLayerProperties &() noexcept {
-        return *reinterpret_cast<VkLayerProperties*>(this);
-    }
 };
 struct ApplicationInfo {
     StructureType sType{StructureType::ApplicationInfo};
@@ -3293,12 +3166,6 @@ struct ApplicationInfo {
     const char* pEngineName = nullptr;
     uint32_t engineVersion{0};
     uint32_t apiVersion{0};
-    operator VkApplicationInfo const &() const noexcept {
-        return *reinterpret_cast<const VkApplicationInfo*>(this);
-    }
-    operator VkApplicationInfo &() noexcept {
-        return *reinterpret_cast<VkApplicationInfo*>(this);
-    }
 };
 struct AllocationCallbacks {
     void* pUserData = nullptr;
@@ -3307,12 +3174,6 @@ struct AllocationCallbacks {
     PFN_vkFreeFunction pfnFree{};
     PFN_vkInternalAllocationNotification pfnInternalAllocation{};
     PFN_vkInternalFreeNotification pfnInternalFree{};
-    operator VkAllocationCallbacks const &() const noexcept {
-        return *reinterpret_cast<const VkAllocationCallbacks*>(this);
-    }
-    operator VkAllocationCallbacks &() noexcept {
-        return *reinterpret_cast<VkAllocationCallbacks*>(this);
-    }
 };
 struct DeviceQueueCreateInfo {
     StructureType sType{StructureType::DeviceQueueCreateInfo};
@@ -3321,12 +3182,6 @@ struct DeviceQueueCreateInfo {
     uint32_t queueFamilyIndex{0};
     uint32_t queueCount{0};
     const float* pQueuePriorities = nullptr;
-    operator VkDeviceQueueCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkDeviceQueueCreateInfo*>(this);
-    }
-    operator VkDeviceQueueCreateInfo &() noexcept {
-        return *reinterpret_cast<VkDeviceQueueCreateInfo*>(this);
-    }
 };
 struct PhysicalDeviceFeatures {
     Bool32 robustBufferAccess{0};
@@ -3385,12 +3240,6 @@ struct PhysicalDeviceFeatures {
     Bool32 variableMultisampleRate{0};
     Bool32 inheritedQueries{0};
     constexpr bool operator==(PhysicalDeviceFeatures const& other) const = default;
-    operator VkPhysicalDeviceFeatures const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceFeatures*>(this);
-    }
-    operator VkPhysicalDeviceFeatures &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceFeatures*>(this);
-    }
 };
 struct DeviceCreateInfo {
     StructureType sType{StructureType::DeviceCreateInfo};
@@ -3403,12 +3252,6 @@ struct DeviceCreateInfo {
     uint32_t enabledExtensionCount{0};
     const char* const* ppEnabledExtensionNames = nullptr;
     const PhysicalDeviceFeatures* pEnabledFeatures = nullptr;
-    operator VkDeviceCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkDeviceCreateInfo*>(this);
-    }
-    operator VkDeviceCreateInfo &() noexcept {
-        return *reinterpret_cast<VkDeviceCreateInfo*>(this);
-    }
 };
 struct InstanceCreateInfo {
     StructureType sType{StructureType::InstanceCreateInfo};
@@ -3419,12 +3262,6 @@ struct InstanceCreateInfo {
     const char* const* ppEnabledLayerNames = nullptr;
     uint32_t enabledExtensionCount{0};
     const char* const* ppEnabledExtensionNames = nullptr;
-    operator VkInstanceCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkInstanceCreateInfo*>(this);
-    }
-    operator VkInstanceCreateInfo &() noexcept {
-        return *reinterpret_cast<VkInstanceCreateInfo*>(this);
-    }
 };
 struct QueueFamilyProperties {
     QueueFlags queueFlags{};
@@ -3432,34 +3269,16 @@ struct QueueFamilyProperties {
     uint32_t timestampValidBits{0};
     Extent3D minImageTransferGranularity{};
     constexpr bool operator==(QueueFamilyProperties const& other) const = default;
-    operator VkQueueFamilyProperties const &() const noexcept {
-        return *reinterpret_cast<const VkQueueFamilyProperties*>(this);
-    }
-    operator VkQueueFamilyProperties &() noexcept {
-        return *reinterpret_cast<VkQueueFamilyProperties*>(this);
-    }
 };
 struct MemoryHeap {
     DeviceSize size{0};
     MemoryHeapFlags flags{};
     constexpr bool operator==(MemoryHeap const& other) const = default;
-    operator VkMemoryHeap const &() const noexcept {
-        return *reinterpret_cast<const VkMemoryHeap*>(this);
-    }
-    operator VkMemoryHeap &() noexcept {
-        return *reinterpret_cast<VkMemoryHeap*>(this);
-    }
 };
 struct MemoryType {
     MemoryPropertyFlags propertyFlags{};
     uint32_t heapIndex{0};
     constexpr bool operator==(MemoryType const& other) const = default;
-    operator VkMemoryType const &() const noexcept {
-        return *reinterpret_cast<const VkMemoryType*>(this);
-    }
-    operator VkMemoryType &() noexcept {
-        return *reinterpret_cast<VkMemoryType*>(this);
-    }
 };
 struct PhysicalDeviceMemoryProperties {
     uint32_t memoryTypeCount{0};
@@ -3467,48 +3286,24 @@ struct PhysicalDeviceMemoryProperties {
     uint32_t memoryHeapCount{0};
     MemoryHeap memoryHeaps[MAX_MEMORY_HEAPS];
     constexpr bool operator==(PhysicalDeviceMemoryProperties const& other) const = default;
-    operator VkPhysicalDeviceMemoryProperties const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceMemoryProperties*>(this);
-    }
-    operator VkPhysicalDeviceMemoryProperties &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceMemoryProperties*>(this);
-    }
 };
 struct MemoryAllocateInfo {
     StructureType sType{StructureType::MemoryAllocateInfo};
     const void* pNext = nullptr;
     DeviceSize allocationSize{0};
     uint32_t memoryTypeIndex{0};
-    operator VkMemoryAllocateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkMemoryAllocateInfo*>(this);
-    }
-    operator VkMemoryAllocateInfo &() noexcept {
-        return *reinterpret_cast<VkMemoryAllocateInfo*>(this);
-    }
 };
 struct MemoryRequirements {
     DeviceSize size{0};
     DeviceSize alignment{0};
     uint32_t memoryTypeBits{0};
     constexpr bool operator==(MemoryRequirements const& other) const = default;
-    operator VkMemoryRequirements const &() const noexcept {
-        return *reinterpret_cast<const VkMemoryRequirements*>(this);
-    }
-    operator VkMemoryRequirements &() noexcept {
-        return *reinterpret_cast<VkMemoryRequirements*>(this);
-    }
 };
 struct SparseImageFormatProperties {
     ImageAspectFlags aspectMask{};
     Extent3D imageGranularity{};
     SparseImageFormatFlags flags{};
     constexpr bool operator==(SparseImageFormatProperties const& other) const = default;
-    operator VkSparseImageFormatProperties const &() const noexcept {
-        return *reinterpret_cast<const VkSparseImageFormatProperties*>(this);
-    }
-    operator VkSparseImageFormatProperties &() noexcept {
-        return *reinterpret_cast<VkSparseImageFormatProperties*>(this);
-    }
 };
 struct SparseImageMemoryRequirements {
     SparseImageFormatProperties formatProperties{};
@@ -3517,12 +3312,6 @@ struct SparseImageMemoryRequirements {
     DeviceSize imageMipTailOffset{0};
     DeviceSize imageMipTailStride{0};
     constexpr bool operator==(SparseImageMemoryRequirements const& other) const = default;
-    operator VkSparseImageMemoryRequirements const &() const noexcept {
-        return *reinterpret_cast<const VkSparseImageMemoryRequirements*>(this);
-    }
-    operator VkSparseImageMemoryRequirements &() noexcept {
-        return *reinterpret_cast<VkSparseImageMemoryRequirements*>(this);
-    }
 };
 struct MappedMemoryRange {
     StructureType sType{StructureType::MappedMemoryRange};
@@ -3530,24 +3319,12 @@ struct MappedMemoryRange {
     DeviceMemory memory{};
     DeviceSize offset{0};
     DeviceSize size{0};
-    operator VkMappedMemoryRange const &() const noexcept {
-        return *reinterpret_cast<const VkMappedMemoryRange*>(this);
-    }
-    operator VkMappedMemoryRange &() noexcept {
-        return *reinterpret_cast<VkMappedMemoryRange*>(this);
-    }
 };
 struct FormatProperties {
     FormatFeatureFlags linearTilingFeatures{};
     FormatFeatureFlags optimalTilingFeatures{};
     FormatFeatureFlags bufferFeatures{};
     constexpr bool operator==(FormatProperties const& other) const = default;
-    operator VkFormatProperties const &() const noexcept {
-        return *reinterpret_cast<const VkFormatProperties*>(this);
-    }
-    operator VkFormatProperties &() noexcept {
-        return *reinterpret_cast<VkFormatProperties*>(this);
-    }
 };
 struct ImageFormatProperties {
     Extent3D maxExtent{};
@@ -3556,34 +3333,16 @@ struct ImageFormatProperties {
     SampleCountFlags sampleCounts{};
     DeviceSize maxResourceSize{0};
     constexpr bool operator==(ImageFormatProperties const& other) const = default;
-    operator VkImageFormatProperties const &() const noexcept {
-        return *reinterpret_cast<const VkImageFormatProperties*>(this);
-    }
-    operator VkImageFormatProperties &() noexcept {
-        return *reinterpret_cast<VkImageFormatProperties*>(this);
-    }
 };
 struct DescriptorBufferInfo {
     Buffer buffer{};
     DeviceSize offset{0};
     DeviceSize range{0};
-    operator VkDescriptorBufferInfo const &() const noexcept {
-        return *reinterpret_cast<const VkDescriptorBufferInfo*>(this);
-    }
-    operator VkDescriptorBufferInfo &() noexcept {
-        return *reinterpret_cast<VkDescriptorBufferInfo*>(this);
-    }
 };
 struct DescriptorImageInfo {
     Sampler sampler{};
     ImageView imageView{};
     ImageLayout imageLayout{static_cast<ImageLayout>(0)};
-    operator VkDescriptorImageInfo const &() const noexcept {
-        return *reinterpret_cast<const VkDescriptorImageInfo*>(this);
-    }
-    operator VkDescriptorImageInfo &() noexcept {
-        return *reinterpret_cast<VkDescriptorImageInfo*>(this);
-    }
 };
 struct WriteDescriptorSet {
     StructureType sType{StructureType::WriteDescriptorSet};
@@ -3596,12 +3355,6 @@ struct WriteDescriptorSet {
     const DescriptorImageInfo* pImageInfo = nullptr;
     const DescriptorBufferInfo* pBufferInfo = nullptr;
     const BufferView* pTexelBufferView = nullptr;
-    operator VkWriteDescriptorSet const &() const noexcept {
-        return *reinterpret_cast<const VkWriteDescriptorSet*>(this);
-    }
-    operator VkWriteDescriptorSet &() noexcept {
-        return *reinterpret_cast<VkWriteDescriptorSet*>(this);
-    }
 };
 struct CopyDescriptorSet {
     StructureType sType{StructureType::CopyDescriptorSet};
@@ -3613,12 +3366,6 @@ struct CopyDescriptorSet {
     uint32_t dstBinding{0};
     uint32_t dstArrayElement{0};
     uint32_t descriptorCount{0};
-    operator VkCopyDescriptorSet const &() const noexcept {
-        return *reinterpret_cast<const VkCopyDescriptorSet*>(this);
-    }
-    operator VkCopyDescriptorSet &() noexcept {
-        return *reinterpret_cast<VkCopyDescriptorSet*>(this);
-    }
 };
 struct BufferCreateInfo {
     StructureType sType{StructureType::BufferCreateInfo};
@@ -3629,12 +3376,6 @@ struct BufferCreateInfo {
     SharingMode sharingMode{static_cast<SharingMode>(0)};
     uint32_t queueFamilyIndexCount{0};
     const uint32_t* pQueueFamilyIndices = nullptr;
-    operator VkBufferCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkBufferCreateInfo*>(this);
-    }
-    operator VkBufferCreateInfo &() noexcept {
-        return *reinterpret_cast<VkBufferCreateInfo*>(this);
-    }
 };
 struct BufferViewCreateInfo {
     StructureType sType{StructureType::BufferViewCreateInfo};
@@ -3644,24 +3385,12 @@ struct BufferViewCreateInfo {
     Format format{static_cast<Format>(0)};
     DeviceSize offset{0};
     DeviceSize range{0};
-    operator VkBufferViewCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkBufferViewCreateInfo*>(this);
-    }
-    operator VkBufferViewCreateInfo &() noexcept {
-        return *reinterpret_cast<VkBufferViewCreateInfo*>(this);
-    }
 };
 struct ImageSubresource {
     ImageAspectFlags aspectMask{};
     uint32_t mipLevel{0};
     uint32_t arrayLayer{0};
     constexpr bool operator==(ImageSubresource const& other) const = default;
-    operator VkImageSubresource const &() const noexcept {
-        return *reinterpret_cast<const VkImageSubresource*>(this);
-    }
-    operator VkImageSubresource &() noexcept {
-        return *reinterpret_cast<VkImageSubresource*>(this);
-    }
 };
 struct ImageSubresourceLayers {
     ImageAspectFlags aspectMask{};
@@ -3669,12 +3398,6 @@ struct ImageSubresourceLayers {
     uint32_t baseArrayLayer{0};
     uint32_t layerCount{0};
     constexpr bool operator==(ImageSubresourceLayers const& other) const = default;
-    operator VkImageSubresourceLayers const &() const noexcept {
-        return *reinterpret_cast<const VkImageSubresourceLayers*>(this);
-    }
-    operator VkImageSubresourceLayers &() noexcept {
-        return *reinterpret_cast<VkImageSubresourceLayers*>(this);
-    }
 };
 struct ImageSubresourceRange {
     ImageAspectFlags aspectMask{};
@@ -3683,24 +3406,12 @@ struct ImageSubresourceRange {
     uint32_t baseArrayLayer{0};
     uint32_t layerCount{0};
     constexpr bool operator==(ImageSubresourceRange const& other) const = default;
-    operator VkImageSubresourceRange const &() const noexcept {
-        return *reinterpret_cast<const VkImageSubresourceRange*>(this);
-    }
-    operator VkImageSubresourceRange &() noexcept {
-        return *reinterpret_cast<VkImageSubresourceRange*>(this);
-    }
 };
 struct MemoryBarrier {
     StructureType sType{StructureType::MemoryBarrier};
     const void* pNext = nullptr;
     AccessFlags srcAccessMask{};
     AccessFlags dstAccessMask{};
-    operator VkMemoryBarrier const &() const noexcept {
-        return *reinterpret_cast<const VkMemoryBarrier*>(this);
-    }
-    operator VkMemoryBarrier &() noexcept {
-        return *reinterpret_cast<VkMemoryBarrier*>(this);
-    }
 };
 struct BufferMemoryBarrier {
     StructureType sType{StructureType::BufferMemoryBarrier};
@@ -3712,12 +3423,6 @@ struct BufferMemoryBarrier {
     Buffer buffer{};
     DeviceSize offset{0};
     DeviceSize size{0};
-    operator VkBufferMemoryBarrier const &() const noexcept {
-        return *reinterpret_cast<const VkBufferMemoryBarrier*>(this);
-    }
-    operator VkBufferMemoryBarrier &() noexcept {
-        return *reinterpret_cast<VkBufferMemoryBarrier*>(this);
-    }
 };
 struct ImageMemoryBarrier {
     StructureType sType{StructureType::ImageMemoryBarrier};
@@ -3730,12 +3435,6 @@ struct ImageMemoryBarrier {
     uint32_t dstQueueFamilyIndex{0};
     Image image{};
     ImageSubresourceRange subresourceRange{};
-    operator VkImageMemoryBarrier const &() const noexcept {
-        return *reinterpret_cast<const VkImageMemoryBarrier*>(this);
-    }
-    operator VkImageMemoryBarrier &() noexcept {
-        return *reinterpret_cast<VkImageMemoryBarrier*>(this);
-    }
 };
 struct ImageCreateInfo {
     StructureType sType{StructureType::ImageCreateInfo};
@@ -3753,12 +3452,6 @@ struct ImageCreateInfo {
     uint32_t queueFamilyIndexCount{0};
     const uint32_t* pQueueFamilyIndices = nullptr;
     ImageLayout initialLayout{static_cast<ImageLayout>(0)};
-    operator VkImageCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkImageCreateInfo*>(this);
-    }
-    operator VkImageCreateInfo &() noexcept {
-        return *reinterpret_cast<VkImageCreateInfo*>(this);
-    }
 };
 struct SubresourceLayout {
     DeviceSize offset{0};
@@ -3767,12 +3460,6 @@ struct SubresourceLayout {
     DeviceSize arrayPitch{0};
     DeviceSize depthPitch{0};
     constexpr bool operator==(SubresourceLayout const& other) const = default;
-    operator VkSubresourceLayout const &() const noexcept {
-        return *reinterpret_cast<const VkSubresourceLayout*>(this);
-    }
-    operator VkSubresourceLayout &() noexcept {
-        return *reinterpret_cast<VkSubresourceLayout*>(this);
-    }
 };
 struct ImageViewCreateInfo {
     StructureType sType{StructureType::ImageViewCreateInfo};
@@ -3783,24 +3470,12 @@ struct ImageViewCreateInfo {
     Format format{static_cast<Format>(0)};
     ComponentMapping components{};
     ImageSubresourceRange subresourceRange{};
-    operator VkImageViewCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkImageViewCreateInfo*>(this);
-    }
-    operator VkImageViewCreateInfo &() noexcept {
-        return *reinterpret_cast<VkImageViewCreateInfo*>(this);
-    }
 };
 struct BufferCopy {
     DeviceSize srcOffset{0};
     DeviceSize dstOffset{0};
     DeviceSize size{0};
     constexpr bool operator==(BufferCopy const& other) const = default;
-    operator VkBufferCopy const &() const noexcept {
-        return *reinterpret_cast<const VkBufferCopy*>(this);
-    }
-    operator VkBufferCopy &() noexcept {
-        return *reinterpret_cast<VkBufferCopy*>(this);
-    }
 };
 struct SparseMemoryBind {
     DeviceSize resourceOffset{0};
@@ -3808,12 +3483,6 @@ struct SparseMemoryBind {
     DeviceMemory memory{};
     DeviceSize memoryOffset{0};
     SparseMemoryBindFlags flags{};
-    operator VkSparseMemoryBind const &() const noexcept {
-        return *reinterpret_cast<const VkSparseMemoryBind*>(this);
-    }
-    operator VkSparseMemoryBind &() noexcept {
-        return *reinterpret_cast<VkSparseMemoryBind*>(this);
-    }
 };
 struct SparseImageMemoryBind {
     ImageSubresource subresource{};
@@ -3822,45 +3491,21 @@ struct SparseImageMemoryBind {
     DeviceMemory memory{};
     DeviceSize memoryOffset{0};
     SparseMemoryBindFlags flags{};
-    operator VkSparseImageMemoryBind const &() const noexcept {
-        return *reinterpret_cast<const VkSparseImageMemoryBind*>(this);
-    }
-    operator VkSparseImageMemoryBind &() noexcept {
-        return *reinterpret_cast<VkSparseImageMemoryBind*>(this);
-    }
 };
 struct SparseBufferMemoryBindInfo {
     Buffer buffer{};
     uint32_t bindCount{0};
     const SparseMemoryBind* pBinds = nullptr;
-    operator VkSparseBufferMemoryBindInfo const &() const noexcept {
-        return *reinterpret_cast<const VkSparseBufferMemoryBindInfo*>(this);
-    }
-    operator VkSparseBufferMemoryBindInfo &() noexcept {
-        return *reinterpret_cast<VkSparseBufferMemoryBindInfo*>(this);
-    }
 };
 struct SparseImageOpaqueMemoryBindInfo {
     Image image{};
     uint32_t bindCount{0};
     const SparseMemoryBind* pBinds = nullptr;
-    operator VkSparseImageOpaqueMemoryBindInfo const &() const noexcept {
-        return *reinterpret_cast<const VkSparseImageOpaqueMemoryBindInfo*>(this);
-    }
-    operator VkSparseImageOpaqueMemoryBindInfo &() noexcept {
-        return *reinterpret_cast<VkSparseImageOpaqueMemoryBindInfo*>(this);
-    }
 };
 struct SparseImageMemoryBindInfo {
     Image image{};
     uint32_t bindCount{0};
     const SparseImageMemoryBind* pBinds = nullptr;
-    operator VkSparseImageMemoryBindInfo const &() const noexcept {
-        return *reinterpret_cast<const VkSparseImageMemoryBindInfo*>(this);
-    }
-    operator VkSparseImageMemoryBindInfo &() noexcept {
-        return *reinterpret_cast<VkSparseImageMemoryBindInfo*>(this);
-    }
 };
 struct BindSparseInfo {
     StructureType sType{StructureType::BindSparseInfo};
@@ -3875,12 +3520,6 @@ struct BindSparseInfo {
     const SparseImageMemoryBindInfo* pImageBinds = nullptr;
     uint32_t signalSemaphoreCount{0};
     const Semaphore* pSignalSemaphores = nullptr;
-    operator VkBindSparseInfo const &() const noexcept {
-        return *reinterpret_cast<const VkBindSparseInfo*>(this);
-    }
-    operator VkBindSparseInfo &() noexcept {
-        return *reinterpret_cast<VkBindSparseInfo*>(this);
-    }
 };
 struct ImageCopy {
     ImageSubresourceLayers srcSubresource{};
@@ -3889,12 +3528,6 @@ struct ImageCopy {
     Offset3D dstOffset{};
     Extent3D extent{};
     constexpr bool operator==(ImageCopy const& other) const = default;
-    operator VkImageCopy const &() const noexcept {
-        return *reinterpret_cast<const VkImageCopy*>(this);
-    }
-    operator VkImageCopy &() noexcept {
-        return *reinterpret_cast<VkImageCopy*>(this);
-    }
 };
 struct ImageBlit {
     ImageSubresourceLayers srcSubresource{};
@@ -3902,12 +3535,6 @@ struct ImageBlit {
     ImageSubresourceLayers dstSubresource{};
     Offset3D dstOffsets[2];
     constexpr bool operator==(ImageBlit const& other) const = default;
-    operator VkImageBlit const &() const noexcept {
-        return *reinterpret_cast<const VkImageBlit*>(this);
-    }
-    operator VkImageBlit &() noexcept {
-        return *reinterpret_cast<VkImageBlit*>(this);
-    }
 };
 struct BufferImageCopy {
     DeviceSize bufferOffset{0};
@@ -3917,12 +3544,6 @@ struct BufferImageCopy {
     Offset3D imageOffset{};
     Extent3D imageExtent{};
     constexpr bool operator==(BufferImageCopy const& other) const = default;
-    operator VkBufferImageCopy const &() const noexcept {
-        return *reinterpret_cast<const VkBufferImageCopy*>(this);
-    }
-    operator VkBufferImageCopy &() noexcept {
-        return *reinterpret_cast<VkBufferImageCopy*>(this);
-    }
 };
 struct ImageResolve {
     ImageSubresourceLayers srcSubresource{};
@@ -3931,12 +3552,6 @@ struct ImageResolve {
     Offset3D dstOffset{};
     Extent3D extent{};
     constexpr bool operator==(ImageResolve const& other) const = default;
-    operator VkImageResolve const &() const noexcept {
-        return *reinterpret_cast<const VkImageResolve*>(this);
-    }
-    operator VkImageResolve &() noexcept {
-        return *reinterpret_cast<VkImageResolve*>(this);
-    }
 };
 struct ShaderModuleCreateInfo {
     StructureType sType{StructureType::ShaderModuleCreateInfo};
@@ -3944,12 +3559,6 @@ struct ShaderModuleCreateInfo {
     ShaderModuleCreateFlags flags{};
     size_t codeSize{0};
     const uint32_t* pCode = nullptr;
-    operator VkShaderModuleCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkShaderModuleCreateInfo*>(this);
-    }
-    operator VkShaderModuleCreateInfo &() noexcept {
-        return *reinterpret_cast<VkShaderModuleCreateInfo*>(this);
-    }
 };
 struct DescriptorSetLayoutBinding {
     uint32_t binding{0};
@@ -3957,12 +3566,6 @@ struct DescriptorSetLayoutBinding {
     uint32_t descriptorCount{0};
     ShaderStageFlags stageFlags{};
     const Sampler* pImmutableSamplers = nullptr;
-    operator VkDescriptorSetLayoutBinding const &() const noexcept {
-        return *reinterpret_cast<const VkDescriptorSetLayoutBinding*>(this);
-    }
-    operator VkDescriptorSetLayoutBinding &() noexcept {
-        return *reinterpret_cast<VkDescriptorSetLayoutBinding*>(this);
-    }
 };
 struct DescriptorSetLayoutCreateInfo {
     StructureType sType{StructureType::DescriptorSetLayoutCreateInfo};
@@ -3970,23 +3573,11 @@ struct DescriptorSetLayoutCreateInfo {
     DescriptorSetLayoutCreateFlags flags{};
     uint32_t bindingCount{0};
     const DescriptorSetLayoutBinding* pBindings = nullptr;
-    operator VkDescriptorSetLayoutCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkDescriptorSetLayoutCreateInfo*>(this);
-    }
-    operator VkDescriptorSetLayoutCreateInfo &() noexcept {
-        return *reinterpret_cast<VkDescriptorSetLayoutCreateInfo*>(this);
-    }
 };
 struct DescriptorPoolSize {
     DescriptorType type{static_cast<DescriptorType>(0)};
     uint32_t descriptorCount{0};
     constexpr bool operator==(DescriptorPoolSize const& other) const = default;
-    operator VkDescriptorPoolSize const &() const noexcept {
-        return *reinterpret_cast<const VkDescriptorPoolSize*>(this);
-    }
-    operator VkDescriptorPoolSize &() noexcept {
-        return *reinterpret_cast<VkDescriptorPoolSize*>(this);
-    }
 };
 struct DescriptorPoolCreateInfo {
     StructureType sType{StructureType::DescriptorPoolCreateInfo};
@@ -3995,12 +3586,6 @@ struct DescriptorPoolCreateInfo {
     uint32_t maxSets{0};
     uint32_t poolSizeCount{0};
     const DescriptorPoolSize* pPoolSizes = nullptr;
-    operator VkDescriptorPoolCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkDescriptorPoolCreateInfo*>(this);
-    }
-    operator VkDescriptorPoolCreateInfo &() noexcept {
-        return *reinterpret_cast<VkDescriptorPoolCreateInfo*>(this);
-    }
 };
 struct DescriptorSetAllocateInfo {
     StructureType sType{StructureType::DescriptorSetAllocateInfo};
@@ -4008,36 +3593,18 @@ struct DescriptorSetAllocateInfo {
     DescriptorPool descriptorPool{};
     uint32_t descriptorSetCount{0};
     const DescriptorSetLayout* pSetLayouts = nullptr;
-    operator VkDescriptorSetAllocateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkDescriptorSetAllocateInfo*>(this);
-    }
-    operator VkDescriptorSetAllocateInfo &() noexcept {
-        return *reinterpret_cast<VkDescriptorSetAllocateInfo*>(this);
-    }
 };
 struct SpecializationMapEntry {
     uint32_t constantID{0};
     uint32_t offset{0};
     size_t size{0};
     constexpr bool operator==(SpecializationMapEntry const& other) const = default;
-    operator VkSpecializationMapEntry const &() const noexcept {
-        return *reinterpret_cast<const VkSpecializationMapEntry*>(this);
-    }
-    operator VkSpecializationMapEntry &() noexcept {
-        return *reinterpret_cast<VkSpecializationMapEntry*>(this);
-    }
 };
 struct SpecializationInfo {
     uint32_t mapEntryCount{0};
     const SpecializationMapEntry* pMapEntries = nullptr;
     size_t dataSize{0};
     const void* pData = nullptr;
-    operator VkSpecializationInfo const &() const noexcept {
-        return *reinterpret_cast<const VkSpecializationInfo*>(this);
-    }
-    operator VkSpecializationInfo &() noexcept {
-        return *reinterpret_cast<VkSpecializationInfo*>(this);
-    }
 };
 struct PipelineShaderStageCreateInfo {
     StructureType sType{StructureType::PipelineShaderStageCreateInfo};
@@ -4047,12 +3614,6 @@ struct PipelineShaderStageCreateInfo {
     ShaderModule module{};
     const char* pName = nullptr;
     const SpecializationInfo* pSpecializationInfo = nullptr;
-    operator VkPipelineShaderStageCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineShaderStageCreateInfo*>(this);
-    }
-    operator VkPipelineShaderStageCreateInfo &() noexcept {
-        return *reinterpret_cast<VkPipelineShaderStageCreateInfo*>(this);
-    }
 };
 struct ComputePipelineCreateInfo {
     StructureType sType{StructureType::ComputePipelineCreateInfo};
@@ -4062,24 +3623,12 @@ struct ComputePipelineCreateInfo {
     PipelineLayout layout{};
     Pipeline basePipelineHandle{};
     int32_t basePipelineIndex{0};
-    operator VkComputePipelineCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkComputePipelineCreateInfo*>(this);
-    }
-    operator VkComputePipelineCreateInfo &() noexcept {
-        return *reinterpret_cast<VkComputePipelineCreateInfo*>(this);
-    }
 };
 struct VertexInputBindingDescription {
     uint32_t binding{0};
     uint32_t stride{0};
     VertexInputRate inputRate{static_cast<VertexInputRate>(0)};
     constexpr bool operator==(VertexInputBindingDescription const& other) const = default;
-    operator VkVertexInputBindingDescription const &() const noexcept {
-        return *reinterpret_cast<const VkVertexInputBindingDescription*>(this);
-    }
-    operator VkVertexInputBindingDescription &() noexcept {
-        return *reinterpret_cast<VkVertexInputBindingDescription*>(this);
-    }
 };
 struct VertexInputAttributeDescription {
     uint32_t location{0};
@@ -4087,12 +3636,6 @@ struct VertexInputAttributeDescription {
     Format format{static_cast<Format>(0)};
     uint32_t offset{0};
     constexpr bool operator==(VertexInputAttributeDescription const& other) const = default;
-    operator VkVertexInputAttributeDescription const &() const noexcept {
-        return *reinterpret_cast<const VkVertexInputAttributeDescription*>(this);
-    }
-    operator VkVertexInputAttributeDescription &() noexcept {
-        return *reinterpret_cast<VkVertexInputAttributeDescription*>(this);
-    }
 };
 struct PipelineVertexInputStateCreateInfo {
     StructureType sType{StructureType::PipelineVertexInputStateCreateInfo};
@@ -4102,12 +3645,6 @@ struct PipelineVertexInputStateCreateInfo {
     const VertexInputBindingDescription* pVertexBindingDescriptions = nullptr;
     uint32_t vertexAttributeDescriptionCount{0};
     const VertexInputAttributeDescription* pVertexAttributeDescriptions = nullptr;
-    operator VkPipelineVertexInputStateCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineVertexInputStateCreateInfo*>(this);
-    }
-    operator VkPipelineVertexInputStateCreateInfo &() noexcept {
-        return *reinterpret_cast<VkPipelineVertexInputStateCreateInfo*>(this);
-    }
 };
 struct PipelineInputAssemblyStateCreateInfo {
     StructureType sType{StructureType::PipelineInputAssemblyStateCreateInfo};
@@ -4115,24 +3652,12 @@ struct PipelineInputAssemblyStateCreateInfo {
     PipelineInputAssemblyStateCreateFlags flags{};
     PrimitiveTopology topology{static_cast<PrimitiveTopology>(0)};
     Bool32 primitiveRestartEnable{0};
-    operator VkPipelineInputAssemblyStateCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineInputAssemblyStateCreateInfo*>(this);
-    }
-    operator VkPipelineInputAssemblyStateCreateInfo &() noexcept {
-        return *reinterpret_cast<VkPipelineInputAssemblyStateCreateInfo*>(this);
-    }
 };
 struct PipelineTessellationStateCreateInfo {
     StructureType sType{StructureType::PipelineTessellationStateCreateInfo};
     const void* pNext = nullptr;
     PipelineTessellationStateCreateFlags flags{};
     uint32_t patchControlPoints{0};
-    operator VkPipelineTessellationStateCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineTessellationStateCreateInfo*>(this);
-    }
-    operator VkPipelineTessellationStateCreateInfo &() noexcept {
-        return *reinterpret_cast<VkPipelineTessellationStateCreateInfo*>(this);
-    }
 };
 struct PipelineViewportStateCreateInfo {
     StructureType sType{StructureType::PipelineViewportStateCreateInfo};
@@ -4142,12 +3667,6 @@ struct PipelineViewportStateCreateInfo {
     const Viewport* pViewports = nullptr;
     uint32_t scissorCount{0};
     const Rect2D* pScissors = nullptr;
-    operator VkPipelineViewportStateCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineViewportStateCreateInfo*>(this);
-    }
-    operator VkPipelineViewportStateCreateInfo &() noexcept {
-        return *reinterpret_cast<VkPipelineViewportStateCreateInfo*>(this);
-    }
 };
 struct PipelineRasterizationStateCreateInfo {
     StructureType sType{StructureType::PipelineRasterizationStateCreateInfo};
@@ -4163,12 +3682,6 @@ struct PipelineRasterizationStateCreateInfo {
     float depthBiasClamp{0.f};
     float depthBiasSlopeFactor{0.f};
     float lineWidth{0.f};
-    operator VkPipelineRasterizationStateCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineRasterizationStateCreateInfo*>(this);
-    }
-    operator VkPipelineRasterizationStateCreateInfo &() noexcept {
-        return *reinterpret_cast<VkPipelineRasterizationStateCreateInfo*>(this);
-    }
 };
 struct PipelineMultisampleStateCreateInfo {
     StructureType sType{StructureType::PipelineMultisampleStateCreateInfo};
@@ -4180,12 +3693,6 @@ struct PipelineMultisampleStateCreateInfo {
     const SampleMask* pSampleMask = nullptr;
     Bool32 alphaToCoverageEnable{0};
     Bool32 alphaToOneEnable{0};
-    operator VkPipelineMultisampleStateCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineMultisampleStateCreateInfo*>(this);
-    }
-    operator VkPipelineMultisampleStateCreateInfo &() noexcept {
-        return *reinterpret_cast<VkPipelineMultisampleStateCreateInfo*>(this);
-    }
 };
 struct PipelineColorBlendAttachmentState {
     Bool32 blendEnable{0};
@@ -4197,12 +3704,6 @@ struct PipelineColorBlendAttachmentState {
     BlendOp alphaBlendOp{static_cast<BlendOp>(0)};
     ColorComponentFlags colorWriteMask{};
     constexpr bool operator==(PipelineColorBlendAttachmentState const& other) const = default;
-    operator VkPipelineColorBlendAttachmentState const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineColorBlendAttachmentState*>(this);
-    }
-    operator VkPipelineColorBlendAttachmentState &() noexcept {
-        return *reinterpret_cast<VkPipelineColorBlendAttachmentState*>(this);
-    }
 };
 struct PipelineColorBlendStateCreateInfo {
     StructureType sType{StructureType::PipelineColorBlendStateCreateInfo};
@@ -4213,12 +3714,6 @@ struct PipelineColorBlendStateCreateInfo {
     uint32_t attachmentCount{0};
     const PipelineColorBlendAttachmentState* pAttachments = nullptr;
     float blendConstants[4];
-    operator VkPipelineColorBlendStateCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineColorBlendStateCreateInfo*>(this);
-    }
-    operator VkPipelineColorBlendStateCreateInfo &() noexcept {
-        return *reinterpret_cast<VkPipelineColorBlendStateCreateInfo*>(this);
-    }
 };
 struct PipelineDynamicStateCreateInfo {
     StructureType sType{StructureType::PipelineDynamicStateCreateInfo};
@@ -4226,12 +3721,6 @@ struct PipelineDynamicStateCreateInfo {
     PipelineDynamicStateCreateFlags flags{};
     uint32_t dynamicStateCount{0};
     const DynamicState* pDynamicStates = nullptr;
-    operator VkPipelineDynamicStateCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineDynamicStateCreateInfo*>(this);
-    }
-    operator VkPipelineDynamicStateCreateInfo &() noexcept {
-        return *reinterpret_cast<VkPipelineDynamicStateCreateInfo*>(this);
-    }
 };
 struct StencilOpState {
     StencilOp failOp{static_cast<StencilOp>(0)};
@@ -4242,12 +3731,6 @@ struct StencilOpState {
     uint32_t writeMask{0};
     uint32_t reference{0};
     constexpr bool operator==(StencilOpState const& other) const = default;
-    operator VkStencilOpState const &() const noexcept {
-        return *reinterpret_cast<const VkStencilOpState*>(this);
-    }
-    operator VkStencilOpState &() noexcept {
-        return *reinterpret_cast<VkStencilOpState*>(this);
-    }
 };
 struct PipelineDepthStencilStateCreateInfo {
     StructureType sType{StructureType::PipelineDepthStencilStateCreateInfo};
@@ -4262,12 +3745,6 @@ struct PipelineDepthStencilStateCreateInfo {
     StencilOpState back{};
     float minDepthBounds{0.f};
     float maxDepthBounds{0.f};
-    operator VkPipelineDepthStencilStateCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineDepthStencilStateCreateInfo*>(this);
-    }
-    operator VkPipelineDepthStencilStateCreateInfo &() noexcept {
-        return *reinterpret_cast<VkPipelineDepthStencilStateCreateInfo*>(this);
-    }
 };
 struct GraphicsPipelineCreateInfo {
     StructureType sType{StructureType::GraphicsPipelineCreateInfo};
@@ -4289,12 +3766,6 @@ struct GraphicsPipelineCreateInfo {
     uint32_t subpass{0};
     Pipeline basePipelineHandle{};
     int32_t basePipelineIndex{0};
-    operator VkGraphicsPipelineCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkGraphicsPipelineCreateInfo*>(this);
-    }
-    operator VkGraphicsPipelineCreateInfo &() noexcept {
-        return *reinterpret_cast<VkGraphicsPipelineCreateInfo*>(this);
-    }
 };
 struct PipelineCacheCreateInfo {
     StructureType sType{StructureType::PipelineCacheCreateInfo};
@@ -4302,24 +3773,12 @@ struct PipelineCacheCreateInfo {
     PipelineCacheCreateFlags flags{};
     size_t initialDataSize{0};
     const void* pInitialData = nullptr;
-    operator VkPipelineCacheCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineCacheCreateInfo*>(this);
-    }
-    operator VkPipelineCacheCreateInfo &() noexcept {
-        return *reinterpret_cast<VkPipelineCacheCreateInfo*>(this);
-    }
 };
 struct PushConstantRange {
     ShaderStageFlags stageFlags{};
     uint32_t offset{0};
     uint32_t size{0};
     constexpr bool operator==(PushConstantRange const& other) const = default;
-    operator VkPushConstantRange const &() const noexcept {
-        return *reinterpret_cast<const VkPushConstantRange*>(this);
-    }
-    operator VkPushConstantRange &() noexcept {
-        return *reinterpret_cast<VkPushConstantRange*>(this);
-    }
 };
 struct PipelineLayoutCreateInfo {
     StructureType sType{StructureType::PipelineLayoutCreateInfo};
@@ -4329,12 +3788,6 @@ struct PipelineLayoutCreateInfo {
     const DescriptorSetLayout* pSetLayouts = nullptr;
     uint32_t pushConstantRangeCount{0};
     const PushConstantRange* pPushConstantRanges = nullptr;
-    operator VkPipelineLayoutCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineLayoutCreateInfo*>(this);
-    }
-    operator VkPipelineLayoutCreateInfo &() noexcept {
-        return *reinterpret_cast<VkPipelineLayoutCreateInfo*>(this);
-    }
 };
 struct SamplerCreateInfo {
     StructureType sType{StructureType::SamplerCreateInfo};
@@ -4355,24 +3808,12 @@ struct SamplerCreateInfo {
     float maxLod{0.f};
     BorderColor borderColor{static_cast<BorderColor>(0)};
     Bool32 unnormalizedCoordinates{0};
-    operator VkSamplerCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkSamplerCreateInfo*>(this);
-    }
-    operator VkSamplerCreateInfo &() noexcept {
-        return *reinterpret_cast<VkSamplerCreateInfo*>(this);
-    }
 };
 struct CommandPoolCreateInfo {
     StructureType sType{StructureType::CommandPoolCreateInfo};
     const void* pNext = nullptr;
     CommandPoolCreateFlags flags{};
     uint32_t queueFamilyIndex{0};
-    operator VkCommandPoolCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkCommandPoolCreateInfo*>(this);
-    }
-    operator VkCommandPoolCreateInfo &() noexcept {
-        return *reinterpret_cast<VkCommandPoolCreateInfo*>(this);
-    }
 };
 struct CommandBufferAllocateInfo {
     StructureType sType{StructureType::CommandBufferAllocateInfo};
@@ -4380,12 +3821,6 @@ struct CommandBufferAllocateInfo {
     CommandPool commandPool{};
     CommandBufferLevel level{static_cast<CommandBufferLevel>(0)};
     uint32_t commandBufferCount{0};
-    operator VkCommandBufferAllocateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkCommandBufferAllocateInfo*>(this);
-    }
-    operator VkCommandBufferAllocateInfo &() noexcept {
-        return *reinterpret_cast<VkCommandBufferAllocateInfo*>(this);
-    }
 };
 struct CommandBufferInheritanceInfo {
     StructureType sType{StructureType::CommandBufferInheritanceInfo};
@@ -4396,35 +3831,17 @@ struct CommandBufferInheritanceInfo {
     Bool32 occlusionQueryEnable{0};
     QueryControlFlags queryFlags{};
     QueryPipelineStatisticFlags pipelineStatistics{};
-    operator VkCommandBufferInheritanceInfo const &() const noexcept {
-        return *reinterpret_cast<const VkCommandBufferInheritanceInfo*>(this);
-    }
-    operator VkCommandBufferInheritanceInfo &() noexcept {
-        return *reinterpret_cast<VkCommandBufferInheritanceInfo*>(this);
-    }
 };
 struct CommandBufferBeginInfo {
     StructureType sType{StructureType::CommandBufferBeginInfo};
     const void* pNext = nullptr;
     CommandBufferUsageFlags flags{};
     const CommandBufferInheritanceInfo* pInheritanceInfo = nullptr;
-    operator VkCommandBufferBeginInfo const &() const noexcept {
-        return *reinterpret_cast<const VkCommandBufferBeginInfo*>(this);
-    }
-    operator VkCommandBufferBeginInfo &() noexcept {
-        return *reinterpret_cast<VkCommandBufferBeginInfo*>(this);
-    }
 };
 struct ClearDepthStencilValue {
     float depth{0.f};
     uint32_t stencil{0};
     constexpr bool operator==(ClearDepthStencilValue const& other) const = default;
-    operator VkClearDepthStencilValue const &() const noexcept {
-        return *reinterpret_cast<const VkClearDepthStencilValue*>(this);
-    }
-    operator VkClearDepthStencilValue &() noexcept {
-        return *reinterpret_cast<VkClearDepthStencilValue*>(this);
-    }
 };
 union ClearColorValue {
     float float32[4];
@@ -4457,24 +3874,12 @@ struct RenderPassBeginInfo {
     Rect2D renderArea{};
     uint32_t clearValueCount{0};
     const ClearValue* pClearValues = nullptr;
-    operator VkRenderPassBeginInfo const &() const noexcept {
-        return *reinterpret_cast<const VkRenderPassBeginInfo*>(this);
-    }
-    operator VkRenderPassBeginInfo &() noexcept {
-        return *reinterpret_cast<VkRenderPassBeginInfo*>(this);
-    }
 };
 struct ClearAttachment {
     ImageAspectFlags aspectMask{};
     uint32_t colorAttachment{0};
     ClearValue clearValue{};
     constexpr bool operator==(ClearAttachment const& other) const = default;
-    operator VkClearAttachment const &() const noexcept {
-        return *reinterpret_cast<const VkClearAttachment*>(this);
-    }
-    operator VkClearAttachment &() noexcept {
-        return *reinterpret_cast<VkClearAttachment*>(this);
-    }
 };
 struct AttachmentDescription {
     AttachmentDescriptionFlags flags{};
@@ -4487,23 +3892,11 @@ struct AttachmentDescription {
     ImageLayout initialLayout{static_cast<ImageLayout>(0)};
     ImageLayout finalLayout{static_cast<ImageLayout>(0)};
     constexpr bool operator==(AttachmentDescription const& other) const = default;
-    operator VkAttachmentDescription const &() const noexcept {
-        return *reinterpret_cast<const VkAttachmentDescription*>(this);
-    }
-    operator VkAttachmentDescription &() noexcept {
-        return *reinterpret_cast<VkAttachmentDescription*>(this);
-    }
 };
 struct AttachmentReference {
     uint32_t attachment{0};
     ImageLayout layout{static_cast<ImageLayout>(0)};
     constexpr bool operator==(AttachmentReference const& other) const = default;
-    operator VkAttachmentReference const &() const noexcept {
-        return *reinterpret_cast<const VkAttachmentReference*>(this);
-    }
-    operator VkAttachmentReference &() noexcept {
-        return *reinterpret_cast<VkAttachmentReference*>(this);
-    }
 };
 struct SubpassDescription {
     SubpassDescriptionFlags flags{};
@@ -4516,12 +3909,6 @@ struct SubpassDescription {
     const AttachmentReference* pDepthStencilAttachment = nullptr;
     uint32_t preserveAttachmentCount{0};
     const uint32_t* pPreserveAttachments = nullptr;
-    operator VkSubpassDescription const &() const noexcept {
-        return *reinterpret_cast<const VkSubpassDescription*>(this);
-    }
-    operator VkSubpassDescription &() noexcept {
-        return *reinterpret_cast<VkSubpassDescription*>(this);
-    }
 };
 struct SubpassDependency {
     uint32_t srcSubpass{0};
@@ -4532,12 +3919,6 @@ struct SubpassDependency {
     AccessFlags dstAccessMask{};
     DependencyFlags dependencyFlags{};
     constexpr bool operator==(SubpassDependency const& other) const = default;
-    operator VkSubpassDependency const &() const noexcept {
-        return *reinterpret_cast<const VkSubpassDependency*>(this);
-    }
-    operator VkSubpassDependency &() noexcept {
-        return *reinterpret_cast<VkSubpassDependency*>(this);
-    }
 };
 struct RenderPassCreateInfo {
     StructureType sType{StructureType::RenderPassCreateInfo};
@@ -4549,45 +3930,21 @@ struct RenderPassCreateInfo {
     const SubpassDescription* pSubpasses = nullptr;
     uint32_t dependencyCount{0};
     const SubpassDependency* pDependencies = nullptr;
-    operator VkRenderPassCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkRenderPassCreateInfo*>(this);
-    }
-    operator VkRenderPassCreateInfo &() noexcept {
-        return *reinterpret_cast<VkRenderPassCreateInfo*>(this);
-    }
 };
 struct EventCreateInfo {
     StructureType sType{StructureType::EventCreateInfo};
     const void* pNext = nullptr;
     EventCreateFlags flags{};
-    operator VkEventCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkEventCreateInfo*>(this);
-    }
-    operator VkEventCreateInfo &() noexcept {
-        return *reinterpret_cast<VkEventCreateInfo*>(this);
-    }
 };
 struct FenceCreateInfo {
     StructureType sType{StructureType::FenceCreateInfo};
     const void* pNext = nullptr;
     FenceCreateFlags flags{};
-    operator VkFenceCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkFenceCreateInfo*>(this);
-    }
-    operator VkFenceCreateInfo &() noexcept {
-        return *reinterpret_cast<VkFenceCreateInfo*>(this);
-    }
 };
 struct SemaphoreCreateInfo {
     StructureType sType{StructureType::SemaphoreCreateInfo};
     const void* pNext = nullptr;
     SemaphoreCreateFlags flags{};
-    operator VkSemaphoreCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkSemaphoreCreateInfo*>(this);
-    }
-    operator VkSemaphoreCreateInfo &() noexcept {
-        return *reinterpret_cast<VkSemaphoreCreateInfo*>(this);
-    }
 };
 struct QueryPoolCreateInfo {
     StructureType sType{StructureType::QueryPoolCreateInfo};
@@ -4596,12 +3953,6 @@ struct QueryPoolCreateInfo {
     QueryType queryType{static_cast<QueryType>(0)};
     uint32_t queryCount{0};
     QueryPipelineStatisticFlags pipelineStatistics{};
-    operator VkQueryPoolCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkQueryPoolCreateInfo*>(this);
-    }
-    operator VkQueryPoolCreateInfo &() noexcept {
-        return *reinterpret_cast<VkQueryPoolCreateInfo*>(this);
-    }
 };
 struct FramebufferCreateInfo {
     StructureType sType{StructureType::FramebufferCreateInfo};
@@ -4613,12 +3964,6 @@ struct FramebufferCreateInfo {
     uint32_t width{0};
     uint32_t height{0};
     uint32_t layers{0};
-    operator VkFramebufferCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkFramebufferCreateInfo*>(this);
-    }
-    operator VkFramebufferCreateInfo &() noexcept {
-        return *reinterpret_cast<VkFramebufferCreateInfo*>(this);
-    }
 };
 struct DrawIndirectCommand {
     uint32_t vertexCount{0};
@@ -4626,12 +3971,6 @@ struct DrawIndirectCommand {
     uint32_t firstVertex{0};
     uint32_t firstInstance{0};
     constexpr bool operator==(DrawIndirectCommand const& other) const = default;
-    operator VkDrawIndirectCommand const &() const noexcept {
-        return *reinterpret_cast<const VkDrawIndirectCommand*>(this);
-    }
-    operator VkDrawIndirectCommand &() noexcept {
-        return *reinterpret_cast<VkDrawIndirectCommand*>(this);
-    }
 };
 struct DrawIndexedIndirectCommand {
     uint32_t indexCount{0};
@@ -4640,24 +3979,12 @@ struct DrawIndexedIndirectCommand {
     int32_t vertexOffset{0};
     uint32_t firstInstance{0};
     constexpr bool operator==(DrawIndexedIndirectCommand const& other) const = default;
-    operator VkDrawIndexedIndirectCommand const &() const noexcept {
-        return *reinterpret_cast<const VkDrawIndexedIndirectCommand*>(this);
-    }
-    operator VkDrawIndexedIndirectCommand &() noexcept {
-        return *reinterpret_cast<VkDrawIndexedIndirectCommand*>(this);
-    }
 };
 struct DispatchIndirectCommand {
     uint32_t x{0};
     uint32_t y{0};
     uint32_t z{0};
     constexpr bool operator==(DispatchIndirectCommand const& other) const = default;
-    operator VkDispatchIndirectCommand const &() const noexcept {
-        return *reinterpret_cast<const VkDispatchIndirectCommand*>(this);
-    }
-    operator VkDispatchIndirectCommand &() noexcept {
-        return *reinterpret_cast<VkDispatchIndirectCommand*>(this);
-    }
 };
 struct SubmitInfo {
     StructureType sType{StructureType::SubmitInfo};
@@ -4669,12 +3996,6 @@ struct SubmitInfo {
     const CommandBuffer* pCommandBuffers = nullptr;
     uint32_t signalSemaphoreCount{0};
     const Semaphore* pSignalSemaphores = nullptr;
-    operator VkSubmitInfo const &() const noexcept {
-        return *reinterpret_cast<const VkSubmitInfo*>(this);
-    }
-    operator VkSubmitInfo &() noexcept {
-        return *reinterpret_cast<VkSubmitInfo*>(this);
-    }
 };
 struct DisplayPropertiesKHR {
     DisplayKHR display{};
@@ -4684,55 +4005,25 @@ struct DisplayPropertiesKHR {
     SurfaceTransformFlagsKHR supportedTransforms{};
     Bool32 planeReorderPossible{0};
     Bool32 persistentContent{0};
-    operator VkDisplayPropertiesKHR const &() const noexcept {
-        return *reinterpret_cast<const VkDisplayPropertiesKHR*>(this);
-    }
-    operator VkDisplayPropertiesKHR &() noexcept {
-        return *reinterpret_cast<VkDisplayPropertiesKHR*>(this);
-    }
 };
 struct DisplayPlanePropertiesKHR {
     DisplayKHR currentDisplay{};
     uint32_t currentStackIndex{0};
-    operator VkDisplayPlanePropertiesKHR const &() const noexcept {
-        return *reinterpret_cast<const VkDisplayPlanePropertiesKHR*>(this);
-    }
-    operator VkDisplayPlanePropertiesKHR &() noexcept {
-        return *reinterpret_cast<VkDisplayPlanePropertiesKHR*>(this);
-    }
 };
 struct DisplayModeParametersKHR {
     Extent2D visibleRegion{};
     uint32_t refreshRate{0};
     constexpr bool operator==(DisplayModeParametersKHR const& other) const = default;
-    operator VkDisplayModeParametersKHR const &() const noexcept {
-        return *reinterpret_cast<const VkDisplayModeParametersKHR*>(this);
-    }
-    operator VkDisplayModeParametersKHR &() noexcept {
-        return *reinterpret_cast<VkDisplayModeParametersKHR*>(this);
-    }
 };
 struct DisplayModePropertiesKHR {
     DisplayModeKHR displayMode{};
     DisplayModeParametersKHR parameters{};
-    operator VkDisplayModePropertiesKHR const &() const noexcept {
-        return *reinterpret_cast<const VkDisplayModePropertiesKHR*>(this);
-    }
-    operator VkDisplayModePropertiesKHR &() noexcept {
-        return *reinterpret_cast<VkDisplayModePropertiesKHR*>(this);
-    }
 };
 struct DisplayModeCreateInfoKHR {
     StructureType sType{StructureType::DisplayModeCreateInfoKHR};
     const void* pNext = nullptr;
     DisplayModeCreateFlagsKHR flags{};
     DisplayModeParametersKHR parameters{};
-    operator VkDisplayModeCreateInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkDisplayModeCreateInfoKHR*>(this);
-    }
-    operator VkDisplayModeCreateInfoKHR &() noexcept {
-        return *reinterpret_cast<VkDisplayModeCreateInfoKHR*>(this);
-    }
 };
 struct DisplayPlaneCapabilitiesKHR {
     DisplayPlaneAlphaFlagsKHR supportedAlpha{};
@@ -4745,12 +4036,6 @@ struct DisplayPlaneCapabilitiesKHR {
     Extent2D minDstExtent{};
     Extent2D maxDstExtent{};
     constexpr bool operator==(DisplayPlaneCapabilitiesKHR const& other) const = default;
-    operator VkDisplayPlaneCapabilitiesKHR const &() const noexcept {
-        return *reinterpret_cast<const VkDisplayPlaneCapabilitiesKHR*>(this);
-    }
-    operator VkDisplayPlaneCapabilitiesKHR &() noexcept {
-        return *reinterpret_cast<VkDisplayPlaneCapabilitiesKHR*>(this);
-    }
 };
 struct DisplaySurfaceCreateInfoKHR {
     StructureType sType{StructureType::DisplaySurfaceCreateInfoKHR};
@@ -4763,12 +4048,6 @@ struct DisplaySurfaceCreateInfoKHR {
     float globalAlpha{0.f};
     DisplayPlaneAlphaFlagBitsKHR alphaMode{static_cast<DisplayPlaneAlphaFlagBitsKHR>(0)};
     Extent2D imageExtent{};
-    operator VkDisplaySurfaceCreateInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkDisplaySurfaceCreateInfoKHR*>(this);
-    }
-    operator VkDisplaySurfaceCreateInfoKHR &() noexcept {
-        return *reinterpret_cast<VkDisplaySurfaceCreateInfoKHR*>(this);
-    }
 };
 struct DisplayPresentInfoKHR {
     StructureType sType{StructureType::DisplayPresentInfoKHR};
@@ -4776,12 +4055,6 @@ struct DisplayPresentInfoKHR {
     Rect2D srcRect{};
     Rect2D dstRect{};
     Bool32 persistent{0};
-    operator VkDisplayPresentInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkDisplayPresentInfoKHR*>(this);
-    }
-    operator VkDisplayPresentInfoKHR &() noexcept {
-        return *reinterpret_cast<VkDisplayPresentInfoKHR*>(this);
-    }
 };
 struct SurfaceCapabilitiesKHR {
     uint32_t minImageCount{0};
@@ -4795,12 +4068,6 @@ struct SurfaceCapabilitiesKHR {
     CompositeAlphaFlagsKHR supportedCompositeAlpha{};
     ImageUsageFlags supportedUsageFlags{};
     constexpr bool operator==(SurfaceCapabilitiesKHR const& other) const = default;
-    operator VkSurfaceCapabilitiesKHR const &() const noexcept {
-        return *reinterpret_cast<const VkSurfaceCapabilitiesKHR*>(this);
-    }
-    operator VkSurfaceCapabilitiesKHR &() noexcept {
-        return *reinterpret_cast<VkSurfaceCapabilitiesKHR*>(this);
-    }
 };
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 struct AndroidSurfaceCreateInfoKHR {
@@ -4808,12 +4075,6 @@ struct AndroidSurfaceCreateInfoKHR {
     const void* pNext = nullptr;
     AndroidSurfaceCreateFlagsKHR flags{};
     ANativeWindow* window = nullptr;
-    operator VkAndroidSurfaceCreateInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkAndroidSurfaceCreateInfoKHR*>(this);
-    }
-    operator VkAndroidSurfaceCreateInfoKHR &() noexcept {
-        return *reinterpret_cast<VkAndroidSurfaceCreateInfoKHR*>(this);
-    }
 };
 #endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
 #if defined(VK_USE_PLATFORM_VI_NN)
@@ -4822,12 +4083,6 @@ struct ViSurfaceCreateInfoNN {
     const void* pNext = nullptr;
     ViSurfaceCreateFlagsNN flags{};
     void* window = nullptr;
-    operator VkViSurfaceCreateInfoNN const &() const noexcept {
-        return *reinterpret_cast<const VkViSurfaceCreateInfoNN*>(this);
-    }
-    operator VkViSurfaceCreateInfoNN &() noexcept {
-        return *reinterpret_cast<VkViSurfaceCreateInfoNN*>(this);
-    }
 };
 #endif // defined(VK_USE_PLATFORM_VI_NN)
 #if defined(VK_USE_PLATFORM_WAYLAND_KHR)
@@ -4837,12 +4092,6 @@ struct WaylandSurfaceCreateInfoKHR {
     WaylandSurfaceCreateFlagsKHR flags{};
     wl_display* display = nullptr;
     wl_surface* surface = nullptr;
-    operator VkWaylandSurfaceCreateInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkWaylandSurfaceCreateInfoKHR*>(this);
-    }
-    operator VkWaylandSurfaceCreateInfoKHR &() noexcept {
-        return *reinterpret_cast<VkWaylandSurfaceCreateInfoKHR*>(this);
-    }
 };
 #endif // defined(VK_USE_PLATFORM_WAYLAND_KHR)
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
@@ -4852,12 +4101,6 @@ struct Win32SurfaceCreateInfoKHR {
     Win32SurfaceCreateFlagsKHR flags{};
     HINSTANCE hinstance{};
     HWND hwnd{};
-    operator VkWin32SurfaceCreateInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkWin32SurfaceCreateInfoKHR*>(this);
-    }
-    operator VkWin32SurfaceCreateInfoKHR &() noexcept {
-        return *reinterpret_cast<VkWin32SurfaceCreateInfoKHR*>(this);
-    }
 };
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 #if defined(VK_USE_PLATFORM_XLIB_KHR)
@@ -4867,12 +4110,6 @@ struct XlibSurfaceCreateInfoKHR {
     XlibSurfaceCreateFlagsKHR flags{};
     Display* dpy = nullptr;
     Window window{};
-    operator VkXlibSurfaceCreateInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkXlibSurfaceCreateInfoKHR*>(this);
-    }
-    operator VkXlibSurfaceCreateInfoKHR &() noexcept {
-        return *reinterpret_cast<VkXlibSurfaceCreateInfoKHR*>(this);
-    }
 };
 #endif // defined(VK_USE_PLATFORM_XLIB_KHR)
 #if defined(VK_USE_PLATFORM_XCB_KHR)
@@ -4882,12 +4119,6 @@ struct XcbSurfaceCreateInfoKHR {
     XcbSurfaceCreateFlagsKHR flags{};
     xcb_connection_t* connection = nullptr;
     xcb_window_t window{};
-    operator VkXcbSurfaceCreateInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkXcbSurfaceCreateInfoKHR*>(this);
-    }
-    operator VkXcbSurfaceCreateInfoKHR &() noexcept {
-        return *reinterpret_cast<VkXcbSurfaceCreateInfoKHR*>(this);
-    }
 };
 #endif // defined(VK_USE_PLATFORM_XCB_KHR)
 #if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
@@ -4897,12 +4128,6 @@ struct DirectFBSurfaceCreateInfoEXT {
     DirectFBSurfaceCreateFlagsEXT flags{};
     IDirectFB* dfb = nullptr;
     IDirectFBSurface* surface = nullptr;
-    operator VkDirectFBSurfaceCreateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkDirectFBSurfaceCreateInfoEXT*>(this);
-    }
-    operator VkDirectFBSurfaceCreateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkDirectFBSurfaceCreateInfoEXT*>(this);
-    }
 };
 #endif // defined(VK_USE_PLATFORM_DIRECTFB_EXT)
 #if defined(VK_USE_PLATFORM_FUCHSIA)
@@ -4911,12 +4136,6 @@ struct ImagePipeSurfaceCreateInfoFUCHSIA {
     const void* pNext = nullptr;
     ImagePipeSurfaceCreateFlagsFUCHSIA flags{};
     zx_handle_t imagePipeHandle{};
-    operator VkImagePipeSurfaceCreateInfoFUCHSIA const &() const noexcept {
-        return *reinterpret_cast<const VkImagePipeSurfaceCreateInfoFUCHSIA*>(this);
-    }
-    operator VkImagePipeSurfaceCreateInfoFUCHSIA &() noexcept {
-        return *reinterpret_cast<VkImagePipeSurfaceCreateInfoFUCHSIA*>(this);
-    }
 };
 #endif // defined(VK_USE_PLATFORM_FUCHSIA)
 #if defined(VK_USE_PLATFORM_GGP)
@@ -4925,24 +4144,12 @@ struct StreamDescriptorSurfaceCreateInfoGGP {
     const void* pNext = nullptr;
     StreamDescriptorSurfaceCreateFlagsGGP flags{};
     GgpStreamDescriptor streamDescriptor{};
-    operator VkStreamDescriptorSurfaceCreateInfoGGP const &() const noexcept {
-        return *reinterpret_cast<const VkStreamDescriptorSurfaceCreateInfoGGP*>(this);
-    }
-    operator VkStreamDescriptorSurfaceCreateInfoGGP &() noexcept {
-        return *reinterpret_cast<VkStreamDescriptorSurfaceCreateInfoGGP*>(this);
-    }
 };
 #endif // defined(VK_USE_PLATFORM_GGP)
 struct SurfaceFormatKHR {
     Format format{static_cast<Format>(0)};
     ColorSpaceKHR colorSpace{static_cast<ColorSpaceKHR>(0)};
     constexpr bool operator==(SurfaceFormatKHR const& other) const = default;
-    operator VkSurfaceFormatKHR const &() const noexcept {
-        return *reinterpret_cast<const VkSurfaceFormatKHR*>(this);
-    }
-    operator VkSurfaceFormatKHR &() noexcept {
-        return *reinterpret_cast<VkSurfaceFormatKHR*>(this);
-    }
 };
 struct SwapchainCreateInfoKHR {
     StructureType sType{StructureType::SwapchainCreateInfoKHR};
@@ -4963,12 +4170,6 @@ struct SwapchainCreateInfoKHR {
     PresentModeKHR presentMode{static_cast<PresentModeKHR>(0)};
     Bool32 clipped{0};
     SwapchainKHR oldSwapchain{};
-    operator VkSwapchainCreateInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkSwapchainCreateInfoKHR*>(this);
-    }
-    operator VkSwapchainCreateInfoKHR &() noexcept {
-        return *reinterpret_cast<VkSwapchainCreateInfoKHR*>(this);
-    }
 };
 struct PresentInfoKHR {
     StructureType sType{StructureType::PresentInfoKHR};
@@ -4979,12 +4180,6 @@ struct PresentInfoKHR {
     const SwapchainKHR* pSwapchains = nullptr;
     const uint32_t* pImageIndices = nullptr;
     Result* pResults = nullptr;
-    operator VkPresentInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkPresentInfoKHR*>(this);
-    }
-    operator VkPresentInfoKHR &() noexcept {
-        return *reinterpret_cast<VkPresentInfoKHR*>(this);
-    }
 };
 struct DebugReportCallbackCreateInfoEXT {
     StructureType sType{StructureType::DebugReportCallbackCreateInfoEXT};
@@ -4992,24 +4187,12 @@ struct DebugReportCallbackCreateInfoEXT {
     DebugReportFlagsEXT flags{};
     PFN_vkDebugReportCallbackEXT pfnCallback{};
     void* pUserData = nullptr;
-    operator VkDebugReportCallbackCreateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkDebugReportCallbackCreateInfoEXT*>(this);
-    }
-    operator VkDebugReportCallbackCreateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkDebugReportCallbackCreateInfoEXT*>(this);
-    }
 };
 struct ValidationFlagsEXT {
     StructureType sType{StructureType::ValidationFlagsEXT};
     const void* pNext = nullptr;
     uint32_t disabledValidationCheckCount{0};
     const ValidationCheckEXT* pDisabledValidationChecks = nullptr;
-    operator VkValidationFlagsEXT const &() const noexcept {
-        return *reinterpret_cast<const VkValidationFlagsEXT*>(this);
-    }
-    operator VkValidationFlagsEXT &() noexcept {
-        return *reinterpret_cast<VkValidationFlagsEXT*>(this);
-    }
 };
 struct ValidationFeaturesEXT {
     StructureType sType{StructureType::ValidationFeaturesEXT};
@@ -5018,23 +4201,11 @@ struct ValidationFeaturesEXT {
     const ValidationFeatureEnableEXT* pEnabledValidationFeatures = nullptr;
     uint32_t disabledValidationFeatureCount{0};
     const ValidationFeatureDisableEXT* pDisabledValidationFeatures = nullptr;
-    operator VkValidationFeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkValidationFeaturesEXT*>(this);
-    }
-    operator VkValidationFeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkValidationFeaturesEXT*>(this);
-    }
 };
 struct PipelineRasterizationStateRasterizationOrderAMD {
     StructureType sType{StructureType::PipelineRasterizationStateRasterizationOrderAMD};
     const void* pNext = nullptr;
     RasterizationOrderAMD rasterizationOrder{static_cast<RasterizationOrderAMD>(0)};
-    operator VkPipelineRasterizationStateRasterizationOrderAMD const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineRasterizationStateRasterizationOrderAMD*>(this);
-    }
-    operator VkPipelineRasterizationStateRasterizationOrderAMD &() noexcept {
-        return *reinterpret_cast<VkPipelineRasterizationStateRasterizationOrderAMD*>(this);
-    }
 };
 struct DebugMarkerObjectNameInfoEXT {
     StructureType sType{StructureType::DebugMarkerObjectNameInfoEXT};
@@ -5042,12 +4213,6 @@ struct DebugMarkerObjectNameInfoEXT {
     DebugReportObjectTypeEXT objectType{static_cast<DebugReportObjectTypeEXT>(0)};
     uint64_t object{0};
     const char* pObjectName = nullptr;
-    operator VkDebugMarkerObjectNameInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkDebugMarkerObjectNameInfoEXT*>(this);
-    }
-    operator VkDebugMarkerObjectNameInfoEXT &() noexcept {
-        return *reinterpret_cast<VkDebugMarkerObjectNameInfoEXT*>(this);
-    }
 };
 struct DebugMarkerObjectTagInfoEXT {
     StructureType sType{StructureType::DebugMarkerObjectTagInfoEXT};
@@ -5057,58 +4222,28 @@ struct DebugMarkerObjectTagInfoEXT {
     uint64_t tagName{0};
     size_t tagSize{0};
     const void* pTag = nullptr;
-    operator VkDebugMarkerObjectTagInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkDebugMarkerObjectTagInfoEXT*>(this);
-    }
-    operator VkDebugMarkerObjectTagInfoEXT &() noexcept {
-        return *reinterpret_cast<VkDebugMarkerObjectTagInfoEXT*>(this);
-    }
 };
 struct DebugMarkerMarkerInfoEXT {
     StructureType sType{StructureType::DebugMarkerMarkerInfoEXT};
     const void* pNext = nullptr;
     const char* pMarkerName = nullptr;
     float color[4];
-    operator VkDebugMarkerMarkerInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkDebugMarkerMarkerInfoEXT*>(this);
-    }
-    operator VkDebugMarkerMarkerInfoEXT &() noexcept {
-        return *reinterpret_cast<VkDebugMarkerMarkerInfoEXT*>(this);
-    }
 };
 struct DedicatedAllocationImageCreateInfoNV {
     StructureType sType{StructureType::DedicatedAllocationImageCreateInfoNV};
     const void* pNext = nullptr;
     Bool32 dedicatedAllocation{0};
-    operator VkDedicatedAllocationImageCreateInfoNV const &() const noexcept {
-        return *reinterpret_cast<const VkDedicatedAllocationImageCreateInfoNV*>(this);
-    }
-    operator VkDedicatedAllocationImageCreateInfoNV &() noexcept {
-        return *reinterpret_cast<VkDedicatedAllocationImageCreateInfoNV*>(this);
-    }
 };
 struct DedicatedAllocationBufferCreateInfoNV {
     StructureType sType{StructureType::DedicatedAllocationBufferCreateInfoNV};
     const void* pNext = nullptr;
     Bool32 dedicatedAllocation{0};
-    operator VkDedicatedAllocationBufferCreateInfoNV const &() const noexcept {
-        return *reinterpret_cast<const VkDedicatedAllocationBufferCreateInfoNV*>(this);
-    }
-    operator VkDedicatedAllocationBufferCreateInfoNV &() noexcept {
-        return *reinterpret_cast<VkDedicatedAllocationBufferCreateInfoNV*>(this);
-    }
 };
 struct DedicatedAllocationMemoryAllocateInfoNV {
     StructureType sType{StructureType::DedicatedAllocationMemoryAllocateInfoNV};
     const void* pNext = nullptr;
     Image image{};
     Buffer buffer{};
-    operator VkDedicatedAllocationMemoryAllocateInfoNV const &() const noexcept {
-        return *reinterpret_cast<const VkDedicatedAllocationMemoryAllocateInfoNV*>(this);
-    }
-    operator VkDedicatedAllocationMemoryAllocateInfoNV &() noexcept {
-        return *reinterpret_cast<VkDedicatedAllocationMemoryAllocateInfoNV*>(this);
-    }
 };
 struct ExternalImageFormatPropertiesNV {
     ImageFormatProperties imageFormatProperties{};
@@ -5116,34 +4251,16 @@ struct ExternalImageFormatPropertiesNV {
     ExternalMemoryHandleTypeFlagsNV exportFromImportedHandleTypes{};
     ExternalMemoryHandleTypeFlagsNV compatibleHandleTypes{};
     constexpr bool operator==(ExternalImageFormatPropertiesNV const& other) const = default;
-    operator VkExternalImageFormatPropertiesNV const &() const noexcept {
-        return *reinterpret_cast<const VkExternalImageFormatPropertiesNV*>(this);
-    }
-    operator VkExternalImageFormatPropertiesNV &() noexcept {
-        return *reinterpret_cast<VkExternalImageFormatPropertiesNV*>(this);
-    }
 };
 struct ExternalMemoryImageCreateInfoNV {
     StructureType sType{StructureType::ExternalMemoryImageCreateInfoNV};
     const void* pNext = nullptr;
     ExternalMemoryHandleTypeFlagsNV handleTypes{};
-    operator VkExternalMemoryImageCreateInfoNV const &() const noexcept {
-        return *reinterpret_cast<const VkExternalMemoryImageCreateInfoNV*>(this);
-    }
-    operator VkExternalMemoryImageCreateInfoNV &() noexcept {
-        return *reinterpret_cast<VkExternalMemoryImageCreateInfoNV*>(this);
-    }
 };
 struct ExportMemoryAllocateInfoNV {
     StructureType sType{StructureType::ExportMemoryAllocateInfoNV};
     const void* pNext = nullptr;
     ExternalMemoryHandleTypeFlagsNV handleTypes{};
-    operator VkExportMemoryAllocateInfoNV const &() const noexcept {
-        return *reinterpret_cast<const VkExportMemoryAllocateInfoNV*>(this);
-    }
-    operator VkExportMemoryAllocateInfoNV &() noexcept {
-        return *reinterpret_cast<VkExportMemoryAllocateInfoNV*>(this);
-    }
 };
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ImportMemoryWin32HandleInfoNV {
@@ -5151,24 +4268,12 @@ struct ImportMemoryWin32HandleInfoNV {
     const void* pNext = nullptr;
     ExternalMemoryHandleTypeFlagsNV handleType{};
     HANDLE handle{};
-    operator VkImportMemoryWin32HandleInfoNV const &() const noexcept {
-        return *reinterpret_cast<const VkImportMemoryWin32HandleInfoNV*>(this);
-    }
-    operator VkImportMemoryWin32HandleInfoNV &() noexcept {
-        return *reinterpret_cast<VkImportMemoryWin32HandleInfoNV*>(this);
-    }
 };
 struct ExportMemoryWin32HandleInfoNV {
     StructureType sType{StructureType::ExportMemoryWin32HandleInfoNV};
     const void* pNext = nullptr;
     const SECURITY_ATTRIBUTES* pAttributes = nullptr;
     DWORD dwAccess{};
-    operator VkExportMemoryWin32HandleInfoNV const &() const noexcept {
-        return *reinterpret_cast<const VkExportMemoryWin32HandleInfoNV*>(this);
-    }
-    operator VkExportMemoryWin32HandleInfoNV &() noexcept {
-        return *reinterpret_cast<VkExportMemoryWin32HandleInfoNV*>(this);
-    }
 };
 struct Win32KeyedMutexAcquireReleaseInfoNV {
     StructureType sType{StructureType::Win32KeyedMutexAcquireReleaseInfoNV};
@@ -5180,57 +4285,27 @@ struct Win32KeyedMutexAcquireReleaseInfoNV {
     uint32_t releaseCount{0};
     const DeviceMemory* pReleaseSyncs = nullptr;
     const uint64_t* pReleaseKeys = nullptr;
-    operator VkWin32KeyedMutexAcquireReleaseInfoNV const &() const noexcept {
-        return *reinterpret_cast<const VkWin32KeyedMutexAcquireReleaseInfoNV*>(this);
-    }
-    operator VkWin32KeyedMutexAcquireReleaseInfoNV &() noexcept {
-        return *reinterpret_cast<VkWin32KeyedMutexAcquireReleaseInfoNV*>(this);
-    }
 };
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 struct PhysicalDeviceDeviceGeneratedCommandsFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceDeviceGeneratedCommandsFeaturesNV};
     void* pNext = nullptr;
     Bool32 deviceGeneratedCommands{0};
-    operator VkPhysicalDeviceDeviceGeneratedCommandsFeaturesNV const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceDeviceGeneratedCommandsFeaturesNV*>(this);
-    }
-    operator VkPhysicalDeviceDeviceGeneratedCommandsFeaturesNV &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceDeviceGeneratedCommandsFeaturesNV*>(this);
-    }
 };
 struct DevicePrivateDataCreateInfoEXT {
     StructureType sType{StructureType::DevicePrivateDataCreateInfoEXT};
     const void* pNext = nullptr;
     uint32_t privateDataSlotRequestCount{0};
-    operator VkDevicePrivateDataCreateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkDevicePrivateDataCreateInfoEXT*>(this);
-    }
-    operator VkDevicePrivateDataCreateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkDevicePrivateDataCreateInfoEXT*>(this);
-    }
 };
 struct PrivateDataSlotCreateInfoEXT {
     StructureType sType{StructureType::PrivateDataSlotCreateInfoEXT};
     const void* pNext = nullptr;
     PrivateDataSlotCreateFlagsEXT flags{};
-    operator VkPrivateDataSlotCreateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPrivateDataSlotCreateInfoEXT*>(this);
-    }
-    operator VkPrivateDataSlotCreateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkPrivateDataSlotCreateInfoEXT*>(this);
-    }
 };
 struct PhysicalDevicePrivateDataFeaturesEXT {
     StructureType sType{StructureType::PhysicalDevicePrivateDataFeaturesEXT};
     void* pNext = nullptr;
     Bool32 privateData{0};
-    operator VkPhysicalDevicePrivateDataFeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDevicePrivateDataFeaturesEXT*>(this);
-    }
-    operator VkPhysicalDevicePrivateDataFeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDevicePrivateDataFeaturesEXT*>(this);
-    }
 };
 struct PhysicalDeviceDeviceGeneratedCommandsPropertiesNV {
     StructureType sType{StructureType::PhysicalDeviceDeviceGeneratedCommandsPropertiesNV};
@@ -5244,12 +4319,6 @@ struct PhysicalDeviceDeviceGeneratedCommandsPropertiesNV {
     uint32_t minSequencesCountBufferOffsetAlignment{0};
     uint32_t minSequencesIndexBufferOffsetAlignment{0};
     uint32_t minIndirectCommandsBufferOffsetAlignment{0};
-    operator VkPhysicalDeviceDeviceGeneratedCommandsPropertiesNV const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceDeviceGeneratedCommandsPropertiesNV*>(this);
-    }
-    operator VkPhysicalDeviceDeviceGeneratedCommandsPropertiesNV &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceDeviceGeneratedCommandsPropertiesNV*>(this);
-    }
 };
 struct GraphicsShaderGroupCreateInfoNV {
     StructureType sType{StructureType::GraphicsShaderGroupCreateInfoNV};
@@ -5258,12 +4327,6 @@ struct GraphicsShaderGroupCreateInfoNV {
     const PipelineShaderStageCreateInfo* pStages = nullptr;
     const PipelineVertexInputStateCreateInfo* pVertexInputState = nullptr;
     const PipelineTessellationStateCreateInfo* pTessellationState = nullptr;
-    operator VkGraphicsShaderGroupCreateInfoNV const &() const noexcept {
-        return *reinterpret_cast<const VkGraphicsShaderGroupCreateInfoNV*>(this);
-    }
-    operator VkGraphicsShaderGroupCreateInfoNV &() noexcept {
-        return *reinterpret_cast<VkGraphicsShaderGroupCreateInfoNV*>(this);
-    }
 };
 struct GraphicsPipelineShaderGroupsCreateInfoNV {
     StructureType sType{StructureType::GraphicsPipelineShaderGroupsCreateInfoNV};
@@ -5272,66 +4335,30 @@ struct GraphicsPipelineShaderGroupsCreateInfoNV {
     const GraphicsShaderGroupCreateInfoNV* pGroups = nullptr;
     uint32_t pipelineCount{0};
     const Pipeline* pPipelines = nullptr;
-    operator VkGraphicsPipelineShaderGroupsCreateInfoNV const &() const noexcept {
-        return *reinterpret_cast<const VkGraphicsPipelineShaderGroupsCreateInfoNV*>(this);
-    }
-    operator VkGraphicsPipelineShaderGroupsCreateInfoNV &() noexcept {
-        return *reinterpret_cast<VkGraphicsPipelineShaderGroupsCreateInfoNV*>(this);
-    }
 };
 struct BindShaderGroupIndirectCommandNV {
     uint32_t groupIndex{0};
     constexpr bool operator==(BindShaderGroupIndirectCommandNV const& other) const = default;
-    operator VkBindShaderGroupIndirectCommandNV const &() const noexcept {
-        return *reinterpret_cast<const VkBindShaderGroupIndirectCommandNV*>(this);
-    }
-    operator VkBindShaderGroupIndirectCommandNV &() noexcept {
-        return *reinterpret_cast<VkBindShaderGroupIndirectCommandNV*>(this);
-    }
 };
 struct BindIndexBufferIndirectCommandNV {
     DeviceAddress bufferAddress{0};
     uint32_t size{0};
     IndexType indexType{static_cast<IndexType>(0)};
     constexpr bool operator==(BindIndexBufferIndirectCommandNV const& other) const = default;
-    operator VkBindIndexBufferIndirectCommandNV const &() const noexcept {
-        return *reinterpret_cast<const VkBindIndexBufferIndirectCommandNV*>(this);
-    }
-    operator VkBindIndexBufferIndirectCommandNV &() noexcept {
-        return *reinterpret_cast<VkBindIndexBufferIndirectCommandNV*>(this);
-    }
 };
 struct BindVertexBufferIndirectCommandNV {
     DeviceAddress bufferAddress{0};
     uint32_t size{0};
     uint32_t stride{0};
     constexpr bool operator==(BindVertexBufferIndirectCommandNV const& other) const = default;
-    operator VkBindVertexBufferIndirectCommandNV const &() const noexcept {
-        return *reinterpret_cast<const VkBindVertexBufferIndirectCommandNV*>(this);
-    }
-    operator VkBindVertexBufferIndirectCommandNV &() noexcept {
-        return *reinterpret_cast<VkBindVertexBufferIndirectCommandNV*>(this);
-    }
 };
 struct SetStateFlagsIndirectCommandNV {
     uint32_t data{0};
     constexpr bool operator==(SetStateFlagsIndirectCommandNV const& other) const = default;
-    operator VkSetStateFlagsIndirectCommandNV const &() const noexcept {
-        return *reinterpret_cast<const VkSetStateFlagsIndirectCommandNV*>(this);
-    }
-    operator VkSetStateFlagsIndirectCommandNV &() noexcept {
-        return *reinterpret_cast<VkSetStateFlagsIndirectCommandNV*>(this);
-    }
 };
 struct IndirectCommandsStreamNV {
     Buffer buffer{};
     DeviceSize offset{0};
-    operator VkIndirectCommandsStreamNV const &() const noexcept {
-        return *reinterpret_cast<const VkIndirectCommandsStreamNV*>(this);
-    }
-    operator VkIndirectCommandsStreamNV &() noexcept {
-        return *reinterpret_cast<VkIndirectCommandsStreamNV*>(this);
-    }
 };
 struct IndirectCommandsLayoutTokenNV {
     StructureType sType{StructureType::IndirectCommandsLayoutTokenNV};
@@ -5349,12 +4376,6 @@ struct IndirectCommandsLayoutTokenNV {
     uint32_t indexTypeCount{0};
     const IndexType* pIndexTypes = nullptr;
     const uint32_t* pIndexTypeValues = nullptr;
-    operator VkIndirectCommandsLayoutTokenNV const &() const noexcept {
-        return *reinterpret_cast<const VkIndirectCommandsLayoutTokenNV*>(this);
-    }
-    operator VkIndirectCommandsLayoutTokenNV &() noexcept {
-        return *reinterpret_cast<VkIndirectCommandsLayoutTokenNV*>(this);
-    }
 };
 struct IndirectCommandsLayoutCreateInfoNV {
     StructureType sType{StructureType::IndirectCommandsLayoutCreateInfoNV};
@@ -5365,12 +4386,6 @@ struct IndirectCommandsLayoutCreateInfoNV {
     const IndirectCommandsLayoutTokenNV* pTokens = nullptr;
     uint32_t streamCount{0};
     const uint32_t* pStreamStrides = nullptr;
-    operator VkIndirectCommandsLayoutCreateInfoNV const &() const noexcept {
-        return *reinterpret_cast<const VkIndirectCommandsLayoutCreateInfoNV*>(this);
-    }
-    operator VkIndirectCommandsLayoutCreateInfoNV &() noexcept {
-        return *reinterpret_cast<VkIndirectCommandsLayoutCreateInfoNV*>(this);
-    }
 };
 struct GeneratedCommandsInfoNV {
     StructureType sType{StructureType::GeneratedCommandsInfoNV};
@@ -5388,12 +4403,6 @@ struct GeneratedCommandsInfoNV {
     DeviceSize sequencesCountOffset{0};
     Buffer sequencesIndexBuffer{};
     DeviceSize sequencesIndexOffset{0};
-    operator VkGeneratedCommandsInfoNV const &() const noexcept {
-        return *reinterpret_cast<const VkGeneratedCommandsInfoNV*>(this);
-    }
-    operator VkGeneratedCommandsInfoNV &() noexcept {
-        return *reinterpret_cast<VkGeneratedCommandsInfoNV*>(this);
-    }
 };
 struct GeneratedCommandsMemoryRequirementsInfoNV {
     StructureType sType{StructureType::GeneratedCommandsMemoryRequirementsInfoNV};
@@ -5402,61 +4411,35 @@ struct GeneratedCommandsMemoryRequirementsInfoNV {
     Pipeline pipeline{};
     IndirectCommandsLayoutNV indirectCommandsLayout{};
     uint32_t maxSequencesCount{0};
-    operator VkGeneratedCommandsMemoryRequirementsInfoNV const &() const noexcept {
-        return *reinterpret_cast<const VkGeneratedCommandsMemoryRequirementsInfoNV*>(this);
-    }
-    operator VkGeneratedCommandsMemoryRequirementsInfoNV &() noexcept {
-        return *reinterpret_cast<VkGeneratedCommandsMemoryRequirementsInfoNV*>(this);
-    }
 };
 struct PhysicalDeviceFeatures2 {
     StructureType sType{StructureType::PhysicalDeviceFeatures2};
     void* pNext = nullptr;
     PhysicalDeviceFeatures features{};
-    operator VkPhysicalDeviceFeatures2 const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceFeatures2*>(this);
-    }
-    operator VkPhysicalDeviceFeatures2 &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceFeatures2*>(this);
-    }
 };
 using PhysicalDeviceFeatures2KHR = PhysicalDeviceFeatures2;
+using VkPhysicalDeviceFeatures2KHR = PhysicalDeviceFeatures2KHR;
 struct PhysicalDeviceProperties2 {
     StructureType sType{StructureType::PhysicalDeviceProperties2};
     void* pNext = nullptr;
     PhysicalDeviceProperties properties{};
-    operator VkPhysicalDeviceProperties2 const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceProperties2*>(this);
-    }
-    operator VkPhysicalDeviceProperties2 &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceProperties2*>(this);
-    }
 };
 using PhysicalDeviceProperties2KHR = PhysicalDeviceProperties2;
+using VkPhysicalDeviceProperties2KHR = PhysicalDeviceProperties2KHR;
 struct FormatProperties2 {
     StructureType sType{StructureType::FormatProperties2};
     void* pNext = nullptr;
     FormatProperties formatProperties{};
-    operator VkFormatProperties2 const &() const noexcept {
-        return *reinterpret_cast<const VkFormatProperties2*>(this);
-    }
-    operator VkFormatProperties2 &() noexcept {
-        return *reinterpret_cast<VkFormatProperties2*>(this);
-    }
 };
 using FormatProperties2KHR = FormatProperties2;
+using VkFormatProperties2KHR = FormatProperties2KHR;
 struct ImageFormatProperties2 {
     StructureType sType{StructureType::ImageFormatProperties2};
     void* pNext = nullptr;
     ImageFormatProperties imageFormatProperties{};
-    operator VkImageFormatProperties2 const &() const noexcept {
-        return *reinterpret_cast<const VkImageFormatProperties2*>(this);
-    }
-    operator VkImageFormatProperties2 &() noexcept {
-        return *reinterpret_cast<VkImageFormatProperties2*>(this);
-    }
 };
 using ImageFormatProperties2KHR = ImageFormatProperties2;
+using VkImageFormatProperties2KHR = ImageFormatProperties2KHR;
 struct PhysicalDeviceImageFormatInfo2 {
     StructureType sType{StructureType::PhysicalDeviceImageFormatInfo2};
     const void* pNext = nullptr;
@@ -5465,50 +4448,30 @@ struct PhysicalDeviceImageFormatInfo2 {
     ImageTiling tiling{static_cast<ImageTiling>(0)};
     ImageUsageFlags usage{};
     ImageCreateFlags flags{};
-    operator VkPhysicalDeviceImageFormatInfo2 const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceImageFormatInfo2*>(this);
-    }
-    operator VkPhysicalDeviceImageFormatInfo2 &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceImageFormatInfo2*>(this);
-    }
 };
 using PhysicalDeviceImageFormatInfo2KHR = PhysicalDeviceImageFormatInfo2;
+using VkPhysicalDeviceImageFormatInfo2KHR = PhysicalDeviceImageFormatInfo2KHR;
 struct QueueFamilyProperties2 {
     StructureType sType{StructureType::QueueFamilyProperties2};
     void* pNext = nullptr;
     QueueFamilyProperties queueFamilyProperties{};
-    operator VkQueueFamilyProperties2 const &() const noexcept {
-        return *reinterpret_cast<const VkQueueFamilyProperties2*>(this);
-    }
-    operator VkQueueFamilyProperties2 &() noexcept {
-        return *reinterpret_cast<VkQueueFamilyProperties2*>(this);
-    }
 };
 using QueueFamilyProperties2KHR = QueueFamilyProperties2;
+using VkQueueFamilyProperties2KHR = QueueFamilyProperties2KHR;
 struct PhysicalDeviceMemoryProperties2 {
     StructureType sType{StructureType::PhysicalDeviceMemoryProperties2};
     void* pNext = nullptr;
     PhysicalDeviceMemoryProperties memoryProperties{};
-    operator VkPhysicalDeviceMemoryProperties2 const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceMemoryProperties2*>(this);
-    }
-    operator VkPhysicalDeviceMemoryProperties2 &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceMemoryProperties2*>(this);
-    }
 };
 using PhysicalDeviceMemoryProperties2KHR = PhysicalDeviceMemoryProperties2;
+using VkPhysicalDeviceMemoryProperties2KHR = PhysicalDeviceMemoryProperties2KHR;
 struct SparseImageFormatProperties2 {
     StructureType sType{StructureType::SparseImageFormatProperties2};
     void* pNext = nullptr;
     SparseImageFormatProperties properties{};
-    operator VkSparseImageFormatProperties2 const &() const noexcept {
-        return *reinterpret_cast<const VkSparseImageFormatProperties2*>(this);
-    }
-    operator VkSparseImageFormatProperties2 &() noexcept {
-        return *reinterpret_cast<VkSparseImageFormatProperties2*>(this);
-    }
 };
 using SparseImageFormatProperties2KHR = SparseImageFormatProperties2;
+using VkSparseImageFormatProperties2KHR = SparseImageFormatProperties2KHR;
 struct PhysicalDeviceSparseImageFormatInfo2 {
     StructureType sType{StructureType::PhysicalDeviceSparseImageFormatInfo2};
     const void* pNext = nullptr;
@@ -5517,24 +4480,13 @@ struct PhysicalDeviceSparseImageFormatInfo2 {
     SampleCountFlagBits samples{static_cast<SampleCountFlagBits>(0)};
     ImageUsageFlags usage{};
     ImageTiling tiling{static_cast<ImageTiling>(0)};
-    operator VkPhysicalDeviceSparseImageFormatInfo2 const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceSparseImageFormatInfo2*>(this);
-    }
-    operator VkPhysicalDeviceSparseImageFormatInfo2 &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceSparseImageFormatInfo2*>(this);
-    }
 };
 using PhysicalDeviceSparseImageFormatInfo2KHR = PhysicalDeviceSparseImageFormatInfo2;
+using VkPhysicalDeviceSparseImageFormatInfo2KHR = PhysicalDeviceSparseImageFormatInfo2KHR;
 struct PhysicalDevicePushDescriptorPropertiesKHR {
     StructureType sType{StructureType::PhysicalDevicePushDescriptorPropertiesKHR};
     void* pNext = nullptr;
     uint32_t maxPushDescriptors{0};
-    operator VkPhysicalDevicePushDescriptorPropertiesKHR const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDevicePushDescriptorPropertiesKHR*>(this);
-    }
-    operator VkPhysicalDevicePushDescriptorPropertiesKHR &() noexcept {
-        return *reinterpret_cast<VkPhysicalDevicePushDescriptorPropertiesKHR*>(this);
-    }
 };
 struct ConformanceVersion {
     uint8_t major{0};
@@ -5542,14 +4494,9 @@ struct ConformanceVersion {
     uint8_t subminor{0};
     uint8_t patch{0};
     constexpr bool operator==(ConformanceVersion const& other) const = default;
-    operator VkConformanceVersion const &() const noexcept {
-        return *reinterpret_cast<const VkConformanceVersion*>(this);
-    }
-    operator VkConformanceVersion &() noexcept {
-        return *reinterpret_cast<VkConformanceVersion*>(this);
-    }
 };
 using ConformanceVersionKHR = ConformanceVersion;
+using VkConformanceVersionKHR = ConformanceVersionKHR;
 struct PhysicalDeviceDriverProperties {
     StructureType sType{StructureType::PhysicalDeviceDriverProperties};
     void* pNext = nullptr;
@@ -5557,126 +4504,75 @@ struct PhysicalDeviceDriverProperties {
     char driverName[MAX_DRIVER_NAME_SIZE];
     char driverInfo[MAX_DRIVER_INFO_SIZE];
     ConformanceVersion conformanceVersion{};
-    operator VkPhysicalDeviceDriverProperties const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceDriverProperties*>(this);
-    }
-    operator VkPhysicalDeviceDriverProperties &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceDriverProperties*>(this);
-    }
 };
 using PhysicalDeviceDriverPropertiesKHR = PhysicalDeviceDriverProperties;
+using VkPhysicalDeviceDriverPropertiesKHR = PhysicalDeviceDriverPropertiesKHR;
 struct RectLayerKHR {
     Offset2D offset{};
     Extent2D extent{};
     uint32_t layer{0};
     constexpr bool operator==(RectLayerKHR const& other) const = default;
-    operator VkRectLayerKHR const &() const noexcept {
-        return *reinterpret_cast<const VkRectLayerKHR*>(this);
-    }
-    operator VkRectLayerKHR &() noexcept {
-        return *reinterpret_cast<VkRectLayerKHR*>(this);
-    }
 };
 struct PresentRegionKHR {
     uint32_t rectangleCount{0};
     const RectLayerKHR* pRectangles = nullptr;
-    operator VkPresentRegionKHR const &() const noexcept {
-        return *reinterpret_cast<const VkPresentRegionKHR*>(this);
-    }
-    operator VkPresentRegionKHR &() noexcept {
-        return *reinterpret_cast<VkPresentRegionKHR*>(this);
-    }
 };
 struct PresentRegionsKHR {
     StructureType sType{StructureType::PresentRegionsKHR};
     const void* pNext = nullptr;
     uint32_t swapchainCount{0};
     const PresentRegionKHR* pRegions = nullptr;
-    operator VkPresentRegionsKHR const &() const noexcept {
-        return *reinterpret_cast<const VkPresentRegionsKHR*>(this);
-    }
-    operator VkPresentRegionsKHR &() noexcept {
-        return *reinterpret_cast<VkPresentRegionsKHR*>(this);
-    }
 };
 struct PhysicalDeviceVariablePointersFeatures {
     StructureType sType{StructureType::PhysicalDeviceVariablePointersFeatures};
     void* pNext = nullptr;
     Bool32 variablePointersStorageBuffer{0};
     Bool32 variablePointers{0};
-    operator VkPhysicalDeviceVariablePointersFeatures const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceVariablePointersFeatures*>(this);
-    }
-    operator VkPhysicalDeviceVariablePointersFeatures &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceVariablePointersFeatures*>(this);
-    }
 };
 using PhysicalDeviceVariablePointersFeaturesKHR = PhysicalDeviceVariablePointersFeatures;
+using VkPhysicalDeviceVariablePointersFeaturesKHR = PhysicalDeviceVariablePointersFeaturesKHR;
 using PhysicalDeviceVariablePointerFeaturesKHR = PhysicalDeviceVariablePointersFeatures;
+using VkPhysicalDeviceVariablePointerFeaturesKHR = PhysicalDeviceVariablePointerFeaturesKHR;
 using PhysicalDeviceVariablePointerFeatures = PhysicalDeviceVariablePointersFeatures;
+using VkPhysicalDeviceVariablePointerFeatures = PhysicalDeviceVariablePointerFeatures;
 struct ExternalMemoryProperties {
     ExternalMemoryFeatureFlags externalMemoryFeatures{};
     ExternalMemoryHandleTypeFlags exportFromImportedHandleTypes{};
     ExternalMemoryHandleTypeFlags compatibleHandleTypes{};
     constexpr bool operator==(ExternalMemoryProperties const& other) const = default;
-    operator VkExternalMemoryProperties const &() const noexcept {
-        return *reinterpret_cast<const VkExternalMemoryProperties*>(this);
-    }
-    operator VkExternalMemoryProperties &() noexcept {
-        return *reinterpret_cast<VkExternalMemoryProperties*>(this);
-    }
 };
 using ExternalMemoryPropertiesKHR = ExternalMemoryProperties;
+using VkExternalMemoryPropertiesKHR = ExternalMemoryPropertiesKHR;
 struct PhysicalDeviceExternalImageFormatInfo {
     StructureType sType{StructureType::PhysicalDeviceExternalImageFormatInfo};
     const void* pNext = nullptr;
     ExternalMemoryHandleTypeFlagBits handleType{static_cast<ExternalMemoryHandleTypeFlagBits>(0)};
-    operator VkPhysicalDeviceExternalImageFormatInfo const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceExternalImageFormatInfo*>(this);
-    }
-    operator VkPhysicalDeviceExternalImageFormatInfo &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceExternalImageFormatInfo*>(this);
-    }
 };
 using PhysicalDeviceExternalImageFormatInfoKHR = PhysicalDeviceExternalImageFormatInfo;
+using VkPhysicalDeviceExternalImageFormatInfoKHR = PhysicalDeviceExternalImageFormatInfoKHR;
 struct ExternalImageFormatProperties {
     StructureType sType{StructureType::ExternalImageFormatProperties};
     void* pNext = nullptr;
     ExternalMemoryProperties externalMemoryProperties{};
-    operator VkExternalImageFormatProperties const &() const noexcept {
-        return *reinterpret_cast<const VkExternalImageFormatProperties*>(this);
-    }
-    operator VkExternalImageFormatProperties &() noexcept {
-        return *reinterpret_cast<VkExternalImageFormatProperties*>(this);
-    }
 };
 using ExternalImageFormatPropertiesKHR = ExternalImageFormatProperties;
+using VkExternalImageFormatPropertiesKHR = ExternalImageFormatPropertiesKHR;
 struct PhysicalDeviceExternalBufferInfo {
     StructureType sType{StructureType::PhysicalDeviceExternalBufferInfo};
     const void* pNext = nullptr;
     BufferCreateFlags flags{};
     BufferUsageFlags usage{};
     ExternalMemoryHandleTypeFlagBits handleType{static_cast<ExternalMemoryHandleTypeFlagBits>(0)};
-    operator VkPhysicalDeviceExternalBufferInfo const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceExternalBufferInfo*>(this);
-    }
-    operator VkPhysicalDeviceExternalBufferInfo &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceExternalBufferInfo*>(this);
-    }
 };
 using PhysicalDeviceExternalBufferInfoKHR = PhysicalDeviceExternalBufferInfo;
+using VkPhysicalDeviceExternalBufferInfoKHR = PhysicalDeviceExternalBufferInfoKHR;
 struct ExternalBufferProperties {
     StructureType sType{StructureType::ExternalBufferProperties};
     void* pNext = nullptr;
     ExternalMemoryProperties externalMemoryProperties{};
-    operator VkExternalBufferProperties const &() const noexcept {
-        return *reinterpret_cast<const VkExternalBufferProperties*>(this);
-    }
-    operator VkExternalBufferProperties &() noexcept {
-        return *reinterpret_cast<VkExternalBufferProperties*>(this);
-    }
 };
 using ExternalBufferPropertiesKHR = ExternalBufferProperties;
+using VkExternalBufferPropertiesKHR = ExternalBufferPropertiesKHR;
 struct PhysicalDeviceIDProperties {
     StructureType sType{StructureType::PhysicalDeviceIdProperties};
     void* pNext = nullptr;
@@ -5685,50 +4581,30 @@ struct PhysicalDeviceIDProperties {
     uint8_t deviceLUID[LUID_SIZE];
     uint32_t deviceNodeMask{0};
     Bool32 deviceLUIDValid{0};
-    operator VkPhysicalDeviceIDProperties const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceIDProperties*>(this);
-    }
-    operator VkPhysicalDeviceIDProperties &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceIDProperties*>(this);
-    }
 };
 using PhysicalDeviceIDPropertiesKHR = PhysicalDeviceIDProperties;
+using VkPhysicalDeviceIDPropertiesKHR = PhysicalDeviceIDPropertiesKHR;
 struct ExternalMemoryImageCreateInfo {
     StructureType sType{StructureType::ExternalMemoryImageCreateInfo};
     const void* pNext = nullptr;
     ExternalMemoryHandleTypeFlags handleTypes{};
-    operator VkExternalMemoryImageCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkExternalMemoryImageCreateInfo*>(this);
-    }
-    operator VkExternalMemoryImageCreateInfo &() noexcept {
-        return *reinterpret_cast<VkExternalMemoryImageCreateInfo*>(this);
-    }
 };
 using ExternalMemoryImageCreateInfoKHR = ExternalMemoryImageCreateInfo;
+using VkExternalMemoryImageCreateInfoKHR = ExternalMemoryImageCreateInfoKHR;
 struct ExternalMemoryBufferCreateInfo {
     StructureType sType{StructureType::ExternalMemoryBufferCreateInfo};
     const void* pNext = nullptr;
     ExternalMemoryHandleTypeFlags handleTypes{};
-    operator VkExternalMemoryBufferCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkExternalMemoryBufferCreateInfo*>(this);
-    }
-    operator VkExternalMemoryBufferCreateInfo &() noexcept {
-        return *reinterpret_cast<VkExternalMemoryBufferCreateInfo*>(this);
-    }
 };
 using ExternalMemoryBufferCreateInfoKHR = ExternalMemoryBufferCreateInfo;
+using VkExternalMemoryBufferCreateInfoKHR = ExternalMemoryBufferCreateInfoKHR;
 struct ExportMemoryAllocateInfo {
     StructureType sType{StructureType::ExportMemoryAllocateInfo};
     const void* pNext = nullptr;
     ExternalMemoryHandleTypeFlags handleTypes{};
-    operator VkExportMemoryAllocateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkExportMemoryAllocateInfo*>(this);
-    }
-    operator VkExportMemoryAllocateInfo &() noexcept {
-        return *reinterpret_cast<VkExportMemoryAllocateInfo*>(this);
-    }
 };
 using ExportMemoryAllocateInfoKHR = ExportMemoryAllocateInfo;
+using VkExportMemoryAllocateInfoKHR = ExportMemoryAllocateInfoKHR;
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ImportMemoryWin32HandleInfoKHR {
     StructureType sType{StructureType::ImportMemoryWin32HandleInfoKHR};
@@ -5736,12 +4612,6 @@ struct ImportMemoryWin32HandleInfoKHR {
     ExternalMemoryHandleTypeFlagBits handleType{static_cast<ExternalMemoryHandleTypeFlagBits>(0)};
     HANDLE handle{};
     LPCWSTR name{};
-    operator VkImportMemoryWin32HandleInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkImportMemoryWin32HandleInfoKHR*>(this);
-    }
-    operator VkImportMemoryWin32HandleInfoKHR &() noexcept {
-        return *reinterpret_cast<VkImportMemoryWin32HandleInfoKHR*>(this);
-    }
 };
 struct ExportMemoryWin32HandleInfoKHR {
     StructureType sType{StructureType::ExportMemoryWin32HandleInfoKHR};
@@ -5749,35 +4619,17 @@ struct ExportMemoryWin32HandleInfoKHR {
     const SECURITY_ATTRIBUTES* pAttributes = nullptr;
     DWORD dwAccess{};
     LPCWSTR name{};
-    operator VkExportMemoryWin32HandleInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkExportMemoryWin32HandleInfoKHR*>(this);
-    }
-    operator VkExportMemoryWin32HandleInfoKHR &() noexcept {
-        return *reinterpret_cast<VkExportMemoryWin32HandleInfoKHR*>(this);
-    }
 };
 struct MemoryWin32HandlePropertiesKHR {
     StructureType sType{StructureType::MemoryWin32HandlePropertiesKHR};
     void* pNext = nullptr;
     uint32_t memoryTypeBits{0};
-    operator VkMemoryWin32HandlePropertiesKHR const &() const noexcept {
-        return *reinterpret_cast<const VkMemoryWin32HandlePropertiesKHR*>(this);
-    }
-    operator VkMemoryWin32HandlePropertiesKHR &() noexcept {
-        return *reinterpret_cast<VkMemoryWin32HandlePropertiesKHR*>(this);
-    }
 };
 struct MemoryGetWin32HandleInfoKHR {
     StructureType sType{StructureType::MemoryGetWin32HandleInfoKHR};
     const void* pNext = nullptr;
     DeviceMemory memory{};
     ExternalMemoryHandleTypeFlagBits handleType{static_cast<ExternalMemoryHandleTypeFlagBits>(0)};
-    operator VkMemoryGetWin32HandleInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkMemoryGetWin32HandleInfoKHR*>(this);
-    }
-    operator VkMemoryGetWin32HandleInfoKHR &() noexcept {
-        return *reinterpret_cast<VkMemoryGetWin32HandleInfoKHR*>(this);
-    }
 };
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ImportMemoryFdInfoKHR {
@@ -5785,35 +4637,17 @@ struct ImportMemoryFdInfoKHR {
     const void* pNext = nullptr;
     ExternalMemoryHandleTypeFlagBits handleType{static_cast<ExternalMemoryHandleTypeFlagBits>(0)};
     int fd{0};
-    operator VkImportMemoryFdInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkImportMemoryFdInfoKHR*>(this);
-    }
-    operator VkImportMemoryFdInfoKHR &() noexcept {
-        return *reinterpret_cast<VkImportMemoryFdInfoKHR*>(this);
-    }
 };
 struct MemoryFdPropertiesKHR {
     StructureType sType{StructureType::MemoryFdPropertiesKHR};
     void* pNext = nullptr;
     uint32_t memoryTypeBits{0};
-    operator VkMemoryFdPropertiesKHR const &() const noexcept {
-        return *reinterpret_cast<const VkMemoryFdPropertiesKHR*>(this);
-    }
-    operator VkMemoryFdPropertiesKHR &() noexcept {
-        return *reinterpret_cast<VkMemoryFdPropertiesKHR*>(this);
-    }
 };
 struct MemoryGetFdInfoKHR {
     StructureType sType{StructureType::MemoryGetFdInfoKHR};
     const void* pNext = nullptr;
     DeviceMemory memory{};
     ExternalMemoryHandleTypeFlagBits handleType{static_cast<ExternalMemoryHandleTypeFlagBits>(0)};
-    operator VkMemoryGetFdInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkMemoryGetFdInfoKHR*>(this);
-    }
-    operator VkMemoryGetFdInfoKHR &() noexcept {
-        return *reinterpret_cast<VkMemoryGetFdInfoKHR*>(this);
-    }
 };
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct Win32KeyedMutexAcquireReleaseInfoKHR {
@@ -5826,52 +4660,31 @@ struct Win32KeyedMutexAcquireReleaseInfoKHR {
     uint32_t releaseCount{0};
     const DeviceMemory* pReleaseSyncs = nullptr;
     const uint64_t* pReleaseKeys = nullptr;
-    operator VkWin32KeyedMutexAcquireReleaseInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkWin32KeyedMutexAcquireReleaseInfoKHR*>(this);
-    }
-    operator VkWin32KeyedMutexAcquireReleaseInfoKHR &() noexcept {
-        return *reinterpret_cast<VkWin32KeyedMutexAcquireReleaseInfoKHR*>(this);
-    }
 };
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 struct PhysicalDeviceExternalSemaphoreInfo {
     StructureType sType{StructureType::PhysicalDeviceExternalSemaphoreInfo};
     const void* pNext = nullptr;
     ExternalSemaphoreHandleTypeFlagBits handleType{static_cast<ExternalSemaphoreHandleTypeFlagBits>(0)};
-    operator VkPhysicalDeviceExternalSemaphoreInfo const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceExternalSemaphoreInfo*>(this);
-    }
-    operator VkPhysicalDeviceExternalSemaphoreInfo &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceExternalSemaphoreInfo*>(this);
-    }
 };
 using PhysicalDeviceExternalSemaphoreInfoKHR = PhysicalDeviceExternalSemaphoreInfo;
+using VkPhysicalDeviceExternalSemaphoreInfoKHR = PhysicalDeviceExternalSemaphoreInfoKHR;
 struct ExternalSemaphoreProperties {
     StructureType sType{StructureType::ExternalSemaphoreProperties};
     void* pNext = nullptr;
     ExternalSemaphoreHandleTypeFlags exportFromImportedHandleTypes{};
     ExternalSemaphoreHandleTypeFlags compatibleHandleTypes{};
     ExternalSemaphoreFeatureFlags externalSemaphoreFeatures{};
-    operator VkExternalSemaphoreProperties const &() const noexcept {
-        return *reinterpret_cast<const VkExternalSemaphoreProperties*>(this);
-    }
-    operator VkExternalSemaphoreProperties &() noexcept {
-        return *reinterpret_cast<VkExternalSemaphoreProperties*>(this);
-    }
 };
 using ExternalSemaphorePropertiesKHR = ExternalSemaphoreProperties;
+using VkExternalSemaphorePropertiesKHR = ExternalSemaphorePropertiesKHR;
 struct ExportSemaphoreCreateInfo {
     StructureType sType{StructureType::ExportSemaphoreCreateInfo};
     const void* pNext = nullptr;
     ExternalSemaphoreHandleTypeFlags handleTypes{};
-    operator VkExportSemaphoreCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkExportSemaphoreCreateInfo*>(this);
-    }
-    operator VkExportSemaphoreCreateInfo &() noexcept {
-        return *reinterpret_cast<VkExportSemaphoreCreateInfo*>(this);
-    }
 };
 using ExportSemaphoreCreateInfoKHR = ExportSemaphoreCreateInfo;
+using VkExportSemaphoreCreateInfoKHR = ExportSemaphoreCreateInfoKHR;
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ImportSemaphoreWin32HandleInfoKHR {
     StructureType sType{StructureType::ImportSemaphoreWin32HandleInfoKHR};
@@ -5881,12 +4694,6 @@ struct ImportSemaphoreWin32HandleInfoKHR {
     ExternalSemaphoreHandleTypeFlagBits handleType{static_cast<ExternalSemaphoreHandleTypeFlagBits>(0)};
     HANDLE handle{};
     LPCWSTR name{};
-    operator VkImportSemaphoreWin32HandleInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkImportSemaphoreWin32HandleInfoKHR*>(this);
-    }
-    operator VkImportSemaphoreWin32HandleInfoKHR &() noexcept {
-        return *reinterpret_cast<VkImportSemaphoreWin32HandleInfoKHR*>(this);
-    }
 };
 struct ExportSemaphoreWin32HandleInfoKHR {
     StructureType sType{StructureType::ExportSemaphoreWin32HandleInfoKHR};
@@ -5894,12 +4701,6 @@ struct ExportSemaphoreWin32HandleInfoKHR {
     const SECURITY_ATTRIBUTES* pAttributes = nullptr;
     DWORD dwAccess{};
     LPCWSTR name{};
-    operator VkExportSemaphoreWin32HandleInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkExportSemaphoreWin32HandleInfoKHR*>(this);
-    }
-    operator VkExportSemaphoreWin32HandleInfoKHR &() noexcept {
-        return *reinterpret_cast<VkExportSemaphoreWin32HandleInfoKHR*>(this);
-    }
 };
 struct D3D12FenceSubmitInfoKHR {
     StructureType sType{StructureType::D3D12FenceSubmitInfoKHR};
@@ -5908,24 +4709,12 @@ struct D3D12FenceSubmitInfoKHR {
     const uint64_t* pWaitSemaphoreValues = nullptr;
     uint32_t signalSemaphoreValuesCount{0};
     const uint64_t* pSignalSemaphoreValues = nullptr;
-    operator VkD3D12FenceSubmitInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkD3D12FenceSubmitInfoKHR*>(this);
-    }
-    operator VkD3D12FenceSubmitInfoKHR &() noexcept {
-        return *reinterpret_cast<VkD3D12FenceSubmitInfoKHR*>(this);
-    }
 };
 struct SemaphoreGetWin32HandleInfoKHR {
     StructureType sType{StructureType::SemaphoreGetWin32HandleInfoKHR};
     const void* pNext = nullptr;
     Semaphore semaphore{};
     ExternalSemaphoreHandleTypeFlagBits handleType{static_cast<ExternalSemaphoreHandleTypeFlagBits>(0)};
-    operator VkSemaphoreGetWin32HandleInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkSemaphoreGetWin32HandleInfoKHR*>(this);
-    }
-    operator VkSemaphoreGetWin32HandleInfoKHR &() noexcept {
-        return *reinterpret_cast<VkSemaphoreGetWin32HandleInfoKHR*>(this);
-    }
 };
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ImportSemaphoreFdInfoKHR {
@@ -5935,63 +4724,36 @@ struct ImportSemaphoreFdInfoKHR {
     SemaphoreImportFlags flags{};
     ExternalSemaphoreHandleTypeFlagBits handleType{static_cast<ExternalSemaphoreHandleTypeFlagBits>(0)};
     int fd{0};
-    operator VkImportSemaphoreFdInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkImportSemaphoreFdInfoKHR*>(this);
-    }
-    operator VkImportSemaphoreFdInfoKHR &() noexcept {
-        return *reinterpret_cast<VkImportSemaphoreFdInfoKHR*>(this);
-    }
 };
 struct SemaphoreGetFdInfoKHR {
     StructureType sType{StructureType::SemaphoreGetFdInfoKHR};
     const void* pNext = nullptr;
     Semaphore semaphore{};
     ExternalSemaphoreHandleTypeFlagBits handleType{static_cast<ExternalSemaphoreHandleTypeFlagBits>(0)};
-    operator VkSemaphoreGetFdInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkSemaphoreGetFdInfoKHR*>(this);
-    }
-    operator VkSemaphoreGetFdInfoKHR &() noexcept {
-        return *reinterpret_cast<VkSemaphoreGetFdInfoKHR*>(this);
-    }
 };
 struct PhysicalDeviceExternalFenceInfo {
     StructureType sType{StructureType::PhysicalDeviceExternalFenceInfo};
     const void* pNext = nullptr;
     ExternalFenceHandleTypeFlagBits handleType{static_cast<ExternalFenceHandleTypeFlagBits>(0)};
-    operator VkPhysicalDeviceExternalFenceInfo const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceExternalFenceInfo*>(this);
-    }
-    operator VkPhysicalDeviceExternalFenceInfo &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceExternalFenceInfo*>(this);
-    }
 };
 using PhysicalDeviceExternalFenceInfoKHR = PhysicalDeviceExternalFenceInfo;
+using VkPhysicalDeviceExternalFenceInfoKHR = PhysicalDeviceExternalFenceInfoKHR;
 struct ExternalFenceProperties {
     StructureType sType{StructureType::ExternalFenceProperties};
     void* pNext = nullptr;
     ExternalFenceHandleTypeFlags exportFromImportedHandleTypes{};
     ExternalFenceHandleTypeFlags compatibleHandleTypes{};
     ExternalFenceFeatureFlags externalFenceFeatures{};
-    operator VkExternalFenceProperties const &() const noexcept {
-        return *reinterpret_cast<const VkExternalFenceProperties*>(this);
-    }
-    operator VkExternalFenceProperties &() noexcept {
-        return *reinterpret_cast<VkExternalFenceProperties*>(this);
-    }
 };
 using ExternalFencePropertiesKHR = ExternalFenceProperties;
+using VkExternalFencePropertiesKHR = ExternalFencePropertiesKHR;
 struct ExportFenceCreateInfo {
     StructureType sType{StructureType::ExportFenceCreateInfo};
     const void* pNext = nullptr;
     ExternalFenceHandleTypeFlags handleTypes{};
-    operator VkExportFenceCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkExportFenceCreateInfo*>(this);
-    }
-    operator VkExportFenceCreateInfo &() noexcept {
-        return *reinterpret_cast<VkExportFenceCreateInfo*>(this);
-    }
 };
 using ExportFenceCreateInfoKHR = ExportFenceCreateInfo;
+using VkExportFenceCreateInfoKHR = ExportFenceCreateInfoKHR;
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ImportFenceWin32HandleInfoKHR {
     StructureType sType{StructureType::ImportFenceWin32HandleInfoKHR};
@@ -6001,12 +4763,6 @@ struct ImportFenceWin32HandleInfoKHR {
     ExternalFenceHandleTypeFlagBits handleType{static_cast<ExternalFenceHandleTypeFlagBits>(0)};
     HANDLE handle{};
     LPCWSTR name{};
-    operator VkImportFenceWin32HandleInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkImportFenceWin32HandleInfoKHR*>(this);
-    }
-    operator VkImportFenceWin32HandleInfoKHR &() noexcept {
-        return *reinterpret_cast<VkImportFenceWin32HandleInfoKHR*>(this);
-    }
 };
 struct ExportFenceWin32HandleInfoKHR {
     StructureType sType{StructureType::ExportFenceWin32HandleInfoKHR};
@@ -6014,24 +4770,12 @@ struct ExportFenceWin32HandleInfoKHR {
     const SECURITY_ATTRIBUTES* pAttributes = nullptr;
     DWORD dwAccess{};
     LPCWSTR name{};
-    operator VkExportFenceWin32HandleInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkExportFenceWin32HandleInfoKHR*>(this);
-    }
-    operator VkExportFenceWin32HandleInfoKHR &() noexcept {
-        return *reinterpret_cast<VkExportFenceWin32HandleInfoKHR*>(this);
-    }
 };
 struct FenceGetWin32HandleInfoKHR {
     StructureType sType{StructureType::FenceGetWin32HandleInfoKHR};
     const void* pNext = nullptr;
     Fence fence{};
     ExternalFenceHandleTypeFlagBits handleType{static_cast<ExternalFenceHandleTypeFlagBits>(0)};
-    operator VkFenceGetWin32HandleInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkFenceGetWin32HandleInfoKHR*>(this);
-    }
-    operator VkFenceGetWin32HandleInfoKHR &() noexcept {
-        return *reinterpret_cast<VkFenceGetWin32HandleInfoKHR*>(this);
-    }
 };
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ImportFenceFdInfoKHR {
@@ -6041,24 +4785,12 @@ struct ImportFenceFdInfoKHR {
     FenceImportFlags flags{};
     ExternalFenceHandleTypeFlagBits handleType{static_cast<ExternalFenceHandleTypeFlagBits>(0)};
     int fd{0};
-    operator VkImportFenceFdInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkImportFenceFdInfoKHR*>(this);
-    }
-    operator VkImportFenceFdInfoKHR &() noexcept {
-        return *reinterpret_cast<VkImportFenceFdInfoKHR*>(this);
-    }
 };
 struct FenceGetFdInfoKHR {
     StructureType sType{StructureType::FenceGetFdInfoKHR};
     const void* pNext = nullptr;
     Fence fence{};
     ExternalFenceHandleTypeFlagBits handleType{static_cast<ExternalFenceHandleTypeFlagBits>(0)};
-    operator VkFenceGetFdInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkFenceGetFdInfoKHR*>(this);
-    }
-    operator VkFenceGetFdInfoKHR &() noexcept {
-        return *reinterpret_cast<VkFenceGetFdInfoKHR*>(this);
-    }
 };
 struct PhysicalDeviceMultiviewFeatures {
     StructureType sType{StructureType::PhysicalDeviceMultiviewFeatures};
@@ -6066,27 +4798,17 @@ struct PhysicalDeviceMultiviewFeatures {
     Bool32 multiview{0};
     Bool32 multiviewGeometryShader{0};
     Bool32 multiviewTessellationShader{0};
-    operator VkPhysicalDeviceMultiviewFeatures const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceMultiviewFeatures*>(this);
-    }
-    operator VkPhysicalDeviceMultiviewFeatures &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceMultiviewFeatures*>(this);
-    }
 };
 using PhysicalDeviceMultiviewFeaturesKHR = PhysicalDeviceMultiviewFeatures;
+using VkPhysicalDeviceMultiviewFeaturesKHR = PhysicalDeviceMultiviewFeaturesKHR;
 struct PhysicalDeviceMultiviewProperties {
     StructureType sType{StructureType::PhysicalDeviceMultiviewProperties};
     void* pNext = nullptr;
     uint32_t maxMultiviewViewCount{0};
     uint32_t maxMultiviewInstanceIndex{0};
-    operator VkPhysicalDeviceMultiviewProperties const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceMultiviewProperties*>(this);
-    }
-    operator VkPhysicalDeviceMultiviewProperties &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceMultiviewProperties*>(this);
-    }
 };
 using PhysicalDeviceMultiviewPropertiesKHR = PhysicalDeviceMultiviewProperties;
+using VkPhysicalDeviceMultiviewPropertiesKHR = PhysicalDeviceMultiviewPropertiesKHR;
 struct RenderPassMultiviewCreateInfo {
     StructureType sType{StructureType::RenderPassMultiviewCreateInfo};
     const void* pNext = nullptr;
@@ -6096,14 +4818,9 @@ struct RenderPassMultiviewCreateInfo {
     const int32_t* pViewOffsets = nullptr;
     uint32_t correlationMaskCount{0};
     const uint32_t* pCorrelationMasks = nullptr;
-    operator VkRenderPassMultiviewCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkRenderPassMultiviewCreateInfo*>(this);
-    }
-    operator VkRenderPassMultiviewCreateInfo &() noexcept {
-        return *reinterpret_cast<VkRenderPassMultiviewCreateInfo*>(this);
-    }
 };
 using RenderPassMultiviewCreateInfoKHR = RenderPassMultiviewCreateInfo;
+using VkRenderPassMultiviewCreateInfoKHR = RenderPassMultiviewCreateInfoKHR;
 struct SurfaceCapabilities2EXT {
     StructureType sType{StructureType::SurfaceCapabilities2EXT};
     void* pNext = nullptr;
@@ -6118,56 +4835,26 @@ struct SurfaceCapabilities2EXT {
     CompositeAlphaFlagsKHR supportedCompositeAlpha{};
     ImageUsageFlags supportedUsageFlags{};
     SurfaceCounterFlagsEXT supportedSurfaceCounters{};
-    operator VkSurfaceCapabilities2EXT const &() const noexcept {
-        return *reinterpret_cast<const VkSurfaceCapabilities2EXT*>(this);
-    }
-    operator VkSurfaceCapabilities2EXT &() noexcept {
-        return *reinterpret_cast<VkSurfaceCapabilities2EXT*>(this);
-    }
 };
 struct DisplayPowerInfoEXT {
     StructureType sType{StructureType::DisplayPowerInfoEXT};
     const void* pNext = nullptr;
     DisplayPowerStateEXT powerState{static_cast<DisplayPowerStateEXT>(0)};
-    operator VkDisplayPowerInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkDisplayPowerInfoEXT*>(this);
-    }
-    operator VkDisplayPowerInfoEXT &() noexcept {
-        return *reinterpret_cast<VkDisplayPowerInfoEXT*>(this);
-    }
 };
 struct DeviceEventInfoEXT {
     StructureType sType{StructureType::DeviceEventInfoEXT};
     const void* pNext = nullptr;
     DeviceEventTypeEXT deviceEvent{static_cast<DeviceEventTypeEXT>(0)};
-    operator VkDeviceEventInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkDeviceEventInfoEXT*>(this);
-    }
-    operator VkDeviceEventInfoEXT &() noexcept {
-        return *reinterpret_cast<VkDeviceEventInfoEXT*>(this);
-    }
 };
 struct DisplayEventInfoEXT {
     StructureType sType{StructureType::DisplayEventInfoEXT};
     const void* pNext = nullptr;
     DisplayEventTypeEXT displayEvent{static_cast<DisplayEventTypeEXT>(0)};
-    operator VkDisplayEventInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkDisplayEventInfoEXT*>(this);
-    }
-    operator VkDisplayEventInfoEXT &() noexcept {
-        return *reinterpret_cast<VkDisplayEventInfoEXT*>(this);
-    }
 };
 struct SwapchainCounterCreateInfoEXT {
     StructureType sType{StructureType::SwapchainCounterCreateInfoEXT};
     const void* pNext = nullptr;
     SurfaceCounterFlagsEXT surfaceCounters{};
-    operator VkSwapchainCounterCreateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkSwapchainCounterCreateInfoEXT*>(this);
-    }
-    operator VkSwapchainCounterCreateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkSwapchainCounterCreateInfoEXT*>(this);
-    }
 };
 struct PhysicalDeviceGroupProperties {
     StructureType sType{StructureType::PhysicalDeviceGroupProperties};
@@ -6175,68 +4862,43 @@ struct PhysicalDeviceGroupProperties {
     uint32_t physicalDeviceCount{0};
     PhysicalDevice physicalDevices[MAX_DEVICE_GROUP_SIZE];
     Bool32 subsetAllocation{0};
-    operator VkPhysicalDeviceGroupProperties const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceGroupProperties*>(this);
-    }
-    operator VkPhysicalDeviceGroupProperties &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceGroupProperties*>(this);
-    }
 };
 using PhysicalDeviceGroupPropertiesKHR = PhysicalDeviceGroupProperties;
+using VkPhysicalDeviceGroupPropertiesKHR = PhysicalDeviceGroupPropertiesKHR;
 struct MemoryAllocateFlagsInfo {
     StructureType sType{StructureType::MemoryAllocateFlagsInfo};
     const void* pNext = nullptr;
     MemoryAllocateFlags flags{};
     uint32_t deviceMask{0};
-    operator VkMemoryAllocateFlagsInfo const &() const noexcept {
-        return *reinterpret_cast<const VkMemoryAllocateFlagsInfo*>(this);
-    }
-    operator VkMemoryAllocateFlagsInfo &() noexcept {
-        return *reinterpret_cast<VkMemoryAllocateFlagsInfo*>(this);
-    }
 };
 using MemoryAllocateFlagsInfoKHR = MemoryAllocateFlagsInfo;
+using VkMemoryAllocateFlagsInfoKHR = MemoryAllocateFlagsInfoKHR;
 struct BindBufferMemoryInfo {
     StructureType sType{StructureType::BindBufferMemoryInfo};
     const void* pNext = nullptr;
     Buffer buffer{};
     DeviceMemory memory{};
     DeviceSize memoryOffset{0};
-    operator VkBindBufferMemoryInfo const &() const noexcept {
-        return *reinterpret_cast<const VkBindBufferMemoryInfo*>(this);
-    }
-    operator VkBindBufferMemoryInfo &() noexcept {
-        return *reinterpret_cast<VkBindBufferMemoryInfo*>(this);
-    }
 };
 using BindBufferMemoryInfoKHR = BindBufferMemoryInfo;
+using VkBindBufferMemoryInfoKHR = BindBufferMemoryInfoKHR;
 struct BindBufferMemoryDeviceGroupInfo {
     StructureType sType{StructureType::BindBufferMemoryDeviceGroupInfo};
     const void* pNext = nullptr;
     uint32_t deviceIndexCount{0};
     const uint32_t* pDeviceIndices = nullptr;
-    operator VkBindBufferMemoryDeviceGroupInfo const &() const noexcept {
-        return *reinterpret_cast<const VkBindBufferMemoryDeviceGroupInfo*>(this);
-    }
-    operator VkBindBufferMemoryDeviceGroupInfo &() noexcept {
-        return *reinterpret_cast<VkBindBufferMemoryDeviceGroupInfo*>(this);
-    }
 };
 using BindBufferMemoryDeviceGroupInfoKHR = BindBufferMemoryDeviceGroupInfo;
+using VkBindBufferMemoryDeviceGroupInfoKHR = BindBufferMemoryDeviceGroupInfoKHR;
 struct BindImageMemoryInfo {
     StructureType sType{StructureType::BindImageMemoryInfo};
     const void* pNext = nullptr;
     Image image{};
     DeviceMemory memory{};
     DeviceSize memoryOffset{0};
-    operator VkBindImageMemoryInfo const &() const noexcept {
-        return *reinterpret_cast<const VkBindImageMemoryInfo*>(this);
-    }
-    operator VkBindImageMemoryInfo &() noexcept {
-        return *reinterpret_cast<VkBindImageMemoryInfo*>(this);
-    }
 };
 using BindImageMemoryInfoKHR = BindImageMemoryInfo;
+using VkBindImageMemoryInfoKHR = BindImageMemoryInfoKHR;
 struct BindImageMemoryDeviceGroupInfo {
     StructureType sType{StructureType::BindImageMemoryDeviceGroupInfo};
     const void* pNext = nullptr;
@@ -6244,40 +4906,25 @@ struct BindImageMemoryDeviceGroupInfo {
     const uint32_t* pDeviceIndices = nullptr;
     uint32_t splitInstanceBindRegionCount{0};
     const Rect2D* pSplitInstanceBindRegions = nullptr;
-    operator VkBindImageMemoryDeviceGroupInfo const &() const noexcept {
-        return *reinterpret_cast<const VkBindImageMemoryDeviceGroupInfo*>(this);
-    }
-    operator VkBindImageMemoryDeviceGroupInfo &() noexcept {
-        return *reinterpret_cast<VkBindImageMemoryDeviceGroupInfo*>(this);
-    }
 };
 using BindImageMemoryDeviceGroupInfoKHR = BindImageMemoryDeviceGroupInfo;
+using VkBindImageMemoryDeviceGroupInfoKHR = BindImageMemoryDeviceGroupInfoKHR;
 struct DeviceGroupRenderPassBeginInfo {
     StructureType sType{StructureType::DeviceGroupRenderPassBeginInfo};
     const void* pNext = nullptr;
     uint32_t deviceMask{0};
     uint32_t deviceRenderAreaCount{0};
     const Rect2D* pDeviceRenderAreas = nullptr;
-    operator VkDeviceGroupRenderPassBeginInfo const &() const noexcept {
-        return *reinterpret_cast<const VkDeviceGroupRenderPassBeginInfo*>(this);
-    }
-    operator VkDeviceGroupRenderPassBeginInfo &() noexcept {
-        return *reinterpret_cast<VkDeviceGroupRenderPassBeginInfo*>(this);
-    }
 };
 using DeviceGroupRenderPassBeginInfoKHR = DeviceGroupRenderPassBeginInfo;
+using VkDeviceGroupRenderPassBeginInfoKHR = DeviceGroupRenderPassBeginInfoKHR;
 struct DeviceGroupCommandBufferBeginInfo {
     StructureType sType{StructureType::DeviceGroupCommandBufferBeginInfo};
     const void* pNext = nullptr;
     uint32_t deviceMask{0};
-    operator VkDeviceGroupCommandBufferBeginInfo const &() const noexcept {
-        return *reinterpret_cast<const VkDeviceGroupCommandBufferBeginInfo*>(this);
-    }
-    operator VkDeviceGroupCommandBufferBeginInfo &() noexcept {
-        return *reinterpret_cast<VkDeviceGroupCommandBufferBeginInfo*>(this);
-    }
 };
 using DeviceGroupCommandBufferBeginInfoKHR = DeviceGroupCommandBufferBeginInfo;
+using VkDeviceGroupCommandBufferBeginInfoKHR = DeviceGroupCommandBufferBeginInfoKHR;
 struct DeviceGroupSubmitInfo {
     StructureType sType{StructureType::DeviceGroupSubmitInfo};
     const void* pNext = nullptr;
@@ -6287,61 +4934,33 @@ struct DeviceGroupSubmitInfo {
     const uint32_t* pCommandBufferDeviceMasks = nullptr;
     uint32_t signalSemaphoreCount{0};
     const uint32_t* pSignalSemaphoreDeviceIndices = nullptr;
-    operator VkDeviceGroupSubmitInfo const &() const noexcept {
-        return *reinterpret_cast<const VkDeviceGroupSubmitInfo*>(this);
-    }
-    operator VkDeviceGroupSubmitInfo &() noexcept {
-        return *reinterpret_cast<VkDeviceGroupSubmitInfo*>(this);
-    }
 };
 using DeviceGroupSubmitInfoKHR = DeviceGroupSubmitInfo;
+using VkDeviceGroupSubmitInfoKHR = DeviceGroupSubmitInfoKHR;
 struct DeviceGroupBindSparseInfo {
     StructureType sType{StructureType::DeviceGroupBindSparseInfo};
     const void* pNext = nullptr;
     uint32_t resourceDeviceIndex{0};
     uint32_t memoryDeviceIndex{0};
-    operator VkDeviceGroupBindSparseInfo const &() const noexcept {
-        return *reinterpret_cast<const VkDeviceGroupBindSparseInfo*>(this);
-    }
-    operator VkDeviceGroupBindSparseInfo &() noexcept {
-        return *reinterpret_cast<VkDeviceGroupBindSparseInfo*>(this);
-    }
 };
 using DeviceGroupBindSparseInfoKHR = DeviceGroupBindSparseInfo;
+using VkDeviceGroupBindSparseInfoKHR = DeviceGroupBindSparseInfoKHR;
 struct DeviceGroupPresentCapabilitiesKHR {
     StructureType sType{StructureType::DeviceGroupPresentCapabilitiesKHR};
     const void* pNext = nullptr;
     uint32_t presentMask[MAX_DEVICE_GROUP_SIZE];
     DeviceGroupPresentModeFlagsKHR modes{};
-    operator VkDeviceGroupPresentCapabilitiesKHR const &() const noexcept {
-        return *reinterpret_cast<const VkDeviceGroupPresentCapabilitiesKHR*>(this);
-    }
-    operator VkDeviceGroupPresentCapabilitiesKHR &() noexcept {
-        return *reinterpret_cast<VkDeviceGroupPresentCapabilitiesKHR*>(this);
-    }
 };
 struct ImageSwapchainCreateInfoKHR {
     StructureType sType{StructureType::ImageSwapchainCreateInfoKHR};
     const void* pNext = nullptr;
     SwapchainKHR swapchain{};
-    operator VkImageSwapchainCreateInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkImageSwapchainCreateInfoKHR*>(this);
-    }
-    operator VkImageSwapchainCreateInfoKHR &() noexcept {
-        return *reinterpret_cast<VkImageSwapchainCreateInfoKHR*>(this);
-    }
 };
 struct BindImageMemorySwapchainInfoKHR {
     StructureType sType{StructureType::BindImageMemorySwapchainInfoKHR};
     const void* pNext = nullptr;
     SwapchainKHR swapchain{};
     uint32_t imageIndex{0};
-    operator VkBindImageMemorySwapchainInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkBindImageMemorySwapchainInfoKHR*>(this);
-    }
-    operator VkBindImageMemorySwapchainInfoKHR &() noexcept {
-        return *reinterpret_cast<VkBindImageMemorySwapchainInfoKHR*>(this);
-    }
 };
 struct AcquireNextImageInfoKHR {
     StructureType sType{StructureType::AcquireNextImageInfoKHR};
@@ -6351,12 +4970,6 @@ struct AcquireNextImageInfoKHR {
     Semaphore semaphore{};
     Fence fence{};
     uint32_t deviceMask{0};
-    operator VkAcquireNextImageInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkAcquireNextImageInfoKHR*>(this);
-    }
-    operator VkAcquireNextImageInfoKHR &() noexcept {
-        return *reinterpret_cast<VkAcquireNextImageInfoKHR*>(this);
-    }
 };
 struct DeviceGroupPresentInfoKHR {
     StructureType sType{StructureType::DeviceGroupPresentInfoKHR};
@@ -6364,36 +4977,19 @@ struct DeviceGroupPresentInfoKHR {
     uint32_t swapchainCount{0};
     const uint32_t* pDeviceMasks = nullptr;
     DeviceGroupPresentModeFlagBitsKHR mode{static_cast<DeviceGroupPresentModeFlagBitsKHR>(0)};
-    operator VkDeviceGroupPresentInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkDeviceGroupPresentInfoKHR*>(this);
-    }
-    operator VkDeviceGroupPresentInfoKHR &() noexcept {
-        return *reinterpret_cast<VkDeviceGroupPresentInfoKHR*>(this);
-    }
 };
 struct DeviceGroupDeviceCreateInfo {
     StructureType sType{StructureType::DeviceGroupDeviceCreateInfo};
     const void* pNext = nullptr;
     uint32_t physicalDeviceCount{0};
     const PhysicalDevice* pPhysicalDevices = nullptr;
-    operator VkDeviceGroupDeviceCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkDeviceGroupDeviceCreateInfo*>(this);
-    }
-    operator VkDeviceGroupDeviceCreateInfo &() noexcept {
-        return *reinterpret_cast<VkDeviceGroupDeviceCreateInfo*>(this);
-    }
 };
 using DeviceGroupDeviceCreateInfoKHR = DeviceGroupDeviceCreateInfo;
+using VkDeviceGroupDeviceCreateInfoKHR = DeviceGroupDeviceCreateInfoKHR;
 struct DeviceGroupSwapchainCreateInfoKHR {
     StructureType sType{StructureType::DeviceGroupSwapchainCreateInfoKHR};
     const void* pNext = nullptr;
     DeviceGroupPresentModeFlagsKHR modes{};
-    operator VkDeviceGroupSwapchainCreateInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkDeviceGroupSwapchainCreateInfoKHR*>(this);
-    }
-    operator VkDeviceGroupSwapchainCreateInfoKHR &() noexcept {
-        return *reinterpret_cast<VkDeviceGroupSwapchainCreateInfoKHR*>(this);
-    }
 };
 struct DescriptorUpdateTemplateEntry {
     uint32_t dstBinding{0};
@@ -6403,14 +4999,9 @@ struct DescriptorUpdateTemplateEntry {
     size_t offset{0};
     size_t stride{0};
     constexpr bool operator==(DescriptorUpdateTemplateEntry const& other) const = default;
-    operator VkDescriptorUpdateTemplateEntry const &() const noexcept {
-        return *reinterpret_cast<const VkDescriptorUpdateTemplateEntry*>(this);
-    }
-    operator VkDescriptorUpdateTemplateEntry &() noexcept {
-        return *reinterpret_cast<VkDescriptorUpdateTemplateEntry*>(this);
-    }
 };
 using DescriptorUpdateTemplateEntryKHR = DescriptorUpdateTemplateEntry;
+using VkDescriptorUpdateTemplateEntryKHR = DescriptorUpdateTemplateEntryKHR;
 struct DescriptorUpdateTemplateCreateInfo {
     StructureType sType{StructureType::DescriptorUpdateTemplateCreateInfo};
     const void* pNext = nullptr;
@@ -6422,24 +5013,13 @@ struct DescriptorUpdateTemplateCreateInfo {
     PipelineBindPoint pipelineBindPoint{static_cast<PipelineBindPoint>(0)};
     PipelineLayout pipelineLayout{};
     uint32_t set{0};
-    operator VkDescriptorUpdateTemplateCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkDescriptorUpdateTemplateCreateInfo*>(this);
-    }
-    operator VkDescriptorUpdateTemplateCreateInfo &() noexcept {
-        return *reinterpret_cast<VkDescriptorUpdateTemplateCreateInfo*>(this);
-    }
 };
 using DescriptorUpdateTemplateCreateInfoKHR = DescriptorUpdateTemplateCreateInfo;
+using VkDescriptorUpdateTemplateCreateInfoKHR = DescriptorUpdateTemplateCreateInfoKHR;
 struct XYColorEXT {
     float x{0.f};
     float y{0.f};
     constexpr bool operator==(XYColorEXT const& other) const = default;
-    operator VkXYColorEXT const &() const noexcept {
-        return *reinterpret_cast<const VkXYColorEXT*>(this);
-    }
-    operator VkXYColorEXT &() noexcept {
-        return *reinterpret_cast<VkXYColorEXT*>(this);
-    }
 };
 struct HdrMetadataEXT {
     StructureType sType{StructureType::HdrMetadataEXT};
@@ -6452,44 +5032,20 @@ struct HdrMetadataEXT {
     float minLuminance{0.f};
     float maxContentLightLevel{0.f};
     float maxFrameAverageLightLevel{0.f};
-    operator VkHdrMetadataEXT const &() const noexcept {
-        return *reinterpret_cast<const VkHdrMetadataEXT*>(this);
-    }
-    operator VkHdrMetadataEXT &() noexcept {
-        return *reinterpret_cast<VkHdrMetadataEXT*>(this);
-    }
 };
 struct DisplayNativeHdrSurfaceCapabilitiesAMD {
     StructureType sType{StructureType::DisplayNativeHdrSurfaceCapabilitiesAMD};
     void* pNext = nullptr;
     Bool32 localDimmingSupport{0};
-    operator VkDisplayNativeHdrSurfaceCapabilitiesAMD const &() const noexcept {
-        return *reinterpret_cast<const VkDisplayNativeHdrSurfaceCapabilitiesAMD*>(this);
-    }
-    operator VkDisplayNativeHdrSurfaceCapabilitiesAMD &() noexcept {
-        return *reinterpret_cast<VkDisplayNativeHdrSurfaceCapabilitiesAMD*>(this);
-    }
 };
 struct SwapchainDisplayNativeHdrCreateInfoAMD {
     StructureType sType{StructureType::SwapchainDisplayNativeHdrCreateInfoAMD};
     const void* pNext = nullptr;
     Bool32 localDimmingEnable{0};
-    operator VkSwapchainDisplayNativeHdrCreateInfoAMD const &() const noexcept {
-        return *reinterpret_cast<const VkSwapchainDisplayNativeHdrCreateInfoAMD*>(this);
-    }
-    operator VkSwapchainDisplayNativeHdrCreateInfoAMD &() noexcept {
-        return *reinterpret_cast<VkSwapchainDisplayNativeHdrCreateInfoAMD*>(this);
-    }
 };
 struct RefreshCycleDurationGOOGLE {
     uint64_t refreshDuration{0};
     constexpr bool operator==(RefreshCycleDurationGOOGLE const& other) const = default;
-    operator VkRefreshCycleDurationGOOGLE const &() const noexcept {
-        return *reinterpret_cast<const VkRefreshCycleDurationGOOGLE*>(this);
-    }
-    operator VkRefreshCycleDurationGOOGLE &() noexcept {
-        return *reinterpret_cast<VkRefreshCycleDurationGOOGLE*>(this);
-    }
 };
 struct PastPresentationTimingGOOGLE {
     uint32_t presentID{0};
@@ -6498,35 +5054,17 @@ struct PastPresentationTimingGOOGLE {
     uint64_t earliestPresentTime{0};
     uint64_t presentMargin{0};
     constexpr bool operator==(PastPresentationTimingGOOGLE const& other) const = default;
-    operator VkPastPresentationTimingGOOGLE const &() const noexcept {
-        return *reinterpret_cast<const VkPastPresentationTimingGOOGLE*>(this);
-    }
-    operator VkPastPresentationTimingGOOGLE &() noexcept {
-        return *reinterpret_cast<VkPastPresentationTimingGOOGLE*>(this);
-    }
 };
 struct PresentTimeGOOGLE {
     uint32_t presentID{0};
     uint64_t desiredPresentTime{0};
     constexpr bool operator==(PresentTimeGOOGLE const& other) const = default;
-    operator VkPresentTimeGOOGLE const &() const noexcept {
-        return *reinterpret_cast<const VkPresentTimeGOOGLE*>(this);
-    }
-    operator VkPresentTimeGOOGLE &() noexcept {
-        return *reinterpret_cast<VkPresentTimeGOOGLE*>(this);
-    }
 };
 struct PresentTimesInfoGOOGLE {
     StructureType sType{StructureType::PresentTimesInfoGOOGLE};
     const void* pNext = nullptr;
     uint32_t swapchainCount{0};
     const PresentTimeGOOGLE* pTimes = nullptr;
-    operator VkPresentTimesInfoGOOGLE const &() const noexcept {
-        return *reinterpret_cast<const VkPresentTimesInfoGOOGLE*>(this);
-    }
-    operator VkPresentTimesInfoGOOGLE &() noexcept {
-        return *reinterpret_cast<VkPresentTimesInfoGOOGLE*>(this);
-    }
 };
 #if defined(VK_USE_PLATFORM_IOS_MVK)
 struct IOSSurfaceCreateInfoMVK {
@@ -6534,12 +5072,6 @@ struct IOSSurfaceCreateInfoMVK {
     const void* pNext = nullptr;
     IOSSurfaceCreateFlagsMVK flags{};
     const void* pView = nullptr;
-    operator VkIOSSurfaceCreateInfoMVK const &() const noexcept {
-        return *reinterpret_cast<const VkIOSSurfaceCreateInfoMVK*>(this);
-    }
-    operator VkIOSSurfaceCreateInfoMVK &() noexcept {
-        return *reinterpret_cast<VkIOSSurfaceCreateInfoMVK*>(this);
-    }
 };
 #endif // defined(VK_USE_PLATFORM_IOS_MVK)
 #if defined(VK_USE_PLATFORM_MACOS_MVK)
@@ -6548,12 +5080,6 @@ struct MacOSSurfaceCreateInfoMVK {
     const void* pNext = nullptr;
     MacOSSurfaceCreateFlagsMVK flags{};
     const void* pView = nullptr;
-    operator VkMacOSSurfaceCreateInfoMVK const &() const noexcept {
-        return *reinterpret_cast<const VkMacOSSurfaceCreateInfoMVK*>(this);
-    }
-    operator VkMacOSSurfaceCreateInfoMVK &() noexcept {
-        return *reinterpret_cast<VkMacOSSurfaceCreateInfoMVK*>(this);
-    }
 };
 #endif // defined(VK_USE_PLATFORM_MACOS_MVK)
 #if defined(VK_USE_PLATFORM_METAL_EXT)
@@ -6562,24 +5088,12 @@ struct MetalSurfaceCreateInfoEXT {
     const void* pNext = nullptr;
     MetalSurfaceCreateFlagsEXT flags{};
     const CAMetalLayer* pLayer = nullptr;
-    operator VkMetalSurfaceCreateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkMetalSurfaceCreateInfoEXT*>(this);
-    }
-    operator VkMetalSurfaceCreateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkMetalSurfaceCreateInfoEXT*>(this);
-    }
 };
 #endif // defined(VK_USE_PLATFORM_METAL_EXT)
 struct ViewportWScalingNV {
     float xcoeff{0.f};
     float ycoeff{0.f};
     constexpr bool operator==(ViewportWScalingNV const& other) const = default;
-    operator VkViewportWScalingNV const &() const noexcept {
-        return *reinterpret_cast<const VkViewportWScalingNV*>(this);
-    }
-    operator VkViewportWScalingNV &() noexcept {
-        return *reinterpret_cast<VkViewportWScalingNV*>(this);
-    }
 };
 struct PipelineViewportWScalingStateCreateInfoNV {
     StructureType sType{StructureType::PipelineViewportWScalingStateCreateInfoNV};
@@ -6587,12 +5101,6 @@ struct PipelineViewportWScalingStateCreateInfoNV {
     Bool32 viewportWScalingEnable{0};
     uint32_t viewportCount{0};
     const ViewportWScalingNV* pViewportWScalings = nullptr;
-    operator VkPipelineViewportWScalingStateCreateInfoNV const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineViewportWScalingStateCreateInfoNV*>(this);
-    }
-    operator VkPipelineViewportWScalingStateCreateInfoNV &() noexcept {
-        return *reinterpret_cast<VkPipelineViewportWScalingStateCreateInfoNV*>(this);
-    }
 };
 struct ViewportSwizzleNV {
     ViewportCoordinateSwizzleNV x{static_cast<ViewportCoordinateSwizzleNV>(0)};
@@ -6600,12 +5108,6 @@ struct ViewportSwizzleNV {
     ViewportCoordinateSwizzleNV z{static_cast<ViewportCoordinateSwizzleNV>(0)};
     ViewportCoordinateSwizzleNV w{static_cast<ViewportCoordinateSwizzleNV>(0)};
     constexpr bool operator==(ViewportSwizzleNV const& other) const = default;
-    operator VkViewportSwizzleNV const &() const noexcept {
-        return *reinterpret_cast<const VkViewportSwizzleNV*>(this);
-    }
-    operator VkViewportSwizzleNV &() noexcept {
-        return *reinterpret_cast<VkViewportSwizzleNV*>(this);
-    }
 };
 struct PipelineViewportSwizzleStateCreateInfoNV {
     StructureType sType{StructureType::PipelineViewportSwizzleStateCreateInfoNV};
@@ -6613,23 +5115,11 @@ struct PipelineViewportSwizzleStateCreateInfoNV {
     PipelineViewportSwizzleStateCreateFlagsNV flags{};
     uint32_t viewportCount{0};
     const ViewportSwizzleNV* pViewportSwizzles = nullptr;
-    operator VkPipelineViewportSwizzleStateCreateInfoNV const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineViewportSwizzleStateCreateInfoNV*>(this);
-    }
-    operator VkPipelineViewportSwizzleStateCreateInfoNV &() noexcept {
-        return *reinterpret_cast<VkPipelineViewportSwizzleStateCreateInfoNV*>(this);
-    }
 };
 struct PhysicalDeviceDiscardRectanglePropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceDiscardRectanglePropertiesEXT};
     void* pNext = nullptr;
     uint32_t maxDiscardRectangles{0};
-    operator VkPhysicalDeviceDiscardRectanglePropertiesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceDiscardRectanglePropertiesEXT*>(this);
-    }
-    operator VkPhysicalDeviceDiscardRectanglePropertiesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceDiscardRectanglePropertiesEXT*>(this);
-    }
 };
 struct PipelineDiscardRectangleStateCreateInfoEXT {
     StructureType sType{StructureType::PipelineDiscardRectangleStateCreateInfoEXT};
@@ -6638,149 +5128,73 @@ struct PipelineDiscardRectangleStateCreateInfoEXT {
     DiscardRectangleModeEXT discardRectangleMode{static_cast<DiscardRectangleModeEXT>(0)};
     uint32_t discardRectangleCount{0};
     const Rect2D* pDiscardRectangles = nullptr;
-    operator VkPipelineDiscardRectangleStateCreateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineDiscardRectangleStateCreateInfoEXT*>(this);
-    }
-    operator VkPipelineDiscardRectangleStateCreateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkPipelineDiscardRectangleStateCreateInfoEXT*>(this);
-    }
 };
 struct PhysicalDeviceMultiviewPerViewAttributesPropertiesNVX {
     StructureType sType{StructureType::PhysicalDeviceMultiviewPerViewAttributesPropertiesNVX};
     void* pNext = nullptr;
     Bool32 perViewPositionAllComponents{0};
-    operator VkPhysicalDeviceMultiviewPerViewAttributesPropertiesNVX const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceMultiviewPerViewAttributesPropertiesNVX*>(this);
-    }
-    operator VkPhysicalDeviceMultiviewPerViewAttributesPropertiesNVX &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceMultiviewPerViewAttributesPropertiesNVX*>(this);
-    }
 };
 struct InputAttachmentAspectReference {
     uint32_t subpass{0};
     uint32_t inputAttachmentIndex{0};
     ImageAspectFlags aspectMask{};
     constexpr bool operator==(InputAttachmentAspectReference const& other) const = default;
-    operator VkInputAttachmentAspectReference const &() const noexcept {
-        return *reinterpret_cast<const VkInputAttachmentAspectReference*>(this);
-    }
-    operator VkInputAttachmentAspectReference &() noexcept {
-        return *reinterpret_cast<VkInputAttachmentAspectReference*>(this);
-    }
 };
 using InputAttachmentAspectReferenceKHR = InputAttachmentAspectReference;
+using VkInputAttachmentAspectReferenceKHR = InputAttachmentAspectReferenceKHR;
 struct RenderPassInputAttachmentAspectCreateInfo {
     StructureType sType{StructureType::RenderPassInputAttachmentAspectCreateInfo};
     const void* pNext = nullptr;
     uint32_t aspectReferenceCount{0};
     const InputAttachmentAspectReference* pAspectReferences = nullptr;
-    operator VkRenderPassInputAttachmentAspectCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkRenderPassInputAttachmentAspectCreateInfo*>(this);
-    }
-    operator VkRenderPassInputAttachmentAspectCreateInfo &() noexcept {
-        return *reinterpret_cast<VkRenderPassInputAttachmentAspectCreateInfo*>(this);
-    }
 };
 using RenderPassInputAttachmentAspectCreateInfoKHR = RenderPassInputAttachmentAspectCreateInfo;
+using VkRenderPassInputAttachmentAspectCreateInfoKHR = RenderPassInputAttachmentAspectCreateInfoKHR;
 struct PhysicalDeviceSurfaceInfo2KHR {
     StructureType sType{StructureType::PhysicalDeviceSurfaceInfo2KHR};
     const void* pNext = nullptr;
     SurfaceKHR surface{};
-    operator VkPhysicalDeviceSurfaceInfo2KHR const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceSurfaceInfo2KHR*>(this);
-    }
-    operator VkPhysicalDeviceSurfaceInfo2KHR &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceSurfaceInfo2KHR*>(this);
-    }
 };
 struct SurfaceCapabilities2KHR {
     StructureType sType{StructureType::SurfaceCapabilities2KHR};
     void* pNext = nullptr;
     SurfaceCapabilitiesKHR surfaceCapabilities{};
-    operator VkSurfaceCapabilities2KHR const &() const noexcept {
-        return *reinterpret_cast<const VkSurfaceCapabilities2KHR*>(this);
-    }
-    operator VkSurfaceCapabilities2KHR &() noexcept {
-        return *reinterpret_cast<VkSurfaceCapabilities2KHR*>(this);
-    }
 };
 struct SurfaceFormat2KHR {
     StructureType sType{StructureType::SurfaceFormat2KHR};
     void* pNext = nullptr;
     SurfaceFormatKHR surfaceFormat{};
-    operator VkSurfaceFormat2KHR const &() const noexcept {
-        return *reinterpret_cast<const VkSurfaceFormat2KHR*>(this);
-    }
-    operator VkSurfaceFormat2KHR &() noexcept {
-        return *reinterpret_cast<VkSurfaceFormat2KHR*>(this);
-    }
 };
 struct DisplayProperties2KHR {
     StructureType sType{StructureType::DisplayProperties2KHR};
     void* pNext = nullptr;
     DisplayPropertiesKHR displayProperties{};
-    operator VkDisplayProperties2KHR const &() const noexcept {
-        return *reinterpret_cast<const VkDisplayProperties2KHR*>(this);
-    }
-    operator VkDisplayProperties2KHR &() noexcept {
-        return *reinterpret_cast<VkDisplayProperties2KHR*>(this);
-    }
 };
 struct DisplayPlaneProperties2KHR {
     StructureType sType{StructureType::DisplayPlaneProperties2KHR};
     void* pNext = nullptr;
     DisplayPlanePropertiesKHR displayPlaneProperties{};
-    operator VkDisplayPlaneProperties2KHR const &() const noexcept {
-        return *reinterpret_cast<const VkDisplayPlaneProperties2KHR*>(this);
-    }
-    operator VkDisplayPlaneProperties2KHR &() noexcept {
-        return *reinterpret_cast<VkDisplayPlaneProperties2KHR*>(this);
-    }
 };
 struct DisplayModeProperties2KHR {
     StructureType sType{StructureType::DisplayModeProperties2KHR};
     void* pNext = nullptr;
     DisplayModePropertiesKHR displayModeProperties{};
-    operator VkDisplayModeProperties2KHR const &() const noexcept {
-        return *reinterpret_cast<const VkDisplayModeProperties2KHR*>(this);
-    }
-    operator VkDisplayModeProperties2KHR &() noexcept {
-        return *reinterpret_cast<VkDisplayModeProperties2KHR*>(this);
-    }
 };
 struct DisplayPlaneInfo2KHR {
     StructureType sType{StructureType::DisplayPlaneInfo2KHR};
     const void* pNext = nullptr;
     DisplayModeKHR mode{};
     uint32_t planeIndex{0};
-    operator VkDisplayPlaneInfo2KHR const &() const noexcept {
-        return *reinterpret_cast<const VkDisplayPlaneInfo2KHR*>(this);
-    }
-    operator VkDisplayPlaneInfo2KHR &() noexcept {
-        return *reinterpret_cast<VkDisplayPlaneInfo2KHR*>(this);
-    }
 };
 struct DisplayPlaneCapabilities2KHR {
     StructureType sType{StructureType::DisplayPlaneCapabilities2KHR};
     void* pNext = nullptr;
     DisplayPlaneCapabilitiesKHR capabilities{};
-    operator VkDisplayPlaneCapabilities2KHR const &() const noexcept {
-        return *reinterpret_cast<const VkDisplayPlaneCapabilities2KHR*>(this);
-    }
-    operator VkDisplayPlaneCapabilities2KHR &() noexcept {
-        return *reinterpret_cast<VkDisplayPlaneCapabilities2KHR*>(this);
-    }
 };
 struct SharedPresentSurfaceCapabilitiesKHR {
     StructureType sType{StructureType::SharedPresentSurfaceCapabilitiesKHR};
     void* pNext = nullptr;
     ImageUsageFlags sharedPresentSupportedUsageFlags{};
-    operator VkSharedPresentSurfaceCapabilitiesKHR const &() const noexcept {
-        return *reinterpret_cast<const VkSharedPresentSurfaceCapabilitiesKHR*>(this);
-    }
-    operator VkSharedPresentSurfaceCapabilitiesKHR &() noexcept {
-        return *reinterpret_cast<VkSharedPresentSurfaceCapabilitiesKHR*>(this);
-    }
 };
 struct PhysicalDevice16BitStorageFeatures {
     StructureType sType{StructureType::PhysicalDevice16BitStorageFeatures};
@@ -6789,14 +5203,9 @@ struct PhysicalDevice16BitStorageFeatures {
     Bool32 uniformAndStorageBuffer16BitAccess{0};
     Bool32 storagePushConstant16{0};
     Bool32 storageInputOutput16{0};
-    operator VkPhysicalDevice16BitStorageFeatures const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDevice16BitStorageFeatures*>(this);
-    }
-    operator VkPhysicalDevice16BitStorageFeatures &() noexcept {
-        return *reinterpret_cast<VkPhysicalDevice16BitStorageFeatures*>(this);
-    }
 };
 using PhysicalDevice16BitStorageFeaturesKHR = PhysicalDevice16BitStorageFeatures;
+using VkPhysicalDevice16BitStorageFeaturesKHR = PhysicalDevice16BitStorageFeaturesKHR;
 struct PhysicalDeviceSubgroupProperties {
     StructureType sType{StructureType::PhysicalDeviceSubgroupProperties};
     void* pNext = nullptr;
@@ -6804,159 +5213,93 @@ struct PhysicalDeviceSubgroupProperties {
     ShaderStageFlags supportedStages{};
     SubgroupFeatureFlags supportedOperations{};
     Bool32 quadOperationsInAllStages{0};
-    operator VkPhysicalDeviceSubgroupProperties const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceSubgroupProperties*>(this);
-    }
-    operator VkPhysicalDeviceSubgroupProperties &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceSubgroupProperties*>(this);
-    }
 };
 struct PhysicalDeviceShaderSubgroupExtendedTypesFeatures {
     StructureType sType{StructureType::PhysicalDeviceShaderSubgroupExtendedTypesFeatures};
     void* pNext = nullptr;
     Bool32 shaderSubgroupExtendedTypes{0};
-    operator VkPhysicalDeviceShaderSubgroupExtendedTypesFeatures const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceShaderSubgroupExtendedTypesFeatures*>(this);
-    }
-    operator VkPhysicalDeviceShaderSubgroupExtendedTypesFeatures &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceShaderSubgroupExtendedTypesFeatures*>(this);
-    }
 };
 using PhysicalDeviceShaderSubgroupExtendedTypesFeaturesKHR = PhysicalDeviceShaderSubgroupExtendedTypesFeatures;
+using VkPhysicalDeviceShaderSubgroupExtendedTypesFeaturesKHR = PhysicalDeviceShaderSubgroupExtendedTypesFeaturesKHR;
 struct BufferMemoryRequirementsInfo2 {
     StructureType sType{StructureType::BufferMemoryRequirementsInfo2};
     const void* pNext = nullptr;
     Buffer buffer{};
-    operator VkBufferMemoryRequirementsInfo2 const &() const noexcept {
-        return *reinterpret_cast<const VkBufferMemoryRequirementsInfo2*>(this);
-    }
-    operator VkBufferMemoryRequirementsInfo2 &() noexcept {
-        return *reinterpret_cast<VkBufferMemoryRequirementsInfo2*>(this);
-    }
 };
 using BufferMemoryRequirementsInfo2KHR = BufferMemoryRequirementsInfo2;
+using VkBufferMemoryRequirementsInfo2KHR = BufferMemoryRequirementsInfo2KHR;
 struct ImageMemoryRequirementsInfo2 {
     StructureType sType{StructureType::ImageMemoryRequirementsInfo2};
     const void* pNext = nullptr;
     Image image{};
-    operator VkImageMemoryRequirementsInfo2 const &() const noexcept {
-        return *reinterpret_cast<const VkImageMemoryRequirementsInfo2*>(this);
-    }
-    operator VkImageMemoryRequirementsInfo2 &() noexcept {
-        return *reinterpret_cast<VkImageMemoryRequirementsInfo2*>(this);
-    }
 };
 using ImageMemoryRequirementsInfo2KHR = ImageMemoryRequirementsInfo2;
+using VkImageMemoryRequirementsInfo2KHR = ImageMemoryRequirementsInfo2KHR;
 struct ImageSparseMemoryRequirementsInfo2 {
     StructureType sType{StructureType::ImageSparseMemoryRequirementsInfo2};
     const void* pNext = nullptr;
     Image image{};
-    operator VkImageSparseMemoryRequirementsInfo2 const &() const noexcept {
-        return *reinterpret_cast<const VkImageSparseMemoryRequirementsInfo2*>(this);
-    }
-    operator VkImageSparseMemoryRequirementsInfo2 &() noexcept {
-        return *reinterpret_cast<VkImageSparseMemoryRequirementsInfo2*>(this);
-    }
 };
 using ImageSparseMemoryRequirementsInfo2KHR = ImageSparseMemoryRequirementsInfo2;
+using VkImageSparseMemoryRequirementsInfo2KHR = ImageSparseMemoryRequirementsInfo2KHR;
 struct MemoryRequirements2 {
     StructureType sType{StructureType::MemoryRequirements2};
     void* pNext = nullptr;
     MemoryRequirements memoryRequirements{};
-    operator VkMemoryRequirements2 const &() const noexcept {
-        return *reinterpret_cast<const VkMemoryRequirements2*>(this);
-    }
-    operator VkMemoryRequirements2 &() noexcept {
-        return *reinterpret_cast<VkMemoryRequirements2*>(this);
-    }
 };
 using MemoryRequirements2KHR = MemoryRequirements2;
+using VkMemoryRequirements2KHR = MemoryRequirements2KHR;
 struct SparseImageMemoryRequirements2 {
     StructureType sType{StructureType::SparseImageMemoryRequirements2};
     void* pNext = nullptr;
     SparseImageMemoryRequirements memoryRequirements{};
-    operator VkSparseImageMemoryRequirements2 const &() const noexcept {
-        return *reinterpret_cast<const VkSparseImageMemoryRequirements2*>(this);
-    }
-    operator VkSparseImageMemoryRequirements2 &() noexcept {
-        return *reinterpret_cast<VkSparseImageMemoryRequirements2*>(this);
-    }
 };
 using SparseImageMemoryRequirements2KHR = SparseImageMemoryRequirements2;
+using VkSparseImageMemoryRequirements2KHR = SparseImageMemoryRequirements2KHR;
 struct PhysicalDevicePointClippingProperties {
     StructureType sType{StructureType::PhysicalDevicePointClippingProperties};
     void* pNext = nullptr;
     PointClippingBehavior pointClippingBehavior{static_cast<PointClippingBehavior>(0)};
-    operator VkPhysicalDevicePointClippingProperties const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDevicePointClippingProperties*>(this);
-    }
-    operator VkPhysicalDevicePointClippingProperties &() noexcept {
-        return *reinterpret_cast<VkPhysicalDevicePointClippingProperties*>(this);
-    }
 };
 using PhysicalDevicePointClippingPropertiesKHR = PhysicalDevicePointClippingProperties;
+using VkPhysicalDevicePointClippingPropertiesKHR = PhysicalDevicePointClippingPropertiesKHR;
 struct MemoryDedicatedRequirements {
     StructureType sType{StructureType::MemoryDedicatedRequirements};
     void* pNext = nullptr;
     Bool32 prefersDedicatedAllocation{0};
     Bool32 requiresDedicatedAllocation{0};
-    operator VkMemoryDedicatedRequirements const &() const noexcept {
-        return *reinterpret_cast<const VkMemoryDedicatedRequirements*>(this);
-    }
-    operator VkMemoryDedicatedRequirements &() noexcept {
-        return *reinterpret_cast<VkMemoryDedicatedRequirements*>(this);
-    }
 };
 using MemoryDedicatedRequirementsKHR = MemoryDedicatedRequirements;
+using VkMemoryDedicatedRequirementsKHR = MemoryDedicatedRequirementsKHR;
 struct MemoryDedicatedAllocateInfo {
     StructureType sType{StructureType::MemoryDedicatedAllocateInfo};
     const void* pNext = nullptr;
     Image image{};
     Buffer buffer{};
-    operator VkMemoryDedicatedAllocateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkMemoryDedicatedAllocateInfo*>(this);
-    }
-    operator VkMemoryDedicatedAllocateInfo &() noexcept {
-        return *reinterpret_cast<VkMemoryDedicatedAllocateInfo*>(this);
-    }
 };
 using MemoryDedicatedAllocateInfoKHR = MemoryDedicatedAllocateInfo;
+using VkMemoryDedicatedAllocateInfoKHR = MemoryDedicatedAllocateInfoKHR;
 struct ImageViewUsageCreateInfo {
     StructureType sType{StructureType::ImageViewUsageCreateInfo};
     const void* pNext = nullptr;
     ImageUsageFlags usage{};
-    operator VkImageViewUsageCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkImageViewUsageCreateInfo*>(this);
-    }
-    operator VkImageViewUsageCreateInfo &() noexcept {
-        return *reinterpret_cast<VkImageViewUsageCreateInfo*>(this);
-    }
 };
 using ImageViewUsageCreateInfoKHR = ImageViewUsageCreateInfo;
+using VkImageViewUsageCreateInfoKHR = ImageViewUsageCreateInfoKHR;
 struct PipelineTessellationDomainOriginStateCreateInfo {
     StructureType sType{StructureType::PipelineTessellationDomainOriginStateCreateInfo};
     const void* pNext = nullptr;
     TessellationDomainOrigin domainOrigin{static_cast<TessellationDomainOrigin>(0)};
-    operator VkPipelineTessellationDomainOriginStateCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineTessellationDomainOriginStateCreateInfo*>(this);
-    }
-    operator VkPipelineTessellationDomainOriginStateCreateInfo &() noexcept {
-        return *reinterpret_cast<VkPipelineTessellationDomainOriginStateCreateInfo*>(this);
-    }
 };
 using PipelineTessellationDomainOriginStateCreateInfoKHR = PipelineTessellationDomainOriginStateCreateInfo;
+using VkPipelineTessellationDomainOriginStateCreateInfoKHR = PipelineTessellationDomainOriginStateCreateInfoKHR;
 struct SamplerYcbcrConversionInfo {
     StructureType sType{StructureType::SamplerYcbcrConversionInfo};
     const void* pNext = nullptr;
     SamplerYcbcrConversion conversion{};
-    operator VkSamplerYcbcrConversionInfo const &() const noexcept {
-        return *reinterpret_cast<const VkSamplerYcbcrConversionInfo*>(this);
-    }
-    operator VkSamplerYcbcrConversionInfo &() noexcept {
-        return *reinterpret_cast<VkSamplerYcbcrConversionInfo*>(this);
-    }
 };
 using SamplerYcbcrConversionInfoKHR = SamplerYcbcrConversionInfo;
+using VkSamplerYcbcrConversionInfoKHR = SamplerYcbcrConversionInfoKHR;
 struct SamplerYcbcrConversionCreateInfo {
     StructureType sType{StructureType::SamplerYcbcrConversionCreateInfo};
     const void* pNext = nullptr;
@@ -6968,72 +5311,41 @@ struct SamplerYcbcrConversionCreateInfo {
     ChromaLocation yChromaOffset{static_cast<ChromaLocation>(0)};
     Filter chromaFilter{static_cast<Filter>(0)};
     Bool32 forceExplicitReconstruction{0};
-    operator VkSamplerYcbcrConversionCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkSamplerYcbcrConversionCreateInfo*>(this);
-    }
-    operator VkSamplerYcbcrConversionCreateInfo &() noexcept {
-        return *reinterpret_cast<VkSamplerYcbcrConversionCreateInfo*>(this);
-    }
 };
 using SamplerYcbcrConversionCreateInfoKHR = SamplerYcbcrConversionCreateInfo;
+using VkSamplerYcbcrConversionCreateInfoKHR = SamplerYcbcrConversionCreateInfoKHR;
 struct BindImagePlaneMemoryInfo {
     StructureType sType{StructureType::BindImagePlaneMemoryInfo};
     const void* pNext = nullptr;
     ImageAspectFlagBits planeAspect{static_cast<ImageAspectFlagBits>(0)};
-    operator VkBindImagePlaneMemoryInfo const &() const noexcept {
-        return *reinterpret_cast<const VkBindImagePlaneMemoryInfo*>(this);
-    }
-    operator VkBindImagePlaneMemoryInfo &() noexcept {
-        return *reinterpret_cast<VkBindImagePlaneMemoryInfo*>(this);
-    }
 };
 using BindImagePlaneMemoryInfoKHR = BindImagePlaneMemoryInfo;
+using VkBindImagePlaneMemoryInfoKHR = BindImagePlaneMemoryInfoKHR;
 struct ImagePlaneMemoryRequirementsInfo {
     StructureType sType{StructureType::ImagePlaneMemoryRequirementsInfo};
     const void* pNext = nullptr;
     ImageAspectFlagBits planeAspect{static_cast<ImageAspectFlagBits>(0)};
-    operator VkImagePlaneMemoryRequirementsInfo const &() const noexcept {
-        return *reinterpret_cast<const VkImagePlaneMemoryRequirementsInfo*>(this);
-    }
-    operator VkImagePlaneMemoryRequirementsInfo &() noexcept {
-        return *reinterpret_cast<VkImagePlaneMemoryRequirementsInfo*>(this);
-    }
 };
 using ImagePlaneMemoryRequirementsInfoKHR = ImagePlaneMemoryRequirementsInfo;
+using VkImagePlaneMemoryRequirementsInfoKHR = ImagePlaneMemoryRequirementsInfoKHR;
 struct PhysicalDeviceSamplerYcbcrConversionFeatures {
     StructureType sType{StructureType::PhysicalDeviceSamplerYcbcrConversionFeatures};
     void* pNext = nullptr;
     Bool32 samplerYcbcrConversion{0};
-    operator VkPhysicalDeviceSamplerYcbcrConversionFeatures const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceSamplerYcbcrConversionFeatures*>(this);
-    }
-    operator VkPhysicalDeviceSamplerYcbcrConversionFeatures &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceSamplerYcbcrConversionFeatures*>(this);
-    }
 };
 using PhysicalDeviceSamplerYcbcrConversionFeaturesKHR = PhysicalDeviceSamplerYcbcrConversionFeatures;
+using VkPhysicalDeviceSamplerYcbcrConversionFeaturesKHR = PhysicalDeviceSamplerYcbcrConversionFeaturesKHR;
 struct SamplerYcbcrConversionImageFormatProperties {
     StructureType sType{StructureType::SamplerYcbcrConversionImageFormatProperties};
     void* pNext = nullptr;
     uint32_t combinedImageSamplerDescriptorCount{0};
-    operator VkSamplerYcbcrConversionImageFormatProperties const &() const noexcept {
-        return *reinterpret_cast<const VkSamplerYcbcrConversionImageFormatProperties*>(this);
-    }
-    operator VkSamplerYcbcrConversionImageFormatProperties &() noexcept {
-        return *reinterpret_cast<VkSamplerYcbcrConversionImageFormatProperties*>(this);
-    }
 };
 using SamplerYcbcrConversionImageFormatPropertiesKHR = SamplerYcbcrConversionImageFormatProperties;
+using VkSamplerYcbcrConversionImageFormatPropertiesKHR = SamplerYcbcrConversionImageFormatPropertiesKHR;
 struct TextureLODGatherFormatPropertiesAMD {
     StructureType sType{StructureType::TextureLodGatherFormatPropertiesAMD};
     void* pNext = nullptr;
     Bool32 supportsTextureGatherLODBiasAMD{0};
-    operator VkTextureLODGatherFormatPropertiesAMD const &() const noexcept {
-        return *reinterpret_cast<const VkTextureLODGatherFormatPropertiesAMD*>(this);
-    }
-    operator VkTextureLODGatherFormatPropertiesAMD &() noexcept {
-        return *reinterpret_cast<VkTextureLODGatherFormatPropertiesAMD*>(this);
-    }
 };
 struct ConditionalRenderingBeginInfoEXT {
     StructureType sType{StructureType::ConditionalRenderingBeginInfoEXT};
@@ -7041,45 +5353,21 @@ struct ConditionalRenderingBeginInfoEXT {
     Buffer buffer{};
     DeviceSize offset{0};
     ConditionalRenderingFlagsEXT flags{};
-    operator VkConditionalRenderingBeginInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkConditionalRenderingBeginInfoEXT*>(this);
-    }
-    operator VkConditionalRenderingBeginInfoEXT &() noexcept {
-        return *reinterpret_cast<VkConditionalRenderingBeginInfoEXT*>(this);
-    }
 };
 struct ProtectedSubmitInfo {
     StructureType sType{StructureType::ProtectedSubmitInfo};
     const void* pNext = nullptr;
     Bool32 protectedSubmit{0};
-    operator VkProtectedSubmitInfo const &() const noexcept {
-        return *reinterpret_cast<const VkProtectedSubmitInfo*>(this);
-    }
-    operator VkProtectedSubmitInfo &() noexcept {
-        return *reinterpret_cast<VkProtectedSubmitInfo*>(this);
-    }
 };
 struct PhysicalDeviceProtectedMemoryFeatures {
     StructureType sType{StructureType::PhysicalDeviceProtectedMemoryFeatures};
     void* pNext = nullptr;
     Bool32 protectedMemory{0};
-    operator VkPhysicalDeviceProtectedMemoryFeatures const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceProtectedMemoryFeatures*>(this);
-    }
-    operator VkPhysicalDeviceProtectedMemoryFeatures &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceProtectedMemoryFeatures*>(this);
-    }
 };
 struct PhysicalDeviceProtectedMemoryProperties {
     StructureType sType{StructureType::PhysicalDeviceProtectedMemoryProperties};
     void* pNext = nullptr;
     Bool32 protectedNoFault{0};
-    operator VkPhysicalDeviceProtectedMemoryProperties const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceProtectedMemoryProperties*>(this);
-    }
-    operator VkPhysicalDeviceProtectedMemoryProperties &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceProtectedMemoryProperties*>(this);
-    }
 };
 struct DeviceQueueInfo2 {
     StructureType sType{StructureType::DeviceQueueInfo2};
@@ -7087,12 +5375,6 @@ struct DeviceQueueInfo2 {
     DeviceQueueCreateFlags flags{};
     uint32_t queueFamilyIndex{0};
     uint32_t queueIndex{0};
-    operator VkDeviceQueueInfo2 const &() const noexcept {
-        return *reinterpret_cast<const VkDeviceQueueInfo2*>(this);
-    }
-    operator VkDeviceQueueInfo2 &() noexcept {
-        return *reinterpret_cast<VkDeviceQueueInfo2*>(this);
-    }
 };
 struct PipelineCoverageToColorStateCreateInfoNV {
     StructureType sType{StructureType::PipelineCoverageToColorStateCreateInfoNV};
@@ -7100,36 +5382,19 @@ struct PipelineCoverageToColorStateCreateInfoNV {
     PipelineCoverageToColorStateCreateFlagsNV flags{};
     Bool32 coverageToColorEnable{0};
     uint32_t coverageToColorLocation{0};
-    operator VkPipelineCoverageToColorStateCreateInfoNV const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineCoverageToColorStateCreateInfoNV*>(this);
-    }
-    operator VkPipelineCoverageToColorStateCreateInfoNV &() noexcept {
-        return *reinterpret_cast<VkPipelineCoverageToColorStateCreateInfoNV*>(this);
-    }
 };
 struct PhysicalDeviceSamplerFilterMinmaxProperties {
     StructureType sType{StructureType::PhysicalDeviceSamplerFilterMinmaxProperties};
     void* pNext = nullptr;
     Bool32 filterMinmaxSingleComponentFormats{0};
     Bool32 filterMinmaxImageComponentMapping{0};
-    operator VkPhysicalDeviceSamplerFilterMinmaxProperties const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceSamplerFilterMinmaxProperties*>(this);
-    }
-    operator VkPhysicalDeviceSamplerFilterMinmaxProperties &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceSamplerFilterMinmaxProperties*>(this);
-    }
 };
 using PhysicalDeviceSamplerFilterMinmaxPropertiesEXT = PhysicalDeviceSamplerFilterMinmaxProperties;
+using VkPhysicalDeviceSamplerFilterMinmaxPropertiesEXT = PhysicalDeviceSamplerFilterMinmaxPropertiesEXT;
 struct SampleLocationEXT {
     float x{0.f};
     float y{0.f};
     constexpr bool operator==(SampleLocationEXT const& other) const = default;
-    operator VkSampleLocationEXT const &() const noexcept {
-        return *reinterpret_cast<const VkSampleLocationEXT*>(this);
-    }
-    operator VkSampleLocationEXT &() noexcept {
-        return *reinterpret_cast<VkSampleLocationEXT*>(this);
-    }
 };
 struct SampleLocationsInfoEXT {
     StructureType sType{StructureType::SampleLocationsInfoEXT};
@@ -7138,32 +5403,14 @@ struct SampleLocationsInfoEXT {
     Extent2D sampleLocationGridSize{};
     uint32_t sampleLocationsCount{0};
     const SampleLocationEXT* pSampleLocations = nullptr;
-    operator VkSampleLocationsInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkSampleLocationsInfoEXT*>(this);
-    }
-    operator VkSampleLocationsInfoEXT &() noexcept {
-        return *reinterpret_cast<VkSampleLocationsInfoEXT*>(this);
-    }
 };
 struct AttachmentSampleLocationsEXT {
     uint32_t attachmentIndex{0};
     SampleLocationsInfoEXT sampleLocationsInfo{};
-    operator VkAttachmentSampleLocationsEXT const &() const noexcept {
-        return *reinterpret_cast<const VkAttachmentSampleLocationsEXT*>(this);
-    }
-    operator VkAttachmentSampleLocationsEXT &() noexcept {
-        return *reinterpret_cast<VkAttachmentSampleLocationsEXT*>(this);
-    }
 };
 struct SubpassSampleLocationsEXT {
     uint32_t subpassIndex{0};
     SampleLocationsInfoEXT sampleLocationsInfo{};
-    operator VkSubpassSampleLocationsEXT const &() const noexcept {
-        return *reinterpret_cast<const VkSubpassSampleLocationsEXT*>(this);
-    }
-    operator VkSubpassSampleLocationsEXT &() noexcept {
-        return *reinterpret_cast<VkSubpassSampleLocationsEXT*>(this);
-    }
 };
 struct RenderPassSampleLocationsBeginInfoEXT {
     StructureType sType{StructureType::RenderPassSampleLocationsBeginInfoEXT};
@@ -7172,24 +5419,12 @@ struct RenderPassSampleLocationsBeginInfoEXT {
     const AttachmentSampleLocationsEXT* pAttachmentInitialSampleLocations = nullptr;
     uint32_t postSubpassSampleLocationsCount{0};
     const SubpassSampleLocationsEXT* pPostSubpassSampleLocations = nullptr;
-    operator VkRenderPassSampleLocationsBeginInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkRenderPassSampleLocationsBeginInfoEXT*>(this);
-    }
-    operator VkRenderPassSampleLocationsBeginInfoEXT &() noexcept {
-        return *reinterpret_cast<VkRenderPassSampleLocationsBeginInfoEXT*>(this);
-    }
 };
 struct PipelineSampleLocationsStateCreateInfoEXT {
     StructureType sType{StructureType::PipelineSampleLocationsStateCreateInfoEXT};
     const void* pNext = nullptr;
     Bool32 sampleLocationsEnable{0};
     SampleLocationsInfoEXT sampleLocationsInfo{};
-    operator VkPipelineSampleLocationsStateCreateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineSampleLocationsStateCreateInfoEXT*>(this);
-    }
-    operator VkPipelineSampleLocationsStateCreateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkPipelineSampleLocationsStateCreateInfoEXT*>(this);
-    }
 };
 struct PhysicalDeviceSampleLocationsPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceSampleLocationsPropertiesEXT};
@@ -7199,46 +5434,23 @@ struct PhysicalDeviceSampleLocationsPropertiesEXT {
     float sampleLocationCoordinateRange[2];
     uint32_t sampleLocationSubPixelBits{0};
     Bool32 variableSampleLocations{0};
-    operator VkPhysicalDeviceSampleLocationsPropertiesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceSampleLocationsPropertiesEXT*>(this);
-    }
-    operator VkPhysicalDeviceSampleLocationsPropertiesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceSampleLocationsPropertiesEXT*>(this);
-    }
 };
 struct MultisamplePropertiesEXT {
     StructureType sType{StructureType::MultisamplePropertiesEXT};
     void* pNext = nullptr;
     Extent2D maxSampleLocationGridSize{};
-    operator VkMultisamplePropertiesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkMultisamplePropertiesEXT*>(this);
-    }
-    operator VkMultisamplePropertiesEXT &() noexcept {
-        return *reinterpret_cast<VkMultisamplePropertiesEXT*>(this);
-    }
 };
 struct SamplerReductionModeCreateInfo {
     StructureType sType{StructureType::SamplerReductionModeCreateInfo};
     const void* pNext = nullptr;
     SamplerReductionMode reductionMode{static_cast<SamplerReductionMode>(0)};
-    operator VkSamplerReductionModeCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkSamplerReductionModeCreateInfo*>(this);
-    }
-    operator VkSamplerReductionModeCreateInfo &() noexcept {
-        return *reinterpret_cast<VkSamplerReductionModeCreateInfo*>(this);
-    }
 };
 using SamplerReductionModeCreateInfoEXT = SamplerReductionModeCreateInfo;
+using VkSamplerReductionModeCreateInfoEXT = SamplerReductionModeCreateInfoEXT;
 struct PhysicalDeviceBlendOperationAdvancedFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceBlendOperationAdvancedFeaturesEXT};
     void* pNext = nullptr;
     Bool32 advancedBlendCoherentOperations{0};
-    operator VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT*>(this);
-    }
-    operator VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT*>(this);
-    }
 };
 struct PhysicalDeviceBlendOperationAdvancedPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceBlendOperationAdvancedPropertiesEXT};
@@ -7249,12 +5461,6 @@ struct PhysicalDeviceBlendOperationAdvancedPropertiesEXT {
     Bool32 advancedBlendNonPremultipliedDstColor{0};
     Bool32 advancedBlendCorrelatedOverlap{0};
     Bool32 advancedBlendAllOperations{0};
-    operator VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT*>(this);
-    }
-    operator VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT*>(this);
-    }
 };
 struct PipelineColorBlendAdvancedStateCreateInfoEXT {
     StructureType sType{StructureType::PipelineColorBlendAdvancedStateCreateInfoEXT};
@@ -7262,24 +5468,12 @@ struct PipelineColorBlendAdvancedStateCreateInfoEXT {
     Bool32 srcPremultiplied{0};
     Bool32 dstPremultiplied{0};
     BlendOverlapEXT blendOverlap{static_cast<BlendOverlapEXT>(0)};
-    operator VkPipelineColorBlendAdvancedStateCreateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineColorBlendAdvancedStateCreateInfoEXT*>(this);
-    }
-    operator VkPipelineColorBlendAdvancedStateCreateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkPipelineColorBlendAdvancedStateCreateInfoEXT*>(this);
-    }
 };
 struct PhysicalDeviceInlineUniformBlockFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceInlineUniformBlockFeaturesEXT};
     void* pNext = nullptr;
     Bool32 inlineUniformBlock{0};
     Bool32 descriptorBindingInlineUniformBlockUpdateAfterBind{0};
-    operator VkPhysicalDeviceInlineUniformBlockFeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceInlineUniformBlockFeaturesEXT*>(this);
-    }
-    operator VkPhysicalDeviceInlineUniformBlockFeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceInlineUniformBlockFeaturesEXT*>(this);
-    }
 };
 struct PhysicalDeviceInlineUniformBlockPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceInlineUniformBlockPropertiesEXT};
@@ -7289,35 +5483,17 @@ struct PhysicalDeviceInlineUniformBlockPropertiesEXT {
     uint32_t maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks{0};
     uint32_t maxDescriptorSetInlineUniformBlocks{0};
     uint32_t maxDescriptorSetUpdateAfterBindInlineUniformBlocks{0};
-    operator VkPhysicalDeviceInlineUniformBlockPropertiesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceInlineUniformBlockPropertiesEXT*>(this);
-    }
-    operator VkPhysicalDeviceInlineUniformBlockPropertiesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceInlineUniformBlockPropertiesEXT*>(this);
-    }
 };
 struct WriteDescriptorSetInlineUniformBlockEXT {
     StructureType sType{StructureType::WriteDescriptorSetInlineUniformBlockEXT};
     const void* pNext = nullptr;
     uint32_t dataSize{0};
     const void* pData = nullptr;
-    operator VkWriteDescriptorSetInlineUniformBlockEXT const &() const noexcept {
-        return *reinterpret_cast<const VkWriteDescriptorSetInlineUniformBlockEXT*>(this);
-    }
-    operator VkWriteDescriptorSetInlineUniformBlockEXT &() noexcept {
-        return *reinterpret_cast<VkWriteDescriptorSetInlineUniformBlockEXT*>(this);
-    }
 };
 struct DescriptorPoolInlineUniformBlockCreateInfoEXT {
     StructureType sType{StructureType::DescriptorPoolInlineUniformBlockCreateInfoEXT};
     const void* pNext = nullptr;
     uint32_t maxInlineUniformBlockBindings{0};
-    operator VkDescriptorPoolInlineUniformBlockCreateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkDescriptorPoolInlineUniformBlockCreateInfoEXT*>(this);
-    }
-    operator VkDescriptorPoolInlineUniformBlockCreateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkDescriptorPoolInlineUniformBlockCreateInfoEXT*>(this);
-    }
 };
 struct PipelineCoverageModulationStateCreateInfoNV {
     StructureType sType{StructureType::PipelineCoverageModulationStateCreateInfoNV};
@@ -7327,101 +5503,59 @@ struct PipelineCoverageModulationStateCreateInfoNV {
     Bool32 coverageModulationTableEnable{0};
     uint32_t coverageModulationTableCount{0};
     const float* pCoverageModulationTable = nullptr;
-    operator VkPipelineCoverageModulationStateCreateInfoNV const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineCoverageModulationStateCreateInfoNV*>(this);
-    }
-    operator VkPipelineCoverageModulationStateCreateInfoNV &() noexcept {
-        return *reinterpret_cast<VkPipelineCoverageModulationStateCreateInfoNV*>(this);
-    }
 };
 struct ImageFormatListCreateInfo {
     StructureType sType{StructureType::ImageFormatListCreateInfo};
     const void* pNext = nullptr;
     uint32_t viewFormatCount{0};
     const Format* pViewFormats = nullptr;
-    operator VkImageFormatListCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkImageFormatListCreateInfo*>(this);
-    }
-    operator VkImageFormatListCreateInfo &() noexcept {
-        return *reinterpret_cast<VkImageFormatListCreateInfo*>(this);
-    }
 };
 using ImageFormatListCreateInfoKHR = ImageFormatListCreateInfo;
+using VkImageFormatListCreateInfoKHR = ImageFormatListCreateInfoKHR;
 struct ValidationCacheCreateInfoEXT {
     StructureType sType{StructureType::ValidationCacheCreateInfoEXT};
     const void* pNext = nullptr;
     ValidationCacheCreateFlagsEXT flags{};
     size_t initialDataSize{0};
     const void* pInitialData = nullptr;
-    operator VkValidationCacheCreateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkValidationCacheCreateInfoEXT*>(this);
-    }
-    operator VkValidationCacheCreateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkValidationCacheCreateInfoEXT*>(this);
-    }
 };
 struct ShaderModuleValidationCacheCreateInfoEXT {
     StructureType sType{StructureType::ShaderModuleValidationCacheCreateInfoEXT};
     const void* pNext = nullptr;
     ValidationCacheEXT validationCache{};
-    operator VkShaderModuleValidationCacheCreateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkShaderModuleValidationCacheCreateInfoEXT*>(this);
-    }
-    operator VkShaderModuleValidationCacheCreateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkShaderModuleValidationCacheCreateInfoEXT*>(this);
-    }
 };
 struct PhysicalDeviceMaintenance3Properties {
     StructureType sType{StructureType::PhysicalDeviceMaintenance3Properties};
     void* pNext = nullptr;
     uint32_t maxPerSetDescriptors{0};
     DeviceSize maxMemoryAllocationSize{0};
-    operator VkPhysicalDeviceMaintenance3Properties const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceMaintenance3Properties*>(this);
-    }
-    operator VkPhysicalDeviceMaintenance3Properties &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceMaintenance3Properties*>(this);
-    }
 };
 using PhysicalDeviceMaintenance3PropertiesKHR = PhysicalDeviceMaintenance3Properties;
+using VkPhysicalDeviceMaintenance3PropertiesKHR = PhysicalDeviceMaintenance3PropertiesKHR;
 struct DescriptorSetLayoutSupport {
     StructureType sType{StructureType::DescriptorSetLayoutSupport};
     void* pNext = nullptr;
     Bool32 supported{0};
-    operator VkDescriptorSetLayoutSupport const &() const noexcept {
-        return *reinterpret_cast<const VkDescriptorSetLayoutSupport*>(this);
-    }
-    operator VkDescriptorSetLayoutSupport &() noexcept {
-        return *reinterpret_cast<VkDescriptorSetLayoutSupport*>(this);
-    }
 };
 using DescriptorSetLayoutSupportKHR = DescriptorSetLayoutSupport;
+using VkDescriptorSetLayoutSupportKHR = DescriptorSetLayoutSupportKHR;
 struct PhysicalDeviceShaderDrawParametersFeatures {
     StructureType sType{StructureType::PhysicalDeviceShaderDrawParametersFeatures};
     void* pNext = nullptr;
     Bool32 shaderDrawParameters{0};
-    operator VkPhysicalDeviceShaderDrawParametersFeatures const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceShaderDrawParametersFeatures*>(this);
-    }
-    operator VkPhysicalDeviceShaderDrawParametersFeatures &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceShaderDrawParametersFeatures*>(this);
-    }
 };
 using PhysicalDeviceShaderDrawParameterFeatures = PhysicalDeviceShaderDrawParametersFeatures;
+using VkPhysicalDeviceShaderDrawParameterFeatures = PhysicalDeviceShaderDrawParameterFeatures;
 struct PhysicalDeviceShaderFloat16Int8Features {
     StructureType sType{StructureType::PhysicalDeviceShaderFloat16Int8Features};
     void* pNext = nullptr;
     Bool32 shaderFloat16{0};
     Bool32 shaderInt8{0};
-    operator VkPhysicalDeviceShaderFloat16Int8Features const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceShaderFloat16Int8Features*>(this);
-    }
-    operator VkPhysicalDeviceShaderFloat16Int8Features &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceShaderFloat16Int8Features*>(this);
-    }
 };
 using PhysicalDeviceShaderFloat16Int8FeaturesKHR = PhysicalDeviceShaderFloat16Int8Features;
+using VkPhysicalDeviceShaderFloat16Int8FeaturesKHR = PhysicalDeviceShaderFloat16Int8FeaturesKHR;
 using PhysicalDeviceFloat16Int8FeaturesKHR = PhysicalDeviceShaderFloat16Int8Features;
+using VkPhysicalDeviceFloat16Int8FeaturesKHR = PhysicalDeviceFloat16Int8FeaturesKHR;
 struct PhysicalDeviceFloatControlsProperties {
     StructureType sType{StructureType::PhysicalDeviceFloatControlsProperties};
     void* pNext = nullptr;
@@ -7442,26 +5576,16 @@ struct PhysicalDeviceFloatControlsProperties {
     Bool32 shaderRoundingModeRTZFloat16{0};
     Bool32 shaderRoundingModeRTZFloat32{0};
     Bool32 shaderRoundingModeRTZFloat64{0};
-    operator VkPhysicalDeviceFloatControlsProperties const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceFloatControlsProperties*>(this);
-    }
-    operator VkPhysicalDeviceFloatControlsProperties &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceFloatControlsProperties*>(this);
-    }
 };
 using PhysicalDeviceFloatControlsPropertiesKHR = PhysicalDeviceFloatControlsProperties;
+using VkPhysicalDeviceFloatControlsPropertiesKHR = PhysicalDeviceFloatControlsPropertiesKHR;
 struct PhysicalDeviceHostQueryResetFeatures {
     StructureType sType{StructureType::PhysicalDeviceHostQueryResetFeatures};
     void* pNext = nullptr;
     Bool32 hostQueryReset{0};
-    operator VkPhysicalDeviceHostQueryResetFeatures const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceHostQueryResetFeatures*>(this);
-    }
-    operator VkPhysicalDeviceHostQueryResetFeatures &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceHostQueryResetFeatures*>(this);
-    }
 };
 using PhysicalDeviceHostQueryResetFeaturesEXT = PhysicalDeviceHostQueryResetFeatures;
+using VkPhysicalDeviceHostQueryResetFeaturesEXT = PhysicalDeviceHostQueryResetFeaturesEXT;
 struct ShaderResourceUsageAMD {
     uint32_t numUsedVgprs{0};
     uint32_t numUsedSgprs{0};
@@ -7469,12 +5593,6 @@ struct ShaderResourceUsageAMD {
     size_t ldsUsageSizeInBytes{0};
     size_t scratchMemUsageInBytes{0};
     constexpr bool operator==(ShaderResourceUsageAMD const& other) const = default;
-    operator VkShaderResourceUsageAMD const &() const noexcept {
-        return *reinterpret_cast<const VkShaderResourceUsageAMD*>(this);
-    }
-    operator VkShaderResourceUsageAMD &() noexcept {
-        return *reinterpret_cast<VkShaderResourceUsageAMD*>(this);
-    }
 };
 struct ShaderStatisticsInfoAMD {
     ShaderStageFlags shaderStageMask{};
@@ -7485,23 +5603,11 @@ struct ShaderStatisticsInfoAMD {
     uint32_t numAvailableSgprs{0};
     uint32_t computeWorkGroupSize[3];
     constexpr bool operator==(ShaderStatisticsInfoAMD const& other) const = default;
-    operator VkShaderStatisticsInfoAMD const &() const noexcept {
-        return *reinterpret_cast<const VkShaderStatisticsInfoAMD*>(this);
-    }
-    operator VkShaderStatisticsInfoAMD &() noexcept {
-        return *reinterpret_cast<VkShaderStatisticsInfoAMD*>(this);
-    }
 };
 struct DeviceQueueGlobalPriorityCreateInfoEXT {
     StructureType sType{StructureType::DeviceQueueGlobalPriorityCreateInfoEXT};
     const void* pNext = nullptr;
     QueueGlobalPriorityEXT globalPriority{static_cast<QueueGlobalPriorityEXT>(0)};
-    operator VkDeviceQueueGlobalPriorityCreateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkDeviceQueueGlobalPriorityCreateInfoEXT*>(this);
-    }
-    operator VkDeviceQueueGlobalPriorityCreateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkDeviceQueueGlobalPriorityCreateInfoEXT*>(this);
-    }
 };
 struct DebugUtilsObjectNameInfoEXT {
     StructureType sType{StructureType::DebugUtilsObjectNameInfoEXT};
@@ -7509,12 +5615,6 @@ struct DebugUtilsObjectNameInfoEXT {
     ObjectType objectType{static_cast<ObjectType>(0)};
     uint64_t objectHandle{0};
     const char* pObjectName = nullptr;
-    operator VkDebugUtilsObjectNameInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkDebugUtilsObjectNameInfoEXT*>(this);
-    }
-    operator VkDebugUtilsObjectNameInfoEXT &() noexcept {
-        return *reinterpret_cast<VkDebugUtilsObjectNameInfoEXT*>(this);
-    }
 };
 struct DebugUtilsObjectTagInfoEXT {
     StructureType sType{StructureType::DebugUtilsObjectTagInfoEXT};
@@ -7524,24 +5624,12 @@ struct DebugUtilsObjectTagInfoEXT {
     uint64_t tagName{0};
     size_t tagSize{0};
     const void* pTag = nullptr;
-    operator VkDebugUtilsObjectTagInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkDebugUtilsObjectTagInfoEXT*>(this);
-    }
-    operator VkDebugUtilsObjectTagInfoEXT &() noexcept {
-        return *reinterpret_cast<VkDebugUtilsObjectTagInfoEXT*>(this);
-    }
 };
 struct DebugUtilsLabelEXT {
     StructureType sType{StructureType::DebugUtilsLabelEXT};
     const void* pNext = nullptr;
     const char* pLabelName = nullptr;
     float color[4];
-    operator VkDebugUtilsLabelEXT const &() const noexcept {
-        return *reinterpret_cast<const VkDebugUtilsLabelEXT*>(this);
-    }
-    operator VkDebugUtilsLabelEXT &() noexcept {
-        return *reinterpret_cast<VkDebugUtilsLabelEXT*>(this);
-    }
 };
 struct DebugUtilsMessengerCreateInfoEXT {
     StructureType sType{StructureType::DebugUtilsMessengerCreateInfoEXT};
@@ -7551,12 +5639,6 @@ struct DebugUtilsMessengerCreateInfoEXT {
     DebugUtilsMessageTypeFlagsEXT messageType{};
     PFN_vkDebugUtilsMessengerCallbackEXT pfnUserCallback{};
     void* pUserData = nullptr;
-    operator VkDebugUtilsMessengerCreateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkDebugUtilsMessengerCreateInfoEXT*>(this);
-    }
-    operator VkDebugUtilsMessengerCreateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkDebugUtilsMessengerCreateInfoEXT*>(this);
-    }
 };
 struct DebugUtilsMessengerCallbackDataEXT {
     StructureType sType{StructureType::DebugUtilsMessengerCallbackDataEXT};
@@ -7571,23 +5653,11 @@ struct DebugUtilsMessengerCallbackDataEXT {
     const DebugUtilsLabelEXT* pCmdBufLabels = nullptr;
     uint32_t objectCount{0};
     const DebugUtilsObjectNameInfoEXT* pObjects = nullptr;
-    operator VkDebugUtilsMessengerCallbackDataEXT const &() const noexcept {
-        return *reinterpret_cast<const VkDebugUtilsMessengerCallbackDataEXT*>(this);
-    }
-    operator VkDebugUtilsMessengerCallbackDataEXT &() noexcept {
-        return *reinterpret_cast<VkDebugUtilsMessengerCallbackDataEXT*>(this);
-    }
 };
 struct PhysicalDeviceDeviceMemoryReportFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceDeviceMemoryReportFeaturesEXT};
     void* pNext = nullptr;
     Bool32 deviceMemoryReport{0};
-    operator VkPhysicalDeviceDeviceMemoryReportFeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceDeviceMemoryReportFeaturesEXT*>(this);
-    }
-    operator VkPhysicalDeviceDeviceMemoryReportFeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceDeviceMemoryReportFeaturesEXT*>(this);
-    }
 };
 struct DeviceDeviceMemoryReportCreateInfoEXT {
     StructureType sType{StructureType::DeviceDeviceMemoryReportCreateInfoEXT};
@@ -7595,12 +5665,6 @@ struct DeviceDeviceMemoryReportCreateInfoEXT {
     DeviceMemoryReportFlagsEXT flags{};
     PFN_vkDeviceMemoryReportCallbackEXT pfnUserCallback{};
     void* pUserData = nullptr;
-    operator VkDeviceDeviceMemoryReportCreateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkDeviceDeviceMemoryReportCreateInfoEXT*>(this);
-    }
-    operator VkDeviceDeviceMemoryReportCreateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkDeviceDeviceMemoryReportCreateInfoEXT*>(this);
-    }
 };
 struct DeviceMemoryReportCallbackDataEXT {
     StructureType sType{StructureType::DeviceMemoryReportCallbackDataEXT};
@@ -7612,46 +5676,22 @@ struct DeviceMemoryReportCallbackDataEXT {
     ObjectType objectType{static_cast<ObjectType>(0)};
     uint64_t objectHandle{0};
     uint32_t heapIndex{0};
-    operator VkDeviceMemoryReportCallbackDataEXT const &() const noexcept {
-        return *reinterpret_cast<const VkDeviceMemoryReportCallbackDataEXT*>(this);
-    }
-    operator VkDeviceMemoryReportCallbackDataEXT &() noexcept {
-        return *reinterpret_cast<VkDeviceMemoryReportCallbackDataEXT*>(this);
-    }
 };
 struct ImportMemoryHostPointerInfoEXT {
     StructureType sType{StructureType::ImportMemoryHostPointerInfoEXT};
     const void* pNext = nullptr;
     ExternalMemoryHandleTypeFlagBits handleType{static_cast<ExternalMemoryHandleTypeFlagBits>(0)};
     void* pHostPointer = nullptr;
-    operator VkImportMemoryHostPointerInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkImportMemoryHostPointerInfoEXT*>(this);
-    }
-    operator VkImportMemoryHostPointerInfoEXT &() noexcept {
-        return *reinterpret_cast<VkImportMemoryHostPointerInfoEXT*>(this);
-    }
 };
 struct MemoryHostPointerPropertiesEXT {
     StructureType sType{StructureType::MemoryHostPointerPropertiesEXT};
     void* pNext = nullptr;
     uint32_t memoryTypeBits{0};
-    operator VkMemoryHostPointerPropertiesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkMemoryHostPointerPropertiesEXT*>(this);
-    }
-    operator VkMemoryHostPointerPropertiesEXT &() noexcept {
-        return *reinterpret_cast<VkMemoryHostPointerPropertiesEXT*>(this);
-    }
 };
 struct PhysicalDeviceExternalMemoryHostPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceExternalMemoryHostPropertiesEXT};
     void* pNext = nullptr;
     DeviceSize minImportedHostPointerAlignment{0};
-    operator VkPhysicalDeviceExternalMemoryHostPropertiesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceExternalMemoryHostPropertiesEXT*>(this);
-    }
-    operator VkPhysicalDeviceExternalMemoryHostPropertiesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceExternalMemoryHostPropertiesEXT*>(this);
-    }
 };
 struct PhysicalDeviceConservativeRasterizationPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceConservativeRasterizationPropertiesEXT};
@@ -7665,23 +5705,11 @@ struct PhysicalDeviceConservativeRasterizationPropertiesEXT {
     Bool32 degenerateLinesRasterized{0};
     Bool32 fullyCoveredFragmentShaderInputVariable{0};
     Bool32 conservativeRasterizationPostDepthCoverage{0};
-    operator VkPhysicalDeviceConservativeRasterizationPropertiesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceConservativeRasterizationPropertiesEXT*>(this);
-    }
-    operator VkPhysicalDeviceConservativeRasterizationPropertiesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceConservativeRasterizationPropertiesEXT*>(this);
-    }
 };
 struct CalibratedTimestampInfoEXT {
     StructureType sType{StructureType::CalibratedTimestampInfoEXT};
     const void* pNext = nullptr;
     TimeDomainEXT timeDomain{static_cast<TimeDomainEXT>(0)};
-    operator VkCalibratedTimestampInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkCalibratedTimestampInfoEXT*>(this);
-    }
-    operator VkCalibratedTimestampInfoEXT &() noexcept {
-        return *reinterpret_cast<VkCalibratedTimestampInfoEXT*>(this);
-    }
 };
 struct PhysicalDeviceShaderCorePropertiesAMD {
     StructureType sType{StructureType::PhysicalDeviceShaderCorePropertiesAMD};
@@ -7700,24 +5728,12 @@ struct PhysicalDeviceShaderCorePropertiesAMD {
     uint32_t minVgprAllocation{0};
     uint32_t maxVgprAllocation{0};
     uint32_t vgprAllocationGranularity{0};
-    operator VkPhysicalDeviceShaderCorePropertiesAMD const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceShaderCorePropertiesAMD*>(this);
-    }
-    operator VkPhysicalDeviceShaderCorePropertiesAMD &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceShaderCorePropertiesAMD*>(this);
-    }
 };
 struct PhysicalDeviceShaderCoreProperties2AMD {
     StructureType sType{StructureType::PhysicalDeviceShaderCoreProperties2AMD};
     void* pNext = nullptr;
     ShaderCorePropertiesFlagsAMD shaderCoreFeatures{};
     uint32_t activeComputeUnitCount{0};
-    operator VkPhysicalDeviceShaderCoreProperties2AMD const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceShaderCoreProperties2AMD*>(this);
-    }
-    operator VkPhysicalDeviceShaderCoreProperties2AMD &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceShaderCoreProperties2AMD*>(this);
-    }
 };
 struct PipelineRasterizationConservativeStateCreateInfoEXT {
     StructureType sType{StructureType::PipelineRasterizationConservativeStateCreateInfoEXT};
@@ -7725,12 +5741,6 @@ struct PipelineRasterizationConservativeStateCreateInfoEXT {
     PipelineRasterizationConservativeStateCreateFlagsEXT flags{};
     ConservativeRasterizationModeEXT conservativeRasterizationMode{static_cast<ConservativeRasterizationModeEXT>(0)};
     float extraPrimitiveOverestimationSize{0.f};
-    operator VkPipelineRasterizationConservativeStateCreateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineRasterizationConservativeStateCreateInfoEXT*>(this);
-    }
-    operator VkPipelineRasterizationConservativeStateCreateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkPipelineRasterizationConservativeStateCreateInfoEXT*>(this);
-    }
 };
 struct PhysicalDeviceDescriptorIndexingFeatures {
     StructureType sType{StructureType::PhysicalDeviceDescriptorIndexingFeatures};
@@ -7755,14 +5765,9 @@ struct PhysicalDeviceDescriptorIndexingFeatures {
     Bool32 descriptorBindingPartiallyBound{0};
     Bool32 descriptorBindingVariableDescriptorCount{0};
     Bool32 runtimeDescriptorArray{0};
-    operator VkPhysicalDeviceDescriptorIndexingFeatures const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceDescriptorIndexingFeatures*>(this);
-    }
-    operator VkPhysicalDeviceDescriptorIndexingFeatures &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceDescriptorIndexingFeatures*>(this);
-    }
 };
 using PhysicalDeviceDescriptorIndexingFeaturesEXT = PhysicalDeviceDescriptorIndexingFeatures;
+using VkPhysicalDeviceDescriptorIndexingFeaturesEXT = PhysicalDeviceDescriptorIndexingFeaturesEXT;
 struct PhysicalDeviceDescriptorIndexingProperties {
     StructureType sType{StructureType::PhysicalDeviceDescriptorIndexingProperties};
     void* pNext = nullptr;
@@ -7789,52 +5794,32 @@ struct PhysicalDeviceDescriptorIndexingProperties {
     uint32_t maxDescriptorSetUpdateAfterBindSampledImages{0};
     uint32_t maxDescriptorSetUpdateAfterBindStorageImages{0};
     uint32_t maxDescriptorSetUpdateAfterBindInputAttachments{0};
-    operator VkPhysicalDeviceDescriptorIndexingProperties const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceDescriptorIndexingProperties*>(this);
-    }
-    operator VkPhysicalDeviceDescriptorIndexingProperties &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceDescriptorIndexingProperties*>(this);
-    }
 };
 using PhysicalDeviceDescriptorIndexingPropertiesEXT = PhysicalDeviceDescriptorIndexingProperties;
+using VkPhysicalDeviceDescriptorIndexingPropertiesEXT = PhysicalDeviceDescriptorIndexingPropertiesEXT;
 struct DescriptorSetLayoutBindingFlagsCreateInfo {
     StructureType sType{StructureType::DescriptorSetLayoutBindingFlagsCreateInfo};
     const void* pNext = nullptr;
     uint32_t bindingCount{0};
     const DescriptorBindingFlags* pBindingFlags = nullptr;
-    operator VkDescriptorSetLayoutBindingFlagsCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkDescriptorSetLayoutBindingFlagsCreateInfo*>(this);
-    }
-    operator VkDescriptorSetLayoutBindingFlagsCreateInfo &() noexcept {
-        return *reinterpret_cast<VkDescriptorSetLayoutBindingFlagsCreateInfo*>(this);
-    }
 };
 using DescriptorSetLayoutBindingFlagsCreateInfoEXT = DescriptorSetLayoutBindingFlagsCreateInfo;
+using VkDescriptorSetLayoutBindingFlagsCreateInfoEXT = DescriptorSetLayoutBindingFlagsCreateInfoEXT;
 struct DescriptorSetVariableDescriptorCountAllocateInfo {
     StructureType sType{StructureType::DescriptorSetVariableDescriptorCountAllocateInfo};
     const void* pNext = nullptr;
     uint32_t descriptorSetCount{0};
     const uint32_t* pDescriptorCounts = nullptr;
-    operator VkDescriptorSetVariableDescriptorCountAllocateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkDescriptorSetVariableDescriptorCountAllocateInfo*>(this);
-    }
-    operator VkDescriptorSetVariableDescriptorCountAllocateInfo &() noexcept {
-        return *reinterpret_cast<VkDescriptorSetVariableDescriptorCountAllocateInfo*>(this);
-    }
 };
 using DescriptorSetVariableDescriptorCountAllocateInfoEXT = DescriptorSetVariableDescriptorCountAllocateInfo;
+using VkDescriptorSetVariableDescriptorCountAllocateInfoEXT = DescriptorSetVariableDescriptorCountAllocateInfoEXT;
 struct DescriptorSetVariableDescriptorCountLayoutSupport {
     StructureType sType{StructureType::DescriptorSetVariableDescriptorCountLayoutSupport};
     void* pNext = nullptr;
     uint32_t maxVariableDescriptorCount{0};
-    operator VkDescriptorSetVariableDescriptorCountLayoutSupport const &() const noexcept {
-        return *reinterpret_cast<const VkDescriptorSetVariableDescriptorCountLayoutSupport*>(this);
-    }
-    operator VkDescriptorSetVariableDescriptorCountLayoutSupport &() noexcept {
-        return *reinterpret_cast<VkDescriptorSetVariableDescriptorCountLayoutSupport*>(this);
-    }
 };
 using DescriptorSetVariableDescriptorCountLayoutSupportEXT = DescriptorSetVariableDescriptorCountLayoutSupport;
+using VkDescriptorSetVariableDescriptorCountLayoutSupportEXT = DescriptorSetVariableDescriptorCountLayoutSupportEXT;
 struct AttachmentDescription2 {
     StructureType sType{StructureType::AttachmentDescription2};
     const void* pNext = nullptr;
@@ -7847,28 +5832,18 @@ struct AttachmentDescription2 {
     AttachmentStoreOp stencilStoreOp{static_cast<AttachmentStoreOp>(0)};
     ImageLayout initialLayout{static_cast<ImageLayout>(0)};
     ImageLayout finalLayout{static_cast<ImageLayout>(0)};
-    operator VkAttachmentDescription2 const &() const noexcept {
-        return *reinterpret_cast<const VkAttachmentDescription2*>(this);
-    }
-    operator VkAttachmentDescription2 &() noexcept {
-        return *reinterpret_cast<VkAttachmentDescription2*>(this);
-    }
 };
 using AttachmentDescription2KHR = AttachmentDescription2;
+using VkAttachmentDescription2KHR = AttachmentDescription2KHR;
 struct AttachmentReference2 {
     StructureType sType{StructureType::AttachmentReference2};
     const void* pNext = nullptr;
     uint32_t attachment{0};
     ImageLayout layout{static_cast<ImageLayout>(0)};
     ImageAspectFlags aspectMask{};
-    operator VkAttachmentReference2 const &() const noexcept {
-        return *reinterpret_cast<const VkAttachmentReference2*>(this);
-    }
-    operator VkAttachmentReference2 &() noexcept {
-        return *reinterpret_cast<VkAttachmentReference2*>(this);
-    }
 };
 using AttachmentReference2KHR = AttachmentReference2;
+using VkAttachmentReference2KHR = AttachmentReference2KHR;
 struct SubpassDescription2 {
     StructureType sType{StructureType::SubpassDescription2};
     const void* pNext = nullptr;
@@ -7883,14 +5858,9 @@ struct SubpassDescription2 {
     const AttachmentReference2* pDepthStencilAttachment = nullptr;
     uint32_t preserveAttachmentCount{0};
     const uint32_t* pPreserveAttachments = nullptr;
-    operator VkSubpassDescription2 const &() const noexcept {
-        return *reinterpret_cast<const VkSubpassDescription2*>(this);
-    }
-    operator VkSubpassDescription2 &() noexcept {
-        return *reinterpret_cast<VkSubpassDescription2*>(this);
-    }
 };
 using SubpassDescription2KHR = SubpassDescription2;
+using VkSubpassDescription2KHR = SubpassDescription2KHR;
 struct SubpassDependency2 {
     StructureType sType{StructureType::SubpassDependency2};
     const void* pNext = nullptr;
@@ -7902,14 +5872,9 @@ struct SubpassDependency2 {
     AccessFlags dstAccessMask{};
     DependencyFlags dependencyFlags{};
     int32_t viewOffset{0};
-    operator VkSubpassDependency2 const &() const noexcept {
-        return *reinterpret_cast<const VkSubpassDependency2*>(this);
-    }
-    operator VkSubpassDependency2 &() noexcept {
-        return *reinterpret_cast<VkSubpassDependency2*>(this);
-    }
 };
 using SubpassDependency2KHR = SubpassDependency2;
+using VkSubpassDependency2KHR = SubpassDependency2KHR;
 struct RenderPassCreateInfo2 {
     StructureType sType{StructureType::RenderPassCreateInfo2};
     const void* pNext = nullptr;
@@ -7922,74 +5887,44 @@ struct RenderPassCreateInfo2 {
     const SubpassDependency2* pDependencies = nullptr;
     uint32_t correlatedViewMaskCount{0};
     const uint32_t* pCorrelatedViewMasks = nullptr;
-    operator VkRenderPassCreateInfo2 const &() const noexcept {
-        return *reinterpret_cast<const VkRenderPassCreateInfo2*>(this);
-    }
-    operator VkRenderPassCreateInfo2 &() noexcept {
-        return *reinterpret_cast<VkRenderPassCreateInfo2*>(this);
-    }
 };
 using RenderPassCreateInfo2KHR = RenderPassCreateInfo2;
+using VkRenderPassCreateInfo2KHR = RenderPassCreateInfo2KHR;
 struct SubpassBeginInfo {
     StructureType sType{StructureType::SubpassBeginInfo};
     const void* pNext = nullptr;
     SubpassContents contents{static_cast<SubpassContents>(0)};
-    operator VkSubpassBeginInfo const &() const noexcept {
-        return *reinterpret_cast<const VkSubpassBeginInfo*>(this);
-    }
-    operator VkSubpassBeginInfo &() noexcept {
-        return *reinterpret_cast<VkSubpassBeginInfo*>(this);
-    }
 };
 using SubpassBeginInfoKHR = SubpassBeginInfo;
+using VkSubpassBeginInfoKHR = SubpassBeginInfoKHR;
 struct SubpassEndInfo {
     StructureType sType{StructureType::SubpassEndInfo};
     const void* pNext = nullptr;
-    operator VkSubpassEndInfo const &() const noexcept {
-        return *reinterpret_cast<const VkSubpassEndInfo*>(this);
-    }
-    operator VkSubpassEndInfo &() noexcept {
-        return *reinterpret_cast<VkSubpassEndInfo*>(this);
-    }
 };
 using SubpassEndInfoKHR = SubpassEndInfo;
+using VkSubpassEndInfoKHR = SubpassEndInfoKHR;
 struct PhysicalDeviceTimelineSemaphoreFeatures {
     StructureType sType{StructureType::PhysicalDeviceTimelineSemaphoreFeatures};
     void* pNext = nullptr;
     Bool32 timelineSemaphore{0};
-    operator VkPhysicalDeviceTimelineSemaphoreFeatures const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceTimelineSemaphoreFeatures*>(this);
-    }
-    operator VkPhysicalDeviceTimelineSemaphoreFeatures &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceTimelineSemaphoreFeatures*>(this);
-    }
 };
 using PhysicalDeviceTimelineSemaphoreFeaturesKHR = PhysicalDeviceTimelineSemaphoreFeatures;
+using VkPhysicalDeviceTimelineSemaphoreFeaturesKHR = PhysicalDeviceTimelineSemaphoreFeaturesKHR;
 struct PhysicalDeviceTimelineSemaphoreProperties {
     StructureType sType{StructureType::PhysicalDeviceTimelineSemaphoreProperties};
     void* pNext = nullptr;
     uint64_t maxTimelineSemaphoreValueDifference{0};
-    operator VkPhysicalDeviceTimelineSemaphoreProperties const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceTimelineSemaphoreProperties*>(this);
-    }
-    operator VkPhysicalDeviceTimelineSemaphoreProperties &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceTimelineSemaphoreProperties*>(this);
-    }
 };
 using PhysicalDeviceTimelineSemaphorePropertiesKHR = PhysicalDeviceTimelineSemaphoreProperties;
+using VkPhysicalDeviceTimelineSemaphorePropertiesKHR = PhysicalDeviceTimelineSemaphorePropertiesKHR;
 struct SemaphoreTypeCreateInfo {
     StructureType sType{StructureType::SemaphoreTypeCreateInfo};
     const void* pNext = nullptr;
     SemaphoreType semaphoreType{static_cast<SemaphoreType>(0)};
     uint64_t initialValue{0};
-    operator VkSemaphoreTypeCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkSemaphoreTypeCreateInfo*>(this);
-    }
-    operator VkSemaphoreTypeCreateInfo &() noexcept {
-        return *reinterpret_cast<VkSemaphoreTypeCreateInfo*>(this);
-    }
 };
 using SemaphoreTypeCreateInfoKHR = SemaphoreTypeCreateInfo;
+using VkSemaphoreTypeCreateInfoKHR = SemaphoreTypeCreateInfoKHR;
 struct TimelineSemaphoreSubmitInfo {
     StructureType sType{StructureType::TimelineSemaphoreSubmitInfo};
     const void* pNext = nullptr;
@@ -7997,14 +5932,9 @@ struct TimelineSemaphoreSubmitInfo {
     const uint64_t* pWaitSemaphoreValues = nullptr;
     uint32_t signalSemaphoreValueCount{0};
     const uint64_t* pSignalSemaphoreValues = nullptr;
-    operator VkTimelineSemaphoreSubmitInfo const &() const noexcept {
-        return *reinterpret_cast<const VkTimelineSemaphoreSubmitInfo*>(this);
-    }
-    operator VkTimelineSemaphoreSubmitInfo &() noexcept {
-        return *reinterpret_cast<VkTimelineSemaphoreSubmitInfo*>(this);
-    }
 };
 using TimelineSemaphoreSubmitInfoKHR = TimelineSemaphoreSubmitInfo;
+using VkTimelineSemaphoreSubmitInfoKHR = TimelineSemaphoreSubmitInfoKHR;
 struct SemaphoreWaitInfo {
     StructureType sType{StructureType::SemaphoreWaitInfo};
     const void* pNext = nullptr;
@@ -8012,60 +5942,32 @@ struct SemaphoreWaitInfo {
     uint32_t semaphoreCount{0};
     const Semaphore* pSemaphores = nullptr;
     const uint64_t* pValues = nullptr;
-    operator VkSemaphoreWaitInfo const &() const noexcept {
-        return *reinterpret_cast<const VkSemaphoreWaitInfo*>(this);
-    }
-    operator VkSemaphoreWaitInfo &() noexcept {
-        return *reinterpret_cast<VkSemaphoreWaitInfo*>(this);
-    }
 };
 using SemaphoreWaitInfoKHR = SemaphoreWaitInfo;
+using VkSemaphoreWaitInfoKHR = SemaphoreWaitInfoKHR;
 struct SemaphoreSignalInfo {
     StructureType sType{StructureType::SemaphoreSignalInfo};
     const void* pNext = nullptr;
     Semaphore semaphore{};
     uint64_t value{0};
-    operator VkSemaphoreSignalInfo const &() const noexcept {
-        return *reinterpret_cast<const VkSemaphoreSignalInfo*>(this);
-    }
-    operator VkSemaphoreSignalInfo &() noexcept {
-        return *reinterpret_cast<VkSemaphoreSignalInfo*>(this);
-    }
 };
 using SemaphoreSignalInfoKHR = SemaphoreSignalInfo;
+using VkSemaphoreSignalInfoKHR = SemaphoreSignalInfoKHR;
 struct VertexInputBindingDivisorDescriptionEXT {
     uint32_t binding{0};
     uint32_t divisor{0};
     constexpr bool operator==(VertexInputBindingDivisorDescriptionEXT const& other) const = default;
-    operator VkVertexInputBindingDivisorDescriptionEXT const &() const noexcept {
-        return *reinterpret_cast<const VkVertexInputBindingDivisorDescriptionEXT*>(this);
-    }
-    operator VkVertexInputBindingDivisorDescriptionEXT &() noexcept {
-        return *reinterpret_cast<VkVertexInputBindingDivisorDescriptionEXT*>(this);
-    }
 };
 struct PipelineVertexInputDivisorStateCreateInfoEXT {
     StructureType sType{StructureType::PipelineVertexInputDivisorStateCreateInfoEXT};
     const void* pNext = nullptr;
     uint32_t vertexBindingDivisorCount{0};
     const VertexInputBindingDivisorDescriptionEXT* pVertexBindingDivisors = nullptr;
-    operator VkPipelineVertexInputDivisorStateCreateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineVertexInputDivisorStateCreateInfoEXT*>(this);
-    }
-    operator VkPipelineVertexInputDivisorStateCreateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkPipelineVertexInputDivisorStateCreateInfoEXT*>(this);
-    }
 };
 struct PhysicalDeviceVertexAttributeDivisorPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceVertexAttributeDivisorPropertiesEXT};
     void* pNext = nullptr;
     uint32_t maxVertexAttribDivisor{0};
-    operator VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT*>(this);
-    }
-    operator VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT*>(this);
-    }
 };
 struct PhysicalDevicePCIBusInfoPropertiesEXT {
     StructureType sType{StructureType::PhysicalDevicePciBusInfoPropertiesEXT};
@@ -8074,58 +5976,28 @@ struct PhysicalDevicePCIBusInfoPropertiesEXT {
     uint32_t pciBus{0};
     uint32_t pciDevice{0};
     uint32_t pciFunction{0};
-    operator VkPhysicalDevicePCIBusInfoPropertiesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDevicePCIBusInfoPropertiesEXT*>(this);
-    }
-    operator VkPhysicalDevicePCIBusInfoPropertiesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDevicePCIBusInfoPropertiesEXT*>(this);
-    }
 };
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 struct ImportAndroidHardwareBufferInfoANDROID {
     StructureType sType{StructureType::ImportAndroidHardwareBufferInfoANDROID};
     const void* pNext = nullptr;
     AHardwareBuffer* buffer = nullptr;
-    operator VkImportAndroidHardwareBufferInfoANDROID const &() const noexcept {
-        return *reinterpret_cast<const VkImportAndroidHardwareBufferInfoANDROID*>(this);
-    }
-    operator VkImportAndroidHardwareBufferInfoANDROID &() noexcept {
-        return *reinterpret_cast<VkImportAndroidHardwareBufferInfoANDROID*>(this);
-    }
 };
 struct AndroidHardwareBufferUsageANDROID {
     StructureType sType{StructureType::AndroidHardwareBufferUsageANDROID};
     void* pNext = nullptr;
     uint64_t androidHardwareBufferUsage{0};
-    operator VkAndroidHardwareBufferUsageANDROID const &() const noexcept {
-        return *reinterpret_cast<const VkAndroidHardwareBufferUsageANDROID*>(this);
-    }
-    operator VkAndroidHardwareBufferUsageANDROID &() noexcept {
-        return *reinterpret_cast<VkAndroidHardwareBufferUsageANDROID*>(this);
-    }
 };
 struct AndroidHardwareBufferPropertiesANDROID {
     StructureType sType{StructureType::AndroidHardwareBufferPropertiesANDROID};
     void* pNext = nullptr;
     DeviceSize allocationSize{0};
     uint32_t memoryTypeBits{0};
-    operator VkAndroidHardwareBufferPropertiesANDROID const &() const noexcept {
-        return *reinterpret_cast<const VkAndroidHardwareBufferPropertiesANDROID*>(this);
-    }
-    operator VkAndroidHardwareBufferPropertiesANDROID &() noexcept {
-        return *reinterpret_cast<VkAndroidHardwareBufferPropertiesANDROID*>(this);
-    }
 };
 struct MemoryGetAndroidHardwareBufferInfoANDROID {
     StructureType sType{StructureType::MemoryGetAndroidHardwareBufferInfoANDROID};
     const void* pNext = nullptr;
     DeviceMemory memory{};
-    operator VkMemoryGetAndroidHardwareBufferInfoANDROID const &() const noexcept {
-        return *reinterpret_cast<const VkMemoryGetAndroidHardwareBufferInfoANDROID*>(this);
-    }
-    operator VkMemoryGetAndroidHardwareBufferInfoANDROID &() noexcept {
-        return *reinterpret_cast<VkMemoryGetAndroidHardwareBufferInfoANDROID*>(this);
-    }
 };
 struct AndroidHardwareBufferFormatPropertiesANDROID {
     StructureType sType{StructureType::AndroidHardwareBufferFormatPropertiesANDROID};
@@ -8138,36 +6010,18 @@ struct AndroidHardwareBufferFormatPropertiesANDROID {
     SamplerYcbcrRange suggestedYcbcrRange{static_cast<SamplerYcbcrRange>(0)};
     ChromaLocation suggestedXChromaOffset{static_cast<ChromaLocation>(0)};
     ChromaLocation suggestedYChromaOffset{static_cast<ChromaLocation>(0)};
-    operator VkAndroidHardwareBufferFormatPropertiesANDROID const &() const noexcept {
-        return *reinterpret_cast<const VkAndroidHardwareBufferFormatPropertiesANDROID*>(this);
-    }
-    operator VkAndroidHardwareBufferFormatPropertiesANDROID &() noexcept {
-        return *reinterpret_cast<VkAndroidHardwareBufferFormatPropertiesANDROID*>(this);
-    }
 };
 #endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
 struct CommandBufferInheritanceConditionalRenderingInfoEXT {
     StructureType sType{StructureType::CommandBufferInheritanceConditionalRenderingInfoEXT};
     const void* pNext = nullptr;
     Bool32 conditionalRenderingEnable{0};
-    operator VkCommandBufferInheritanceConditionalRenderingInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkCommandBufferInheritanceConditionalRenderingInfoEXT*>(this);
-    }
-    operator VkCommandBufferInheritanceConditionalRenderingInfoEXT &() noexcept {
-        return *reinterpret_cast<VkCommandBufferInheritanceConditionalRenderingInfoEXT*>(this);
-    }
 };
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 struct ExternalFormatANDROID {
     StructureType sType{StructureType::ExternalFormatANDROID};
     void* pNext = nullptr;
     uint64_t externalFormat{0};
-    operator VkExternalFormatANDROID const &() const noexcept {
-        return *reinterpret_cast<const VkExternalFormatANDROID*>(this);
-    }
-    operator VkExternalFormatANDROID &() noexcept {
-        return *reinterpret_cast<VkExternalFormatANDROID*>(this);
-    }
 };
 #endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
 struct PhysicalDevice8BitStorageFeatures {
@@ -8176,25 +6030,14 @@ struct PhysicalDevice8BitStorageFeatures {
     Bool32 storageBuffer8BitAccess{0};
     Bool32 uniformAndStorageBuffer8BitAccess{0};
     Bool32 storagePushConstant8{0};
-    operator VkPhysicalDevice8BitStorageFeatures const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDevice8BitStorageFeatures*>(this);
-    }
-    operator VkPhysicalDevice8BitStorageFeatures &() noexcept {
-        return *reinterpret_cast<VkPhysicalDevice8BitStorageFeatures*>(this);
-    }
 };
 using PhysicalDevice8BitStorageFeaturesKHR = PhysicalDevice8BitStorageFeatures;
+using VkPhysicalDevice8BitStorageFeaturesKHR = PhysicalDevice8BitStorageFeaturesKHR;
 struct PhysicalDeviceConditionalRenderingFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceConditionalRenderingFeaturesEXT};
     void* pNext = nullptr;
     Bool32 conditionalRendering{0};
     Bool32 inheritedConditionalRendering{0};
-    operator VkPhysicalDeviceConditionalRenderingFeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceConditionalRenderingFeaturesEXT*>(this);
-    }
-    operator VkPhysicalDeviceConditionalRenderingFeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceConditionalRenderingFeaturesEXT*>(this);
-    }
 };
 struct PhysicalDeviceVulkanMemoryModelFeatures {
     StructureType sType{StructureType::PhysicalDeviceVulkanMemoryModelFeatures};
@@ -8202,27 +6045,17 @@ struct PhysicalDeviceVulkanMemoryModelFeatures {
     Bool32 vulkanMemoryModel{0};
     Bool32 vulkanMemoryModelDeviceScope{0};
     Bool32 vulkanMemoryModelAvailabilityVisibilityChains{0};
-    operator VkPhysicalDeviceVulkanMemoryModelFeatures const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceVulkanMemoryModelFeatures*>(this);
-    }
-    operator VkPhysicalDeviceVulkanMemoryModelFeatures &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceVulkanMemoryModelFeatures*>(this);
-    }
 };
 using PhysicalDeviceVulkanMemoryModelFeaturesKHR = PhysicalDeviceVulkanMemoryModelFeatures;
+using VkPhysicalDeviceVulkanMemoryModelFeaturesKHR = PhysicalDeviceVulkanMemoryModelFeaturesKHR;
 struct PhysicalDeviceShaderAtomicInt64Features {
     StructureType sType{StructureType::PhysicalDeviceShaderAtomicInt64Features};
     void* pNext = nullptr;
     Bool32 shaderBufferInt64Atomics{0};
     Bool32 shaderSharedInt64Atomics{0};
-    operator VkPhysicalDeviceShaderAtomicInt64Features const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceShaderAtomicInt64Features*>(this);
-    }
-    operator VkPhysicalDeviceShaderAtomicInt64Features &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceShaderAtomicInt64Features*>(this);
-    }
 };
 using PhysicalDeviceShaderAtomicInt64FeaturesKHR = PhysicalDeviceShaderAtomicInt64Features;
+using VkPhysicalDeviceShaderAtomicInt64FeaturesKHR = PhysicalDeviceShaderAtomicInt64FeaturesKHR;
 struct PhysicalDeviceShaderAtomicFloatFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceShaderAtomicFloatFeaturesEXT};
     void* pNext = nullptr;
@@ -8238,47 +6071,23 @@ struct PhysicalDeviceShaderAtomicFloatFeaturesEXT {
     Bool32 shaderImageFloat32AtomicAdd{0};
     Bool32 sparseImageFloat32Atomics{0};
     Bool32 sparseImageFloat32AtomicAdd{0};
-    operator VkPhysicalDeviceShaderAtomicFloatFeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceShaderAtomicFloatFeaturesEXT*>(this);
-    }
-    operator VkPhysicalDeviceShaderAtomicFloatFeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceShaderAtomicFloatFeaturesEXT*>(this);
-    }
 };
 struct PhysicalDeviceVertexAttributeDivisorFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceVertexAttributeDivisorFeaturesEXT};
     void* pNext = nullptr;
     Bool32 vertexAttributeInstanceRateDivisor{0};
     Bool32 vertexAttributeInstanceRateZeroDivisor{0};
-    operator VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT*>(this);
-    }
-    operator VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT*>(this);
-    }
 };
 struct QueueFamilyCheckpointPropertiesNV {
     StructureType sType{StructureType::QueueFamilyCheckpointPropertiesNV};
     void* pNext = nullptr;
     PipelineStageFlags checkpointExecutionStageMask{};
-    operator VkQueueFamilyCheckpointPropertiesNV const &() const noexcept {
-        return *reinterpret_cast<const VkQueueFamilyCheckpointPropertiesNV*>(this);
-    }
-    operator VkQueueFamilyCheckpointPropertiesNV &() noexcept {
-        return *reinterpret_cast<VkQueueFamilyCheckpointPropertiesNV*>(this);
-    }
 };
 struct CheckpointDataNV {
     StructureType sType{StructureType::CheckpointDataNV};
     void* pNext = nullptr;
     PipelineStageFlagBits stage{static_cast<PipelineStageFlagBits>(0)};
     void* pCheckpointMarker = nullptr;
-    operator VkCheckpointDataNV const &() const noexcept {
-        return *reinterpret_cast<const VkCheckpointDataNV*>(this);
-    }
-    operator VkCheckpointDataNV &() noexcept {
-        return *reinterpret_cast<VkCheckpointDataNV*>(this);
-    }
 };
 struct PhysicalDeviceDepthStencilResolveProperties {
     StructureType sType{StructureType::PhysicalDeviceDepthStencilResolveProperties};
@@ -8287,61 +6096,33 @@ struct PhysicalDeviceDepthStencilResolveProperties {
     ResolveModeFlags supportedStencilResolveModes{};
     Bool32 independentResolveNone{0};
     Bool32 independentResolve{0};
-    operator VkPhysicalDeviceDepthStencilResolveProperties const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceDepthStencilResolveProperties*>(this);
-    }
-    operator VkPhysicalDeviceDepthStencilResolveProperties &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceDepthStencilResolveProperties*>(this);
-    }
 };
 using PhysicalDeviceDepthStencilResolvePropertiesKHR = PhysicalDeviceDepthStencilResolveProperties;
+using VkPhysicalDeviceDepthStencilResolvePropertiesKHR = PhysicalDeviceDepthStencilResolvePropertiesKHR;
 struct SubpassDescriptionDepthStencilResolve {
     StructureType sType{StructureType::SubpassDescriptionDepthStencilResolve};
     const void* pNext = nullptr;
     ResolveModeFlagBits depthResolveMode{static_cast<ResolveModeFlagBits>(0)};
     ResolveModeFlagBits stencilResolveMode{static_cast<ResolveModeFlagBits>(0)};
     const AttachmentReference2* pDepthStencilResolveAttachment = nullptr;
-    operator VkSubpassDescriptionDepthStencilResolve const &() const noexcept {
-        return *reinterpret_cast<const VkSubpassDescriptionDepthStencilResolve*>(this);
-    }
-    operator VkSubpassDescriptionDepthStencilResolve &() noexcept {
-        return *reinterpret_cast<VkSubpassDescriptionDepthStencilResolve*>(this);
-    }
 };
 using SubpassDescriptionDepthStencilResolveKHR = SubpassDescriptionDepthStencilResolve;
+using VkSubpassDescriptionDepthStencilResolveKHR = SubpassDescriptionDepthStencilResolveKHR;
 struct ImageViewASTCDecodeModeEXT {
     StructureType sType{StructureType::ImageViewAstcDecodeModeEXT};
     const void* pNext = nullptr;
     Format decodeMode{static_cast<Format>(0)};
-    operator VkImageViewASTCDecodeModeEXT const &() const noexcept {
-        return *reinterpret_cast<const VkImageViewASTCDecodeModeEXT*>(this);
-    }
-    operator VkImageViewASTCDecodeModeEXT &() noexcept {
-        return *reinterpret_cast<VkImageViewASTCDecodeModeEXT*>(this);
-    }
 };
 struct PhysicalDeviceASTCDecodeFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceAstcDecodeFeaturesEXT};
     void* pNext = nullptr;
     Bool32 decodeModeSharedExponent{0};
-    operator VkPhysicalDeviceASTCDecodeFeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceASTCDecodeFeaturesEXT*>(this);
-    }
-    operator VkPhysicalDeviceASTCDecodeFeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceASTCDecodeFeaturesEXT*>(this);
-    }
 };
 struct PhysicalDeviceTransformFeedbackFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceTransformFeedbackFeaturesEXT};
     void* pNext = nullptr;
     Bool32 transformFeedback{0};
     Bool32 geometryStreams{0};
-    operator VkPhysicalDeviceTransformFeedbackFeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceTransformFeedbackFeaturesEXT*>(this);
-    }
-    operator VkPhysicalDeviceTransformFeedbackFeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceTransformFeedbackFeaturesEXT*>(this);
-    }
 };
 struct PhysicalDeviceTransformFeedbackPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceTransformFeedbackPropertiesEXT};
@@ -8356,135 +6137,63 @@ struct PhysicalDeviceTransformFeedbackPropertiesEXT {
     Bool32 transformFeedbackStreamsLinesTriangles{0};
     Bool32 transformFeedbackRasterizationStreamSelect{0};
     Bool32 transformFeedbackDraw{0};
-    operator VkPhysicalDeviceTransformFeedbackPropertiesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceTransformFeedbackPropertiesEXT*>(this);
-    }
-    operator VkPhysicalDeviceTransformFeedbackPropertiesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceTransformFeedbackPropertiesEXT*>(this);
-    }
 };
 struct PipelineRasterizationStateStreamCreateInfoEXT {
     StructureType sType{StructureType::PipelineRasterizationStateStreamCreateInfoEXT};
     const void* pNext = nullptr;
     PipelineRasterizationStateStreamCreateFlagsEXT flags{};
     uint32_t rasterizationStream{0};
-    operator VkPipelineRasterizationStateStreamCreateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineRasterizationStateStreamCreateInfoEXT*>(this);
-    }
-    operator VkPipelineRasterizationStateStreamCreateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkPipelineRasterizationStateStreamCreateInfoEXT*>(this);
-    }
 };
 struct PhysicalDeviceRepresentativeFragmentTestFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceRepresentativeFragmentTestFeaturesNV};
     void* pNext = nullptr;
     Bool32 representativeFragmentTest{0};
-    operator VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV*>(this);
-    }
-    operator VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV*>(this);
-    }
 };
 struct PipelineRepresentativeFragmentTestStateCreateInfoNV {
     StructureType sType{StructureType::PipelineRepresentativeFragmentTestStateCreateInfoNV};
     const void* pNext = nullptr;
     Bool32 representativeFragmentTestEnable{0};
-    operator VkPipelineRepresentativeFragmentTestStateCreateInfoNV const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineRepresentativeFragmentTestStateCreateInfoNV*>(this);
-    }
-    operator VkPipelineRepresentativeFragmentTestStateCreateInfoNV &() noexcept {
-        return *reinterpret_cast<VkPipelineRepresentativeFragmentTestStateCreateInfoNV*>(this);
-    }
 };
 struct PhysicalDeviceExclusiveScissorFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceExclusiveScissorFeaturesNV};
     void* pNext = nullptr;
     Bool32 exclusiveScissor{0};
-    operator VkPhysicalDeviceExclusiveScissorFeaturesNV const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceExclusiveScissorFeaturesNV*>(this);
-    }
-    operator VkPhysicalDeviceExclusiveScissorFeaturesNV &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceExclusiveScissorFeaturesNV*>(this);
-    }
 };
 struct PipelineViewportExclusiveScissorStateCreateInfoNV {
     StructureType sType{StructureType::PipelineViewportExclusiveScissorStateCreateInfoNV};
     const void* pNext = nullptr;
     uint32_t exclusiveScissorCount{0};
     const Rect2D* pExclusiveScissors = nullptr;
-    operator VkPipelineViewportExclusiveScissorStateCreateInfoNV const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineViewportExclusiveScissorStateCreateInfoNV*>(this);
-    }
-    operator VkPipelineViewportExclusiveScissorStateCreateInfoNV &() noexcept {
-        return *reinterpret_cast<VkPipelineViewportExclusiveScissorStateCreateInfoNV*>(this);
-    }
 };
 struct PhysicalDeviceCornerSampledImageFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceCornerSampledImageFeaturesNV};
     void* pNext = nullptr;
     Bool32 cornerSampledImage{0};
-    operator VkPhysicalDeviceCornerSampledImageFeaturesNV const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceCornerSampledImageFeaturesNV*>(this);
-    }
-    operator VkPhysicalDeviceCornerSampledImageFeaturesNV &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceCornerSampledImageFeaturesNV*>(this);
-    }
 };
 struct PhysicalDeviceComputeShaderDerivativesFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceComputeShaderDerivativesFeaturesNV};
     void* pNext = nullptr;
     Bool32 computeDerivativeGroupQuads{0};
     Bool32 computeDerivativeGroupLinear{0};
-    operator VkPhysicalDeviceComputeShaderDerivativesFeaturesNV const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceComputeShaderDerivativesFeaturesNV*>(this);
-    }
-    operator VkPhysicalDeviceComputeShaderDerivativesFeaturesNV &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceComputeShaderDerivativesFeaturesNV*>(this);
-    }
 };
 struct PhysicalDeviceFragmentShaderBarycentricFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceFragmentShaderBarycentricFeaturesNV};
     void* pNext = nullptr;
     Bool32 fragmentShaderBarycentric{0};
-    operator VkPhysicalDeviceFragmentShaderBarycentricFeaturesNV const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceFragmentShaderBarycentricFeaturesNV*>(this);
-    }
-    operator VkPhysicalDeviceFragmentShaderBarycentricFeaturesNV &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceFragmentShaderBarycentricFeaturesNV*>(this);
-    }
 };
 struct PhysicalDeviceShaderImageFootprintFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceShaderImageFootprintFeaturesNV};
     void* pNext = nullptr;
     Bool32 imageFootprint{0};
-    operator VkPhysicalDeviceShaderImageFootprintFeaturesNV const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceShaderImageFootprintFeaturesNV*>(this);
-    }
-    operator VkPhysicalDeviceShaderImageFootprintFeaturesNV &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceShaderImageFootprintFeaturesNV*>(this);
-    }
 };
 struct PhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV};
     void* pNext = nullptr;
     Bool32 dedicatedAllocationImageAliasing{0};
-    operator VkPhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV*>(this);
-    }
-    operator VkPhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV*>(this);
-    }
 };
 struct ShadingRatePaletteNV {
     uint32_t shadingRatePaletteEntryCount{0};
     const ShadingRatePaletteEntryNV* pShadingRatePaletteEntries = nullptr;
-    operator VkShadingRatePaletteNV const &() const noexcept {
-        return *reinterpret_cast<const VkShadingRatePaletteNV*>(this);
-    }
-    operator VkShadingRatePaletteNV &() noexcept {
-        return *reinterpret_cast<VkShadingRatePaletteNV*>(this);
-    }
 };
 struct PipelineViewportShadingRateImageStateCreateInfoNV {
     StructureType sType{StructureType::PipelineViewportShadingRateImageStateCreateInfoNV};
@@ -8492,24 +6201,12 @@ struct PipelineViewportShadingRateImageStateCreateInfoNV {
     Bool32 shadingRateImageEnable{0};
     uint32_t viewportCount{0};
     const ShadingRatePaletteNV* pShadingRatePalettes = nullptr;
-    operator VkPipelineViewportShadingRateImageStateCreateInfoNV const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineViewportShadingRateImageStateCreateInfoNV*>(this);
-    }
-    operator VkPipelineViewportShadingRateImageStateCreateInfoNV &() noexcept {
-        return *reinterpret_cast<VkPipelineViewportShadingRateImageStateCreateInfoNV*>(this);
-    }
 };
 struct PhysicalDeviceShadingRateImageFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceShadingRateImageFeaturesNV};
     void* pNext = nullptr;
     Bool32 shadingRateImage{0};
     Bool32 shadingRateCoarseSampleOrder{0};
-    operator VkPhysicalDeviceShadingRateImageFeaturesNV const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceShadingRateImageFeaturesNV*>(this);
-    }
-    operator VkPhysicalDeviceShadingRateImageFeaturesNV &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceShadingRateImageFeaturesNV*>(this);
-    }
 };
 struct PhysicalDeviceShadingRateImagePropertiesNV {
     StructureType sType{StructureType::PhysicalDeviceShadingRateImagePropertiesNV};
@@ -8517,36 +6214,18 @@ struct PhysicalDeviceShadingRateImagePropertiesNV {
     Extent2D shadingRateTexelSize{};
     uint32_t shadingRatePaletteSize{0};
     uint32_t shadingRateMaxCoarseSamples{0};
-    operator VkPhysicalDeviceShadingRateImagePropertiesNV const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceShadingRateImagePropertiesNV*>(this);
-    }
-    operator VkPhysicalDeviceShadingRateImagePropertiesNV &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceShadingRateImagePropertiesNV*>(this);
-    }
 };
 struct CoarseSampleLocationNV {
     uint32_t pixelX{0};
     uint32_t pixelY{0};
     uint32_t sample{0};
     constexpr bool operator==(CoarseSampleLocationNV const& other) const = default;
-    operator VkCoarseSampleLocationNV const &() const noexcept {
-        return *reinterpret_cast<const VkCoarseSampleLocationNV*>(this);
-    }
-    operator VkCoarseSampleLocationNV &() noexcept {
-        return *reinterpret_cast<VkCoarseSampleLocationNV*>(this);
-    }
 };
 struct CoarseSampleOrderCustomNV {
     ShadingRatePaletteEntryNV shadingRate{static_cast<ShadingRatePaletteEntryNV>(0)};
     uint32_t sampleCount{0};
     uint32_t sampleLocationCount{0};
     const CoarseSampleLocationNV* pSampleLocations = nullptr;
-    operator VkCoarseSampleOrderCustomNV const &() const noexcept {
-        return *reinterpret_cast<const VkCoarseSampleOrderCustomNV*>(this);
-    }
-    operator VkCoarseSampleOrderCustomNV &() noexcept {
-        return *reinterpret_cast<VkCoarseSampleOrderCustomNV*>(this);
-    }
 };
 struct PipelineViewportCoarseSampleOrderStateCreateInfoNV {
     StructureType sType{StructureType::PipelineViewportCoarseSampleOrderStateCreateInfoNV};
@@ -8554,24 +6233,12 @@ struct PipelineViewportCoarseSampleOrderStateCreateInfoNV {
     CoarseSampleOrderTypeNV sampleOrderType{static_cast<CoarseSampleOrderTypeNV>(0)};
     uint32_t customSampleOrderCount{0};
     const CoarseSampleOrderCustomNV* pCustomSampleOrders = nullptr;
-    operator VkPipelineViewportCoarseSampleOrderStateCreateInfoNV const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineViewportCoarseSampleOrderStateCreateInfoNV*>(this);
-    }
-    operator VkPipelineViewportCoarseSampleOrderStateCreateInfoNV &() noexcept {
-        return *reinterpret_cast<VkPipelineViewportCoarseSampleOrderStateCreateInfoNV*>(this);
-    }
 };
 struct PhysicalDeviceMeshShaderFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceMeshShaderFeaturesNV};
     void* pNext = nullptr;
     Bool32 taskShader{0};
     Bool32 meshShader{0};
-    operator VkPhysicalDeviceMeshShaderFeaturesNV const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceMeshShaderFeaturesNV*>(this);
-    }
-    operator VkPhysicalDeviceMeshShaderFeaturesNV &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceMeshShaderFeaturesNV*>(this);
-    }
 };
 struct PhysicalDeviceMeshShaderPropertiesNV {
     StructureType sType{StructureType::PhysicalDeviceMeshShaderPropertiesNV};
@@ -8589,23 +6256,11 @@ struct PhysicalDeviceMeshShaderPropertiesNV {
     uint32_t maxMeshMultiviewViewCount{0};
     uint32_t meshOutputPerVertexGranularity{0};
     uint32_t meshOutputPerPrimitiveGranularity{0};
-    operator VkPhysicalDeviceMeshShaderPropertiesNV const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceMeshShaderPropertiesNV*>(this);
-    }
-    operator VkPhysicalDeviceMeshShaderPropertiesNV &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceMeshShaderPropertiesNV*>(this);
-    }
 };
 struct DrawMeshTasksIndirectCommandNV {
     uint32_t taskCount{0};
     uint32_t firstTask{0};
     constexpr bool operator==(DrawMeshTasksIndirectCommandNV const& other) const = default;
-    operator VkDrawMeshTasksIndirectCommandNV const &() const noexcept {
-        return *reinterpret_cast<const VkDrawMeshTasksIndirectCommandNV*>(this);
-    }
-    operator VkDrawMeshTasksIndirectCommandNV &() noexcept {
-        return *reinterpret_cast<VkDrawMeshTasksIndirectCommandNV*>(this);
-    }
 };
 struct RayTracingShaderGroupCreateInfoNV {
     StructureType sType{StructureType::RayTracingShaderGroupCreateInfoNV};
@@ -8615,12 +6270,6 @@ struct RayTracingShaderGroupCreateInfoNV {
     uint32_t closestHitShader{0};
     uint32_t anyHitShader{0};
     uint32_t intersectionShader{0};
-    operator VkRayTracingShaderGroupCreateInfoNV const &() const noexcept {
-        return *reinterpret_cast<const VkRayTracingShaderGroupCreateInfoNV*>(this);
-    }
-    operator VkRayTracingShaderGroupCreateInfoNV &() noexcept {
-        return *reinterpret_cast<VkRayTracingShaderGroupCreateInfoNV*>(this);
-    }
 };
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct RayTracingShaderGroupCreateInfoKHR {
@@ -8632,12 +6281,6 @@ struct RayTracingShaderGroupCreateInfoKHR {
     uint32_t anyHitShader{0};
     uint32_t intersectionShader{0};
     const void* pShaderGroupCaptureReplayHandle = nullptr;
-    operator VkRayTracingShaderGroupCreateInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkRayTracingShaderGroupCreateInfoKHR*>(this);
-    }
-    operator VkRayTracingShaderGroupCreateInfoKHR &() noexcept {
-        return *reinterpret_cast<VkRayTracingShaderGroupCreateInfoKHR*>(this);
-    }
 };
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 struct RayTracingPipelineCreateInfoNV {
@@ -8652,12 +6295,6 @@ struct RayTracingPipelineCreateInfoNV {
     PipelineLayout layout{};
     Pipeline basePipelineHandle{};
     int32_t basePipelineIndex{0};
-    operator VkRayTracingPipelineCreateInfoNV const &() const noexcept {
-        return *reinterpret_cast<const VkRayTracingPipelineCreateInfoNV*>(this);
-    }
-    operator VkRayTracingPipelineCreateInfoNV &() noexcept {
-        return *reinterpret_cast<VkRayTracingPipelineCreateInfoNV*>(this);
-    }
 };
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct RayTracingPipelineInterfaceCreateInfoKHR {
@@ -8666,24 +6303,12 @@ struct RayTracingPipelineInterfaceCreateInfoKHR {
     uint32_t maxPayloadSize{0};
     uint32_t maxAttributeSize{0};
     uint32_t maxCallableSize{0};
-    operator VkRayTracingPipelineInterfaceCreateInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkRayTracingPipelineInterfaceCreateInfoKHR*>(this);
-    }
-    operator VkRayTracingPipelineInterfaceCreateInfoKHR &() noexcept {
-        return *reinterpret_cast<VkRayTracingPipelineInterfaceCreateInfoKHR*>(this);
-    }
 };
 struct PipelineLibraryCreateInfoKHR {
     StructureType sType{StructureType::PipelineLibraryCreateInfoKHR};
     const void* pNext = nullptr;
     uint32_t libraryCount{0};
     const Pipeline* pLibraries = nullptr;
-    operator VkPipelineLibraryCreateInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineLibraryCreateInfoKHR*>(this);
-    }
-    operator VkPipelineLibraryCreateInfoKHR &() noexcept {
-        return *reinterpret_cast<VkPipelineLibraryCreateInfoKHR*>(this);
-    }
 };
 struct RayTracingPipelineCreateInfoKHR {
     StructureType sType{StructureType::RayTracingPipelineCreateInfoKHR};
@@ -8699,12 +6324,6 @@ struct RayTracingPipelineCreateInfoKHR {
     PipelineLayout layout{};
     Pipeline basePipelineHandle{};
     int32_t basePipelineIndex{0};
-    operator VkRayTracingPipelineCreateInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkRayTracingPipelineCreateInfoKHR*>(this);
-    }
-    operator VkRayTracingPipelineCreateInfoKHR &() noexcept {
-        return *reinterpret_cast<VkRayTracingPipelineCreateInfoKHR*>(this);
-    }
 };
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 struct GeometryTrianglesNV {
@@ -8721,12 +6340,6 @@ struct GeometryTrianglesNV {
     IndexType indexType{static_cast<IndexType>(0)};
     Buffer transformData{};
     DeviceSize transformOffset{0};
-    operator VkGeometryTrianglesNV const &() const noexcept {
-        return *reinterpret_cast<const VkGeometryTrianglesNV*>(this);
-    }
-    operator VkGeometryTrianglesNV &() noexcept {
-        return *reinterpret_cast<VkGeometryTrianglesNV*>(this);
-    }
 };
 struct GeometryAABBNV {
     StructureType sType{StructureType::GeometryAabbNV};
@@ -8735,22 +6348,10 @@ struct GeometryAABBNV {
     uint32_t numAABBs{0};
     uint32_t stride{0};
     DeviceSize offset{0};
-    operator VkGeometryAABBNV const &() const noexcept {
-        return *reinterpret_cast<const VkGeometryAABBNV*>(this);
-    }
-    operator VkGeometryAABBNV &() noexcept {
-        return *reinterpret_cast<VkGeometryAABBNV*>(this);
-    }
 };
 struct GeometryDataNV {
     GeometryTrianglesNV triangles{};
     GeometryAABBNV aabbs{};
-    operator VkGeometryDataNV const &() const noexcept {
-        return *reinterpret_cast<const VkGeometryDataNV*>(this);
-    }
-    operator VkGeometryDataNV &() noexcept {
-        return *reinterpret_cast<VkGeometryDataNV*>(this);
-    }
 };
 struct GeometryNV {
     StructureType sType{StructureType::GeometryNV};
@@ -8758,12 +6359,6 @@ struct GeometryNV {
     GeometryTypeKHR geometryType{static_cast<GeometryTypeKHR>(0)};
     GeometryDataNV geometry{};
     GeometryFlagsKHR flags{};
-    operator VkGeometryNV const &() const noexcept {
-        return *reinterpret_cast<const VkGeometryNV*>(this);
-    }
-    operator VkGeometryNV &() noexcept {
-        return *reinterpret_cast<VkGeometryNV*>(this);
-    }
 };
 struct AccelerationStructureInfoNV {
     StructureType sType{StructureType::AccelerationStructureInfoNV};
@@ -8773,24 +6368,12 @@ struct AccelerationStructureInfoNV {
     uint32_t instanceCount{0};
     uint32_t geometryCount{0};
     const GeometryNV* pGeometries = nullptr;
-    operator VkAccelerationStructureInfoNV const &() const noexcept {
-        return *reinterpret_cast<const VkAccelerationStructureInfoNV*>(this);
-    }
-    operator VkAccelerationStructureInfoNV &() noexcept {
-        return *reinterpret_cast<VkAccelerationStructureInfoNV*>(this);
-    }
 };
 struct AccelerationStructureCreateInfoNV {
     StructureType sType{StructureType::AccelerationStructureCreateInfoNV};
     const void* pNext = nullptr;
     DeviceSize compactedSize{0};
     AccelerationStructureInfoNV info{};
-    operator VkAccelerationStructureCreateInfoNV const &() const noexcept {
-        return *reinterpret_cast<const VkAccelerationStructureCreateInfoNV*>(this);
-    }
-    operator VkAccelerationStructureCreateInfoNV &() noexcept {
-        return *reinterpret_cast<VkAccelerationStructureCreateInfoNV*>(this);
-    }
 };
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct BindAccelerationStructureMemoryInfoKHR {
@@ -8801,30 +6384,20 @@ struct BindAccelerationStructureMemoryInfoKHR {
     DeviceSize memoryOffset{0};
     uint32_t deviceIndexCount{0};
     const uint32_t* pDeviceIndices = nullptr;
-    operator VkBindAccelerationStructureMemoryInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkBindAccelerationStructureMemoryInfoKHR*>(this);
-    }
-    operator VkBindAccelerationStructureMemoryInfoKHR &() noexcept {
-        return *reinterpret_cast<VkBindAccelerationStructureMemoryInfoKHR*>(this);
-    }
 };
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using BindAccelerationStructureMemoryInfoNV = BindAccelerationStructureMemoryInfoKHR;
+using VkBindAccelerationStructureMemoryInfoNV = BindAccelerationStructureMemoryInfoNV;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct WriteDescriptorSetAccelerationStructureKHR {
     StructureType sType{StructureType::WriteDescriptorSetAccelerationStructureKHR};
     const void* pNext = nullptr;
     uint32_t accelerationStructureCount{0};
     const AccelerationStructureKHR* pAccelerationStructures = nullptr;
-    operator VkWriteDescriptorSetAccelerationStructureKHR const &() const noexcept {
-        return *reinterpret_cast<const VkWriteDescriptorSetAccelerationStructureKHR*>(this);
-    }
-    operator VkWriteDescriptorSetAccelerationStructureKHR &() noexcept {
-        return *reinterpret_cast<VkWriteDescriptorSetAccelerationStructureKHR*>(this);
-    }
 };
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using WriteDescriptorSetAccelerationStructureNV = WriteDescriptorSetAccelerationStructureKHR;
+using VkWriteDescriptorSetAccelerationStructureNV = WriteDescriptorSetAccelerationStructureNV;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureMemoryRequirementsInfoKHR {
     StructureType sType{StructureType::AccelerationStructureMemoryRequirementsInfoKHR};
@@ -8832,12 +6405,6 @@ struct AccelerationStructureMemoryRequirementsInfoKHR {
     AccelerationStructureMemoryRequirementsTypeKHR type{static_cast<AccelerationStructureMemoryRequirementsTypeKHR>(0)};
     AccelerationStructureBuildTypeKHR buildType{static_cast<AccelerationStructureBuildTypeKHR>(0)};
     AccelerationStructureKHR accelerationStructure{};
-    operator VkAccelerationStructureMemoryRequirementsInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkAccelerationStructureMemoryRequirementsInfoKHR*>(this);
-    }
-    operator VkAccelerationStructureMemoryRequirementsInfoKHR &() noexcept {
-        return *reinterpret_cast<VkAccelerationStructureMemoryRequirementsInfoKHR*>(this);
-    }
 };
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureMemoryRequirementsInfoNV {
@@ -8845,12 +6412,6 @@ struct AccelerationStructureMemoryRequirementsInfoNV {
     const void* pNext = nullptr;
     AccelerationStructureMemoryRequirementsTypeNV type{static_cast<AccelerationStructureMemoryRequirementsTypeNV>(0)};
     AccelerationStructureNV accelerationStructure{};
-    operator VkAccelerationStructureMemoryRequirementsInfoNV const &() const noexcept {
-        return *reinterpret_cast<const VkAccelerationStructureMemoryRequirementsInfoNV*>(this);
-    }
-    operator VkAccelerationStructureMemoryRequirementsInfoNV &() noexcept {
-        return *reinterpret_cast<VkAccelerationStructureMemoryRequirementsInfoNV*>(this);
-    }
 };
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct PhysicalDeviceRayTracingFeaturesKHR {
@@ -8865,12 +6426,6 @@ struct PhysicalDeviceRayTracingFeaturesKHR {
     Bool32 rayTracingHostAccelerationStructureCommands{0};
     Bool32 rayQuery{0};
     Bool32 rayTracingPrimitiveCulling{0};
-    operator VkPhysicalDeviceRayTracingFeaturesKHR const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceRayTracingFeaturesKHR*>(this);
-    }
-    operator VkPhysicalDeviceRayTracingFeaturesKHR &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceRayTracingFeaturesKHR*>(this);
-    }
 };
 struct PhysicalDeviceRayTracingPropertiesKHR {
     StructureType sType{StructureType::PhysicalDeviceRayTracingPropertiesKHR};
@@ -8884,12 +6439,6 @@ struct PhysicalDeviceRayTracingPropertiesKHR {
     uint64_t maxPrimitiveCount{0};
     uint32_t maxDescriptorSetAccelerationStructures{0};
     uint32_t shaderGroupHandleCaptureReplaySize{0};
-    operator VkPhysicalDeviceRayTracingPropertiesKHR const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceRayTracingPropertiesKHR*>(this);
-    }
-    operator VkPhysicalDeviceRayTracingPropertiesKHR &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceRayTracingPropertiesKHR*>(this);
-    }
 };
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 struct PhysicalDeviceRayTracingPropertiesNV {
@@ -8903,12 +6452,6 @@ struct PhysicalDeviceRayTracingPropertiesNV {
     uint64_t maxInstanceCount{0};
     uint64_t maxTriangleCount{0};
     uint32_t maxDescriptorSetAccelerationStructures{0};
-    operator VkPhysicalDeviceRayTracingPropertiesNV const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceRayTracingPropertiesNV*>(this);
-    }
-    operator VkPhysicalDeviceRayTracingPropertiesNV &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceRayTracingPropertiesNV*>(this);
-    }
 };
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct StridedBufferRegionKHR {
@@ -8916,24 +6459,12 @@ struct StridedBufferRegionKHR {
     DeviceSize offset{0};
     DeviceSize stride{0};
     DeviceSize size{0};
-    operator VkStridedBufferRegionKHR const &() const noexcept {
-        return *reinterpret_cast<const VkStridedBufferRegionKHR*>(this);
-    }
-    operator VkStridedBufferRegionKHR &() noexcept {
-        return *reinterpret_cast<VkStridedBufferRegionKHR*>(this);
-    }
 };
 struct TraceRaysIndirectCommandKHR {
     uint32_t width{0};
     uint32_t height{0};
     uint32_t depth{0};
     constexpr bool operator==(TraceRaysIndirectCommandKHR const& other) const = default;
-    operator VkTraceRaysIndirectCommandKHR const &() const noexcept {
-        return *reinterpret_cast<const VkTraceRaysIndirectCommandKHR*>(this);
-    }
-    operator VkTraceRaysIndirectCommandKHR &() noexcept {
-        return *reinterpret_cast<VkTraceRaysIndirectCommandKHR*>(this);
-    }
 };
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 struct DrmFormatModifierPropertiesEXT {
@@ -8941,24 +6472,12 @@ struct DrmFormatModifierPropertiesEXT {
     uint32_t drmFormatModifierPlaneCount{0};
     FormatFeatureFlags drmFormatModifierTilingFeatures{};
     constexpr bool operator==(DrmFormatModifierPropertiesEXT const& other) const = default;
-    operator VkDrmFormatModifierPropertiesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkDrmFormatModifierPropertiesEXT*>(this);
-    }
-    operator VkDrmFormatModifierPropertiesEXT &() noexcept {
-        return *reinterpret_cast<VkDrmFormatModifierPropertiesEXT*>(this);
-    }
 };
 struct DrmFormatModifierPropertiesListEXT {
     StructureType sType{StructureType::DrmFormatModifierPropertiesListEXT};
     void* pNext = nullptr;
     uint32_t drmFormatModifierCount{0};
     DrmFormatModifierPropertiesEXT* pDrmFormatModifierProperties = nullptr;
-    operator VkDrmFormatModifierPropertiesListEXT const &() const noexcept {
-        return *reinterpret_cast<const VkDrmFormatModifierPropertiesListEXT*>(this);
-    }
-    operator VkDrmFormatModifierPropertiesListEXT &() noexcept {
-        return *reinterpret_cast<VkDrmFormatModifierPropertiesListEXT*>(this);
-    }
 };
 struct PhysicalDeviceImageDrmFormatModifierInfoEXT {
     StructureType sType{StructureType::PhysicalDeviceImageDrmFormatModifierInfoEXT};
@@ -8967,24 +6486,12 @@ struct PhysicalDeviceImageDrmFormatModifierInfoEXT {
     SharingMode sharingMode{static_cast<SharingMode>(0)};
     uint32_t queueFamilyIndexCount{0};
     const uint32_t* pQueueFamilyIndices = nullptr;
-    operator VkPhysicalDeviceImageDrmFormatModifierInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceImageDrmFormatModifierInfoEXT*>(this);
-    }
-    operator VkPhysicalDeviceImageDrmFormatModifierInfoEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceImageDrmFormatModifierInfoEXT*>(this);
-    }
 };
 struct ImageDrmFormatModifierListCreateInfoEXT {
     StructureType sType{StructureType::ImageDrmFormatModifierListCreateInfoEXT};
     const void* pNext = nullptr;
     uint32_t drmFormatModifierCount{0};
     const uint64_t* pDrmFormatModifiers = nullptr;
-    operator VkImageDrmFormatModifierListCreateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkImageDrmFormatModifierListCreateInfoEXT*>(this);
-    }
-    operator VkImageDrmFormatModifierListCreateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkImageDrmFormatModifierListCreateInfoEXT*>(this);
-    }
 };
 struct ImageDrmFormatModifierExplicitCreateInfoEXT {
     StructureType sType{StructureType::ImageDrmFormatModifierExplicitCreateInfoEXT};
@@ -8992,46 +6499,23 @@ struct ImageDrmFormatModifierExplicitCreateInfoEXT {
     uint64_t drmFormatModifier{0};
     uint32_t drmFormatModifierPlaneCount{0};
     const SubresourceLayout* pPlaneLayouts = nullptr;
-    operator VkImageDrmFormatModifierExplicitCreateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkImageDrmFormatModifierExplicitCreateInfoEXT*>(this);
-    }
-    operator VkImageDrmFormatModifierExplicitCreateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkImageDrmFormatModifierExplicitCreateInfoEXT*>(this);
-    }
 };
 struct ImageDrmFormatModifierPropertiesEXT {
     StructureType sType{StructureType::ImageDrmFormatModifierPropertiesEXT};
     void* pNext = nullptr;
     uint64_t drmFormatModifier{0};
-    operator VkImageDrmFormatModifierPropertiesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkImageDrmFormatModifierPropertiesEXT*>(this);
-    }
-    operator VkImageDrmFormatModifierPropertiesEXT &() noexcept {
-        return *reinterpret_cast<VkImageDrmFormatModifierPropertiesEXT*>(this);
-    }
 };
 struct ImageStencilUsageCreateInfo {
     StructureType sType{StructureType::ImageStencilUsageCreateInfo};
     const void* pNext = nullptr;
     ImageUsageFlags stencilUsage{};
-    operator VkImageStencilUsageCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkImageStencilUsageCreateInfo*>(this);
-    }
-    operator VkImageStencilUsageCreateInfo &() noexcept {
-        return *reinterpret_cast<VkImageStencilUsageCreateInfo*>(this);
-    }
 };
 using ImageStencilUsageCreateInfoEXT = ImageStencilUsageCreateInfo;
+using VkImageStencilUsageCreateInfoEXT = ImageStencilUsageCreateInfoEXT;
 struct DeviceMemoryOverallocationCreateInfoAMD {
     StructureType sType{StructureType::DeviceMemoryOverallocationCreateInfoAMD};
     const void* pNext = nullptr;
     MemoryOverallocationBehaviorAMD overallocationBehavior{static_cast<MemoryOverallocationBehaviorAMD>(0)};
-    operator VkDeviceMemoryOverallocationCreateInfoAMD const &() const noexcept {
-        return *reinterpret_cast<const VkDeviceMemoryOverallocationCreateInfoAMD*>(this);
-    }
-    operator VkDeviceMemoryOverallocationCreateInfoAMD &() noexcept {
-        return *reinterpret_cast<VkDeviceMemoryOverallocationCreateInfoAMD*>(this);
-    }
 };
 struct PhysicalDeviceFragmentDensityMapFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceFragmentDensityMapFeaturesEXT};
@@ -9039,23 +6523,11 @@ struct PhysicalDeviceFragmentDensityMapFeaturesEXT {
     Bool32 fragmentDensityMap{0};
     Bool32 fragmentDensityMapDynamic{0};
     Bool32 fragmentDensityMapNonSubsampledImages{0};
-    operator VkPhysicalDeviceFragmentDensityMapFeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceFragmentDensityMapFeaturesEXT*>(this);
-    }
-    operator VkPhysicalDeviceFragmentDensityMapFeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceFragmentDensityMapFeaturesEXT*>(this);
-    }
 };
 struct PhysicalDeviceFragmentDensityMap2FeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceFragmentDensityMap2FeaturesEXT};
     void* pNext = nullptr;
     Bool32 fragmentDensityMapDeferred{0};
-    operator VkPhysicalDeviceFragmentDensityMap2FeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceFragmentDensityMap2FeaturesEXT*>(this);
-    }
-    operator VkPhysicalDeviceFragmentDensityMap2FeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceFragmentDensityMap2FeaturesEXT*>(this);
-    }
 };
 struct PhysicalDeviceFragmentDensityMapPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceFragmentDensityMapPropertiesEXT};
@@ -9063,12 +6535,6 @@ struct PhysicalDeviceFragmentDensityMapPropertiesEXT {
     Extent2D minFragmentDensityTexelSize{};
     Extent2D maxFragmentDensityTexelSize{};
     Bool32 fragmentDensityInvocations{0};
-    operator VkPhysicalDeviceFragmentDensityMapPropertiesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceFragmentDensityMapPropertiesEXT*>(this);
-    }
-    operator VkPhysicalDeviceFragmentDensityMapPropertiesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceFragmentDensityMapPropertiesEXT*>(this);
-    }
 };
 struct PhysicalDeviceFragmentDensityMap2PropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceFragmentDensityMap2PropertiesEXT};
@@ -9077,115 +6543,57 @@ struct PhysicalDeviceFragmentDensityMap2PropertiesEXT {
     Bool32 subsampledCoarseReconstructionEarlyAccess{0};
     uint32_t maxSubsampledArrayLayers{0};
     uint32_t maxDescriptorSetSubsampledSamplers{0};
-    operator VkPhysicalDeviceFragmentDensityMap2PropertiesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceFragmentDensityMap2PropertiesEXT*>(this);
-    }
-    operator VkPhysicalDeviceFragmentDensityMap2PropertiesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceFragmentDensityMap2PropertiesEXT*>(this);
-    }
 };
 struct RenderPassFragmentDensityMapCreateInfoEXT {
     StructureType sType{StructureType::RenderPassFragmentDensityMapCreateInfoEXT};
     const void* pNext = nullptr;
     AttachmentReference fragmentDensityMapAttachment{};
-    operator VkRenderPassFragmentDensityMapCreateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkRenderPassFragmentDensityMapCreateInfoEXT*>(this);
-    }
-    operator VkRenderPassFragmentDensityMapCreateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkRenderPassFragmentDensityMapCreateInfoEXT*>(this);
-    }
 };
 struct PhysicalDeviceScalarBlockLayoutFeatures {
     StructureType sType{StructureType::PhysicalDeviceScalarBlockLayoutFeatures};
     void* pNext = nullptr;
     Bool32 scalarBlockLayout{0};
-    operator VkPhysicalDeviceScalarBlockLayoutFeatures const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceScalarBlockLayoutFeatures*>(this);
-    }
-    operator VkPhysicalDeviceScalarBlockLayoutFeatures &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceScalarBlockLayoutFeatures*>(this);
-    }
 };
 using PhysicalDeviceScalarBlockLayoutFeaturesEXT = PhysicalDeviceScalarBlockLayoutFeatures;
+using VkPhysicalDeviceScalarBlockLayoutFeaturesEXT = PhysicalDeviceScalarBlockLayoutFeaturesEXT;
 struct SurfaceProtectedCapabilitiesKHR {
     StructureType sType{StructureType::SurfaceProtectedCapabilitiesKHR};
     const void* pNext = nullptr;
     Bool32 supportsProtected{0};
-    operator VkSurfaceProtectedCapabilitiesKHR const &() const noexcept {
-        return *reinterpret_cast<const VkSurfaceProtectedCapabilitiesKHR*>(this);
-    }
-    operator VkSurfaceProtectedCapabilitiesKHR &() noexcept {
-        return *reinterpret_cast<VkSurfaceProtectedCapabilitiesKHR*>(this);
-    }
 };
 struct PhysicalDeviceUniformBufferStandardLayoutFeatures {
     StructureType sType{StructureType::PhysicalDeviceUniformBufferStandardLayoutFeatures};
     void* pNext = nullptr;
     Bool32 uniformBufferStandardLayout{0};
-    operator VkPhysicalDeviceUniformBufferStandardLayoutFeatures const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceUniformBufferStandardLayoutFeatures*>(this);
-    }
-    operator VkPhysicalDeviceUniformBufferStandardLayoutFeatures &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceUniformBufferStandardLayoutFeatures*>(this);
-    }
 };
 using PhysicalDeviceUniformBufferStandardLayoutFeaturesKHR = PhysicalDeviceUniformBufferStandardLayoutFeatures;
+using VkPhysicalDeviceUniformBufferStandardLayoutFeaturesKHR = PhysicalDeviceUniformBufferStandardLayoutFeaturesKHR;
 struct PhysicalDeviceDepthClipEnableFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceDepthClipEnableFeaturesEXT};
     void* pNext = nullptr;
     Bool32 depthClipEnable{0};
-    operator VkPhysicalDeviceDepthClipEnableFeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceDepthClipEnableFeaturesEXT*>(this);
-    }
-    operator VkPhysicalDeviceDepthClipEnableFeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceDepthClipEnableFeaturesEXT*>(this);
-    }
 };
 struct PipelineRasterizationDepthClipStateCreateInfoEXT {
     StructureType sType{StructureType::PipelineRasterizationDepthClipStateCreateInfoEXT};
     const void* pNext = nullptr;
     PipelineRasterizationDepthClipStateCreateFlagsEXT flags{};
     Bool32 depthClipEnable{0};
-    operator VkPipelineRasterizationDepthClipStateCreateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineRasterizationDepthClipStateCreateInfoEXT*>(this);
-    }
-    operator VkPipelineRasterizationDepthClipStateCreateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkPipelineRasterizationDepthClipStateCreateInfoEXT*>(this);
-    }
 };
 struct PhysicalDeviceMemoryBudgetPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceMemoryBudgetPropertiesEXT};
     void* pNext = nullptr;
     DeviceSize heapBudget[MAX_MEMORY_HEAPS];
     DeviceSize heapUsage[MAX_MEMORY_HEAPS];
-    operator VkPhysicalDeviceMemoryBudgetPropertiesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceMemoryBudgetPropertiesEXT*>(this);
-    }
-    operator VkPhysicalDeviceMemoryBudgetPropertiesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceMemoryBudgetPropertiesEXT*>(this);
-    }
 };
 struct PhysicalDeviceMemoryPriorityFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceMemoryPriorityFeaturesEXT};
     void* pNext = nullptr;
     Bool32 memoryPriority{0};
-    operator VkPhysicalDeviceMemoryPriorityFeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceMemoryPriorityFeaturesEXT*>(this);
-    }
-    operator VkPhysicalDeviceMemoryPriorityFeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceMemoryPriorityFeaturesEXT*>(this);
-    }
 };
 struct MemoryPriorityAllocateInfoEXT {
     StructureType sType{StructureType::MemoryPriorityAllocateInfoEXT};
     const void* pNext = nullptr;
     float priority{0.f};
-    operator VkMemoryPriorityAllocateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkMemoryPriorityAllocateInfoEXT*>(this);
-    }
-    operator VkMemoryPriorityAllocateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkMemoryPriorityAllocateInfoEXT*>(this);
-    }
 };
 struct PhysicalDeviceBufferDeviceAddressFeatures {
     StructureType sType{StructureType::PhysicalDeviceBufferDeviceAddressFeatures};
@@ -9193,99 +6601,57 @@ struct PhysicalDeviceBufferDeviceAddressFeatures {
     Bool32 bufferDeviceAddress{0};
     Bool32 bufferDeviceAddressCaptureReplay{0};
     Bool32 bufferDeviceAddressMultiDevice{0};
-    operator VkPhysicalDeviceBufferDeviceAddressFeatures const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceBufferDeviceAddressFeatures*>(this);
-    }
-    operator VkPhysicalDeviceBufferDeviceAddressFeatures &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceBufferDeviceAddressFeatures*>(this);
-    }
 };
 using PhysicalDeviceBufferDeviceAddressFeaturesKHR = PhysicalDeviceBufferDeviceAddressFeatures;
+using VkPhysicalDeviceBufferDeviceAddressFeaturesKHR = PhysicalDeviceBufferDeviceAddressFeaturesKHR;
 struct PhysicalDeviceBufferDeviceAddressFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceBufferDeviceAddressFeaturesEXT};
     void* pNext = nullptr;
     Bool32 bufferDeviceAddress{0};
     Bool32 bufferDeviceAddressCaptureReplay{0};
     Bool32 bufferDeviceAddressMultiDevice{0};
-    operator VkPhysicalDeviceBufferDeviceAddressFeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceBufferDeviceAddressFeaturesEXT*>(this);
-    }
-    operator VkPhysicalDeviceBufferDeviceAddressFeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceBufferDeviceAddressFeaturesEXT*>(this);
-    }
 };
 using PhysicalDeviceBufferAddressFeaturesEXT = PhysicalDeviceBufferDeviceAddressFeaturesEXT;
+using VkPhysicalDeviceBufferAddressFeaturesEXT = PhysicalDeviceBufferAddressFeaturesEXT;
 struct BufferDeviceAddressInfo {
     StructureType sType{StructureType::BufferDeviceAddressInfo};
     const void* pNext = nullptr;
     Buffer buffer{};
-    operator VkBufferDeviceAddressInfo const &() const noexcept {
-        return *reinterpret_cast<const VkBufferDeviceAddressInfo*>(this);
-    }
-    operator VkBufferDeviceAddressInfo &() noexcept {
-        return *reinterpret_cast<VkBufferDeviceAddressInfo*>(this);
-    }
 };
 using BufferDeviceAddressInfoKHR = BufferDeviceAddressInfo;
+using VkBufferDeviceAddressInfoKHR = BufferDeviceAddressInfoKHR;
 using BufferDeviceAddressInfoEXT = BufferDeviceAddressInfo;
+using VkBufferDeviceAddressInfoEXT = BufferDeviceAddressInfoEXT;
 struct BufferOpaqueCaptureAddressCreateInfo {
     StructureType sType{StructureType::BufferOpaqueCaptureAddressCreateInfo};
     const void* pNext = nullptr;
     uint64_t opaqueCaptureAddress{0};
-    operator VkBufferOpaqueCaptureAddressCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkBufferOpaqueCaptureAddressCreateInfo*>(this);
-    }
-    operator VkBufferOpaqueCaptureAddressCreateInfo &() noexcept {
-        return *reinterpret_cast<VkBufferOpaqueCaptureAddressCreateInfo*>(this);
-    }
 };
 using BufferOpaqueCaptureAddressCreateInfoKHR = BufferOpaqueCaptureAddressCreateInfo;
+using VkBufferOpaqueCaptureAddressCreateInfoKHR = BufferOpaqueCaptureAddressCreateInfoKHR;
 struct BufferDeviceAddressCreateInfoEXT {
     StructureType sType{StructureType::BufferDeviceAddressCreateInfoEXT};
     const void* pNext = nullptr;
     DeviceAddress deviceAddress{0};
-    operator VkBufferDeviceAddressCreateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkBufferDeviceAddressCreateInfoEXT*>(this);
-    }
-    operator VkBufferDeviceAddressCreateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkBufferDeviceAddressCreateInfoEXT*>(this);
-    }
 };
 struct PhysicalDeviceImageViewImageFormatInfoEXT {
     StructureType sType{StructureType::PhysicalDeviceImageViewImageFormatInfoEXT};
     void* pNext = nullptr;
     ImageViewType imageViewType{static_cast<ImageViewType>(0)};
-    operator VkPhysicalDeviceImageViewImageFormatInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceImageViewImageFormatInfoEXT*>(this);
-    }
-    operator VkPhysicalDeviceImageViewImageFormatInfoEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceImageViewImageFormatInfoEXT*>(this);
-    }
 };
 struct FilterCubicImageViewImageFormatPropertiesEXT {
     StructureType sType{StructureType::FilterCubicImageViewImageFormatPropertiesEXT};
     void* pNext = nullptr;
     Bool32 filterCubic{0};
     Bool32 filterCubicMinmax{0};
-    operator VkFilterCubicImageViewImageFormatPropertiesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkFilterCubicImageViewImageFormatPropertiesEXT*>(this);
-    }
-    operator VkFilterCubicImageViewImageFormatPropertiesEXT &() noexcept {
-        return *reinterpret_cast<VkFilterCubicImageViewImageFormatPropertiesEXT*>(this);
-    }
 };
 struct PhysicalDeviceImagelessFramebufferFeatures {
     StructureType sType{StructureType::PhysicalDeviceImagelessFramebufferFeatures};
     void* pNext = nullptr;
     Bool32 imagelessFramebuffer{0};
-    operator VkPhysicalDeviceImagelessFramebufferFeatures const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceImagelessFramebufferFeatures*>(this);
-    }
-    operator VkPhysicalDeviceImagelessFramebufferFeatures &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceImagelessFramebufferFeatures*>(this);
-    }
 };
 using PhysicalDeviceImagelessFramebufferFeaturesKHR = PhysicalDeviceImagelessFramebufferFeatures;
+using VkPhysicalDeviceImagelessFramebufferFeaturesKHR = PhysicalDeviceImagelessFramebufferFeaturesKHR;
 struct FramebufferAttachmentImageInfo {
     StructureType sType{StructureType::FramebufferAttachmentImageInfo};
     const void* pNext = nullptr;
@@ -9296,73 +6662,40 @@ struct FramebufferAttachmentImageInfo {
     uint32_t layerCount{0};
     uint32_t viewFormatCount{0};
     const Format* pViewFormats = nullptr;
-    operator VkFramebufferAttachmentImageInfo const &() const noexcept {
-        return *reinterpret_cast<const VkFramebufferAttachmentImageInfo*>(this);
-    }
-    operator VkFramebufferAttachmentImageInfo &() noexcept {
-        return *reinterpret_cast<VkFramebufferAttachmentImageInfo*>(this);
-    }
 };
 struct FramebufferAttachmentsCreateInfo {
     StructureType sType{StructureType::FramebufferAttachmentsCreateInfo};
     const void* pNext = nullptr;
     uint32_t attachmentImageInfoCount{0};
     const FramebufferAttachmentImageInfo* pAttachmentImageInfos = nullptr;
-    operator VkFramebufferAttachmentsCreateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkFramebufferAttachmentsCreateInfo*>(this);
-    }
-    operator VkFramebufferAttachmentsCreateInfo &() noexcept {
-        return *reinterpret_cast<VkFramebufferAttachmentsCreateInfo*>(this);
-    }
 };
 using FramebufferAttachmentsCreateInfoKHR = FramebufferAttachmentsCreateInfo;
+using VkFramebufferAttachmentsCreateInfoKHR = FramebufferAttachmentsCreateInfoKHR;
 using FramebufferAttachmentImageInfoKHR = FramebufferAttachmentImageInfo;
+using VkFramebufferAttachmentImageInfoKHR = FramebufferAttachmentImageInfoKHR;
 struct RenderPassAttachmentBeginInfo {
     StructureType sType{StructureType::RenderPassAttachmentBeginInfo};
     const void* pNext = nullptr;
     uint32_t attachmentCount{0};
     const ImageView* pAttachments = nullptr;
-    operator VkRenderPassAttachmentBeginInfo const &() const noexcept {
-        return *reinterpret_cast<const VkRenderPassAttachmentBeginInfo*>(this);
-    }
-    operator VkRenderPassAttachmentBeginInfo &() noexcept {
-        return *reinterpret_cast<VkRenderPassAttachmentBeginInfo*>(this);
-    }
 };
 using RenderPassAttachmentBeginInfoKHR = RenderPassAttachmentBeginInfo;
+using VkRenderPassAttachmentBeginInfoKHR = RenderPassAttachmentBeginInfoKHR;
 struct PhysicalDeviceTextureCompressionASTCHDRFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceTextureCompressionAstcHdrFeaturesEXT};
     void* pNext = nullptr;
     Bool32 textureCompressionASTC_HDR{0};
-    operator VkPhysicalDeviceTextureCompressionASTCHDRFeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceTextureCompressionASTCHDRFeaturesEXT*>(this);
-    }
-    operator VkPhysicalDeviceTextureCompressionASTCHDRFeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceTextureCompressionASTCHDRFeaturesEXT*>(this);
-    }
 };
 struct PhysicalDeviceCooperativeMatrixFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceCooperativeMatrixFeaturesNV};
     void* pNext = nullptr;
     Bool32 cooperativeMatrix{0};
     Bool32 cooperativeMatrixRobustBufferAccess{0};
-    operator VkPhysicalDeviceCooperativeMatrixFeaturesNV const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceCooperativeMatrixFeaturesNV*>(this);
-    }
-    operator VkPhysicalDeviceCooperativeMatrixFeaturesNV &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceCooperativeMatrixFeaturesNV*>(this);
-    }
 };
 struct PhysicalDeviceCooperativeMatrixPropertiesNV {
     StructureType sType{StructureType::PhysicalDeviceCooperativeMatrixPropertiesNV};
     void* pNext = nullptr;
     ShaderStageFlags cooperativeMatrixSupportedStages{};
-    operator VkPhysicalDeviceCooperativeMatrixPropertiesNV const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceCooperativeMatrixPropertiesNV*>(this);
-    }
-    operator VkPhysicalDeviceCooperativeMatrixPropertiesNV &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceCooperativeMatrixPropertiesNV*>(this);
-    }
 };
 struct CooperativeMatrixPropertiesNV {
     StructureType sType{StructureType::CooperativeMatrixPropertiesNV};
@@ -9375,23 +6708,11 @@ struct CooperativeMatrixPropertiesNV {
     ComponentTypeNV CType{static_cast<ComponentTypeNV>(0)};
     ComponentTypeNV DType{static_cast<ComponentTypeNV>(0)};
     ScopeNV scope{static_cast<ScopeNV>(0)};
-    operator VkCooperativeMatrixPropertiesNV const &() const noexcept {
-        return *reinterpret_cast<const VkCooperativeMatrixPropertiesNV*>(this);
-    }
-    operator VkCooperativeMatrixPropertiesNV &() noexcept {
-        return *reinterpret_cast<VkCooperativeMatrixPropertiesNV*>(this);
-    }
 };
 struct PhysicalDeviceYcbcrImageArraysFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceYcbcrImageArraysFeaturesEXT};
     void* pNext = nullptr;
     Bool32 ycbcrImageArrays{0};
-    operator VkPhysicalDeviceYcbcrImageArraysFeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceYcbcrImageArraysFeaturesEXT*>(this);
-    }
-    operator VkPhysicalDeviceYcbcrImageArraysFeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceYcbcrImageArraysFeaturesEXT*>(this);
-    }
 };
 struct ImageViewHandleInfoNVX {
     StructureType sType{StructureType::ImageViewHandleInfoNVX};
@@ -9399,48 +6720,24 @@ struct ImageViewHandleInfoNVX {
     ImageView imageView{};
     DescriptorType descriptorType{static_cast<DescriptorType>(0)};
     Sampler sampler{};
-    operator VkImageViewHandleInfoNVX const &() const noexcept {
-        return *reinterpret_cast<const VkImageViewHandleInfoNVX*>(this);
-    }
-    operator VkImageViewHandleInfoNVX &() noexcept {
-        return *reinterpret_cast<VkImageViewHandleInfoNVX*>(this);
-    }
 };
 struct ImageViewAddressPropertiesNVX {
     StructureType sType{StructureType::ImageViewAddressPropertiesNVX};
     void* pNext = nullptr;
     DeviceAddress deviceAddress{0};
     DeviceSize size{0};
-    operator VkImageViewAddressPropertiesNVX const &() const noexcept {
-        return *reinterpret_cast<const VkImageViewAddressPropertiesNVX*>(this);
-    }
-    operator VkImageViewAddressPropertiesNVX &() noexcept {
-        return *reinterpret_cast<VkImageViewAddressPropertiesNVX*>(this);
-    }
 };
 #if defined(VK_USE_PLATFORM_GGP)
 struct PresentFrameTokenGGP {
     StructureType sType{StructureType::PresentFrameTokenGGP};
     const void* pNext = nullptr;
     GgpFrameToken frameToken{};
-    operator VkPresentFrameTokenGGP const &() const noexcept {
-        return *reinterpret_cast<const VkPresentFrameTokenGGP*>(this);
-    }
-    operator VkPresentFrameTokenGGP &() noexcept {
-        return *reinterpret_cast<VkPresentFrameTokenGGP*>(this);
-    }
 };
 #endif // defined(VK_USE_PLATFORM_GGP)
 struct PipelineCreationFeedbackEXT {
     PipelineCreationFeedbackFlagsEXT flags{};
     uint64_t duration{0};
     constexpr bool operator==(PipelineCreationFeedbackEXT const& other) const = default;
-    operator VkPipelineCreationFeedbackEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineCreationFeedbackEXT*>(this);
-    }
-    operator VkPipelineCreationFeedbackEXT &() noexcept {
-        return *reinterpret_cast<VkPipelineCreationFeedbackEXT*>(this);
-    }
 };
 struct PipelineCreationFeedbackCreateInfoEXT {
     StructureType sType{StructureType::PipelineCreationFeedbackCreateInfoEXT};
@@ -9448,46 +6745,22 @@ struct PipelineCreationFeedbackCreateInfoEXT {
     PipelineCreationFeedbackEXT* pPipelineCreationFeedback = nullptr;
     uint32_t pipelineStageCreationFeedbackCount{0};
     PipelineCreationFeedbackEXT* pPipelineStageCreationFeedbacks = nullptr;
-    operator VkPipelineCreationFeedbackCreateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineCreationFeedbackCreateInfoEXT*>(this);
-    }
-    operator VkPipelineCreationFeedbackCreateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkPipelineCreationFeedbackCreateInfoEXT*>(this);
-    }
 };
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct SurfaceFullScreenExclusiveInfoEXT {
     StructureType sType{StructureType::SurfaceFullScreenExclusiveInfoEXT};
     void* pNext = nullptr;
     FullScreenExclusiveEXT fullScreenExclusive{static_cast<FullScreenExclusiveEXT>(0)};
-    operator VkSurfaceFullScreenExclusiveInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkSurfaceFullScreenExclusiveInfoEXT*>(this);
-    }
-    operator VkSurfaceFullScreenExclusiveInfoEXT &() noexcept {
-        return *reinterpret_cast<VkSurfaceFullScreenExclusiveInfoEXT*>(this);
-    }
 };
 struct SurfaceFullScreenExclusiveWin32InfoEXT {
     StructureType sType{StructureType::SurfaceFullScreenExclusiveWin32InfoEXT};
     const void* pNext = nullptr;
     HMONITOR hmonitor{};
-    operator VkSurfaceFullScreenExclusiveWin32InfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkSurfaceFullScreenExclusiveWin32InfoEXT*>(this);
-    }
-    operator VkSurfaceFullScreenExclusiveWin32InfoEXT &() noexcept {
-        return *reinterpret_cast<VkSurfaceFullScreenExclusiveWin32InfoEXT*>(this);
-    }
 };
 struct SurfaceCapabilitiesFullScreenExclusiveEXT {
     StructureType sType{StructureType::SurfaceCapabilitiesFullScreenExclusiveEXT};
     void* pNext = nullptr;
     Bool32 fullScreenExclusiveSupported{0};
-    operator VkSurfaceCapabilitiesFullScreenExclusiveEXT const &() const noexcept {
-        return *reinterpret_cast<const VkSurfaceCapabilitiesFullScreenExclusiveEXT*>(this);
-    }
-    operator VkSurfaceCapabilitiesFullScreenExclusiveEXT &() noexcept {
-        return *reinterpret_cast<VkSurfaceCapabilitiesFullScreenExclusiveEXT*>(this);
-    }
 };
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 struct PhysicalDevicePerformanceQueryFeaturesKHR {
@@ -9495,23 +6768,11 @@ struct PhysicalDevicePerformanceQueryFeaturesKHR {
     void* pNext = nullptr;
     Bool32 performanceCounterQueryPools{0};
     Bool32 performanceCounterMultipleQueryPools{0};
-    operator VkPhysicalDevicePerformanceQueryFeaturesKHR const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDevicePerformanceQueryFeaturesKHR*>(this);
-    }
-    operator VkPhysicalDevicePerformanceQueryFeaturesKHR &() noexcept {
-        return *reinterpret_cast<VkPhysicalDevicePerformanceQueryFeaturesKHR*>(this);
-    }
 };
 struct PhysicalDevicePerformanceQueryPropertiesKHR {
     StructureType sType{StructureType::PhysicalDevicePerformanceQueryPropertiesKHR};
     void* pNext = nullptr;
     Bool32 allowCommandBufferQueryCopies{0};
-    operator VkPhysicalDevicePerformanceQueryPropertiesKHR const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDevicePerformanceQueryPropertiesKHR*>(this);
-    }
-    operator VkPhysicalDevicePerformanceQueryPropertiesKHR &() noexcept {
-        return *reinterpret_cast<VkPhysicalDevicePerformanceQueryPropertiesKHR*>(this);
-    }
 };
 struct PerformanceCounterKHR {
     StructureType sType{StructureType::PerformanceCounterKHR};
@@ -9520,12 +6781,6 @@ struct PerformanceCounterKHR {
     PerformanceCounterScopeKHR scope{static_cast<PerformanceCounterScopeKHR>(0)};
     PerformanceCounterStorageKHR storage{static_cast<PerformanceCounterStorageKHR>(0)};
     uint8_t uuid[UUID_SIZE];
-    operator VkPerformanceCounterKHR const &() const noexcept {
-        return *reinterpret_cast<const VkPerformanceCounterKHR*>(this);
-    }
-    operator VkPerformanceCounterKHR &() noexcept {
-        return *reinterpret_cast<VkPerformanceCounterKHR*>(this);
-    }
 };
 struct PerformanceCounterDescriptionKHR {
     StructureType sType{StructureType::PerformanceCounterDescriptionKHR};
@@ -9534,12 +6789,6 @@ struct PerformanceCounterDescriptionKHR {
     char name[MAX_DESCRIPTION_SIZE];
     char category[MAX_DESCRIPTION_SIZE];
     char description[MAX_DESCRIPTION_SIZE];
-    operator VkPerformanceCounterDescriptionKHR const &() const noexcept {
-        return *reinterpret_cast<const VkPerformanceCounterDescriptionKHR*>(this);
-    }
-    operator VkPerformanceCounterDescriptionKHR &() noexcept {
-        return *reinterpret_cast<VkPerformanceCounterDescriptionKHR*>(this);
-    }
 };
 struct QueryPoolPerformanceCreateInfoKHR {
     StructureType sType{StructureType::QueryPoolPerformanceCreateInfoKHR};
@@ -9547,12 +6796,6 @@ struct QueryPoolPerformanceCreateInfoKHR {
     uint32_t queueFamilyIndex{0};
     uint32_t counterIndexCount{0};
     const uint32_t* pCounterIndices = nullptr;
-    operator VkQueryPoolPerformanceCreateInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkQueryPoolPerformanceCreateInfoKHR*>(this);
-    }
-    operator VkQueryPoolPerformanceCreateInfoKHR &() noexcept {
-        return *reinterpret_cast<VkQueryPoolPerformanceCreateInfoKHR*>(this);
-    }
 };
 union PerformanceCounterResultKHR {
     int32_t int32;
@@ -9572,57 +6815,27 @@ struct AcquireProfilingLockInfoKHR {
     const void* pNext = nullptr;
     AcquireProfilingLockFlagsKHR flags{};
     uint64_t timeout{0};
-    operator VkAcquireProfilingLockInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkAcquireProfilingLockInfoKHR*>(this);
-    }
-    operator VkAcquireProfilingLockInfoKHR &() noexcept {
-        return *reinterpret_cast<VkAcquireProfilingLockInfoKHR*>(this);
-    }
 };
 struct PerformanceQuerySubmitInfoKHR {
     StructureType sType{StructureType::PerformanceQuerySubmitInfoKHR};
     const void* pNext = nullptr;
     uint32_t counterPassIndex{0};
-    operator VkPerformanceQuerySubmitInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkPerformanceQuerySubmitInfoKHR*>(this);
-    }
-    operator VkPerformanceQuerySubmitInfoKHR &() noexcept {
-        return *reinterpret_cast<VkPerformanceQuerySubmitInfoKHR*>(this);
-    }
 };
 struct HeadlessSurfaceCreateInfoEXT {
     StructureType sType{StructureType::HeadlessSurfaceCreateInfoEXT};
     const void* pNext = nullptr;
     HeadlessSurfaceCreateFlagsEXT flags{};
-    operator VkHeadlessSurfaceCreateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkHeadlessSurfaceCreateInfoEXT*>(this);
-    }
-    operator VkHeadlessSurfaceCreateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkHeadlessSurfaceCreateInfoEXT*>(this);
-    }
 };
 struct PhysicalDeviceCoverageReductionModeFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceCoverageReductionModeFeaturesNV};
     void* pNext = nullptr;
     Bool32 coverageReductionMode{0};
-    operator VkPhysicalDeviceCoverageReductionModeFeaturesNV const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceCoverageReductionModeFeaturesNV*>(this);
-    }
-    operator VkPhysicalDeviceCoverageReductionModeFeaturesNV &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceCoverageReductionModeFeaturesNV*>(this);
-    }
 };
 struct PipelineCoverageReductionStateCreateInfoNV {
     StructureType sType{StructureType::PipelineCoverageReductionStateCreateInfoNV};
     const void* pNext = nullptr;
     PipelineCoverageReductionStateCreateFlagsNV flags{};
     CoverageReductionModeNV coverageReductionMode{static_cast<CoverageReductionModeNV>(0)};
-    operator VkPipelineCoverageReductionStateCreateInfoNV const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineCoverageReductionStateCreateInfoNV*>(this);
-    }
-    operator VkPipelineCoverageReductionStateCreateInfoNV &() noexcept {
-        return *reinterpret_cast<VkPipelineCoverageReductionStateCreateInfoNV*>(this);
-    }
 };
 struct FramebufferMixedSamplesCombinationNV {
     StructureType sType{StructureType::FramebufferMixedSamplesCombinationNV};
@@ -9631,23 +6844,11 @@ struct FramebufferMixedSamplesCombinationNV {
     SampleCountFlagBits rasterizationSamples{static_cast<SampleCountFlagBits>(0)};
     SampleCountFlags depthStencilSamples{};
     SampleCountFlags colorSamples{};
-    operator VkFramebufferMixedSamplesCombinationNV const &() const noexcept {
-        return *reinterpret_cast<const VkFramebufferMixedSamplesCombinationNV*>(this);
-    }
-    operator VkFramebufferMixedSamplesCombinationNV &() noexcept {
-        return *reinterpret_cast<VkFramebufferMixedSamplesCombinationNV*>(this);
-    }
 };
 struct PhysicalDeviceShaderIntegerFunctions2FeaturesINTEL {
     StructureType sType{StructureType::PhysicalDeviceShaderIntegerFunctions2FeaturesINTEL};
     void* pNext = nullptr;
     Bool32 shaderIntegerFunctions2{0};
-    operator VkPhysicalDeviceShaderIntegerFunctions2FeaturesINTEL const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceShaderIntegerFunctions2FeaturesINTEL*>(this);
-    }
-    operator VkPhysicalDeviceShaderIntegerFunctions2FeaturesINTEL &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceShaderIntegerFunctions2FeaturesINTEL*>(this);
-    }
 };
 union PerformanceValueDataINTEL {
     uint32_t value32;
@@ -9659,57 +6860,28 @@ union PerformanceValueDataINTEL {
 struct PerformanceValueINTEL {
     PerformanceValueTypeINTEL type{static_cast<PerformanceValueTypeINTEL>(0)};
     PerformanceValueDataINTEL data{};
-    operator VkPerformanceValueINTEL const &() const noexcept {
-        return *reinterpret_cast<const VkPerformanceValueINTEL*>(this);
-    }
-    operator VkPerformanceValueINTEL &() noexcept {
-        return *reinterpret_cast<VkPerformanceValueINTEL*>(this);
-    }
 };
 struct InitializePerformanceApiInfoINTEL {
     StructureType sType{StructureType::InitializePerformanceApiInfoINTEL};
     const void* pNext = nullptr;
     void* pUserData = nullptr;
-    operator VkInitializePerformanceApiInfoINTEL const &() const noexcept {
-        return *reinterpret_cast<const VkInitializePerformanceApiInfoINTEL*>(this);
-    }
-    operator VkInitializePerformanceApiInfoINTEL &() noexcept {
-        return *reinterpret_cast<VkInitializePerformanceApiInfoINTEL*>(this);
-    }
 };
 struct QueryPoolPerformanceQueryCreateInfoINTEL {
     StructureType sType{StructureType::QueryPoolPerformanceQueryCreateInfoINTEL};
     const void* pNext = nullptr;
     QueryPoolSamplingModeINTEL performanceCountersSampling{static_cast<QueryPoolSamplingModeINTEL>(0)};
-    operator VkQueryPoolPerformanceQueryCreateInfoINTEL const &() const noexcept {
-        return *reinterpret_cast<const VkQueryPoolPerformanceQueryCreateInfoINTEL*>(this);
-    }
-    operator VkQueryPoolPerformanceQueryCreateInfoINTEL &() noexcept {
-        return *reinterpret_cast<VkQueryPoolPerformanceQueryCreateInfoINTEL*>(this);
-    }
 };
 using QueryPoolCreateInfoINTEL = QueryPoolPerformanceQueryCreateInfoINTEL;
+using VkQueryPoolCreateInfoINTEL = QueryPoolCreateInfoINTEL;
 struct PerformanceMarkerInfoINTEL {
     StructureType sType{StructureType::PerformanceMarkerInfoINTEL};
     const void* pNext = nullptr;
     uint64_t marker{0};
-    operator VkPerformanceMarkerInfoINTEL const &() const noexcept {
-        return *reinterpret_cast<const VkPerformanceMarkerInfoINTEL*>(this);
-    }
-    operator VkPerformanceMarkerInfoINTEL &() noexcept {
-        return *reinterpret_cast<VkPerformanceMarkerInfoINTEL*>(this);
-    }
 };
 struct PerformanceStreamMarkerInfoINTEL {
     StructureType sType{StructureType::PerformanceStreamMarkerInfoINTEL};
     const void* pNext = nullptr;
     uint32_t marker{0};
-    operator VkPerformanceStreamMarkerInfoINTEL const &() const noexcept {
-        return *reinterpret_cast<const VkPerformanceStreamMarkerInfoINTEL*>(this);
-    }
-    operator VkPerformanceStreamMarkerInfoINTEL &() noexcept {
-        return *reinterpret_cast<VkPerformanceStreamMarkerInfoINTEL*>(this);
-    }
 };
 struct PerformanceOverrideInfoINTEL {
     StructureType sType{StructureType::PerformanceOverrideInfoINTEL};
@@ -9717,69 +6889,33 @@ struct PerformanceOverrideInfoINTEL {
     PerformanceOverrideTypeINTEL type{static_cast<PerformanceOverrideTypeINTEL>(0)};
     Bool32 enable{0};
     uint64_t parameter{0};
-    operator VkPerformanceOverrideInfoINTEL const &() const noexcept {
-        return *reinterpret_cast<const VkPerformanceOverrideInfoINTEL*>(this);
-    }
-    operator VkPerformanceOverrideInfoINTEL &() noexcept {
-        return *reinterpret_cast<VkPerformanceOverrideInfoINTEL*>(this);
-    }
 };
 struct PerformanceConfigurationAcquireInfoINTEL {
     StructureType sType{StructureType::PerformanceConfigurationAcquireInfoINTEL};
     const void* pNext = nullptr;
     PerformanceConfigurationTypeINTEL type{static_cast<PerformanceConfigurationTypeINTEL>(0)};
-    operator VkPerformanceConfigurationAcquireInfoINTEL const &() const noexcept {
-        return *reinterpret_cast<const VkPerformanceConfigurationAcquireInfoINTEL*>(this);
-    }
-    operator VkPerformanceConfigurationAcquireInfoINTEL &() noexcept {
-        return *reinterpret_cast<VkPerformanceConfigurationAcquireInfoINTEL*>(this);
-    }
 };
 struct PhysicalDeviceShaderClockFeaturesKHR {
     StructureType sType{StructureType::PhysicalDeviceShaderClockFeaturesKHR};
     void* pNext = nullptr;
     Bool32 shaderSubgroupClock{0};
     Bool32 shaderDeviceClock{0};
-    operator VkPhysicalDeviceShaderClockFeaturesKHR const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceShaderClockFeaturesKHR*>(this);
-    }
-    operator VkPhysicalDeviceShaderClockFeaturesKHR &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceShaderClockFeaturesKHR*>(this);
-    }
 };
 struct PhysicalDeviceIndexTypeUint8FeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceIndexTypeUint8FeaturesEXT};
     void* pNext = nullptr;
     Bool32 indexTypeUint8{0};
-    operator VkPhysicalDeviceIndexTypeUint8FeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceIndexTypeUint8FeaturesEXT*>(this);
-    }
-    operator VkPhysicalDeviceIndexTypeUint8FeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceIndexTypeUint8FeaturesEXT*>(this);
-    }
 };
 struct PhysicalDeviceShaderSMBuiltinsPropertiesNV {
     StructureType sType{StructureType::PhysicalDeviceShaderSmBuiltinsPropertiesNV};
     void* pNext = nullptr;
     uint32_t shaderSMCount{0};
     uint32_t shaderWarpsPerSM{0};
-    operator VkPhysicalDeviceShaderSMBuiltinsPropertiesNV const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceShaderSMBuiltinsPropertiesNV*>(this);
-    }
-    operator VkPhysicalDeviceShaderSMBuiltinsPropertiesNV &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceShaderSMBuiltinsPropertiesNV*>(this);
-    }
 };
 struct PhysicalDeviceShaderSMBuiltinsFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceShaderSmBuiltinsFeaturesNV};
     void* pNext = nullptr;
     Bool32 shaderSMBuiltins{0};
-    operator VkPhysicalDeviceShaderSMBuiltinsFeaturesNV const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceShaderSMBuiltinsFeaturesNV*>(this);
-    }
-    operator VkPhysicalDeviceShaderSMBuiltinsFeaturesNV &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceShaderSMBuiltinsFeaturesNV*>(this);
-    }
 };
 struct PhysicalDeviceFragmentShaderInterlockFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceFragmentShaderInterlockFeaturesEXT};
@@ -9787,71 +6923,38 @@ struct PhysicalDeviceFragmentShaderInterlockFeaturesEXT {
     Bool32 fragmentShaderSampleInterlock{0};
     Bool32 fragmentShaderPixelInterlock{0};
     Bool32 fragmentShaderShadingRateInterlock{0};
-    operator VkPhysicalDeviceFragmentShaderInterlockFeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceFragmentShaderInterlockFeaturesEXT*>(this);
-    }
-    operator VkPhysicalDeviceFragmentShaderInterlockFeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceFragmentShaderInterlockFeaturesEXT*>(this);
-    }
 };
 struct PhysicalDeviceSeparateDepthStencilLayoutsFeatures {
     StructureType sType{StructureType::PhysicalDeviceSeparateDepthStencilLayoutsFeatures};
     void* pNext = nullptr;
     Bool32 separateDepthStencilLayouts{0};
-    operator VkPhysicalDeviceSeparateDepthStencilLayoutsFeatures const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceSeparateDepthStencilLayoutsFeatures*>(this);
-    }
-    operator VkPhysicalDeviceSeparateDepthStencilLayoutsFeatures &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceSeparateDepthStencilLayoutsFeatures*>(this);
-    }
 };
 using PhysicalDeviceSeparateDepthStencilLayoutsFeaturesKHR = PhysicalDeviceSeparateDepthStencilLayoutsFeatures;
+using VkPhysicalDeviceSeparateDepthStencilLayoutsFeaturesKHR = PhysicalDeviceSeparateDepthStencilLayoutsFeaturesKHR;
 struct AttachmentReferenceStencilLayout {
     StructureType sType{StructureType::AttachmentReferenceStencilLayout};
     void* pNext = nullptr;
     ImageLayout stencilLayout{static_cast<ImageLayout>(0)};
-    operator VkAttachmentReferenceStencilLayout const &() const noexcept {
-        return *reinterpret_cast<const VkAttachmentReferenceStencilLayout*>(this);
-    }
-    operator VkAttachmentReferenceStencilLayout &() noexcept {
-        return *reinterpret_cast<VkAttachmentReferenceStencilLayout*>(this);
-    }
 };
 using AttachmentReferenceStencilLayoutKHR = AttachmentReferenceStencilLayout;
+using VkAttachmentReferenceStencilLayoutKHR = AttachmentReferenceStencilLayoutKHR;
 struct AttachmentDescriptionStencilLayout {
     StructureType sType{StructureType::AttachmentDescriptionStencilLayout};
     void* pNext = nullptr;
     ImageLayout stencilInitialLayout{static_cast<ImageLayout>(0)};
     ImageLayout stencilFinalLayout{static_cast<ImageLayout>(0)};
-    operator VkAttachmentDescriptionStencilLayout const &() const noexcept {
-        return *reinterpret_cast<const VkAttachmentDescriptionStencilLayout*>(this);
-    }
-    operator VkAttachmentDescriptionStencilLayout &() noexcept {
-        return *reinterpret_cast<VkAttachmentDescriptionStencilLayout*>(this);
-    }
 };
 using AttachmentDescriptionStencilLayoutKHR = AttachmentDescriptionStencilLayout;
+using VkAttachmentDescriptionStencilLayoutKHR = AttachmentDescriptionStencilLayoutKHR;
 struct PhysicalDevicePipelineExecutablePropertiesFeaturesKHR {
     StructureType sType{StructureType::PhysicalDevicePipelineExecutablePropertiesFeaturesKHR};
     void* pNext = nullptr;
     Bool32 pipelineExecutableInfo{0};
-    operator VkPhysicalDevicePipelineExecutablePropertiesFeaturesKHR const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDevicePipelineExecutablePropertiesFeaturesKHR*>(this);
-    }
-    operator VkPhysicalDevicePipelineExecutablePropertiesFeaturesKHR &() noexcept {
-        return *reinterpret_cast<VkPhysicalDevicePipelineExecutablePropertiesFeaturesKHR*>(this);
-    }
 };
 struct PipelineInfoKHR {
     StructureType sType{StructureType::PipelineInfoKHR};
     const void* pNext = nullptr;
     Pipeline pipeline{};
-    operator VkPipelineInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineInfoKHR*>(this);
-    }
-    operator VkPipelineInfoKHR &() noexcept {
-        return *reinterpret_cast<VkPipelineInfoKHR*>(this);
-    }
 };
 struct PipelineExecutablePropertiesKHR {
     StructureType sType{StructureType::PipelineExecutablePropertiesKHR};
@@ -9860,24 +6963,12 @@ struct PipelineExecutablePropertiesKHR {
     char name[MAX_DESCRIPTION_SIZE];
     char description[MAX_DESCRIPTION_SIZE];
     uint32_t subgroupSize{0};
-    operator VkPipelineExecutablePropertiesKHR const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineExecutablePropertiesKHR*>(this);
-    }
-    operator VkPipelineExecutablePropertiesKHR &() noexcept {
-        return *reinterpret_cast<VkPipelineExecutablePropertiesKHR*>(this);
-    }
 };
 struct PipelineExecutableInfoKHR {
     StructureType sType{StructureType::PipelineExecutableInfoKHR};
     const void* pNext = nullptr;
     Pipeline pipeline{};
     uint32_t executableIndex{0};
-    operator VkPipelineExecutableInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineExecutableInfoKHR*>(this);
-    }
-    operator VkPipelineExecutableInfoKHR &() noexcept {
-        return *reinterpret_cast<VkPipelineExecutableInfoKHR*>(this);
-    }
 };
 union PipelineExecutableStatisticValueKHR {
     Bool32 b32;
@@ -9896,12 +6987,6 @@ struct PipelineExecutableStatisticKHR {
     char description[MAX_DESCRIPTION_SIZE];
     PipelineExecutableStatisticFormatKHR format{static_cast<PipelineExecutableStatisticFormatKHR>(0)};
     PipelineExecutableStatisticValueKHR value{};
-    operator VkPipelineExecutableStatisticKHR const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineExecutableStatisticKHR*>(this);
-    }
-    operator VkPipelineExecutableStatisticKHR &() noexcept {
-        return *reinterpret_cast<VkPipelineExecutableStatisticKHR*>(this);
-    }
 };
 struct PipelineExecutableInternalRepresentationKHR {
     StructureType sType{StructureType::PipelineExecutableInternalRepresentationKHR};
@@ -9911,34 +6996,16 @@ struct PipelineExecutableInternalRepresentationKHR {
     Bool32 isText{0};
     size_t dataSize{0};
     void* pData = nullptr;
-    operator VkPipelineExecutableInternalRepresentationKHR const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineExecutableInternalRepresentationKHR*>(this);
-    }
-    operator VkPipelineExecutableInternalRepresentationKHR &() noexcept {
-        return *reinterpret_cast<VkPipelineExecutableInternalRepresentationKHR*>(this);
-    }
 };
 struct PhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXT};
     void* pNext = nullptr;
     Bool32 shaderDemoteToHelperInvocation{0};
-    operator VkPhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXT*>(this);
-    }
-    operator VkPhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXT*>(this);
-    }
 };
 struct PhysicalDeviceTexelBufferAlignmentFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceTexelBufferAlignmentFeaturesEXT};
     void* pNext = nullptr;
     Bool32 texelBufferAlignment{0};
-    operator VkPhysicalDeviceTexelBufferAlignmentFeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceTexelBufferAlignmentFeaturesEXT*>(this);
-    }
-    operator VkPhysicalDeviceTexelBufferAlignmentFeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceTexelBufferAlignmentFeaturesEXT*>(this);
-    }
 };
 struct PhysicalDeviceTexelBufferAlignmentPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceTexelBufferAlignmentPropertiesEXT};
@@ -9947,24 +7014,12 @@ struct PhysicalDeviceTexelBufferAlignmentPropertiesEXT {
     Bool32 storageTexelBufferOffsetSingleTexelAlignment{0};
     DeviceSize uniformTexelBufferOffsetAlignmentBytes{0};
     Bool32 uniformTexelBufferOffsetSingleTexelAlignment{0};
-    operator VkPhysicalDeviceTexelBufferAlignmentPropertiesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceTexelBufferAlignmentPropertiesEXT*>(this);
-    }
-    operator VkPhysicalDeviceTexelBufferAlignmentPropertiesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceTexelBufferAlignmentPropertiesEXT*>(this);
-    }
 };
 struct PhysicalDeviceSubgroupSizeControlFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceSubgroupSizeControlFeaturesEXT};
     void* pNext = nullptr;
     Bool32 subgroupSizeControl{0};
     Bool32 computeFullSubgroups{0};
-    operator VkPhysicalDeviceSubgroupSizeControlFeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceSubgroupSizeControlFeaturesEXT*>(this);
-    }
-    operator VkPhysicalDeviceSubgroupSizeControlFeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceSubgroupSizeControlFeaturesEXT*>(this);
-    }
 };
 struct PhysicalDeviceSubgroupSizeControlPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceSubgroupSizeControlPropertiesEXT};
@@ -9973,48 +7028,26 @@ struct PhysicalDeviceSubgroupSizeControlPropertiesEXT {
     uint32_t maxSubgroupSize{0};
     uint32_t maxComputeWorkgroupSubgroups{0};
     ShaderStageFlags requiredSubgroupSizeStages{};
-    operator VkPhysicalDeviceSubgroupSizeControlPropertiesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceSubgroupSizeControlPropertiesEXT*>(this);
-    }
-    operator VkPhysicalDeviceSubgroupSizeControlPropertiesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceSubgroupSizeControlPropertiesEXT*>(this);
-    }
 };
 struct PipelineShaderStageRequiredSubgroupSizeCreateInfoEXT {
     StructureType sType{StructureType::PipelineShaderStageRequiredSubgroupSizeCreateInfoEXT};
     void* pNext = nullptr;
     uint32_t requiredSubgroupSize{0};
-    operator VkPipelineShaderStageRequiredSubgroupSizeCreateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineShaderStageRequiredSubgroupSizeCreateInfoEXT*>(this);
-    }
-    operator VkPipelineShaderStageRequiredSubgroupSizeCreateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkPipelineShaderStageRequiredSubgroupSizeCreateInfoEXT*>(this);
-    }
 };
 struct MemoryOpaqueCaptureAddressAllocateInfo {
     StructureType sType{StructureType::MemoryOpaqueCaptureAddressAllocateInfo};
     const void* pNext = nullptr;
     uint64_t opaqueCaptureAddress{0};
-    operator VkMemoryOpaqueCaptureAddressAllocateInfo const &() const noexcept {
-        return *reinterpret_cast<const VkMemoryOpaqueCaptureAddressAllocateInfo*>(this);
-    }
-    operator VkMemoryOpaqueCaptureAddressAllocateInfo &() noexcept {
-        return *reinterpret_cast<VkMemoryOpaqueCaptureAddressAllocateInfo*>(this);
-    }
 };
 using MemoryOpaqueCaptureAddressAllocateInfoKHR = MemoryOpaqueCaptureAddressAllocateInfo;
+using VkMemoryOpaqueCaptureAddressAllocateInfoKHR = MemoryOpaqueCaptureAddressAllocateInfoKHR;
 struct DeviceMemoryOpaqueCaptureAddressInfo {
     StructureType sType{StructureType::DeviceMemoryOpaqueCaptureAddressInfo};
     const void* pNext = nullptr;
     DeviceMemory memory{};
-    operator VkDeviceMemoryOpaqueCaptureAddressInfo const &() const noexcept {
-        return *reinterpret_cast<const VkDeviceMemoryOpaqueCaptureAddressInfo*>(this);
-    }
-    operator VkDeviceMemoryOpaqueCaptureAddressInfo &() noexcept {
-        return *reinterpret_cast<VkDeviceMemoryOpaqueCaptureAddressInfo*>(this);
-    }
 };
 using DeviceMemoryOpaqueCaptureAddressInfoKHR = DeviceMemoryOpaqueCaptureAddressInfo;
+using VkDeviceMemoryOpaqueCaptureAddressInfoKHR = DeviceMemoryOpaqueCaptureAddressInfoKHR;
 struct PhysicalDeviceLineRasterizationFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceLineRasterizationFeaturesEXT};
     void* pNext = nullptr;
@@ -10024,23 +7057,11 @@ struct PhysicalDeviceLineRasterizationFeaturesEXT {
     Bool32 stippledRectangularLines{0};
     Bool32 stippledBresenhamLines{0};
     Bool32 stippledSmoothLines{0};
-    operator VkPhysicalDeviceLineRasterizationFeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceLineRasterizationFeaturesEXT*>(this);
-    }
-    operator VkPhysicalDeviceLineRasterizationFeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceLineRasterizationFeaturesEXT*>(this);
-    }
 };
 struct PhysicalDeviceLineRasterizationPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceLineRasterizationPropertiesEXT};
     void* pNext = nullptr;
     uint32_t lineSubPixelPrecisionBits{0};
-    operator VkPhysicalDeviceLineRasterizationPropertiesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceLineRasterizationPropertiesEXT*>(this);
-    }
-    operator VkPhysicalDeviceLineRasterizationPropertiesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceLineRasterizationPropertiesEXT*>(this);
-    }
 };
 struct PipelineRasterizationLineStateCreateInfoEXT {
     StructureType sType{StructureType::PipelineRasterizationLineStateCreateInfoEXT};
@@ -10049,23 +7070,11 @@ struct PipelineRasterizationLineStateCreateInfoEXT {
     Bool32 stippledLineEnable{0};
     uint32_t lineStippleFactor{0};
     uint16_t lineStipplePattern{0};
-    operator VkPipelineRasterizationLineStateCreateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineRasterizationLineStateCreateInfoEXT*>(this);
-    }
-    operator VkPipelineRasterizationLineStateCreateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkPipelineRasterizationLineStateCreateInfoEXT*>(this);
-    }
 };
 struct PhysicalDevicePipelineCreationCacheControlFeaturesEXT {
     StructureType sType{StructureType::PhysicalDevicePipelineCreationCacheControlFeaturesEXT};
     void* pNext = nullptr;
     Bool32 pipelineCreationCacheControl{0};
-    operator VkPhysicalDevicePipelineCreationCacheControlFeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDevicePipelineCreationCacheControlFeaturesEXT*>(this);
-    }
-    operator VkPhysicalDevicePipelineCreationCacheControlFeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDevicePipelineCreationCacheControlFeaturesEXT*>(this);
-    }
 };
 struct PhysicalDeviceVulkan11Features {
     StructureType sType{StructureType::PhysicalDeviceVulkan11Features};
@@ -10082,12 +7091,6 @@ struct PhysicalDeviceVulkan11Features {
     Bool32 protectedMemory{0};
     Bool32 samplerYcbcrConversion{0};
     Bool32 shaderDrawParameters{0};
-    operator VkPhysicalDeviceVulkan11Features const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceVulkan11Features*>(this);
-    }
-    operator VkPhysicalDeviceVulkan11Features &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceVulkan11Features*>(this);
-    }
 };
 struct PhysicalDeviceVulkan11Properties {
     StructureType sType{StructureType::PhysicalDeviceVulkan11Properties};
@@ -10107,12 +7110,6 @@ struct PhysicalDeviceVulkan11Properties {
     Bool32 protectedNoFault{0};
     uint32_t maxPerSetDescriptors{0};
     DeviceSize maxMemoryAllocationSize{0};
-    operator VkPhysicalDeviceVulkan11Properties const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceVulkan11Properties*>(this);
-    }
-    operator VkPhysicalDeviceVulkan11Properties &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceVulkan11Properties*>(this);
-    }
 };
 struct PhysicalDeviceVulkan12Features {
     StructureType sType{StructureType::PhysicalDeviceVulkan12Features};
@@ -10164,12 +7161,6 @@ struct PhysicalDeviceVulkan12Features {
     Bool32 shaderOutputViewportIndex{0};
     Bool32 shaderOutputLayer{0};
     Bool32 subgroupBroadcastDynamicId{0};
-    operator VkPhysicalDeviceVulkan12Features const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceVulkan12Features*>(this);
-    }
-    operator VkPhysicalDeviceVulkan12Features &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceVulkan12Features*>(this);
-    }
 };
 struct PhysicalDeviceVulkan12Properties {
     StructureType sType{StructureType::PhysicalDeviceVulkan12Properties};
@@ -10226,34 +7217,16 @@ struct PhysicalDeviceVulkan12Properties {
     Bool32 filterMinmaxImageComponentMapping{0};
     uint64_t maxTimelineSemaphoreValueDifference{0};
     SampleCountFlags framebufferIntegerColorSampleCounts{};
-    operator VkPhysicalDeviceVulkan12Properties const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceVulkan12Properties*>(this);
-    }
-    operator VkPhysicalDeviceVulkan12Properties &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceVulkan12Properties*>(this);
-    }
 };
 struct PipelineCompilerControlCreateInfoAMD {
     StructureType sType{StructureType::PipelineCompilerControlCreateInfoAMD};
     const void* pNext = nullptr;
     PipelineCompilerControlFlagsAMD compilerControlFlags{};
-    operator VkPipelineCompilerControlCreateInfoAMD const &() const noexcept {
-        return *reinterpret_cast<const VkPipelineCompilerControlCreateInfoAMD*>(this);
-    }
-    operator VkPipelineCompilerControlCreateInfoAMD &() noexcept {
-        return *reinterpret_cast<VkPipelineCompilerControlCreateInfoAMD*>(this);
-    }
 };
 struct PhysicalDeviceCoherentMemoryFeaturesAMD {
     StructureType sType{StructureType::PhysicalDeviceCoherentMemoryFeaturesAMD};
     void* pNext = nullptr;
     Bool32 deviceCoherentMemory{0};
-    operator VkPhysicalDeviceCoherentMemoryFeaturesAMD const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceCoherentMemoryFeaturesAMD*>(this);
-    }
-    operator VkPhysicalDeviceCoherentMemoryFeaturesAMD &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceCoherentMemoryFeaturesAMD*>(this);
-    }
 };
 struct PhysicalDeviceToolPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceToolPropertiesEXT};
@@ -10263,47 +7236,23 @@ struct PhysicalDeviceToolPropertiesEXT {
     ToolPurposeFlagsEXT purposes{};
     char description[MAX_DESCRIPTION_SIZE];
     char layer[MAX_EXTENSION_NAME_SIZE];
-    operator VkPhysicalDeviceToolPropertiesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceToolPropertiesEXT*>(this);
-    }
-    operator VkPhysicalDeviceToolPropertiesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceToolPropertiesEXT*>(this);
-    }
 };
 struct SamplerCustomBorderColorCreateInfoEXT {
     StructureType sType{StructureType::SamplerCustomBorderColorCreateInfoEXT};
     const void* pNext = nullptr;
     ClearColorValue customBorderColor{};
     Format format{static_cast<Format>(0)};
-    operator VkSamplerCustomBorderColorCreateInfoEXT const &() const noexcept {
-        return *reinterpret_cast<const VkSamplerCustomBorderColorCreateInfoEXT*>(this);
-    }
-    operator VkSamplerCustomBorderColorCreateInfoEXT &() noexcept {
-        return *reinterpret_cast<VkSamplerCustomBorderColorCreateInfoEXT*>(this);
-    }
 };
 struct PhysicalDeviceCustomBorderColorPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceCustomBorderColorPropertiesEXT};
     void* pNext = nullptr;
     uint32_t maxCustomBorderColorSamplers{0};
-    operator VkPhysicalDeviceCustomBorderColorPropertiesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceCustomBorderColorPropertiesEXT*>(this);
-    }
-    operator VkPhysicalDeviceCustomBorderColorPropertiesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceCustomBorderColorPropertiesEXT*>(this);
-    }
 };
 struct PhysicalDeviceCustomBorderColorFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceCustomBorderColorFeaturesEXT};
     void* pNext = nullptr;
     Bool32 customBorderColors{0};
     Bool32 customBorderColorWithoutFormat{0};
-    operator VkPhysicalDeviceCustomBorderColorFeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceCustomBorderColorFeaturesEXT*>(this);
-    }
-    operator VkPhysicalDeviceCustomBorderColorFeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceCustomBorderColorFeaturesEXT*>(this);
-    }
 };
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 union DeviceOrHostAddressKHR {
@@ -10323,36 +7272,18 @@ struct AccelerationStructureGeometryTrianglesDataKHR {
     IndexType indexType{static_cast<IndexType>(0)};
     DeviceOrHostAddressConstKHR indexData{};
     DeviceOrHostAddressConstKHR transformData{};
-    operator VkAccelerationStructureGeometryTrianglesDataKHR const &() const noexcept {
-        return *reinterpret_cast<const VkAccelerationStructureGeometryTrianglesDataKHR*>(this);
-    }
-    operator VkAccelerationStructureGeometryTrianglesDataKHR &() noexcept {
-        return *reinterpret_cast<VkAccelerationStructureGeometryTrianglesDataKHR*>(this);
-    }
 };
 struct AccelerationStructureGeometryAabbsDataKHR {
     StructureType sType{StructureType::AccelerationStructureGeometryAabbsDataKHR};
     const void* pNext = nullptr;
     DeviceOrHostAddressConstKHR data{};
     DeviceSize stride{0};
-    operator VkAccelerationStructureGeometryAabbsDataKHR const &() const noexcept {
-        return *reinterpret_cast<const VkAccelerationStructureGeometryAabbsDataKHR*>(this);
-    }
-    operator VkAccelerationStructureGeometryAabbsDataKHR &() noexcept {
-        return *reinterpret_cast<VkAccelerationStructureGeometryAabbsDataKHR*>(this);
-    }
 };
 struct AccelerationStructureGeometryInstancesDataKHR {
     StructureType sType{StructureType::AccelerationStructureGeometryInstancesDataKHR};
     const void* pNext = nullptr;
     Bool32 arrayOfPointers{0};
     DeviceOrHostAddressConstKHR data{};
-    operator VkAccelerationStructureGeometryInstancesDataKHR const &() const noexcept {
-        return *reinterpret_cast<const VkAccelerationStructureGeometryInstancesDataKHR*>(this);
-    }
-    operator VkAccelerationStructureGeometryInstancesDataKHR &() noexcept {
-        return *reinterpret_cast<VkAccelerationStructureGeometryInstancesDataKHR*>(this);
-    }
 };
 union AccelerationStructureGeometryDataKHR {
     AccelerationStructureGeometryTrianglesDataKHR triangles;
@@ -10365,12 +7296,6 @@ struct AccelerationStructureGeometryKHR {
     GeometryTypeKHR geometryType{static_cast<GeometryTypeKHR>(0)};
     AccelerationStructureGeometryDataKHR geometry{};
     GeometryFlagsKHR flags{};
-    operator VkAccelerationStructureGeometryKHR const &() const noexcept {
-        return *reinterpret_cast<const VkAccelerationStructureGeometryKHR*>(this);
-    }
-    operator VkAccelerationStructureGeometryKHR &() noexcept {
-        return *reinterpret_cast<VkAccelerationStructureGeometryKHR*>(this);
-    }
 };
 struct AccelerationStructureBuildGeometryInfoKHR {
     StructureType sType{StructureType::AccelerationStructureBuildGeometryInfoKHR};
@@ -10384,12 +7309,6 @@ struct AccelerationStructureBuildGeometryInfoKHR {
     uint32_t geometryCount{0};
     const AccelerationStructureGeometryKHR* const* ppGeometries = nullptr;
     DeviceOrHostAddressKHR scratchData{};
-    operator VkAccelerationStructureBuildGeometryInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkAccelerationStructureBuildGeometryInfoKHR*>(this);
-    }
-    operator VkAccelerationStructureBuildGeometryInfoKHR &() noexcept {
-        return *reinterpret_cast<VkAccelerationStructureBuildGeometryInfoKHR*>(this);
-    }
 };
 struct AccelerationStructureBuildOffsetInfoKHR {
     uint32_t primitiveCount{0};
@@ -10397,12 +7316,6 @@ struct AccelerationStructureBuildOffsetInfoKHR {
     uint32_t firstVertex{0};
     uint32_t transformOffset{0};
     constexpr bool operator==(AccelerationStructureBuildOffsetInfoKHR const& other) const = default;
-    operator VkAccelerationStructureBuildOffsetInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkAccelerationStructureBuildOffsetInfoKHR*>(this);
-    }
-    operator VkAccelerationStructureBuildOffsetInfoKHR &() noexcept {
-        return *reinterpret_cast<VkAccelerationStructureBuildOffsetInfoKHR*>(this);
-    }
 };
 struct AccelerationStructureCreateGeometryTypeInfoKHR {
     StructureType sType{StructureType::AccelerationStructureCreateGeometryTypeInfoKHR};
@@ -10413,12 +7326,6 @@ struct AccelerationStructureCreateGeometryTypeInfoKHR {
     uint32_t maxVertexCount{0};
     Format vertexFormat{static_cast<Format>(0)};
     Bool32 allowsTransforms{0};
-    operator VkAccelerationStructureCreateGeometryTypeInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkAccelerationStructureCreateGeometryTypeInfoKHR*>(this);
-    }
-    operator VkAccelerationStructureCreateGeometryTypeInfoKHR &() noexcept {
-        return *reinterpret_cast<VkAccelerationStructureCreateGeometryTypeInfoKHR*>(this);
-    }
 };
 struct AccelerationStructureCreateInfoKHR {
     StructureType sType{StructureType::AccelerationStructureCreateInfoKHR};
@@ -10429,12 +7336,6 @@ struct AccelerationStructureCreateInfoKHR {
     uint32_t maxGeometryCount{0};
     const AccelerationStructureCreateGeometryTypeInfoKHR* pGeometryInfos = nullptr;
     DeviceAddress deviceAddress{0};
-    operator VkAccelerationStructureCreateInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkAccelerationStructureCreateInfoKHR*>(this);
-    }
-    operator VkAccelerationStructureCreateInfoKHR &() noexcept {
-        return *reinterpret_cast<VkAccelerationStructureCreateInfoKHR*>(this);
-    }
 };
 struct AabbPositionsKHR {
     float minX{0.f};
@@ -10444,28 +7345,18 @@ struct AabbPositionsKHR {
     float maxY{0.f};
     float maxZ{0.f};
     constexpr bool operator==(AabbPositionsKHR const& other) const = default;
-    operator VkAabbPositionsKHR const &() const noexcept {
-        return *reinterpret_cast<const VkAabbPositionsKHR*>(this);
-    }
-    operator VkAabbPositionsKHR &() noexcept {
-        return *reinterpret_cast<VkAabbPositionsKHR*>(this);
-    }
 };
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using AabbPositionsNV = AabbPositionsKHR;
+using VkAabbPositionsNV = AabbPositionsNV;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct TransformMatrixKHR {
     float matrix[3][4];
     constexpr bool operator==(TransformMatrixKHR const& other) const = default;
-    operator VkTransformMatrixKHR const &() const noexcept {
-        return *reinterpret_cast<const VkTransformMatrixKHR*>(this);
-    }
-    operator VkTransformMatrixKHR &() noexcept {
-        return *reinterpret_cast<VkTransformMatrixKHR*>(this);
-    }
 };
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using TransformMatrixNV = TransformMatrixKHR;
+using VkTransformMatrixNV = TransformMatrixNV;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureInstanceKHR {
     TransformMatrixKHR transform{};
@@ -10475,37 +7366,20 @@ struct AccelerationStructureInstanceKHR {
     VkGeometryInstanceFlagsKHR flags:8;
     uint64_t accelerationStructureReference{0};
     constexpr bool operator==(AccelerationStructureInstanceKHR const& other) const = default;
-    operator VkAccelerationStructureInstanceKHR const &() const noexcept {
-        return *reinterpret_cast<const VkAccelerationStructureInstanceKHR*>(this);
-    }
-    operator VkAccelerationStructureInstanceKHR &() noexcept {
-        return *reinterpret_cast<VkAccelerationStructureInstanceKHR*>(this);
-    }
 };
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using AccelerationStructureInstanceNV = AccelerationStructureInstanceKHR;
+using VkAccelerationStructureInstanceNV = AccelerationStructureInstanceNV;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureDeviceAddressInfoKHR {
     StructureType sType{StructureType::AccelerationStructureDeviceAddressInfoKHR};
     const void* pNext = nullptr;
     AccelerationStructureKHR accelerationStructure{};
-    operator VkAccelerationStructureDeviceAddressInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkAccelerationStructureDeviceAddressInfoKHR*>(this);
-    }
-    operator VkAccelerationStructureDeviceAddressInfoKHR &() noexcept {
-        return *reinterpret_cast<VkAccelerationStructureDeviceAddressInfoKHR*>(this);
-    }
 };
 struct AccelerationStructureVersionKHR {
     StructureType sType{StructureType::AccelerationStructureVersionKHR};
     const void* pNext = nullptr;
     const uint8_t* versionData = nullptr;
-    operator VkAccelerationStructureVersionKHR const &() const noexcept {
-        return *reinterpret_cast<const VkAccelerationStructureVersionKHR*>(this);
-    }
-    operator VkAccelerationStructureVersionKHR &() noexcept {
-        return *reinterpret_cast<VkAccelerationStructureVersionKHR*>(this);
-    }
 };
 struct CopyAccelerationStructureInfoKHR {
     StructureType sType{StructureType::CopyAccelerationStructureInfoKHR};
@@ -10513,12 +7387,6 @@ struct CopyAccelerationStructureInfoKHR {
     AccelerationStructureKHR src{};
     AccelerationStructureKHR dst{};
     CopyAccelerationStructureModeKHR mode{static_cast<CopyAccelerationStructureModeKHR>(0)};
-    operator VkCopyAccelerationStructureInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkCopyAccelerationStructureInfoKHR*>(this);
-    }
-    operator VkCopyAccelerationStructureInfoKHR &() noexcept {
-        return *reinterpret_cast<VkCopyAccelerationStructureInfoKHR*>(this);
-    }
 };
 struct CopyAccelerationStructureToMemoryInfoKHR {
     StructureType sType{StructureType::CopyAccelerationStructureToMemoryInfoKHR};
@@ -10526,12 +7394,6 @@ struct CopyAccelerationStructureToMemoryInfoKHR {
     AccelerationStructureKHR src{};
     DeviceOrHostAddressKHR dst{};
     CopyAccelerationStructureModeKHR mode{static_cast<CopyAccelerationStructureModeKHR>(0)};
-    operator VkCopyAccelerationStructureToMemoryInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkCopyAccelerationStructureToMemoryInfoKHR*>(this);
-    }
-    operator VkCopyAccelerationStructureToMemoryInfoKHR &() noexcept {
-        return *reinterpret_cast<VkCopyAccelerationStructureToMemoryInfoKHR*>(this);
-    }
 };
 struct CopyMemoryToAccelerationStructureInfoKHR {
     StructureType sType{StructureType::CopyMemoryToAccelerationStructureInfoKHR};
@@ -10539,80 +7401,38 @@ struct CopyMemoryToAccelerationStructureInfoKHR {
     DeviceOrHostAddressConstKHR src{};
     AccelerationStructureKHR dst{};
     CopyAccelerationStructureModeKHR mode{static_cast<CopyAccelerationStructureModeKHR>(0)};
-    operator VkCopyMemoryToAccelerationStructureInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkCopyMemoryToAccelerationStructureInfoKHR*>(this);
-    }
-    operator VkCopyMemoryToAccelerationStructureInfoKHR &() noexcept {
-        return *reinterpret_cast<VkCopyMemoryToAccelerationStructureInfoKHR*>(this);
-    }
 };
 struct DeferredOperationInfoKHR {
     StructureType sType{StructureType::DeferredOperationInfoKHR};
     const void* pNext = nullptr;
     DeferredOperationKHR operationHandle{};
-    operator VkDeferredOperationInfoKHR const &() const noexcept {
-        return *reinterpret_cast<const VkDeferredOperationInfoKHR*>(this);
-    }
-    operator VkDeferredOperationInfoKHR &() noexcept {
-        return *reinterpret_cast<VkDeferredOperationInfoKHR*>(this);
-    }
 };
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 struct PhysicalDeviceExtendedDynamicStateFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceExtendedDynamicStateFeaturesEXT};
     void* pNext = nullptr;
     Bool32 extendedDynamicState{0};
-    operator VkPhysicalDeviceExtendedDynamicStateFeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceExtendedDynamicStateFeaturesEXT*>(this);
-    }
-    operator VkPhysicalDeviceExtendedDynamicStateFeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceExtendedDynamicStateFeaturesEXT*>(this);
-    }
 };
 struct RenderPassTransformBeginInfoQCOM {
     StructureType sType{StructureType::RenderPassTransformBeginInfoQCOM};
     void* pNext = nullptr;
     SurfaceTransformFlagBitsKHR transform{static_cast<SurfaceTransformFlagBitsKHR>(0)};
-    operator VkRenderPassTransformBeginInfoQCOM const &() const noexcept {
-        return *reinterpret_cast<const VkRenderPassTransformBeginInfoQCOM*>(this);
-    }
-    operator VkRenderPassTransformBeginInfoQCOM &() noexcept {
-        return *reinterpret_cast<VkRenderPassTransformBeginInfoQCOM*>(this);
-    }
 };
 struct CommandBufferInheritanceRenderPassTransformInfoQCOM {
     StructureType sType{StructureType::CommandBufferInheritanceRenderPassTransformInfoQCOM};
     void* pNext = nullptr;
     SurfaceTransformFlagBitsKHR transform{static_cast<SurfaceTransformFlagBitsKHR>(0)};
     Rect2D renderArea{};
-    operator VkCommandBufferInheritanceRenderPassTransformInfoQCOM const &() const noexcept {
-        return *reinterpret_cast<const VkCommandBufferInheritanceRenderPassTransformInfoQCOM*>(this);
-    }
-    operator VkCommandBufferInheritanceRenderPassTransformInfoQCOM &() noexcept {
-        return *reinterpret_cast<VkCommandBufferInheritanceRenderPassTransformInfoQCOM*>(this);
-    }
 };
 struct PhysicalDeviceDiagnosticsConfigFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceDiagnosticsConfigFeaturesNV};
     void* pNext = nullptr;
     Bool32 diagnosticsConfig{0};
-    operator VkPhysicalDeviceDiagnosticsConfigFeaturesNV const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceDiagnosticsConfigFeaturesNV*>(this);
-    }
-    operator VkPhysicalDeviceDiagnosticsConfigFeaturesNV &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceDiagnosticsConfigFeaturesNV*>(this);
-    }
 };
 struct DeviceDiagnosticsConfigCreateInfoNV {
     StructureType sType{StructureType::DeviceDiagnosticsConfigCreateInfoNV};
     const void* pNext = nullptr;
     DeviceDiagnosticsConfigFlagsNV flags{};
-    operator VkDeviceDiagnosticsConfigCreateInfoNV const &() const noexcept {
-        return *reinterpret_cast<const VkDeviceDiagnosticsConfigCreateInfoNV*>(this);
-    }
-    operator VkDeviceDiagnosticsConfigCreateInfoNV &() noexcept {
-        return *reinterpret_cast<VkDeviceDiagnosticsConfigCreateInfoNV*>(this);
-    }
 };
 struct PhysicalDeviceRobustness2FeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceRobustness2FeaturesEXT};
@@ -10620,35 +7440,17 @@ struct PhysicalDeviceRobustness2FeaturesEXT {
     Bool32 robustBufferAccess2{0};
     Bool32 robustImageAccess2{0};
     Bool32 nullDescriptor{0};
-    operator VkPhysicalDeviceRobustness2FeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceRobustness2FeaturesEXT*>(this);
-    }
-    operator VkPhysicalDeviceRobustness2FeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceRobustness2FeaturesEXT*>(this);
-    }
 };
 struct PhysicalDeviceRobustness2PropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceRobustness2PropertiesEXT};
     void* pNext = nullptr;
     DeviceSize robustStorageBufferAccessSizeAlignment{0};
     DeviceSize robustUniformBufferAccessSizeAlignment{0};
-    operator VkPhysicalDeviceRobustness2PropertiesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceRobustness2PropertiesEXT*>(this);
-    }
-    operator VkPhysicalDeviceRobustness2PropertiesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceRobustness2PropertiesEXT*>(this);
-    }
 };
 struct PhysicalDeviceImageRobustnessFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceImageRobustnessFeaturesEXT};
     void* pNext = nullptr;
     Bool32 robustImageAccess{0};
-    operator VkPhysicalDeviceImageRobustnessFeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceImageRobustnessFeaturesEXT*>(this);
-    }
-    operator VkPhysicalDeviceImageRobustnessFeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceImageRobustnessFeaturesEXT*>(this);
-    }
 };
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct PhysicalDevicePortabilitySubsetFeaturesKHR {
@@ -10669,23 +7471,11 @@ struct PhysicalDevicePortabilitySubsetFeaturesKHR {
     Bool32 tessellationPointMode{0};
     Bool32 triangleFans{0};
     Bool32 vertexAttributeAccessBeyondStride{0};
-    operator VkPhysicalDevicePortabilitySubsetFeaturesKHR const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDevicePortabilitySubsetFeaturesKHR*>(this);
-    }
-    operator VkPhysicalDevicePortabilitySubsetFeaturesKHR &() noexcept {
-        return *reinterpret_cast<VkPhysicalDevicePortabilitySubsetFeaturesKHR*>(this);
-    }
 };
 struct PhysicalDevicePortabilitySubsetPropertiesKHR {
     StructureType sType{StructureType::PhysicalDevicePortabilitySubsetPropertiesKHR};
     void* pNext = nullptr;
     uint32_t minVertexInputBindingStrideAlignment{0};
-    operator VkPhysicalDevicePortabilitySubsetPropertiesKHR const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDevicePortabilitySubsetPropertiesKHR*>(this);
-    }
-    operator VkPhysicalDevicePortabilitySubsetPropertiesKHR &() noexcept {
-        return *reinterpret_cast<VkPhysicalDevicePortabilitySubsetPropertiesKHR*>(this);
-    }
 };
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 struct PhysicalDevice4444FormatsFeaturesEXT {
@@ -10693,12 +7483,6 @@ struct PhysicalDevice4444FormatsFeaturesEXT {
     void* pNext = nullptr;
     Bool32 formatA4R4G4B4{0};
     Bool32 formatA4B4G4R4{0};
-    operator VkPhysicalDevice4444FormatsFeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDevice4444FormatsFeaturesEXT*>(this);
-    }
-    operator VkPhysicalDevice4444FormatsFeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDevice4444FormatsFeaturesEXT*>(this);
-    }
 };
 struct BufferCopy2KHR {
     StructureType sType{StructureType::BufferCopy2KHR};
@@ -10706,12 +7490,6 @@ struct BufferCopy2KHR {
     DeviceSize srcOffset{0};
     DeviceSize dstOffset{0};
     DeviceSize size{0};
-    operator VkBufferCopy2KHR const &() const noexcept {
-        return *reinterpret_cast<const VkBufferCopy2KHR*>(this);
-    }
-    operator VkBufferCopy2KHR &() noexcept {
-        return *reinterpret_cast<VkBufferCopy2KHR*>(this);
-    }
 };
 struct ImageCopy2KHR {
     StructureType sType{StructureType::ImageCopy2KHR};
@@ -10721,12 +7499,6 @@ struct ImageCopy2KHR {
     ImageSubresourceLayers dstSubresource{};
     Offset3D dstOffset{};
     Extent3D extent{};
-    operator VkImageCopy2KHR const &() const noexcept {
-        return *reinterpret_cast<const VkImageCopy2KHR*>(this);
-    }
-    operator VkImageCopy2KHR &() noexcept {
-        return *reinterpret_cast<VkImageCopy2KHR*>(this);
-    }
 };
 struct ImageBlit2KHR {
     StructureType sType{StructureType::ImageBlit2KHR};
@@ -10735,12 +7507,6 @@ struct ImageBlit2KHR {
     Offset3D srcOffsets[2];
     ImageSubresourceLayers dstSubresource{};
     Offset3D dstOffsets[2];
-    operator VkImageBlit2KHR const &() const noexcept {
-        return *reinterpret_cast<const VkImageBlit2KHR*>(this);
-    }
-    operator VkImageBlit2KHR &() noexcept {
-        return *reinterpret_cast<VkImageBlit2KHR*>(this);
-    }
 };
 struct BufferImageCopy2KHR {
     StructureType sType{StructureType::BufferImageCopy2KHR};
@@ -10751,12 +7517,6 @@ struct BufferImageCopy2KHR {
     ImageSubresourceLayers imageSubresource{};
     Offset3D imageOffset{};
     Extent3D imageExtent{};
-    operator VkBufferImageCopy2KHR const &() const noexcept {
-        return *reinterpret_cast<const VkBufferImageCopy2KHR*>(this);
-    }
-    operator VkBufferImageCopy2KHR &() noexcept {
-        return *reinterpret_cast<VkBufferImageCopy2KHR*>(this);
-    }
 };
 struct ImageResolve2KHR {
     StructureType sType{StructureType::ImageResolve2KHR};
@@ -10766,12 +7526,6 @@ struct ImageResolve2KHR {
     ImageSubresourceLayers dstSubresource{};
     Offset3D dstOffset{};
     Extent3D extent{};
-    operator VkImageResolve2KHR const &() const noexcept {
-        return *reinterpret_cast<const VkImageResolve2KHR*>(this);
-    }
-    operator VkImageResolve2KHR &() noexcept {
-        return *reinterpret_cast<VkImageResolve2KHR*>(this);
-    }
 };
 struct CopyBufferInfo2KHR {
     StructureType sType{StructureType::CopyBufferInfo2KHR};
@@ -10780,12 +7534,6 @@ struct CopyBufferInfo2KHR {
     Buffer dstBuffer{};
     uint32_t regionCount{0};
     const BufferCopy2KHR* pRegions = nullptr;
-    operator VkCopyBufferInfo2KHR const &() const noexcept {
-        return *reinterpret_cast<const VkCopyBufferInfo2KHR*>(this);
-    }
-    operator VkCopyBufferInfo2KHR &() noexcept {
-        return *reinterpret_cast<VkCopyBufferInfo2KHR*>(this);
-    }
 };
 struct CopyImageInfo2KHR {
     StructureType sType{StructureType::CopyImageInfo2KHR};
@@ -10796,12 +7544,6 @@ struct CopyImageInfo2KHR {
     ImageLayout dstImageLayout{static_cast<ImageLayout>(0)};
     uint32_t regionCount{0};
     const ImageCopy2KHR* pRegions = nullptr;
-    operator VkCopyImageInfo2KHR const &() const noexcept {
-        return *reinterpret_cast<const VkCopyImageInfo2KHR*>(this);
-    }
-    operator VkCopyImageInfo2KHR &() noexcept {
-        return *reinterpret_cast<VkCopyImageInfo2KHR*>(this);
-    }
 };
 struct BlitImageInfo2KHR {
     StructureType sType{StructureType::BlitImageInfo2KHR};
@@ -10813,12 +7555,6 @@ struct BlitImageInfo2KHR {
     uint32_t regionCount{0};
     const ImageBlit2KHR* pRegions = nullptr;
     Filter filter{static_cast<Filter>(0)};
-    operator VkBlitImageInfo2KHR const &() const noexcept {
-        return *reinterpret_cast<const VkBlitImageInfo2KHR*>(this);
-    }
-    operator VkBlitImageInfo2KHR &() noexcept {
-        return *reinterpret_cast<VkBlitImageInfo2KHR*>(this);
-    }
 };
 struct CopyBufferToImageInfo2KHR {
     StructureType sType{StructureType::CopyBufferToImageInfo2KHR};
@@ -10828,12 +7564,6 @@ struct CopyBufferToImageInfo2KHR {
     ImageLayout dstImageLayout{static_cast<ImageLayout>(0)};
     uint32_t regionCount{0};
     const BufferImageCopy2KHR* pRegions = nullptr;
-    operator VkCopyBufferToImageInfo2KHR const &() const noexcept {
-        return *reinterpret_cast<const VkCopyBufferToImageInfo2KHR*>(this);
-    }
-    operator VkCopyBufferToImageInfo2KHR &() noexcept {
-        return *reinterpret_cast<VkCopyBufferToImageInfo2KHR*>(this);
-    }
 };
 struct CopyImageToBufferInfo2KHR {
     StructureType sType{StructureType::CopyImageToBufferInfo2KHR};
@@ -10843,12 +7573,6 @@ struct CopyImageToBufferInfo2KHR {
     Buffer dstBuffer{};
     uint32_t regionCount{0};
     const BufferImageCopy2KHR* pRegions = nullptr;
-    operator VkCopyImageToBufferInfo2KHR const &() const noexcept {
-        return *reinterpret_cast<const VkCopyImageToBufferInfo2KHR*>(this);
-    }
-    operator VkCopyImageToBufferInfo2KHR &() noexcept {
-        return *reinterpret_cast<VkCopyImageToBufferInfo2KHR*>(this);
-    }
 };
 struct ResolveImageInfo2KHR {
     StructureType sType{StructureType::ResolveImageInfo2KHR};
@@ -10859,24 +7583,12 @@ struct ResolveImageInfo2KHR {
     ImageLayout dstImageLayout{static_cast<ImageLayout>(0)};
     uint32_t regionCount{0};
     const ImageResolve2KHR* pRegions = nullptr;
-    operator VkResolveImageInfo2KHR const &() const noexcept {
-        return *reinterpret_cast<const VkResolveImageInfo2KHR*>(this);
-    }
-    operator VkResolveImageInfo2KHR &() noexcept {
-        return *reinterpret_cast<VkResolveImageInfo2KHR*>(this);
-    }
 };
 struct PhysicalDeviceShaderImageAtomicInt64FeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceShaderImageAtomicInt64FeaturesEXT};
     void* pNext = nullptr;
     Bool32 shaderImageInt64Atomics{0};
     Bool32 sparseImageInt64Atomics{0};
-    operator VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT const &() const noexcept {
-        return *reinterpret_cast<const VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT*>(this);
-    }
-    operator VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT &() noexcept {
-        return *reinterpret_cast<VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT*>(this);
-    }
 };
 } // namespace vk
 // clang-format on

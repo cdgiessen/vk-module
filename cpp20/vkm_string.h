@@ -3,110 +3,7 @@
 #include "vkm_core.h"
 #include <string>
 namespace vk {
-const char * to_string(AttachmentLoadOp val);
-const char * to_string(AttachmentStoreOp val);
-const char * to_string(BlendFactor val);
-const char * to_string(BlendOp val);
-const char * to_string(BorderColor val);
-const char * to_string(PipelineCacheHeaderVersion val);
-const char * to_string(ComponentSwizzle val);
-const char * to_string(CommandBufferLevel val);
-const char * to_string(CompareOp val);
-const char * to_string(DescriptorType val);
-const char * to_string(DynamicState val);
-const char * to_string(PolygonMode val);
-const char * to_string(Format val);
-const char * to_string(FrontFace val);
-const char * to_string(ImageLayout val);
-const char * to_string(ImageTiling val);
-const char * to_string(ImageType val);
-const char * to_string(ImageViewType val);
-const char * to_string(SharingMode val);
-const char * to_string(IndexType val);
-const char * to_string(LogicOp val);
-const char * to_string(PhysicalDeviceType val);
-const char * to_string(PipelineBindPoint val);
-const char * to_string(PrimitiveTopology val);
-const char * to_string(QueryType val);
-const char * to_string(SubpassContents val);
-const char * to_string(StencilOp val);
-const char * to_string(StructureType val);
-const char * to_string(SystemAllocationScope val);
-const char * to_string(InternalAllocationType val);
-const char * to_string(SamplerAddressMode val);
-const char * to_string(Filter val);
-const char * to_string(SamplerMipmapMode val);
-const char * to_string(VertexInputRate val);
-const char * to_string(ObjectType val);
-const char * to_string(IndirectCommandsTokenTypeNV val);
-const char * to_string(DescriptorUpdateTemplateType val);
-const char * to_string(ViewportCoordinateSwizzleNV val);
-const char * to_string(DiscardRectangleModeEXT val);
-const char * to_string(PointClippingBehavior val);
-const char * to_string(CoverageModulationModeNV val);
-const char * to_string(CoverageReductionModeNV val);
-const char * to_string(ValidationCacheHeaderVersionEXT val);
-const char * to_string(ShaderInfoTypeAMD val);
-const char * to_string(QueueGlobalPriorityEXT val);
-const char * to_string(TimeDomainEXT val);
-const char * to_string(ConservativeRasterizationModeEXT val);
-const char * to_string(SemaphoreType val);
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
-const char * to_string(CopyAccelerationStructureModeKHR val);
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
-const char * to_string(AccelerationStructureTypeKHR val);
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
-const char * to_string(GeometryTypeKHR val);
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
-const char * to_string(RayTracingShaderGroupTypeKHR val);
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
-const char * to_string(AccelerationStructureMemoryRequirementsTypeKHR val);
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
-const char * to_string(AccelerationStructureBuildTypeKHR val);
-#endif // VK_ENABLE_BETA_EXTENSIONS
-const char * to_string(MemoryOverallocationBehaviorAMD val);
-const char * to_string(ScopeNV val);
-const char * to_string(ComponentTypeNV val);
-const char * to_string(PerformanceCounterScopeKHR val);
-const char * to_string(PerformanceCounterUnitKHR val);
-const char * to_string(PerformanceCounterStorageKHR val);
-const char * to_string(PerformanceConfigurationTypeINTEL val);
-const char * to_string(QueryPoolSamplingModeINTEL val);
-const char * to_string(PerformanceOverrideTypeINTEL val);
-const char * to_string(PerformanceParameterTypeINTEL val);
-const char * to_string(PerformanceValueTypeINTEL val);
-const char * to_string(LineRasterizationModeEXT val);
-const char * to_string(ColorSpaceKHR val);
-const char * to_string(PresentModeKHR val);
-const char * to_string(DebugReportObjectTypeEXT val);
-const char * to_string(DeviceMemoryReportEventTypeEXT val);
-const char * to_string(RasterizationOrderAMD val);
-const char * to_string(ValidationCheckEXT val);
-const char * to_string(ValidationFeatureEnableEXT val);
-const char * to_string(ValidationFeatureDisableEXT val);
-const char * to_string(DisplayPowerStateEXT val);
-const char * to_string(DeviceEventTypeEXT val);
-const char * to_string(DisplayEventTypeEXT val);
-const char * to_string(TessellationDomainOrigin val);
-const char * to_string(SamplerYcbcrModelConversion val);
-const char * to_string(SamplerYcbcrRange val);
-const char * to_string(ChromaLocation val);
-const char * to_string(SamplerReductionMode val);
-const char * to_string(BlendOverlapEXT val);
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
-const char * to_string(FullScreenExclusiveEXT val);
-#endif // VK_USE_PLATFORM_WIN32_KHR
-const char * to_string(ShaderFloatControlsIndependence val);
-const char * to_string(VendorId val);
-const char * to_string(DriverId val);
-const char * to_string(ShadingRatePaletteEntryNV val);
-const char * to_string(CoarseSampleOrderTypeNV val);
-const char * to_string(PipelineExecutableStatisticFormatKHR val);
+const char * to_string(Result val);
 const char * to_string(PipelineCacheCreateFlagBits val);
 std::string to_string(PipelineCacheCreateFlags flag);
 const char * to_string(QueueFlagBits val);
@@ -246,15 +143,11 @@ std::string to_string(ResolveModeFlags flag);
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 const char * to_string(GeometryInstanceFlagBitsKHR val);
 std::string to_string(GeometryInstanceFlagsKHR flag);
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
 const char * to_string(GeometryFlagBitsKHR val);
 std::string to_string(GeometryFlagsKHR flag);
-#endif // VK_ENABLE_BETA_EXTENSIONS
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
 const char * to_string(BuildAccelerationStructureFlagBitsKHR val);
 std::string to_string(BuildAccelerationStructureFlagsKHR flag);
-#endif // VK_ENABLE_BETA_EXTENSIONS
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 const char * to_string(FramebufferCreateFlagBits val);
 std::string to_string(FramebufferCreateFlags flag);
 const char * to_string(DeviceDiagnosticsConfigFlagBitsNV val);
@@ -295,40 +188,40 @@ const char * to_string(DisplayModeCreateFlagBitsKHR val);
 const char * to_string(DisplaySurfaceCreateFlagBitsKHR val);
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 const char * to_string(AndroidSurfaceCreateFlagBitsKHR val);
-#endif // VK_USE_PLATFORM_ANDROID_KHR
+#endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
 #if defined(VK_USE_PLATFORM_VI_NN)
 const char * to_string(ViSurfaceCreateFlagBitsNN val);
-#endif // VK_USE_PLATFORM_VI_NN
+#endif // defined(VK_USE_PLATFORM_VI_NN)
 #if defined(VK_USE_PLATFORM_WAYLAND_KHR)
 const char * to_string(WaylandSurfaceCreateFlagBitsKHR val);
-#endif // VK_USE_PLATFORM_WAYLAND_KHR
+#endif // defined(VK_USE_PLATFORM_WAYLAND_KHR)
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 const char * to_string(Win32SurfaceCreateFlagBitsKHR val);
-#endif // VK_USE_PLATFORM_WIN32_KHR
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 #if defined(VK_USE_PLATFORM_XLIB_KHR)
 const char * to_string(XlibSurfaceCreateFlagBitsKHR val);
-#endif // VK_USE_PLATFORM_XLIB_KHR
+#endif // defined(VK_USE_PLATFORM_XLIB_KHR)
 #if defined(VK_USE_PLATFORM_XCB_KHR)
 const char * to_string(XcbSurfaceCreateFlagBitsKHR val);
-#endif // VK_USE_PLATFORM_XCB_KHR
+#endif // defined(VK_USE_PLATFORM_XCB_KHR)
 #if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
 const char * to_string(DirectFBSurfaceCreateFlagBitsEXT val);
-#endif // VK_USE_PLATFORM_DIRECTFB_EXT
+#endif // defined(VK_USE_PLATFORM_DIRECTFB_EXT)
 #if defined(VK_USE_PLATFORM_IOS_MVK)
 const char * to_string(IOSSurfaceCreateFlagBitsMVK val);
-#endif // VK_USE_PLATFORM_IOS_MVK
+#endif // defined(VK_USE_PLATFORM_IOS_MVK)
 #if defined(VK_USE_PLATFORM_MACOS_MVK)
 const char * to_string(MacOSSurfaceCreateFlagBitsMVK val);
-#endif // VK_USE_PLATFORM_MACOS_MVK
+#endif // defined(VK_USE_PLATFORM_MACOS_MVK)
 #if defined(VK_USE_PLATFORM_METAL_EXT)
 const char * to_string(MetalSurfaceCreateFlagBitsEXT val);
-#endif // VK_USE_PLATFORM_METAL_EXT
+#endif // defined(VK_USE_PLATFORM_METAL_EXT)
 #if defined(VK_USE_PLATFORM_FUCHSIA)
 const char * to_string(ImagePipeSurfaceCreateFlagBitsFUCHSIA val);
-#endif // VK_USE_PLATFORM_FUCHSIA
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
 #if defined(VK_USE_PLATFORM_GGP)
 const char * to_string(StreamDescriptorSurfaceCreateFlagBitsGGP val);
-#endif // VK_USE_PLATFORM_GGP
+#endif // defined(VK_USE_PLATFORM_GGP)
 const char * to_string(HeadlessSurfaceCreateFlagBitsEXT val);
 const char * to_string(CommandPoolTrimFlagBits val);
 const char * to_string(PipelineViewportSwizzleStateCreateFlagBitsNV val);

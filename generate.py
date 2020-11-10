@@ -47,6 +47,9 @@ class BaseType:
     def print_base(self, file):
         if self.type is not None:
             file.write(f'using {self.name[2:]} = {self.type};\n')
+    def print_vk_base(self, file):
+        if self.type is not None:
+            file.write(f'using {self.name} = {self.type};\n')
 
 class FuncPointer:
     def __init__(self, node):
@@ -93,6 +96,27 @@ def PlatformGuardFooter(file, guard, should_print=True):
     if should_print and guard is not None:
         file.write(f'#endif // {guard}\n')
 
+def PrintConsecutivePlatforms(file, in_list, function_name, cpp20mode = None):
+    prev_platform = None
+    for item in in_list:
+        if getattr(item, 'platform', None) is not None:
+            if prev_platform != item.platform:
+                if prev_platform is not None:
+                    file.write(f'#endif // defined({prev_platform})\n')
+                if item.platform is not None:
+                    file.write(f'#if defined({item.platform})\n')
+            prev_platform = item.platform
+        else:
+            if prev_platform is not None:
+                file.write(f'#endif // defined({prev_platform})\n')
+            prev_platform = None
+        if cpp20mode is not None:
+            getattr(item, function_name)(file, cpp20mode)
+        else:
+            getattr(item, function_name)(file)
+    if prev_platform is not None:
+        file.write(f'#endif // defined({prev_platform})\n')
+
 class Enum:
     def __init__(self, node):
         self.name = node.get('name')
@@ -119,7 +143,15 @@ class Enum:
     def check_platform(self, platform, ext_types):
         if self.name in ext_types:
             self.platform = platform
+    
+    def print_c_decl(self, file):
+        if self.alias is None:
+            file.write(f'enum {self.name} : {self.underlying_type};\n')
 
+    def print_to_c_enum(self, file):
+        if self.alias is None and len(self.values) > 0:
+            file.write(f'constexpr {self.name} c_enum({self.name[2:]} val) {{ return static_cast<{self.name}>(val);}}\n')
+   
     def print_base(self, file):
         if self.alias is not None:
             file.write(f'using {self.name[2:]} = {self.alias[2:]};\n')
@@ -131,23 +163,19 @@ class Enum:
                     out_name = f'e{out_name}'
                 file.write(f'    {out_name} = {str(value)},\n')
             file.write('};\n')
-            file.write(f'constexpr {self.name} c_enum({self.name[2:]} val) {{ return static_cast<{self.name}>(val);}}\n')
             if self.name == "VkResult":
                 file.write('inline ')
-                self.print_string_defs(file, False)
+                self.print_string_defs(file)
                 file.write('constexpr bool operator !(Result res) { return res != Result::Success; }\n')
         
-    def print_string(self, file, skip_result):
-        if self.alias is not None or self.name == 'VkResult' and skip_result:
+    def print_string(self, file):
+        if self.alias is not None:
             return
-        PlatformGuardHeader(file, self.platform)
         file.write(f'const char * to_string({self.name[2:]} val);\n')
-        PlatformGuardFooter(file, self.platform)
 
-    def print_string_defs(self, file, skip_result):
-        if self.alias is not None or self.name == 'VkResult' and skip_result:
+    def print_string_defs(self, file):
+        if self.alias is not None:
             return
-        PlatformGuardHeader(file, self.platform)
         file.write(f'const char * to_string({self.name[2:]} val) {{\n')
         file.write(f'    switch(val) {{\n')
         for name in self.values.keys():
@@ -156,7 +184,6 @@ class Enum:
                 out_name = f'e{out_name}'
             file.write(f'        case({self.name[2:]}::{out_name}): return \"{out_name}\";\n')
         file.write('        default: return "UNKNOWN";\n    }\n}\n')
-        PlatformGuardFooter(file, self.platform)
 
 def RepresentsIntOrHex(s):
     try: 
@@ -170,6 +197,7 @@ class Bitmask:
     def __init__(self, node):
         self.name = node.get('name')
         self.flags_name = self.name.replace('Bits', 's')
+        self.underlying_type = 'uint32_t'  # for ABI
         self.values = {}
         self.bitmask_name_len = len(re.findall('[A-Z]+[^A-Z]*', self.name)) - 2
         if self.name[-4:] != "Bits": #ie an extension bitmask
@@ -199,30 +227,33 @@ class Bitmask:
         if self.name in ext_types:
             self.platform = platform
 
+    def print_c_decl(self, file):
+        if self.alias is None:
+            file.write(f'enum {self.name} : {self.underlying_type};\n')
+
+    def print_to_c_enum(self, file):
+        if self.alias is None and len(self.values) > 0:
+            file.write(f'constexpr {self.name} c_enum({self.name[2:]} val) {{ return static_cast<{self.name}>(val);}}\n')
+            
     def print_base(self, file):
         if self.alias is not None:
             file.write(f'using {self.name} = {self.alias[2:]};\n')
         else:
-            file.write(f'enum class {self.name[2:]}: uint32_t {{\n')
+            file.write(f'enum class {self.name[2:]}: {self.underlying_type} {{\n')
             for bitpos, name in self.values.items():
                 out_name = MorphVkBitaskName(name, self.bitmask_name_len)
                 if out_name[0].isnumeric():
                     out_name = f'e{out_name}'
                 file.write(f"    {out_name} = {bitpos},\n")
             file.write('};\n')
-            if len(self.values) > 0:
-                file.write(f'inline {self.name} c_enum({self.name[2:]} val) {{ return static_cast<{self.name}>(val);}}\n')
-
+      
     def print_string(self, file):
         if self.alias is None:
-            PlatformGuardHeader(file, self.platform)
             file.write(f'const char * to_string({self.name[2:]} val);\n')
             file.write(f'std::string to_string({self.flags_name[2:]} flag);\n')
-            PlatformGuardFooter(file, self.platform)
             
     def print_string_defs(self, file):
         if self.alias is None:
-            PlatformGuardHeader(file, self.platform)
             file.write(f'const char * to_string({self.name[2:]} val) {{\n')
             file.write('    switch(val) {\n')
             for bitpos, name in self.values.items():
@@ -246,14 +277,13 @@ class Bitmask:
                 file.write(f'    if (flag & {self.name[2:]}::{out_name}) out += \"{out_name} | \";\n')
                 
             file.write(f'    return out.substr(0, out.size() - 3);\n}}\n')
-            PlatformGuardFooter(file, self.platform)
-
-            
+           
 
 class EmptyBitmask:
     def __init__(self, name):
         self.name = name
         self.flags_name = self.name.replace('Bits', 's')
+        self.underlying_type = 'uint32_t'
         self.platform = None
     
     def fill_ext_bitmasks(self, bitmask_ext_dict):
@@ -262,24 +292,26 @@ class EmptyBitmask:
     def check_platform(self, platform, ext_types):
         if self.name in ext_types or self.flags_name in ext_types:
             self.platform = platform
+
+    def print_c_decl(self, file):
+        file.write(f'enum {self.name} : {self.underlying_type};\n')
     
+    def print_to_c_enum(self, file):
+        file.write(f'constexpr {self.name} c_enum({self.name[2:]} val) {{ return static_cast<{self.name}>(val);}}\n')
+     
     def print_base(self, file):
         file.write(f'enum class {self.name[2:]}: uint32_t {{ }};\n')
 
     def print_string(self, file):
-        PlatformGuardHeader(file, self.platform)
         file.write(f'const char * to_string({self.name[2:]} val);\n')
-        PlatformGuardFooter(file, self.platform)
 
     def print_string_defs(self, file):
-        PlatformGuardHeader(file, self.platform)
         file.write(f'const char * to_string({self.name[2:]} val) {{\n')
         file.write('    switch(val) {\n')
         file.write('        default: return "UNKNOWN";\n    }\n}\n')
         file.write(f'std::string to_string({self.flags_name[2:]} flag){{\n')
         file.write(f'    if (flag.flags == 0) return \"None\";\n')
         file.write(f'    return "Unknown";\n}}\n')
-        PlatformGuardFooter(file, self.platform)
 
 class Flags:
     def __init__(self, node):
@@ -290,7 +322,7 @@ class Flags:
             self.name = node.get('name')
             self.alias = node.get('alias')
 
-        self.base_type = 'uint32_t'
+        self.underlying_type = 'uint32_t'
         self.flags_name = self.name.replace('Flags', 'FlagBits')
         self.requires = node.get('requires')
         self.need_empty = False
@@ -302,9 +334,16 @@ class Flags:
         if (self.alias is not None and self.alias in ext_types) or self.name in ext_types:
             self.platform = platform
 
+    def print_c_decl(self, file):
+        file.write(f'enum {self.name} : {self.underlying_type};\n')
+    
+    def print_to_c_enum(self, file):
+        if self.alias is None:
+            file.write(f'constexpr {self.name} c_enum({self.name[2:]} val) {{ return static_cast<{self.name}>(val);}}\n')
+
     def print_base(self, file):
         if self.alias is None:
-            file.write(f'DECLARE_ENUM_FLAG_OPERATORS({self.name[2:]}, {self.flags_name[2:]}, {self.name}, {self.base_type})\n')
+            file.write(f'DECLARE_ENUM_FLAG_OPERATORS({self.name[2:]}, {self.flags_name[2:]}, {self.underlying_type})\n')
         else:
             file.write(f'using {self.name[2:]} = {self.alias[2:]};\n')
 
@@ -327,31 +366,37 @@ class Handle:
         if self.name in ext_types:
             self.platform = platform
 
+    def print_handle_define(self, file):
+        if self.alias is None:
+            if self.dispatchable:
+                file.write(f'VK_DEFINE_HANDLE({self.name})\n')
+            else:
+                file.write(f'VK_DEFINE_NON_DISPATCHABLE_HANDLE({self.name})\n')
+
     def print_base(self, file):
         if self.alias is not None:
             file.write(f'using {self.name[2:]} = {self.alias[2:]};\n')
+            file.write(f'using {self.name} = {self.name[2:]};\n')
         else:
             file.write(f'class {self.name[2:]} {{\n')
-            file.write(f'    {self.name} handle = VK_NULL_HANDLE;\n')
+            file.write(f'    {self.name} handle = 0;\n')
             file.write(f'    public:\n')
             file.write(f'    explicit {self.name[2:]}() = default;\n')
             file.write(f'    explicit {self.name[2:]}({self.name} handle):handle(handle){{}}\n')
             file.write(f'    {self.name[2:]}([[maybe_unused]] std::nullptr_t none){{}}\n')
             file.write(f'    {self.name} get() const {{ return handle; }}\n')
-            file.write(f'    explicit operator bool() const {{return handle != VK_NULL_HANDLE;}};\n')
-            file.write(f'    bool operator!() {{ return handle == VK_NULL_HANDLE; }}\n')
+            file.write(f'    explicit operator bool() const {{return handle != 0;}};\n')
+            file.write(f'    bool operator!() {{ return handle == 0; }}\n')
             file.write('};\n')
     
     def print_static_asserts(self, file):
         if self.alias is None:
-            PlatformGuardHeader(file, self.platform)
             if self.dispatchable:
-                file.write(f'static_assert( sizeof({self.name[2:]}) == sizeof({self.name}),')
+                file.write(f'static_assert( sizeof(vk::{self.name[2:]}) == sizeof({self.name}),')
                 file.write(f'"Must maintain size between handles");\n')
             else:
-                file.write(f'static_assert( sizeof({self.name[2:]}) == sizeof({self.name}),')
+                file.write(f'static_assert( sizeof(vk::{self.name[2:]}) == sizeof({self.name}),')
                 file.write(f'"Must maintain size between handles");\n')
-            PlatformGuardFooter(file, self.platform)
 
 
 class Variable:
@@ -385,7 +430,8 @@ class Variable:
         if node.find('comment') is not None:
             node.remove(node.find('comment'))
 
-        type_list = ' '.join(node.itertext()).split()
+        self.raw_xml_text = ' '.join(node.itertext())
+        type_list = self.raw_xml_text.split()
 
         # type parsing
         cur = 0
@@ -573,10 +619,18 @@ class Structure:
     def check_platform(self, platform, ext_types):
         if self.name in ext_types or (self.alias is not None and self.alias in ext_types):
             self.platform = platform
+    
+    def print_c_forward_decl(self, file):
+        if self.alias is None:
+            if self.category == 'struct':
+                file.write(f'struct {self.name};\n')
+            elif self.category == 'union':
+                file.write(f'union {self.name};\n')
 
     def print_base(self, file, cpp20mode = True):
         if self.alias is not None:
             file.write(f'using {self.name[2:]} = {self.alias[2:]};\n')
+            file.write(f'using {self.name} = {self.name[2:]};\n')
         else:
             if self.category == 'struct':
                 file.write(f'struct {self.name[2:]} {{\n')
@@ -589,10 +643,6 @@ class Structure:
                         file.write(f'    constexpr bool operator==({self.name[2:]} const& other) const = default;\n')
                     else:
                         print_custom_comparator(file, self.members, self.name[2:])
-                file.write(f'    operator {self.name} const &() const noexcept {{\n')
-                file.write(f'        return *reinterpret_cast<const {self.name}*>(this);\n    }}\n')
-                file.write(f'    operator {self.name} &() noexcept {{\n')
-                file.write(f'        return *reinterpret_cast<{self.name}*>(this);\n    }}\n')
                 file.write('};\n')
             elif self.category == 'union':
                 file.write(f'union {self.name[2:]} {{\n')
@@ -604,10 +654,8 @@ class Structure:
 
     def print_static_asserts(self, file):
         if self.category == 'struct':
-            PlatformGuardHeader(file, self.platform)
-            file.write(f'static_assert( sizeof({self.name[2:]}) == sizeof({self.name}), "Must maintain size between types" );\n')
-            file.write(f'static_assert( std::is_standard_layout<{self.name[2:]}>::value, "Must be a standard layout type" );\n')
-            PlatformGuardFooter(file, self.platform)
+            file.write(f'static_assert( sizeof(vk::{self.name[2:]}) == sizeof({self.name}), "Must maintain size between types" );\n')
+            file.write(f'static_assert( std::is_standard_layout<vk::{self.name[2:]}>::value, "Must be a standard layout type" );\n')
 
 class Function:
     def __init__(self, node, handles, dispatchable_handles, default_values):
@@ -688,6 +736,20 @@ class Function:
     def check_platform(self, platform, ext_functions):
         if self.name in ext_functions:
             self.platform = platform
+    
+    def print_pfn_variable_decl(self, file):
+        file.write(f'    detail::{self.func_prototype} pfn_{self.name[2:]} = nullptr;\n')
+
+    def print_c_func_pointer(self, file):
+        if self.alias is not None:
+            file.write(f'using PFN_{self.name} = PFN_{self.alias};\n')
+            return
+        file.write(f'using PFN_{self.name} = {self.return_type} (*) (')
+        for param in self.parameters:
+            if param != self.parameters[0]:
+                file.write(', ')
+            file.write(param.raw_xml_text)
+        file.write(");\n")
 
     def print_return_type(self, file, indent='', replace_list=None, full_return_type=None):
         print_function_name = self.name[2:]
@@ -789,7 +851,7 @@ class Function:
     def print_definition(self, file, indent='', dispatch_handle = None, replace_list=None, guard=True, make_void_return_this=None, cpp20mode=False):
         PlatformGuardHeader(file, self.platform, guard)
         if self.alias is not None:
-            file.write(f'const auto {self.name[2:]} = {self.alias[2:]};\n')
+            #file.write(f'{indent}const auto {self.name[2:]} = {self.alias[2:]};\n')
             PlatformGuardFooter(file, self.platform, guard)
             return
         self.inner_print_definition(file, indent, dispatch_handle, replace_list, make_void_return_this, print_spans=False)
@@ -1024,41 +1086,12 @@ class DispatchTable:
     def __init__(self, name, dispatch_type, ext_or_feature_list):
         self.name = name
         self.dispatch_type = dispatch_type
-        dispatch_functions = {}
+        self.functions = {}
         for ext_or_feature in ext_or_feature_list:
             for require in ext_or_feature.requires: 
                 for func in require.functions:
                     if func.dispatch_type == dispatch_type or dispatch_type == 'instance' and func.name == 'vkGetInstanceProcAddr':
-                        if func not in dispatch_functions:
-                            dispatch_functions[func] = []
-                        if require.extension is not None:
-                            dispatch_functions[func].append(FunctionGuard(ext_or_feature.name, require.extension))
-                        elif require.feature is not None:
-                            dispatch_functions[func].append(FunctionGuard(ext_or_feature.name, require.feature))
-                        else:
-                            dispatch_functions[func].append(FunctionGuard(ext_or_feature.name, None))
-        
-        self.guarded_functions = {}
-        for func, guards in dispatch_functions.items():
-            guard_str = ''
-            if func.platform is not None:
-                guard_str += f'defined({func.platform}) && ('
-            is_first = True
-            for guard in guards:
-                if is_first:
-                    is_first = False
-                else:
-                    guard_str += ' || '
-                if guard.extension_or_feature is not None:
-                    guard_str += f'(defined({guard.name}) && defined({guard.extension_or_feature}))'
-                else:
-                    guard_str += f'defined({guard.name})'
-            if func.platform is not None:
-                guard_str += ')'
-            if guard_str not in self.guarded_functions:
-                self.guarded_functions[guard_str] = [func]
-            else:
-                self.guarded_functions[guard_str].append(func)
+                        self.functions[func.name] = func
 
         self.gpa_type = 'PFN_vkGetDeviceProcAddr' if self.dispatch_type  == 'device' else 'PFN_vkGetInstanceProcAddr'
         self.gpa_name = 'get_device_proc_addr'  if self.dispatch_type == 'device' else 'get_instance_proc_addr'
@@ -1066,24 +1099,20 @@ class DispatchTable:
         self.gpa_val = f'{self.dispatch_type}.get()' if self.dispatch_type != 'global' else 'nullptr'
 
     def print_definition(self, file, cpp20mode):
-        if len(self.guarded_functions.keys()) == 0:
+        if len(self.functions) == 0:
             return
                 
         file.write(f'struct {self.name}Functions {{\n')
         #function pointers
         if self.dispatch_type != 'global':
             file.write(f'    {self.dispatch_type.title()} {self.dispatch_type};\n')
-        for guard, functions in self.guarded_functions.items():
-            file.write(f'#if {guard}\n')
-            for function in functions:
-                file.write(f'    {function.func_prototype} pfn_{function.name[2:]};\n')
-            file.write(f'#endif //{guard}\n')
+        PrintConsecutivePlatforms(file, self.functions.values(), 'print_pfn_variable_decl')
+
         #functions
-        for guard, functions in self.guarded_functions.items():
-            file.write(f'#if {guard}\n')
-            for func in functions:               
-                func.print_definition(file, dispatch_handle=self.dispatch_handle, indent='    ', guard=False, cpp20mode=cpp20mode)
-            file.write(f'#endif //{guard}\n')
+        for function in self.functions.values():
+            PlatformGuardHeader(file, function.platform)
+            function.print_definition(file, dispatch_handle=self.dispatch_handle, indent='    ', guard=False, cpp20mode=cpp20mode)
+            PlatformGuardFooter(file, function.platform)
              
         #constructor
         file.write(f'    explicit {self.name}Functions() noexcept;\n')   
@@ -1093,44 +1122,42 @@ class DispatchTable:
             file.write(f'    explicit {self.name}Functions(GlobalFunctions const& global_functions, {self.dispatch_type.title()} {self.dispatch_type}) noexcept;\n')
         elif self.dispatch_type == 'device':
             file.write(f'    explicit {self.name}Functions(InstanceFunctions const& instance_functions, {self.dispatch_type.title()} {self.dispatch_type}) noexcept;\n')
-        file.write('\n};\n')
+        file.write('};\n')
 
     def print_base(self, file, cpp20mode):
-        if len(self.guarded_functions.keys()) == 0:
+        if len(self.functions) == 0:
             return
                 
         #functions
-        for guard, functions in self.guarded_functions.items():
-            file.write(f'#if {guard}\n')
-            for func in functions:               
-                func.print_function(file, dispatch_handle=self.dispatch_handle, dispatch_handle_name=self.dispatch_type, guard=False, struct_source=f'{self.name}Functions', cpp20mode=cpp20mode)
-            file.write(f'#endif //{guard}\n')
+        for function in self.functions.values():
+            PlatformGuardHeader(file, function.platform)
+            function.print_function(file, dispatch_handle=self.dispatch_handle, dispatch_handle_name=self.dispatch_type, guard=False, struct_source=f'{self.name}Functions', cpp20mode=cpp20mode)
+            PlatformGuardFooter(file, function.platform)
              
         #constructor
         file.write(f'{self.name}Functions::{self.name}Functions() noexcept {{}}\n')   
         if self.dispatch_type == 'global':
             file.write(f'{self.name}Functions::{self.name}Functions(DynamicLibrary const& library) noexcept {{\n')
-            file.write(f'    {self.gpa_type} {self.gpa_name} = library.get();\n')
+            file.write(f'    detail::{self.gpa_type} {self.gpa_name} = library.get();\n')
         elif self.dispatch_type == 'instance':
             file.write(f'{self.name}Functions::{self.name}Functions(GlobalFunctions const& global_functions, {self.dispatch_type.title()} {self.dispatch_type}) noexcept \n')
             file.write(f'    :{self.dispatch_type}({self.dispatch_type}) {{ \n')
-            file.write(f'    {self.gpa_type} {self.gpa_name} = global_functions.pfn_GetInstanceProcAddr;\n')
+            file.write(f'    detail::{self.gpa_type} {self.gpa_name} = global_functions.pfn_GetInstanceProcAddr;\n')
         elif self.dispatch_type == 'device':
             file.write(f'{self.name}Functions::{self.name}Functions(InstanceFunctions const& instance_functions, {self.dispatch_type.title()} {self.dispatch_type}) noexcept ')
             if self.name == 'Device':
                 file.write(f'\n    :{self.dispatch_type}({self.dispatch_type}) {{\n')
             else:
                 file.write('{\n')
-            file.write(f'    {self.gpa_type} {self.gpa_name} = instance_functions.pfn_GetDeviceProcAddr;\n')
-        for guard, functions in self.guarded_functions.items():
-            file.write(f'#if {guard}\n')
-            for function in functions:
-                file.write(f'    pfn_{function.name[2:]} = ')
-                if function.name == 'vkGetInstanceProcAddr': 
-                    file.write(f'{self.gpa_name};\n') #had a crash here once, may not be needed.
-                else:
-                    file.write(f'reinterpret_cast<{function.func_prototype}>({self.gpa_name}({self.gpa_val},\"{function.name}\"));\n')
-            file.write(f'#endif //{guard}\n')
+            file.write(f'    detail::{self.gpa_type} {self.gpa_name} = instance_functions.pfn_GetDeviceProcAddr;\n')
+        for function in self.functions.values():
+            PlatformGuardHeader(file, function.platform) 
+            file.write(f'    pfn_{function.name[2:]} = ')
+            if function.name == 'vkGetInstanceProcAddr': 
+                file.write(f'{self.gpa_name};\n') #had a crash here once, may not be needed.
+            else:
+                file.write(f'reinterpret_cast<detail::{function.func_prototype}>({self.gpa_name}({self.gpa_val},\"{function.name}\"));\n')
+            PlatformGuardFooter(file, function.platform)
         file.write('}\n')
 
 class DispatchableHandleDispatchTable:
@@ -1187,23 +1214,6 @@ class DispatchableHandleDispatchTable:
                 struct_source=f'{self.type_name}Functions', pfn_source=self.functions_name, guard=False, make_void_return_this=command_buffer_return_type, cpp20mode=cpp20mode)
         if prev_platform is not None:
             file.write(f'#endif // defined({prev_platform})\n')
-        #file.write('}\n')
-
-def PrintConsecutivePlatforms(file, in_list, cpp20mode = None):
-    prev_platform = None
-    for item in in_list:
-        if prev_platform != item.platform:
-            if prev_platform is not None:
-                file.write(f'#endif // defined({prev_platform})\n')
-            if item.platform is not None:
-                file.write(f'#if defined({item.platform})\n')
-        prev_platform = item.platform
-        if cpp20mode is not None:
-            item.print_base(file, cpp20mode)
-        else:
-            item.print_base(file)
-    if prev_platform is not None:
-        file.write(f'#endif // defined({prev_platform})\n')
         
 class BindingGenerator:
     def __init__(self, root):
@@ -1376,17 +1386,24 @@ def print_vkm_core(bindings, cpp20mode, cpp20str):
         vkm_core.write('#pragma once\n// clang-format off\n')
         vkm_core.write('#include <stdint.h>\n')
         vkm_core.write('#include <cstddef>\n')
-        vkm_core.write('#define VK_ENABLE_BETA_EXTENSIONS\n')
-        vkm_core.write('#include <vulkan/vulkan.h>\n')
+        vkm_core.write('#include "vk_platform.h"\n')
+        [ define.print_base(vkm_core) for define in bindings.macro_defines ]
+        vkm_core.write(vk_macro_defines)
         vkm_core.write('namespace vk {\n')
-        [ constant.print_base(vkm_core) for constant in api_constants.values() ]
-        [ base_type.print_base(vkm_core) for base_type in bindings.base_types ]
-        PrintConsecutivePlatforms(vkm_core, bindings.enum_dict.values())
-        PrintConsecutivePlatforms(vkm_core, bindings.bitmask_dict.values())
+        PrintConsecutivePlatforms(vkm_core, api_constants.values(), 'print_base')
+        PrintConsecutivePlatforms(vkm_core, bindings.base_types, 'print_base')
+        PrintConsecutivePlatforms(vkm_core, bindings.base_types, 'print_vk_base')
+        PrintConsecutivePlatforms(vkm_core, bindings.enum_dict.values(), 'print_base')
+        PrintConsecutivePlatforms(vkm_core, bindings.bitmask_dict.values(), 'print_base')
         vkm_core.write(bitmask_flags_macro + '\n')
-        PrintConsecutivePlatforms(vkm_core, bindings.flags_dict.values())
-        PrintConsecutivePlatforms(vkm_core, bindings.handles.values())
-        PrintConsecutivePlatforms(vkm_core, bindings.structures, cpp20mode)
+        PrintConsecutivePlatforms(vkm_core, bindings.flags_dict.values(), 'print_base')
+        PrintConsecutivePlatforms(vkm_core, bindings.handles.values(), 'print_handle_define')
+        PrintConsecutivePlatforms(vkm_core, bindings.handles.values(), 'print_base')
+        vkm_core.write('using VkBool32 = uint32_t;\n')
+        vkm_core.write('struct VkDebugUtilsMessengerCallbackDataEXT;\n')
+        vkm_core.write('struct VkDeviceMemoryReportCallbackDataEXT;\n')
+        PrintConsecutivePlatforms(vkm_core, bindings.func_pointers, 'print_base')
+        PrintConsecutivePlatforms(vkm_core, bindings.structures, 'print_base', cpp20mode)
         vkm_core.write('} // namespace vk\n// clang-format on\n')
 
 def print_vkm_function(bindings, cpp20mode, cpp20str):
@@ -1395,7 +1412,8 @@ def print_vkm_function(bindings, cpp20mode, cpp20str):
         if cpp20mode:
             vkm_function.write('#include <span>\n')
         vkm_function.write('#include "vkm_core.h"\n')
-        vkm_function.write(vulkan_library_text + '\n') #defines namespace vk here
+        vkm_function.write('#include "vkm_c_interop.h"\n')
+        vkm_function.write(vulkan_library_text + '\n')
         vkm_function.write(fixed_vector_text + '\n')
         vkm_function.write(vulkan_expected_type + '\n')
         [ dispatch_table.print_definition(vkm_function, cpp20mode) for dispatch_table in bindings.dispatch_tables ]
@@ -1410,13 +1428,14 @@ def print_vkm_function(bindings, cpp20mode, cpp20str):
         vkm_function.write('} // namespace vk\n// clang-format on\n')
 
 def print_vkm_string(bindings, cpp20mode, cpp20str):
+    removed_result = { 'VkResult': bindings.enum_dict['VkResult'] for key in bindings.enum_dict }
     with open(f'cpp{cpp20str}/vkm_string.h', 'w') as string_decl:
         string_decl.write('#pragma once\n// clang-format off\n')
         string_decl.write('#include "vkm_core.h"\n')
         string_decl.write('#include <string>\n')
         string_decl.write('namespace vk {\n')
-        [ enum.print_string(string_decl, True) for enum in bindings.enum_dict.values()]
-        [ bitmask.print_string(string_decl) for bitmask in bindings.bitmask_dict.values()]
+        PrintConsecutivePlatforms(string_decl, removed_result.values(), 'print_string')
+        PrintConsecutivePlatforms(string_decl, bindings.bitmask_dict.values(), 'print_string')
         string_decl.write('} // namespace vk\n// clang-format on\n')
 
     with open(f'cpp{cpp20str}/vkm_string.cpp', 'w') as string_def:
@@ -1426,13 +1445,25 @@ def print_vkm_string(bindings, cpp20mode, cpp20str):
         string_def.write('#if defined(WIN32)\n')
         string_def.write('#pragma warning( disable : 4065 )\n')
         string_def.write('#endif //defined(WIN32)\n')
-        [ enum.print_string_defs(string_def, True) for enum in bindings.enum_dict.values()]
-        [ bitmask.print_string_defs(string_def) for bitmask in bindings.bitmask_dict.values()]
+        PrintConsecutivePlatforms(string_def, removed_result.values(), 'print_string_defs')
+        PrintConsecutivePlatforms(string_def, bindings.bitmask_dict.values(), 'print_string_defs')
         string_def.write('} // namespace vk\n// clang-format on\n')
-    
+
+def print_c_definitions(bindings, cpp20mode, cpp20str):
+    with open(f'cpp{cpp20str}/vkm_c_interop.h', 'w') as c_defs:
+        c_defs.write('#pragma once\n// clang-format off\n')
+        c_defs.write('namespace vk::detail {\n')
+        PrintConsecutivePlatforms(c_defs, bindings.enum_dict.values(), 'print_c_decl')
+        PrintConsecutivePlatforms(c_defs, bindings.bitmask_dict.values(), 'print_c_decl')
+        PrintConsecutivePlatforms(c_defs, bindings.structures, 'print_c_forward_decl')
+        PrintConsecutivePlatforms(c_defs, bindings.functions, 'print_c_func_pointer')
+        c_defs.write('} // namespace vk\n// clang-format on\n')
+
+
 def print_bindings_version(bindings, cpp20mode, cpp20str):
     print_vkm_main(bindings, cpp20mode, cpp20str)
     print_vkm_core(bindings, cpp20mode, cpp20str)
+    print_c_definitions(bindings, cpp20mode, cpp20str)
     print_vkm_function(bindings, cpp20mode, cpp20str)
     print_vkm_string(bindings, cpp20mode, cpp20str)
 
@@ -1452,10 +1483,9 @@ def main():
         static_asserts.write('// clang-format off\n')
         static_asserts.write('#include "vkm_core.h"\n')
         static_asserts.write('#include <type_traits>\n')
-        static_asserts.write('namespace vk {\n')
-        [ structure.print_static_asserts(static_asserts) for structure in bindings.structures ]
-        [ handle.print_static_asserts(static_asserts) for handle in bindings.handles.values() ]
-        static_asserts.write('} // namespace vk\n')
+        static_asserts.write('#include "vulkan/vulkan.h"\n')
+        PrintConsecutivePlatforms(static_asserts, bindings.structures, 'print_static_asserts')
+        PrintConsecutivePlatforms(static_asserts, bindings.handles.values(), 'print_static_asserts')
         static_asserts.write('// clang-format on\n')
 
 if __name__ == "__main__":
