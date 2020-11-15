@@ -3,7 +3,110 @@
 #include "vkm_core.h"
 #include <string>
 namespace vk {
-const char * to_string(Result val);
+const char * to_string(AttachmentLoadOp val);
+const char * to_string(AttachmentStoreOp val);
+const char * to_string(BlendFactor val);
+const char * to_string(BlendOp val);
+const char * to_string(BorderColor val);
+const char * to_string(PipelineCacheHeaderVersion val);
+const char * to_string(ComponentSwizzle val);
+const char * to_string(CommandBufferLevel val);
+const char * to_string(CompareOp val);
+const char * to_string(DescriptorType val);
+const char * to_string(DynamicState val);
+const char * to_string(PolygonMode val);
+const char * to_string(Format val);
+const char * to_string(FrontFace val);
+const char * to_string(ImageLayout val);
+const char * to_string(ImageTiling val);
+const char * to_string(ImageType val);
+const char * to_string(ImageViewType val);
+const char * to_string(SharingMode val);
+const char * to_string(IndexType val);
+const char * to_string(LogicOp val);
+const char * to_string(PhysicalDeviceType val);
+const char * to_string(PipelineBindPoint val);
+const char * to_string(PrimitiveTopology val);
+const char * to_string(QueryType val);
+const char * to_string(SubpassContents val);
+const char * to_string(StencilOp val);
+const char * to_string(StructureType val);
+const char * to_string(SystemAllocationScope val);
+const char * to_string(InternalAllocationType val);
+const char * to_string(SamplerAddressMode val);
+const char * to_string(Filter val);
+const char * to_string(SamplerMipmapMode val);
+const char * to_string(VertexInputRate val);
+const char * to_string(ObjectType val);
+const char * to_string(IndirectCommandsTokenTypeNV val);
+const char * to_string(DescriptorUpdateTemplateType val);
+const char * to_string(ViewportCoordinateSwizzleNV val);
+const char * to_string(DiscardRectangleModeEXT val);
+const char * to_string(PointClippingBehavior val);
+const char * to_string(CoverageModulationModeNV val);
+const char * to_string(CoverageReductionModeNV val);
+const char * to_string(ValidationCacheHeaderVersionEXT val);
+const char * to_string(ShaderInfoTypeAMD val);
+const char * to_string(QueueGlobalPriorityEXT val);
+const char * to_string(TimeDomainEXT val);
+const char * to_string(ConservativeRasterizationModeEXT val);
+const char * to_string(SemaphoreType val);
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+const char * to_string(CopyAccelerationStructureModeKHR val);
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+const char * to_string(AccelerationStructureTypeKHR val);
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+const char * to_string(GeometryTypeKHR val);
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+const char * to_string(RayTracingShaderGroupTypeKHR val);
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+const char * to_string(AccelerationStructureMemoryRequirementsTypeKHR val);
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+const char * to_string(AccelerationStructureBuildTypeKHR val);
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
+const char * to_string(MemoryOverallocationBehaviorAMD val);
+const char * to_string(ScopeNV val);
+const char * to_string(ComponentTypeNV val);
+const char * to_string(PerformanceCounterScopeKHR val);
+const char * to_string(PerformanceCounterUnitKHR val);
+const char * to_string(PerformanceCounterStorageKHR val);
+const char * to_string(PerformanceConfigurationTypeINTEL val);
+const char * to_string(QueryPoolSamplingModeINTEL val);
+const char * to_string(PerformanceOverrideTypeINTEL val);
+const char * to_string(PerformanceParameterTypeINTEL val);
+const char * to_string(PerformanceValueTypeINTEL val);
+const char * to_string(LineRasterizationModeEXT val);
+const char * to_string(ColorSpaceKHR val);
+const char * to_string(PresentModeKHR val);
+const char * to_string(DebugReportObjectTypeEXT val);
+const char * to_string(DeviceMemoryReportEventTypeEXT val);
+const char * to_string(RasterizationOrderAMD val);
+const char * to_string(ValidationCheckEXT val);
+const char * to_string(ValidationFeatureEnableEXT val);
+const char * to_string(ValidationFeatureDisableEXT val);
+const char * to_string(DisplayPowerStateEXT val);
+const char * to_string(DeviceEventTypeEXT val);
+const char * to_string(DisplayEventTypeEXT val);
+const char * to_string(TessellationDomainOrigin val);
+const char * to_string(SamplerYcbcrModelConversion val);
+const char * to_string(SamplerYcbcrRange val);
+const char * to_string(ChromaLocation val);
+const char * to_string(SamplerReductionMode val);
+const char * to_string(BlendOverlapEXT val);
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+const char * to_string(FullScreenExclusiveEXT val);
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+const char * to_string(ShaderFloatControlsIndependence val);
+const char * to_string(VendorId val);
+const char * to_string(DriverId val);
+const char * to_string(ShadingRatePaletteEntryNV val);
+const char * to_string(CoarseSampleOrderTypeNV val);
+const char * to_string(PipelineExecutableStatisticFormatKHR val);
 const char * to_string(PipelineCacheCreateFlagBits val);
 std::string to_string(PipelineCacheCreateFlags flag);
 const char * to_string(QueueFlagBits val);

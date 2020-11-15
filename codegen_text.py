@@ -236,6 +236,7 @@ struct FLAG_TYPE {                                                              
     constexpr FLAG_TYPE(FLAG_BITS in) noexcept: flags(static_cast<BASE_TYPE>(in)){ }       \\
     constexpr bool operator==(FLAG_TYPE const& right) const { return flags == right.flags;}\\
     constexpr bool operator!=(FLAG_TYPE const& right) const { return flags != right.flags;}\\
+    constexpr explicit operator BASE_TYPE() const { return flags;}                         \\
     constexpr explicit operator bool() const noexcept {                                    \\
       return flags != 0;                                                                   \\
     }                                                                                      \\
@@ -307,7 +308,7 @@ class DynamicLibrary {
     explicit DynamicLibrary([[maybe_unused]] LoadAtConstruction load) noexcept {
         init();
     }
-    explicit DynamicLibrary(detail::PFN_vkGetInstanceProcAddr GetInstanceProcAddr) noexcept : 
+    explicit DynamicLibrary(PFN_vkGetInstanceProcAddr GetInstanceProcAddr) noexcept : 
         get_instance_proc_addr(GetInstanceProcAddr) { }
     ~DynamicLibrary() noexcept {
         close();
@@ -330,7 +331,7 @@ class DynamicLibrary {
         return *this;
     }
 
-    vk::Result init(detail::PFN_vkGetInstanceProcAddr GetInstanceProcAddr = nullptr) noexcept {
+    vk::Result init(PFN_vkGetInstanceProcAddr GetInstanceProcAddr = nullptr) noexcept {
         if (GetInstanceProcAddr != nullptr) {
             get_instance_proc_addr = GetInstanceProcAddr;
             return vk::Result::Success;
@@ -363,7 +364,7 @@ class DynamicLibrary {
     [[nodiscard]] bool is_init() const noexcept { return get_instance_proc_addr != 0; }
 
     // Get `vkGetInstanceProcAddr` if it was loaded, 0 if not
-    [[nodiscard]] detail::PFN_vkGetInstanceProcAddr get() const noexcept {
+    [[nodiscard]] PFN_vkGetInstanceProcAddr get() const noexcept {
         assert(get_instance_proc_addr != nullptr && "Must call init() before use");
         return get_instance_proc_addr;
     }
@@ -385,7 +386,7 @@ private:
     ::HINSTANCE library = nullptr;
 #endif
 
-    detail::PFN_vkGetInstanceProcAddr get_instance_proc_addr = nullptr;
+    PFN_vkGetInstanceProcAddr get_instance_proc_addr = nullptr;
     
 };
 '''

@@ -63,14 +63,21 @@ class FuncPointer:
 
 class MacroDefine:
     def __init__(self, node):
+        self.should_print = True
         self.name = node.find("name")
         self.text = ''
         for t in node.itertext():
+            if t in ['VK_API_VERSION', 'VK_API_VERSION_1_0', 'VK_API_VERSION_1_1', \
+                'VK_API_VERSION_1_2', 'VK_HEADER_VERSION', 'VK_HEADER_VERSION_COMPLETE'
+                
+                ]:
+                self.should_print = False
             self.text += t
         self.text += '\n'
 
     def print_base(self, file):
-        file.write(self.text)
+        if self.should_print:
+            file.write(self.text)
 
 def MorphVkEnumName(name, enum_name_len):
     n_part = name.title().split('_')[enum_name_len:]
@@ -120,7 +127,7 @@ def PrintConsecutivePlatforms(file, in_list, function_name, cpp20mode = None):
 class Enum:
     def __init__(self, node):
         self.name = node.get('name')
-        self.underlying_type = 'uint32_t'  # for ABI
+        self.underlying_type = 'int32_t'  # for ABI
         self.values = {}
         self.platform = None
         self.alias = node.get('alias')
@@ -197,7 +204,7 @@ class Bitmask:
     def __init__(self, node):
         self.name = node.get('name')
         self.flags_name = self.name.replace('Bits', 's')
-        self.underlying_type = 'uint32_t'  # for ABI
+        self.underlying_type = 'int32_t'  # for ABI
         self.values = {}
         self.bitmask_name_len = len(re.findall('[A-Z]+[^A-Z]*', self.name)) - 2
         if self.name[-4:] != "Bits": #ie an extension bitmask
@@ -283,7 +290,7 @@ class EmptyBitmask:
     def __init__(self, name):
         self.name = name
         self.flags_name = self.name.replace('Bits', 's')
-        self.underlying_type = 'uint32_t'
+        self.underlying_type = 'int32_t'
         self.platform = None
     
     def fill_ext_bitmasks(self, bitmask_ext_dict):
@@ -300,7 +307,7 @@ class EmptyBitmask:
         file.write(f'constexpr {self.name} c_enum({self.name[2:]} val) {{ return static_cast<{self.name}>(val);}}\n')
      
     def print_base(self, file):
-        file.write(f'enum class {self.name[2:]}: uint32_t {{ }};\n')
+        file.write(f'enum class {self.name[2:]}: {self.underlying_type} {{ }};\n')
 
     def print_string(self, file):
         file.write(f'const char * to_string({self.name[2:]} val);\n')
@@ -322,7 +329,7 @@ class Flags:
             self.name = node.get('name')
             self.alias = node.get('alias')
 
-        self.underlying_type = 'uint32_t'
+        self.underlying_type = 'VkFlags'
         self.flags_name = self.name.replace('Flags', 'FlagBits')
         self.requires = node.get('requires')
         self.need_empty = False
@@ -335,7 +342,7 @@ class Flags:
             self.platform = platform
 
     def print_c_decl(self, file):
-        file.write(f'enum {self.name} : {self.underlying_type};\n')
+        file.write(f'using {self.name} = {self.underlying_type};\n')
     
     def print_to_c_enum(self, file):
         if self.alias is None:
@@ -372,11 +379,12 @@ class Handle:
                 file.write(f'VK_DEFINE_HANDLE({self.name})\n')
             else:
                 file.write(f'VK_DEFINE_NON_DISPATCHABLE_HANDLE({self.name})\n')
+        else:
+            file.write(f'using {self.name} = {self.alias};\n')
 
     def print_base(self, file):
         if self.alias is not None:
             file.write(f'using {self.name[2:]} = {self.alias[2:]};\n')
-            file.write(f'using {self.name} = {self.name[2:]};\n')
         else:
             file.write(f'class {self.name[2:]} {{\n')
             file.write(f'    {self.name} handle = 0;\n')
@@ -626,11 +634,12 @@ class Structure:
                 file.write(f'struct {self.name};\n')
             elif self.category == 'union':
                 file.write(f'union {self.name};\n')
+        else:
+            file.write(f'using {self.name} = {self.alias};\n')
 
     def print_base(self, file, cpp20mode = True):
         if self.alias is not None:
             file.write(f'using {self.name[2:]} = {self.alias[2:]};\n')
-            file.write(f'using {self.name} = {self.name[2:]};\n')
         else:
             if self.category == 'struct':
                 file.write(f'struct {self.name[2:]} {{\n')
@@ -738,7 +747,7 @@ class Function:
             self.platform = platform
     
     def print_pfn_variable_decl(self, file):
-        file.write(f'    detail::{self.func_prototype} pfn_{self.name[2:]} = nullptr;\n')
+        file.write(f'    {self.func_prototype} pfn_{self.name[2:]} = nullptr;\n')
 
     def print_c_func_pointer(self, file):
         if self.alias is not None:
@@ -1138,25 +1147,25 @@ class DispatchTable:
         file.write(f'{self.name}Functions::{self.name}Functions() noexcept {{}}\n')   
         if self.dispatch_type == 'global':
             file.write(f'{self.name}Functions::{self.name}Functions(DynamicLibrary const& library) noexcept {{\n')
-            file.write(f'    detail::{self.gpa_type} {self.gpa_name} = library.get();\n')
+            file.write(f'    {self.gpa_type} {self.gpa_name} = library.get();\n')
         elif self.dispatch_type == 'instance':
             file.write(f'{self.name}Functions::{self.name}Functions(GlobalFunctions const& global_functions, {self.dispatch_type.title()} {self.dispatch_type}) noexcept \n')
             file.write(f'    :{self.dispatch_type}({self.dispatch_type}) {{ \n')
-            file.write(f'    detail::{self.gpa_type} {self.gpa_name} = global_functions.pfn_GetInstanceProcAddr;\n')
+            file.write(f'    {self.gpa_type} {self.gpa_name} = global_functions.pfn_GetInstanceProcAddr;\n')
         elif self.dispatch_type == 'device':
             file.write(f'{self.name}Functions::{self.name}Functions(InstanceFunctions const& instance_functions, {self.dispatch_type.title()} {self.dispatch_type}) noexcept ')
             if self.name == 'Device':
                 file.write(f'\n    :{self.dispatch_type}({self.dispatch_type}) {{\n')
             else:
                 file.write('{\n')
-            file.write(f'    detail::{self.gpa_type} {self.gpa_name} = instance_functions.pfn_GetDeviceProcAddr;\n')
+            file.write(f'    {self.gpa_type} {self.gpa_name} = instance_functions.pfn_GetDeviceProcAddr;\n')
         for function in self.functions.values():
             PlatformGuardHeader(file, function.platform) 
             file.write(f'    pfn_{function.name[2:]} = ')
             if function.name == 'vkGetInstanceProcAddr': 
                 file.write(f'{self.gpa_name};\n') #had a crash here once, may not be needed.
             else:
-                file.write(f'reinterpret_cast<detail::{function.func_prototype}>({self.gpa_name}({self.gpa_val},\"{function.name}\"));\n')
+                file.write(f'reinterpret_cast<{function.func_prototype}>({self.gpa_name}({self.gpa_val},\"{function.name}\"));\n')
             PlatformGuardFooter(file, function.platform)
         file.write('}\n')
 
@@ -1386,23 +1395,15 @@ def print_vkm_core(bindings, cpp20mode, cpp20str):
         vkm_core.write('#pragma once\n// clang-format off\n')
         vkm_core.write('#include <stdint.h>\n')
         vkm_core.write('#include <cstddef>\n')
-        vkm_core.write('#include "vk_platform.h"\n')
-        [ define.print_base(vkm_core) for define in bindings.macro_defines ]
-        vkm_core.write(vk_macro_defines)
+        vkm_core.write('#include "vkm_c_defs.h"\n')
         vkm_core.write('namespace vk {\n')
         PrintConsecutivePlatforms(vkm_core, api_constants.values(), 'print_base')
         PrintConsecutivePlatforms(vkm_core, bindings.base_types, 'print_base')
-        PrintConsecutivePlatforms(vkm_core, bindings.base_types, 'print_vk_base')
         PrintConsecutivePlatforms(vkm_core, bindings.enum_dict.values(), 'print_base')
         PrintConsecutivePlatforms(vkm_core, bindings.bitmask_dict.values(), 'print_base')
         vkm_core.write(bitmask_flags_macro + '\n')
         PrintConsecutivePlatforms(vkm_core, bindings.flags_dict.values(), 'print_base')
-        PrintConsecutivePlatforms(vkm_core, bindings.handles.values(), 'print_handle_define')
         PrintConsecutivePlatforms(vkm_core, bindings.handles.values(), 'print_base')
-        vkm_core.write('using VkBool32 = uint32_t;\n')
-        vkm_core.write('struct VkDebugUtilsMessengerCallbackDataEXT;\n')
-        vkm_core.write('struct VkDeviceMemoryReportCallbackDataEXT;\n')
-        PrintConsecutivePlatforms(vkm_core, bindings.func_pointers, 'print_base')
         PrintConsecutivePlatforms(vkm_core, bindings.structures, 'print_base', cpp20mode)
         vkm_core.write('} // namespace vk\n// clang-format on\n')
 
@@ -1412,7 +1413,6 @@ def print_vkm_function(bindings, cpp20mode, cpp20str):
         if cpp20mode:
             vkm_function.write('#include <span>\n')
         vkm_function.write('#include "vkm_core.h"\n')
-        vkm_function.write('#include "vkm_c_interop.h"\n')
         vkm_function.write(vulkan_library_text + '\n')
         vkm_function.write(fixed_vector_text + '\n')
         vkm_function.write(vulkan_expected_type + '\n')
@@ -1428,7 +1428,8 @@ def print_vkm_function(bindings, cpp20mode, cpp20str):
         vkm_function.write('} // namespace vk\n// clang-format on\n')
 
 def print_vkm_string(bindings, cpp20mode, cpp20str):
-    removed_result = { 'VkResult': bindings.enum_dict['VkResult'] for key in bindings.enum_dict }
+    removed_result = bindings.enum_dict.copy()
+    removed_result.pop('VkResult')
     with open(f'cpp{cpp20str}/vkm_string.h', 'w') as string_decl:
         string_decl.write('#pragma once\n// clang-format off\n')
         string_decl.write('#include "vkm_core.h"\n')
@@ -1450,14 +1451,20 @@ def print_vkm_string(bindings, cpp20mode, cpp20str):
         string_def.write('} // namespace vk\n// clang-format on\n')
 
 def print_c_definitions(bindings, cpp20mode, cpp20str):
-    with open(f'cpp{cpp20str}/vkm_c_interop.h', 'w') as c_defs:
+    with open(f'cpp{cpp20str}/vkm_c_defs.h', 'w') as c_defs:
         c_defs.write('#pragma once\n// clang-format off\n')
-        c_defs.write('namespace vk::detail {\n')
+        c_defs.write('#include "vk_platform.h"\n')
+        c_defs.write('#define VK_ENABLE_BETA_EXTENSIONS\n')
+        [ define.print_base(c_defs) for define in bindings.macro_defines ]
+        PrintConsecutivePlatforms(c_defs, bindings.base_types, 'print_vk_base')
         PrintConsecutivePlatforms(c_defs, bindings.enum_dict.values(), 'print_c_decl')
         PrintConsecutivePlatforms(c_defs, bindings.bitmask_dict.values(), 'print_c_decl')
+        PrintConsecutivePlatforms(c_defs, bindings.flags_dict.values(), 'print_c_decl')
+        PrintConsecutivePlatforms(c_defs, bindings.handles.values(), 'print_handle_define')
         PrintConsecutivePlatforms(c_defs, bindings.structures, 'print_c_forward_decl')
+        PrintConsecutivePlatforms(c_defs, bindings.func_pointers, 'print_base')
         PrintConsecutivePlatforms(c_defs, bindings.functions, 'print_c_func_pointer')
-        c_defs.write('} // namespace vk\n// clang-format on\n')
+        c_defs.write('// clang-format on\n')
 
 
 def print_bindings_version(bindings, cpp20mode, cpp20str):

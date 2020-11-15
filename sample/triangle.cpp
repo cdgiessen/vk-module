@@ -349,11 +349,11 @@ void create_pipeline(DeviceContext& device)
 
     device.pipeline_layout = pipeline_layout_ret.value();
     std::array<vk::DynamicState, 2> dynamic_states = { vk::DynamicState::Viewport, vk::DynamicState::Scissor };
-    vk::PipelineDynamicStateCreateInfo dynamic_state{ .dynamicStateCount = dynamic_states.size(),
+    vk::PipelineDynamicStateCreateInfo dynamic_state{ .dynamicStateCount = static_cast<uint32_t>(dynamic_states.size()),
                                                       .pDynamicStates = dynamic_states.data() };
 
     vk::GraphicsPipelineCreateInfo pipe_info{
-        .stageCount = shader_stages.size(),
+        .stageCount = static_cast<uint32_t>(shader_stages.size()),
         .pStages = shader_stages.data(),
         .pVertexInputState = &vert_input_info,
         .pInputAssemblyState = &input_assembly,

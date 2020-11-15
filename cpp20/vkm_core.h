@@ -2,47 +2,7 @@
 // clang-format off
 #include <stdint.h>
 #include <cstddef>
-#include "vk_platform.h"
-#define VK_MAKE_VERSION(major, minor, patch) \
-    ((((uint32_t)(major)) << 22) | (((uint32_t)(minor)) << 12) | ((uint32_t)(patch)))
-#define VK_VERSION_MAJOR(version) ((uint32_t)(version) >> 22)
-#define VK_VERSION_MINOR(version) (((uint32_t)(version) >> 12) & 0x3ff)
-#define VK_VERSION_PATCH(version) ((uint32_t)(version) & 0xfff)
-// DEPRECATED: This define has been removed. Specific version defines (e.g. VK_API_VERSION_1_0), or the VK_MAKE_VERSION macro, should be used instead.
-//#define VK_API_VERSION VK_MAKE_VERSION(1, 0, 0) // Patch version should always be set to 0
-// Vulkan 1.0 version number
-#define VK_API_VERSION_1_0 VK_MAKE_VERSION(1, 0, 0)// Patch version should always be set to 0
-// Vulkan 1.1 version number
-#define VK_API_VERSION_1_1 VK_MAKE_VERSION(1, 1, 0)// Patch version should always be set to 0
-// Vulkan 1.2 version number
-#define VK_API_VERSION_1_2 VK_MAKE_VERSION(1, 2, 0)// Patch version should always be set to 0
-// Version of this file
-#define VK_HEADER_VERSION 156
-// Complete version of this file
-#define VK_HEADER_VERSION_COMPLETE VK_MAKE_VERSION(1, 2, VK_HEADER_VERSION)
-
-#define VK_DEFINE_HANDLE(object) typedef struct object##_T* object;
-
-#if !defined(VK_DEFINE_NON_DISPATCHABLE_HANDLE)
-#if defined(__LP64__) || defined(_WIN64) || (defined(__x86_64__) && !defined(__ILP32__) ) || defined(_M_X64) || defined(__ia64) || defined (_M_IA64) || defined(__aarch64__) || defined(__powerpc64__)
-        #define VK_DEFINE_NON_DISPATCHABLE_HANDLE(object) typedef struct object##_T *object;
-#else
-        #define VK_DEFINE_NON_DISPATCHABLE_HANDLE(object) typedef uint64_t object;
-#endif
-#endif
-
-#define VK_NULL_HANDLE 0
-
-#define VK_ENABLE_BETA_EXTENSIONS
-
-#define VK_VERSION_1_0 1
-
-#define VK_VERSION_1_1 1
-#define VK_API_VERSION_1_1 VK_MAKE_VERSION(1, 1, 0)// Patch version should always be set to 0
-
-#define VK_VERSION_1_2 1
-#define VK_API_VERSION_1_2 VK_MAKE_VERSION(1, 2, 0)// Patch version should always be set to 0
-
+#include "vkm_c_defs.h"
 namespace vk {
 constexpr auto MAX_PHYSICAL_DEVICE_NAME_SIZE = 256;
 constexpr auto UUID_SIZE = 16;
@@ -75,22 +35,17 @@ using Bool32 = uint32_t;
 using Flags = uint32_t;
 using DeviceSize = uint64_t;
 using DeviceAddress = uint64_t;
-using VkSampleMask = uint32_t;
-using VkBool32 = uint32_t;
-using VkFlags = uint32_t;
-using VkDeviceSize = uint64_t;
-using VkDeviceAddress = uint64_t;
-enum class AttachmentLoadOp : uint32_t {
+enum class AttachmentLoadOp : int32_t {
     Load = 0,
     Clear = 1,
     DontCare = 2,
 };
-enum class AttachmentStoreOp : uint32_t {
+enum class AttachmentStoreOp : int32_t {
     Store = 0,
     DontCare = 1,
     NoneQCOM = 1000301000,
 };
-enum class BlendFactor : uint32_t {
+enum class BlendFactor : int32_t {
     Zero = 0,
     One = 1,
     SrcColor = 2,
@@ -111,7 +66,7 @@ enum class BlendFactor : uint32_t {
     Src1Alpha = 17,
     OneMinusSrc1Alpha = 18,
 };
-enum class BlendOp : uint32_t {
+enum class BlendOp : int32_t {
     Add = 0,
     Subtract = 1,
     ReverseSubtract = 2,
@@ -164,7 +119,7 @@ enum class BlendOp : uint32_t {
     GreenEXT = 1000148044,
     BlueEXT = 1000148045,
 };
-enum class BorderColor : uint32_t {
+enum class BorderColor : int32_t {
     FloatTransparentBlack = 0,
     IntTransparentBlack = 1,
     FloatOpaqueBlack = 2,
@@ -174,10 +129,10 @@ enum class BorderColor : uint32_t {
     FloatCustomEXT = 1000287003,
     IntCustomEXT = 1000287004,
 };
-enum class PipelineCacheHeaderVersion : uint32_t {
+enum class PipelineCacheHeaderVersion : int32_t {
     One = 1,
 };
-enum class ComponentSwizzle : uint32_t {
+enum class ComponentSwizzle : int32_t {
     Identity = 0,
     Zero = 1,
     One = 2,
@@ -186,11 +141,11 @@ enum class ComponentSwizzle : uint32_t {
     B = 5,
     A = 6,
 };
-enum class CommandBufferLevel : uint32_t {
+enum class CommandBufferLevel : int32_t {
     Primary = 0,
     Secondary = 1,
 };
-enum class CompareOp : uint32_t {
+enum class CompareOp : int32_t {
     Never = 0,
     Less = 1,
     Equal = 2,
@@ -200,7 +155,7 @@ enum class CompareOp : uint32_t {
     GreaterOrEqual = 6,
     Always = 7,
 };
-enum class DescriptorType : uint32_t {
+enum class DescriptorType : int32_t {
     Sampler = 0,
     CombinedImageSampler = 1,
     SampledImage = 2,
@@ -215,7 +170,7 @@ enum class DescriptorType : uint32_t {
     InlineUniformBlockEXT = 1000138000,
     AccelerationStructureKHR = 1000165000,
 };
-enum class DynamicState : uint32_t {
+enum class DynamicState : int32_t {
     Viewport = 0,
     Scissor = 1,
     LineWidth = 2,
@@ -245,13 +200,13 @@ enum class DynamicState : uint32_t {
     StencilTestEnableEXT = 1000267010,
     StencilOpEXT = 1000267011,
 };
-enum class PolygonMode : uint32_t {
+enum class PolygonMode : int32_t {
     Fill = 0,
     Line = 1,
     Point = 2,
     FillRectangleNV = 1000153000,
 };
-enum class Format : uint32_t {
+enum class Format : int32_t {
     Undefined = 0,
     R4G4UnormPack8 = 1,
     R4G4B4A4UnormPack16 = 2,
@@ -496,11 +451,11 @@ enum class Format : uint32_t {
     G16B16R162Plane422Unorm = 1000156032,
     G16B16R163Plane444Unorm = 1000156033,
 };
-enum class FrontFace : uint32_t {
+enum class FrontFace : int32_t {
     CounterClockwise = 0,
     Clockwise = 1,
 };
-enum class ImageLayout : uint32_t {
+enum class ImageLayout : int32_t {
     Undefined = 0,
     General = 1,
     ColorAttachmentOptimal = 2,
@@ -521,17 +476,17 @@ enum class ImageLayout : uint32_t {
     StencilAttachmentOptimal = 1000241002,
     StencilReadOnlyOptimal = 1000241003,
 };
-enum class ImageTiling : uint32_t {
+enum class ImageTiling : int32_t {
     Optimal = 0,
     Linear = 1,
     DrmFormatModifierEXT = 1000158000,
 };
-enum class ImageType : uint32_t {
+enum class ImageType : int32_t {
     e1D = 0,
     e2D = 1,
     e3D = 2,
 };
-enum class ImageViewType : uint32_t {
+enum class ImageViewType : int32_t {
     e1D = 0,
     e2D = 1,
     e3D = 2,
@@ -540,17 +495,17 @@ enum class ImageViewType : uint32_t {
     e2DArray = 5,
     CubeArray = 6,
 };
-enum class SharingMode : uint32_t {
+enum class SharingMode : int32_t {
     Exclusive = 0,
     Concurrent = 1,
 };
-enum class IndexType : uint32_t {
+enum class IndexType : int32_t {
     Uint16 = 0,
     Uint32 = 1,
     NoneKHR = 1000165000,
     Uint8EXT = 1000265000,
 };
-enum class LogicOp : uint32_t {
+enum class LogicOp : int32_t {
     Clear = 0,
     And = 1,
     AndReverse = 2,
@@ -568,19 +523,19 @@ enum class LogicOp : uint32_t {
     Nand = 14,
     Set = 15,
 };
-enum class PhysicalDeviceType : uint32_t {
+enum class PhysicalDeviceType : int32_t {
     Other = 0,
     IntegratedGpu = 1,
     DiscreteGpu = 2,
     VirtualGpu = 3,
     Cpu = 4,
 };
-enum class PipelineBindPoint : uint32_t {
+enum class PipelineBindPoint : int32_t {
     Graphics = 0,
     Compute = 1,
     RayTracingKHR = 1000165000,
 };
-enum class PrimitiveTopology : uint32_t {
+enum class PrimitiveTopology : int32_t {
     PointList = 0,
     LineList = 1,
     LineStrip = 2,
@@ -593,7 +548,7 @@ enum class PrimitiveTopology : uint32_t {
     TriangleStripWithAdjacency = 9,
     PatchList = 10,
 };
-enum class QueryType : uint32_t {
+enum class QueryType : int32_t {
     Occlusion = 0,
     PipelineStatistics = 1,
     Timestamp = 2,
@@ -603,7 +558,7 @@ enum class QueryType : uint32_t {
     AccelerationStructureSerializationSizeKHR = 1000150000,
     PerformanceQueryINTEL = 1000210000,
 };
-enum class SubpassContents : uint32_t {
+enum class SubpassContents : int32_t {
     Inline = 0,
     SecondaryCommandBuffers = 1,
 };
@@ -693,7 +648,7 @@ inline const char * to_string(Result val) {
     }
 }
 constexpr bool operator !(Result res) { return res != Result::Success; }
-enum class StencilOp : uint32_t {
+enum class StencilOp : int32_t {
     Keep = 0,
     Zero = 1,
     Replace = 2,
@@ -703,7 +658,7 @@ enum class StencilOp : uint32_t {
     IncrementAndWrap = 6,
     DecrementAndWrap = 7,
 };
-enum class StructureType : uint32_t {
+enum class StructureType : int32_t {
     ApplicationInfo = 0,
     InstanceCreateInfo = 1,
     DeviceQueueCreateInfo = 2,
@@ -1165,37 +1120,37 @@ enum class StructureType : uint32_t {
     MemoryOpaqueCaptureAddressAllocateInfo = 1000257003,
     DeviceMemoryOpaqueCaptureAddressInfo = 1000257004,
 };
-enum class SystemAllocationScope : uint32_t {
+enum class SystemAllocationScope : int32_t {
     Command = 0,
     Object = 1,
     Cache = 2,
     Device = 3,
     Instance = 4,
 };
-enum class InternalAllocationType : uint32_t {
+enum class InternalAllocationType : int32_t {
     Executable = 0,
 };
-enum class SamplerAddressMode : uint32_t {
+enum class SamplerAddressMode : int32_t {
     Repeat = 0,
     MirroredRepeat = 1,
     ClampToEdge = 2,
     ClampToBorder = 3,
     MirrorClampToEdge = 4,
 };
-enum class Filter : uint32_t {
+enum class Filter : int32_t {
     Nearest = 0,
     Linear = 1,
     CubicIMG = 1000015000,
 };
-enum class SamplerMipmapMode : uint32_t {
+enum class SamplerMipmapMode : int32_t {
     Nearest = 0,
     Linear = 1,
 };
-enum class VertexInputRate : uint32_t {
+enum class VertexInputRate : int32_t {
     Vertex = 0,
     Instance = 1,
 };
-enum class ObjectType : uint32_t {
+enum class ObjectType : int32_t {
     Unknown = 0,
     Instance = 1,
     PhysicalDevice = 2,
@@ -1237,7 +1192,7 @@ enum class ObjectType : uint32_t {
     SamplerYcbcrConversion = 1000156000,
     DescriptorUpdateTemplate = 1000085000,
 };
-enum class IndirectCommandsTokenTypeNV : uint32_t {
+enum class IndirectCommandsTokenTypeNV : int32_t {
     ShaderGroupNV = 0,
     StateFlagsNV = 1,
     IndexBufferNV = 2,
@@ -1247,12 +1202,12 @@ enum class IndirectCommandsTokenTypeNV : uint32_t {
     DrawNV = 6,
     DrawTasksNV = 7,
 };
-enum class DescriptorUpdateTemplateType : uint32_t {
+enum class DescriptorUpdateTemplateType : int32_t {
     DescriptorSet = 0,
     PushDescriptorsKHR = 1,
 };
 using DescriptorUpdateTemplateTypeKHR = DescriptorUpdateTemplateType;
-enum class ViewportCoordinateSwizzleNV : uint32_t {
+enum class ViewportCoordinateSwizzleNV : int32_t {
     PositiveXNV = 0,
     NegativeXNV = 1,
     PositiveYNV = 2,
@@ -1262,57 +1217,57 @@ enum class ViewportCoordinateSwizzleNV : uint32_t {
     PositiveWNV = 6,
     NegativeWNV = 7,
 };
-enum class DiscardRectangleModeEXT : uint32_t {
+enum class DiscardRectangleModeEXT : int32_t {
     InclusiveEXT = 0,
     ExclusiveEXT = 1,
 };
-enum class PointClippingBehavior : uint32_t {
+enum class PointClippingBehavior : int32_t {
     AllClipPlanes = 0,
     UserClipPlanesOnly = 1,
 };
 using PointClippingBehaviorKHR = PointClippingBehavior;
-enum class CoverageModulationModeNV : uint32_t {
+enum class CoverageModulationModeNV : int32_t {
     NoneNV = 0,
     RgbNV = 1,
     AlphaNV = 2,
     RgbaNV = 3,
 };
-enum class CoverageReductionModeNV : uint32_t {
+enum class CoverageReductionModeNV : int32_t {
     MergeNV = 0,
     TruncateNV = 1,
 };
-enum class ValidationCacheHeaderVersionEXT : uint32_t {
+enum class ValidationCacheHeaderVersionEXT : int32_t {
     OneEXT = 1,
 };
-enum class ShaderInfoTypeAMD : uint32_t {
+enum class ShaderInfoTypeAMD : int32_t {
     StatisticsAMD = 0,
     BinaryAMD = 1,
     DisassemblyAMD = 2,
 };
-enum class QueueGlobalPriorityEXT : uint32_t {
+enum class QueueGlobalPriorityEXT : int32_t {
     LowEXT = 128,
     MediumEXT = 256,
     HighEXT = 512,
     RealtimeEXT = 1024,
 };
-enum class TimeDomainEXT : uint32_t {
+enum class TimeDomainEXT : int32_t {
     DeviceEXT = 0,
     ClockMonotonicEXT = 1,
     ClockMonotonicRawEXT = 2,
     QueryPerformanceCounterEXT = 3,
 };
-enum class ConservativeRasterizationModeEXT : uint32_t {
+enum class ConservativeRasterizationModeEXT : int32_t {
     DisabledEXT = 0,
     OverestimateEXT = 1,
     UnderestimateEXT = 2,
 };
-enum class SemaphoreType : uint32_t {
+enum class SemaphoreType : int32_t {
     Binary = 0,
     Timeline = 1,
 };
 using SemaphoreTypeKHR = SemaphoreType;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-enum class CopyAccelerationStructureModeKHR : uint32_t {
+enum class CopyAccelerationStructureModeKHR : int32_t {
     CloneKHR = 0,
     CompactKHR = 1,
     SerializeKHR = 2,
@@ -1321,14 +1276,14 @@ enum class CopyAccelerationStructureModeKHR : uint32_t {
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using CopyAccelerationStructureModeNV = CopyAccelerationStructureModeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-enum class AccelerationStructureTypeKHR : uint32_t {
+enum class AccelerationStructureTypeKHR : int32_t {
     TopLevelKHR = 0,
     BottomLevelKHR = 1,
 };
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using AccelerationStructureTypeNV = AccelerationStructureTypeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-enum class GeometryTypeKHR : uint32_t {
+enum class GeometryTypeKHR : int32_t {
     TrianglesKHR = 0,
     AabbsKHR = 1,
     InstancesKHR = 1000150000,
@@ -1336,7 +1291,7 @@ enum class GeometryTypeKHR : uint32_t {
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using GeometryTypeNV = GeometryTypeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-enum class RayTracingShaderGroupTypeKHR : uint32_t {
+enum class RayTracingShaderGroupTypeKHR : int32_t {
     GeneralKHR = 0,
     TrianglesHitGroupKHR = 1,
     ProceduralHitGroupKHR = 2,
@@ -1344,7 +1299,7 @@ enum class RayTracingShaderGroupTypeKHR : uint32_t {
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using RayTracingShaderGroupTypeNV = RayTracingShaderGroupTypeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-enum class AccelerationStructureMemoryRequirementsTypeKHR : uint32_t {
+enum class AccelerationStructureMemoryRequirementsTypeKHR : int32_t {
     ObjectKHR = 0,
     BuildScratchKHR = 1,
     UpdateScratchKHR = 2,
@@ -1352,24 +1307,24 @@ enum class AccelerationStructureMemoryRequirementsTypeKHR : uint32_t {
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using AccelerationStructureMemoryRequirementsTypeNV = AccelerationStructureMemoryRequirementsTypeKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-enum class AccelerationStructureBuildTypeKHR : uint32_t {
+enum class AccelerationStructureBuildTypeKHR : int32_t {
     HostKHR = 0,
     DeviceKHR = 1,
     HostOrDeviceKHR = 2,
 };
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
-enum class MemoryOverallocationBehaviorAMD : uint32_t {
+enum class MemoryOverallocationBehaviorAMD : int32_t {
     DefaultAMD = 0,
     AllowedAMD = 1,
     DisallowedAMD = 2,
 };
-enum class ScopeNV : uint32_t {
+enum class ScopeNV : int32_t {
     DeviceNV = 1,
     WorkgroupNV = 2,
     SubgroupNV = 3,
     QueueFamilyNV = 5,
 };
-enum class ComponentTypeNV : uint32_t {
+enum class ComponentTypeNV : int32_t {
     Float16NV = 0,
     Float32NV = 1,
     Float64NV = 2,
@@ -1382,12 +1337,12 @@ enum class ComponentTypeNV : uint32_t {
     Uint32NV = 9,
     Uint64NV = 10,
 };
-enum class PerformanceCounterScopeKHR : uint32_t {
+enum class PerformanceCounterScopeKHR : int32_t {
     CommandBufferKHR = 0,
     RenderPassKHR = 1,
     CommandKHR = 2,
 };
-enum class PerformanceCounterUnitKHR : uint32_t {
+enum class PerformanceCounterUnitKHR : int32_t {
     GenericKHR = 0,
     PercentageKHR = 1,
     NanosecondsKHR = 2,
@@ -1400,7 +1355,7 @@ enum class PerformanceCounterUnitKHR : uint32_t {
     HertzKHR = 9,
     CyclesKHR = 10,
 };
-enum class PerformanceCounterStorageKHR : uint32_t {
+enum class PerformanceCounterStorageKHR : int32_t {
     Int32KHR = 0,
     Int64KHR = 1,
     Uint32KHR = 2,
@@ -1408,34 +1363,34 @@ enum class PerformanceCounterStorageKHR : uint32_t {
     Float32KHR = 4,
     Float64KHR = 5,
 };
-enum class PerformanceConfigurationTypeINTEL : uint32_t {
+enum class PerformanceConfigurationTypeINTEL : int32_t {
     CommandQueueMetricsDiscoveryActivatedINTEL = 0,
 };
-enum class QueryPoolSamplingModeINTEL : uint32_t {
+enum class QueryPoolSamplingModeINTEL : int32_t {
     ManualINTEL = 0,
 };
-enum class PerformanceOverrideTypeINTEL : uint32_t {
+enum class PerformanceOverrideTypeINTEL : int32_t {
     NullHardwareINTEL = 0,
     FlushGpuCachesINTEL = 1,
 };
-enum class PerformanceParameterTypeINTEL : uint32_t {
+enum class PerformanceParameterTypeINTEL : int32_t {
     HwCountersSupportedINTEL = 0,
     StreamMarkerValidBitsINTEL = 1,
 };
-enum class PerformanceValueTypeINTEL : uint32_t {
+enum class PerformanceValueTypeINTEL : int32_t {
     Uint32INTEL = 0,
     Uint64INTEL = 1,
     FloatINTEL = 2,
     BoolINTEL = 3,
     StringINTEL = 4,
 };
-enum class LineRasterizationModeEXT : uint32_t {
+enum class LineRasterizationModeEXT : int32_t {
     DefaultEXT = 0,
     RectangularEXT = 1,
     BresenhamEXT = 2,
     RectangularSmoothEXT = 3,
 };
-enum class ColorSpaceKHR : uint32_t {
+enum class ColorSpaceKHR : int32_t {
     SrgbNonlinearKHR = 0,
     DisplayP3NonlinearEXT = 1000104001,
     ExtendedSrgbLinearEXT = 1000104002,
@@ -1453,7 +1408,7 @@ enum class ColorSpaceKHR : uint32_t {
     ExtendedSrgbNonlinearEXT = 1000104014,
     DisplayNativeAMD = 1000213000,
 };
-enum class PresentModeKHR : uint32_t {
+enum class PresentModeKHR : int32_t {
     ImmediateKHR = 0,
     MailboxKHR = 1,
     FifoKHR = 2,
@@ -1461,7 +1416,7 @@ enum class PresentModeKHR : uint32_t {
     SharedDemandRefreshKHR = 1000111000,
     SharedContinuousRefreshKHR = 1000111001,
 };
-enum class DebugReportObjectTypeEXT : uint32_t {
+enum class DebugReportObjectTypeEXT : int32_t {
     UnknownEXT = 0,
     InstanceEXT = 1,
     PhysicalDeviceEXT = 2,
@@ -1498,29 +1453,29 @@ enum class DebugReportObjectTypeEXT : uint32_t {
     DescriptorUpdateTemplateEXT = 1000085000,
     AccelerationStructureKhrEXT = 1000165000,
 };
-enum class DeviceMemoryReportEventTypeEXT : uint32_t {
+enum class DeviceMemoryReportEventTypeEXT : int32_t {
     AllocateEXT = 0,
     FreeEXT = 1,
     ImportEXT = 2,
     UnimportEXT = 3,
     AllocationFailedEXT = 4,
 };
-enum class RasterizationOrderAMD : uint32_t {
+enum class RasterizationOrderAMD : int32_t {
     StrictAMD = 0,
     RelaxedAMD = 1,
 };
-enum class ValidationCheckEXT : uint32_t {
+enum class ValidationCheckEXT : int32_t {
     AllEXT = 0,
     ShadersEXT = 1,
 };
-enum class ValidationFeatureEnableEXT : uint32_t {
+enum class ValidationFeatureEnableEXT : int32_t {
     GpuAssistedEXT = 0,
     GpuAssistedReserveBindingSlotEXT = 1,
     BestPracticesEXT = 2,
     DebugPrintfEXT = 3,
     SynchronizationValidationEXT = 4,
 };
-enum class ValidationFeatureDisableEXT : uint32_t {
+enum class ValidationFeatureDisableEXT : int32_t {
     AllEXT = 0,
     ShadersEXT = 1,
     ThreadSafetyEXT = 2,
@@ -1529,23 +1484,23 @@ enum class ValidationFeatureDisableEXT : uint32_t {
     CoreChecksEXT = 5,
     UniqueHandlesEXT = 6,
 };
-enum class DisplayPowerStateEXT : uint32_t {
+enum class DisplayPowerStateEXT : int32_t {
     OffEXT = 0,
     SuspendEXT = 1,
     OnEXT = 2,
 };
-enum class DeviceEventTypeEXT : uint32_t {
+enum class DeviceEventTypeEXT : int32_t {
     DisplayHotplugEXT = 0,
 };
-enum class DisplayEventTypeEXT : uint32_t {
+enum class DisplayEventTypeEXT : int32_t {
     FirstPixelOutEXT = 0,
 };
-enum class TessellationDomainOrigin : uint32_t {
+enum class TessellationDomainOrigin : int32_t {
     UpperLeft = 0,
     LowerLeft = 1,
 };
 using TessellationDomainOriginKHR = TessellationDomainOrigin;
-enum class SamplerYcbcrModelConversion : uint32_t {
+enum class SamplerYcbcrModelConversion : int32_t {
     RgbIdentity = 0,
     YcbcrIdentity = 1,
     Ycbcr709 = 2,
@@ -1553,49 +1508,49 @@ enum class SamplerYcbcrModelConversion : uint32_t {
     Ycbcr2020 = 4,
 };
 using SamplerYcbcrModelConversionKHR = SamplerYcbcrModelConversion;
-enum class SamplerYcbcrRange : uint32_t {
+enum class SamplerYcbcrRange : int32_t {
     ItuFull = 0,
     ItuNarrow = 1,
 };
 using SamplerYcbcrRangeKHR = SamplerYcbcrRange;
-enum class ChromaLocation : uint32_t {
+enum class ChromaLocation : int32_t {
     CositedEven = 0,
     Midpoint = 1,
 };
 using ChromaLocationKHR = ChromaLocation;
-enum class SamplerReductionMode : uint32_t {
+enum class SamplerReductionMode : int32_t {
     WeightedAverage = 0,
     Min = 1,
     Max = 2,
 };
 using SamplerReductionModeEXT = SamplerReductionMode;
-enum class BlendOverlapEXT : uint32_t {
+enum class BlendOverlapEXT : int32_t {
     UncorrelatedEXT = 0,
     DisjointEXT = 1,
     ConjointEXT = 2,
 };
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
-enum class FullScreenExclusiveEXT : uint32_t {
+enum class FullScreenExclusiveEXT : int32_t {
     DefaultEXT = 0,
     AllowedEXT = 1,
     DisallowedEXT = 2,
     ApplicationControlledEXT = 3,
 };
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
-enum class ShaderFloatControlsIndependence : uint32_t {
+enum class ShaderFloatControlsIndependence : int32_t {
     e32BitOnly = 0,
     All = 1,
     None = 2,
 };
 using ShaderFloatControlsIndependenceKHR = ShaderFloatControlsIndependence;
-enum class VendorId : uint32_t {
+enum class VendorId : int32_t {
     VIV = 0x10001,
     VSI = 0x10002,
     Kazan = 0x10003,
     Codeplay = 0x10004,
     MESA = 0x10005,
 };
-enum class DriverId : uint32_t {
+enum class DriverId : int32_t {
     AmdProprietary = 1,
     AmdOpenSource = 2,
     MesaRadv = 3,
@@ -1612,7 +1567,7 @@ enum class DriverId : uint32_t {
     Moltenvk = 14,
 };
 using DriverIdKHR = DriverId;
-enum class ShadingRatePaletteEntryNV : uint32_t {
+enum class ShadingRatePaletteEntryNV : int32_t {
     NoInvocationsNV = 0,
     e16InvocationsPerPixelNV = 1,
     e8InvocationsPerPixelNV = 2,
@@ -1626,41 +1581,41 @@ enum class ShadingRatePaletteEntryNV : uint32_t {
     e1InvocationPer2X4PixelsNV = 10,
     e1InvocationPer4X4PixelsNV = 11,
 };
-enum class CoarseSampleOrderTypeNV : uint32_t {
+enum class CoarseSampleOrderTypeNV : int32_t {
     DefaultNV = 0,
     CustomNV = 1,
     PixelMajorNV = 2,
     SampleMajorNV = 3,
 };
-enum class PipelineExecutableStatisticFormatKHR : uint32_t {
+enum class PipelineExecutableStatisticFormatKHR : int32_t {
     Bool32KHR = 0,
     Int64KHR = 1,
     Uint64KHR = 2,
     Float64KHR = 3,
 };
-enum class PipelineCacheCreateFlagBits: uint32_t {
+enum class PipelineCacheCreateFlagBits: int32_t {
     ExternallySynchronizedBitEXT = 1,
 };
-enum class QueueFlagBits: uint32_t {
+enum class QueueFlagBits: int32_t {
     Graphics = 1,
     Compute = 2,
     Transfer = 4,
     SparseBinding = 8,
     Protected = 16,
 };
-enum class CullModeFlagBits: uint32_t {
+enum class CullModeFlagBits: int32_t {
     None = 0,
     Front = 1,
     Back = 2,
     FrontAndBack = 0x00000003,
 };
-enum class RenderPassCreateFlagBits: uint32_t {
+enum class RenderPassCreateFlagBits: int32_t {
     TransformBitQCOM = 2,
 };
-enum class DeviceQueueCreateFlagBits: uint32_t {
+enum class DeviceQueueCreateFlagBits: int32_t {
     Protected = 1,
 };
-enum class MemoryPropertyFlagBits: uint32_t {
+enum class MemoryPropertyFlagBits: int32_t {
     DeviceLocal = 1,
     HostVisible = 2,
     HostCoherent = 4,
@@ -1670,11 +1625,11 @@ enum class MemoryPropertyFlagBits: uint32_t {
     DeviceUncachedBitAMD = 128,
     Protected = 32,
 };
-enum class MemoryHeapFlagBits: uint32_t {
+enum class MemoryHeapFlagBits: int32_t {
     DeviceLocal = 1,
     MultiInstance = 2,
 };
-enum class AccessFlagBits: uint32_t {
+enum class AccessFlagBits: int32_t {
     IndirectCommandRead = 1,
     IndexRead = 2,
     VertexAttributeRead = 4,
@@ -1704,7 +1659,7 @@ enum class AccessFlagBits: uint32_t {
     CommandPreprocessReadBitNV = 131072,
     CommandPreprocessWriteBitNV = 262144,
 };
-enum class BufferUsageFlagBits: uint32_t {
+enum class BufferUsageFlagBits: int32_t {
     TransferSrc = 1,
     TransferDst = 2,
     UniformTexelBuffer = 4,
@@ -1720,14 +1675,14 @@ enum class BufferUsageFlagBits: uint32_t {
     RayTracingBitKHR = 1024,
     ShaderDeviceAddress = 131072,
 };
-enum class BufferCreateFlagBits: uint32_t {
+enum class BufferCreateFlagBits: int32_t {
     SparseBinding = 1,
     SparseResidency = 2,
     SparseAliased = 4,
     Protected = 8,
     DeviceAddressCaptureReplay = 16,
 };
-enum class ShaderStageFlagBits: uint32_t {
+enum class ShaderStageFlagBits: int32_t {
     Vertex = 1,
     TessellationControl = 2,
     TessellationEvaluation = 4,
@@ -1745,7 +1700,7 @@ enum class ShaderStageFlagBits: uint32_t {
     TaskBitNV = 64,
     MeshBitNV = 128,
 };
-enum class ImageUsageFlagBits: uint32_t {
+enum class ImageUsageFlagBits: int32_t {
     TransferSrc = 1,
     TransferDst = 2,
     Sampled = 4,
@@ -1757,7 +1712,7 @@ enum class ImageUsageFlagBits: uint32_t {
     ShadingRateImageBitNV = 256,
     FragmentDensityMapBitEXT = 512,
 };
-enum class ImageCreateFlagBits: uint32_t {
+enum class ImageCreateFlagBits: int32_t {
     SparseBinding = 1,
     SparseResidency = 2,
     SparseAliased = 4,
@@ -1774,15 +1729,15 @@ enum class ImageCreateFlagBits: uint32_t {
     Protected = 2048,
     Disjoint = 512,
 };
-enum class ImageViewCreateFlagBits: uint32_t {
+enum class ImageViewCreateFlagBits: int32_t {
     FragmentDensityMapDynamicBitEXT = 1,
     FragmentDensityMapDeferredBitEXT = 2,
 };
-enum class SamplerCreateFlagBits: uint32_t {
+enum class SamplerCreateFlagBits: int32_t {
     SubsampledBitEXT = 1,
     SubsampledCoarseReconstructionBitEXT = 2,
 };
-enum class PipelineCreateFlagBits: uint32_t {
+enum class PipelineCreateFlagBits: int32_t {
     DisableOptimization = 1,
     AllowDerivatives = 2,
     Derivative = 4,
@@ -1802,22 +1757,22 @@ enum class PipelineCreateFlagBits: uint32_t {
     ViewIndexFromDeviceIndex = 8,
     DispatchBase = 16,
 };
-enum class PipelineShaderStageCreateFlagBits: uint32_t {
+enum class PipelineShaderStageCreateFlagBits: int32_t {
     AllowVaryingSubgroupSizeBitEXT = 1,
     RequireFullSubgroupsBitEXT = 2,
 };
-enum class ColorComponentFlagBits: uint32_t {
+enum class ColorComponentFlagBits: int32_t {
     R = 1,
     G = 2,
     B = 4,
     A = 8,
 };
-enum class FenceCreateFlagBits: uint32_t {
+enum class FenceCreateFlagBits: int32_t {
     Signaled = 1,
 };
-enum class SemaphoreCreateFlagBits: uint32_t {
+enum class SemaphoreCreateFlagBits: int32_t {
 };
-enum class FormatFeatureFlagBits: uint32_t {
+enum class FormatFeatureFlagBits: int32_t {
     SampledImage = 1,
     StorageImage = 2,
     StorageImageAtomic = 4,
@@ -1845,21 +1800,21 @@ enum class FormatFeatureFlagBits: uint32_t {
     CositedChromaSamples = 8388608,
     SampledImageFilterMinmax = 65536,
 };
-enum class QueryControlFlagBits: uint32_t {
+enum class QueryControlFlagBits: int32_t {
     Precise = 1,
 };
-enum class QueryResultFlagBits: uint32_t {
+enum class QueryResultFlagBits: int32_t {
     e64 = 1,
     Wait = 2,
     WithAvailability = 4,
     Partial = 8,
 };
-enum class CommandBufferUsageFlagBits: uint32_t {
+enum class CommandBufferUsageFlagBits: int32_t {
     OneTimeSubmit = 1,
     RenderPassContinue = 2,
     SimultaneousUse = 4,
 };
-enum class QueryPipelineStatisticFlagBits: uint32_t {
+enum class QueryPipelineStatisticFlagBits: int32_t {
     InputAssemblyVertices = 1,
     InputAssemblyPrimitives = 2,
     VertexShaderInvocations = 4,
@@ -1872,7 +1827,7 @@ enum class QueryPipelineStatisticFlagBits: uint32_t {
     TessellationEvaluationShaderInvocations = 512,
     ComputeShaderInvocations = 1024,
 };
-enum class ImageAspectFlagBits: uint32_t {
+enum class ImageAspectFlagBits: int32_t {
     Color = 1,
     Depth = 2,
     Stencil = 4,
@@ -1885,15 +1840,15 @@ enum class ImageAspectFlagBits: uint32_t {
     Plane1 = 32,
     Plane2 = 64,
 };
-enum class SparseImageFormatFlagBits: uint32_t {
+enum class SparseImageFormatFlagBits: int32_t {
     SingleMiptail = 1,
     AlignedMipSize = 2,
     NonstandardBlockSize = 4,
 };
-enum class SparseMemoryBindFlagBits: uint32_t {
+enum class SparseMemoryBindFlagBits: int32_t {
     Metadata = 1,
 };
-enum class PipelineStageFlagBits: uint32_t {
+enum class PipelineStageFlagBits: int32_t {
     TopOfPipe = 1,
     DrawIndirect = 2,
     VertexInput = 4,
@@ -1921,18 +1876,18 @@ enum class PipelineStageFlagBits: uint32_t {
     FragmentDensityProcessBitEXT = 8388608,
     CommandPreprocessBitNV = 131072,
 };
-enum class CommandPoolCreateFlagBits: uint32_t {
+enum class CommandPoolCreateFlagBits: int32_t {
     Transient = 1,
     ResetCommandBuffer = 2,
     Protected = 4,
 };
-enum class CommandPoolResetFlagBits: uint32_t {
+enum class CommandPoolResetFlagBits: int32_t {
     ReleaseResources = 1,
 };
-enum class CommandBufferResetFlagBits: uint32_t {
+enum class CommandBufferResetFlagBits: int32_t {
     ReleaseResources = 1,
 };
-enum class SampleCountFlagBits: uint32_t {
+enum class SampleCountFlagBits: int32_t {
     e1 = 1,
     e2 = 2,
     e4 = 4,
@@ -1941,39 +1896,39 @@ enum class SampleCountFlagBits: uint32_t {
     e32 = 32,
     e64 = 64,
 };
-enum class AttachmentDescriptionFlagBits: uint32_t {
+enum class AttachmentDescriptionFlagBits: int32_t {
     MayAlias = 1,
 };
-enum class StencilFaceFlagBits: uint32_t {
+enum class StencilFaceFlagBits: int32_t {
     Front = 1,
     Back = 2,
     FrontAndBack = 0x00000003,
 };
-enum class DescriptorPoolCreateFlagBits: uint32_t {
+enum class DescriptorPoolCreateFlagBits: int32_t {
     FreeDescriptorSet = 1,
     UpdateAfterBind = 2,
 };
-enum class DependencyFlagBits: uint32_t {
+enum class DependencyFlagBits: int32_t {
     ByRegion = 1,
     DeviceGroup = 4,
     ViewLocal = 2,
 };
-enum class SemaphoreWaitFlagBits: uint32_t {
+enum class SemaphoreWaitFlagBits: int32_t {
     Any = 1,
 };
-enum class DisplayPlaneAlphaFlagBitsKHR: uint32_t {
+enum class DisplayPlaneAlphaFlagBitsKHR: int32_t {
     OpaqueBitKHR = 1,
     GlobalBitKHR = 2,
     PerPixelBitKHR = 4,
     PerPixelPremultipliedBitKHR = 8,
 };
-enum class CompositeAlphaFlagBitsKHR: uint32_t {
+enum class CompositeAlphaFlagBitsKHR: int32_t {
     OpaqueBitKHR = 1,
     PreMultipliedBitKHR = 2,
     PostMultipliedBitKHR = 4,
     InheritBitKHR = 8,
 };
-enum class SurfaceTransformFlagBitsKHR: uint32_t {
+enum class SurfaceTransformFlagBitsKHR: int32_t {
     IdentityBitKHR = 1,
     Rotate90BitKHR = 2,
     Rotate180BitKHR = 4,
@@ -1984,25 +1939,25 @@ enum class SurfaceTransformFlagBitsKHR: uint32_t {
     HorizontalMirrorRotate270BitKHR = 128,
     InheritBitKHR = 256,
 };
-enum class DebugReportFlagBitsEXT: uint32_t {
+enum class DebugReportFlagBitsEXT: int32_t {
     InformationBitEXT = 1,
     WarningBitEXT = 2,
     PerformanceWarningBitEXT = 4,
     ErrorBitEXT = 8,
     DebugBitEXT = 16,
 };
-enum class ExternalMemoryHandleTypeFlagBitsNV: uint32_t {
+enum class ExternalMemoryHandleTypeFlagBitsNV: int32_t {
     OpaqueWin32BitNV = 1,
     OpaqueWin32KmtBitNV = 2,
     D3D11ImageBitNV = 4,
     D3D11ImageKmtBitNV = 8,
 };
-enum class ExternalMemoryFeatureFlagBitsNV: uint32_t {
+enum class ExternalMemoryFeatureFlagBitsNV: int32_t {
     DedicatedOnlyBitNV = 1,
     ExportableBitNV = 2,
     ImportableBitNV = 4,
 };
-enum class SubgroupFeatureFlagBits: uint32_t {
+enum class SubgroupFeatureFlagBits: int32_t {
     Basic = 1,
     Vote = 2,
     Arithmetic = 4,
@@ -2013,21 +1968,21 @@ enum class SubgroupFeatureFlagBits: uint32_t {
     Quad = 128,
     PartitionedBitNV = 256,
 };
-enum class IndirectCommandsLayoutUsageFlagBitsNV: uint32_t {
+enum class IndirectCommandsLayoutUsageFlagBitsNV: int32_t {
     ExplicitPreprocessBitNV = 1,
     IndexedSequencesBitNV = 2,
     UnorderedSequencesBitNV = 4,
 };
-enum class IndirectStateFlagBitsNV: uint32_t {
+enum class IndirectStateFlagBitsNV: int32_t {
     FlagFrontfaceBitNV = 1,
 };
-enum class PrivateDataSlotCreateFlagBitsEXT: uint32_t {
+enum class PrivateDataSlotCreateFlagBitsEXT: int32_t {
 };
-enum class DescriptorSetLayoutCreateFlagBits: uint32_t {
+enum class DescriptorSetLayoutCreateFlagBits: int32_t {
     PushDescriptorBitKHR = 1,
     UpdateAfterBindPool = 2,
 };
-enum class ExternalMemoryHandleTypeFlagBits: uint32_t {
+enum class ExternalMemoryHandleTypeFlagBits: int32_t {
     OpaqueFd = 1,
     OpaqueWin32 = 2,
     OpaqueWin32Kmt = 4,
@@ -2040,12 +1995,12 @@ enum class ExternalMemoryHandleTypeFlagBits: uint32_t {
     HostAllocationBitEXT = 128,
     HostMappedForeignMemoryBitEXT = 256,
 };
-enum class ExternalMemoryFeatureFlagBits: uint32_t {
+enum class ExternalMemoryFeatureFlagBits: int32_t {
     DedicatedOnly = 1,
     Exportable = 2,
     Importable = 4,
 };
-enum class ExternalSemaphoreHandleTypeFlagBits: uint32_t {
+enum class ExternalSemaphoreHandleTypeFlagBits: int32_t {
     OpaqueFd = 1,
     OpaqueWin32 = 2,
     OpaqueWin32Kmt = 4,
@@ -2053,78 +2008,78 @@ enum class ExternalSemaphoreHandleTypeFlagBits: uint32_t {
     D3D11Fence = D3D12Fence,
     SyncFd = 16,
 };
-enum class ExternalSemaphoreFeatureFlagBits: uint32_t {
+enum class ExternalSemaphoreFeatureFlagBits: int32_t {
     Exportable = 1,
     Importable = 2,
 };
-enum class SemaphoreImportFlagBits: uint32_t {
+enum class SemaphoreImportFlagBits: int32_t {
     Temporary = 1,
 };
-enum class ExternalFenceHandleTypeFlagBits: uint32_t {
+enum class ExternalFenceHandleTypeFlagBits: int32_t {
     OpaqueFd = 1,
     OpaqueWin32 = 2,
     OpaqueWin32Kmt = 4,
     SyncFd = 8,
 };
-enum class ExternalFenceFeatureFlagBits: uint32_t {
+enum class ExternalFenceFeatureFlagBits: int32_t {
     Exportable = 1,
     Importable = 2,
 };
-enum class FenceImportFlagBits: uint32_t {
+enum class FenceImportFlagBits: int32_t {
     Temporary = 1,
 };
-enum class SurfaceCounterFlagBitsEXT: uint32_t {
+enum class SurfaceCounterFlagBitsEXT: int32_t {
     VblankEXT = 1,
 };
-enum class PeerMemoryFeatureFlagBits: uint32_t {
+enum class PeerMemoryFeatureFlagBits: int32_t {
     CopySrc = 1,
     CopyDst = 2,
     GenericSrc = 4,
     GenericDst = 8,
 };
-enum class MemoryAllocateFlagBits: uint32_t {
+enum class MemoryAllocateFlagBits: int32_t {
     DeviceMask = 1,
     DeviceAddress = 2,
     DeviceAddressCaptureReplay = 4,
 };
-enum class DeviceGroupPresentModeFlagBitsKHR: uint32_t {
+enum class DeviceGroupPresentModeFlagBitsKHR: int32_t {
     LocalBitKHR = 1,
     RemoteBitKHR = 2,
     SumBitKHR = 4,
     LocalMultiDeviceBitKHR = 8,
 };
-enum class SwapchainCreateFlagBitsKHR: uint32_t {
+enum class SwapchainCreateFlagBitsKHR: int32_t {
     SplitInstanceBindRegionsBitKHR = 1,
     ProtectedBitKHR = 2,
     MutableFormatBitKHR = 4,
 };
-enum class SubpassDescriptionFlagBits: uint32_t {
+enum class SubpassDescriptionFlagBits: int32_t {
     PerViewAttributesBitNVX = 1,
     PerViewPositionXOnlyBitNVX = 2,
     FragmentRegionBitQCOM = 4,
     ShaderResolveBitQCOM = 8,
 };
-enum class DebugUtilsMessageSeverityFlagBitsEXT: uint32_t {
+enum class DebugUtilsMessageSeverityFlagBitsEXT: int32_t {
     VerboseBitEXT = 1,
     InfoBitEXT = 16,
     WarningBitEXT = 256,
     ErrorBitEXT = 4096,
 };
-enum class DebugUtilsMessageTypeFlagBitsEXT: uint32_t {
+enum class DebugUtilsMessageTypeFlagBitsEXT: int32_t {
     GeneralBitEXT = 1,
     ValidationBitEXT = 2,
     PerformanceBitEXT = 4,
 };
-enum class DescriptorBindingFlagBits: uint32_t {
+enum class DescriptorBindingFlagBits: int32_t {
     UpdateAfterBind = 1,
     UpdateUnusedWhilePending = 2,
     PartiallyBound = 4,
     VariableDescriptorCount = 8,
 };
-enum class ConditionalRenderingFlagBitsEXT: uint32_t {
+enum class ConditionalRenderingFlagBitsEXT: int32_t {
     InvertedBitEXT = 1,
 };
-enum class ResolveModeFlagBits: uint32_t {
+enum class ResolveModeFlagBits: int32_t {
     None = 0,
     SampleZero = 1,
     Average = 2,
@@ -2132,17 +2087,17 @@ enum class ResolveModeFlagBits: uint32_t {
     Max = 8,
 };
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-enum class GeometryInstanceFlagBitsKHR: uint32_t {
+enum class GeometryInstanceFlagBitsKHR: int32_t {
     TriangleFacingCullDisableBitKHR = 1,
     TriangleFrontCounterclockwiseBitKHR = 2,
     ForceOpaqueBitKHR = 4,
     ForceNoOpaqueBitKHR = 8,
 };
-enum class GeometryFlagBitsKHR: uint32_t {
+enum class GeometryFlagBitsKHR: int32_t {
     OpaqueBitKHR = 1,
     NoDuplicateAnyHitInvocationBitKHR = 2,
 };
-enum class BuildAccelerationStructureFlagBitsKHR: uint32_t {
+enum class BuildAccelerationStructureFlagBitsKHR: int32_t {
     AllowUpdateBitKHR = 1,
     AllowCompactionBitKHR = 2,
     PreferFastTraceBitKHR = 4,
@@ -2150,32 +2105,32 @@ enum class BuildAccelerationStructureFlagBitsKHR: uint32_t {
     LowMemoryBitKHR = 16,
 };
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
-enum class FramebufferCreateFlagBits: uint32_t {
+enum class FramebufferCreateFlagBits: int32_t {
     Imageless = 1,
 };
-enum class DeviceDiagnosticsConfigFlagBitsNV: uint32_t {
+enum class DeviceDiagnosticsConfigFlagBitsNV: int32_t {
     EnableShaderDebugInfoBitNV = 1,
     EnableResourceTrackingBitNV = 2,
     EnableAutomaticCheckpointsBitNV = 4,
 };
-enum class PipelineCreationFeedbackFlagBitsEXT: uint32_t {
+enum class PipelineCreationFeedbackFlagBitsEXT: int32_t {
     ValidBitEXT = 1,
     ApplicationPipelineCacheHitBitEXT = 2,
     BasePipelineAccelerationBitEXT = 4,
 };
-enum class PerformanceCounterDescriptionFlagBitsKHR: uint32_t {
+enum class PerformanceCounterDescriptionFlagBitsKHR: int32_t {
     PerformanceImpactingKHR = 1,
     ConcurrentlyImpactedKHR = 2,
 };
-enum class AcquireProfilingLockFlagBitsKHR: uint32_t {
+enum class AcquireProfilingLockFlagBitsKHR: int32_t {
 };
-enum class ShaderCorePropertiesFlagBitsAMD: uint32_t {
+enum class ShaderCorePropertiesFlagBitsAMD: int32_t {
 };
-enum class ShaderModuleCreateFlagBits: uint32_t {
+enum class ShaderModuleCreateFlagBits: int32_t {
 };
-enum class PipelineCompilerControlFlagBitsAMD: uint32_t {
+enum class PipelineCompilerControlFlagBitsAMD: int32_t {
 };
-enum class ToolPurposeFlagBitsEXT: uint32_t {
+enum class ToolPurposeFlagBitsEXT: int32_t {
     ValidationBitEXT = 1,
     ProfilingBitEXT = 2,
     TracingBitEXT = 4,
@@ -2184,76 +2139,76 @@ enum class ToolPurposeFlagBitsEXT: uint32_t {
     DebugReportingBitEXT = 32,
     DebugMarkersBitEXT = 64,
 };
-enum class QueryPoolCreateFlagBits: uint32_t { };
-enum class PipelineLayoutCreateFlagBits: uint32_t { };
-enum class PipelineDepthStencilStateCreateFlagBits: uint32_t { };
-enum class PipelineDynamicStateCreateFlagBits: uint32_t { };
-enum class PipelineColorBlendStateCreateFlagBits: uint32_t { };
-enum class PipelineMultisampleStateCreateFlagBits: uint32_t { };
-enum class PipelineRasterizationStateCreateFlagBits: uint32_t { };
-enum class PipelineViewportStateCreateFlagBits: uint32_t { };
-enum class PipelineTessellationStateCreateFlagBits: uint32_t { };
-enum class PipelineInputAssemblyStateCreateFlagBits: uint32_t { };
-enum class PipelineVertexInputStateCreateFlagBits: uint32_t { };
-enum class BufferViewCreateFlagBits: uint32_t { };
-enum class InstanceCreateFlagBits: uint32_t { };
-enum class DeviceCreateFlagBits: uint32_t { };
-enum class EventCreateFlagBits: uint32_t { };
-enum class MemoryMapFlagBits: uint32_t { };
-enum class DescriptorPoolResetFlagBits: uint32_t { };
-enum class DescriptorUpdateTemplateCreateFlagBits: uint32_t { };
-enum class DisplayModeCreateFlagBitsKHR: uint32_t { };
-enum class DisplaySurfaceCreateFlagBitsKHR: uint32_t { };
+enum class QueryPoolCreateFlagBits: int32_t { };
+enum class PipelineLayoutCreateFlagBits: int32_t { };
+enum class PipelineDepthStencilStateCreateFlagBits: int32_t { };
+enum class PipelineDynamicStateCreateFlagBits: int32_t { };
+enum class PipelineColorBlendStateCreateFlagBits: int32_t { };
+enum class PipelineMultisampleStateCreateFlagBits: int32_t { };
+enum class PipelineRasterizationStateCreateFlagBits: int32_t { };
+enum class PipelineViewportStateCreateFlagBits: int32_t { };
+enum class PipelineTessellationStateCreateFlagBits: int32_t { };
+enum class PipelineInputAssemblyStateCreateFlagBits: int32_t { };
+enum class PipelineVertexInputStateCreateFlagBits: int32_t { };
+enum class BufferViewCreateFlagBits: int32_t { };
+enum class InstanceCreateFlagBits: int32_t { };
+enum class DeviceCreateFlagBits: int32_t { };
+enum class EventCreateFlagBits: int32_t { };
+enum class MemoryMapFlagBits: int32_t { };
+enum class DescriptorPoolResetFlagBits: int32_t { };
+enum class DescriptorUpdateTemplateCreateFlagBits: int32_t { };
+enum class DisplayModeCreateFlagBitsKHR: int32_t { };
+enum class DisplaySurfaceCreateFlagBitsKHR: int32_t { };
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
-enum class AndroidSurfaceCreateFlagBitsKHR: uint32_t { };
+enum class AndroidSurfaceCreateFlagBitsKHR: int32_t { };
 #endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
 #if defined(VK_USE_PLATFORM_VI_NN)
-enum class ViSurfaceCreateFlagBitsNN: uint32_t { };
+enum class ViSurfaceCreateFlagBitsNN: int32_t { };
 #endif // defined(VK_USE_PLATFORM_VI_NN)
 #if defined(VK_USE_PLATFORM_WAYLAND_KHR)
-enum class WaylandSurfaceCreateFlagBitsKHR: uint32_t { };
+enum class WaylandSurfaceCreateFlagBitsKHR: int32_t { };
 #endif // defined(VK_USE_PLATFORM_WAYLAND_KHR)
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
-enum class Win32SurfaceCreateFlagBitsKHR: uint32_t { };
+enum class Win32SurfaceCreateFlagBitsKHR: int32_t { };
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 #if defined(VK_USE_PLATFORM_XLIB_KHR)
-enum class XlibSurfaceCreateFlagBitsKHR: uint32_t { };
+enum class XlibSurfaceCreateFlagBitsKHR: int32_t { };
 #endif // defined(VK_USE_PLATFORM_XLIB_KHR)
 #if defined(VK_USE_PLATFORM_XCB_KHR)
-enum class XcbSurfaceCreateFlagBitsKHR: uint32_t { };
+enum class XcbSurfaceCreateFlagBitsKHR: int32_t { };
 #endif // defined(VK_USE_PLATFORM_XCB_KHR)
 #if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
-enum class DirectFBSurfaceCreateFlagBitsEXT: uint32_t { };
+enum class DirectFBSurfaceCreateFlagBitsEXT: int32_t { };
 #endif // defined(VK_USE_PLATFORM_DIRECTFB_EXT)
 #if defined(VK_USE_PLATFORM_IOS_MVK)
-enum class IOSSurfaceCreateFlagBitsMVK: uint32_t { };
+enum class IOSSurfaceCreateFlagBitsMVK: int32_t { };
 #endif // defined(VK_USE_PLATFORM_IOS_MVK)
 #if defined(VK_USE_PLATFORM_MACOS_MVK)
-enum class MacOSSurfaceCreateFlagBitsMVK: uint32_t { };
+enum class MacOSSurfaceCreateFlagBitsMVK: int32_t { };
 #endif // defined(VK_USE_PLATFORM_MACOS_MVK)
 #if defined(VK_USE_PLATFORM_METAL_EXT)
-enum class MetalSurfaceCreateFlagBitsEXT: uint32_t { };
+enum class MetalSurfaceCreateFlagBitsEXT: int32_t { };
 #endif // defined(VK_USE_PLATFORM_METAL_EXT)
 #if defined(VK_USE_PLATFORM_FUCHSIA)
-enum class ImagePipeSurfaceCreateFlagBitsFUCHSIA: uint32_t { };
+enum class ImagePipeSurfaceCreateFlagBitsFUCHSIA: int32_t { };
 #endif // defined(VK_USE_PLATFORM_FUCHSIA)
 #if defined(VK_USE_PLATFORM_GGP)
-enum class StreamDescriptorSurfaceCreateFlagBitsGGP: uint32_t { };
+enum class StreamDescriptorSurfaceCreateFlagBitsGGP: int32_t { };
 #endif // defined(VK_USE_PLATFORM_GGP)
-enum class HeadlessSurfaceCreateFlagBitsEXT: uint32_t { };
-enum class CommandPoolTrimFlagBits: uint32_t { };
-enum class PipelineViewportSwizzleStateCreateFlagBitsNV: uint32_t { };
-enum class PipelineDiscardRectangleStateCreateFlagBitsEXT: uint32_t { };
-enum class PipelineCoverageToColorStateCreateFlagBitsNV: uint32_t { };
-enum class PipelineCoverageModulationStateCreateFlagBitsNV: uint32_t { };
-enum class PipelineCoverageReductionStateCreateFlagBitsNV: uint32_t { };
-enum class ValidationCacheCreateFlagBitsEXT: uint32_t { };
-enum class DebugUtilsMessengerCreateFlagBitsEXT: uint32_t { };
-enum class DebugUtilsMessengerCallbackDataFlagBitsEXT: uint32_t { };
-enum class DeviceMemoryReportFlagBitsEXT: uint32_t { };
-enum class PipelineRasterizationConservativeStateCreateFlagBitsEXT: uint32_t { };
-enum class PipelineRasterizationStateStreamCreateFlagBitsEXT: uint32_t { };
-enum class PipelineRasterizationDepthClipStateCreateFlagBitsEXT: uint32_t { };
+enum class HeadlessSurfaceCreateFlagBitsEXT: int32_t { };
+enum class CommandPoolTrimFlagBits: int32_t { };
+enum class PipelineViewportSwizzleStateCreateFlagBitsNV: int32_t { };
+enum class PipelineDiscardRectangleStateCreateFlagBitsEXT: int32_t { };
+enum class PipelineCoverageToColorStateCreateFlagBitsNV: int32_t { };
+enum class PipelineCoverageModulationStateCreateFlagBitsNV: int32_t { };
+enum class PipelineCoverageReductionStateCreateFlagBitsNV: int32_t { };
+enum class ValidationCacheCreateFlagBitsEXT: int32_t { };
+enum class DebugUtilsMessengerCreateFlagBitsEXT: int32_t { };
+enum class DebugUtilsMessengerCallbackDataFlagBitsEXT: int32_t { };
+enum class DeviceMemoryReportFlagBitsEXT: int32_t { };
+enum class PipelineRasterizationConservativeStateCreateFlagBitsEXT: int32_t { };
+enum class PipelineRasterizationStateStreamCreateFlagBitsEXT: int32_t { };
+enum class PipelineRasterizationDepthClipStateCreateFlagBitsEXT: int32_t { };
 
 #define DECLARE_ENUM_FLAG_OPERATORS(FLAG_TYPE, FLAG_BITS, BASE_TYPE)                       \
                                                                                            \
@@ -2265,6 +2220,7 @@ struct FLAG_TYPE {                                                              
     constexpr FLAG_TYPE(FLAG_BITS in) noexcept: flags(static_cast<BASE_TYPE>(in)){ }       \
     constexpr bool operator==(FLAG_TYPE const& right) const { return flags == right.flags;}\
     constexpr bool operator!=(FLAG_TYPE const& right) const { return flags != right.flags;}\
+    constexpr explicit operator BASE_TYPE() const { return flags;}                         \
     constexpr explicit operator bool() const noexcept {                                    \
       return flags != 0;                                                                   \
     }                                                                                      \
@@ -2306,219 +2262,180 @@ constexpr FLAG_TYPE operator^(FLAG_BITS a, FLAG_BITS b) noexcept {              
     return static_cast<FLAG_TYPE>(static_cast<BASE_TYPE>(a) ^ static_cast<BASE_TYPE>(b));  \
 }                                                                                          \
 
-DECLARE_ENUM_FLAG_OPERATORS(FramebufferCreateFlags, FramebufferCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(QueryPoolCreateFlags, QueryPoolCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(RenderPassCreateFlags, RenderPassCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(SamplerCreateFlags, SamplerCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineLayoutCreateFlags, PipelineLayoutCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineCacheCreateFlags, PipelineCacheCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineDepthStencilStateCreateFlags, PipelineDepthStencilStateCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineDynamicStateCreateFlags, PipelineDynamicStateCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineColorBlendStateCreateFlags, PipelineColorBlendStateCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineMultisampleStateCreateFlags, PipelineMultisampleStateCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationStateCreateFlags, PipelineRasterizationStateCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineViewportStateCreateFlags, PipelineViewportStateCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineTessellationStateCreateFlags, PipelineTessellationStateCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineInputAssemblyStateCreateFlags, PipelineInputAssemblyStateCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineVertexInputStateCreateFlags, PipelineVertexInputStateCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineShaderStageCreateFlags, PipelineShaderStageCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DescriptorSetLayoutCreateFlags, DescriptorSetLayoutCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(BufferViewCreateFlags, BufferViewCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(InstanceCreateFlags, InstanceCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DeviceCreateFlags, DeviceCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DeviceQueueCreateFlags, DeviceQueueCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(QueueFlags, QueueFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(MemoryPropertyFlags, MemoryPropertyFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(MemoryHeapFlags, MemoryHeapFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(AccessFlags, AccessFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(BufferUsageFlags, BufferUsageFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(BufferCreateFlags, BufferCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(ShaderStageFlags, ShaderStageFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(ImageUsageFlags, ImageUsageFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(ImageCreateFlags, ImageCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(ImageViewCreateFlags, ImageViewCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineCreateFlags, PipelineCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(ColorComponentFlags, ColorComponentFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(FenceCreateFlags, FenceCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(SemaphoreCreateFlags, SemaphoreCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(FormatFeatureFlags, FormatFeatureFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(QueryControlFlags, QueryControlFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(QueryResultFlags, QueryResultFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(ShaderModuleCreateFlags, ShaderModuleCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(EventCreateFlags, EventCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(CommandPoolCreateFlags, CommandPoolCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(CommandPoolResetFlags, CommandPoolResetFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(CommandBufferResetFlags, CommandBufferResetFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(CommandBufferUsageFlags, CommandBufferUsageFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(QueryPipelineStatisticFlags, QueryPipelineStatisticFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(MemoryMapFlags, MemoryMapFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(ImageAspectFlags, ImageAspectFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(SparseMemoryBindFlags, SparseMemoryBindFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(SparseImageFormatFlags, SparseImageFormatFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(SubpassDescriptionFlags, SubpassDescriptionFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineStageFlags, PipelineStageFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(SampleCountFlags, SampleCountFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(AttachmentDescriptionFlags, AttachmentDescriptionFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(StencilFaceFlags, StencilFaceFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(CullModeFlags, CullModeFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DescriptorPoolCreateFlags, DescriptorPoolCreateFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DescriptorPoolResetFlags, DescriptorPoolResetFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DependencyFlags, DependencyFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(SubgroupFeatureFlags, SubgroupFeatureFlagBits, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(IndirectCommandsLayoutUsageFlagsNV, IndirectCommandsLayoutUsageFlagBitsNV, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(IndirectStateFlagsNV, IndirectStateFlagBitsNV, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(FramebufferCreateFlags, FramebufferCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(QueryPoolCreateFlags, QueryPoolCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(RenderPassCreateFlags, RenderPassCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(SamplerCreateFlags, SamplerCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineLayoutCreateFlags, PipelineLayoutCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineCacheCreateFlags, PipelineCacheCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineDepthStencilStateCreateFlags, PipelineDepthStencilStateCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineDynamicStateCreateFlags, PipelineDynamicStateCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineColorBlendStateCreateFlags, PipelineColorBlendStateCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineMultisampleStateCreateFlags, PipelineMultisampleStateCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationStateCreateFlags, PipelineRasterizationStateCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineViewportStateCreateFlags, PipelineViewportStateCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineTessellationStateCreateFlags, PipelineTessellationStateCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineInputAssemblyStateCreateFlags, PipelineInputAssemblyStateCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineVertexInputStateCreateFlags, PipelineVertexInputStateCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineShaderStageCreateFlags, PipelineShaderStageCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(DescriptorSetLayoutCreateFlags, DescriptorSetLayoutCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(BufferViewCreateFlags, BufferViewCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(InstanceCreateFlags, InstanceCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(DeviceCreateFlags, DeviceCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(DeviceQueueCreateFlags, DeviceQueueCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(QueueFlags, QueueFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(MemoryPropertyFlags, MemoryPropertyFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(MemoryHeapFlags, MemoryHeapFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(AccessFlags, AccessFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(BufferUsageFlags, BufferUsageFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(BufferCreateFlags, BufferCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(ShaderStageFlags, ShaderStageFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(ImageUsageFlags, ImageUsageFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(ImageCreateFlags, ImageCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(ImageViewCreateFlags, ImageViewCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineCreateFlags, PipelineCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(ColorComponentFlags, ColorComponentFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(FenceCreateFlags, FenceCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(SemaphoreCreateFlags, SemaphoreCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(FormatFeatureFlags, FormatFeatureFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(QueryControlFlags, QueryControlFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(QueryResultFlags, QueryResultFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(ShaderModuleCreateFlags, ShaderModuleCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(EventCreateFlags, EventCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(CommandPoolCreateFlags, CommandPoolCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(CommandPoolResetFlags, CommandPoolResetFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(CommandBufferResetFlags, CommandBufferResetFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(CommandBufferUsageFlags, CommandBufferUsageFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(QueryPipelineStatisticFlags, QueryPipelineStatisticFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(MemoryMapFlags, MemoryMapFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(ImageAspectFlags, ImageAspectFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(SparseMemoryBindFlags, SparseMemoryBindFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(SparseImageFormatFlags, SparseImageFormatFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(SubpassDescriptionFlags, SubpassDescriptionFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineStageFlags, PipelineStageFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(SampleCountFlags, SampleCountFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(AttachmentDescriptionFlags, AttachmentDescriptionFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(StencilFaceFlags, StencilFaceFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(CullModeFlags, CullModeFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(DescriptorPoolCreateFlags, DescriptorPoolCreateFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(DescriptorPoolResetFlags, DescriptorPoolResetFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(DependencyFlags, DependencyFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(SubgroupFeatureFlags, SubgroupFeatureFlagBits, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(IndirectCommandsLayoutUsageFlagsNV, IndirectCommandsLayoutUsageFlagBitsNV, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(IndirectStateFlagsNV, IndirectStateFlagBitsNV, VkFlags)
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-DECLARE_ENUM_FLAG_OPERATORS(GeometryFlagsKHR, GeometryFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(GeometryFlagsKHR, GeometryFlagBitsKHR, VkFlags)
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using GeometryFlagsNV = GeometryFlagsKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-DECLARE_ENUM_FLAG_OPERATORS(GeometryInstanceFlagsKHR, GeometryInstanceFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(GeometryInstanceFlagsKHR, GeometryInstanceFlagBitsKHR, VkFlags)
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using GeometryInstanceFlagsNV = GeometryInstanceFlagsKHR;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-DECLARE_ENUM_FLAG_OPERATORS(BuildAccelerationStructureFlagsKHR, BuildAccelerationStructureFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(BuildAccelerationStructureFlagsKHR, BuildAccelerationStructureFlagBitsKHR, VkFlags)
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using BuildAccelerationStructureFlagsNV = BuildAccelerationStructureFlagsKHR;
-DECLARE_ENUM_FLAG_OPERATORS(PrivateDataSlotCreateFlagsEXT, PrivateDataSlotCreateFlagBitsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DescriptorUpdateTemplateCreateFlags, DescriptorUpdateTemplateCreateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PrivateDataSlotCreateFlagsEXT, PrivateDataSlotCreateFlagBitsEXT, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(DescriptorUpdateTemplateCreateFlags, DescriptorUpdateTemplateCreateFlagBits, VkFlags)
 using DescriptorUpdateTemplateCreateFlagsKHR = DescriptorUpdateTemplateCreateFlags;
-DECLARE_ENUM_FLAG_OPERATORS(PipelineCreationFeedbackFlagsEXT, PipelineCreationFeedbackFlagBitsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PerformanceCounterDescriptionFlagsKHR, PerformanceCounterDescriptionFlagBitsKHR, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(AcquireProfilingLockFlagsKHR, AcquireProfilingLockFlagBitsKHR, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(SemaphoreWaitFlags, SemaphoreWaitFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineCreationFeedbackFlagsEXT, PipelineCreationFeedbackFlagBitsEXT, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(PerformanceCounterDescriptionFlagsKHR, PerformanceCounterDescriptionFlagBitsKHR, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(AcquireProfilingLockFlagsKHR, AcquireProfilingLockFlagBitsKHR, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(SemaphoreWaitFlags, SemaphoreWaitFlagBits, VkFlags)
 using SemaphoreWaitFlagsKHR = SemaphoreWaitFlags;
-DECLARE_ENUM_FLAG_OPERATORS(PipelineCompilerControlFlagsAMD, PipelineCompilerControlFlagBitsAMD, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(ShaderCorePropertiesFlagsAMD, ShaderCorePropertiesFlagBitsAMD, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DeviceDiagnosticsConfigFlagsNV, DeviceDiagnosticsConfigFlagBitsNV, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(CompositeAlphaFlagsKHR, CompositeAlphaFlagBitsKHR, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DisplayPlaneAlphaFlagsKHR, DisplayPlaneAlphaFlagBitsKHR, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(SurfaceTransformFlagsKHR, SurfaceTransformFlagBitsKHR, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(SwapchainCreateFlagsKHR, SwapchainCreateFlagBitsKHR, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DisplayModeCreateFlagsKHR, DisplayModeCreateFlagBitsKHR, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DisplaySurfaceCreateFlagsKHR, DisplaySurfaceCreateFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineCompilerControlFlagsAMD, PipelineCompilerControlFlagBitsAMD, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(ShaderCorePropertiesFlagsAMD, ShaderCorePropertiesFlagBitsAMD, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(DeviceDiagnosticsConfigFlagsNV, DeviceDiagnosticsConfigFlagBitsNV, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(CompositeAlphaFlagsKHR, CompositeAlphaFlagBitsKHR, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(DisplayPlaneAlphaFlagsKHR, DisplayPlaneAlphaFlagBitsKHR, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(SurfaceTransformFlagsKHR, SurfaceTransformFlagBitsKHR, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(SwapchainCreateFlagsKHR, SwapchainCreateFlagBitsKHR, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(DisplayModeCreateFlagsKHR, DisplayModeCreateFlagBitsKHR, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(DisplaySurfaceCreateFlagsKHR, DisplaySurfaceCreateFlagBitsKHR, VkFlags)
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
-DECLARE_ENUM_FLAG_OPERATORS(AndroidSurfaceCreateFlagsKHR, AndroidSurfaceCreateFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(AndroidSurfaceCreateFlagsKHR, AndroidSurfaceCreateFlagBitsKHR, VkFlags)
 #endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
 #if defined(VK_USE_PLATFORM_VI_NN)
-DECLARE_ENUM_FLAG_OPERATORS(ViSurfaceCreateFlagsNN, ViSurfaceCreateFlagBitsNN, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ViSurfaceCreateFlagsNN, ViSurfaceCreateFlagBitsNN, VkFlags)
 #endif // defined(VK_USE_PLATFORM_VI_NN)
 #if defined(VK_USE_PLATFORM_WAYLAND_KHR)
-DECLARE_ENUM_FLAG_OPERATORS(WaylandSurfaceCreateFlagsKHR, WaylandSurfaceCreateFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(WaylandSurfaceCreateFlagsKHR, WaylandSurfaceCreateFlagBitsKHR, VkFlags)
 #endif // defined(VK_USE_PLATFORM_WAYLAND_KHR)
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
-DECLARE_ENUM_FLAG_OPERATORS(Win32SurfaceCreateFlagsKHR, Win32SurfaceCreateFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(Win32SurfaceCreateFlagsKHR, Win32SurfaceCreateFlagBitsKHR, VkFlags)
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 #if defined(VK_USE_PLATFORM_XLIB_KHR)
-DECLARE_ENUM_FLAG_OPERATORS(XlibSurfaceCreateFlagsKHR, XlibSurfaceCreateFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(XlibSurfaceCreateFlagsKHR, XlibSurfaceCreateFlagBitsKHR, VkFlags)
 #endif // defined(VK_USE_PLATFORM_XLIB_KHR)
 #if defined(VK_USE_PLATFORM_XCB_KHR)
-DECLARE_ENUM_FLAG_OPERATORS(XcbSurfaceCreateFlagsKHR, XcbSurfaceCreateFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(XcbSurfaceCreateFlagsKHR, XcbSurfaceCreateFlagBitsKHR, VkFlags)
 #endif // defined(VK_USE_PLATFORM_XCB_KHR)
 #if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
-DECLARE_ENUM_FLAG_OPERATORS(DirectFBSurfaceCreateFlagsEXT, DirectFBSurfaceCreateFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DirectFBSurfaceCreateFlagsEXT, DirectFBSurfaceCreateFlagBitsEXT, VkFlags)
 #endif // defined(VK_USE_PLATFORM_DIRECTFB_EXT)
 #if defined(VK_USE_PLATFORM_IOS_MVK)
-DECLARE_ENUM_FLAG_OPERATORS(IOSSurfaceCreateFlagsMVK, IOSSurfaceCreateFlagBitsMVK, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(IOSSurfaceCreateFlagsMVK, IOSSurfaceCreateFlagBitsMVK, VkFlags)
 #endif // defined(VK_USE_PLATFORM_IOS_MVK)
 #if defined(VK_USE_PLATFORM_MACOS_MVK)
-DECLARE_ENUM_FLAG_OPERATORS(MacOSSurfaceCreateFlagsMVK, MacOSSurfaceCreateFlagBitsMVK, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(MacOSSurfaceCreateFlagsMVK, MacOSSurfaceCreateFlagBitsMVK, VkFlags)
 #endif // defined(VK_USE_PLATFORM_MACOS_MVK)
 #if defined(VK_USE_PLATFORM_METAL_EXT)
-DECLARE_ENUM_FLAG_OPERATORS(MetalSurfaceCreateFlagsEXT, MetalSurfaceCreateFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(MetalSurfaceCreateFlagsEXT, MetalSurfaceCreateFlagBitsEXT, VkFlags)
 #endif // defined(VK_USE_PLATFORM_METAL_EXT)
 #if defined(VK_USE_PLATFORM_FUCHSIA)
-DECLARE_ENUM_FLAG_OPERATORS(ImagePipeSurfaceCreateFlagsFUCHSIA, ImagePipeSurfaceCreateFlagBitsFUCHSIA, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ImagePipeSurfaceCreateFlagsFUCHSIA, ImagePipeSurfaceCreateFlagBitsFUCHSIA, VkFlags)
 #endif // defined(VK_USE_PLATFORM_FUCHSIA)
 #if defined(VK_USE_PLATFORM_GGP)
-DECLARE_ENUM_FLAG_OPERATORS(StreamDescriptorSurfaceCreateFlagsGGP, StreamDescriptorSurfaceCreateFlagBitsGGP, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(StreamDescriptorSurfaceCreateFlagsGGP, StreamDescriptorSurfaceCreateFlagBitsGGP, VkFlags)
 #endif // defined(VK_USE_PLATFORM_GGP)
-DECLARE_ENUM_FLAG_OPERATORS(HeadlessSurfaceCreateFlagsEXT, HeadlessSurfaceCreateFlagBitsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PeerMemoryFeatureFlags, PeerMemoryFeatureFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(HeadlessSurfaceCreateFlagsEXT, HeadlessSurfaceCreateFlagBitsEXT, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(PeerMemoryFeatureFlags, PeerMemoryFeatureFlagBits, VkFlags)
 using PeerMemoryFeatureFlagsKHR = PeerMemoryFeatureFlags;
-DECLARE_ENUM_FLAG_OPERATORS(MemoryAllocateFlags, MemoryAllocateFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(MemoryAllocateFlags, MemoryAllocateFlagBits, VkFlags)
 using MemoryAllocateFlagsKHR = MemoryAllocateFlags;
-DECLARE_ENUM_FLAG_OPERATORS(DeviceGroupPresentModeFlagsKHR, DeviceGroupPresentModeFlagBitsKHR, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DebugReportFlagsEXT, DebugReportFlagBitsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(CommandPoolTrimFlags, CommandPoolTrimFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(DeviceGroupPresentModeFlagsKHR, DeviceGroupPresentModeFlagBitsKHR, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(DebugReportFlagsEXT, DebugReportFlagBitsEXT, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(CommandPoolTrimFlags, CommandPoolTrimFlagBits, VkFlags)
 using CommandPoolTrimFlagsKHR = CommandPoolTrimFlags;
-DECLARE_ENUM_FLAG_OPERATORS(ExternalMemoryHandleTypeFlagsNV, ExternalMemoryHandleTypeFlagBitsNV, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(ExternalMemoryFeatureFlagsNV, ExternalMemoryFeatureFlagBitsNV, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(ExternalMemoryHandleTypeFlags, ExternalMemoryHandleTypeFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ExternalMemoryHandleTypeFlagsNV, ExternalMemoryHandleTypeFlagBitsNV, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(ExternalMemoryFeatureFlagsNV, ExternalMemoryFeatureFlagBitsNV, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(ExternalMemoryHandleTypeFlags, ExternalMemoryHandleTypeFlagBits, VkFlags)
 using ExternalMemoryHandleTypeFlagsKHR = ExternalMemoryHandleTypeFlags;
-DECLARE_ENUM_FLAG_OPERATORS(ExternalMemoryFeatureFlags, ExternalMemoryFeatureFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ExternalMemoryFeatureFlags, ExternalMemoryFeatureFlagBits, VkFlags)
 using ExternalMemoryFeatureFlagsKHR = ExternalMemoryFeatureFlags;
-DECLARE_ENUM_FLAG_OPERATORS(ExternalSemaphoreHandleTypeFlags, ExternalSemaphoreHandleTypeFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ExternalSemaphoreHandleTypeFlags, ExternalSemaphoreHandleTypeFlagBits, VkFlags)
 using ExternalSemaphoreHandleTypeFlagsKHR = ExternalSemaphoreHandleTypeFlags;
-DECLARE_ENUM_FLAG_OPERATORS(ExternalSemaphoreFeatureFlags, ExternalSemaphoreFeatureFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ExternalSemaphoreFeatureFlags, ExternalSemaphoreFeatureFlagBits, VkFlags)
 using ExternalSemaphoreFeatureFlagsKHR = ExternalSemaphoreFeatureFlags;
-DECLARE_ENUM_FLAG_OPERATORS(SemaphoreImportFlags, SemaphoreImportFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(SemaphoreImportFlags, SemaphoreImportFlagBits, VkFlags)
 using SemaphoreImportFlagsKHR = SemaphoreImportFlags;
-DECLARE_ENUM_FLAG_OPERATORS(ExternalFenceHandleTypeFlags, ExternalFenceHandleTypeFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ExternalFenceHandleTypeFlags, ExternalFenceHandleTypeFlagBits, VkFlags)
 using ExternalFenceHandleTypeFlagsKHR = ExternalFenceHandleTypeFlags;
-DECLARE_ENUM_FLAG_OPERATORS(ExternalFenceFeatureFlags, ExternalFenceFeatureFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ExternalFenceFeatureFlags, ExternalFenceFeatureFlagBits, VkFlags)
 using ExternalFenceFeatureFlagsKHR = ExternalFenceFeatureFlags;
-DECLARE_ENUM_FLAG_OPERATORS(FenceImportFlags, FenceImportFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(FenceImportFlags, FenceImportFlagBits, VkFlags)
 using FenceImportFlagsKHR = FenceImportFlags;
-DECLARE_ENUM_FLAG_OPERATORS(SurfaceCounterFlagsEXT, SurfaceCounterFlagBitsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineViewportSwizzleStateCreateFlagsNV, PipelineViewportSwizzleStateCreateFlagBitsNV, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineDiscardRectangleStateCreateFlagsEXT, PipelineDiscardRectangleStateCreateFlagBitsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineCoverageToColorStateCreateFlagsNV, PipelineCoverageToColorStateCreateFlagBitsNV, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineCoverageModulationStateCreateFlagsNV, PipelineCoverageModulationStateCreateFlagBitsNV, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineCoverageReductionStateCreateFlagsNV, PipelineCoverageReductionStateCreateFlagBitsNV, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(ValidationCacheCreateFlagsEXT, ValidationCacheCreateFlagBitsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DebugUtilsMessageSeverityFlagsEXT, DebugUtilsMessageSeverityFlagBitsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DebugUtilsMessageTypeFlagsEXT, DebugUtilsMessageTypeFlagBitsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DebugUtilsMessengerCreateFlagsEXT, DebugUtilsMessengerCreateFlagBitsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DebugUtilsMessengerCallbackDataFlagsEXT, DebugUtilsMessengerCallbackDataFlagBitsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DeviceMemoryReportFlagsEXT, DeviceMemoryReportFlagBitsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationConservativeStateCreateFlagsEXT, PipelineRasterizationConservativeStateCreateFlagBitsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(DescriptorBindingFlags, DescriptorBindingFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(SurfaceCounterFlagsEXT, SurfaceCounterFlagBitsEXT, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineViewportSwizzleStateCreateFlagsNV, PipelineViewportSwizzleStateCreateFlagBitsNV, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineDiscardRectangleStateCreateFlagsEXT, PipelineDiscardRectangleStateCreateFlagBitsEXT, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineCoverageToColorStateCreateFlagsNV, PipelineCoverageToColorStateCreateFlagBitsNV, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineCoverageModulationStateCreateFlagsNV, PipelineCoverageModulationStateCreateFlagBitsNV, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineCoverageReductionStateCreateFlagsNV, PipelineCoverageReductionStateCreateFlagBitsNV, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(ValidationCacheCreateFlagsEXT, ValidationCacheCreateFlagBitsEXT, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(DebugUtilsMessageSeverityFlagsEXT, DebugUtilsMessageSeverityFlagBitsEXT, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(DebugUtilsMessageTypeFlagsEXT, DebugUtilsMessageTypeFlagBitsEXT, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(DebugUtilsMessengerCreateFlagsEXT, DebugUtilsMessengerCreateFlagBitsEXT, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(DebugUtilsMessengerCallbackDataFlagsEXT, DebugUtilsMessengerCallbackDataFlagBitsEXT, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(DeviceMemoryReportFlagsEXT, DeviceMemoryReportFlagBitsEXT, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationConservativeStateCreateFlagsEXT, PipelineRasterizationConservativeStateCreateFlagBitsEXT, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(DescriptorBindingFlags, DescriptorBindingFlagBits, VkFlags)
 using DescriptorBindingFlagsEXT = DescriptorBindingFlags;
-DECLARE_ENUM_FLAG_OPERATORS(ConditionalRenderingFlagsEXT, ConditionalRenderingFlagBitsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(ResolveModeFlags, ResolveModeFlagBits, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ConditionalRenderingFlagsEXT, ConditionalRenderingFlagBitsEXT, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(ResolveModeFlags, ResolveModeFlagBits, VkFlags)
 using ResolveModeFlagsKHR = ResolveModeFlags;
-DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationStateStreamCreateFlagsEXT, PipelineRasterizationStateStreamCreateFlagBitsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationDepthClipStateCreateFlagsEXT, PipelineRasterizationDepthClipStateCreateFlagBitsEXT, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(ToolPurposeFlagsEXT, ToolPurposeFlagBitsEXT, uint32_t)
-VK_DEFINE_HANDLE(VkInstance)
-VK_DEFINE_HANDLE(VkPhysicalDevice)
-VK_DEFINE_HANDLE(VkDevice)
-VK_DEFINE_HANDLE(VkQueue)
-VK_DEFINE_HANDLE(VkCommandBuffer)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDeviceMemory)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkCommandPool)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkBuffer)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkBufferView)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkImage)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkImageView)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkShaderModule)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkPipeline)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkPipelineLayout)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkSampler)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDescriptorSet)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDescriptorSetLayout)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDescriptorPool)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkFence)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkSemaphore)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkEvent)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkQueryPool)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkFramebuffer)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkRenderPass)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkPipelineCache)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkIndirectCommandsLayoutNV)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDescriptorUpdateTemplate)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkSamplerYcbcrConversion)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkValidationCacheEXT)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkAccelerationStructureKHR)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkPerformanceConfigurationINTEL)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDeferredOperationKHR)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkPrivateDataSlotEXT)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDisplayKHR)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDisplayModeKHR)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkSurfaceKHR)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkSwapchainKHR)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDebugReportCallbackEXT)
-VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDebugUtilsMessengerEXT)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationStateStreamCreateFlagsEXT, PipelineRasterizationStateStreamCreateFlagBitsEXT, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationDepthClipStateCreateFlagsEXT, PipelineRasterizationDepthClipStateCreateFlagBitsEXT, VkFlags)
+DECLARE_ENUM_FLAG_OPERATORS(ToolPurposeFlagsEXT, ToolPurposeFlagBitsEXT, VkFlags)
 class Instance {
     VkInstance handle = 0;
     public:
@@ -2790,7 +2707,6 @@ class DescriptorUpdateTemplate {
     bool operator!() { return handle == 0; }
 };
 using DescriptorUpdateTemplateKHR = DescriptorUpdateTemplate;
-using VkDescriptorUpdateTemplateKHR = DescriptorUpdateTemplateKHR;
 class SamplerYcbcrConversion {
     VkSamplerYcbcrConversion handle = 0;
     public:
@@ -2802,7 +2718,6 @@ class SamplerYcbcrConversion {
     bool operator!() { return handle == 0; }
 };
 using SamplerYcbcrConversionKHR = SamplerYcbcrConversion;
-using VkSamplerYcbcrConversionKHR = SamplerYcbcrConversionKHR;
 class ValidationCacheEXT {
     VkValidationCacheEXT handle = 0;
     public:
@@ -2824,7 +2739,6 @@ class AccelerationStructureKHR {
     bool operator!() { return handle == 0; }
 };
 using AccelerationStructureNV = AccelerationStructureKHR;
-using VkAccelerationStructureNV = AccelerationStructureNV;
 class PerformanceConfigurationINTEL {
     VkPerformanceConfigurationINTEL handle = 0;
     public:
@@ -2915,51 +2829,6 @@ class DebugUtilsMessengerEXT {
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
-using VkBool32 = uint32_t;
-struct VkDebugUtilsMessengerCallbackDataEXT;
-struct VkDeviceMemoryReportCallbackDataEXT;
-typedef void (VKAPI_PTR *PFN_vkInternalAllocationNotification)(
-    void*                                       pUserData,
-    size_t                                      size,
-    VkInternalAllocationType                    allocationType,
-    VkSystemAllocationScope                     allocationScope);
-typedef void (VKAPI_PTR *PFN_vkInternalFreeNotification)(
-    void*                                       pUserData,
-    size_t                                      size,
-    VkInternalAllocationType                    allocationType,
-    VkSystemAllocationScope                     allocationScope);
-typedef void* (VKAPI_PTR *PFN_vkReallocationFunction)(
-    void*                                       pUserData,
-    void*                                       pOriginal,
-    size_t                                      size,
-    size_t                                      alignment,
-    VkSystemAllocationScope                     allocationScope);
-typedef void* (VKAPI_PTR *PFN_vkAllocationFunction)(
-    void*                                       pUserData,
-    size_t                                      size,
-    size_t                                      alignment,
-    VkSystemAllocationScope                     allocationScope);
-typedef void (VKAPI_PTR *PFN_vkFreeFunction)(
-    void*                                       pUserData,
-    void*                                       pMemory);
-typedef void (VKAPI_PTR *PFN_vkVoidFunction)(void);
-typedef VkBool32 (VKAPI_PTR *PFN_vkDebugReportCallbackEXT)(
-    VkDebugReportFlagsEXT                       flags,
-    VkDebugReportObjectTypeEXT                  objectType,
-    uint64_t                                    object,
-    size_t                                      location,
-    int32_t                                     messageCode,
-    const char*                                 pLayerPrefix,
-    const char*                                 pMessage,
-    void*                                       pUserData);
-typedef VkBool32 (VKAPI_PTR *PFN_vkDebugUtilsMessengerCallbackEXT)(
-    VkDebugUtilsMessageSeverityFlagBitsEXT           messageSeverity,
-    VkDebugUtilsMessageTypeFlagsEXT                  messageTypes,
-    const VkDebugUtilsMessengerCallbackDataEXT*      pCallbackData,
-    void*                                            pUserData);
-typedef void (VKAPI_PTR *PFN_vkDeviceMemoryReportCallbackEXT)(
-    const VkDeviceMemoryReportCallbackDataEXT*  pCallbackData,
-    void*                                       pUserData);
 struct BaseOutStructure {
     StructureType sType{static_cast<StructureType>(0)};
     BaseOutStructure* pNext = nullptr;
@@ -4418,28 +4287,24 @@ struct PhysicalDeviceFeatures2 {
     PhysicalDeviceFeatures features{};
 };
 using PhysicalDeviceFeatures2KHR = PhysicalDeviceFeatures2;
-using VkPhysicalDeviceFeatures2KHR = PhysicalDeviceFeatures2KHR;
 struct PhysicalDeviceProperties2 {
     StructureType sType{StructureType::PhysicalDeviceProperties2};
     void* pNext = nullptr;
     PhysicalDeviceProperties properties{};
 };
 using PhysicalDeviceProperties2KHR = PhysicalDeviceProperties2;
-using VkPhysicalDeviceProperties2KHR = PhysicalDeviceProperties2KHR;
 struct FormatProperties2 {
     StructureType sType{StructureType::FormatProperties2};
     void* pNext = nullptr;
     FormatProperties formatProperties{};
 };
 using FormatProperties2KHR = FormatProperties2;
-using VkFormatProperties2KHR = FormatProperties2KHR;
 struct ImageFormatProperties2 {
     StructureType sType{StructureType::ImageFormatProperties2};
     void* pNext = nullptr;
     ImageFormatProperties imageFormatProperties{};
 };
 using ImageFormatProperties2KHR = ImageFormatProperties2;
-using VkImageFormatProperties2KHR = ImageFormatProperties2KHR;
 struct PhysicalDeviceImageFormatInfo2 {
     StructureType sType{StructureType::PhysicalDeviceImageFormatInfo2};
     const void* pNext = nullptr;
@@ -4450,28 +4315,24 @@ struct PhysicalDeviceImageFormatInfo2 {
     ImageCreateFlags flags{};
 };
 using PhysicalDeviceImageFormatInfo2KHR = PhysicalDeviceImageFormatInfo2;
-using VkPhysicalDeviceImageFormatInfo2KHR = PhysicalDeviceImageFormatInfo2KHR;
 struct QueueFamilyProperties2 {
     StructureType sType{StructureType::QueueFamilyProperties2};
     void* pNext = nullptr;
     QueueFamilyProperties queueFamilyProperties{};
 };
 using QueueFamilyProperties2KHR = QueueFamilyProperties2;
-using VkQueueFamilyProperties2KHR = QueueFamilyProperties2KHR;
 struct PhysicalDeviceMemoryProperties2 {
     StructureType sType{StructureType::PhysicalDeviceMemoryProperties2};
     void* pNext = nullptr;
     PhysicalDeviceMemoryProperties memoryProperties{};
 };
 using PhysicalDeviceMemoryProperties2KHR = PhysicalDeviceMemoryProperties2;
-using VkPhysicalDeviceMemoryProperties2KHR = PhysicalDeviceMemoryProperties2KHR;
 struct SparseImageFormatProperties2 {
     StructureType sType{StructureType::SparseImageFormatProperties2};
     void* pNext = nullptr;
     SparseImageFormatProperties properties{};
 };
 using SparseImageFormatProperties2KHR = SparseImageFormatProperties2;
-using VkSparseImageFormatProperties2KHR = SparseImageFormatProperties2KHR;
 struct PhysicalDeviceSparseImageFormatInfo2 {
     StructureType sType{StructureType::PhysicalDeviceSparseImageFormatInfo2};
     const void* pNext = nullptr;
@@ -4482,7 +4343,6 @@ struct PhysicalDeviceSparseImageFormatInfo2 {
     ImageTiling tiling{static_cast<ImageTiling>(0)};
 };
 using PhysicalDeviceSparseImageFormatInfo2KHR = PhysicalDeviceSparseImageFormatInfo2;
-using VkPhysicalDeviceSparseImageFormatInfo2KHR = PhysicalDeviceSparseImageFormatInfo2KHR;
 struct PhysicalDevicePushDescriptorPropertiesKHR {
     StructureType sType{StructureType::PhysicalDevicePushDescriptorPropertiesKHR};
     void* pNext = nullptr;
@@ -4496,7 +4356,6 @@ struct ConformanceVersion {
     constexpr bool operator==(ConformanceVersion const& other) const = default;
 };
 using ConformanceVersionKHR = ConformanceVersion;
-using VkConformanceVersionKHR = ConformanceVersionKHR;
 struct PhysicalDeviceDriverProperties {
     StructureType sType{StructureType::PhysicalDeviceDriverProperties};
     void* pNext = nullptr;
@@ -4506,7 +4365,6 @@ struct PhysicalDeviceDriverProperties {
     ConformanceVersion conformanceVersion{};
 };
 using PhysicalDeviceDriverPropertiesKHR = PhysicalDeviceDriverProperties;
-using VkPhysicalDeviceDriverPropertiesKHR = PhysicalDeviceDriverPropertiesKHR;
 struct RectLayerKHR {
     Offset2D offset{};
     Extent2D extent{};
@@ -4530,11 +4388,8 @@ struct PhysicalDeviceVariablePointersFeatures {
     Bool32 variablePointers{0};
 };
 using PhysicalDeviceVariablePointersFeaturesKHR = PhysicalDeviceVariablePointersFeatures;
-using VkPhysicalDeviceVariablePointersFeaturesKHR = PhysicalDeviceVariablePointersFeaturesKHR;
 using PhysicalDeviceVariablePointerFeaturesKHR = PhysicalDeviceVariablePointersFeatures;
-using VkPhysicalDeviceVariablePointerFeaturesKHR = PhysicalDeviceVariablePointerFeaturesKHR;
 using PhysicalDeviceVariablePointerFeatures = PhysicalDeviceVariablePointersFeatures;
-using VkPhysicalDeviceVariablePointerFeatures = PhysicalDeviceVariablePointerFeatures;
 struct ExternalMemoryProperties {
     ExternalMemoryFeatureFlags externalMemoryFeatures{};
     ExternalMemoryHandleTypeFlags exportFromImportedHandleTypes{};
@@ -4542,21 +4397,18 @@ struct ExternalMemoryProperties {
     constexpr bool operator==(ExternalMemoryProperties const& other) const = default;
 };
 using ExternalMemoryPropertiesKHR = ExternalMemoryProperties;
-using VkExternalMemoryPropertiesKHR = ExternalMemoryPropertiesKHR;
 struct PhysicalDeviceExternalImageFormatInfo {
     StructureType sType{StructureType::PhysicalDeviceExternalImageFormatInfo};
     const void* pNext = nullptr;
     ExternalMemoryHandleTypeFlagBits handleType{static_cast<ExternalMemoryHandleTypeFlagBits>(0)};
 };
 using PhysicalDeviceExternalImageFormatInfoKHR = PhysicalDeviceExternalImageFormatInfo;
-using VkPhysicalDeviceExternalImageFormatInfoKHR = PhysicalDeviceExternalImageFormatInfoKHR;
 struct ExternalImageFormatProperties {
     StructureType sType{StructureType::ExternalImageFormatProperties};
     void* pNext = nullptr;
     ExternalMemoryProperties externalMemoryProperties{};
 };
 using ExternalImageFormatPropertiesKHR = ExternalImageFormatProperties;
-using VkExternalImageFormatPropertiesKHR = ExternalImageFormatPropertiesKHR;
 struct PhysicalDeviceExternalBufferInfo {
     StructureType sType{StructureType::PhysicalDeviceExternalBufferInfo};
     const void* pNext = nullptr;
@@ -4565,14 +4417,12 @@ struct PhysicalDeviceExternalBufferInfo {
     ExternalMemoryHandleTypeFlagBits handleType{static_cast<ExternalMemoryHandleTypeFlagBits>(0)};
 };
 using PhysicalDeviceExternalBufferInfoKHR = PhysicalDeviceExternalBufferInfo;
-using VkPhysicalDeviceExternalBufferInfoKHR = PhysicalDeviceExternalBufferInfoKHR;
 struct ExternalBufferProperties {
     StructureType sType{StructureType::ExternalBufferProperties};
     void* pNext = nullptr;
     ExternalMemoryProperties externalMemoryProperties{};
 };
 using ExternalBufferPropertiesKHR = ExternalBufferProperties;
-using VkExternalBufferPropertiesKHR = ExternalBufferPropertiesKHR;
 struct PhysicalDeviceIDProperties {
     StructureType sType{StructureType::PhysicalDeviceIdProperties};
     void* pNext = nullptr;
@@ -4583,28 +4433,24 @@ struct PhysicalDeviceIDProperties {
     Bool32 deviceLUIDValid{0};
 };
 using PhysicalDeviceIDPropertiesKHR = PhysicalDeviceIDProperties;
-using VkPhysicalDeviceIDPropertiesKHR = PhysicalDeviceIDPropertiesKHR;
 struct ExternalMemoryImageCreateInfo {
     StructureType sType{StructureType::ExternalMemoryImageCreateInfo};
     const void* pNext = nullptr;
     ExternalMemoryHandleTypeFlags handleTypes{};
 };
 using ExternalMemoryImageCreateInfoKHR = ExternalMemoryImageCreateInfo;
-using VkExternalMemoryImageCreateInfoKHR = ExternalMemoryImageCreateInfoKHR;
 struct ExternalMemoryBufferCreateInfo {
     StructureType sType{StructureType::ExternalMemoryBufferCreateInfo};
     const void* pNext = nullptr;
     ExternalMemoryHandleTypeFlags handleTypes{};
 };
 using ExternalMemoryBufferCreateInfoKHR = ExternalMemoryBufferCreateInfo;
-using VkExternalMemoryBufferCreateInfoKHR = ExternalMemoryBufferCreateInfoKHR;
 struct ExportMemoryAllocateInfo {
     StructureType sType{StructureType::ExportMemoryAllocateInfo};
     const void* pNext = nullptr;
     ExternalMemoryHandleTypeFlags handleTypes{};
 };
 using ExportMemoryAllocateInfoKHR = ExportMemoryAllocateInfo;
-using VkExportMemoryAllocateInfoKHR = ExportMemoryAllocateInfoKHR;
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ImportMemoryWin32HandleInfoKHR {
     StructureType sType{StructureType::ImportMemoryWin32HandleInfoKHR};
@@ -4668,7 +4514,6 @@ struct PhysicalDeviceExternalSemaphoreInfo {
     ExternalSemaphoreHandleTypeFlagBits handleType{static_cast<ExternalSemaphoreHandleTypeFlagBits>(0)};
 };
 using PhysicalDeviceExternalSemaphoreInfoKHR = PhysicalDeviceExternalSemaphoreInfo;
-using VkPhysicalDeviceExternalSemaphoreInfoKHR = PhysicalDeviceExternalSemaphoreInfoKHR;
 struct ExternalSemaphoreProperties {
     StructureType sType{StructureType::ExternalSemaphoreProperties};
     void* pNext = nullptr;
@@ -4677,14 +4522,12 @@ struct ExternalSemaphoreProperties {
     ExternalSemaphoreFeatureFlags externalSemaphoreFeatures{};
 };
 using ExternalSemaphorePropertiesKHR = ExternalSemaphoreProperties;
-using VkExternalSemaphorePropertiesKHR = ExternalSemaphorePropertiesKHR;
 struct ExportSemaphoreCreateInfo {
     StructureType sType{StructureType::ExportSemaphoreCreateInfo};
     const void* pNext = nullptr;
     ExternalSemaphoreHandleTypeFlags handleTypes{};
 };
 using ExportSemaphoreCreateInfoKHR = ExportSemaphoreCreateInfo;
-using VkExportSemaphoreCreateInfoKHR = ExportSemaphoreCreateInfoKHR;
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ImportSemaphoreWin32HandleInfoKHR {
     StructureType sType{StructureType::ImportSemaphoreWin32HandleInfoKHR};
@@ -4737,7 +4580,6 @@ struct PhysicalDeviceExternalFenceInfo {
     ExternalFenceHandleTypeFlagBits handleType{static_cast<ExternalFenceHandleTypeFlagBits>(0)};
 };
 using PhysicalDeviceExternalFenceInfoKHR = PhysicalDeviceExternalFenceInfo;
-using VkPhysicalDeviceExternalFenceInfoKHR = PhysicalDeviceExternalFenceInfoKHR;
 struct ExternalFenceProperties {
     StructureType sType{StructureType::ExternalFenceProperties};
     void* pNext = nullptr;
@@ -4746,14 +4588,12 @@ struct ExternalFenceProperties {
     ExternalFenceFeatureFlags externalFenceFeatures{};
 };
 using ExternalFencePropertiesKHR = ExternalFenceProperties;
-using VkExternalFencePropertiesKHR = ExternalFencePropertiesKHR;
 struct ExportFenceCreateInfo {
     StructureType sType{StructureType::ExportFenceCreateInfo};
     const void* pNext = nullptr;
     ExternalFenceHandleTypeFlags handleTypes{};
 };
 using ExportFenceCreateInfoKHR = ExportFenceCreateInfo;
-using VkExportFenceCreateInfoKHR = ExportFenceCreateInfoKHR;
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ImportFenceWin32HandleInfoKHR {
     StructureType sType{StructureType::ImportFenceWin32HandleInfoKHR};
@@ -4800,7 +4640,6 @@ struct PhysicalDeviceMultiviewFeatures {
     Bool32 multiviewTessellationShader{0};
 };
 using PhysicalDeviceMultiviewFeaturesKHR = PhysicalDeviceMultiviewFeatures;
-using VkPhysicalDeviceMultiviewFeaturesKHR = PhysicalDeviceMultiviewFeaturesKHR;
 struct PhysicalDeviceMultiviewProperties {
     StructureType sType{StructureType::PhysicalDeviceMultiviewProperties};
     void* pNext = nullptr;
@@ -4808,7 +4647,6 @@ struct PhysicalDeviceMultiviewProperties {
     uint32_t maxMultiviewInstanceIndex{0};
 };
 using PhysicalDeviceMultiviewPropertiesKHR = PhysicalDeviceMultiviewProperties;
-using VkPhysicalDeviceMultiviewPropertiesKHR = PhysicalDeviceMultiviewPropertiesKHR;
 struct RenderPassMultiviewCreateInfo {
     StructureType sType{StructureType::RenderPassMultiviewCreateInfo};
     const void* pNext = nullptr;
@@ -4820,7 +4658,6 @@ struct RenderPassMultiviewCreateInfo {
     const uint32_t* pCorrelationMasks = nullptr;
 };
 using RenderPassMultiviewCreateInfoKHR = RenderPassMultiviewCreateInfo;
-using VkRenderPassMultiviewCreateInfoKHR = RenderPassMultiviewCreateInfoKHR;
 struct SurfaceCapabilities2EXT {
     StructureType sType{StructureType::SurfaceCapabilities2EXT};
     void* pNext = nullptr;
@@ -4864,7 +4701,6 @@ struct PhysicalDeviceGroupProperties {
     Bool32 subsetAllocation{0};
 };
 using PhysicalDeviceGroupPropertiesKHR = PhysicalDeviceGroupProperties;
-using VkPhysicalDeviceGroupPropertiesKHR = PhysicalDeviceGroupPropertiesKHR;
 struct MemoryAllocateFlagsInfo {
     StructureType sType{StructureType::MemoryAllocateFlagsInfo};
     const void* pNext = nullptr;
@@ -4872,7 +4708,6 @@ struct MemoryAllocateFlagsInfo {
     uint32_t deviceMask{0};
 };
 using MemoryAllocateFlagsInfoKHR = MemoryAllocateFlagsInfo;
-using VkMemoryAllocateFlagsInfoKHR = MemoryAllocateFlagsInfoKHR;
 struct BindBufferMemoryInfo {
     StructureType sType{StructureType::BindBufferMemoryInfo};
     const void* pNext = nullptr;
@@ -4881,7 +4716,6 @@ struct BindBufferMemoryInfo {
     DeviceSize memoryOffset{0};
 };
 using BindBufferMemoryInfoKHR = BindBufferMemoryInfo;
-using VkBindBufferMemoryInfoKHR = BindBufferMemoryInfoKHR;
 struct BindBufferMemoryDeviceGroupInfo {
     StructureType sType{StructureType::BindBufferMemoryDeviceGroupInfo};
     const void* pNext = nullptr;
@@ -4889,7 +4723,6 @@ struct BindBufferMemoryDeviceGroupInfo {
     const uint32_t* pDeviceIndices = nullptr;
 };
 using BindBufferMemoryDeviceGroupInfoKHR = BindBufferMemoryDeviceGroupInfo;
-using VkBindBufferMemoryDeviceGroupInfoKHR = BindBufferMemoryDeviceGroupInfoKHR;
 struct BindImageMemoryInfo {
     StructureType sType{StructureType::BindImageMemoryInfo};
     const void* pNext = nullptr;
@@ -4898,7 +4731,6 @@ struct BindImageMemoryInfo {
     DeviceSize memoryOffset{0};
 };
 using BindImageMemoryInfoKHR = BindImageMemoryInfo;
-using VkBindImageMemoryInfoKHR = BindImageMemoryInfoKHR;
 struct BindImageMemoryDeviceGroupInfo {
     StructureType sType{StructureType::BindImageMemoryDeviceGroupInfo};
     const void* pNext = nullptr;
@@ -4908,7 +4740,6 @@ struct BindImageMemoryDeviceGroupInfo {
     const Rect2D* pSplitInstanceBindRegions = nullptr;
 };
 using BindImageMemoryDeviceGroupInfoKHR = BindImageMemoryDeviceGroupInfo;
-using VkBindImageMemoryDeviceGroupInfoKHR = BindImageMemoryDeviceGroupInfoKHR;
 struct DeviceGroupRenderPassBeginInfo {
     StructureType sType{StructureType::DeviceGroupRenderPassBeginInfo};
     const void* pNext = nullptr;
@@ -4917,14 +4748,12 @@ struct DeviceGroupRenderPassBeginInfo {
     const Rect2D* pDeviceRenderAreas = nullptr;
 };
 using DeviceGroupRenderPassBeginInfoKHR = DeviceGroupRenderPassBeginInfo;
-using VkDeviceGroupRenderPassBeginInfoKHR = DeviceGroupRenderPassBeginInfoKHR;
 struct DeviceGroupCommandBufferBeginInfo {
     StructureType sType{StructureType::DeviceGroupCommandBufferBeginInfo};
     const void* pNext = nullptr;
     uint32_t deviceMask{0};
 };
 using DeviceGroupCommandBufferBeginInfoKHR = DeviceGroupCommandBufferBeginInfo;
-using VkDeviceGroupCommandBufferBeginInfoKHR = DeviceGroupCommandBufferBeginInfoKHR;
 struct DeviceGroupSubmitInfo {
     StructureType sType{StructureType::DeviceGroupSubmitInfo};
     const void* pNext = nullptr;
@@ -4936,7 +4765,6 @@ struct DeviceGroupSubmitInfo {
     const uint32_t* pSignalSemaphoreDeviceIndices = nullptr;
 };
 using DeviceGroupSubmitInfoKHR = DeviceGroupSubmitInfo;
-using VkDeviceGroupSubmitInfoKHR = DeviceGroupSubmitInfoKHR;
 struct DeviceGroupBindSparseInfo {
     StructureType sType{StructureType::DeviceGroupBindSparseInfo};
     const void* pNext = nullptr;
@@ -4944,7 +4772,6 @@ struct DeviceGroupBindSparseInfo {
     uint32_t memoryDeviceIndex{0};
 };
 using DeviceGroupBindSparseInfoKHR = DeviceGroupBindSparseInfo;
-using VkDeviceGroupBindSparseInfoKHR = DeviceGroupBindSparseInfoKHR;
 struct DeviceGroupPresentCapabilitiesKHR {
     StructureType sType{StructureType::DeviceGroupPresentCapabilitiesKHR};
     const void* pNext = nullptr;
@@ -4985,7 +4812,6 @@ struct DeviceGroupDeviceCreateInfo {
     const PhysicalDevice* pPhysicalDevices = nullptr;
 };
 using DeviceGroupDeviceCreateInfoKHR = DeviceGroupDeviceCreateInfo;
-using VkDeviceGroupDeviceCreateInfoKHR = DeviceGroupDeviceCreateInfoKHR;
 struct DeviceGroupSwapchainCreateInfoKHR {
     StructureType sType{StructureType::DeviceGroupSwapchainCreateInfoKHR};
     const void* pNext = nullptr;
@@ -5001,7 +4827,6 @@ struct DescriptorUpdateTemplateEntry {
     constexpr bool operator==(DescriptorUpdateTemplateEntry const& other) const = default;
 };
 using DescriptorUpdateTemplateEntryKHR = DescriptorUpdateTemplateEntry;
-using VkDescriptorUpdateTemplateEntryKHR = DescriptorUpdateTemplateEntryKHR;
 struct DescriptorUpdateTemplateCreateInfo {
     StructureType sType{StructureType::DescriptorUpdateTemplateCreateInfo};
     const void* pNext = nullptr;
@@ -5015,7 +4840,6 @@ struct DescriptorUpdateTemplateCreateInfo {
     uint32_t set{0};
 };
 using DescriptorUpdateTemplateCreateInfoKHR = DescriptorUpdateTemplateCreateInfo;
-using VkDescriptorUpdateTemplateCreateInfoKHR = DescriptorUpdateTemplateCreateInfoKHR;
 struct XYColorEXT {
     float x{0.f};
     float y{0.f};
@@ -5141,7 +4965,6 @@ struct InputAttachmentAspectReference {
     constexpr bool operator==(InputAttachmentAspectReference const& other) const = default;
 };
 using InputAttachmentAspectReferenceKHR = InputAttachmentAspectReference;
-using VkInputAttachmentAspectReferenceKHR = InputAttachmentAspectReferenceKHR;
 struct RenderPassInputAttachmentAspectCreateInfo {
     StructureType sType{StructureType::RenderPassInputAttachmentAspectCreateInfo};
     const void* pNext = nullptr;
@@ -5149,7 +4972,6 @@ struct RenderPassInputAttachmentAspectCreateInfo {
     const InputAttachmentAspectReference* pAspectReferences = nullptr;
 };
 using RenderPassInputAttachmentAspectCreateInfoKHR = RenderPassInputAttachmentAspectCreateInfo;
-using VkRenderPassInputAttachmentAspectCreateInfoKHR = RenderPassInputAttachmentAspectCreateInfoKHR;
 struct PhysicalDeviceSurfaceInfo2KHR {
     StructureType sType{StructureType::PhysicalDeviceSurfaceInfo2KHR};
     const void* pNext = nullptr;
@@ -5205,7 +5027,6 @@ struct PhysicalDevice16BitStorageFeatures {
     Bool32 storageInputOutput16{0};
 };
 using PhysicalDevice16BitStorageFeaturesKHR = PhysicalDevice16BitStorageFeatures;
-using VkPhysicalDevice16BitStorageFeaturesKHR = PhysicalDevice16BitStorageFeaturesKHR;
 struct PhysicalDeviceSubgroupProperties {
     StructureType sType{StructureType::PhysicalDeviceSubgroupProperties};
     void* pNext = nullptr;
@@ -5220,49 +5041,42 @@ struct PhysicalDeviceShaderSubgroupExtendedTypesFeatures {
     Bool32 shaderSubgroupExtendedTypes{0};
 };
 using PhysicalDeviceShaderSubgroupExtendedTypesFeaturesKHR = PhysicalDeviceShaderSubgroupExtendedTypesFeatures;
-using VkPhysicalDeviceShaderSubgroupExtendedTypesFeaturesKHR = PhysicalDeviceShaderSubgroupExtendedTypesFeaturesKHR;
 struct BufferMemoryRequirementsInfo2 {
     StructureType sType{StructureType::BufferMemoryRequirementsInfo2};
     const void* pNext = nullptr;
     Buffer buffer{};
 };
 using BufferMemoryRequirementsInfo2KHR = BufferMemoryRequirementsInfo2;
-using VkBufferMemoryRequirementsInfo2KHR = BufferMemoryRequirementsInfo2KHR;
 struct ImageMemoryRequirementsInfo2 {
     StructureType sType{StructureType::ImageMemoryRequirementsInfo2};
     const void* pNext = nullptr;
     Image image{};
 };
 using ImageMemoryRequirementsInfo2KHR = ImageMemoryRequirementsInfo2;
-using VkImageMemoryRequirementsInfo2KHR = ImageMemoryRequirementsInfo2KHR;
 struct ImageSparseMemoryRequirementsInfo2 {
     StructureType sType{StructureType::ImageSparseMemoryRequirementsInfo2};
     const void* pNext = nullptr;
     Image image{};
 };
 using ImageSparseMemoryRequirementsInfo2KHR = ImageSparseMemoryRequirementsInfo2;
-using VkImageSparseMemoryRequirementsInfo2KHR = ImageSparseMemoryRequirementsInfo2KHR;
 struct MemoryRequirements2 {
     StructureType sType{StructureType::MemoryRequirements2};
     void* pNext = nullptr;
     MemoryRequirements memoryRequirements{};
 };
 using MemoryRequirements2KHR = MemoryRequirements2;
-using VkMemoryRequirements2KHR = MemoryRequirements2KHR;
 struct SparseImageMemoryRequirements2 {
     StructureType sType{StructureType::SparseImageMemoryRequirements2};
     void* pNext = nullptr;
     SparseImageMemoryRequirements memoryRequirements{};
 };
 using SparseImageMemoryRequirements2KHR = SparseImageMemoryRequirements2;
-using VkSparseImageMemoryRequirements2KHR = SparseImageMemoryRequirements2KHR;
 struct PhysicalDevicePointClippingProperties {
     StructureType sType{StructureType::PhysicalDevicePointClippingProperties};
     void* pNext = nullptr;
     PointClippingBehavior pointClippingBehavior{static_cast<PointClippingBehavior>(0)};
 };
 using PhysicalDevicePointClippingPropertiesKHR = PhysicalDevicePointClippingProperties;
-using VkPhysicalDevicePointClippingPropertiesKHR = PhysicalDevicePointClippingPropertiesKHR;
 struct MemoryDedicatedRequirements {
     StructureType sType{StructureType::MemoryDedicatedRequirements};
     void* pNext = nullptr;
@@ -5270,7 +5084,6 @@ struct MemoryDedicatedRequirements {
     Bool32 requiresDedicatedAllocation{0};
 };
 using MemoryDedicatedRequirementsKHR = MemoryDedicatedRequirements;
-using VkMemoryDedicatedRequirementsKHR = MemoryDedicatedRequirementsKHR;
 struct MemoryDedicatedAllocateInfo {
     StructureType sType{StructureType::MemoryDedicatedAllocateInfo};
     const void* pNext = nullptr;
@@ -5278,28 +5091,24 @@ struct MemoryDedicatedAllocateInfo {
     Buffer buffer{};
 };
 using MemoryDedicatedAllocateInfoKHR = MemoryDedicatedAllocateInfo;
-using VkMemoryDedicatedAllocateInfoKHR = MemoryDedicatedAllocateInfoKHR;
 struct ImageViewUsageCreateInfo {
     StructureType sType{StructureType::ImageViewUsageCreateInfo};
     const void* pNext = nullptr;
     ImageUsageFlags usage{};
 };
 using ImageViewUsageCreateInfoKHR = ImageViewUsageCreateInfo;
-using VkImageViewUsageCreateInfoKHR = ImageViewUsageCreateInfoKHR;
 struct PipelineTessellationDomainOriginStateCreateInfo {
     StructureType sType{StructureType::PipelineTessellationDomainOriginStateCreateInfo};
     const void* pNext = nullptr;
     TessellationDomainOrigin domainOrigin{static_cast<TessellationDomainOrigin>(0)};
 };
 using PipelineTessellationDomainOriginStateCreateInfoKHR = PipelineTessellationDomainOriginStateCreateInfo;
-using VkPipelineTessellationDomainOriginStateCreateInfoKHR = PipelineTessellationDomainOriginStateCreateInfoKHR;
 struct SamplerYcbcrConversionInfo {
     StructureType sType{StructureType::SamplerYcbcrConversionInfo};
     const void* pNext = nullptr;
     SamplerYcbcrConversion conversion{};
 };
 using SamplerYcbcrConversionInfoKHR = SamplerYcbcrConversionInfo;
-using VkSamplerYcbcrConversionInfoKHR = SamplerYcbcrConversionInfoKHR;
 struct SamplerYcbcrConversionCreateInfo {
     StructureType sType{StructureType::SamplerYcbcrConversionCreateInfo};
     const void* pNext = nullptr;
@@ -5313,35 +5122,30 @@ struct SamplerYcbcrConversionCreateInfo {
     Bool32 forceExplicitReconstruction{0};
 };
 using SamplerYcbcrConversionCreateInfoKHR = SamplerYcbcrConversionCreateInfo;
-using VkSamplerYcbcrConversionCreateInfoKHR = SamplerYcbcrConversionCreateInfoKHR;
 struct BindImagePlaneMemoryInfo {
     StructureType sType{StructureType::BindImagePlaneMemoryInfo};
     const void* pNext = nullptr;
     ImageAspectFlagBits planeAspect{static_cast<ImageAspectFlagBits>(0)};
 };
 using BindImagePlaneMemoryInfoKHR = BindImagePlaneMemoryInfo;
-using VkBindImagePlaneMemoryInfoKHR = BindImagePlaneMemoryInfoKHR;
 struct ImagePlaneMemoryRequirementsInfo {
     StructureType sType{StructureType::ImagePlaneMemoryRequirementsInfo};
     const void* pNext = nullptr;
     ImageAspectFlagBits planeAspect{static_cast<ImageAspectFlagBits>(0)};
 };
 using ImagePlaneMemoryRequirementsInfoKHR = ImagePlaneMemoryRequirementsInfo;
-using VkImagePlaneMemoryRequirementsInfoKHR = ImagePlaneMemoryRequirementsInfoKHR;
 struct PhysicalDeviceSamplerYcbcrConversionFeatures {
     StructureType sType{StructureType::PhysicalDeviceSamplerYcbcrConversionFeatures};
     void* pNext = nullptr;
     Bool32 samplerYcbcrConversion{0};
 };
 using PhysicalDeviceSamplerYcbcrConversionFeaturesKHR = PhysicalDeviceSamplerYcbcrConversionFeatures;
-using VkPhysicalDeviceSamplerYcbcrConversionFeaturesKHR = PhysicalDeviceSamplerYcbcrConversionFeaturesKHR;
 struct SamplerYcbcrConversionImageFormatProperties {
     StructureType sType{StructureType::SamplerYcbcrConversionImageFormatProperties};
     void* pNext = nullptr;
     uint32_t combinedImageSamplerDescriptorCount{0};
 };
 using SamplerYcbcrConversionImageFormatPropertiesKHR = SamplerYcbcrConversionImageFormatProperties;
-using VkSamplerYcbcrConversionImageFormatPropertiesKHR = SamplerYcbcrConversionImageFormatPropertiesKHR;
 struct TextureLODGatherFormatPropertiesAMD {
     StructureType sType{StructureType::TextureLodGatherFormatPropertiesAMD};
     void* pNext = nullptr;
@@ -5390,7 +5194,6 @@ struct PhysicalDeviceSamplerFilterMinmaxProperties {
     Bool32 filterMinmaxImageComponentMapping{0};
 };
 using PhysicalDeviceSamplerFilterMinmaxPropertiesEXT = PhysicalDeviceSamplerFilterMinmaxProperties;
-using VkPhysicalDeviceSamplerFilterMinmaxPropertiesEXT = PhysicalDeviceSamplerFilterMinmaxPropertiesEXT;
 struct SampleLocationEXT {
     float x{0.f};
     float y{0.f};
@@ -5446,7 +5249,6 @@ struct SamplerReductionModeCreateInfo {
     SamplerReductionMode reductionMode{static_cast<SamplerReductionMode>(0)};
 };
 using SamplerReductionModeCreateInfoEXT = SamplerReductionModeCreateInfo;
-using VkSamplerReductionModeCreateInfoEXT = SamplerReductionModeCreateInfoEXT;
 struct PhysicalDeviceBlendOperationAdvancedFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceBlendOperationAdvancedFeaturesEXT};
     void* pNext = nullptr;
@@ -5511,7 +5313,6 @@ struct ImageFormatListCreateInfo {
     const Format* pViewFormats = nullptr;
 };
 using ImageFormatListCreateInfoKHR = ImageFormatListCreateInfo;
-using VkImageFormatListCreateInfoKHR = ImageFormatListCreateInfoKHR;
 struct ValidationCacheCreateInfoEXT {
     StructureType sType{StructureType::ValidationCacheCreateInfoEXT};
     const void* pNext = nullptr;
@@ -5531,21 +5332,18 @@ struct PhysicalDeviceMaintenance3Properties {
     DeviceSize maxMemoryAllocationSize{0};
 };
 using PhysicalDeviceMaintenance3PropertiesKHR = PhysicalDeviceMaintenance3Properties;
-using VkPhysicalDeviceMaintenance3PropertiesKHR = PhysicalDeviceMaintenance3PropertiesKHR;
 struct DescriptorSetLayoutSupport {
     StructureType sType{StructureType::DescriptorSetLayoutSupport};
     void* pNext = nullptr;
     Bool32 supported{0};
 };
 using DescriptorSetLayoutSupportKHR = DescriptorSetLayoutSupport;
-using VkDescriptorSetLayoutSupportKHR = DescriptorSetLayoutSupportKHR;
 struct PhysicalDeviceShaderDrawParametersFeatures {
     StructureType sType{StructureType::PhysicalDeviceShaderDrawParametersFeatures};
     void* pNext = nullptr;
     Bool32 shaderDrawParameters{0};
 };
 using PhysicalDeviceShaderDrawParameterFeatures = PhysicalDeviceShaderDrawParametersFeatures;
-using VkPhysicalDeviceShaderDrawParameterFeatures = PhysicalDeviceShaderDrawParameterFeatures;
 struct PhysicalDeviceShaderFloat16Int8Features {
     StructureType sType{StructureType::PhysicalDeviceShaderFloat16Int8Features};
     void* pNext = nullptr;
@@ -5553,9 +5351,7 @@ struct PhysicalDeviceShaderFloat16Int8Features {
     Bool32 shaderInt8{0};
 };
 using PhysicalDeviceShaderFloat16Int8FeaturesKHR = PhysicalDeviceShaderFloat16Int8Features;
-using VkPhysicalDeviceShaderFloat16Int8FeaturesKHR = PhysicalDeviceShaderFloat16Int8FeaturesKHR;
 using PhysicalDeviceFloat16Int8FeaturesKHR = PhysicalDeviceShaderFloat16Int8Features;
-using VkPhysicalDeviceFloat16Int8FeaturesKHR = PhysicalDeviceFloat16Int8FeaturesKHR;
 struct PhysicalDeviceFloatControlsProperties {
     StructureType sType{StructureType::PhysicalDeviceFloatControlsProperties};
     void* pNext = nullptr;
@@ -5578,14 +5374,12 @@ struct PhysicalDeviceFloatControlsProperties {
     Bool32 shaderRoundingModeRTZFloat64{0};
 };
 using PhysicalDeviceFloatControlsPropertiesKHR = PhysicalDeviceFloatControlsProperties;
-using VkPhysicalDeviceFloatControlsPropertiesKHR = PhysicalDeviceFloatControlsPropertiesKHR;
 struct PhysicalDeviceHostQueryResetFeatures {
     StructureType sType{StructureType::PhysicalDeviceHostQueryResetFeatures};
     void* pNext = nullptr;
     Bool32 hostQueryReset{0};
 };
 using PhysicalDeviceHostQueryResetFeaturesEXT = PhysicalDeviceHostQueryResetFeatures;
-using VkPhysicalDeviceHostQueryResetFeaturesEXT = PhysicalDeviceHostQueryResetFeaturesEXT;
 struct ShaderResourceUsageAMD {
     uint32_t numUsedVgprs{0};
     uint32_t numUsedSgprs{0};
@@ -5767,7 +5561,6 @@ struct PhysicalDeviceDescriptorIndexingFeatures {
     Bool32 runtimeDescriptorArray{0};
 };
 using PhysicalDeviceDescriptorIndexingFeaturesEXT = PhysicalDeviceDescriptorIndexingFeatures;
-using VkPhysicalDeviceDescriptorIndexingFeaturesEXT = PhysicalDeviceDescriptorIndexingFeaturesEXT;
 struct PhysicalDeviceDescriptorIndexingProperties {
     StructureType sType{StructureType::PhysicalDeviceDescriptorIndexingProperties};
     void* pNext = nullptr;
@@ -5796,7 +5589,6 @@ struct PhysicalDeviceDescriptorIndexingProperties {
     uint32_t maxDescriptorSetUpdateAfterBindInputAttachments{0};
 };
 using PhysicalDeviceDescriptorIndexingPropertiesEXT = PhysicalDeviceDescriptorIndexingProperties;
-using VkPhysicalDeviceDescriptorIndexingPropertiesEXT = PhysicalDeviceDescriptorIndexingPropertiesEXT;
 struct DescriptorSetLayoutBindingFlagsCreateInfo {
     StructureType sType{StructureType::DescriptorSetLayoutBindingFlagsCreateInfo};
     const void* pNext = nullptr;
@@ -5804,7 +5596,6 @@ struct DescriptorSetLayoutBindingFlagsCreateInfo {
     const DescriptorBindingFlags* pBindingFlags = nullptr;
 };
 using DescriptorSetLayoutBindingFlagsCreateInfoEXT = DescriptorSetLayoutBindingFlagsCreateInfo;
-using VkDescriptorSetLayoutBindingFlagsCreateInfoEXT = DescriptorSetLayoutBindingFlagsCreateInfoEXT;
 struct DescriptorSetVariableDescriptorCountAllocateInfo {
     StructureType sType{StructureType::DescriptorSetVariableDescriptorCountAllocateInfo};
     const void* pNext = nullptr;
@@ -5812,14 +5603,12 @@ struct DescriptorSetVariableDescriptorCountAllocateInfo {
     const uint32_t* pDescriptorCounts = nullptr;
 };
 using DescriptorSetVariableDescriptorCountAllocateInfoEXT = DescriptorSetVariableDescriptorCountAllocateInfo;
-using VkDescriptorSetVariableDescriptorCountAllocateInfoEXT = DescriptorSetVariableDescriptorCountAllocateInfoEXT;
 struct DescriptorSetVariableDescriptorCountLayoutSupport {
     StructureType sType{StructureType::DescriptorSetVariableDescriptorCountLayoutSupport};
     void* pNext = nullptr;
     uint32_t maxVariableDescriptorCount{0};
 };
 using DescriptorSetVariableDescriptorCountLayoutSupportEXT = DescriptorSetVariableDescriptorCountLayoutSupport;
-using VkDescriptorSetVariableDescriptorCountLayoutSupportEXT = DescriptorSetVariableDescriptorCountLayoutSupportEXT;
 struct AttachmentDescription2 {
     StructureType sType{StructureType::AttachmentDescription2};
     const void* pNext = nullptr;
@@ -5834,7 +5623,6 @@ struct AttachmentDescription2 {
     ImageLayout finalLayout{static_cast<ImageLayout>(0)};
 };
 using AttachmentDescription2KHR = AttachmentDescription2;
-using VkAttachmentDescription2KHR = AttachmentDescription2KHR;
 struct AttachmentReference2 {
     StructureType sType{StructureType::AttachmentReference2};
     const void* pNext = nullptr;
@@ -5843,7 +5631,6 @@ struct AttachmentReference2 {
     ImageAspectFlags aspectMask{};
 };
 using AttachmentReference2KHR = AttachmentReference2;
-using VkAttachmentReference2KHR = AttachmentReference2KHR;
 struct SubpassDescription2 {
     StructureType sType{StructureType::SubpassDescription2};
     const void* pNext = nullptr;
@@ -5860,7 +5647,6 @@ struct SubpassDescription2 {
     const uint32_t* pPreserveAttachments = nullptr;
 };
 using SubpassDescription2KHR = SubpassDescription2;
-using VkSubpassDescription2KHR = SubpassDescription2KHR;
 struct SubpassDependency2 {
     StructureType sType{StructureType::SubpassDependency2};
     const void* pNext = nullptr;
@@ -5874,7 +5660,6 @@ struct SubpassDependency2 {
     int32_t viewOffset{0};
 };
 using SubpassDependency2KHR = SubpassDependency2;
-using VkSubpassDependency2KHR = SubpassDependency2KHR;
 struct RenderPassCreateInfo2 {
     StructureType sType{StructureType::RenderPassCreateInfo2};
     const void* pNext = nullptr;
@@ -5889,34 +5674,29 @@ struct RenderPassCreateInfo2 {
     const uint32_t* pCorrelatedViewMasks = nullptr;
 };
 using RenderPassCreateInfo2KHR = RenderPassCreateInfo2;
-using VkRenderPassCreateInfo2KHR = RenderPassCreateInfo2KHR;
 struct SubpassBeginInfo {
     StructureType sType{StructureType::SubpassBeginInfo};
     const void* pNext = nullptr;
     SubpassContents contents{static_cast<SubpassContents>(0)};
 };
 using SubpassBeginInfoKHR = SubpassBeginInfo;
-using VkSubpassBeginInfoKHR = SubpassBeginInfoKHR;
 struct SubpassEndInfo {
     StructureType sType{StructureType::SubpassEndInfo};
     const void* pNext = nullptr;
 };
 using SubpassEndInfoKHR = SubpassEndInfo;
-using VkSubpassEndInfoKHR = SubpassEndInfoKHR;
 struct PhysicalDeviceTimelineSemaphoreFeatures {
     StructureType sType{StructureType::PhysicalDeviceTimelineSemaphoreFeatures};
     void* pNext = nullptr;
     Bool32 timelineSemaphore{0};
 };
 using PhysicalDeviceTimelineSemaphoreFeaturesKHR = PhysicalDeviceTimelineSemaphoreFeatures;
-using VkPhysicalDeviceTimelineSemaphoreFeaturesKHR = PhysicalDeviceTimelineSemaphoreFeaturesKHR;
 struct PhysicalDeviceTimelineSemaphoreProperties {
     StructureType sType{StructureType::PhysicalDeviceTimelineSemaphoreProperties};
     void* pNext = nullptr;
     uint64_t maxTimelineSemaphoreValueDifference{0};
 };
 using PhysicalDeviceTimelineSemaphorePropertiesKHR = PhysicalDeviceTimelineSemaphoreProperties;
-using VkPhysicalDeviceTimelineSemaphorePropertiesKHR = PhysicalDeviceTimelineSemaphorePropertiesKHR;
 struct SemaphoreTypeCreateInfo {
     StructureType sType{StructureType::SemaphoreTypeCreateInfo};
     const void* pNext = nullptr;
@@ -5924,7 +5704,6 @@ struct SemaphoreTypeCreateInfo {
     uint64_t initialValue{0};
 };
 using SemaphoreTypeCreateInfoKHR = SemaphoreTypeCreateInfo;
-using VkSemaphoreTypeCreateInfoKHR = SemaphoreTypeCreateInfoKHR;
 struct TimelineSemaphoreSubmitInfo {
     StructureType sType{StructureType::TimelineSemaphoreSubmitInfo};
     const void* pNext = nullptr;
@@ -5934,7 +5713,6 @@ struct TimelineSemaphoreSubmitInfo {
     const uint64_t* pSignalSemaphoreValues = nullptr;
 };
 using TimelineSemaphoreSubmitInfoKHR = TimelineSemaphoreSubmitInfo;
-using VkTimelineSemaphoreSubmitInfoKHR = TimelineSemaphoreSubmitInfoKHR;
 struct SemaphoreWaitInfo {
     StructureType sType{StructureType::SemaphoreWaitInfo};
     const void* pNext = nullptr;
@@ -5944,7 +5722,6 @@ struct SemaphoreWaitInfo {
     const uint64_t* pValues = nullptr;
 };
 using SemaphoreWaitInfoKHR = SemaphoreWaitInfo;
-using VkSemaphoreWaitInfoKHR = SemaphoreWaitInfoKHR;
 struct SemaphoreSignalInfo {
     StructureType sType{StructureType::SemaphoreSignalInfo};
     const void* pNext = nullptr;
@@ -5952,7 +5729,6 @@ struct SemaphoreSignalInfo {
     uint64_t value{0};
 };
 using SemaphoreSignalInfoKHR = SemaphoreSignalInfo;
-using VkSemaphoreSignalInfoKHR = SemaphoreSignalInfoKHR;
 struct VertexInputBindingDivisorDescriptionEXT {
     uint32_t binding{0};
     uint32_t divisor{0};
@@ -6032,7 +5808,6 @@ struct PhysicalDevice8BitStorageFeatures {
     Bool32 storagePushConstant8{0};
 };
 using PhysicalDevice8BitStorageFeaturesKHR = PhysicalDevice8BitStorageFeatures;
-using VkPhysicalDevice8BitStorageFeaturesKHR = PhysicalDevice8BitStorageFeaturesKHR;
 struct PhysicalDeviceConditionalRenderingFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceConditionalRenderingFeaturesEXT};
     void* pNext = nullptr;
@@ -6047,7 +5822,6 @@ struct PhysicalDeviceVulkanMemoryModelFeatures {
     Bool32 vulkanMemoryModelAvailabilityVisibilityChains{0};
 };
 using PhysicalDeviceVulkanMemoryModelFeaturesKHR = PhysicalDeviceVulkanMemoryModelFeatures;
-using VkPhysicalDeviceVulkanMemoryModelFeaturesKHR = PhysicalDeviceVulkanMemoryModelFeaturesKHR;
 struct PhysicalDeviceShaderAtomicInt64Features {
     StructureType sType{StructureType::PhysicalDeviceShaderAtomicInt64Features};
     void* pNext = nullptr;
@@ -6055,7 +5829,6 @@ struct PhysicalDeviceShaderAtomicInt64Features {
     Bool32 shaderSharedInt64Atomics{0};
 };
 using PhysicalDeviceShaderAtomicInt64FeaturesKHR = PhysicalDeviceShaderAtomicInt64Features;
-using VkPhysicalDeviceShaderAtomicInt64FeaturesKHR = PhysicalDeviceShaderAtomicInt64FeaturesKHR;
 struct PhysicalDeviceShaderAtomicFloatFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceShaderAtomicFloatFeaturesEXT};
     void* pNext = nullptr;
@@ -6098,7 +5871,6 @@ struct PhysicalDeviceDepthStencilResolveProperties {
     Bool32 independentResolve{0};
 };
 using PhysicalDeviceDepthStencilResolvePropertiesKHR = PhysicalDeviceDepthStencilResolveProperties;
-using VkPhysicalDeviceDepthStencilResolvePropertiesKHR = PhysicalDeviceDepthStencilResolvePropertiesKHR;
 struct SubpassDescriptionDepthStencilResolve {
     StructureType sType{StructureType::SubpassDescriptionDepthStencilResolve};
     const void* pNext = nullptr;
@@ -6107,7 +5879,6 @@ struct SubpassDescriptionDepthStencilResolve {
     const AttachmentReference2* pDepthStencilResolveAttachment = nullptr;
 };
 using SubpassDescriptionDepthStencilResolveKHR = SubpassDescriptionDepthStencilResolve;
-using VkSubpassDescriptionDepthStencilResolveKHR = SubpassDescriptionDepthStencilResolveKHR;
 struct ImageViewASTCDecodeModeEXT {
     StructureType sType{StructureType::ImageViewAstcDecodeModeEXT};
     const void* pNext = nullptr;
@@ -6387,7 +6158,6 @@ struct BindAccelerationStructureMemoryInfoKHR {
 };
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using BindAccelerationStructureMemoryInfoNV = BindAccelerationStructureMemoryInfoKHR;
-using VkBindAccelerationStructureMemoryInfoNV = BindAccelerationStructureMemoryInfoNV;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct WriteDescriptorSetAccelerationStructureKHR {
     StructureType sType{StructureType::WriteDescriptorSetAccelerationStructureKHR};
@@ -6397,7 +6167,6 @@ struct WriteDescriptorSetAccelerationStructureKHR {
 };
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using WriteDescriptorSetAccelerationStructureNV = WriteDescriptorSetAccelerationStructureKHR;
-using VkWriteDescriptorSetAccelerationStructureNV = WriteDescriptorSetAccelerationStructureNV;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureMemoryRequirementsInfoKHR {
     StructureType sType{StructureType::AccelerationStructureMemoryRequirementsInfoKHR};
@@ -6511,7 +6280,6 @@ struct ImageStencilUsageCreateInfo {
     ImageUsageFlags stencilUsage{};
 };
 using ImageStencilUsageCreateInfoEXT = ImageStencilUsageCreateInfo;
-using VkImageStencilUsageCreateInfoEXT = ImageStencilUsageCreateInfoEXT;
 struct DeviceMemoryOverallocationCreateInfoAMD {
     StructureType sType{StructureType::DeviceMemoryOverallocationCreateInfoAMD};
     const void* pNext = nullptr;
@@ -6555,7 +6323,6 @@ struct PhysicalDeviceScalarBlockLayoutFeatures {
     Bool32 scalarBlockLayout{0};
 };
 using PhysicalDeviceScalarBlockLayoutFeaturesEXT = PhysicalDeviceScalarBlockLayoutFeatures;
-using VkPhysicalDeviceScalarBlockLayoutFeaturesEXT = PhysicalDeviceScalarBlockLayoutFeaturesEXT;
 struct SurfaceProtectedCapabilitiesKHR {
     StructureType sType{StructureType::SurfaceProtectedCapabilitiesKHR};
     const void* pNext = nullptr;
@@ -6567,7 +6334,6 @@ struct PhysicalDeviceUniformBufferStandardLayoutFeatures {
     Bool32 uniformBufferStandardLayout{0};
 };
 using PhysicalDeviceUniformBufferStandardLayoutFeaturesKHR = PhysicalDeviceUniformBufferStandardLayoutFeatures;
-using VkPhysicalDeviceUniformBufferStandardLayoutFeaturesKHR = PhysicalDeviceUniformBufferStandardLayoutFeaturesKHR;
 struct PhysicalDeviceDepthClipEnableFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceDepthClipEnableFeaturesEXT};
     void* pNext = nullptr;
@@ -6603,7 +6369,6 @@ struct PhysicalDeviceBufferDeviceAddressFeatures {
     Bool32 bufferDeviceAddressMultiDevice{0};
 };
 using PhysicalDeviceBufferDeviceAddressFeaturesKHR = PhysicalDeviceBufferDeviceAddressFeatures;
-using VkPhysicalDeviceBufferDeviceAddressFeaturesKHR = PhysicalDeviceBufferDeviceAddressFeaturesKHR;
 struct PhysicalDeviceBufferDeviceAddressFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceBufferDeviceAddressFeaturesEXT};
     void* pNext = nullptr;
@@ -6612,23 +6377,19 @@ struct PhysicalDeviceBufferDeviceAddressFeaturesEXT {
     Bool32 bufferDeviceAddressMultiDevice{0};
 };
 using PhysicalDeviceBufferAddressFeaturesEXT = PhysicalDeviceBufferDeviceAddressFeaturesEXT;
-using VkPhysicalDeviceBufferAddressFeaturesEXT = PhysicalDeviceBufferAddressFeaturesEXT;
 struct BufferDeviceAddressInfo {
     StructureType sType{StructureType::BufferDeviceAddressInfo};
     const void* pNext = nullptr;
     Buffer buffer{};
 };
 using BufferDeviceAddressInfoKHR = BufferDeviceAddressInfo;
-using VkBufferDeviceAddressInfoKHR = BufferDeviceAddressInfoKHR;
 using BufferDeviceAddressInfoEXT = BufferDeviceAddressInfo;
-using VkBufferDeviceAddressInfoEXT = BufferDeviceAddressInfoEXT;
 struct BufferOpaqueCaptureAddressCreateInfo {
     StructureType sType{StructureType::BufferOpaqueCaptureAddressCreateInfo};
     const void* pNext = nullptr;
     uint64_t opaqueCaptureAddress{0};
 };
 using BufferOpaqueCaptureAddressCreateInfoKHR = BufferOpaqueCaptureAddressCreateInfo;
-using VkBufferOpaqueCaptureAddressCreateInfoKHR = BufferOpaqueCaptureAddressCreateInfoKHR;
 struct BufferDeviceAddressCreateInfoEXT {
     StructureType sType{StructureType::BufferDeviceAddressCreateInfoEXT};
     const void* pNext = nullptr;
@@ -6651,7 +6412,6 @@ struct PhysicalDeviceImagelessFramebufferFeatures {
     Bool32 imagelessFramebuffer{0};
 };
 using PhysicalDeviceImagelessFramebufferFeaturesKHR = PhysicalDeviceImagelessFramebufferFeatures;
-using VkPhysicalDeviceImagelessFramebufferFeaturesKHR = PhysicalDeviceImagelessFramebufferFeaturesKHR;
 struct FramebufferAttachmentImageInfo {
     StructureType sType{StructureType::FramebufferAttachmentImageInfo};
     const void* pNext = nullptr;
@@ -6670,9 +6430,7 @@ struct FramebufferAttachmentsCreateInfo {
     const FramebufferAttachmentImageInfo* pAttachmentImageInfos = nullptr;
 };
 using FramebufferAttachmentsCreateInfoKHR = FramebufferAttachmentsCreateInfo;
-using VkFramebufferAttachmentsCreateInfoKHR = FramebufferAttachmentsCreateInfoKHR;
 using FramebufferAttachmentImageInfoKHR = FramebufferAttachmentImageInfo;
-using VkFramebufferAttachmentImageInfoKHR = FramebufferAttachmentImageInfoKHR;
 struct RenderPassAttachmentBeginInfo {
     StructureType sType{StructureType::RenderPassAttachmentBeginInfo};
     const void* pNext = nullptr;
@@ -6680,7 +6438,6 @@ struct RenderPassAttachmentBeginInfo {
     const ImageView* pAttachments = nullptr;
 };
 using RenderPassAttachmentBeginInfoKHR = RenderPassAttachmentBeginInfo;
-using VkRenderPassAttachmentBeginInfoKHR = RenderPassAttachmentBeginInfoKHR;
 struct PhysicalDeviceTextureCompressionASTCHDRFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceTextureCompressionAstcHdrFeaturesEXT};
     void* pNext = nullptr;
@@ -6872,7 +6629,6 @@ struct QueryPoolPerformanceQueryCreateInfoINTEL {
     QueryPoolSamplingModeINTEL performanceCountersSampling{static_cast<QueryPoolSamplingModeINTEL>(0)};
 };
 using QueryPoolCreateInfoINTEL = QueryPoolPerformanceQueryCreateInfoINTEL;
-using VkQueryPoolCreateInfoINTEL = QueryPoolCreateInfoINTEL;
 struct PerformanceMarkerInfoINTEL {
     StructureType sType{StructureType::PerformanceMarkerInfoINTEL};
     const void* pNext = nullptr;
@@ -6930,14 +6686,12 @@ struct PhysicalDeviceSeparateDepthStencilLayoutsFeatures {
     Bool32 separateDepthStencilLayouts{0};
 };
 using PhysicalDeviceSeparateDepthStencilLayoutsFeaturesKHR = PhysicalDeviceSeparateDepthStencilLayoutsFeatures;
-using VkPhysicalDeviceSeparateDepthStencilLayoutsFeaturesKHR = PhysicalDeviceSeparateDepthStencilLayoutsFeaturesKHR;
 struct AttachmentReferenceStencilLayout {
     StructureType sType{StructureType::AttachmentReferenceStencilLayout};
     void* pNext = nullptr;
     ImageLayout stencilLayout{static_cast<ImageLayout>(0)};
 };
 using AttachmentReferenceStencilLayoutKHR = AttachmentReferenceStencilLayout;
-using VkAttachmentReferenceStencilLayoutKHR = AttachmentReferenceStencilLayoutKHR;
 struct AttachmentDescriptionStencilLayout {
     StructureType sType{StructureType::AttachmentDescriptionStencilLayout};
     void* pNext = nullptr;
@@ -6945,7 +6699,6 @@ struct AttachmentDescriptionStencilLayout {
     ImageLayout stencilFinalLayout{static_cast<ImageLayout>(0)};
 };
 using AttachmentDescriptionStencilLayoutKHR = AttachmentDescriptionStencilLayout;
-using VkAttachmentDescriptionStencilLayoutKHR = AttachmentDescriptionStencilLayoutKHR;
 struct PhysicalDevicePipelineExecutablePropertiesFeaturesKHR {
     StructureType sType{StructureType::PhysicalDevicePipelineExecutablePropertiesFeaturesKHR};
     void* pNext = nullptr;
@@ -7040,14 +6793,12 @@ struct MemoryOpaqueCaptureAddressAllocateInfo {
     uint64_t opaqueCaptureAddress{0};
 };
 using MemoryOpaqueCaptureAddressAllocateInfoKHR = MemoryOpaqueCaptureAddressAllocateInfo;
-using VkMemoryOpaqueCaptureAddressAllocateInfoKHR = MemoryOpaqueCaptureAddressAllocateInfoKHR;
 struct DeviceMemoryOpaqueCaptureAddressInfo {
     StructureType sType{StructureType::DeviceMemoryOpaqueCaptureAddressInfo};
     const void* pNext = nullptr;
     DeviceMemory memory{};
 };
 using DeviceMemoryOpaqueCaptureAddressInfoKHR = DeviceMemoryOpaqueCaptureAddressInfo;
-using VkDeviceMemoryOpaqueCaptureAddressInfoKHR = DeviceMemoryOpaqueCaptureAddressInfoKHR;
 struct PhysicalDeviceLineRasterizationFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceLineRasterizationFeaturesEXT};
     void* pNext = nullptr;
@@ -7348,7 +7099,6 @@ struct AabbPositionsKHR {
 };
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using AabbPositionsNV = AabbPositionsKHR;
-using VkAabbPositionsNV = AabbPositionsNV;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct TransformMatrixKHR {
     float matrix[3][4];
@@ -7356,7 +7106,6 @@ struct TransformMatrixKHR {
 };
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using TransformMatrixNV = TransformMatrixKHR;
-using VkTransformMatrixNV = TransformMatrixNV;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureInstanceKHR {
     TransformMatrixKHR transform{};
@@ -7369,7 +7118,6 @@ struct AccelerationStructureInstanceKHR {
 };
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 using AccelerationStructureInstanceNV = AccelerationStructureInstanceKHR;
-using VkAccelerationStructureInstanceNV = AccelerationStructureInstanceNV;
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct AccelerationStructureDeviceAddressInfoKHR {
     StructureType sType{StructureType::AccelerationStructureDeviceAddressInfoKHR};

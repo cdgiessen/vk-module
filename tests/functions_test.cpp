@@ -11,7 +11,7 @@ TEST_CASE("Global Function Usage", "[vk-module.functions]")
     vk::GlobalFunctions free_funcs(library);
     auto layers_ret = free_funcs.EnumerateInstanceLayerProperties();
     REQUIRE(layers_ret.raw_result() == vk::Result::Success);
-   
+
     auto exts_ret = free_funcs.EnumerateInstanceExtensionProperties(nullptr);
     REQUIRE(exts_ret.raw_result() == vk::Result::Success);
     uint32_t version = free_funcs.EnumerateInstanceVersion().value();
@@ -50,6 +50,8 @@ TEST_CASE("Constructor init", "[vk-module.functions]")
     REQUIRE(free_funcs.pfn_EnumerateInstanceVersion != nullptr);
 #endif
 }
+#include <vulkan/vulkan.h>
+
 TEST_CASE("Pass vkGetInstanceProcAddr to constructor", "[vk-module.functions]")
 {
     vk::DynamicLibrary library(vkGetInstanceProcAddr);
