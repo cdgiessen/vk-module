@@ -68,9 +68,7 @@ class MacroDefine:
         self.text = ''
         for t in node.itertext():
             if t in ['VK_API_VERSION', 'VK_API_VERSION_1_0', 'VK_API_VERSION_1_1', \
-                'VK_API_VERSION_1_2', 'VK_HEADER_VERSION', 'VK_HEADER_VERSION_COMPLETE'
-                
-                ]:
+                'VK_API_VERSION_1_2', 'VK_HEADER_VERSION', 'VK_HEADER_VERSION_COMPLETE']:
                 self.should_print = False
             self.text += t
         self.text += '\n'
@@ -81,14 +79,6 @@ class MacroDefine:
 
 def MorphVkEnumName(name, enum_name_len):
     n_part = name.title().split('_')[enum_name_len:]
-    if n_part[-1] == "Bit":
-        n_part = n_part[:-1]
-    if n_part[-1].upper() in vendor_abbreviations:
-        n_part[-1] = n_part[-1].upper()
-    return ''.join(n_part)
-
-def MorphVkBitaskName(name, bitmask_name_len):
-    n_part = name.title().split('_')[bitmask_name_len:]
     if n_part[-1] == "Bit":
         n_part = n_part[:-1]
     if n_part[-1].upper() in vendor_abbreviations:
@@ -220,7 +210,7 @@ class Bitmask:
             elif elem.get('alias') is not None:
                 if elem.get('name') == "VK_STENCIL_FRONT_AND_BACK":
                     continue #ugly special case
-                out_name = MorphVkBitaskName(elem.get("alias"), self.bitmask_name_len)
+                out_name = MorphVkEnumName(elem.get("alias"), self.bitmask_name_len)
                 if out_name[0].isnumeric():
                     out_name = f'e{out_name}'
                 value = out_name
@@ -248,7 +238,7 @@ class Bitmask:
         else:
             file.write(f'enum class {self.name[2:]}: {self.underlying_type} {{\n')
             for bitpos, name in self.values.items():
-                out_name = MorphVkBitaskName(name, self.bitmask_name_len)
+                out_name = MorphVkEnumName(name, self.bitmask_name_len)
                 if out_name[0].isnumeric():
                     out_name = f'e{out_name}'
                 file.write(f"    {out_name} = {bitpos},\n")
@@ -266,7 +256,7 @@ class Bitmask:
             for bitpos, name in self.values.items():
                 if not RepresentsIntOrHex(bitpos):
                     continue
-                out_name = MorphVkBitaskName(name, self.bitmask_name_len)
+                out_name = MorphVkEnumName(name, self.bitmask_name_len)
                 if out_name[0].isnumeric():
                     out_name = f'e{out_name}'
                 file.write(f'        case({self.name[2:]}::{out_name}): return \"{out_name}\";\n')
@@ -278,7 +268,7 @@ class Bitmask:
             for bitpos, name in self.values.items():
                 if not RepresentsIntOrHex(bitpos):
                     continue
-                out_name = MorphVkBitaskName(name, self.bitmask_name_len)
+                out_name = MorphVkEnumName(name, self.bitmask_name_len)
                 if out_name[0].isnumeric():
                     out_name = f'e{out_name}'
                 file.write(f'    if (flag & {self.name[2:]}::{out_name}) out += \"{out_name} | \";\n')
@@ -511,27 +501,34 @@ class Variable:
 
     def get_type_decl(self, use_vk_type=True, use_references=False, downgrade_ptr_type=False):
         type_decl = ''
-        if self.is_const:
-            type_decl += 'const '
-        if use_vk_type:
-            type_decl += self.base_type_modified
-        else:
-            type_decl += self.base_type
+        type_decl += 'const ' if self.is_const else ''
+        type_decl += self.base_type_modified if use_vk_type else self.base_type
         if downgrade_ptr_type:
-            if self.is_double_ptr:
-                type_decl += '*'
-            elif self.is_const_double_ptr:
-                type_decl += 'const*'
+            type_decl += '*' if self.is_double_ptr else ''
+            type_decl += 'const*' if self.is_const_double_ptr else ''
         else:
             if use_references and self.is_ref_eligible:
                 type_decl += '& '
-            elif self.is_single_ptr:
-                type_decl += '*'
-            elif self.is_double_ptr:
-                type_decl += '**'
-            elif self.is_const_double_ptr:
-                type_decl += '* const*'
+            else:
+                type_decl += '*' if self.is_single_ptr else ''
+                type_decl += '**' if self.is_double_ptr else ''
+                type_decl += '* const*' if self.is_const_double_ptr else ''
+        return type_decl
 
+    def get_type_decl_w_arr(self):
+        type_decl = self.get_type_decl(use_vk_type=False)
+        for arr in self.array_lengths:
+            type_decl += f'[{arr}]'
+        return type_decl
+
+    def get_parameter_decl(self, use_references = False):
+        local_use_refs = use_references
+        type_decl = f'{self.get_type_decl(use_references=local_use_refs)} '
+        type_decl += self.name
+        if self.bitfield is not None:
+            type_decl += f':{self.bitfield}'
+        for arr in self.array_lengths:
+            type_decl += f'[{arr}]'
         return type_decl
 
     def get_init(self):
@@ -544,26 +541,11 @@ class Variable:
         else:
             return '{}'
 
-    def get_type_decl_w_arr(self):
-        type_decl = self.get_type_decl(use_vk_type=False)
-        for arr in self.array_lengths:
-            type_decl += f'[{arr}]'
-        return type_decl
-
-    def get_full_type(self, use_references = False):
-        local_use_refs = use_references
-        type_decl = f'{self.get_type_decl(use_references=local_use_refs)} '
-        type_decl += self.name
-        if self.bitfield is not None:
-            type_decl += f':{self.bitfield}'
-        for arr in self.array_lengths:
-            type_decl += f'[{arr}]'
-        return type_decl
-
-    def get_parameter_decl(self, default_init):
-        type_decl = self.get_full_type()
+    def get_struct_member_decl(self, default_init):
+        type_decl = self.get_parameter_decl()
         if default_init and self.bitfield is None:
             type_decl += self.get_init()
+        type_decl += ';'
         return type_decl
 
 def print_custom_comparator(file, member_list, name):
@@ -630,10 +612,7 @@ class Structure:
     
     def print_c_forward_decl(self, file):
         if self.alias is None:
-            if self.category == 'struct':
-                file.write(f'struct {self.name};\n')
-            elif self.category == 'union':
-                file.write(f'union {self.name};\n')
+            file.write(f'{self.category} {self.name};\n')
         else:
             file.write(f'using {self.name} = {self.alias};\n')
 
@@ -641,25 +620,20 @@ class Structure:
         if self.alias is not None:
             file.write(f'using {self.name[2:]} = {self.alias[2:]};\n')
         else:
-            if self.category == 'struct':
-                file.write(f'struct {self.name[2:]} {{\n')
-                for member in self.members:
-                    if self.name == 'VkDeviceCreateInfo' and member.name in ['ppEnabledLayerNames', 'enabledLayerCount']:
-                        file.write('[[deprecated]]')
-                    file.write(f'    {member.get_parameter_decl(default_init=True)};\n')
-                if self.is_comparable:
-                    if cpp20mode:
-                        file.write(f'    constexpr bool operator==({self.name[2:]} const& other) const = default;\n')
-                    else:
-                        print_custom_comparator(file, self.members, self.name[2:])
-                file.write('};\n')
-            elif self.category == 'union':
-                file.write(f'union {self.name[2:]} {{\n')
-                for member in self.members:
-                    file.write(f'    {member.get_parameter_decl(default_init=False)};\n')
-                if self.is_comparable:
+            should_init = self.category == 'struct' #members should default_init in structs but not unions
+            file.write(f'{self.category} {self.name[2:]} {{\n')
+            for member in self.members:
+                if self.name == 'VkDeviceCreateInfo' and member.name in ['ppEnabledLayerNames', 'enabledLayerCount']:
+                    file.write('[[deprecated]]')
+                file.write(f'    {member.get_struct_member_decl(default_init=should_init)}\n')
+            if self.is_comparable:
+                if self.category == 'union':
                     print_custom_comparator(file, self.members, self.name[2:])
-                file.write('};\n')
+                elif cpp20mode:
+                    file.write(f'    constexpr bool operator==({self.name[2:]} const& other) const = default;\n')
+                else:
+                    print_custom_comparator(file, self.members, self.name[2:])
+            file.write('};\n')
 
     def print_static_asserts(self, file):
         if self.category == 'struct':
@@ -800,7 +774,7 @@ class Function:
             elif condense_spans and param.len_attrib is not None and param.len_attrib in self.span_params:
                 file.write(f'std::span<{param.get_base_type()}> {param.name[1:]}')
             else:
-                file.write(f'{param.get_full_type(use_references=True)}')
+                file.write(f'{param.get_parameter_decl(use_references=True)}')
             if print_defaults and param.name == 'pAllocator' and param == parameter_list[-1]:
                 file.write(f' = nullptr')
             should_print_comma = True
@@ -860,7 +834,6 @@ class Function:
     def print_definition(self, file, indent='', dispatch_handle = None, replace_list=None, guard=True, make_void_return_this=None, cpp20mode=False):
         PlatformGuardHeader(file, self.platform, guard)
         if self.alias is not None:
-            #file.write(f'{indent}const auto {self.name[2:]} = {self.alias[2:]};\n')
             PlatformGuardFooter(file, self.platform, guard)
             return
         self.inner_print_definition(file, indent, dispatch_handle, replace_list, make_void_return_this, print_spans=False)
@@ -985,8 +958,6 @@ class Function:
             self.inner_print_forwarding_function(file, dispatch_handle, dispatch_handle_name, indent, replace_list, struct_source, pfn_source, make_void_return_this, print_spans=True)
         PlatformGuardFooter(file, self.platform, guard)
 
-
-
 class ExtEnum:
     def __init__(self, name, value):
         self.name = name
@@ -1047,7 +1018,7 @@ class Requires:
                 AppendToDictOfLists(self.bitmask_dict, extends, ExtBitmask(name, int(bitpos)))
 
     def fill_functions(self, functions):
-        self.functions.extend([func for func in functions if func.name in self.commands])
+        self.functions.extend([function for function in functions if function.name in self.commands])
 
     def fill_enums(self, enum_dict):
         for key in self.enum_dict.keys():
@@ -1086,11 +1057,6 @@ class VulkanFeatureLevel:
         for require in node.findall('require'):
             self.requires.append(Requires(require))
 
-class FunctionGuard:
-    def __init__(self, name, extension_or_feature):
-        self.name = name
-        self.extension_or_feature = extension_or_feature
-
 class DispatchTable:   
     def __init__(self, name, dispatch_type, ext_or_feature_list):
         self.name = name
@@ -1098,9 +1064,9 @@ class DispatchTable:
         self.functions = {}
         for ext_or_feature in ext_or_feature_list:
             for require in ext_or_feature.requires: 
-                for func in require.functions:
-                    if func.dispatch_type == dispatch_type or dispatch_type == 'instance' and func.name == 'vkGetInstanceProcAddr':
-                        self.functions[func.name] = func
+                for function in require.functions:
+                    if function.dispatch_type == dispatch_type or dispatch_type == 'instance' and function.name == 'vkGetInstanceProcAddr':
+                        self.functions[function.name] = function
 
         self.gpa_type = 'PFN_vkGetDeviceProcAddr' if self.dispatch_type  == 'device' else 'PFN_vkGetInstanceProcAddr'
         self.gpa_name = 'get_device_proc_addr'  if self.dispatch_type == 'device' else 'get_instance_proc_addr'
@@ -1193,14 +1159,14 @@ class DispatchableHandleDispatchTable:
         file.write(f'    {self.type_name}Functions() noexcept;\n')
         file.write(f'    {self.type_name}Functions({self.functions_type} const& {self.functions_name}, {self.type_name} const {self.var_name}) noexcept;\n')
         prev_platform = None
-        for func in self.functions:
-            if prev_platform != func.platform:
+        for function in self.functions:
+            if prev_platform != function.platform:
                 if prev_platform is not None:
                     file.write(f'#endif // defined({prev_platform})\n')
-                if func.platform is not None:
-                    file.write(f'#if defined({func.platform})\n')
-            prev_platform = func.platform
-            func.print_definition(file, dispatch_handle=self.name, indent='    ', replace_list=self.replace_list, \
+                if function.platform is not None:
+                    file.write(f'#if defined({function.platform})\n')
+            prev_platform = function.platform
+            function.print_definition(file, dispatch_handle=self.name, indent='    ', replace_list=self.replace_list, \
                 guard=False, make_void_return_this=command_buffer_return_type, cpp20mode=cpp20mode)
         if prev_platform is not None:
             file.write(f'#endif // defined({prev_platform})\n')
@@ -1212,14 +1178,14 @@ class DispatchableHandleDispatchTable:
         file.write(f'{self.type_name}Functions::{self.type_name}Functions({self.functions_type} const& {self.functions_name}, {self.type_name} const {self.var_name}) noexcept\n')
         file.write(f'    :{self.functions_name}(&{self.functions_name}), {self.var_name}({self.var_name}){{}}\n')
         prev_platform = None
-        for func in self.functions:
-            if prev_platform != func.platform:
+        for function in self.functions:
+            if prev_platform != function.platform:
                 if prev_platform is not None:
                     file.write(f'#endif // defined({prev_platform})\n')
-                if func.platform is not None:
-                    file.write(f'#if defined({func.platform})\n')
-            prev_platform = func.platform
-            func.print_forwarding_function(file, dispatch_handle=self.name, dispatch_handle_name=self.var_name, replace_list=self.replace_list, \
+                if function.platform is not None:
+                    file.write(f'#if defined({function.platform})\n')
+            prev_platform = function.platform
+            function.print_forwarding_function(file, dispatch_handle=self.name, dispatch_handle_name=self.var_name, replace_list=self.replace_list, \
                 struct_source=f'{self.type_name}Functions', pfn_source=self.functions_name, guard=False, make_void_return_this=command_buffer_return_type, cpp20mode=cpp20mode)
         if prev_platform is not None:
             file.write(f'#endif // defined({prev_platform})\n')
