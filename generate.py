@@ -3,7 +3,10 @@ import xml.etree.ElementTree
 import re
 from codegen_text import *
 
+#globals that are initialized near beginning of xml parsing
 vendor_abbreviations = []
+base_type_implicit_conversions = {}
+api_constants = {}
 
 base_type_default_values = {
     'void*': 'nullptr',
@@ -20,7 +23,55 @@ base_type_default_values = {
     'size_t': '0'
 }
 
-base_type_implicit_conversions = {}
+def MorphVkEnumName(name, enum_name_len):
+    n_part = name.title().split('_')[enum_name_len:]
+    if n_part[-1] == "Bit":
+        n_part = n_part[:-1]
+    if n_part[-1].upper() in vendor_abbreviations:
+        n_part[-1] = n_part[-1].upper()
+    return ''.join(n_part)
+
+def PlatformGuardHeader(file, guard, should_print=True):
+    if should_print and guard is not None:
+        file.write(f'#if defined({guard})\n')
+
+def PlatformGuardFooter(file, guard, should_print=True):
+    if should_print and guard is not None:
+        file.write(f'#endif // {guard}\n')
+
+def PrintConsecutivePlatforms(file, in_list, function_name, cpp20mode = None):
+    prev_platform = None
+    for item in in_list:
+        if getattr(item, 'platform', None) is not None:
+            if prev_platform != item.platform:
+                if prev_platform is not None:
+                    file.write(f'#endif // defined({prev_platform})\n')
+                if item.platform is not None:
+                    file.write(f'#if defined({item.platform})\n')
+            prev_platform = item.platform
+        else:
+            if prev_platform is not None:
+                file.write(f'#endif // defined({prev_platform})\n')
+            prev_platform = None
+        if cpp20mode is not None:
+            getattr(item, function_name)(file, cpp20mode)
+        else:
+            getattr(item, function_name)(file)
+    if prev_platform is not None:
+        file.write(f'#endif // defined({prev_platform})\n')
+
+def TrimVkFromType(in_string):
+    if in_string[:2] == 'Vk' or in_string[:2] == 'vk':
+        return in_string[2:]
+    else:
+        return in_string
+
+def TrimVkFromPFN(in_string):
+    if in_string[:6] == 'PFN_vk':
+        return f'PFN_{in_string[6:]}'
+    else:
+        return in_string
+
 
 class ApiConstant:
     def __init__(self, node):
@@ -33,8 +84,6 @@ class ApiConstant:
             file.write(f'constexpr auto {self.name[3:]} = {self.alias[3:]};\n')
         elif self.value is not None:
             file.write(f'constexpr auto {self.name[3:]} = {self.value};\n')
-
-api_constants = {}
 
 class BaseType:
     def __init__(self, node):
@@ -76,43 +125,6 @@ class MacroDefine:
     def print_base(self, file):
         if self.should_print:
             file.write(self.text)
-
-def MorphVkEnumName(name, enum_name_len):
-    n_part = name.title().split('_')[enum_name_len:]
-    if n_part[-1] == "Bit":
-        n_part = n_part[:-1]
-    if n_part[-1].upper() in vendor_abbreviations:
-        n_part[-1] = n_part[-1].upper()
-    return ''.join(n_part)
-
-def PlatformGuardHeader(file, guard, should_print=True):
-    if should_print and guard is not None:
-        file.write(f'#if defined({guard})\n')
-
-def PlatformGuardFooter(file, guard, should_print=True):
-    if should_print and guard is not None:
-        file.write(f'#endif // {guard}\n')
-
-def PrintConsecutivePlatforms(file, in_list, function_name, cpp20mode = None):
-    prev_platform = None
-    for item in in_list:
-        if getattr(item, 'platform', None) is not None:
-            if prev_platform != item.platform:
-                if prev_platform is not None:
-                    file.write(f'#endif // defined({prev_platform})\n')
-                if item.platform is not None:
-                    file.write(f'#if defined({item.platform})\n')
-            prev_platform = item.platform
-        else:
-            if prev_platform is not None:
-                file.write(f'#endif // defined({prev_platform})\n')
-            prev_platform = None
-        if cpp20mode is not None:
-            getattr(item, function_name)(file, cpp20mode)
-        else:
-            getattr(item, function_name)(file)
-    if prev_platform is not None:
-        file.write(f'#endif // defined({prev_platform})\n')
 
 class Enum:
     def __init__(self, node):
@@ -349,10 +361,7 @@ class Handle:
         self.name = None
         if node.find('name') is not None:
             self.name = node.find('name').text
-            if node.find('type').text == 'VK_DEFINE_HANDLE':
-                self.dispatchable = True
-            elif node.find('type').text == 'VK_DEFINE_NON_DISPATCHABLE_HANDLE':
-                self.dispatchable = False
+            self.dispatchable = node.find('type').text == 'VK_DEFINE_HANDLE' #else is a nondispatchable handle 
             self.parent = node.get('parent')
         self.alias = node.get('alias')
         if self.alias is not None:
@@ -418,9 +427,7 @@ class Variable:
         self.is_ref_eligible = False
 
         self.base_type = node.find('type').text
-        self.base_type_modified = self.base_type
-        if self.base_type_modified[:2] == 'Vk':
-            self.base_type_modified = self.base_type_modified[2:]
+        self.base_type_modified = TrimVkFromType(self.base_type)
         # special case cause of bitfields
         if self.base_type_modified == 'GeometryInstanceFlagsKHR':
             self.base_type_modified = 'VkGeometryInstanceFlagsKHR'
@@ -655,9 +662,6 @@ class Function:
         self.alias = node.get('alias') if proto is None else None
         self.return_type = proto.find('type').text if proto is not None else None
 
-        if self.name is not None:
-            self.func_prototype = f'PFN_{self.name}'
-
         self.parameters = []
         for param in node.findall('param'):
             self.parameters.append( Variable(param, handles, default_values))
@@ -694,9 +698,7 @@ class Function:
         self.modified_param_list = self.parameters
         if self.is_value_query:
             self.modified_param_list = self.parameters[:-1]
-            self.query_type = self.parameters[-1].get_type_decl(downgrade_ptr_type=True)
-            if self.query_type[:2] == 'vk':
-                self.query_type = self.query_type[:2]
+            self.query_type = TrimVkFromType(self.parameters[-1].get_type_decl(downgrade_ptr_type=True))
             self.query_name = self.parameters[-1].name
             if self.return_type == 'VkResult':
                 self.full_return_type = f'expected<{self.query_type}>'
@@ -721,7 +723,7 @@ class Function:
             self.platform = platform
     
     def print_pfn_variable_decl(self, file):
-        file.write(f'    {self.func_prototype} pfn_{self.name[2:]} = nullptr;\n')
+        file.write(f'    PFN_{self.name} pfn_{self.name[2:]} = nullptr;\n')
 
     def print_c_func_pointer(self, file):
         if self.alias is not None:
@@ -1124,7 +1126,7 @@ class DispatchTable:
             if function.name == 'vkGetInstanceProcAddr': 
                 file.write(f'{self.gpa_name};\n') #had a crash here once, may not be needed.
             else:
-                file.write(f'reinterpret_cast<{function.func_prototype}>({self.gpa_name}({self.gpa_val},\"{function.name}\"));\n')
+                file.write(f'reinterpret_cast<PFN_{function.name}>({self.gpa_name}({self.gpa_val},\"{function.name}\"));\n')
             PlatformGuardFooter(file, function.platform)
         file.write('}\n')
 
