@@ -31,15 +31,7 @@ def MorphVkEnumName(name, enum_name_len):
         n_part[-1] = n_part[-1].upper()
     return ''.join(n_part)
 
-def PlatformGuardHeader(file, guard, should_print=True):
-    if should_print and guard is not None:
-        file.write(f'#if defined({guard})\n')
-
-def PlatformGuardFooter(file, guard, should_print=True):
-    if should_print and guard is not None:
-        file.write(f'#endif // {guard}\n')
-
-def PrintConsecutivePlatforms(file, in_list, function_name, cpp20mode = None):
+def PrintConsecutivePlatforms(file, in_list, function_name, *args, **kwargs):
     prev_platform = None
     for item in in_list:
         if getattr(item, 'platform', None) is not None:
@@ -53,10 +45,7 @@ def PrintConsecutivePlatforms(file, in_list, function_name, cpp20mode = None):
             if prev_platform is not None:
                 file.write(f'#endif // defined({prev_platform})\n')
             prev_platform = None
-        if cpp20mode is not None:
-            getattr(item, function_name)(file, cpp20mode)
-        else:
-            getattr(item, function_name)(file)
+        getattr(item, function_name)(file, *args, **kwargs)
     if prev_platform is not None:
         file.write(f'#endif // defined({prev_platform})\n')
 
@@ -703,6 +692,10 @@ class Function:
     def print_pfn_variable_decl(self, file):
         file.write(f'    detail::{self.pfn_type} {self.pfn_name} = nullptr;\n')
 
+    def print_get_pfn_statement(self, file, gpa_name, gpa_val):
+        file.write(f'    pfn_{self.name[2:]} = ')
+        file.write(f'reinterpret_cast<detail::{self.pfn_type}>({gpa_name}({gpa_val},\"{self.name}\"));\n')
+
     def print_pfn_func_decl(self, file):
         if self.alias is not None:
             file.write(f'using {self.pfn_type} = PFN_{TrimVkFromType(self.alias)};\n')
@@ -730,12 +723,10 @@ class Function:
             return_type += f'{TrimVkFromAll(self.return_type)} '
         return return_type
 
-    def print_name(self, file, replace_list):
+    def print_name(self, file, replace_list = []):
         print_function_name = self.name[2:]
-        if replace_list is not None:
-            for str_from in replace_list:
-                if print_function_name.find(str_from) != -1:
-                    print_function_name = print_function_name.replace(str_from, '')
+        for str_from in replace_list:
+            print_function_name = print_function_name.replace(str_from, '')
         file.write(f'{print_function_name}')
 
     def print_parameters(self, file, parameter_list, break_between=True, condense_spans=False, print_defaults=False):
@@ -809,7 +800,7 @@ class Function:
                 file.write(param_name)
         file.write(');\n')
 
-    def inner_print_function(self, file, dispatch_handle = None, dispatch_handle_name = None, replace_list=None, \
+    def inner_print_function(self, file, dispatch_handle = None, dispatch_handle_name = None, replace_list=[], \
             struct_source='', pfn_source=None, make_void_return_this=None, print_spans=False):
         file.write(f'{self.get_return_type(replace_list, self.full_return_type)}')
         self.print_name(file, replace_list)
@@ -857,14 +848,12 @@ class Function:
 
         file.write(f'}}\n')
 
-    def print_function(self, file, dispatch_handle = None, dispatch_handle_name = None, replace_list=None, \
+    def print_function(self, file, dispatch_handle = None, dispatch_handle_name = None, replace_list=[], \
             struct_source='', pfn_source=None, make_void_return_this=None, cpp20mode=False):
         if self.alias is not None:
             file.write(f'const auto {self.name[2:]} = {self.alias[2:]};\n')
             return
         self.inner_print_function(file, dispatch_handle, dispatch_handle_name, replace_list, struct_source, pfn_source, make_void_return_this, print_spans=True)
-        #self.inner_print_function(file, dispatch_handle, dispatch_handle_name, replace_list, struct_source, pfn_source, make_void_return_this, print_spans=False)
-        #if len(self.span_params) > 0:
 
     def print_forwarding_function_call(self, file, parameter_list, dispatch_handle_name, print_spans):
         for param in parameter_list:
@@ -879,7 +868,7 @@ class Function:
                         continue
                 file.write(f', {param.name}')
 
-    def inner_print_forwarding_function(self, file, dispatch_handle = None, dispatch_handle_name = None, replace_list=None, \
+    def inner_print_forwarding_function(self, file, dispatch_handle = None, dispatch_handle_name = None, replace_list=[], \
             struct_source='', pfn_source=None, make_void_return_this=None, print_spans=False):
         if make_void_return_this is not None and self.return_type == 'void':
             file.write(f'{self.get_return_type(replace_list, make_void_return_this)}')
@@ -907,8 +896,6 @@ class Function:
             file.write(f'const auto {self.name[2:]} = {self.alias[2:]};\n')
             return
         self.inner_print_forwarding_function(file, dispatch_handle, dispatch_handle_name, replace_list, struct_source, pfn_source, make_void_return_this, print_spans=True)
-        #self.inner_print_forwarding_function(file, dispatch_handle, dispatch_handle_name, replace_list, struct_source, pfn_source, make_void_return_this, print_spans=False)
-        #if len(self.span_params) > 0:
 
 class FuncPointer:
     def __init__(self, node):
@@ -933,8 +920,7 @@ class ExtBitmask:
 
 def EnumExtValue(ext_num, offset, direction):
     enum_value = 1000000000 + 1000 * (ext_num - 1) + offset
-    if direction == '-':
-        enum_value = -enum_value
+    enum_value = -enum_value if direction == '-' else enum_value
     return enum_value
 
 def AppendToDictOfLists(dict, key, val):
@@ -984,12 +970,10 @@ class Requires:
         self.functions.extend([function for function in functions if function.name in self.commands])
 
     def fill_enums(self, enum_dict):
-        for key in self.enum_dict.keys():
-            enum_dict[key].fill_ext_enums(self.enum_dict[key])
+        [enum_dict[key].fill_ext_enums(self.enum_dict[key]) for key in self.enum_dict.keys()]
 
     def fill_bitmasks(self, bitmask_dict):
-        for key in self.bitmask_dict.keys():
-            bitmask_dict[key].fill_ext_bitmasks(self.bitmask_dict[key])
+        [bitmask_dict[key].fill_ext_bitmasks(self.bitmask_dict[key]) for key in self.bitmask_dict.keys()]
     
     def check_platform(self, platform, enum_dict, flags_dict, bitmask_dict, structures, functions):
         [enum.check_platform(platform, self.types) for enum in enum_dict.values()]
@@ -1047,10 +1031,8 @@ class DispatchTable:
         PrintConsecutivePlatforms(file, self.functions.values(), 'print_pfn_variable_decl')
 
         #functions
-        for function in self.functions.values():
-            PlatformGuardHeader(file, function.platform)
-            function.print_function(file, dispatch_handle=self.dispatch_handle, dispatch_handle_name=self.dispatch_type, struct_source=f'{self.name}Functions', cpp20mode=cpp20mode)
-            PlatformGuardFooter(file, function.platform)
+        PrintConsecutivePlatforms(file, self.functions.values(), "print_function", dispatch_handle=self.dispatch_handle\
+            ,dispatch_handle_name=self.dispatch_type, struct_source=f'{self.name}Functions', cpp20mode=cpp20mode)
              
         #constructor
         file.write(f'{self.name}Functions() noexcept {{}}\n')   
@@ -1068,11 +1050,7 @@ class DispatchTable:
             else:
                 file.write('{\n')
             file.write(f'    detail::{self.gpa_type} {self.gpa_name} = instance_functions.pfn_GetDeviceProcAddr;\n')
-        for function in self.functions.values():
-            PlatformGuardHeader(file, function.platform) 
-            file.write(f'    pfn_{function.name[2:]} = ')
-            file.write(f'reinterpret_cast<detail::{function.pfn_type}>({self.gpa_name}({self.gpa_val},\"{function.name}\"));\n')
-            PlatformGuardFooter(file, function.platform)
+        PrintConsecutivePlatforms(file, self.functions.values(), "print_get_pfn_statement", self.gpa_name, self.gpa_val)
         file.write('}\n')
         file.write('};\n')
 
@@ -1094,24 +1072,14 @@ class DispatchableHandleDispatchTable:
 
     def print_definition(self, file, cpp20mode):
         command_buffer_return_type = f'{self.type_name}Functions const&' if self.type_name == 'CommandBuffer' else None
-        file.write(f'struct {self.type_name}Functions {{\n')
-        file.write(f'    {self.functions_type} const* {self.functions_name};\n')
-        file.write(f'    {self.type_name} {self.var_name};\n')   
-        file.write(f'    {self.type_name}Functions() noexcept {{}}\n')
-        file.write(f'    {self.type_name}Functions({self.functions_type} const& {self.functions_name}, {self.type_name} const {self.var_name}) noexcept:\n')
-        file.write(f'    {self.functions_name}{{&{self.functions_name}}}, {self.var_name}{{{self.var_name}}} {{}}\n')
-        prev_platform = None
-        for function in self.functions:
-            if prev_platform != function.platform:
-                if prev_platform is not None:
-                    file.write(f'#endif // defined({prev_platform})\n')
-                if function.platform is not None:
-                    file.write(f'#if defined({function.platform})\n')
-            prev_platform = function.platform
-            function.print_forwarding_function(file, dispatch_handle=self.name, dispatch_handle_name=self.var_name, replace_list=self.replace_list, \
+        file.write(f'''    struct {self.type_name}Functions {{
+    {self.functions_type} const* {self.functions_name};
+    {self.type_name} {self.var_name};
+    {self.type_name}Functions() noexcept {{}}
+    {self.type_name}Functions({self.functions_type} const& {self.functions_name}, {self.type_name} const {self.var_name}) noexcept:
+    {self.functions_name}{{&{self.functions_name}}}, {self.var_name}{{{self.var_name}}} {{}}''')
+        PrintConsecutivePlatforms(file, self.functions, "print_forwarding_function", dispatch_handle=self.name, dispatch_handle_name=self.var_name, replace_list=self.replace_list, \
                 struct_source=f'{self.type_name}Functions', pfn_source=self.functions_name, make_void_return_this=command_buffer_return_type, cpp20mode=cpp20mode)
-        if prev_platform is not None:
-            file.write(f'#endif // defined({prev_platform})\n')
         file.write('};\n')
             
 class BindingGenerator:
@@ -1317,7 +1285,6 @@ def print_c_interop(bindings, cpp20mode, cpp20str):
         PrintConsecutivePlatforms(c_interop, bindings.enum_dict.values(), 'print_c_interop')
         PrintConsecutivePlatforms(c_interop, bindings.bitmask_dict.values(), 'print_c_interop')
         PrintConsecutivePlatforms(c_interop, bindings.flags_dict.values(), 'print_c_interop')
-        #PrintConsecutivePlatforms(c_interop, bindings.handles.values(), 'print_c_interop')
         #PrintConsecutivePlatforms(c_interop, bindings.structures, 'print_c_interop')
         c_interop.write('} // namespace vk\n// clang-format on\n')
 

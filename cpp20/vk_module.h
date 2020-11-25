@@ -9280,8 +9280,6 @@ void DestroySurfaceKHR(SurfaceKHR surface = {},
         &pSurface);
     return expected<SurfaceKHR>(pSurface, result);
 }
-#endif // VK_USE_PLATFORM_XLIB_KHR
-#if defined(VK_USE_PLATFORM_XLIB_KHR)
 [[nodiscard]] Bool32 GetPhysicalDeviceXlibPresentationSupportKHR(PhysicalDevice physicalDevice, 
     uint32_t queueFamilyIndex, 
     Display&  dpy, 
@@ -9292,7 +9290,7 @@ void DestroySurfaceKHR(SurfaceKHR surface = {},
         &dpy,
         visualID);
 }
-#endif // VK_USE_PLATFORM_XLIB_KHR
+#endif // defined(VK_USE_PLATFORM_XLIB_KHR)
 #if defined(VK_USE_PLATFORM_XCB_KHR)
 [[nodiscard]] expected<SurfaceKHR> CreateXcbSurfaceKHR(const XcbSurfaceCreateInfoKHR&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
@@ -9304,8 +9302,6 @@ void DestroySurfaceKHR(SurfaceKHR surface = {},
         &pSurface);
     return expected<SurfaceKHR>(pSurface, result);
 }
-#endif // VK_USE_PLATFORM_XCB_KHR
-#if defined(VK_USE_PLATFORM_XCB_KHR)
 [[nodiscard]] Bool32 GetPhysicalDeviceXcbPresentationSupportKHR(PhysicalDevice physicalDevice, 
     uint32_t queueFamilyIndex, 
     xcb_connection_t&  connection, 
@@ -9316,7 +9312,7 @@ void DestroySurfaceKHR(SurfaceKHR surface = {},
         &connection,
         visual_id);
 }
-#endif // VK_USE_PLATFORM_XCB_KHR
+#endif // defined(VK_USE_PLATFORM_XCB_KHR)
 #if defined(VK_USE_PLATFORM_WAYLAND_KHR)
 [[nodiscard]] expected<SurfaceKHR> CreateWaylandSurfaceKHR(const WaylandSurfaceCreateInfoKHR&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
@@ -9328,8 +9324,6 @@ void DestroySurfaceKHR(SurfaceKHR surface = {},
         &pSurface);
     return expected<SurfaceKHR>(pSurface, result);
 }
-#endif // VK_USE_PLATFORM_WAYLAND_KHR
-#if defined(VK_USE_PLATFORM_WAYLAND_KHR)
 [[nodiscard]] expected<wl_display> GetPhysicalDeviceWaylandPresentationSupportKHR(PhysicalDevice physicalDevice, 
     uint32_t queueFamilyIndex) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
@@ -9339,7 +9333,7 @@ void DestroySurfaceKHR(SurfaceKHR surface = {},
         &display);
     return expected<wl_display>(display, result);
 }
-#endif // VK_USE_PLATFORM_WAYLAND_KHR
+#endif // defined(VK_USE_PLATFORM_WAYLAND_KHR)
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 [[nodiscard]] expected<SurfaceKHR> CreateAndroidSurfaceKHR(const AndroidSurfaceCreateInfoKHR&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
@@ -9351,7 +9345,7 @@ void DestroySurfaceKHR(SurfaceKHR surface = {},
         &pSurface);
     return expected<SurfaceKHR>(pSurface, result);
 }
-#endif // VK_USE_PLATFORM_ANDROID_KHR
+#endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] expected<SurfaceKHR> CreateWin32SurfaceKHR(const Win32SurfaceCreateInfoKHR&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
@@ -9363,15 +9357,13 @@ void DestroySurfaceKHR(SurfaceKHR surface = {},
         &pSurface);
     return expected<SurfaceKHR>(pSurface, result);
 }
-#endif // VK_USE_PLATFORM_WIN32_KHR
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] Bool32 GetPhysicalDeviceWin32PresentationSupportKHR(PhysicalDevice physicalDevice, 
     uint32_t queueFamilyIndex) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_GetPhysicalDeviceWin32PresentationSupportKHR(physicalDevice,
         queueFamilyIndex);
 }
-#endif // VK_USE_PLATFORM_WIN32_KHR
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] expected<DebugReportCallbackEXT> CreateDebugReportCallbackEXT(const DebugReportCallbackCreateInfoEXT&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
@@ -9417,7 +9409,7 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
         &pSurface);
     return expected<SurfaceKHR>(pSurface, result);
 }
-#endif // VK_USE_PLATFORM_GGP
+#endif // defined(VK_USE_PLATFORM_GGP)
 [[nodiscard]] expected<ExternalImageFormatPropertiesNV> GetPhysicalDeviceExternalImageFormatPropertiesNV(PhysicalDevice physicalDevice, 
     Format format, 
     ImageType type, 
@@ -9448,7 +9440,7 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
         &pSurface);
     return expected<SurfaceKHR>(pSurface, result);
 }
-#endif // VK_USE_PLATFORM_VI_NN
+#endif // defined(VK_USE_PLATFORM_VI_NN)
 [[nodiscard]] Result ReleaseDisplayEXT(PhysicalDevice physicalDevice, 
     DisplayKHR display) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
@@ -9464,8 +9456,6 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
         &dpy,
         display);
 }
-#endif // VK_USE_PLATFORM_XLIB_XRANDR_EXT
-#if defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT)
 [[nodiscard]] expected<DisplayKHR> GetRandROutputDisplayEXT(PhysicalDevice physicalDevice, 
     Display&  dpy, 
     RROutput rrOutput) const {
@@ -9477,7 +9467,7 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
         &pDisplay);
     return expected<DisplayKHR>(pDisplay, result);
 }
-#endif // VK_USE_PLATFORM_XLIB_XRANDR_EXT
+#endif // defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT)
 [[nodiscard]] expected<SurfaceCapabilities2EXT> GetPhysicalDeviceSurfaceCapabilities2EXT(PhysicalDevice physicalDevice, 
     SurfaceKHR surface) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
@@ -9599,7 +9589,7 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
         &pSurface);
     return expected<SurfaceKHR>(pSurface, result);
 }
-#endif // VK_USE_PLATFORM_IOS_MVK
+#endif // defined(VK_USE_PLATFORM_IOS_MVK)
 #if defined(VK_USE_PLATFORM_MACOS_MVK)
 [[nodiscard]] expected<SurfaceKHR> CreateMacOSSurfaceMVK(const MacOSSurfaceCreateInfoMVK&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
@@ -9611,7 +9601,7 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
         &pSurface);
     return expected<SurfaceKHR>(pSurface, result);
 }
-#endif // VK_USE_PLATFORM_MACOS_MVK
+#endif // defined(VK_USE_PLATFORM_MACOS_MVK)
 [[nodiscard]] expected<DebugUtilsMessengerEXT> CreateDebugUtilsMessengerEXT(const DebugUtilsMessengerCreateInfoEXT&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
@@ -9672,7 +9662,7 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
         &pSurface);
     return expected<SurfaceKHR>(pSurface, result);
 }
-#endif // VK_USE_PLATFORM_FUCHSIA
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
 #if defined(VK_USE_PLATFORM_METAL_EXT)
 [[nodiscard]] expected<SurfaceKHR> CreateMetalSurfaceEXT(const MetalSurfaceCreateInfoEXT&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
@@ -9684,7 +9674,7 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
         &pSurface);
     return expected<SurfaceKHR>(pSurface, result);
 }
-#endif // VK_USE_PLATFORM_METAL_EXT
+#endif // defined(VK_USE_PLATFORM_METAL_EXT)
 [[nodiscard]] expected<detail::fixed_vector<PhysicalDeviceFragmentShadingRateKHR>> GetPhysicalDeviceFragmentShadingRatesKHR(PhysicalDevice physicalDevice) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pFragmentShadingRateCount = 0;
@@ -9759,7 +9749,7 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
     if (pPresentModeCount < pPresentModes.size()) pPresentModes.shrink(pPresentModeCount);
     return expected(std::move(pPresentModes), result);
 }
-#endif // VK_USE_PLATFORM_WIN32_KHR
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] expected<SurfaceKHR> CreateHeadlessSurfaceEXT(const HeadlessSurfaceCreateInfoEXT&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
@@ -9781,8 +9771,6 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
         &pSurface);
     return expected<SurfaceKHR>(pSurface, result);
 }
-#endif // VK_USE_PLATFORM_DIRECTFB_EXT
-#if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
 [[nodiscard]] expected<IDirectFB> GetPhysicalDeviceDirectFBPresentationSupportEXT(PhysicalDevice physicalDevice, 
     uint32_t queueFamilyIndex) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
@@ -9792,7 +9780,7 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
         &dfb);
     return expected<IDirectFB>(dfb, result);
 }
-#endif // VK_USE_PLATFORM_DIRECTFB_EXT
+#endif // defined(VK_USE_PLATFORM_DIRECTFB_EXT)
 InstanceFunctions() noexcept {}
 explicit InstanceFunctions(GlobalFunctions const& global_functions, Instance instance) noexcept 
     :instance(instance) { 
@@ -9836,48 +9824,38 @@ explicit InstanceFunctions(GlobalFunctions const& global_functions, Instance ins
     pfn_CreateDisplayPlaneSurfaceKHR = reinterpret_cast<detail::PFN_CreateDisplayPlaneSurfaceKHR>(get_instance_proc_addr(instance,"vkCreateDisplayPlaneSurfaceKHR"));
 #if defined(VK_USE_PLATFORM_XLIB_KHR)
     pfn_CreateXlibSurfaceKHR = reinterpret_cast<detail::PFN_CreateXlibSurfaceKHR>(get_instance_proc_addr(instance,"vkCreateXlibSurfaceKHR"));
-#endif // VK_USE_PLATFORM_XLIB_KHR
-#if defined(VK_USE_PLATFORM_XLIB_KHR)
     pfn_GetPhysicalDeviceXlibPresentationSupportKHR = reinterpret_cast<detail::PFN_GetPhysicalDeviceXlibPresentationSupportKHR>(get_instance_proc_addr(instance,"vkGetPhysicalDeviceXlibPresentationSupportKHR"));
-#endif // VK_USE_PLATFORM_XLIB_KHR
+#endif // defined(VK_USE_PLATFORM_XLIB_KHR)
 #if defined(VK_USE_PLATFORM_XCB_KHR)
     pfn_CreateXcbSurfaceKHR = reinterpret_cast<detail::PFN_CreateXcbSurfaceKHR>(get_instance_proc_addr(instance,"vkCreateXcbSurfaceKHR"));
-#endif // VK_USE_PLATFORM_XCB_KHR
-#if defined(VK_USE_PLATFORM_XCB_KHR)
     pfn_GetPhysicalDeviceXcbPresentationSupportKHR = reinterpret_cast<detail::PFN_GetPhysicalDeviceXcbPresentationSupportKHR>(get_instance_proc_addr(instance,"vkGetPhysicalDeviceXcbPresentationSupportKHR"));
-#endif // VK_USE_PLATFORM_XCB_KHR
+#endif // defined(VK_USE_PLATFORM_XCB_KHR)
 #if defined(VK_USE_PLATFORM_WAYLAND_KHR)
     pfn_CreateWaylandSurfaceKHR = reinterpret_cast<detail::PFN_CreateWaylandSurfaceKHR>(get_instance_proc_addr(instance,"vkCreateWaylandSurfaceKHR"));
-#endif // VK_USE_PLATFORM_WAYLAND_KHR
-#if defined(VK_USE_PLATFORM_WAYLAND_KHR)
     pfn_GetPhysicalDeviceWaylandPresentationSupportKHR = reinterpret_cast<detail::PFN_GetPhysicalDeviceWaylandPresentationSupportKHR>(get_instance_proc_addr(instance,"vkGetPhysicalDeviceWaylandPresentationSupportKHR"));
-#endif // VK_USE_PLATFORM_WAYLAND_KHR
+#endif // defined(VK_USE_PLATFORM_WAYLAND_KHR)
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
     pfn_CreateAndroidSurfaceKHR = reinterpret_cast<detail::PFN_CreateAndroidSurfaceKHR>(get_instance_proc_addr(instance,"vkCreateAndroidSurfaceKHR"));
-#endif // VK_USE_PLATFORM_ANDROID_KHR
+#endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     pfn_CreateWin32SurfaceKHR = reinterpret_cast<detail::PFN_CreateWin32SurfaceKHR>(get_instance_proc_addr(instance,"vkCreateWin32SurfaceKHR"));
-#endif // VK_USE_PLATFORM_WIN32_KHR
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
     pfn_GetPhysicalDeviceWin32PresentationSupportKHR = reinterpret_cast<detail::PFN_GetPhysicalDeviceWin32PresentationSupportKHR>(get_instance_proc_addr(instance,"vkGetPhysicalDeviceWin32PresentationSupportKHR"));
-#endif // VK_USE_PLATFORM_WIN32_KHR
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
     pfn_CreateDebugReportCallbackEXT = reinterpret_cast<detail::PFN_CreateDebugReportCallbackEXT>(get_instance_proc_addr(instance,"vkCreateDebugReportCallbackEXT"));
     pfn_DestroyDebugReportCallbackEXT = reinterpret_cast<detail::PFN_DestroyDebugReportCallbackEXT>(get_instance_proc_addr(instance,"vkDestroyDebugReportCallbackEXT"));
     pfn_DebugReportMessageEXT = reinterpret_cast<detail::PFN_DebugReportMessageEXT>(get_instance_proc_addr(instance,"vkDebugReportMessageEXT"));
 #if defined(VK_USE_PLATFORM_GGP)
     pfn_CreateStreamDescriptorSurfaceGGP = reinterpret_cast<detail::PFN_CreateStreamDescriptorSurfaceGGP>(get_instance_proc_addr(instance,"vkCreateStreamDescriptorSurfaceGGP"));
-#endif // VK_USE_PLATFORM_GGP
+#endif // defined(VK_USE_PLATFORM_GGP)
     pfn_GetPhysicalDeviceExternalImageFormatPropertiesNV = reinterpret_cast<detail::PFN_GetPhysicalDeviceExternalImageFormatPropertiesNV>(get_instance_proc_addr(instance,"vkGetPhysicalDeviceExternalImageFormatPropertiesNV"));
 #if defined(VK_USE_PLATFORM_VI_NN)
     pfn_CreateViSurfaceNN = reinterpret_cast<detail::PFN_CreateViSurfaceNN>(get_instance_proc_addr(instance,"vkCreateViSurfaceNN"));
-#endif // VK_USE_PLATFORM_VI_NN
+#endif // defined(VK_USE_PLATFORM_VI_NN)
     pfn_ReleaseDisplayEXT = reinterpret_cast<detail::PFN_ReleaseDisplayEXT>(get_instance_proc_addr(instance,"vkReleaseDisplayEXT"));
 #if defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT)
     pfn_AcquireXlibDisplayEXT = reinterpret_cast<detail::PFN_AcquireXlibDisplayEXT>(get_instance_proc_addr(instance,"vkAcquireXlibDisplayEXT"));
-#endif // VK_USE_PLATFORM_XLIB_XRANDR_EXT
-#if defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT)
     pfn_GetRandROutputDisplayEXT = reinterpret_cast<detail::PFN_GetRandROutputDisplayEXT>(get_instance_proc_addr(instance,"vkGetRandROutputDisplayEXT"));
-#endif // VK_USE_PLATFORM_XLIB_XRANDR_EXT
+#endif // defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT)
     pfn_GetPhysicalDeviceSurfaceCapabilities2EXT = reinterpret_cast<detail::PFN_GetPhysicalDeviceSurfaceCapabilities2EXT>(get_instance_proc_addr(instance,"vkGetPhysicalDeviceSurfaceCapabilities2EXT"));
     pfn_EnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR = reinterpret_cast<detail::PFN_EnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR>(get_instance_proc_addr(instance,"vkEnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR"));
     pfn_GetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR = reinterpret_cast<detail::PFN_GetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR>(get_instance_proc_addr(instance,"vkGetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR"));
@@ -9889,10 +9867,10 @@ explicit InstanceFunctions(GlobalFunctions const& global_functions, Instance ins
     pfn_GetDisplayPlaneCapabilities2KHR = reinterpret_cast<detail::PFN_GetDisplayPlaneCapabilities2KHR>(get_instance_proc_addr(instance,"vkGetDisplayPlaneCapabilities2KHR"));
 #if defined(VK_USE_PLATFORM_IOS_MVK)
     pfn_CreateIOSSurfaceMVK = reinterpret_cast<detail::PFN_CreateIOSSurfaceMVK>(get_instance_proc_addr(instance,"vkCreateIOSSurfaceMVK"));
-#endif // VK_USE_PLATFORM_IOS_MVK
+#endif // defined(VK_USE_PLATFORM_IOS_MVK)
 #if defined(VK_USE_PLATFORM_MACOS_MVK)
     pfn_CreateMacOSSurfaceMVK = reinterpret_cast<detail::PFN_CreateMacOSSurfaceMVK>(get_instance_proc_addr(instance,"vkCreateMacOSSurfaceMVK"));
-#endif // VK_USE_PLATFORM_MACOS_MVK
+#endif // defined(VK_USE_PLATFORM_MACOS_MVK)
     pfn_CreateDebugUtilsMessengerEXT = reinterpret_cast<detail::PFN_CreateDebugUtilsMessengerEXT>(get_instance_proc_addr(instance,"vkCreateDebugUtilsMessengerEXT"));
     pfn_DestroyDebugUtilsMessengerEXT = reinterpret_cast<detail::PFN_DestroyDebugUtilsMessengerEXT>(get_instance_proc_addr(instance,"vkDestroyDebugUtilsMessengerEXT"));
     pfn_SubmitDebugUtilsMessageEXT = reinterpret_cast<detail::PFN_SubmitDebugUtilsMessageEXT>(get_instance_proc_addr(instance,"vkSubmitDebugUtilsMessageEXT"));
@@ -9900,24 +9878,22 @@ explicit InstanceFunctions(GlobalFunctions const& global_functions, Instance ins
     pfn_GetPhysicalDeviceCalibrateableTimeDomainsEXT = reinterpret_cast<detail::PFN_GetPhysicalDeviceCalibrateableTimeDomainsEXT>(get_instance_proc_addr(instance,"vkGetPhysicalDeviceCalibrateableTimeDomainsEXT"));
 #if defined(VK_USE_PLATFORM_FUCHSIA)
     pfn_CreateImagePipeSurfaceFUCHSIA = reinterpret_cast<detail::PFN_CreateImagePipeSurfaceFUCHSIA>(get_instance_proc_addr(instance,"vkCreateImagePipeSurfaceFUCHSIA"));
-#endif // VK_USE_PLATFORM_FUCHSIA
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
 #if defined(VK_USE_PLATFORM_METAL_EXT)
     pfn_CreateMetalSurfaceEXT = reinterpret_cast<detail::PFN_CreateMetalSurfaceEXT>(get_instance_proc_addr(instance,"vkCreateMetalSurfaceEXT"));
-#endif // VK_USE_PLATFORM_METAL_EXT
+#endif // defined(VK_USE_PLATFORM_METAL_EXT)
     pfn_GetPhysicalDeviceFragmentShadingRatesKHR = reinterpret_cast<detail::PFN_GetPhysicalDeviceFragmentShadingRatesKHR>(get_instance_proc_addr(instance,"vkGetPhysicalDeviceFragmentShadingRatesKHR"));
     pfn_GetPhysicalDeviceToolPropertiesEXT = reinterpret_cast<detail::PFN_GetPhysicalDeviceToolPropertiesEXT>(get_instance_proc_addr(instance,"vkGetPhysicalDeviceToolPropertiesEXT"));
     pfn_GetPhysicalDeviceCooperativeMatrixPropertiesNV = reinterpret_cast<detail::PFN_GetPhysicalDeviceCooperativeMatrixPropertiesNV>(get_instance_proc_addr(instance,"vkGetPhysicalDeviceCooperativeMatrixPropertiesNV"));
     pfn_GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV = reinterpret_cast<detail::PFN_GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV>(get_instance_proc_addr(instance,"vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV"));
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     pfn_GetPhysicalDeviceSurfacePresentModes2EXT = reinterpret_cast<detail::PFN_GetPhysicalDeviceSurfacePresentModes2EXT>(get_instance_proc_addr(instance,"vkGetPhysicalDeviceSurfacePresentModes2EXT"));
-#endif // VK_USE_PLATFORM_WIN32_KHR
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
     pfn_CreateHeadlessSurfaceEXT = reinterpret_cast<detail::PFN_CreateHeadlessSurfaceEXT>(get_instance_proc_addr(instance,"vkCreateHeadlessSurfaceEXT"));
 #if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
     pfn_CreateDirectFBSurfaceEXT = reinterpret_cast<detail::PFN_CreateDirectFBSurfaceEXT>(get_instance_proc_addr(instance,"vkCreateDirectFBSurfaceEXT"));
-#endif // VK_USE_PLATFORM_DIRECTFB_EXT
-#if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
     pfn_GetPhysicalDeviceDirectFBPresentationSupportEXT = reinterpret_cast<detail::PFN_GetPhysicalDeviceDirectFBPresentationSupportEXT>(get_instance_proc_addr(instance,"vkGetPhysicalDeviceDirectFBPresentationSupportEXT"));
-#endif // VK_USE_PLATFORM_DIRECTFB_EXT
+#endif // defined(VK_USE_PLATFORM_DIRECTFB_EXT)
 }
 };
 struct DeviceFunctions {
@@ -11884,8 +11860,6 @@ void CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer,
         &pHandle);
     return expected<HANDLE>(pHandle, result);
 }
-#endif // VK_USE_PLATFORM_WIN32_KHR
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] expected<HANDLE> GetMemoryWin32HandleKHR(const MemoryGetWin32HandleInfoKHR&  pGetWin32HandleInfo) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     HANDLE pHandle;
@@ -11894,8 +11868,6 @@ void CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer,
         &pHandle);
     return expected<HANDLE>(pHandle, result);
 }
-#endif // VK_USE_PLATFORM_WIN32_KHR
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] expected<MemoryWin32HandlePropertiesKHR> GetMemoryWin32HandlePropertiesKHR(ExternalMemoryHandleTypeFlagBits handleType, 
     HANDLE handle) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
@@ -11906,7 +11878,7 @@ void CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer,
         &pMemoryWin32HandleProperties);
     return expected<MemoryWin32HandlePropertiesKHR>(pMemoryWin32HandleProperties, result);
 }
-#endif // VK_USE_PLATFORM_WIN32_KHR
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] expected<int> GetMemoryFdKHR(const MemoryGetFdInfoKHR&  pGetFdInfo) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     int pFd;
@@ -11934,14 +11906,12 @@ void CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer,
         &pHandle);
     return expected<HANDLE>(pHandle, result);
 }
-#endif // VK_USE_PLATFORM_WIN32_KHR
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] Result ImportSemaphoreWin32HandleKHR(const ImportSemaphoreWin32HandleInfoKHR&  pImportSemaphoreWin32HandleInfo) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_ImportSemaphoreWin32HandleKHR(device,
         &pImportSemaphoreWin32HandleInfo);
 }
-#endif // VK_USE_PLATFORM_WIN32_KHR
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] expected<int> GetSemaphoreFdKHR(const SemaphoreGetFdInfoKHR&  pGetFdInfo) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     int pFd;
@@ -12097,14 +12067,12 @@ void SetHdrMetadataEXT(detail::span<const SwapchainKHR> Swapchains,
         &pHandle);
     return expected<HANDLE>(pHandle, result);
 }
-#endif // VK_USE_PLATFORM_WIN32_KHR
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] Result ImportFenceWin32HandleKHR(const ImportFenceWin32HandleInfoKHR&  pImportFenceWin32HandleInfo) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_ImportFenceWin32HandleKHR(device,
         &pImportFenceWin32HandleInfo);
 }
-#endif // VK_USE_PLATFORM_WIN32_KHR
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] expected<int> GetFenceFdKHR(const FenceGetFdInfoKHR&  pGetFdInfo) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     int pFd;
@@ -12178,8 +12146,6 @@ void CmdInsertDebugUtilsLabelEXT(CommandBuffer commandBuffer,
         &pProperties);
     return expected<AndroidHardwareBufferPropertiesANDROID>(pProperties, result);
 }
-#endif // VK_USE_PLATFORM_ANDROID_KHR
-#if defined(VK_USE_PLATFORM_ANDROID_KHR)
 [[nodiscard]] expected<AHardwareBuffer*> GetMemoryAndroidHardwareBufferANDROID(const MemoryGetAndroidHardwareBufferInfoANDROID&  pInfo) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     AHardwareBuffer* pBuffer;
@@ -12188,7 +12154,7 @@ void CmdInsertDebugUtilsLabelEXT(CommandBuffer commandBuffer,
         &pBuffer);
     return expected<AHardwareBuffer*>(pBuffer, result);
 }
-#endif // VK_USE_PLATFORM_ANDROID_KHR
+#endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
 void CmdSetSampleLocationsEXT(CommandBuffer commandBuffer, 
     const SampleLocationsInfoEXT&  pSampleLocationsInfo) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
@@ -12817,15 +12783,11 @@ void CmdSetFragmentShadingRateKHR(CommandBuffer commandBuffer,
     return pfn_AcquireFullScreenExclusiveModeEXT(device,
         swapchain);
 }
-#endif // VK_USE_PLATFORM_WIN32_KHR
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] Result ReleaseFullScreenExclusiveModeEXT(SwapchainKHR swapchain) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_ReleaseFullScreenExclusiveModeEXT(device,
         swapchain);
 }
-#endif // VK_USE_PLATFORM_WIN32_KHR
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] expected<DeviceGroupPresentModeFlagsKHR> GetDeviceGroupSurfacePresentModes2EXT(const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     DeviceGroupPresentModeFlagsKHR pModes;
@@ -12834,7 +12796,7 @@ void CmdSetFragmentShadingRateKHR(CommandBuffer commandBuffer,
         &pModes);
     return expected<DeviceGroupPresentModeFlagsKHR>(pModes, result);
 }
-#endif // VK_USE_PLATFORM_WIN32_KHR
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 void CmdSetLineStippleEXT(CommandBuffer commandBuffer, 
     uint32_t lineStippleFactor, 
     uint16_t lineStipplePattern) const {
@@ -13326,21 +13288,15 @@ explicit DeviceFunctions(InstanceFunctions const& instance_functions, Device dev
     pfn_GetShaderInfoAMD = reinterpret_cast<detail::PFN_GetShaderInfoAMD>(get_device_proc_addr(device,"vkGetShaderInfoAMD"));
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     pfn_GetMemoryWin32HandleNV = reinterpret_cast<detail::PFN_GetMemoryWin32HandleNV>(get_device_proc_addr(device,"vkGetMemoryWin32HandleNV"));
-#endif // VK_USE_PLATFORM_WIN32_KHR
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
     pfn_GetMemoryWin32HandleKHR = reinterpret_cast<detail::PFN_GetMemoryWin32HandleKHR>(get_device_proc_addr(device,"vkGetMemoryWin32HandleKHR"));
-#endif // VK_USE_PLATFORM_WIN32_KHR
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
     pfn_GetMemoryWin32HandlePropertiesKHR = reinterpret_cast<detail::PFN_GetMemoryWin32HandlePropertiesKHR>(get_device_proc_addr(device,"vkGetMemoryWin32HandlePropertiesKHR"));
-#endif // VK_USE_PLATFORM_WIN32_KHR
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
     pfn_GetMemoryFdKHR = reinterpret_cast<detail::PFN_GetMemoryFdKHR>(get_device_proc_addr(device,"vkGetMemoryFdKHR"));
     pfn_GetMemoryFdPropertiesKHR = reinterpret_cast<detail::PFN_GetMemoryFdPropertiesKHR>(get_device_proc_addr(device,"vkGetMemoryFdPropertiesKHR"));
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     pfn_GetSemaphoreWin32HandleKHR = reinterpret_cast<detail::PFN_GetSemaphoreWin32HandleKHR>(get_device_proc_addr(device,"vkGetSemaphoreWin32HandleKHR"));
-#endif // VK_USE_PLATFORM_WIN32_KHR
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
     pfn_ImportSemaphoreWin32HandleKHR = reinterpret_cast<detail::PFN_ImportSemaphoreWin32HandleKHR>(get_device_proc_addr(device,"vkImportSemaphoreWin32HandleKHR"));
-#endif // VK_USE_PLATFORM_WIN32_KHR
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
     pfn_GetSemaphoreFdKHR = reinterpret_cast<detail::PFN_GetSemaphoreFdKHR>(get_device_proc_addr(device,"vkGetSemaphoreFdKHR"));
     pfn_ImportSemaphoreFdKHR = reinterpret_cast<detail::PFN_ImportSemaphoreFdKHR>(get_device_proc_addr(device,"vkImportSemaphoreFdKHR"));
     pfn_CmdPushDescriptorSetKHR = reinterpret_cast<detail::PFN_CmdPushDescriptorSetKHR>(get_device_proc_addr(device,"vkCmdPushDescriptorSetKHR"));
@@ -13359,10 +13315,8 @@ explicit DeviceFunctions(InstanceFunctions const& instance_functions, Device dev
     pfn_GetSwapchainStatusKHR = reinterpret_cast<detail::PFN_GetSwapchainStatusKHR>(get_device_proc_addr(device,"vkGetSwapchainStatusKHR"));
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     pfn_GetFenceWin32HandleKHR = reinterpret_cast<detail::PFN_GetFenceWin32HandleKHR>(get_device_proc_addr(device,"vkGetFenceWin32HandleKHR"));
-#endif // VK_USE_PLATFORM_WIN32_KHR
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
     pfn_ImportFenceWin32HandleKHR = reinterpret_cast<detail::PFN_ImportFenceWin32HandleKHR>(get_device_proc_addr(device,"vkImportFenceWin32HandleKHR"));
-#endif // VK_USE_PLATFORM_WIN32_KHR
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
     pfn_GetFenceFdKHR = reinterpret_cast<detail::PFN_GetFenceFdKHR>(get_device_proc_addr(device,"vkGetFenceFdKHR"));
     pfn_ImportFenceFdKHR = reinterpret_cast<detail::PFN_ImportFenceFdKHR>(get_device_proc_addr(device,"vkImportFenceFdKHR"));
     pfn_AcquireProfilingLockKHR = reinterpret_cast<detail::PFN_AcquireProfilingLockKHR>(get_device_proc_addr(device,"vkAcquireProfilingLockKHR"));
@@ -13377,10 +13331,8 @@ explicit DeviceFunctions(InstanceFunctions const& instance_functions, Device dev
     pfn_CmdInsertDebugUtilsLabelEXT = reinterpret_cast<detail::PFN_CmdInsertDebugUtilsLabelEXT>(get_device_proc_addr(device,"vkCmdInsertDebugUtilsLabelEXT"));
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
     pfn_GetAndroidHardwareBufferPropertiesANDROID = reinterpret_cast<detail::PFN_GetAndroidHardwareBufferPropertiesANDROID>(get_device_proc_addr(device,"vkGetAndroidHardwareBufferPropertiesANDROID"));
-#endif // VK_USE_PLATFORM_ANDROID_KHR
-#if defined(VK_USE_PLATFORM_ANDROID_KHR)
     pfn_GetMemoryAndroidHardwareBufferANDROID = reinterpret_cast<detail::PFN_GetMemoryAndroidHardwareBufferANDROID>(get_device_proc_addr(device,"vkGetMemoryAndroidHardwareBufferANDROID"));
-#endif // VK_USE_PLATFORM_ANDROID_KHR
+#endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
     pfn_CmdSetSampleLocationsEXT = reinterpret_cast<detail::PFN_CmdSetSampleLocationsEXT>(get_device_proc_addr(device,"vkCmdSetSampleLocationsEXT"));
     pfn_DestroyAccelerationStructureKHR = reinterpret_cast<detail::PFN_DestroyAccelerationStructureKHR>(get_device_proc_addr(device,"vkDestroyAccelerationStructureKHR"));
     pfn_CmdCopyAccelerationStructureKHR = reinterpret_cast<detail::PFN_CmdCopyAccelerationStructureKHR>(get_device_proc_addr(device,"vkCmdCopyAccelerationStructureKHR"));
@@ -13446,13 +13398,9 @@ explicit DeviceFunctions(InstanceFunctions const& instance_functions, Device dev
     pfn_CmdSetFragmentShadingRateKHR = reinterpret_cast<detail::PFN_CmdSetFragmentShadingRateKHR>(get_device_proc_addr(device,"vkCmdSetFragmentShadingRateKHR"));
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     pfn_AcquireFullScreenExclusiveModeEXT = reinterpret_cast<detail::PFN_AcquireFullScreenExclusiveModeEXT>(get_device_proc_addr(device,"vkAcquireFullScreenExclusiveModeEXT"));
-#endif // VK_USE_PLATFORM_WIN32_KHR
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
     pfn_ReleaseFullScreenExclusiveModeEXT = reinterpret_cast<detail::PFN_ReleaseFullScreenExclusiveModeEXT>(get_device_proc_addr(device,"vkReleaseFullScreenExclusiveModeEXT"));
-#endif // VK_USE_PLATFORM_WIN32_KHR
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
     pfn_GetDeviceGroupSurfacePresentModes2EXT = reinterpret_cast<detail::PFN_GetDeviceGroupSurfacePresentModes2EXT>(get_device_proc_addr(device,"vkGetDeviceGroupSurfacePresentModes2EXT"));
-#endif // VK_USE_PLATFORM_WIN32_KHR
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
     pfn_CmdSetLineStippleEXT = reinterpret_cast<detail::PFN_CmdSetLineStippleEXT>(get_device_proc_addr(device,"vkCmdSetLineStippleEXT"));
     pfn_CmdSetCullModeEXT = reinterpret_cast<detail::PFN_CmdSetCullModeEXT>(get_device_proc_addr(device,"vkCmdSetCullModeEXT"));
     pfn_CmdSetFrontFaceEXT = reinterpret_cast<detail::PFN_CmdSetFrontFaceEXT>(get_device_proc_addr(device,"vkCmdSetFrontFaceEXT"));
@@ -13493,13 +13441,12 @@ explicit DeviceFunctions(InstanceFunctions const& instance_functions, Device dev
     pfn_CmdResolveImage2KHR = reinterpret_cast<detail::PFN_CmdResolveImage2KHR>(get_device_proc_addr(device,"vkCmdResolveImage2KHR"));
 }
 };
-struct PhysicalDeviceFunctions {
+    struct PhysicalDeviceFunctions {
     InstanceFunctions const* instance_functions;
     PhysicalDevice physicaldevice;
     PhysicalDeviceFunctions() noexcept {}
     PhysicalDeviceFunctions(InstanceFunctions const& instance_functions, PhysicalDevice const physicaldevice) noexcept:
-    instance_functions{&instance_functions}, physicaldevice{physicaldevice} {}
-[[nodiscard]] PhysicalDeviceProperties GetProperties() const {
+    instance_functions{&instance_functions}, physicaldevice{physicaldevice} {}[[nodiscard]] PhysicalDeviceProperties GetProperties() const {
     return instance_functions->GetPhysicalDeviceProperties(physicaldevice); }
 [[nodiscard]] detail::fixed_vector<QueueFamilyProperties> GetQueueFamilyProperties() const {
     return instance_functions->GetPhysicalDeviceQueueFamilyProperties(physicaldevice); }
@@ -13624,13 +13571,12 @@ struct PhysicalDeviceFunctions {
 [[nodiscard]] expected<detail::fixed_vector<PhysicalDeviceFragmentShadingRateKHR>> GetFragmentShadingRatesKHR() const {
     return instance_functions->GetPhysicalDeviceFragmentShadingRatesKHR(physicaldevice); }
 };
-struct QueueFunctions {
+    struct QueueFunctions {
     DeviceFunctions const* device_functions;
     Queue queue;
     QueueFunctions() noexcept {}
     QueueFunctions(DeviceFunctions const& device_functions, Queue const queue) noexcept:
-    device_functions{&device_functions}, queue{queue} {}
-[[nodiscard]] Result Submit(detail::span<const SubmitInfo> Submits, Fence fence = {}) const {
+    device_functions{&device_functions}, queue{queue} {}[[nodiscard]] Result Submit(detail::span<const SubmitInfo> Submits, Fence fence = {}) const {
     return device_functions->QueueSubmit(queue, Submits, fence); }
 [[nodiscard]] Result WaitIdle() const {
     return device_functions->QueueWaitIdle(queue); }
@@ -13649,13 +13595,12 @@ void InsertDebugUtilsLabelEXT(const DebugUtilsLabelEXT&  pLabelInfo) const {
 [[nodiscard]] Result SetPerformanceConfigurationINTEL(PerformanceConfigurationINTEL configuration) const {
     return device_functions->QueueSetPerformanceConfigurationINTEL(queue, configuration); }
 };
-struct CommandBufferFunctions {
+    struct CommandBufferFunctions {
     DeviceFunctions const* device_functions;
     CommandBuffer commandbuffer;
     CommandBufferFunctions() noexcept {}
     CommandBufferFunctions(DeviceFunctions const& device_functions, CommandBuffer const commandbuffer) noexcept:
-    device_functions{&device_functions}, commandbuffer{commandbuffer} {}
-[[nodiscard]] Result Begin(const CommandBufferBeginInfo&  pBeginInfo) const {
+    device_functions{&device_functions}, commandbuffer{commandbuffer} {}[[nodiscard]] Result Begin(const CommandBufferBeginInfo&  pBeginInfo) const {
     return device_functions->BeginCommandBuffer(commandbuffer, pBeginInfo); }
 [[nodiscard]] Result End() const {
     return device_functions->EndCommandBuffer(commandbuffer); }

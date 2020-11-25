@@ -17,11 +17,6 @@ find_package(Vulkan REQUIRED)
 add_executable(basic_sample_usage basic.cpp)
 target_link_libraries(basic_sample_usage vk_module_20)
 
-# add_executable(test_vkhpp_compilation test_vkhpp.cpp)
-# target_link_libraries(test_vkhpp_compilation Vulkan::Vulkan)
-# set_target_properties(test_vkhpp_compilation PROPERTIES CXX_STANDARD 17)
-
-
 add_executable(vk-module-triangle-header triangle.cpp)
 target_link_libraries(vk-module-triangle-header
     PRIVATE
