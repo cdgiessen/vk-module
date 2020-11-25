@@ -11,10 +11,25 @@ vk_module_file_header = '''
 #include <type_traits>
 #include <utility>
 #include "vk_platform.h"
-//#define VK_DEFINE_HANDLE(object) typedef struct object##_T* object;
-//VK_DEFINE_HANDLE(VkInstance)
-//using PFN_vkVoidFunction = void (VKAPI_PTR *)(void);
-//using PFN_vkGetInstanceProcAddr = PFN_vkVoidFunction (VKAPI_PTR *)(VkInstance instance, const char* pName);
+
+
+// Compatability with compilers that don't support __has_feature
+#ifndef __has_feature
+#define __has_feature(x) 0
+#endif
+
+#if !defined(VK_MODULE_DISABLE_LEAK_SANITIZER_SUPPRESSION) && (__has_feature(address_sanitizer) || defined(__SANITIZE_ADDRESS__) )
+#include <sanitizer/lsan_interface.h>
+#define VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE __lsan::ScopedDisabler lsan_scope{};
+#else
+#define VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+#endif
+
+#ifndef __has_feature
+#undef __has_feature
+#endif
+
+
 namespace vk {
 constexpr uint32_t make_vk_version(uint32_t major, uint32_t minor, uint32_t patch) {
     return major << 22 | minor << 12 | patch;
@@ -51,7 +66,7 @@ struct fixed_vector
         for (size_t i = 0; i < count; i++)
             _data[i] = T(); // some vulkan structs have default values, so must be initialized
     }
-    ~fixed_vector() noexcept { delete _data; }
+    ~fixed_vector() noexcept { delete[] _data; }
     fixed_vector(fixed_vector const& value) noexcept
     {
         _count = value._count;

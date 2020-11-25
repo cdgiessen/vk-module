@@ -811,6 +811,7 @@ class Function:
         file.write('(')
         self.print_parameters(file, parameter_list, condense_spans=print_spans, print_defaults=True)
         file.write(') const {\n')
+        file.write('    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE\n')
         if self.name == 'vkEnumerateInstanceVersion':
             #early return because 1.0 doesn't support the function, will be null and shouldn't cause a crash
             file.write(f'    if (pfn_EnumerateInstanceVersion == 0) return expected<uint32_t>(make_vk_version(1,0,0), Result::Success);\n')

@@ -10,10 +10,25 @@
 #include <type_traits>
 #include <utility>
 #include "vk_platform.h"
-//#define VK_DEFINE_HANDLE(object) typedef struct object##_T* object;
-//VK_DEFINE_HANDLE(VkInstance)
-//using PFN_vkVoidFunction = void (VKAPI_PTR *)(void);
-//using PFN_vkGetInstanceProcAddr = PFN_vkVoidFunction (VKAPI_PTR *)(VkInstance instance, const char* pName);
+
+
+// Compatability with compilers that don't support __has_feature
+#ifndef __has_feature
+#define __has_feature(x) 0
+#endif
+
+#if !defined(VK_MODULE_DISABLE_LEAK_SANITIZER_SUPPRESSION) && (__has_feature(address_sanitizer) || defined(__SANITIZE_ADDRESS__) )
+#include <sanitizer/lsan_interface.h>
+#define VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE __lsan::ScopedDisabler lsan_scope{};
+#else
+#define VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+#endif
+
+#ifndef __has_feature
+#undef __has_feature
+#endif
+
+
 namespace vk {
 constexpr uint32_t make_vk_version(uint32_t major, uint32_t minor, uint32_t patch) {
     return major << 22 | minor << 12 | patch;
@@ -8477,7 +8492,7 @@ struct fixed_vector
         for (size_t i = 0; i < count; i++)
             _data[i] = T(); // some vulkan structs have default values, so must be initialized
     }
-    ~fixed_vector() noexcept { delete _data; }
+    ~fixed_vector() noexcept { delete[] _data; }
     fixed_vector(fixed_vector const& value) noexcept
     {
         _count = value._count;
@@ -8658,6 +8673,7 @@ struct GlobalFunctions {
     detail::PFN_EnumerateInstanceVersion pfn_EnumerateInstanceVersion = nullptr;
 [[nodiscard]] expected<Instance> CreateInstance(const InstanceCreateInfo&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     Instance pInstance;
         Result result = pfn_CreateInstance(&pCreateInfo,
         pAllocator,
@@ -8666,10 +8682,12 @@ struct GlobalFunctions {
 }
 [[nodiscard]] PFN_VoidFunction GetInstanceProcAddr(Instance instance, 
     const char* pName) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_GetInstanceProcAddr(instance,
         pName);
 }
 [[nodiscard]] expected<detail::fixed_vector<ExtensionProperties>> EnumerateInstanceExtensionProperties(const char* pLayerName) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPropertyCount = 0;
         Result result = pfn_EnumerateInstanceExtensionProperties(pLayerName,
         &pPropertyCount,
@@ -8683,6 +8701,7 @@ struct GlobalFunctions {
     return expected(std::move(pProperties), result);
 }
 [[nodiscard]] expected<detail::fixed_vector<LayerProperties>> EnumerateInstanceLayerProperties() const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPropertyCount = 0;
         Result result = pfn_EnumerateInstanceLayerProperties(&pPropertyCount,
         nullptr);
@@ -8694,6 +8713,7 @@ struct GlobalFunctions {
     return expected(std::move(pProperties), result);
 }
 [[nodiscard]] expected<uint32_t> EnumerateInstanceVersion() const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     if (pfn_EnumerateInstanceVersion == 0) return expected<uint32_t>(make_vk_version(1,0,0), Result::Success);
     uint32_t pApiVersion;
         Result result = pfn_EnumerateInstanceVersion(&pApiVersion);
@@ -8821,10 +8841,12 @@ struct InstanceFunctions {
     detail::PFN_GetPhysicalDeviceDirectFBPresentationSupportEXT pfn_GetPhysicalDeviceDirectFBPresentationSupportEXT = nullptr;
 #endif // defined(VK_USE_PLATFORM_DIRECTFB_EXT)
 void DestroyInstance(const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyInstance(instance,
         pAllocator);
 }
 [[nodiscard]] expected<detail::fixed_vector<PhysicalDevice>> EnumeratePhysicalDevices() const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPhysicalDeviceCount = 0;
         Result result = pfn_EnumeratePhysicalDevices(instance,
         &pPhysicalDeviceCount,
@@ -8839,20 +8861,24 @@ void DestroyInstance(const AllocationCallbacks* pAllocator = nullptr) const {
 }
 [[nodiscard]] PFN_VoidFunction GetDeviceProcAddr(Device device, 
     const char* pName) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_GetDeviceProcAddr(device,
         pName);
 }
 [[nodiscard]] PFN_VoidFunction GetInstanceProcAddr(const char* pName) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_GetInstanceProcAddr(instance,
         pName);
 }
 [[nodiscard]] PhysicalDeviceProperties GetPhysicalDeviceProperties(PhysicalDevice physicalDevice) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     PhysicalDeviceProperties pProperties;
     pfn_GetPhysicalDeviceProperties(physicalDevice,
         &pProperties);
     return pProperties;
 }
 [[nodiscard]] detail::fixed_vector<QueueFamilyProperties> GetPhysicalDeviceQueueFamilyProperties(PhysicalDevice physicalDevice) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pQueueFamilyPropertyCount = 0;
     pfn_GetPhysicalDeviceQueueFamilyProperties(physicalDevice,
         &pQueueFamilyPropertyCount,
@@ -8865,12 +8891,14 @@ pfn_GetPhysicalDeviceQueueFamilyProperties(physicalDevice,
     return pQueueFamilyProperties;
 }
 [[nodiscard]] PhysicalDeviceMemoryProperties GetPhysicalDeviceMemoryProperties(PhysicalDevice physicalDevice) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     PhysicalDeviceMemoryProperties pMemoryProperties;
     pfn_GetPhysicalDeviceMemoryProperties(physicalDevice,
         &pMemoryProperties);
     return pMemoryProperties;
 }
 [[nodiscard]] PhysicalDeviceFeatures GetPhysicalDeviceFeatures(PhysicalDevice physicalDevice) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     PhysicalDeviceFeatures pFeatures;
     pfn_GetPhysicalDeviceFeatures(physicalDevice,
         &pFeatures);
@@ -8878,6 +8906,7 @@ pfn_GetPhysicalDeviceQueueFamilyProperties(physicalDevice,
 }
 [[nodiscard]] FormatProperties GetPhysicalDeviceFormatProperties(PhysicalDevice physicalDevice, 
     Format format) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     FormatProperties pFormatProperties;
     pfn_GetPhysicalDeviceFormatProperties(physicalDevice,
         format,
@@ -8890,6 +8919,7 @@ pfn_GetPhysicalDeviceQueueFamilyProperties(physicalDevice,
     ImageTiling tiling, 
     ImageUsageFlags usage, 
     ImageCreateFlags flags) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     ImageFormatProperties pImageFormatProperties;
         Result result = pfn_GetPhysicalDeviceImageFormatProperties(physicalDevice,
         format,
@@ -8903,6 +8933,7 @@ pfn_GetPhysicalDeviceQueueFamilyProperties(physicalDevice,
 [[nodiscard]] expected<Device> CreateDevice(PhysicalDevice physicalDevice, 
     const DeviceCreateInfo&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     Device pDevice;
         Result result = pfn_CreateDevice(physicalDevice,
         &pCreateInfo,
@@ -8912,6 +8943,7 @@ pfn_GetPhysicalDeviceQueueFamilyProperties(physicalDevice,
 }
 [[nodiscard]] expected<detail::fixed_vector<ExtensionProperties>> EnumerateDeviceExtensionProperties(PhysicalDevice physicalDevice, 
     const char* pLayerName) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPropertyCount = 0;
         Result result = pfn_EnumerateDeviceExtensionProperties(physicalDevice,
         pLayerName,
@@ -8932,6 +8964,7 @@ pfn_GetPhysicalDeviceQueueFamilyProperties(physicalDevice,
     SampleCountFlagBits samples, 
     ImageUsageFlags usage, 
     ImageTiling tiling) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPropertyCount = 0;
     pfn_GetPhysicalDeviceSparseImageFormatProperties(physicalDevice,
         format,
@@ -8954,6 +8987,7 @@ pfn_GetPhysicalDeviceSparseImageFormatProperties(physicalDevice,
     return pProperties;
 }
 [[nodiscard]] expected<detail::fixed_vector<PhysicalDeviceGroupProperties>> EnumeratePhysicalDeviceGroups() const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPhysicalDeviceGroupCount = 0;
         Result result = pfn_EnumeratePhysicalDeviceGroups(instance,
         &pPhysicalDeviceGroupCount,
@@ -8967,12 +9001,14 @@ pfn_GetPhysicalDeviceSparseImageFormatProperties(physicalDevice,
     return expected(std::move(pPhysicalDeviceGroupProperties), result);
 }
 [[nodiscard]] PhysicalDeviceFeatures2 GetPhysicalDeviceFeatures2(PhysicalDevice physicalDevice) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     PhysicalDeviceFeatures2 pFeatures;
     pfn_GetPhysicalDeviceFeatures2(physicalDevice,
         &pFeatures);
     return pFeatures;
 }
 [[nodiscard]] PhysicalDeviceProperties2 GetPhysicalDeviceProperties2(PhysicalDevice physicalDevice) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     PhysicalDeviceProperties2 pProperties;
     pfn_GetPhysicalDeviceProperties2(physicalDevice,
         &pProperties);
@@ -8980,6 +9016,7 @@ pfn_GetPhysicalDeviceSparseImageFormatProperties(physicalDevice,
 }
 [[nodiscard]] FormatProperties2 GetPhysicalDeviceFormatProperties2(PhysicalDevice physicalDevice, 
     Format format) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     FormatProperties2 pFormatProperties;
     pfn_GetPhysicalDeviceFormatProperties2(physicalDevice,
         format,
@@ -8988,6 +9025,7 @@ pfn_GetPhysicalDeviceSparseImageFormatProperties(physicalDevice,
 }
 [[nodiscard]] expected<ImageFormatProperties2> GetPhysicalDeviceImageFormatProperties2(PhysicalDevice physicalDevice, 
     const PhysicalDeviceImageFormatInfo2&  pImageFormatInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     ImageFormatProperties2 pImageFormatProperties;
         Result result = pfn_GetPhysicalDeviceImageFormatProperties2(physicalDevice,
         &pImageFormatInfo,
@@ -8995,6 +9033,7 @@ pfn_GetPhysicalDeviceSparseImageFormatProperties(physicalDevice,
     return expected<ImageFormatProperties2>(pImageFormatProperties, result);
 }
 [[nodiscard]] detail::fixed_vector<QueueFamilyProperties2> GetPhysicalDeviceQueueFamilyProperties2(PhysicalDevice physicalDevice) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pQueueFamilyPropertyCount = 0;
     pfn_GetPhysicalDeviceQueueFamilyProperties2(physicalDevice,
         &pQueueFamilyPropertyCount,
@@ -9007,6 +9046,7 @@ pfn_GetPhysicalDeviceQueueFamilyProperties2(physicalDevice,
     return pQueueFamilyProperties;
 }
 [[nodiscard]] PhysicalDeviceMemoryProperties2 GetPhysicalDeviceMemoryProperties2(PhysicalDevice physicalDevice) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     PhysicalDeviceMemoryProperties2 pMemoryProperties;
     pfn_GetPhysicalDeviceMemoryProperties2(physicalDevice,
         &pMemoryProperties);
@@ -9014,6 +9054,7 @@ pfn_GetPhysicalDeviceQueueFamilyProperties2(physicalDevice,
 }
 [[nodiscard]] detail::fixed_vector<SparseImageFormatProperties2> GetPhysicalDeviceSparseImageFormatProperties2(PhysicalDevice physicalDevice, 
     const PhysicalDeviceSparseImageFormatInfo2&  pFormatInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPropertyCount = 0;
     pfn_GetPhysicalDeviceSparseImageFormatProperties2(physicalDevice,
         &pFormatInfo,
@@ -9029,6 +9070,7 @@ pfn_GetPhysicalDeviceSparseImageFormatProperties2(physicalDevice,
 }
 [[nodiscard]] ExternalBufferProperties GetPhysicalDeviceExternalBufferProperties(PhysicalDevice physicalDevice, 
     const PhysicalDeviceExternalBufferInfo&  pExternalBufferInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     ExternalBufferProperties pExternalBufferProperties;
     pfn_GetPhysicalDeviceExternalBufferProperties(physicalDevice,
         &pExternalBufferInfo,
@@ -9037,6 +9079,7 @@ pfn_GetPhysicalDeviceSparseImageFormatProperties2(physicalDevice,
 }
 [[nodiscard]] ExternalFenceProperties GetPhysicalDeviceExternalFenceProperties(PhysicalDevice physicalDevice, 
     const PhysicalDeviceExternalFenceInfo&  pExternalFenceInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     ExternalFenceProperties pExternalFenceProperties;
     pfn_GetPhysicalDeviceExternalFenceProperties(physicalDevice,
         &pExternalFenceInfo,
@@ -9045,6 +9088,7 @@ pfn_GetPhysicalDeviceSparseImageFormatProperties2(physicalDevice,
 }
 [[nodiscard]] ExternalSemaphoreProperties GetPhysicalDeviceExternalSemaphoreProperties(PhysicalDevice physicalDevice, 
     const PhysicalDeviceExternalSemaphoreInfo&  pExternalSemaphoreInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     ExternalSemaphoreProperties pExternalSemaphoreProperties;
     pfn_GetPhysicalDeviceExternalSemaphoreProperties(physicalDevice,
         &pExternalSemaphoreInfo,
@@ -9053,6 +9097,7 @@ pfn_GetPhysicalDeviceSparseImageFormatProperties2(physicalDevice,
 }
 void DestroySurfaceKHR(SurfaceKHR surface, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroySurfaceKHR(instance,
         surface,
         pAllocator);
@@ -9060,6 +9105,7 @@ void DestroySurfaceKHR(SurfaceKHR surface,
 [[nodiscard]] expected<Bool32> GetPhysicalDeviceSurfaceSupportKHR(PhysicalDevice physicalDevice, 
     uint32_t queueFamilyIndex, 
     SurfaceKHR surface) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     Bool32 pSupported;
         Result result = pfn_GetPhysicalDeviceSurfaceSupportKHR(physicalDevice,
         queueFamilyIndex,
@@ -9069,6 +9115,7 @@ void DestroySurfaceKHR(SurfaceKHR surface,
 }
 [[nodiscard]] expected<SurfaceCapabilitiesKHR> GetPhysicalDeviceSurfaceCapabilitiesKHR(PhysicalDevice physicalDevice, 
     SurfaceKHR surface) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     SurfaceCapabilitiesKHR pSurfaceCapabilities;
         Result result = pfn_GetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice,
         surface,
@@ -9077,6 +9124,7 @@ void DestroySurfaceKHR(SurfaceKHR surface,
 }
 [[nodiscard]] expected<detail::fixed_vector<SurfaceFormatKHR>> GetPhysicalDeviceSurfaceFormatsKHR(PhysicalDevice physicalDevice, 
     SurfaceKHR surface) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pSurfaceFormatCount = 0;
         Result result = pfn_GetPhysicalDeviceSurfaceFormatsKHR(physicalDevice,
         surface,
@@ -9093,6 +9141,7 @@ void DestroySurfaceKHR(SurfaceKHR surface,
 }
 [[nodiscard]] expected<detail::fixed_vector<PresentModeKHR>> GetPhysicalDeviceSurfacePresentModesKHR(PhysicalDevice physicalDevice, 
     SurfaceKHR surface) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPresentModeCount = 0;
         Result result = pfn_GetPhysicalDeviceSurfacePresentModesKHR(physicalDevice,
         surface,
@@ -9109,6 +9158,7 @@ void DestroySurfaceKHR(SurfaceKHR surface,
 }
 [[nodiscard]] expected<detail::fixed_vector<Rect2D>> GetPhysicalDevicePresentRectanglesKHR(PhysicalDevice physicalDevice, 
     SurfaceKHR surface) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pRectCount = 0;
         Result result = pfn_GetPhysicalDevicePresentRectanglesKHR(physicalDevice,
         surface,
@@ -9124,6 +9174,7 @@ void DestroySurfaceKHR(SurfaceKHR surface,
     return expected(std::move(pRects), result);
 }
 [[nodiscard]] expected<detail::fixed_vector<DisplayPropertiesKHR>> GetPhysicalDeviceDisplayPropertiesKHR(PhysicalDevice physicalDevice) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPropertyCount = 0;
         Result result = pfn_GetPhysicalDeviceDisplayPropertiesKHR(physicalDevice,
         &pPropertyCount,
@@ -9137,6 +9188,7 @@ void DestroySurfaceKHR(SurfaceKHR surface,
     return expected(std::move(pProperties), result);
 }
 [[nodiscard]] expected<detail::fixed_vector<DisplayPlanePropertiesKHR>> GetPhysicalDeviceDisplayPlanePropertiesKHR(PhysicalDevice physicalDevice) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPropertyCount = 0;
         Result result = pfn_GetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice,
         &pPropertyCount,
@@ -9151,6 +9203,7 @@ void DestroySurfaceKHR(SurfaceKHR surface,
 }
 [[nodiscard]] expected<detail::fixed_vector<DisplayKHR>> GetDisplayPlaneSupportedDisplaysKHR(PhysicalDevice physicalDevice, 
     uint32_t planeIndex) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pDisplayCount = 0;
         Result result = pfn_GetDisplayPlaneSupportedDisplaysKHR(physicalDevice,
         planeIndex,
@@ -9167,6 +9220,7 @@ void DestroySurfaceKHR(SurfaceKHR surface,
 }
 [[nodiscard]] expected<detail::fixed_vector<DisplayModePropertiesKHR>> GetDisplayModePropertiesKHR(PhysicalDevice physicalDevice, 
     DisplayKHR display) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPropertyCount = 0;
         Result result = pfn_GetDisplayModePropertiesKHR(physicalDevice,
         display,
@@ -9185,6 +9239,7 @@ void DestroySurfaceKHR(SurfaceKHR surface,
     DisplayKHR display, 
     const DisplayModeCreateInfoKHR&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     DisplayModeKHR pMode;
         Result result = pfn_CreateDisplayModeKHR(physicalDevice,
         display,
@@ -9196,6 +9251,7 @@ void DestroySurfaceKHR(SurfaceKHR surface,
 [[nodiscard]] expected<DisplayPlaneCapabilitiesKHR> GetDisplayPlaneCapabilitiesKHR(PhysicalDevice physicalDevice, 
     DisplayModeKHR mode, 
     uint32_t planeIndex) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     DisplayPlaneCapabilitiesKHR pCapabilities;
         Result result = pfn_GetDisplayPlaneCapabilitiesKHR(physicalDevice,
         mode,
@@ -9205,6 +9261,7 @@ void DestroySurfaceKHR(SurfaceKHR surface,
 }
 [[nodiscard]] expected<SurfaceKHR> CreateDisplayPlaneSurfaceKHR(const DisplaySurfaceCreateInfoKHR&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     SurfaceKHR pSurface;
         Result result = pfn_CreateDisplayPlaneSurfaceKHR(instance,
         &pCreateInfo,
@@ -9215,6 +9272,7 @@ void DestroySurfaceKHR(SurfaceKHR surface,
 #if defined(VK_USE_PLATFORM_XLIB_KHR)
 [[nodiscard]] expected<SurfaceKHR> CreateXlibSurfaceKHR(const XlibSurfaceCreateInfoKHR&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     SurfaceKHR pSurface;
         Result result = pfn_CreateXlibSurfaceKHR(instance,
         &pCreateInfo,
@@ -9228,6 +9286,7 @@ void DestroySurfaceKHR(SurfaceKHR surface,
     uint32_t queueFamilyIndex, 
     Display&  dpy, 
     VisualID visualID) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_GetPhysicalDeviceXlibPresentationSupportKHR(physicalDevice,
         queueFamilyIndex,
         &dpy,
@@ -9237,6 +9296,7 @@ void DestroySurfaceKHR(SurfaceKHR surface,
 #if defined(VK_USE_PLATFORM_XCB_KHR)
 [[nodiscard]] expected<SurfaceKHR> CreateXcbSurfaceKHR(const XcbSurfaceCreateInfoKHR&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     SurfaceKHR pSurface;
         Result result = pfn_CreateXcbSurfaceKHR(instance,
         &pCreateInfo,
@@ -9250,6 +9310,7 @@ void DestroySurfaceKHR(SurfaceKHR surface,
     uint32_t queueFamilyIndex, 
     xcb_connection_t&  connection, 
     xcb_visualid_t visual_id) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_GetPhysicalDeviceXcbPresentationSupportKHR(physicalDevice,
         queueFamilyIndex,
         &connection,
@@ -9259,6 +9320,7 @@ void DestroySurfaceKHR(SurfaceKHR surface,
 #if defined(VK_USE_PLATFORM_WAYLAND_KHR)
 [[nodiscard]] expected<SurfaceKHR> CreateWaylandSurfaceKHR(const WaylandSurfaceCreateInfoKHR&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     SurfaceKHR pSurface;
         Result result = pfn_CreateWaylandSurfaceKHR(instance,
         &pCreateInfo,
@@ -9270,6 +9332,7 @@ void DestroySurfaceKHR(SurfaceKHR surface,
 #if defined(VK_USE_PLATFORM_WAYLAND_KHR)
 [[nodiscard]] expected<wl_display> GetPhysicalDeviceWaylandPresentationSupportKHR(PhysicalDevice physicalDevice, 
     uint32_t queueFamilyIndex) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     wl_display display;
         Result result = pfn_GetPhysicalDeviceWaylandPresentationSupportKHR(physicalDevice,
         queueFamilyIndex,
@@ -9280,6 +9343,7 @@ void DestroySurfaceKHR(SurfaceKHR surface,
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 [[nodiscard]] expected<SurfaceKHR> CreateAndroidSurfaceKHR(const AndroidSurfaceCreateInfoKHR&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     SurfaceKHR pSurface;
         Result result = pfn_CreateAndroidSurfaceKHR(instance,
         &pCreateInfo,
@@ -9291,6 +9355,7 @@ void DestroySurfaceKHR(SurfaceKHR surface,
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] expected<SurfaceKHR> CreateWin32SurfaceKHR(const Win32SurfaceCreateInfoKHR&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     SurfaceKHR pSurface;
         Result result = pfn_CreateWin32SurfaceKHR(instance,
         &pCreateInfo,
@@ -9302,12 +9367,14 @@ void DestroySurfaceKHR(SurfaceKHR surface,
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] Bool32 GetPhysicalDeviceWin32PresentationSupportKHR(PhysicalDevice physicalDevice, 
     uint32_t queueFamilyIndex) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_GetPhysicalDeviceWin32PresentationSupportKHR(physicalDevice,
         queueFamilyIndex);
 }
 #endif // VK_USE_PLATFORM_WIN32_KHR
 [[nodiscard]] expected<DebugReportCallbackEXT> CreateDebugReportCallbackEXT(const DebugReportCallbackCreateInfoEXT&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     DebugReportCallbackEXT pCallback;
         Result result = pfn_CreateDebugReportCallbackEXT(instance,
         &pCreateInfo,
@@ -9317,6 +9384,7 @@ void DestroySurfaceKHR(SurfaceKHR surface,
 }
 void DestroyDebugReportCallbackEXT(DebugReportCallbackEXT callback, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyDebugReportCallbackEXT(instance,
         callback,
         pAllocator);
@@ -9328,6 +9396,7 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
     int32_t messageCode, 
     const char* pLayerPrefix, 
     const char* pMessage) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DebugReportMessageEXT(instance,
         flags,
         objectType,
@@ -9340,6 +9409,7 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
 #if defined(VK_USE_PLATFORM_GGP)
 [[nodiscard]] expected<SurfaceKHR> CreateStreamDescriptorSurfaceGGP(const StreamDescriptorSurfaceCreateInfoGGP&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     SurfaceKHR pSurface;
         Result result = pfn_CreateStreamDescriptorSurfaceGGP(instance,
         &pCreateInfo,
@@ -9355,6 +9425,7 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
     ImageUsageFlags usage, 
     ImageCreateFlags flags, 
     ExternalMemoryHandleTypeFlagsNV externalHandleType) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     ExternalImageFormatPropertiesNV pExternalImageFormatProperties;
         Result result = pfn_GetPhysicalDeviceExternalImageFormatPropertiesNV(physicalDevice,
         format,
@@ -9369,6 +9440,7 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
 #if defined(VK_USE_PLATFORM_VI_NN)
 [[nodiscard]] expected<SurfaceKHR> CreateViSurfaceNN(const ViSurfaceCreateInfoNN&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     SurfaceKHR pSurface;
         Result result = pfn_CreateViSurfaceNN(instance,
         &pCreateInfo,
@@ -9379,6 +9451,7 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
 #endif // VK_USE_PLATFORM_VI_NN
 [[nodiscard]] Result ReleaseDisplayEXT(PhysicalDevice physicalDevice, 
     DisplayKHR display) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_ReleaseDisplayEXT(physicalDevice,
         display);
 }
@@ -9386,6 +9459,7 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
 [[nodiscard]] Result AcquireXlibDisplayEXT(PhysicalDevice physicalDevice, 
     Display&  dpy, 
     DisplayKHR display) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_AcquireXlibDisplayEXT(physicalDevice,
         &dpy,
         display);
@@ -9395,6 +9469,7 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
 [[nodiscard]] expected<DisplayKHR> GetRandROutputDisplayEXT(PhysicalDevice physicalDevice, 
     Display&  dpy, 
     RROutput rrOutput) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     DisplayKHR pDisplay;
         Result result = pfn_GetRandROutputDisplayEXT(physicalDevice,
         &dpy,
@@ -9405,6 +9480,7 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
 #endif // VK_USE_PLATFORM_XLIB_XRANDR_EXT
 [[nodiscard]] expected<SurfaceCapabilities2EXT> GetPhysicalDeviceSurfaceCapabilities2EXT(PhysicalDevice physicalDevice, 
     SurfaceKHR surface) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     SurfaceCapabilities2EXT pSurfaceCapabilities;
         Result result = pfn_GetPhysicalDeviceSurfaceCapabilities2EXT(physicalDevice,
         surface,
@@ -9416,6 +9492,7 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
     uint32_t&  pCounterCount, 
     PerformanceCounterKHR* pCounters, 
     PerformanceCounterDescriptionKHR* pCounterDescriptions) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_EnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR(physicalDevice,
         queueFamilyIndex,
         &pCounterCount,
@@ -9424,6 +9501,7 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
 }
 [[nodiscard]] uint32_t GetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR(PhysicalDevice physicalDevice, 
     const QueryPoolPerformanceCreateInfoKHR&  pPerformanceQueryCreateInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pNumPasses;
     pfn_GetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR(physicalDevice,
         &pPerformanceQueryCreateInfo,
@@ -9432,6 +9510,7 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
 }
 [[nodiscard]] expected<SurfaceCapabilities2KHR> GetPhysicalDeviceSurfaceCapabilities2KHR(PhysicalDevice physicalDevice, 
     const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     SurfaceCapabilities2KHR pSurfaceCapabilities;
         Result result = pfn_GetPhysicalDeviceSurfaceCapabilities2KHR(physicalDevice,
         &pSurfaceInfo,
@@ -9440,6 +9519,7 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
 }
 [[nodiscard]] expected<detail::fixed_vector<SurfaceFormat2KHR>> GetPhysicalDeviceSurfaceFormats2KHR(PhysicalDevice physicalDevice, 
     const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pSurfaceFormatCount = 0;
         Result result = pfn_GetPhysicalDeviceSurfaceFormats2KHR(physicalDevice,
         &pSurfaceInfo,
@@ -9455,6 +9535,7 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
     return expected(std::move(pSurfaceFormats), result);
 }
 [[nodiscard]] expected<detail::fixed_vector<DisplayProperties2KHR>> GetPhysicalDeviceDisplayProperties2KHR(PhysicalDevice physicalDevice) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPropertyCount = 0;
         Result result = pfn_GetPhysicalDeviceDisplayProperties2KHR(physicalDevice,
         &pPropertyCount,
@@ -9468,6 +9549,7 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
     return expected(std::move(pProperties), result);
 }
 [[nodiscard]] expected<detail::fixed_vector<DisplayPlaneProperties2KHR>> GetPhysicalDeviceDisplayPlaneProperties2KHR(PhysicalDevice physicalDevice) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPropertyCount = 0;
         Result result = pfn_GetPhysicalDeviceDisplayPlaneProperties2KHR(physicalDevice,
         &pPropertyCount,
@@ -9482,6 +9564,7 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
 }
 [[nodiscard]] expected<detail::fixed_vector<DisplayModeProperties2KHR>> GetDisplayModeProperties2KHR(PhysicalDevice physicalDevice, 
     DisplayKHR display) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPropertyCount = 0;
         Result result = pfn_GetDisplayModeProperties2KHR(physicalDevice,
         display,
@@ -9498,6 +9581,7 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
 }
 [[nodiscard]] expected<DisplayPlaneCapabilities2KHR> GetDisplayPlaneCapabilities2KHR(PhysicalDevice physicalDevice, 
     const DisplayPlaneInfo2KHR&  pDisplayPlaneInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     DisplayPlaneCapabilities2KHR pCapabilities;
         Result result = pfn_GetDisplayPlaneCapabilities2KHR(physicalDevice,
         &pDisplayPlaneInfo,
@@ -9507,6 +9591,7 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
 #if defined(VK_USE_PLATFORM_IOS_MVK)
 [[nodiscard]] expected<SurfaceKHR> CreateIOSSurfaceMVK(const IOSSurfaceCreateInfoMVK&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     SurfaceKHR pSurface;
         Result result = pfn_CreateIOSSurfaceMVK(instance,
         &pCreateInfo,
@@ -9518,6 +9603,7 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
 #if defined(VK_USE_PLATFORM_MACOS_MVK)
 [[nodiscard]] expected<SurfaceKHR> CreateMacOSSurfaceMVK(const MacOSSurfaceCreateInfoMVK&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     SurfaceKHR pSurface;
         Result result = pfn_CreateMacOSSurfaceMVK(instance,
         &pCreateInfo,
@@ -9528,6 +9614,7 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
 #endif // VK_USE_PLATFORM_MACOS_MVK
 [[nodiscard]] expected<DebugUtilsMessengerEXT> CreateDebugUtilsMessengerEXT(const DebugUtilsMessengerCreateInfoEXT&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     DebugUtilsMessengerEXT pMessenger;
         Result result = pfn_CreateDebugUtilsMessengerEXT(instance,
         &pCreateInfo,
@@ -9537,6 +9624,7 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
 }
 void DestroyDebugUtilsMessengerEXT(DebugUtilsMessengerEXT messenger, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyDebugUtilsMessengerEXT(instance,
         messenger,
         pAllocator);
@@ -9544,6 +9632,7 @@ void DestroyDebugUtilsMessengerEXT(DebugUtilsMessengerEXT messenger,
 void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeverity, 
     DebugUtilsMessageTypeFlagsEXT messageTypes, 
     const DebugUtilsMessengerCallbackDataEXT&  pCallbackData) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_SubmitDebugUtilsMessageEXT(instance,
         messageSeverity,
         messageTypes,
@@ -9551,6 +9640,7 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
 }
 [[nodiscard]] MultisamplePropertiesEXT GetPhysicalDeviceMultisamplePropertiesEXT(PhysicalDevice physicalDevice, 
     SampleCountFlagBits samples) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     MultisamplePropertiesEXT pMultisampleProperties;
     pfn_GetPhysicalDeviceMultisamplePropertiesEXT(physicalDevice,
         samples,
@@ -9558,6 +9648,7 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
     return pMultisampleProperties;
 }
 [[nodiscard]] expected<detail::fixed_vector<TimeDomainEXT>> GetPhysicalDeviceCalibrateableTimeDomainsEXT(PhysicalDevice physicalDevice) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pTimeDomainCount = 0;
         Result result = pfn_GetPhysicalDeviceCalibrateableTimeDomainsEXT(physicalDevice,
         &pTimeDomainCount,
@@ -9573,6 +9664,7 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
 #if defined(VK_USE_PLATFORM_FUCHSIA)
 [[nodiscard]] expected<SurfaceKHR> CreateImagePipeSurfaceFUCHSIA(const ImagePipeSurfaceCreateInfoFUCHSIA&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     SurfaceKHR pSurface;
         Result result = pfn_CreateImagePipeSurfaceFUCHSIA(instance,
         &pCreateInfo,
@@ -9584,6 +9676,7 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
 #if defined(VK_USE_PLATFORM_METAL_EXT)
 [[nodiscard]] expected<SurfaceKHR> CreateMetalSurfaceEXT(const MetalSurfaceCreateInfoEXT&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     SurfaceKHR pSurface;
         Result result = pfn_CreateMetalSurfaceEXT(instance,
         &pCreateInfo,
@@ -9593,6 +9686,7 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
 }
 #endif // VK_USE_PLATFORM_METAL_EXT
 [[nodiscard]] expected<detail::fixed_vector<PhysicalDeviceFragmentShadingRateKHR>> GetPhysicalDeviceFragmentShadingRatesKHR(PhysicalDevice physicalDevice) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pFragmentShadingRateCount = 0;
         Result result = pfn_GetPhysicalDeviceFragmentShadingRatesKHR(physicalDevice,
         &pFragmentShadingRateCount,
@@ -9606,6 +9700,7 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
     return expected(std::move(pFragmentShadingRates), result);
 }
 [[nodiscard]] expected<detail::fixed_vector<PhysicalDeviceToolPropertiesEXT>> GetPhysicalDeviceToolPropertiesEXT(PhysicalDevice physicalDevice) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pToolCount = 0;
         Result result = pfn_GetPhysicalDeviceToolPropertiesEXT(physicalDevice,
         &pToolCount,
@@ -9619,6 +9714,7 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
     return expected(std::move(pToolProperties), result);
 }
 [[nodiscard]] expected<detail::fixed_vector<CooperativeMatrixPropertiesNV>> GetPhysicalDeviceCooperativeMatrixPropertiesNV(PhysicalDevice physicalDevice) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPropertyCount = 0;
         Result result = pfn_GetPhysicalDeviceCooperativeMatrixPropertiesNV(physicalDevice,
         &pPropertyCount,
@@ -9632,6 +9728,7 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
     return expected(std::move(pProperties), result);
 }
 [[nodiscard]] expected<detail::fixed_vector<FramebufferMixedSamplesCombinationNV>> GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(PhysicalDevice physicalDevice) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pCombinationCount = 0;
         Result result = pfn_GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(physicalDevice,
         &pCombinationCount,
@@ -9647,6 +9744,7 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] expected<detail::fixed_vector<PresentModeKHR>> GetPhysicalDeviceSurfacePresentModes2EXT(PhysicalDevice physicalDevice, 
     const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPresentModeCount = 0;
         Result result = pfn_GetPhysicalDeviceSurfacePresentModes2EXT(physicalDevice,
         &pSurfaceInfo,
@@ -9664,6 +9762,7 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
 #endif // VK_USE_PLATFORM_WIN32_KHR
 [[nodiscard]] expected<SurfaceKHR> CreateHeadlessSurfaceEXT(const HeadlessSurfaceCreateInfoEXT&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     SurfaceKHR pSurface;
         Result result = pfn_CreateHeadlessSurfaceEXT(instance,
         &pCreateInfo,
@@ -9674,6 +9773,7 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
 #if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
 [[nodiscard]] expected<SurfaceKHR> CreateDirectFBSurfaceEXT(const DirectFBSurfaceCreateInfoEXT&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     SurfaceKHR pSurface;
         Result result = pfn_CreateDirectFBSurfaceEXT(instance,
         &pCreateInfo,
@@ -9685,6 +9785,7 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
 #if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
 [[nodiscard]] expected<IDirectFB> GetPhysicalDeviceDirectFBPresentationSupportEXT(PhysicalDevice physicalDevice, 
     uint32_t queueFamilyIndex) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     IDirectFB dfb;
         Result result = pfn_GetPhysicalDeviceDirectFBPresentationSupportEXT(physicalDevice,
         queueFamilyIndex,
@@ -10147,11 +10248,13 @@ struct DeviceFunctions {
     detail::PFN_CmdCopyImageToBuffer2KHR pfn_CmdCopyImageToBuffer2KHR = nullptr;
     detail::PFN_CmdResolveImage2KHR pfn_CmdResolveImage2KHR = nullptr;
 void DestroyDevice(const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyDevice(device,
         pAllocator);
 }
 [[nodiscard]] Queue GetDeviceQueue(uint32_t queueFamilyIndex, 
     uint32_t queueIndex) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     Queue pQueue;
     pfn_GetDeviceQueue(device,
         queueFamilyIndex,
@@ -10162,6 +10265,7 @@ void DestroyDevice(const AllocationCallbacks* pAllocator = nullptr) const {
 [[nodiscard]] Result QueueSubmit(Queue queue, 
     detail::span<const SubmitInfo> Submits, 
     Fence fence) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t submitCount = Submits.size();
     return pfn_QueueSubmit(queue,
         submitCount,
@@ -10169,13 +10273,16 @@ void DestroyDevice(const AllocationCallbacks* pAllocator = nullptr) const {
         fence);
 }
 [[nodiscard]] Result QueueWaitIdle(Queue queue) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_QueueWaitIdle(queue);
 }
 [[nodiscard]] Result DeviceWaitIdle() const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_DeviceWaitIdle(device);
 }
 [[nodiscard]] expected<DeviceMemory> AllocateMemory(const MemoryAllocateInfo&  pAllocateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     DeviceMemory pMemory;
         Result result = pfn_AllocateMemory(device,
         &pAllocateInfo,
@@ -10185,6 +10292,7 @@ void DestroyDevice(const AllocationCallbacks* pAllocator = nullptr) const {
 }
 void FreeMemory(DeviceMemory memory, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_FreeMemory(device,
         memory,
         pAllocator);
@@ -10193,6 +10301,7 @@ void FreeMemory(DeviceMemory memory,
     DeviceSize offset, 
     DeviceSize size, 
     MemoryMapFlags flags) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     void* ppData;
         Result result = pfn_MapMemory(device,
         memory,
@@ -10203,22 +10312,26 @@ void FreeMemory(DeviceMemory memory,
     return expected<void*>(ppData, result);
 }
 void UnmapMemory(DeviceMemory memory) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_UnmapMemory(device,
         memory);
 }
 [[nodiscard]] Result FlushMappedMemoryRanges(detail::span<const MappedMemoryRange> MemoryRanges) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t memoryRangeCount = MemoryRanges.size();
     return pfn_FlushMappedMemoryRanges(device,
         memoryRangeCount,
         MemoryRanges.data());
 }
 [[nodiscard]] Result InvalidateMappedMemoryRanges(detail::span<const MappedMemoryRange> MemoryRanges) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t memoryRangeCount = MemoryRanges.size();
     return pfn_InvalidateMappedMemoryRanges(device,
         memoryRangeCount,
         MemoryRanges.data());
 }
 [[nodiscard]] DeviceSize GetDeviceMemoryCommitment(DeviceMemory memory) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     DeviceSize pCommittedMemoryInBytes;
     pfn_GetDeviceMemoryCommitment(device,
         memory,
@@ -10226,6 +10339,7 @@ void UnmapMemory(DeviceMemory memory) const {
     return pCommittedMemoryInBytes;
 }
 [[nodiscard]] MemoryRequirements GetBufferMemoryRequirements(Buffer buffer) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     MemoryRequirements pMemoryRequirements;
     pfn_GetBufferMemoryRequirements(device,
         buffer,
@@ -10235,12 +10349,14 @@ void UnmapMemory(DeviceMemory memory) const {
 [[nodiscard]] Result BindBufferMemory(Buffer buffer, 
     DeviceMemory memory, 
     DeviceSize memoryOffset) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_BindBufferMemory(device,
         buffer,
         memory,
         memoryOffset);
 }
 [[nodiscard]] MemoryRequirements GetImageMemoryRequirements(Image image) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     MemoryRequirements pMemoryRequirements;
     pfn_GetImageMemoryRequirements(device,
         image,
@@ -10250,12 +10366,14 @@ void UnmapMemory(DeviceMemory memory) const {
 [[nodiscard]] Result BindImageMemory(Image image, 
     DeviceMemory memory, 
     DeviceSize memoryOffset) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_BindImageMemory(device,
         image,
         memory,
         memoryOffset);
 }
 [[nodiscard]] detail::fixed_vector<SparseImageMemoryRequirements> GetImageSparseMemoryRequirements(Image image) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pSparseMemoryRequirementCount = 0;
     pfn_GetImageSparseMemoryRequirements(device,
         image,
@@ -10272,6 +10390,7 @@ pfn_GetImageSparseMemoryRequirements(device,
 [[nodiscard]] Result QueueBindSparse(Queue queue, 
     detail::span<const BindSparseInfo> BindInfo, 
     Fence fence) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t bindInfoCount = BindInfo.size();
     return pfn_QueueBindSparse(queue,
         bindInfoCount,
@@ -10280,6 +10399,7 @@ pfn_GetImageSparseMemoryRequirements(device,
 }
 [[nodiscard]] expected<Fence> CreateFence(const FenceCreateInfo&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     Fence pFence;
         Result result = pfn_CreateFence(device,
         &pCreateInfo,
@@ -10289,23 +10409,27 @@ pfn_GetImageSparseMemoryRequirements(device,
 }
 void DestroyFence(Fence fence, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyFence(device,
         fence,
         pAllocator);
 }
 [[nodiscard]] Result ResetFences(detail::span<const Fence> Fences) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t fenceCount = Fences.size();
     return pfn_ResetFences(device,
         fenceCount,
         Fences.data());
 }
 [[nodiscard]] Result GetFenceStatus(Fence fence) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_GetFenceStatus(device,
         fence);
 }
 [[nodiscard]] Result WaitForFences(detail::span<const Fence> Fences, 
     Bool32 waitAll, 
     uint64_t timeout) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t fenceCount = Fences.size();
     return pfn_WaitForFences(device,
         fenceCount,
@@ -10315,6 +10439,7 @@ void DestroyFence(Fence fence,
 }
 [[nodiscard]] expected<Semaphore> CreateSemaphore(const SemaphoreCreateInfo&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     Semaphore pSemaphore;
         Result result = pfn_CreateSemaphore(device,
         &pCreateInfo,
@@ -10324,12 +10449,14 @@ void DestroyFence(Fence fence,
 }
 void DestroySemaphore(Semaphore semaphore, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroySemaphore(device,
         semaphore,
         pAllocator);
 }
 [[nodiscard]] expected<Event> CreateEvent(const EventCreateInfo&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     Event pEvent;
         Result result = pfn_CreateEvent(device,
         &pCreateInfo,
@@ -10339,24 +10466,29 @@ void DestroySemaphore(Semaphore semaphore,
 }
 void DestroyEvent(Event event, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyEvent(device,
         event,
         pAllocator);
 }
 [[nodiscard]] Result GetEventStatus(Event event) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_GetEventStatus(device,
         event);
 }
 [[nodiscard]] Result SetEvent(Event event) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_SetEvent(device,
         event);
 }
 [[nodiscard]] Result ResetEvent(Event event) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_ResetEvent(device,
         event);
 }
 [[nodiscard]] expected<QueryPool> CreateQueryPool(const QueryPoolCreateInfo&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     QueryPool pQueryPool;
         Result result = pfn_CreateQueryPool(device,
         &pCreateInfo,
@@ -10366,6 +10498,7 @@ void DestroyEvent(Event event,
 }
 void DestroyQueryPool(QueryPool queryPool, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyQueryPool(device,
         queryPool,
         pAllocator);
@@ -10376,6 +10509,7 @@ void DestroyQueryPool(QueryPool queryPool,
     detail::span<std::byte> Data, 
     DeviceSize stride, 
     QueryResultFlags flags) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     size_t dataSize = Data.size();
     return pfn_GetQueryPoolResults(device,
         queryPool,
@@ -10388,6 +10522,7 @@ void DestroyQueryPool(QueryPool queryPool,
 }
 [[nodiscard]] expected<Buffer> CreateBuffer(const BufferCreateInfo&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     Buffer pBuffer;
         Result result = pfn_CreateBuffer(device,
         &pCreateInfo,
@@ -10397,12 +10532,14 @@ void DestroyQueryPool(QueryPool queryPool,
 }
 void DestroyBuffer(Buffer buffer, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyBuffer(device,
         buffer,
         pAllocator);
 }
 [[nodiscard]] expected<BufferView> CreateBufferView(const BufferViewCreateInfo&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     BufferView pView;
         Result result = pfn_CreateBufferView(device,
         &pCreateInfo,
@@ -10412,12 +10549,14 @@ void DestroyBuffer(Buffer buffer,
 }
 void DestroyBufferView(BufferView bufferView, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyBufferView(device,
         bufferView,
         pAllocator);
 }
 [[nodiscard]] expected<Image> CreateImage(const ImageCreateInfo&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     Image pImage;
         Result result = pfn_CreateImage(device,
         &pCreateInfo,
@@ -10427,12 +10566,14 @@ void DestroyBufferView(BufferView bufferView,
 }
 void DestroyImage(Image image, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyImage(device,
         image,
         pAllocator);
 }
 [[nodiscard]] SubresourceLayout GetImageSubresourceLayout(Image image, 
     const ImageSubresource&  pSubresource) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     SubresourceLayout pLayout;
     pfn_GetImageSubresourceLayout(device,
         image,
@@ -10442,6 +10583,7 @@ void DestroyImage(Image image,
 }
 [[nodiscard]] expected<ImageView> CreateImageView(const ImageViewCreateInfo&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     ImageView pView;
         Result result = pfn_CreateImageView(device,
         &pCreateInfo,
@@ -10451,12 +10593,14 @@ void DestroyImage(Image image,
 }
 void DestroyImageView(ImageView imageView, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyImageView(device,
         imageView,
         pAllocator);
 }
 [[nodiscard]] expected<ShaderModule> CreateShaderModule(const ShaderModuleCreateInfo&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     ShaderModule pShaderModule;
         Result result = pfn_CreateShaderModule(device,
         &pCreateInfo,
@@ -10466,12 +10610,14 @@ void DestroyImageView(ImageView imageView,
 }
 void DestroyShaderModule(ShaderModule shaderModule, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyShaderModule(device,
         shaderModule,
         pAllocator);
 }
 [[nodiscard]] expected<PipelineCache> CreatePipelineCache(const PipelineCacheCreateInfo&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     PipelineCache pPipelineCache;
         Result result = pfn_CreatePipelineCache(device,
         &pCreateInfo,
@@ -10481,11 +10627,13 @@ void DestroyShaderModule(ShaderModule shaderModule,
 }
 void DestroyPipelineCache(PipelineCache pipelineCache, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyPipelineCache(device,
         pipelineCache,
         pAllocator);
 }
 [[nodiscard]] expected<detail::fixed_vector<void*>> GetPipelineCacheData(PipelineCache pipelineCache) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     size_t pDataSize = 0;
         Result result = pfn_GetPipelineCacheData(device,
         pipelineCache,
@@ -10502,6 +10650,7 @@ void DestroyPipelineCache(PipelineCache pipelineCache,
 }
 [[nodiscard]] Result MergePipelineCaches(PipelineCache dstCache, 
     detail::span<const PipelineCache> SrcCaches) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t srcCacheCount = SrcCaches.size();
     return pfn_MergePipelineCaches(device,
         dstCache,
@@ -10511,6 +10660,7 @@ void DestroyPipelineCache(PipelineCache pipelineCache,
 [[nodiscard]] expected<detail::fixed_vector<Pipeline>> CreateGraphicsPipelines(PipelineCache pipelineCache, 
     detail::span<const GraphicsPipelineCreateInfo> CreateInfos, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t createInfoCount = CreateInfos.size();
     detail::fixed_vector<Pipeline> pPipelines{createInfoCount};
     Result result = pfn_CreateGraphicsPipelines(device,
@@ -10524,6 +10674,7 @@ void DestroyPipelineCache(PipelineCache pipelineCache,
 [[nodiscard]] expected<detail::fixed_vector<Pipeline>> CreateComputePipelines(PipelineCache pipelineCache, 
     detail::span<const ComputePipelineCreateInfo> CreateInfos, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t createInfoCount = CreateInfos.size();
     detail::fixed_vector<Pipeline> pPipelines{createInfoCount};
     Result result = pfn_CreateComputePipelines(device,
@@ -10536,12 +10687,14 @@ void DestroyPipelineCache(PipelineCache pipelineCache,
 }
 void DestroyPipeline(Pipeline pipeline, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyPipeline(device,
         pipeline,
         pAllocator);
 }
 [[nodiscard]] expected<PipelineLayout> CreatePipelineLayout(const PipelineLayoutCreateInfo&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     PipelineLayout pPipelineLayout;
         Result result = pfn_CreatePipelineLayout(device,
         &pCreateInfo,
@@ -10551,12 +10704,14 @@ void DestroyPipeline(Pipeline pipeline,
 }
 void DestroyPipelineLayout(PipelineLayout pipelineLayout, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyPipelineLayout(device,
         pipelineLayout,
         pAllocator);
 }
 [[nodiscard]] expected<Sampler> CreateSampler(const SamplerCreateInfo&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     Sampler pSampler;
         Result result = pfn_CreateSampler(device,
         &pCreateInfo,
@@ -10566,12 +10721,14 @@ void DestroyPipelineLayout(PipelineLayout pipelineLayout,
 }
 void DestroySampler(Sampler sampler, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroySampler(device,
         sampler,
         pAllocator);
 }
 [[nodiscard]] expected<DescriptorSetLayout> CreateDescriptorSetLayout(const DescriptorSetLayoutCreateInfo&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     DescriptorSetLayout pSetLayout;
         Result result = pfn_CreateDescriptorSetLayout(device,
         &pCreateInfo,
@@ -10581,12 +10738,14 @@ void DestroySampler(Sampler sampler,
 }
 void DestroyDescriptorSetLayout(DescriptorSetLayout descriptorSetLayout, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyDescriptorSetLayout(device,
         descriptorSetLayout,
         pAllocator);
 }
 [[nodiscard]] expected<DescriptorPool> CreateDescriptorPool(const DescriptorPoolCreateInfo&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     DescriptorPool pDescriptorPool;
         Result result = pfn_CreateDescriptorPool(device,
         &pCreateInfo,
@@ -10596,17 +10755,20 @@ void DestroyDescriptorSetLayout(DescriptorSetLayout descriptorSetLayout,
 }
 void DestroyDescriptorPool(DescriptorPool descriptorPool, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyDescriptorPool(device,
         descriptorPool,
         pAllocator);
 }
 [[nodiscard]] Result ResetDescriptorPool(DescriptorPool descriptorPool, 
     DescriptorPoolResetFlags flags) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_ResetDescriptorPool(device,
         descriptorPool,
         flags);
 }
 [[nodiscard]] expected<detail::fixed_vector<DescriptorSet>> AllocateDescriptorSets(const DescriptorSetAllocateInfo&  pAllocateInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     detail::fixed_vector<DescriptorSet> pDescriptorSets{pAllocateInfo.descriptorSetCount};
     Result result = pfn_AllocateDescriptorSets(device,
         &pAllocateInfo,
@@ -10615,6 +10777,7 @@ void DestroyDescriptorPool(DescriptorPool descriptorPool,
 }
 [[nodiscard]] Result FreeDescriptorSets(DescriptorPool descriptorPool, 
     detail::span<const DescriptorSet> DescriptorSets) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t descriptorSetCount = DescriptorSets.size();
     return pfn_FreeDescriptorSets(device,
         descriptorPool,
@@ -10623,6 +10786,7 @@ void DestroyDescriptorPool(DescriptorPool descriptorPool,
 }
 void UpdateDescriptorSets(detail::span<const WriteDescriptorSet> DescriptorWrites, 
     detail::span<const CopyDescriptorSet> DescriptorCopies) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t descriptorWriteCount = DescriptorWrites.size();
     uint32_t descriptorCopyCount = DescriptorCopies.size();
     pfn_UpdateDescriptorSets(device,
@@ -10633,6 +10797,7 @@ void UpdateDescriptorSets(detail::span<const WriteDescriptorSet> DescriptorWrite
 }
 [[nodiscard]] expected<Framebuffer> CreateFramebuffer(const FramebufferCreateInfo&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     Framebuffer pFramebuffer;
         Result result = pfn_CreateFramebuffer(device,
         &pCreateInfo,
@@ -10642,12 +10807,14 @@ void UpdateDescriptorSets(detail::span<const WriteDescriptorSet> DescriptorWrite
 }
 void DestroyFramebuffer(Framebuffer framebuffer, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyFramebuffer(device,
         framebuffer,
         pAllocator);
 }
 [[nodiscard]] expected<RenderPass> CreateRenderPass(const RenderPassCreateInfo&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     RenderPass pRenderPass;
         Result result = pfn_CreateRenderPass(device,
         &pCreateInfo,
@@ -10657,11 +10824,13 @@ void DestroyFramebuffer(Framebuffer framebuffer,
 }
 void DestroyRenderPass(RenderPass renderPass, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyRenderPass(device,
         renderPass,
         pAllocator);
 }
 [[nodiscard]] Extent2D GetRenderAreaGranularity(RenderPass renderPass) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     Extent2D pGranularity;
     pfn_GetRenderAreaGranularity(device,
         renderPass,
@@ -10670,6 +10839,7 @@ void DestroyRenderPass(RenderPass renderPass,
 }
 [[nodiscard]] expected<CommandPool> CreateCommandPool(const CommandPoolCreateInfo&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     CommandPool pCommandPool;
         Result result = pfn_CreateCommandPool(device,
         &pCreateInfo,
@@ -10679,17 +10849,20 @@ void DestroyRenderPass(RenderPass renderPass,
 }
 void DestroyCommandPool(CommandPool commandPool, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyCommandPool(device,
         commandPool,
         pAllocator);
 }
 [[nodiscard]] Result ResetCommandPool(CommandPool commandPool, 
     CommandPoolResetFlags flags) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_ResetCommandPool(device,
         commandPool,
         flags);
 }
 [[nodiscard]] expected<detail::fixed_vector<CommandBuffer>> AllocateCommandBuffers(const CommandBufferAllocateInfo&  pAllocateInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     detail::fixed_vector<CommandBuffer> pCommandBuffers{pAllocateInfo.commandBufferCount};
     Result result = pfn_AllocateCommandBuffers(device,
         &pAllocateInfo,
@@ -10698,6 +10871,7 @@ void DestroyCommandPool(CommandPool commandPool,
 }
 void FreeCommandBuffers(CommandPool commandPool, 
     detail::span<const CommandBuffer> CommandBuffers) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t commandBufferCount = CommandBuffers.size();
     pfn_FreeCommandBuffers(device,
         commandPool,
@@ -10706,20 +10880,24 @@ void FreeCommandBuffers(CommandPool commandPool,
 }
 [[nodiscard]] Result BeginCommandBuffer(CommandBuffer commandBuffer, 
     const CommandBufferBeginInfo&  pBeginInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_BeginCommandBuffer(commandBuffer,
         &pBeginInfo);
 }
 [[nodiscard]] Result EndCommandBuffer(CommandBuffer commandBuffer) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_EndCommandBuffer(commandBuffer);
 }
 [[nodiscard]] Result ResetCommandBuffer(CommandBuffer commandBuffer, 
     CommandBufferResetFlags flags) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_ResetCommandBuffer(commandBuffer,
         flags);
 }
 void CmdBindPipeline(CommandBuffer commandBuffer, 
     PipelineBindPoint pipelineBindPoint, 
     Pipeline pipeline) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdBindPipeline(commandBuffer,
         pipelineBindPoint,
         pipeline);
@@ -10727,6 +10905,7 @@ void CmdBindPipeline(CommandBuffer commandBuffer,
 void CmdSetViewport(CommandBuffer commandBuffer, 
     uint32_t firstViewport, 
     detail::span<const Viewport> Viewports) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t viewportCount = Viewports.size();
     pfn_CmdSetViewport(commandBuffer,
         firstViewport,
@@ -10736,6 +10915,7 @@ void CmdSetViewport(CommandBuffer commandBuffer,
 void CmdSetScissor(CommandBuffer commandBuffer, 
     uint32_t firstScissor, 
     detail::span<const Rect2D> Scissors) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t scissorCount = Scissors.size();
     pfn_CmdSetScissor(commandBuffer,
         firstScissor,
@@ -10744,6 +10924,7 @@ void CmdSetScissor(CommandBuffer commandBuffer,
 }
 void CmdSetLineWidth(CommandBuffer commandBuffer, 
     float lineWidth) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdSetLineWidth(commandBuffer,
         lineWidth);
 }
@@ -10751,6 +10932,7 @@ void CmdSetDepthBias(CommandBuffer commandBuffer,
     float depthBiasConstantFactor, 
     float depthBiasClamp, 
     float depthBiasSlopeFactor) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdSetDepthBias(commandBuffer,
         depthBiasConstantFactor,
         depthBiasClamp,
@@ -10758,12 +10940,14 @@ void CmdSetDepthBias(CommandBuffer commandBuffer,
 }
 void CmdSetBlendConstants(CommandBuffer commandBuffer, 
     const float blendConstants[4]) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdSetBlendConstants(commandBuffer,
         blendConstants);
 }
 void CmdSetDepthBounds(CommandBuffer commandBuffer, 
     float minDepthBounds, 
     float maxDepthBounds) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdSetDepthBounds(commandBuffer,
         minDepthBounds,
         maxDepthBounds);
@@ -10771,6 +10955,7 @@ void CmdSetDepthBounds(CommandBuffer commandBuffer,
 void CmdSetStencilCompareMask(CommandBuffer commandBuffer, 
     StencilFaceFlags faceMask, 
     uint32_t compareMask) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdSetStencilCompareMask(commandBuffer,
         faceMask,
         compareMask);
@@ -10778,6 +10963,7 @@ void CmdSetStencilCompareMask(CommandBuffer commandBuffer,
 void CmdSetStencilWriteMask(CommandBuffer commandBuffer, 
     StencilFaceFlags faceMask, 
     uint32_t writeMask) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdSetStencilWriteMask(commandBuffer,
         faceMask,
         writeMask);
@@ -10785,6 +10971,7 @@ void CmdSetStencilWriteMask(CommandBuffer commandBuffer,
 void CmdSetStencilReference(CommandBuffer commandBuffer, 
     StencilFaceFlags faceMask, 
     uint32_t reference) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdSetStencilReference(commandBuffer,
         faceMask,
         reference);
@@ -10795,6 +10982,7 @@ void CmdBindDescriptorSets(CommandBuffer commandBuffer,
     uint32_t firstSet, 
     detail::span<const DescriptorSet> DescriptorSets, 
     detail::span<const uint32_t> DynamicOffsets) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t descriptorSetCount = DescriptorSets.size();
     uint32_t dynamicOffsetCount = DynamicOffsets.size();
     pfn_CmdBindDescriptorSets(commandBuffer,
@@ -10810,6 +10998,7 @@ void CmdBindIndexBuffer(CommandBuffer commandBuffer,
     Buffer buffer, 
     DeviceSize offset, 
     IndexType indexType) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdBindIndexBuffer(commandBuffer,
         buffer,
         offset,
@@ -10819,6 +11008,7 @@ void CmdBindVertexBuffers(CommandBuffer commandBuffer,
     uint32_t firstBinding, 
     detail::span<const Buffer> Buffers, 
     detail::span<const DeviceSize> Offsets) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t bindingCount = Buffers.size();
     pfn_CmdBindVertexBuffers(commandBuffer,
         firstBinding,
@@ -10831,6 +11021,7 @@ void CmdDraw(CommandBuffer commandBuffer,
     uint32_t instanceCount, 
     uint32_t firstVertex, 
     uint32_t firstInstance) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdDraw(commandBuffer,
         vertexCount,
         instanceCount,
@@ -10843,6 +11034,7 @@ void CmdDrawIndexed(CommandBuffer commandBuffer,
     uint32_t firstIndex, 
     int32_t vertexOffset, 
     uint32_t firstInstance) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdDrawIndexed(commandBuffer,
         indexCount,
         instanceCount,
@@ -10855,6 +11047,7 @@ void CmdDrawIndirect(CommandBuffer commandBuffer,
     DeviceSize offset, 
     uint32_t drawCount, 
     uint32_t stride) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdDrawIndirect(commandBuffer,
         buffer,
         offset,
@@ -10866,6 +11059,7 @@ void CmdDrawIndexedIndirect(CommandBuffer commandBuffer,
     DeviceSize offset, 
     uint32_t drawCount, 
     uint32_t stride) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdDrawIndexedIndirect(commandBuffer,
         buffer,
         offset,
@@ -10876,6 +11070,7 @@ void CmdDispatch(CommandBuffer commandBuffer,
     uint32_t groupCountX, 
     uint32_t groupCountY, 
     uint32_t groupCountZ) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdDispatch(commandBuffer,
         groupCountX,
         groupCountY,
@@ -10884,6 +11079,7 @@ void CmdDispatch(CommandBuffer commandBuffer,
 void CmdDispatchIndirect(CommandBuffer commandBuffer, 
     Buffer buffer, 
     DeviceSize offset) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdDispatchIndirect(commandBuffer,
         buffer,
         offset);
@@ -10892,6 +11088,7 @@ void CmdCopyBuffer(CommandBuffer commandBuffer,
     Buffer srcBuffer, 
     Buffer dstBuffer, 
     detail::span<const BufferCopy> Regions) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t regionCount = Regions.size();
     pfn_CmdCopyBuffer(commandBuffer,
         srcBuffer,
@@ -10905,6 +11102,7 @@ void CmdCopyImage(CommandBuffer commandBuffer,
     Image dstImage, 
     ImageLayout dstImageLayout, 
     detail::span<const ImageCopy> Regions) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t regionCount = Regions.size();
     pfn_CmdCopyImage(commandBuffer,
         srcImage,
@@ -10921,6 +11119,7 @@ void CmdBlitImage(CommandBuffer commandBuffer,
     ImageLayout dstImageLayout, 
     detail::span<const ImageBlit> Regions, 
     Filter filter) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t regionCount = Regions.size();
     pfn_CmdBlitImage(commandBuffer,
         srcImage,
@@ -10936,6 +11135,7 @@ void CmdCopyBufferToImage(CommandBuffer commandBuffer,
     Image dstImage, 
     ImageLayout dstImageLayout, 
     detail::span<const BufferImageCopy> Regions) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t regionCount = Regions.size();
     pfn_CmdCopyBufferToImage(commandBuffer,
         srcBuffer,
@@ -10949,6 +11149,7 @@ void CmdCopyImageToBuffer(CommandBuffer commandBuffer,
     ImageLayout srcImageLayout, 
     Buffer dstBuffer, 
     detail::span<const BufferImageCopy> Regions) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t regionCount = Regions.size();
     pfn_CmdCopyImageToBuffer(commandBuffer,
         srcImage,
@@ -10961,6 +11162,7 @@ void CmdUpdateBuffer(CommandBuffer commandBuffer,
     Buffer dstBuffer, 
     DeviceSize dstOffset, 
     detail::span<const std::byte> Data) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     DeviceSize dataSize = Data.size();
     pfn_CmdUpdateBuffer(commandBuffer,
         dstBuffer,
@@ -10973,6 +11175,7 @@ void CmdFillBuffer(CommandBuffer commandBuffer,
     DeviceSize dstOffset, 
     DeviceSize size, 
     uint32_t data) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdFillBuffer(commandBuffer,
         dstBuffer,
         dstOffset,
@@ -10984,6 +11187,7 @@ void CmdClearColorImage(CommandBuffer commandBuffer,
     ImageLayout imageLayout, 
     const ClearColorValue&  pColor, 
     detail::span<const ImageSubresourceRange> Ranges) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t rangeCount = Ranges.size();
     pfn_CmdClearColorImage(commandBuffer,
         image,
@@ -10997,6 +11201,7 @@ void CmdClearDepthStencilImage(CommandBuffer commandBuffer,
     ImageLayout imageLayout, 
     const ClearDepthStencilValue&  pDepthStencil, 
     detail::span<const ImageSubresourceRange> Ranges) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t rangeCount = Ranges.size();
     pfn_CmdClearDepthStencilImage(commandBuffer,
         image,
@@ -11008,6 +11213,7 @@ void CmdClearDepthStencilImage(CommandBuffer commandBuffer,
 void CmdClearAttachments(CommandBuffer commandBuffer, 
     detail::span<const ClearAttachment> Attachments, 
     detail::span<const ClearRect> Rects) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t attachmentCount = Attachments.size();
     uint32_t rectCount = Rects.size();
     pfn_CmdClearAttachments(commandBuffer,
@@ -11022,6 +11228,7 @@ void CmdResolveImage(CommandBuffer commandBuffer,
     Image dstImage, 
     ImageLayout dstImageLayout, 
     detail::span<const ImageResolve> Regions) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t regionCount = Regions.size();
     pfn_CmdResolveImage(commandBuffer,
         srcImage,
@@ -11034,6 +11241,7 @@ void CmdResolveImage(CommandBuffer commandBuffer,
 void CmdSetEvent(CommandBuffer commandBuffer, 
     Event event, 
     PipelineStageFlags stageMask) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdSetEvent(commandBuffer,
         event,
         stageMask);
@@ -11041,6 +11249,7 @@ void CmdSetEvent(CommandBuffer commandBuffer,
 void CmdResetEvent(CommandBuffer commandBuffer, 
     Event event, 
     PipelineStageFlags stageMask) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdResetEvent(commandBuffer,
         event,
         stageMask);
@@ -11052,6 +11261,7 @@ void CmdWaitEvents(CommandBuffer commandBuffer,
     detail::span<const MemoryBarrier> MemoryBarriers, 
     detail::span<const BufferMemoryBarrier> BufferMemoryBarriers, 
     detail::span<const ImageMemoryBarrier> ImageMemoryBarriers) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t eventCount = Events.size();
     uint32_t memoryBarrierCount = MemoryBarriers.size();
     uint32_t bufferMemoryBarrierCount = BufferMemoryBarriers.size();
@@ -11075,6 +11285,7 @@ void CmdPipelineBarrier(CommandBuffer commandBuffer,
     detail::span<const MemoryBarrier> MemoryBarriers, 
     detail::span<const BufferMemoryBarrier> BufferMemoryBarriers, 
     detail::span<const ImageMemoryBarrier> ImageMemoryBarriers) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t memoryBarrierCount = MemoryBarriers.size();
     uint32_t bufferMemoryBarrierCount = BufferMemoryBarriers.size();
     uint32_t imageMemoryBarrierCount = ImageMemoryBarriers.size();
@@ -11093,6 +11304,7 @@ void CmdBeginQuery(CommandBuffer commandBuffer,
     QueryPool queryPool, 
     uint32_t query, 
     QueryControlFlags flags) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdBeginQuery(commandBuffer,
         queryPool,
         query,
@@ -11101,6 +11313,7 @@ void CmdBeginQuery(CommandBuffer commandBuffer,
 void CmdEndQuery(CommandBuffer commandBuffer, 
     QueryPool queryPool, 
     uint32_t query) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdEndQuery(commandBuffer,
         queryPool,
         query);
@@ -11109,6 +11322,7 @@ void CmdResetQueryPool(CommandBuffer commandBuffer,
     QueryPool queryPool, 
     uint32_t firstQuery, 
     uint32_t queryCount) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdResetQueryPool(commandBuffer,
         queryPool,
         firstQuery,
@@ -11118,6 +11332,7 @@ void CmdWriteTimestamp(CommandBuffer commandBuffer,
     PipelineStageFlagBits pipelineStage, 
     QueryPool queryPool, 
     uint32_t query) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdWriteTimestamp(commandBuffer,
         pipelineStage,
         queryPool,
@@ -11131,6 +11346,7 @@ void CmdCopyQueryPoolResults(CommandBuffer commandBuffer,
     DeviceSize dstOffset, 
     DeviceSize stride, 
     QueryResultFlags flags) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdCopyQueryPoolResults(commandBuffer,
         queryPool,
         firstQuery,
@@ -11145,6 +11361,7 @@ void CmdPushConstants(CommandBuffer commandBuffer,
     ShaderStageFlags stageFlags, 
     uint32_t offset, 
     detail::span<const std::byte> Values) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t size = Values.size();
     pfn_CmdPushConstants(commandBuffer,
         layout,
@@ -11156,32 +11373,38 @@ void CmdPushConstants(CommandBuffer commandBuffer,
 void CmdBeginRenderPass(CommandBuffer commandBuffer, 
     const RenderPassBeginInfo&  pRenderPassBegin, 
     SubpassContents contents) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdBeginRenderPass(commandBuffer,
         &pRenderPassBegin,
         contents);
 }
 void CmdNextSubpass(CommandBuffer commandBuffer, 
     SubpassContents contents) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdNextSubpass(commandBuffer,
         contents);
 }
 void CmdEndRenderPass(CommandBuffer commandBuffer) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdEndRenderPass(commandBuffer);
 }
 void CmdExecuteCommands(CommandBuffer commandBuffer, 
     detail::span<const CommandBuffer> CommandBuffers) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t commandBufferCount = CommandBuffers.size();
     pfn_CmdExecuteCommands(commandBuffer,
         commandBufferCount,
         CommandBuffers.data());
 }
 [[nodiscard]] Result BindBufferMemory2(detail::span<const BindBufferMemoryInfo> BindInfos) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t bindInfoCount = BindInfos.size();
     return pfn_BindBufferMemory2(device,
         bindInfoCount,
         BindInfos.data());
 }
 [[nodiscard]] Result BindImageMemory2(detail::span<const BindImageMemoryInfo> BindInfos) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t bindInfoCount = BindInfos.size();
     return pfn_BindImageMemory2(device,
         bindInfoCount,
@@ -11190,6 +11413,7 @@ void CmdExecuteCommands(CommandBuffer commandBuffer,
 [[nodiscard]] PeerMemoryFeatureFlags GetDeviceGroupPeerMemoryFeatures(uint32_t heapIndex, 
     uint32_t localDeviceIndex, 
     uint32_t remoteDeviceIndex) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     PeerMemoryFeatureFlags pPeerMemoryFeatures;
     pfn_GetDeviceGroupPeerMemoryFeatures(device,
         heapIndex,
@@ -11200,6 +11424,7 @@ void CmdExecuteCommands(CommandBuffer commandBuffer,
 }
 void CmdSetDeviceMask(CommandBuffer commandBuffer, 
     uint32_t deviceMask) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdSetDeviceMask(commandBuffer,
         deviceMask);
 }
@@ -11210,6 +11435,7 @@ void CmdDispatchBase(CommandBuffer commandBuffer,
     uint32_t groupCountX, 
     uint32_t groupCountY, 
     uint32_t groupCountZ) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdDispatchBase(commandBuffer,
         baseGroupX,
         baseGroupY,
@@ -11219,6 +11445,7 @@ void CmdDispatchBase(CommandBuffer commandBuffer,
         groupCountZ);
 }
 [[nodiscard]] MemoryRequirements2 GetBufferMemoryRequirements2(const BufferMemoryRequirementsInfo2&  pInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     MemoryRequirements2 pMemoryRequirements;
     pfn_GetBufferMemoryRequirements2(device,
         &pInfo,
@@ -11226,6 +11453,7 @@ void CmdDispatchBase(CommandBuffer commandBuffer,
     return pMemoryRequirements;
 }
 [[nodiscard]] MemoryRequirements2 GetImageMemoryRequirements2(const ImageMemoryRequirementsInfo2&  pInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     MemoryRequirements2 pMemoryRequirements;
     pfn_GetImageMemoryRequirements2(device,
         &pInfo,
@@ -11233,6 +11461,7 @@ void CmdDispatchBase(CommandBuffer commandBuffer,
     return pMemoryRequirements;
 }
 [[nodiscard]] detail::fixed_vector<SparseImageMemoryRequirements2> GetImageSparseMemoryRequirements2(const ImageSparseMemoryRequirementsInfo2&  pInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pSparseMemoryRequirementCount = 0;
     pfn_GetImageSparseMemoryRequirements2(device,
         &pInfo,
@@ -11248,11 +11477,13 @@ pfn_GetImageSparseMemoryRequirements2(device,
 }
 void TrimCommandPool(CommandPool commandPool, 
     CommandPoolTrimFlags flags) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_TrimCommandPool(device,
         commandPool,
         flags);
 }
 [[nodiscard]] Queue GetDeviceQueue2(const DeviceQueueInfo2&  pQueueInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     Queue pQueue;
     pfn_GetDeviceQueue2(device,
         &pQueueInfo,
@@ -11261,6 +11492,7 @@ void TrimCommandPool(CommandPool commandPool,
 }
 [[nodiscard]] expected<SamplerYcbcrConversion> CreateSamplerYcbcrConversion(const SamplerYcbcrConversionCreateInfo&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     SamplerYcbcrConversion pYcbcrConversion;
         Result result = pfn_CreateSamplerYcbcrConversion(device,
         &pCreateInfo,
@@ -11270,12 +11502,14 @@ void TrimCommandPool(CommandPool commandPool,
 }
 void DestroySamplerYcbcrConversion(SamplerYcbcrConversion ycbcrConversion, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroySamplerYcbcrConversion(device,
         ycbcrConversion,
         pAllocator);
 }
 [[nodiscard]] expected<DescriptorUpdateTemplate> CreateDescriptorUpdateTemplate(const DescriptorUpdateTemplateCreateInfo&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     DescriptorUpdateTemplate pDescriptorUpdateTemplate;
         Result result = pfn_CreateDescriptorUpdateTemplate(device,
         &pCreateInfo,
@@ -11285,6 +11519,7 @@ void DestroySamplerYcbcrConversion(SamplerYcbcrConversion ycbcrConversion,
 }
 void DestroyDescriptorUpdateTemplate(DescriptorUpdateTemplate descriptorUpdateTemplate, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyDescriptorUpdateTemplate(device,
         descriptorUpdateTemplate,
         pAllocator);
@@ -11292,12 +11527,14 @@ void DestroyDescriptorUpdateTemplate(DescriptorUpdateTemplate descriptorUpdateTe
 void UpdateDescriptorSetWithTemplate(DescriptorSet descriptorSet, 
     DescriptorUpdateTemplate descriptorUpdateTemplate, 
     const void* pData) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_UpdateDescriptorSetWithTemplate(device,
         descriptorSet,
         descriptorUpdateTemplate,
         pData);
 }
 [[nodiscard]] DescriptorSetLayoutSupport GetDescriptorSetLayoutSupport(const DescriptorSetLayoutCreateInfo&  pCreateInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     DescriptorSetLayoutSupport pSupport;
     pfn_GetDescriptorSetLayoutSupport(device,
         &pCreateInfo,
@@ -11311,6 +11548,7 @@ void CmdDrawIndirectCount(CommandBuffer commandBuffer,
     DeviceSize countBufferOffset, 
     uint32_t maxDrawCount, 
     uint32_t stride) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdDrawIndirectCount(commandBuffer,
         buffer,
         offset,
@@ -11326,6 +11564,7 @@ void CmdDrawIndexedIndirectCount(CommandBuffer commandBuffer,
     DeviceSize countBufferOffset, 
     uint32_t maxDrawCount, 
     uint32_t stride) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdDrawIndexedIndirectCount(commandBuffer,
         buffer,
         offset,
@@ -11336,6 +11575,7 @@ void CmdDrawIndexedIndirectCount(CommandBuffer commandBuffer,
 }
 [[nodiscard]] expected<RenderPass> CreateRenderPass2(const RenderPassCreateInfo2&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     RenderPass pRenderPass;
         Result result = pfn_CreateRenderPass2(device,
         &pCreateInfo,
@@ -11346,6 +11586,7 @@ void CmdDrawIndexedIndirectCount(CommandBuffer commandBuffer,
 void CmdBeginRenderPass2(CommandBuffer commandBuffer, 
     const RenderPassBeginInfo&  pRenderPassBegin, 
     const SubpassBeginInfo&  pSubpassBeginInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdBeginRenderPass2(commandBuffer,
         &pRenderPassBegin,
         &pSubpassBeginInfo);
@@ -11353,24 +11594,28 @@ void CmdBeginRenderPass2(CommandBuffer commandBuffer,
 void CmdNextSubpass2(CommandBuffer commandBuffer, 
     const SubpassBeginInfo&  pSubpassBeginInfo, 
     const SubpassEndInfo&  pSubpassEndInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdNextSubpass2(commandBuffer,
         &pSubpassBeginInfo,
         &pSubpassEndInfo);
 }
 void CmdEndRenderPass2(CommandBuffer commandBuffer, 
     const SubpassEndInfo&  pSubpassEndInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdEndRenderPass2(commandBuffer,
         &pSubpassEndInfo);
 }
 void ResetQueryPool(QueryPool queryPool, 
     uint32_t firstQuery, 
     uint32_t queryCount) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_ResetQueryPool(device,
         queryPool,
         firstQuery,
         queryCount);
 }
 [[nodiscard]] expected<uint64_t> GetSemaphoreCounterValue(Semaphore semaphore) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint64_t pValue;
         Result result = pfn_GetSemaphoreCounterValue(device,
         semaphore,
@@ -11379,28 +11624,34 @@ void ResetQueryPool(QueryPool queryPool,
 }
 [[nodiscard]] Result WaitSemaphores(const SemaphoreWaitInfo&  pWaitInfo, 
     uint64_t timeout) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_WaitSemaphores(device,
         &pWaitInfo,
         timeout);
 }
 [[nodiscard]] Result SignalSemaphore(const SemaphoreSignalInfo&  pSignalInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_SignalSemaphore(device,
         &pSignalInfo);
 }
 [[nodiscard]] uint64_t GetBufferOpaqueCaptureAddress(const BufferDeviceAddressInfo&  pInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_GetBufferOpaqueCaptureAddress(device,
         &pInfo);
 }
 [[nodiscard]] DeviceAddress GetBufferDeviceAddress(const BufferDeviceAddressInfo&  pInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_GetBufferDeviceAddress(device,
         &pInfo);
 }
 [[nodiscard]] uint64_t GetDeviceMemoryOpaqueCaptureAddress(const DeviceMemoryOpaqueCaptureAddressInfo&  pInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_GetDeviceMemoryOpaqueCaptureAddress(device,
         &pInfo);
 }
 [[nodiscard]] expected<SwapchainKHR> CreateSwapchainKHR(const SwapchainCreateInfoKHR&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     SwapchainKHR pSwapchain;
         Result result = pfn_CreateSwapchainKHR(device,
         &pCreateInfo,
@@ -11410,11 +11661,13 @@ void ResetQueryPool(QueryPool queryPool,
 }
 void DestroySwapchainKHR(SwapchainKHR swapchain, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroySwapchainKHR(device,
         swapchain,
         pAllocator);
 }
 [[nodiscard]] expected<detail::fixed_vector<Image>> GetSwapchainImagesKHR(SwapchainKHR swapchain) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pSwapchainImageCount = 0;
         Result result = pfn_GetSwapchainImagesKHR(device,
         swapchain,
@@ -11433,6 +11686,7 @@ void DestroySwapchainKHR(SwapchainKHR swapchain,
     uint64_t timeout, 
     Semaphore semaphore, 
     Fence fence) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pImageIndex;
         Result result = pfn_AcquireNextImageKHR(device,
         swapchain,
@@ -11444,16 +11698,19 @@ void DestroySwapchainKHR(SwapchainKHR swapchain,
 }
 [[nodiscard]] Result QueuePresentKHR(Queue queue, 
     const PresentInfoKHR&  pPresentInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_QueuePresentKHR(queue,
         &pPresentInfo);
 }
 [[nodiscard]] expected<DeviceGroupPresentCapabilitiesKHR> GetDeviceGroupPresentCapabilitiesKHR() const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     DeviceGroupPresentCapabilitiesKHR pDeviceGroupPresentCapabilities;
         Result result = pfn_GetDeviceGroupPresentCapabilitiesKHR(device,
         &pDeviceGroupPresentCapabilities);
     return expected<DeviceGroupPresentCapabilitiesKHR>(pDeviceGroupPresentCapabilities, result);
 }
 [[nodiscard]] expected<DeviceGroupPresentModeFlagsKHR> GetDeviceGroupSurfacePresentModesKHR(SurfaceKHR surface) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     DeviceGroupPresentModeFlagsKHR pModes;
         Result result = pfn_GetDeviceGroupSurfacePresentModesKHR(device,
         surface,
@@ -11461,6 +11718,7 @@ void DestroySwapchainKHR(SwapchainKHR swapchain,
     return expected<DeviceGroupPresentModeFlagsKHR>(pModes, result);
 }
 [[nodiscard]] expected<uint32_t> AcquireNextImage2KHR(const AcquireNextImageInfoKHR&  pAcquireInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pImageIndex;
         Result result = pfn_AcquireNextImage2KHR(device,
         &pAcquireInfo,
@@ -11470,6 +11728,7 @@ void DestroySwapchainKHR(SwapchainKHR swapchain,
 [[nodiscard]] Result CreateSharedSwapchainsKHR(detail::span<const SwapchainCreateInfoKHR> CreateInfos, 
     const AllocationCallbacks* pAllocator, 
     detail::span<SwapchainKHR> Swapchains) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t swapchainCount = CreateInfos.size();
     return pfn_CreateSharedSwapchainsKHR(device,
         swapchainCount,
@@ -11478,23 +11737,28 @@ void DestroySwapchainKHR(SwapchainKHR swapchain,
         Swapchains.data());
 }
 [[nodiscard]] Result DebugMarkerSetObjectNameEXT(const DebugMarkerObjectNameInfoEXT&  pNameInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_DebugMarkerSetObjectNameEXT(device,
         &pNameInfo);
 }
 [[nodiscard]] Result DebugMarkerSetObjectTagEXT(const DebugMarkerObjectTagInfoEXT&  pTagInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_DebugMarkerSetObjectTagEXT(device,
         &pTagInfo);
 }
 void CmdDebugMarkerBeginEXT(CommandBuffer commandBuffer, 
     const DebugMarkerMarkerInfoEXT&  pMarkerInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdDebugMarkerBeginEXT(commandBuffer,
         &pMarkerInfo);
 }
 void CmdDebugMarkerEndEXT(CommandBuffer commandBuffer) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdDebugMarkerEndEXT(commandBuffer);
 }
 void CmdDebugMarkerInsertEXT(CommandBuffer commandBuffer, 
     const DebugMarkerMarkerInfoEXT&  pMarkerInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdDebugMarkerInsertEXT(commandBuffer,
         &pMarkerInfo);
 }
@@ -11503,6 +11767,7 @@ void CmdBindTransformFeedbackBuffersEXT(CommandBuffer commandBuffer,
     detail::span<const Buffer> Buffers, 
     detail::span<const DeviceSize> Offsets, 
     detail::span<const DeviceSize> Sizes) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t bindingCount = Buffers.size();
     pfn_CmdBindTransformFeedbackBuffersEXT(commandBuffer,
         firstBinding,
@@ -11515,6 +11780,7 @@ void CmdBeginTransformFeedbackEXT(CommandBuffer commandBuffer,
     uint32_t firstCounterBuffer, 
     detail::span<const Buffer> CounterBuffers, 
     detail::span<const DeviceSize> CounterBufferOffsets) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t counterBufferCount = CounterBuffers.size();
     pfn_CmdBeginTransformFeedbackEXT(commandBuffer,
         firstCounterBuffer,
@@ -11526,6 +11792,7 @@ void CmdEndTransformFeedbackEXT(CommandBuffer commandBuffer,
     uint32_t firstCounterBuffer, 
     detail::span<const Buffer> CounterBuffers, 
     detail::span<const DeviceSize> CounterBufferOffsets) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t counterBufferCount = CounterBuffers.size();
     pfn_CmdEndTransformFeedbackEXT(commandBuffer,
         firstCounterBuffer,
@@ -11538,6 +11805,7 @@ void CmdBeginQueryIndexedEXT(CommandBuffer commandBuffer,
     uint32_t query, 
     QueryControlFlags flags, 
     uint32_t index) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdBeginQueryIndexedEXT(commandBuffer,
         queryPool,
         query,
@@ -11548,6 +11816,7 @@ void CmdEndQueryIndexedEXT(CommandBuffer commandBuffer,
     QueryPool queryPool, 
     uint32_t query, 
     uint32_t index) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdEndQueryIndexedEXT(commandBuffer,
         queryPool,
         query,
@@ -11560,6 +11829,7 @@ void CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer,
     DeviceSize counterBufferOffset, 
     uint32_t counterOffset, 
     uint32_t vertexStride) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdDrawIndirectByteCountEXT(commandBuffer,
         instanceCount,
         firstInstance,
@@ -11569,10 +11839,12 @@ void CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer,
         vertexStride);
 }
 [[nodiscard]] uint32_t GetImageViewHandleNVX(const ImageViewHandleInfoNVX&  pInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_GetImageViewHandleNVX(device,
         &pInfo);
 }
 [[nodiscard]] expected<ImageViewAddressPropertiesNVX> GetImageViewAddressNVX(ImageView imageView) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     ImageViewAddressPropertiesNVX pProperties;
         Result result = pfn_GetImageViewAddressNVX(device,
         imageView,
@@ -11582,6 +11854,7 @@ void CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer,
 [[nodiscard]] expected<detail::fixed_vector<void*>> GetShaderInfoAMD(Pipeline pipeline, 
     ShaderStageFlagBits shaderStage, 
     ShaderInfoTypeAMD infoType) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     size_t pInfoSize = 0;
         Result result = pfn_GetShaderInfoAMD(device,
         pipeline,
@@ -11603,6 +11876,7 @@ void CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer,
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] expected<HANDLE> GetMemoryWin32HandleNV(DeviceMemory memory, 
     ExternalMemoryHandleTypeFlagsNV handleType) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     HANDLE pHandle;
         Result result = pfn_GetMemoryWin32HandleNV(device,
         memory,
@@ -11613,6 +11887,7 @@ void CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer,
 #endif // VK_USE_PLATFORM_WIN32_KHR
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] expected<HANDLE> GetMemoryWin32HandleKHR(const MemoryGetWin32HandleInfoKHR&  pGetWin32HandleInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     HANDLE pHandle;
         Result result = pfn_GetMemoryWin32HandleKHR(device,
         &pGetWin32HandleInfo,
@@ -11623,6 +11898,7 @@ void CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer,
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] expected<MemoryWin32HandlePropertiesKHR> GetMemoryWin32HandlePropertiesKHR(ExternalMemoryHandleTypeFlagBits handleType, 
     HANDLE handle) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     MemoryWin32HandlePropertiesKHR pMemoryWin32HandleProperties;
         Result result = pfn_GetMemoryWin32HandlePropertiesKHR(device,
         handleType,
@@ -11632,6 +11908,7 @@ void CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer,
 }
 #endif // VK_USE_PLATFORM_WIN32_KHR
 [[nodiscard]] expected<int> GetMemoryFdKHR(const MemoryGetFdInfoKHR&  pGetFdInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     int pFd;
         Result result = pfn_GetMemoryFdKHR(device,
         &pGetFdInfo,
@@ -11640,6 +11917,7 @@ void CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer,
 }
 [[nodiscard]] expected<MemoryFdPropertiesKHR> GetMemoryFdPropertiesKHR(ExternalMemoryHandleTypeFlagBits handleType, 
     int fd) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     MemoryFdPropertiesKHR pMemoryFdProperties;
         Result result = pfn_GetMemoryFdPropertiesKHR(device,
         handleType,
@@ -11649,6 +11927,7 @@ void CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer,
 }
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] expected<HANDLE> GetSemaphoreWin32HandleKHR(const SemaphoreGetWin32HandleInfoKHR&  pGetWin32HandleInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     HANDLE pHandle;
         Result result = pfn_GetSemaphoreWin32HandleKHR(device,
         &pGetWin32HandleInfo,
@@ -11658,11 +11937,13 @@ void CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer,
 #endif // VK_USE_PLATFORM_WIN32_KHR
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] Result ImportSemaphoreWin32HandleKHR(const ImportSemaphoreWin32HandleInfoKHR&  pImportSemaphoreWin32HandleInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_ImportSemaphoreWin32HandleKHR(device,
         &pImportSemaphoreWin32HandleInfo);
 }
 #endif // VK_USE_PLATFORM_WIN32_KHR
 [[nodiscard]] expected<int> GetSemaphoreFdKHR(const SemaphoreGetFdInfoKHR&  pGetFdInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     int pFd;
         Result result = pfn_GetSemaphoreFdKHR(device,
         &pGetFdInfo,
@@ -11670,6 +11951,7 @@ void CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer,
     return expected<int>(pFd, result);
 }
 [[nodiscard]] Result ImportSemaphoreFdKHR(const ImportSemaphoreFdInfoKHR&  pImportSemaphoreFdInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_ImportSemaphoreFdKHR(device,
         &pImportSemaphoreFdInfo);
 }
@@ -11678,6 +11960,7 @@ void CmdPushDescriptorSetKHR(CommandBuffer commandBuffer,
     PipelineLayout layout, 
     uint32_t set, 
     detail::span<const WriteDescriptorSet> DescriptorWrites) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t descriptorWriteCount = DescriptorWrites.size();
     pfn_CmdPushDescriptorSetKHR(commandBuffer,
         pipelineBindPoint,
@@ -11691,6 +11974,7 @@ void CmdPushDescriptorSetWithTemplateKHR(CommandBuffer commandBuffer,
     PipelineLayout layout, 
     uint32_t set, 
     const void* pData) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdPushDescriptorSetWithTemplateKHR(commandBuffer,
         descriptorUpdateTemplate,
         layout,
@@ -11699,15 +11983,18 @@ void CmdPushDescriptorSetWithTemplateKHR(CommandBuffer commandBuffer,
 }
 void CmdBeginConditionalRenderingEXT(CommandBuffer commandBuffer, 
     const ConditionalRenderingBeginInfoEXT&  pConditionalRenderingBegin) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdBeginConditionalRenderingEXT(commandBuffer,
         &pConditionalRenderingBegin);
 }
 void CmdEndConditionalRenderingEXT(CommandBuffer commandBuffer) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdEndConditionalRenderingEXT(commandBuffer);
 }
 void CmdSetViewportWScalingNV(CommandBuffer commandBuffer, 
     uint32_t firstViewport, 
     detail::span<const ViewportWScalingNV> ViewportWScalings) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t viewportCount = ViewportWScalings.size();
     pfn_CmdSetViewportWScalingNV(commandBuffer,
         firstViewport,
@@ -11716,12 +12003,14 @@ void CmdSetViewportWScalingNV(CommandBuffer commandBuffer,
 }
 [[nodiscard]] Result DisplayPowerControlEXT(DisplayKHR display, 
     const DisplayPowerInfoEXT&  pDisplayPowerInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_DisplayPowerControlEXT(device,
         display,
         &pDisplayPowerInfo);
 }
 [[nodiscard]] expected<Fence> RegisterDeviceEventEXT(const DeviceEventInfoEXT&  pDeviceEventInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     Fence pFence;
         Result result = pfn_RegisterDeviceEventEXT(device,
         &pDeviceEventInfo,
@@ -11732,6 +12021,7 @@ void CmdSetViewportWScalingNV(CommandBuffer commandBuffer,
 [[nodiscard]] expected<Fence> RegisterDisplayEventEXT(DisplayKHR display, 
     const DisplayEventInfoEXT&  pDisplayEventInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     Fence pFence;
         Result result = pfn_RegisterDisplayEventEXT(device,
         display,
@@ -11742,6 +12032,7 @@ void CmdSetViewportWScalingNV(CommandBuffer commandBuffer,
 }
 [[nodiscard]] expected<uint64_t> GetSwapchainCounterEXT(SwapchainKHR swapchain, 
     SurfaceCounterFlagBitsEXT counter) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint64_t pCounterValue;
         Result result = pfn_GetSwapchainCounterEXT(device,
         swapchain,
@@ -11750,6 +12041,7 @@ void CmdSetViewportWScalingNV(CommandBuffer commandBuffer,
     return expected<uint64_t>(pCounterValue, result);
 }
 [[nodiscard]] expected<RefreshCycleDurationGOOGLE> GetRefreshCycleDurationGOOGLE(SwapchainKHR swapchain) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     RefreshCycleDurationGOOGLE pDisplayTimingProperties;
         Result result = pfn_GetRefreshCycleDurationGOOGLE(device,
         swapchain,
@@ -11757,6 +12049,7 @@ void CmdSetViewportWScalingNV(CommandBuffer commandBuffer,
     return expected<RefreshCycleDurationGOOGLE>(pDisplayTimingProperties, result);
 }
 [[nodiscard]] expected<detail::fixed_vector<PastPresentationTimingGOOGLE>> GetPastPresentationTimingGOOGLE(SwapchainKHR swapchain) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPresentationTimingCount = 0;
         Result result = pfn_GetPastPresentationTimingGOOGLE(device,
         swapchain,
@@ -11774,6 +12067,7 @@ void CmdSetViewportWScalingNV(CommandBuffer commandBuffer,
 void CmdSetDiscardRectangleEXT(CommandBuffer commandBuffer, 
     uint32_t firstDiscardRectangle, 
     detail::span<const Rect2D> DiscardRectangles) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t discardRectangleCount = DiscardRectangles.size();
     pfn_CmdSetDiscardRectangleEXT(commandBuffer,
         firstDiscardRectangle,
@@ -11782,6 +12076,7 @@ void CmdSetDiscardRectangleEXT(CommandBuffer commandBuffer,
 }
 void SetHdrMetadataEXT(detail::span<const SwapchainKHR> Swapchains, 
     detail::span<const HdrMetadataEXT> Metadata) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t swapchainCount = Swapchains.size();
     pfn_SetHdrMetadataEXT(device,
         swapchainCount,
@@ -11789,11 +12084,13 @@ void SetHdrMetadataEXT(detail::span<const SwapchainKHR> Swapchains,
         Metadata.data());
 }
 [[nodiscard]] Result GetSwapchainStatusKHR(SwapchainKHR swapchain) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_GetSwapchainStatusKHR(device,
         swapchain);
 }
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] expected<HANDLE> GetFenceWin32HandleKHR(const FenceGetWin32HandleInfoKHR&  pGetWin32HandleInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     HANDLE pHandle;
         Result result = pfn_GetFenceWin32HandleKHR(device,
         &pGetWin32HandleInfo,
@@ -11803,11 +12100,13 @@ void SetHdrMetadataEXT(detail::span<const SwapchainKHR> Swapchains,
 #endif // VK_USE_PLATFORM_WIN32_KHR
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] Result ImportFenceWin32HandleKHR(const ImportFenceWin32HandleInfoKHR&  pImportFenceWin32HandleInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_ImportFenceWin32HandleKHR(device,
         &pImportFenceWin32HandleInfo);
 }
 #endif // VK_USE_PLATFORM_WIN32_KHR
 [[nodiscard]] expected<int> GetFenceFdKHR(const FenceGetFdInfoKHR&  pGetFdInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     int pFd;
         Result result = pfn_GetFenceFdKHR(device,
         &pGetFdInfo,
@@ -11815,52 +12114,64 @@ void SetHdrMetadataEXT(detail::span<const SwapchainKHR> Swapchains,
     return expected<int>(pFd, result);
 }
 [[nodiscard]] Result ImportFenceFdKHR(const ImportFenceFdInfoKHR&  pImportFenceFdInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_ImportFenceFdKHR(device,
         &pImportFenceFdInfo);
 }
 [[nodiscard]] Result AcquireProfilingLockKHR(const AcquireProfilingLockInfoKHR&  pInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_AcquireProfilingLockKHR(device,
         &pInfo);
 }
 void ReleaseProfilingLockKHR() const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_ReleaseProfilingLockKHR(device);
 }
 [[nodiscard]] Result SetDebugUtilsObjectNameEXT(const DebugUtilsObjectNameInfoEXT&  pNameInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_SetDebugUtilsObjectNameEXT(device,
         &pNameInfo);
 }
 [[nodiscard]] Result SetDebugUtilsObjectTagEXT(const DebugUtilsObjectTagInfoEXT&  pTagInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_SetDebugUtilsObjectTagEXT(device,
         &pTagInfo);
 }
 void QueueBeginDebugUtilsLabelEXT(Queue queue, 
     const DebugUtilsLabelEXT&  pLabelInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_QueueBeginDebugUtilsLabelEXT(queue,
         &pLabelInfo);
 }
 void QueueEndDebugUtilsLabelEXT(Queue queue) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_QueueEndDebugUtilsLabelEXT(queue);
 }
 void QueueInsertDebugUtilsLabelEXT(Queue queue, 
     const DebugUtilsLabelEXT&  pLabelInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_QueueInsertDebugUtilsLabelEXT(queue,
         &pLabelInfo);
 }
 void CmdBeginDebugUtilsLabelEXT(CommandBuffer commandBuffer, 
     const DebugUtilsLabelEXT&  pLabelInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdBeginDebugUtilsLabelEXT(commandBuffer,
         &pLabelInfo);
 }
 void CmdEndDebugUtilsLabelEXT(CommandBuffer commandBuffer) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdEndDebugUtilsLabelEXT(commandBuffer);
 }
 void CmdInsertDebugUtilsLabelEXT(CommandBuffer commandBuffer, 
     const DebugUtilsLabelEXT&  pLabelInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdInsertDebugUtilsLabelEXT(commandBuffer,
         &pLabelInfo);
 }
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 [[nodiscard]] expected<AndroidHardwareBufferPropertiesANDROID> GetAndroidHardwareBufferPropertiesANDROID(const AHardwareBuffer&  buffer) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     AndroidHardwareBufferPropertiesANDROID pProperties;
         Result result = pfn_GetAndroidHardwareBufferPropertiesANDROID(device,
         &buffer,
@@ -11870,6 +12181,7 @@ void CmdInsertDebugUtilsLabelEXT(CommandBuffer commandBuffer,
 #endif // VK_USE_PLATFORM_ANDROID_KHR
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 [[nodiscard]] expected<AHardwareBuffer*> GetMemoryAndroidHardwareBufferANDROID(const MemoryGetAndroidHardwareBufferInfoANDROID&  pInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     AHardwareBuffer* pBuffer;
         Result result = pfn_GetMemoryAndroidHardwareBufferANDROID(device,
         &pInfo,
@@ -11879,44 +12191,52 @@ void CmdInsertDebugUtilsLabelEXT(CommandBuffer commandBuffer,
 #endif // VK_USE_PLATFORM_ANDROID_KHR
 void CmdSetSampleLocationsEXT(CommandBuffer commandBuffer, 
     const SampleLocationsInfoEXT&  pSampleLocationsInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdSetSampleLocationsEXT(commandBuffer,
         &pSampleLocationsInfo);
 }
 void DestroyAccelerationStructureKHR(AccelerationStructureKHR accelerationStructure, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyAccelerationStructureKHR(device,
         accelerationStructure,
         pAllocator);
 }
 void CmdCopyAccelerationStructureKHR(CommandBuffer commandBuffer, 
     const CopyAccelerationStructureInfoKHR&  pInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdCopyAccelerationStructureKHR(commandBuffer,
         &pInfo);
 }
 [[nodiscard]] Result CopyAccelerationStructureKHR(DeferredOperationKHR deferredOperation, 
     const CopyAccelerationStructureInfoKHR&  pInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_CopyAccelerationStructureKHR(device,
         deferredOperation,
         &pInfo);
 }
 void CmdCopyAccelerationStructureToMemoryKHR(CommandBuffer commandBuffer, 
     const CopyAccelerationStructureToMemoryInfoKHR&  pInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdCopyAccelerationStructureToMemoryKHR(commandBuffer,
         &pInfo);
 }
 [[nodiscard]] Result CopyAccelerationStructureToMemoryKHR(DeferredOperationKHR deferredOperation, 
     const CopyAccelerationStructureToMemoryInfoKHR&  pInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_CopyAccelerationStructureToMemoryKHR(device,
         deferredOperation,
         &pInfo);
 }
 void CmdCopyMemoryToAccelerationStructureKHR(CommandBuffer commandBuffer, 
     const CopyMemoryToAccelerationStructureInfoKHR&  pInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdCopyMemoryToAccelerationStructureKHR(commandBuffer,
         &pInfo);
 }
 [[nodiscard]] Result CopyMemoryToAccelerationStructureKHR(DeferredOperationKHR deferredOperation, 
     const CopyMemoryToAccelerationStructureInfoKHR&  pInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_CopyMemoryToAccelerationStructureKHR(device,
         deferredOperation,
         &pInfo);
@@ -11926,6 +12246,7 @@ void CmdWriteAccelerationStructuresPropertiesKHR(CommandBuffer commandBuffer,
     QueryType queryType, 
     QueryPool queryPool, 
     uint32_t firstQuery) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t accelerationStructureCount = AccelerationStructures.size();
     pfn_CmdWriteAccelerationStructuresPropertiesKHR(commandBuffer,
         accelerationStructureCount,
@@ -11938,6 +12259,7 @@ void CmdWriteAccelerationStructuresPropertiesKHR(CommandBuffer commandBuffer,
     QueryType queryType, 
     detail::span<std::byte> Data, 
     size_t stride) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t accelerationStructureCount = AccelerationStructures.size();
     size_t dataSize = Data.size();
     return pfn_WriteAccelerationStructuresPropertiesKHR(device,
@@ -11949,6 +12271,7 @@ void CmdWriteAccelerationStructuresPropertiesKHR(CommandBuffer commandBuffer,
         stride);
 }
 [[nodiscard]] AccelerationStructureCompatibilityKHR GetDeviceAccelerationStructureCompatibilityKHR(const AccelerationStructureVersionInfoKHR&  pVersionInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     AccelerationStructureCompatibilityKHR pCompatibility;
     pfn_GetDeviceAccelerationStructureCompatibilityKHR(device,
         &pVersionInfo,
@@ -11957,6 +12280,7 @@ void CmdWriteAccelerationStructuresPropertiesKHR(CommandBuffer commandBuffer,
 }
 [[nodiscard]] expected<AccelerationStructureKHR> CreateAccelerationStructureKHR(const AccelerationStructureCreateInfoKHR&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     AccelerationStructureKHR pAccelerationStructure;
         Result result = pfn_CreateAccelerationStructureKHR(device,
         &pCreateInfo,
@@ -11967,6 +12291,7 @@ void CmdWriteAccelerationStructuresPropertiesKHR(CommandBuffer commandBuffer,
 void CmdBuildAccelerationStructuresKHR(CommandBuffer commandBuffer, 
     detail::span<const AccelerationStructureBuildGeometryInfoKHR> Infos, 
     detail::span<const AccelerationStructureBuildRangeInfoKHR*> pBuildRangeInfos) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t infoCount = Infos.size();
     pfn_CmdBuildAccelerationStructuresKHR(commandBuffer,
         infoCount,
@@ -11978,6 +12303,7 @@ void CmdBuildAccelerationStructuresIndirectKHR(CommandBuffer commandBuffer,
     detail::span<const DeviceAddress> IndirectDeviceAddresses, 
     detail::span<const uint32_t> IndirectStrides, 
     detail::span<const uint32_t*> pMaxPrimitiveCounts) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t infoCount = Infos.size();
     pfn_CmdBuildAccelerationStructuresIndirectKHR(commandBuffer,
         infoCount,
@@ -11989,6 +12315,7 @@ void CmdBuildAccelerationStructuresIndirectKHR(CommandBuffer commandBuffer,
 [[nodiscard]] Result BuildAccelerationStructuresKHR(DeferredOperationKHR deferredOperation, 
     detail::span<const AccelerationStructureBuildGeometryInfoKHR> Infos, 
     detail::span<const AccelerationStructureBuildRangeInfoKHR*> pBuildRangeInfos) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t infoCount = Infos.size();
     return pfn_BuildAccelerationStructuresKHR(device,
         deferredOperation,
@@ -11997,12 +12324,14 @@ void CmdBuildAccelerationStructuresIndirectKHR(CommandBuffer commandBuffer,
         pBuildRangeInfos.data());
 }
 [[nodiscard]] DeviceAddress GetAccelerationStructureDeviceAddressKHR(const AccelerationStructureDeviceAddressInfoKHR&  pInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_GetAccelerationStructureDeviceAddressKHR(device,
         &pInfo);
 }
 [[nodiscard]] AccelerationStructureBuildSizesInfoKHR GetAccelerationStructureBuildSizesKHR(AccelerationStructureBuildTypeKHR buildType, 
     const AccelerationStructureBuildGeometryInfoKHR&  pBuildInfo, 
     const uint32_t* pMaxPrimitiveCounts) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     AccelerationStructureBuildSizesInfoKHR pSizeInfo;
     pfn_GetAccelerationStructureBuildSizesKHR(device,
         buildType,
@@ -12019,6 +12348,7 @@ void CmdTraceRaysKHR(CommandBuffer commandBuffer,
     uint32_t width, 
     uint32_t height, 
     uint32_t depth) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdTraceRaysKHR(commandBuffer,
         &pRaygenShaderBindingTable,
         &pMissShaderBindingTable,
@@ -12032,6 +12362,7 @@ void CmdTraceRaysKHR(CommandBuffer commandBuffer,
     uint32_t firstGroup, 
     uint32_t groupCount, 
     detail::span<std::byte> Data) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     size_t dataSize = Data.size();
     return pfn_GetRayTracingShaderGroupHandlesKHR(device,
         pipeline,
@@ -12044,6 +12375,7 @@ void CmdTraceRaysKHR(CommandBuffer commandBuffer,
     uint32_t firstGroup, 
     uint32_t groupCount, 
     detail::span<std::byte> Data) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     size_t dataSize = Data.size();
     return pfn_GetRayTracingCaptureReplayShaderGroupHandlesKHR(device,
         pipeline,
@@ -12057,6 +12389,7 @@ void CmdTraceRaysKHR(CommandBuffer commandBuffer,
     detail::span<const RayTracingPipelineCreateInfoKHR> CreateInfos, 
     const AllocationCallbacks* pAllocator, 
     detail::span<Pipeline> Pipelines) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t createInfoCount = CreateInfos.size();
     return pfn_CreateRayTracingPipelinesKHR(device,
         deferredOperation,
@@ -12072,6 +12405,7 @@ void CmdTraceRaysIndirectKHR(CommandBuffer commandBuffer,
     const StridedDeviceAddressRegionKHR&  pHitShaderBindingTable, 
     const StridedDeviceAddressRegionKHR&  pCallableShaderBindingTable, 
     DeviceAddress indirectDeviceAddress) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdTraceRaysIndirectKHR(commandBuffer,
         &pRaygenShaderBindingTable,
         &pMissShaderBindingTable,
@@ -12082,6 +12416,7 @@ void CmdTraceRaysIndirectKHR(CommandBuffer commandBuffer,
 [[nodiscard]] DeviceSize GetRayTracingShaderGroupStackSizeKHR(Pipeline pipeline, 
     uint32_t group, 
     ShaderGroupShaderKHR groupShader) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_GetRayTracingShaderGroupStackSizeKHR(device,
         pipeline,
         group,
@@ -12089,10 +12424,12 @@ void CmdTraceRaysIndirectKHR(CommandBuffer commandBuffer,
 }
 void CmdSetRayTracingPipelineStackSizeKHR(CommandBuffer commandBuffer, 
     uint32_t pipelineStackSize) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdSetRayTracingPipelineStackSizeKHR(commandBuffer,
         pipelineStackSize);
 }
 [[nodiscard]] expected<ImageDrmFormatModifierPropertiesEXT> GetImageDrmFormatModifierPropertiesEXT(Image image) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     ImageDrmFormatModifierPropertiesEXT pProperties;
         Result result = pfn_GetImageDrmFormatModifierPropertiesEXT(device,
         image,
@@ -12101,6 +12438,7 @@ void CmdSetRayTracingPipelineStackSizeKHR(CommandBuffer commandBuffer,
 }
 [[nodiscard]] expected<ValidationCacheEXT> CreateValidationCacheEXT(const ValidationCacheCreateInfoEXT&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     ValidationCacheEXT pValidationCache;
         Result result = pfn_CreateValidationCacheEXT(device,
         &pCreateInfo,
@@ -12110,11 +12448,13 @@ void CmdSetRayTracingPipelineStackSizeKHR(CommandBuffer commandBuffer,
 }
 void DestroyValidationCacheEXT(ValidationCacheEXT validationCache, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyValidationCacheEXT(device,
         validationCache,
         pAllocator);
 }
 [[nodiscard]] expected<detail::fixed_vector<void*>> GetValidationCacheDataEXT(ValidationCacheEXT validationCache) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     size_t pDataSize = 0;
         Result result = pfn_GetValidationCacheDataEXT(device,
         validationCache,
@@ -12131,6 +12471,7 @@ void DestroyValidationCacheEXT(ValidationCacheEXT validationCache,
 }
 [[nodiscard]] Result MergeValidationCachesEXT(ValidationCacheEXT dstCache, 
     detail::span<const ValidationCacheEXT> SrcCaches) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t srcCacheCount = SrcCaches.size();
     return pfn_MergeValidationCachesEXT(device,
         dstCache,
@@ -12140,6 +12481,7 @@ void DestroyValidationCacheEXT(ValidationCacheEXT validationCache,
 void CmdBindShadingRateImageNV(CommandBuffer commandBuffer, 
     ImageView imageView, 
     ImageLayout imageLayout) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdBindShadingRateImageNV(commandBuffer,
         imageView,
         imageLayout);
@@ -12147,6 +12489,7 @@ void CmdBindShadingRateImageNV(CommandBuffer commandBuffer,
 void CmdSetViewportShadingRatePaletteNV(CommandBuffer commandBuffer, 
     uint32_t firstViewport, 
     detail::span<const ShadingRatePaletteNV> ShadingRatePalettes) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t viewportCount = ShadingRatePalettes.size();
     pfn_CmdSetViewportShadingRatePaletteNV(commandBuffer,
         firstViewport,
@@ -12156,6 +12499,7 @@ void CmdSetViewportShadingRatePaletteNV(CommandBuffer commandBuffer,
 void CmdSetCoarseSampleOrderNV(CommandBuffer commandBuffer, 
     CoarseSampleOrderTypeNV sampleOrderType, 
     detail::span<const CoarseSampleOrderCustomNV> CustomSampleOrders) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t customSampleOrderCount = CustomSampleOrders.size();
     pfn_CmdSetCoarseSampleOrderNV(commandBuffer,
         sampleOrderType,
@@ -12164,12 +12508,14 @@ void CmdSetCoarseSampleOrderNV(CommandBuffer commandBuffer,
 }
 [[nodiscard]] Result CompileDeferredNV(Pipeline pipeline, 
     uint32_t shader) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_CompileDeferredNV(device,
         pipeline,
         shader);
 }
 [[nodiscard]] expected<AccelerationStructureNV> CreateAccelerationStructureNV(const AccelerationStructureCreateInfoNV&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     AccelerationStructureNV pAccelerationStructure;
         Result result = pfn_CreateAccelerationStructureNV(device,
         &pCreateInfo,
@@ -12179,11 +12525,13 @@ void CmdSetCoarseSampleOrderNV(CommandBuffer commandBuffer,
 }
 void DestroyAccelerationStructureNV(AccelerationStructureNV accelerationStructure, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyAccelerationStructureNV(device,
         accelerationStructure,
         pAllocator);
 }
 [[nodiscard]] MemoryRequirements2KHR GetAccelerationStructureMemoryRequirementsNV(const AccelerationStructureMemoryRequirementsInfoNV&  pInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     MemoryRequirements2KHR pMemoryRequirements;
     pfn_GetAccelerationStructureMemoryRequirementsNV(device,
         &pInfo,
@@ -12191,6 +12539,7 @@ void DestroyAccelerationStructureNV(AccelerationStructureNV accelerationStructur
     return pMemoryRequirements;
 }
 [[nodiscard]] Result BindAccelerationStructureMemoryNV(detail::span<const BindAccelerationStructureMemoryInfoNV> BindInfos) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t bindInfoCount = BindInfos.size();
     return pfn_BindAccelerationStructureMemoryNV(device,
         bindInfoCount,
@@ -12200,6 +12549,7 @@ void CmdCopyAccelerationStructureNV(CommandBuffer commandBuffer,
     AccelerationStructureNV dst, 
     AccelerationStructureNV src, 
     CopyAccelerationStructureModeKHR mode) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdCopyAccelerationStructureNV(commandBuffer,
         dst,
         src,
@@ -12210,6 +12560,7 @@ void CmdWriteAccelerationStructuresPropertiesNV(CommandBuffer commandBuffer,
     QueryType queryType, 
     QueryPool queryPool, 
     uint32_t firstQuery) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t accelerationStructureCount = AccelerationStructures.size();
     pfn_CmdWriteAccelerationStructuresPropertiesNV(commandBuffer,
         accelerationStructureCount,
@@ -12227,6 +12578,7 @@ void CmdBuildAccelerationStructureNV(CommandBuffer commandBuffer,
     AccelerationStructureNV src, 
     Buffer scratch, 
     DeviceSize scratchOffset) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdBuildAccelerationStructureNV(commandBuffer,
         &pInfo,
         instanceData,
@@ -12252,6 +12604,7 @@ void CmdTraceRaysNV(CommandBuffer commandBuffer,
     uint32_t width, 
     uint32_t height, 
     uint32_t depth) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdTraceRaysNV(commandBuffer,
         raygenShaderBindingTableBuffer,
         raygenShaderBindingOffset,
@@ -12270,6 +12623,7 @@ void CmdTraceRaysNV(CommandBuffer commandBuffer,
 }
 [[nodiscard]] Result GetAccelerationStructureHandleNV(AccelerationStructureNV accelerationStructure, 
     detail::span<std::byte> Data) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     size_t dataSize = Data.size();
     return pfn_GetAccelerationStructureHandleNV(device,
         accelerationStructure,
@@ -12280,6 +12634,7 @@ void CmdTraceRaysNV(CommandBuffer commandBuffer,
     detail::span<const RayTracingPipelineCreateInfoNV> CreateInfos, 
     const AllocationCallbacks* pAllocator, 
     detail::span<Pipeline> Pipelines) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t createInfoCount = CreateInfos.size();
     return pfn_CreateRayTracingPipelinesNV(device,
         pipelineCache,
@@ -12290,6 +12645,7 @@ void CmdTraceRaysNV(CommandBuffer commandBuffer,
 }
 [[nodiscard]] expected<MemoryHostPointerPropertiesEXT> GetMemoryHostPointerPropertiesEXT(ExternalMemoryHandleTypeFlagBits handleType, 
     const void* pHostPointer) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     MemoryHostPointerPropertiesEXT pMemoryHostPointerProperties;
         Result result = pfn_GetMemoryHostPointerPropertiesEXT(device,
         handleType,
@@ -12302,6 +12658,7 @@ void CmdWriteBufferMarkerAMD(CommandBuffer commandBuffer,
     Buffer dstBuffer, 
     DeviceSize dstOffset, 
     uint32_t marker) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdWriteBufferMarkerAMD(commandBuffer,
         pipelineStage,
         dstBuffer,
@@ -12310,6 +12667,7 @@ void CmdWriteBufferMarkerAMD(CommandBuffer commandBuffer,
 }
 [[nodiscard]] expected<uint64_t> GetCalibratedTimestampsEXT(detail::span<const CalibratedTimestampInfoEXT> TimestampInfos, 
     detail::span<uint64_t> Timestamps) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t timestampCount = TimestampInfos.size();
     uint64_t pMaxDeviation;
         Result result = pfn_GetCalibratedTimestampsEXT(device,
@@ -12322,6 +12680,7 @@ void CmdWriteBufferMarkerAMD(CommandBuffer commandBuffer,
 void CmdDrawMeshTasksNV(CommandBuffer commandBuffer, 
     uint32_t taskCount, 
     uint32_t firstTask) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdDrawMeshTasksNV(commandBuffer,
         taskCount,
         firstTask);
@@ -12331,6 +12690,7 @@ void CmdDrawMeshTasksIndirectNV(CommandBuffer commandBuffer,
     DeviceSize offset, 
     uint32_t drawCount, 
     uint32_t stride) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdDrawMeshTasksIndirectNV(commandBuffer,
         buffer,
         offset,
@@ -12344,6 +12704,7 @@ void CmdDrawMeshTasksIndirectCountNV(CommandBuffer commandBuffer,
     DeviceSize countBufferOffset, 
     uint32_t maxDrawCount, 
     uint32_t stride) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdDrawMeshTasksIndirectCountNV(commandBuffer,
         buffer,
         offset,
@@ -12355,6 +12716,7 @@ void CmdDrawMeshTasksIndirectCountNV(CommandBuffer commandBuffer,
 void CmdSetExclusiveScissorNV(CommandBuffer commandBuffer, 
     uint32_t firstExclusiveScissor, 
     detail::span<const Rect2D> ExclusiveScissors) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t exclusiveScissorCount = ExclusiveScissors.size();
     pfn_CmdSetExclusiveScissorNV(commandBuffer,
         firstExclusiveScissor,
@@ -12363,10 +12725,12 @@ void CmdSetExclusiveScissorNV(CommandBuffer commandBuffer,
 }
 void CmdSetCheckpointNV(CommandBuffer commandBuffer, 
     const void* pCheckpointMarker) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdSetCheckpointNV(commandBuffer,
         pCheckpointMarker);
 }
 [[nodiscard]] detail::fixed_vector<CheckpointDataNV> GetQueueCheckpointDataNV(Queue queue) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pCheckpointDataCount = 0;
     pfn_GetQueueCheckpointDataNV(queue,
         &pCheckpointDataCount,
@@ -12379,28 +12743,34 @@ pfn_GetQueueCheckpointDataNV(queue,
     return pCheckpointData;
 }
 [[nodiscard]] Result InitializePerformanceApiINTEL(const InitializePerformanceApiInfoINTEL&  pInitializeInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_InitializePerformanceApiINTEL(device,
         &pInitializeInfo);
 }
 void UninitializePerformanceApiINTEL() const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_UninitializePerformanceApiINTEL(device);
 }
 [[nodiscard]] Result CmdSetPerformanceMarkerINTEL(CommandBuffer commandBuffer, 
     const PerformanceMarkerInfoINTEL&  pMarkerInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_CmdSetPerformanceMarkerINTEL(commandBuffer,
         &pMarkerInfo);
 }
 [[nodiscard]] Result CmdSetPerformanceStreamMarkerINTEL(CommandBuffer commandBuffer, 
     const PerformanceStreamMarkerInfoINTEL&  pMarkerInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_CmdSetPerformanceStreamMarkerINTEL(commandBuffer,
         &pMarkerInfo);
 }
 [[nodiscard]] Result CmdSetPerformanceOverrideINTEL(CommandBuffer commandBuffer, 
     const PerformanceOverrideInfoINTEL&  pOverrideInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_CmdSetPerformanceOverrideINTEL(commandBuffer,
         &pOverrideInfo);
 }
 [[nodiscard]] expected<PerformanceConfigurationINTEL> AcquirePerformanceConfigurationINTEL(const PerformanceConfigurationAcquireInfoINTEL&  pAcquireInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     PerformanceConfigurationINTEL pConfiguration;
         Result result = pfn_AcquirePerformanceConfigurationINTEL(device,
         &pAcquireInfo,
@@ -12408,15 +12778,18 @@ void UninitializePerformanceApiINTEL() const {
     return expected<PerformanceConfigurationINTEL>(pConfiguration, result);
 }
 [[nodiscard]] Result ReleasePerformanceConfigurationINTEL(PerformanceConfigurationINTEL configuration) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_ReleasePerformanceConfigurationINTEL(device,
         configuration);
 }
 [[nodiscard]] Result QueueSetPerformanceConfigurationINTEL(Queue queue, 
     PerformanceConfigurationINTEL configuration) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_QueueSetPerformanceConfigurationINTEL(queue,
         configuration);
 }
 [[nodiscard]] expected<PerformanceValueINTEL> GetPerformanceParameterINTEL(PerformanceParameterTypeINTEL parameter) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     PerformanceValueINTEL pValue;
         Result result = pfn_GetPerformanceParameterINTEL(device,
         parameter,
@@ -12425,6 +12798,7 @@ void UninitializePerformanceApiINTEL() const {
 }
 void SetLocalDimmingAMD(SwapchainKHR swapChain, 
     Bool32 localDimmingEnable) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_SetLocalDimmingAMD(device,
         swapChain,
         localDimmingEnable);
@@ -12432,24 +12806,28 @@ void SetLocalDimmingAMD(SwapchainKHR swapChain,
 void CmdSetFragmentShadingRateKHR(CommandBuffer commandBuffer, 
     const Extent2D&  pFragmentSize, 
     const FragmentShadingRateCombinerOpKHR combinerOps[2]) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdSetFragmentShadingRateKHR(commandBuffer,
         &pFragmentSize,
         combinerOps);
 }
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] Result AcquireFullScreenExclusiveModeEXT(SwapchainKHR swapchain) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_AcquireFullScreenExclusiveModeEXT(device,
         swapchain);
 }
 #endif // VK_USE_PLATFORM_WIN32_KHR
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] Result ReleaseFullScreenExclusiveModeEXT(SwapchainKHR swapchain) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_ReleaseFullScreenExclusiveModeEXT(device,
         swapchain);
 }
 #endif // VK_USE_PLATFORM_WIN32_KHR
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] expected<DeviceGroupPresentModeFlagsKHR> GetDeviceGroupSurfacePresentModes2EXT(const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     DeviceGroupPresentModeFlagsKHR pModes;
         Result result = pfn_GetDeviceGroupSurfacePresentModes2EXT(device,
         &pSurfaceInfo,
@@ -12460,27 +12838,32 @@ void CmdSetFragmentShadingRateKHR(CommandBuffer commandBuffer,
 void CmdSetLineStippleEXT(CommandBuffer commandBuffer, 
     uint32_t lineStippleFactor, 
     uint16_t lineStipplePattern) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdSetLineStippleEXT(commandBuffer,
         lineStippleFactor,
         lineStipplePattern);
 }
 void CmdSetCullModeEXT(CommandBuffer commandBuffer, 
     CullModeFlags cullMode) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdSetCullModeEXT(commandBuffer,
         cullMode);
 }
 void CmdSetFrontFaceEXT(CommandBuffer commandBuffer, 
     FrontFace frontFace) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdSetFrontFaceEXT(commandBuffer,
         frontFace);
 }
 void CmdSetPrimitiveTopologyEXT(CommandBuffer commandBuffer, 
     PrimitiveTopology primitiveTopology) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdSetPrimitiveTopologyEXT(commandBuffer,
         primitiveTopology);
 }
 void CmdSetViewportWithCountEXT(CommandBuffer commandBuffer, 
     detail::span<const Viewport> Viewports) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t viewportCount = Viewports.size();
     pfn_CmdSetViewportWithCountEXT(commandBuffer,
         viewportCount,
@@ -12488,6 +12871,7 @@ void CmdSetViewportWithCountEXT(CommandBuffer commandBuffer,
 }
 void CmdSetScissorWithCountEXT(CommandBuffer commandBuffer, 
     detail::span<const Rect2D> Scissors) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t scissorCount = Scissors.size();
     pfn_CmdSetScissorWithCountEXT(commandBuffer,
         scissorCount,
@@ -12499,6 +12883,7 @@ void CmdBindVertexBuffers2EXT(CommandBuffer commandBuffer,
     detail::span<const DeviceSize> Offsets, 
     detail::span<const DeviceSize> Sizes, 
     detail::span<const DeviceSize> Strides) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t bindingCount = Buffers.size();
     pfn_CmdBindVertexBuffers2EXT(commandBuffer,
         firstBinding,
@@ -12510,26 +12895,31 @@ void CmdBindVertexBuffers2EXT(CommandBuffer commandBuffer,
 }
 void CmdSetDepthTestEnableEXT(CommandBuffer commandBuffer, 
     Bool32 depthTestEnable) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdSetDepthTestEnableEXT(commandBuffer,
         depthTestEnable);
 }
 void CmdSetDepthWriteEnableEXT(CommandBuffer commandBuffer, 
     Bool32 depthWriteEnable) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdSetDepthWriteEnableEXT(commandBuffer,
         depthWriteEnable);
 }
 void CmdSetDepthCompareOpEXT(CommandBuffer commandBuffer, 
     CompareOp depthCompareOp) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdSetDepthCompareOpEXT(commandBuffer,
         depthCompareOp);
 }
 void CmdSetDepthBoundsTestEnableEXT(CommandBuffer commandBuffer, 
     Bool32 depthBoundsTestEnable) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdSetDepthBoundsTestEnableEXT(commandBuffer,
         depthBoundsTestEnable);
 }
 void CmdSetStencilTestEnableEXT(CommandBuffer commandBuffer, 
     Bool32 stencilTestEnable) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdSetStencilTestEnableEXT(commandBuffer,
         stencilTestEnable);
 }
@@ -12539,6 +12929,7 @@ void CmdSetStencilOpEXT(CommandBuffer commandBuffer,
     StencilOp passOp, 
     StencilOp depthFailOp, 
     CompareOp compareOp) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdSetStencilOpEXT(commandBuffer,
         faceMask,
         failOp,
@@ -12547,6 +12938,7 @@ void CmdSetStencilOpEXT(CommandBuffer commandBuffer,
         compareOp);
 }
 [[nodiscard]] expected<DeferredOperationKHR> CreateDeferredOperationKHR(const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     DeferredOperationKHR pDeferredOperation;
         Result result = pfn_CreateDeferredOperationKHR(device,
         pAllocator,
@@ -12555,23 +12947,28 @@ void CmdSetStencilOpEXT(CommandBuffer commandBuffer,
 }
 void DestroyDeferredOperationKHR(DeferredOperationKHR operation, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyDeferredOperationKHR(device,
         operation,
         pAllocator);
 }
 [[nodiscard]] uint32_t GetDeferredOperationMaxConcurrencyKHR(DeferredOperationKHR operation) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_GetDeferredOperationMaxConcurrencyKHR(device,
         operation);
 }
 [[nodiscard]] Result GetDeferredOperationResultKHR(DeferredOperationKHR operation) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_GetDeferredOperationResultKHR(device,
         operation);
 }
 [[nodiscard]] Result DeferredOperationJoinKHR(DeferredOperationKHR operation) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_DeferredOperationJoinKHR(device,
         operation);
 }
 [[nodiscard]] expected<detail::fixed_vector<PipelineExecutablePropertiesKHR>> GetPipelineExecutablePropertiesKHR(const PipelineInfoKHR&  pPipelineInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pExecutableCount = 0;
         Result result = pfn_GetPipelineExecutablePropertiesKHR(device,
         &pPipelineInfo,
@@ -12587,6 +12984,7 @@ void DestroyDeferredOperationKHR(DeferredOperationKHR operation,
     return expected(std::move(pProperties), result);
 }
 [[nodiscard]] expected<detail::fixed_vector<PipelineExecutableStatisticKHR>> GetPipelineExecutableStatisticsKHR(const PipelineExecutableInfoKHR&  pExecutableInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pStatisticCount = 0;
         Result result = pfn_GetPipelineExecutableStatisticsKHR(device,
         &pExecutableInfo,
@@ -12602,6 +13000,7 @@ void DestroyDeferredOperationKHR(DeferredOperationKHR operation,
     return expected(std::move(pStatistics), result);
 }
 [[nodiscard]] expected<detail::fixed_vector<PipelineExecutableInternalRepresentationKHR>> GetPipelineExecutableInternalRepresentationsKHR(const PipelineExecutableInfoKHR&  pExecutableInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pInternalRepresentationCount = 0;
         Result result = pfn_GetPipelineExecutableInternalRepresentationsKHR(device,
         &pExecutableInfo,
@@ -12619,12 +13018,14 @@ void DestroyDeferredOperationKHR(DeferredOperationKHR operation,
 void CmdExecuteGeneratedCommandsNV(CommandBuffer commandBuffer, 
     Bool32 isPreprocessed, 
     const GeneratedCommandsInfoNV&  pGeneratedCommandsInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdExecuteGeneratedCommandsNV(commandBuffer,
         isPreprocessed,
         &pGeneratedCommandsInfo);
 }
 void CmdPreprocessGeneratedCommandsNV(CommandBuffer commandBuffer, 
     const GeneratedCommandsInfoNV&  pGeneratedCommandsInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdPreprocessGeneratedCommandsNV(commandBuffer,
         &pGeneratedCommandsInfo);
 }
@@ -12632,12 +13033,14 @@ void CmdBindPipelineShaderGroupNV(CommandBuffer commandBuffer,
     PipelineBindPoint pipelineBindPoint, 
     Pipeline pipeline, 
     uint32_t groupIndex) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdBindPipelineShaderGroupNV(commandBuffer,
         pipelineBindPoint,
         pipeline,
         groupIndex);
 }
 [[nodiscard]] MemoryRequirements2 GetGeneratedCommandsMemoryRequirementsNV(const GeneratedCommandsMemoryRequirementsInfoNV&  pInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     MemoryRequirements2 pMemoryRequirements;
     pfn_GetGeneratedCommandsMemoryRequirementsNV(device,
         &pInfo,
@@ -12646,6 +13049,7 @@ void CmdBindPipelineShaderGroupNV(CommandBuffer commandBuffer,
 }
 [[nodiscard]] expected<IndirectCommandsLayoutNV> CreateIndirectCommandsLayoutNV(const IndirectCommandsLayoutCreateInfoNV&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     IndirectCommandsLayoutNV pIndirectCommandsLayout;
         Result result = pfn_CreateIndirectCommandsLayoutNV(device,
         &pCreateInfo,
@@ -12655,12 +13059,14 @@ void CmdBindPipelineShaderGroupNV(CommandBuffer commandBuffer,
 }
 void DestroyIndirectCommandsLayoutNV(IndirectCommandsLayoutNV indirectCommandsLayout, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyIndirectCommandsLayoutNV(device,
         indirectCommandsLayout,
         pAllocator);
 }
 [[nodiscard]] expected<PrivateDataSlotEXT> CreatePrivateDataSlotEXT(const PrivateDataSlotCreateInfoEXT&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     PrivateDataSlotEXT pPrivateDataSlot;
         Result result = pfn_CreatePrivateDataSlotEXT(device,
         &pCreateInfo,
@@ -12670,6 +13076,7 @@ void DestroyIndirectCommandsLayoutNV(IndirectCommandsLayoutNV indirectCommandsLa
 }
 void DestroyPrivateDataSlotEXT(PrivateDataSlotEXT privateDataSlot, 
     const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyPrivateDataSlotEXT(device,
         privateDataSlot,
         pAllocator);
@@ -12678,6 +13085,7 @@ void DestroyPrivateDataSlotEXT(PrivateDataSlotEXT privateDataSlot,
     uint64_t objectHandle, 
     PrivateDataSlotEXT privateDataSlot, 
     uint64_t data) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_SetPrivateDataEXT(device,
         objectType,
         objectHandle,
@@ -12687,6 +13095,7 @@ void DestroyPrivateDataSlotEXT(PrivateDataSlotEXT privateDataSlot,
 [[nodiscard]] uint64_t GetPrivateDataEXT(ObjectType objectType, 
     uint64_t objectHandle, 
     PrivateDataSlotEXT privateDataSlot) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint64_t pData;
     pfn_GetPrivateDataEXT(device,
         objectType,
@@ -12698,37 +13107,44 @@ void DestroyPrivateDataSlotEXT(PrivateDataSlotEXT privateDataSlot,
 void CmdSetFragmentShadingRateEnumNV(CommandBuffer commandBuffer, 
     FragmentShadingRateNV shadingRate, 
     const FragmentShadingRateCombinerOpKHR combinerOps[2]) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdSetFragmentShadingRateEnumNV(commandBuffer,
         shadingRate,
         combinerOps);
 }
 void CmdCopyBuffer2KHR(CommandBuffer commandBuffer, 
     const CopyBufferInfo2KHR&  pCopyBufferInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdCopyBuffer2KHR(commandBuffer,
         &pCopyBufferInfo);
 }
 void CmdCopyImage2KHR(CommandBuffer commandBuffer, 
     const CopyImageInfo2KHR&  pCopyImageInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdCopyImage2KHR(commandBuffer,
         &pCopyImageInfo);
 }
 void CmdBlitImage2KHR(CommandBuffer commandBuffer, 
     const BlitImageInfo2KHR&  pBlitImageInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdBlitImage2KHR(commandBuffer,
         &pBlitImageInfo);
 }
 void CmdCopyBufferToImage2KHR(CommandBuffer commandBuffer, 
     const CopyBufferToImageInfo2KHR&  pCopyBufferToImageInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdCopyBufferToImage2KHR(commandBuffer,
         &pCopyBufferToImageInfo);
 }
 void CmdCopyImageToBuffer2KHR(CommandBuffer commandBuffer, 
     const CopyImageToBufferInfo2KHR&  pCopyImageToBufferInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdCopyImageToBuffer2KHR(commandBuffer,
         &pCopyImageToBufferInfo);
 }
 void CmdResolveImage2KHR(CommandBuffer commandBuffer, 
     const ResolveImageInfo2KHR&  pResolveImageInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdResolveImage2KHR(commandBuffer,
         &pResolveImageInfo);
 }

@@ -30,6 +30,9 @@ target_link_libraries(vk-module-triangle-header
     vk_module_20
     vk-module-compiler-warnings )
 
+target_compile_options(vk-module-triangle-header PUBLIC -fsanitize=address)
+target_link_options(vk-module-triangle-header PUBLIC -fsanitize=address)
+
 add_custom_target(copy-shader-files ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/sample/shaders ${CMAKE_CURRENT_BINARY_DIR}
     DEPENDS vk-module-triangle-header)
