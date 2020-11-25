@@ -15,8 +15,7 @@ FetchContent_MakeAvailable(glfw_repo)
 find_package(Vulkan REQUIRED)
 
 add_executable(basic_sample_usage basic.cpp)
-target_link_libraries(basic_sample_usage vkm20)
-set_target_properties(basic_sample_usage PROPERTIES CXX_STANDARD 20)
+target_link_libraries(basic_sample_usage vk_module_20)
 
 # add_executable(test_vkhpp_compilation test_vkhpp.cpp)
 # target_link_libraries(test_vkhpp_compilation Vulkan::Vulkan)
@@ -28,7 +27,7 @@ target_link_libraries(vk-module-triangle-header
     PRIVATE
     Vulkan::Headers
     glfw
-    vkm20_function
+    vk_module_20
     vk-module-compiler-warnings )
 
 add_custom_target(copy-shader-files ALL

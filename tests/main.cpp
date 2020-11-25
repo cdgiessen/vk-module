@@ -1,8 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 
-#include "vkm.h"
-
+#include "vk_module.h"
 TEST_CASE("test static vector", "[vk-module.fixed_vector]")
 {
     vk::detail::fixed_vector<vk::ExtensionProperties> a;

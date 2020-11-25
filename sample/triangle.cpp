@@ -1,4 +1,5 @@
-#include "vkm_function.h"
+#include "vk_module.h"
+#include "vk_module_interop.h"
 
 #include <array>
 #include <vector>
@@ -99,7 +100,7 @@ vk::SurfaceKHR create_surface_glfw(VkInstance instance, GLFWwindow* window)
         }
         surface = VK_NULL_HANDLE;
     }
-    return vk::SurfaceKHR(surface);
+    return vk::SurfaceKHR{ surface };
 }
 
 void create_renderer_context(RendererContext& context)
@@ -365,9 +366,9 @@ void create_pipeline(DeviceContext& device)
         .layout = pipeline_layout_ret.value(),
         .renderPass = device.render_pass,
     };
-    auto pipeline_ret = device.functions.CreateGraphicsPipelines(nullptr, 1, &pipe_info, nullptr, &device.pipeline);
+    auto [pipelines, pipeline_ret] = device.functions.CreateGraphicsPipelines(nullptr, pipe_info, nullptr);
     check_res(pipeline_ret, "Failed to create graphipcs pipeline");
-
+    device.pipeline = pipelines[0];
     device.functions.DestroyShaderModule(vert);
     device.functions.DestroyShaderModule(frag);
 }
@@ -378,11 +379,10 @@ void create_command_buffers(DeviceContext& device)
     check_res(cmd_pool_ret, "Failed to create command pool");
 
     device.cmd_pool = cmd_pool_ret.value();
-    device.cmd_buffers.resize(device.image_count);
-    auto cmd_ret = device.functions.AllocateCommandBuffers(
-      { .commandPool = device.cmd_pool, .level = vk::CommandBufferLevel::Primary, .commandBufferCount = device.image_count },
-      device.cmd_buffers.data());
+    auto [cmds, cmd_ret] = device.functions.AllocateCommandBuffers(
+      { .commandPool = device.cmd_pool, .level = vk::CommandBufferLevel::Primary, .commandBufferCount = device.image_count });
     check_res(cmd_ret, "Failed to create command buffers");
+    device.cmd_buffers = std::vector<vk::CommandBuffer>(cmds.begin(), cmds.end());
 
     for (uint32_t i = 0; i < device.cmd_buffers.size(); i++) {
         vk::CommandBufferFunctions funcs(device.functions, device.cmd_buffers[i]);
@@ -400,9 +400,9 @@ void create_command_buffers(DeviceContext& device)
                              .pClearValues = &clear },
                            vk::SubpassContents::Inline)
           .BindPipeline(vk::PipelineBindPoint::Graphics, device.pipeline)
-          .SetViewport(0, 1, &viewport)
-          .SetViewport(0, { &viewport, 1 })
-          .SetScissor(0, 1, &scissor)
+          .SetViewport(0, viewport)
+          .SetViewport(0, { viewport })
+          .SetScissor(0, vk::Rect2D{ .offset = { 0, 0 }, .extent = { width, height } })
           .Draw(3, 1, 0, 0)
           .EndRenderPass();
         cmd_ret = funcs.End();
@@ -449,10 +449,10 @@ void recreate_swapchain(DeviceContext& device)
 
 void draw_frame(DeviceContext& device)
 {
-    auto fence_ret = device.functions.WaitForFences(1, &device.fences[device.current_frame], true, UINT64_MAX);
+    auto fence_ret = device.functions.WaitForFences({ device.fences[device.current_frame] }, true, UINT64_MAX);
     check_res(fence_ret, "Failed to wait for fence");
 
-    fence_ret = device.functions.ResetFences(1, &device.fences[device.current_frame]);
+    fence_ret = device.functions.ResetFences({ device.fences[device.current_frame] });
     check_res(fence_ret, "Failed to reset fence");
 
     auto image_index_ret = device.functions.AcquireNextImageKHR(
@@ -473,7 +473,7 @@ void draw_frame(DeviceContext& device)
         .signalSemaphoreCount = 1,
         .pSignalSemaphores = &device.finished_semaphores[device.current_frame],
     };
-    auto submit_ret = device.queue_functions.Submit(1, &submit_info, device.fences[device.current_frame]);
+    auto submit_ret = device.queue_functions.Submit(submit_info, device.fences[device.current_frame]);
     check_res(submit_ret, "Failed to submit command buffer");
 
     auto present_ret = device.queue_functions.PresentKHR({

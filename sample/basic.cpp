@@ -1,8 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <array>
-#include "vkm.h"
-#include "vkm_string.h"
+#include "vk_module.h"
 
 int main()
 {
@@ -91,24 +90,24 @@ int main()
         .commandBufferCount = 1,
     };
 
-    vk::CommandBuffer cmd_buf;
-    auto alloc_ret = device_functions.AllocateCommandBuffers(alloc_info, &cmd_buf);
-    if (!alloc_ret) {
+    auto [cmds, alloc_ret] = device_functions.AllocateCommandBuffers(alloc_info);
+    if (alloc_ret != vk::Result::Success) {
         return -1;
     }
+    vk::CommandBuffer cmd_buf = cmds[0];
     vk::CommandBufferFunctions cmd_buf_functions{ device_functions, cmd_buf };
     auto begin_ret = cmd_buf_functions.Begin({});
-    if (!begin_ret)
+    if (begin_ret != vk::Result::Success)
         return -1;
 
     vk::RenderPass renderpass;
     vk::Framebuffer framebuffer;
     vk::ClearValue clear_color{ .color = { { 0, 0, 0, 1 } } };
-    vk::Viewport viewport{ 0, 0, 1, 1, 0, 1 };
-    std::array<vk::Viewport, 2> viewports = { viewport, { 0.f, 0.f, 1.f, 1.f, 0.f, 1.f } };
     vk::Rect2D scissor{ { 0, 0 }, { 100, 100 } };
-    std::array buffers = { buffer };
-    std::array dev_size = { vk::DeviceSize{} };
+    vk::Viewport viewport{ 0.f, 0.f, 1.f, 1.f, 0.f, 1.f };
+
+    // std::array buffers = { buffer };
+    // std::array dev_size = { vk::DeviceSize{} };
     auto ret = cmd_buf_functions
                  .BeginRenderPass({ .renderPass = renderpass,
                                     .framebuffer = framebuffer,
@@ -116,9 +115,9 @@ int main()
                                     .clearValueCount = 1,
                                     .pClearValues = &clear_color },
                                   vk::SubpassContents::Inline)
-                 .SetViewport(0, viewports)
-                 .SetScissor(0, 1, &scissor)
-                 .BindVertexBuffers(0, buffers, dev_size)
+                 .SetViewport(0, { viewport, viewport })
+                 .SetScissor(0, { scissor })
+                 .BindVertexBuffers(0, { buffer }, 0)
                  .BindIndexBuffer(buffer, 0, vk::IndexType::Uint16)
                  .Draw(10, 1, 0, 0)
                  .EndRenderPass()
@@ -131,6 +130,8 @@ int main()
     }
 
     auto [fence, fence_ret] = device_functions.CreateFence({});
-
+    if (fence_ret == vk::Result::Success) {
+        std::cout << "success recording command buffer\n";
+    }
     return 0;
 }

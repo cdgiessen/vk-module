@@ -1,6 +1,6 @@
 
 #include <catch2/catch.hpp>
-#include "vkm_core.h"
+#include "vk_module.h"
 
 TEST_CASE("Flags bitwise operation", "[vk-module.flags]")
 {

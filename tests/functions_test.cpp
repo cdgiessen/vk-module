@@ -1,6 +1,6 @@
 
 #include <catch2/catch.hpp>
-#include "vkm_function.h"
+#include "vk_module.h"
 
 TEST_CASE("Global Function Usage", "[vk-module.functions]")
 {
