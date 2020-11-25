@@ -155,6 +155,7 @@ class Enum:
     def print_c_interop(self, file):
         if self.alias is None:
             file.write(f'constexpr {self.name} to_c({self.name[2:]} value) {{ return static_cast<{self.name}>(value);}}\n')
+            file.write(f'constexpr {self.name[2:]} from_c({self.name} value) {{ return static_cast<{self.name[2:]}>(value);}}\n')
 
 def RepresentsIntOrHex(s):
     try: 
@@ -239,7 +240,7 @@ class Bitmask:
     def print_c_interop(self, file):
         if self.alias is None:
             file.write(f'constexpr {self.name} to_c({self.name[2:]} value) {{ return static_cast<{self.name}>(value);}}\n')
-     
+            file.write(f'constexpr {self.name[2:]} from_c({self.name} value) {{ return static_cast<{self.name[2:]}>(value);}}\n')
 
 class EmptyBitmask:
     def __init__(self, name):
@@ -268,7 +269,6 @@ class EmptyBitmask:
 
     def print_c_interop(self, file):
         pass
-        #file.write(f'constexpr {self.name} c_enum({self.name[2:]} value) {{ return static_cast<{self.name}>(value);}}\n')
 
 class Flags:
     def __init__(self, node):
