@@ -106,8 +106,6 @@ int main()
     vk::Rect2D scissor{ { 0, 0 }, { 100, 100 } };
     vk::Viewport viewport{ 0.f, 0.f, 1.f, 1.f, 0.f, 1.f };
 
-    // std::array buffers = { buffer };
-    // std::array dev_size = { vk::DeviceSize{} };
     auto ret = cmd_buf_functions
                  .BeginRenderPass({ .renderPass = renderpass,
                                     .framebuffer = framebuffer,

@@ -325,7 +325,7 @@ void create_pipeline(DeviceContext& device)
     vk::PipelineShaderStageCreateInfo frag_stage{ .stage = vk::ShaderStageFlagBits::Fragment, .module = frag, .pName = "main" };
     std::array<vk::PipelineShaderStageCreateInfo, 2> shader_stages{ vert_stage, frag_stage };
 
-    vk::PipelineVertexInputStateCreateInfo vert_input_info{};
+    vk::PipelineVertexInputStateCreateInfo vert_input_info;
     vk::PipelineInputAssemblyStateCreateInfo input_assembly{ .topology = vk::PrimitiveTopology::TriangleList };
     vk::Viewport viewport = { 0.f, 0.f, static_cast<float>(width), static_cast<float>(height), 0.f, 1.f };
     vk::Rect2D scissor = { .offset = { 0, 0 }, .extent = { width, height } };

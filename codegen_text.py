@@ -259,7 +259,7 @@ bitmask_flags_macro = '''
 struct FLAG_TYPE {                                                                         \\
     BASE_TYPE flags = static_cast<BASE_TYPE>(0);                                           \\
                                                                                            \\
-    constexpr explicit FLAG_TYPE() noexcept = default;                                     \\
+    constexpr FLAG_TYPE() noexcept = default;                                              \\
     constexpr explicit FLAG_TYPE(BASE_TYPE in) noexcept: flags(in){ }                      \\
     constexpr FLAG_TYPE(FLAG_BITS in) noexcept: flags(static_cast<BASE_TYPE>(in)){ }       \\
     constexpr bool operator==(FLAG_TYPE const& right) const { return flags == right.flags;}\\
@@ -312,7 +312,7 @@ namespace detail {
 template<typename T>
 class span {
 public:
-    constexpr explicit span() noexcept = default;
+    constexpr span() noexcept = default;
     constexpr span(T const& value) noexcept : _data{&value}, _count{1} {}
     constexpr explicit span(T* data, uint32_t count) noexcept : _data{data}, _count{count} {}
 

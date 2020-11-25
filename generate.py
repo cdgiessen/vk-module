@@ -343,7 +343,7 @@ class Handle:
 class {self.name[2:]} {{
     {self.name} handle = 0;
     public:
-    explicit {self.name[2:]}() = default;
+    {self.name[2:]}() = default;
     {self.name[2:]}([[maybe_unused]] std::nullptr_t none) noexcept {{}}
     explicit {self.name[2:]}({self.name} handle) noexcept : handle(handle){{}}
     {self.name} get() {{ return handle; }}
@@ -740,7 +740,9 @@ class Function:
 
     def print_parameters(self, file, parameter_list, break_between=True, condense_spans=False, print_defaults=False):
         should_print_comma = False #prevents printing of a comma before the first real parameter
+        index = -1
         for param in parameter_list:
+            index = index + 1
             if param != parameter_list[0]:
                 if condense_spans == False or param.name not in self.span_params: 
                     if should_print_comma:
@@ -751,14 +753,20 @@ class Function:
             if condense_spans and param.name in self.span_params: 
                 continue            
             elif condense_spans and param.len_attrib is not None and param.len_attrib in self.span_params:
-                # file.write(f'detail::span<{param.get_span_type()}>') 
-                # file.write('const' if param.is_const else '')
-                # file.write(f'& {param.name[1:]}')
                 file.write(f'detail::span<{param.get_span_type()}> {param.name[1:]}')
             else:
                 file.write(f'{param.get_parameter_decl(use_references=True)}')
-            if print_defaults and param.name == 'pAllocator' and param == parameter_list[-1]:
-                file.write(f' = nullptr')
+            if param.optional == "true":
+                all_optional = True
+                for inner_param in parameter_list[index:]:
+                    if not inner_param.optional:
+                        all_optional = False
+                        break
+                if all_optional:
+                    if param.is_ptr() and param.len_attrib not in self.span_params:
+                        file.write(f' = nullptr')
+                    else:
+                        file.write(' = {}')
             should_print_comma = True
 
     def print_c_api_call(self, file, dispatch_handle = None, dispatch_handle_name = None, pfn_source=None, last_arg=None, init_result=None, condense_spans=False):
@@ -1045,7 +1053,7 @@ class DispatchTable:
             PlatformGuardFooter(file, function.platform)
              
         #constructor
-        file.write(f'explicit {self.name}Functions() noexcept {{}}\n')   
+        file.write(f'{self.name}Functions() noexcept {{}}\n')   
         if self.dispatch_type == 'global':
             file.write(f'explicit {self.name}Functions(DynamicLibrary const& library) noexcept {{\n')
             file.write(f'    detail::{self.gpa_type} {self.gpa_name} = reinterpret_cast<detail::PFN_GetInstanceProcAddr>(library.get());\n')

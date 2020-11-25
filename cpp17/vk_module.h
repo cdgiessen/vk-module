@@ -2261,7 +2261,7 @@ enum class PipelineRasterizationDepthClipStateCreateFlagBitsEXT: uint32_t { };
 struct FLAG_TYPE {                                                                         \
     BASE_TYPE flags = static_cast<BASE_TYPE>(0);                                           \
                                                                                            \
-    constexpr explicit FLAG_TYPE() noexcept = default;                                     \
+    constexpr FLAG_TYPE() noexcept = default;                                              \
     constexpr explicit FLAG_TYPE(BASE_TYPE in) noexcept: flags(in){ }                      \
     constexpr FLAG_TYPE(FLAG_BITS in) noexcept: flags(static_cast<BASE_TYPE>(in)){ }       \
     constexpr bool operator==(FLAG_TYPE const& right) const { return flags == right.flags;}\
@@ -2525,7 +2525,7 @@ namespace vk {
 class Instance {
     VkInstance handle = 0;
     public:
-    explicit Instance() = default;
+    Instance() = default;
     Instance([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit Instance(VkInstance handle) noexcept : handle(handle){}
     VkInstance get() { return handle; }
@@ -2536,7 +2536,7 @@ class Instance {
 class PhysicalDevice {
     VkPhysicalDevice handle = 0;
     public:
-    explicit PhysicalDevice() = default;
+    PhysicalDevice() = default;
     PhysicalDevice([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit PhysicalDevice(VkPhysicalDevice handle) noexcept : handle(handle){}
     VkPhysicalDevice get() { return handle; }
@@ -2547,7 +2547,7 @@ class PhysicalDevice {
 class Device {
     VkDevice handle = 0;
     public:
-    explicit Device() = default;
+    Device() = default;
     Device([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit Device(VkDevice handle) noexcept : handle(handle){}
     VkDevice get() { return handle; }
@@ -2558,7 +2558,7 @@ class Device {
 class Queue {
     VkQueue handle = 0;
     public:
-    explicit Queue() = default;
+    Queue() = default;
     Queue([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit Queue(VkQueue handle) noexcept : handle(handle){}
     VkQueue get() { return handle; }
@@ -2569,7 +2569,7 @@ class Queue {
 class CommandBuffer {
     VkCommandBuffer handle = 0;
     public:
-    explicit CommandBuffer() = default;
+    CommandBuffer() = default;
     CommandBuffer([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit CommandBuffer(VkCommandBuffer handle) noexcept : handle(handle){}
     VkCommandBuffer get() { return handle; }
@@ -2580,7 +2580,7 @@ class CommandBuffer {
 class DeviceMemory {
     VkDeviceMemory handle = 0;
     public:
-    explicit DeviceMemory() = default;
+    DeviceMemory() = default;
     DeviceMemory([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit DeviceMemory(VkDeviceMemory handle) noexcept : handle(handle){}
     VkDeviceMemory get() { return handle; }
@@ -2591,7 +2591,7 @@ class DeviceMemory {
 class CommandPool {
     VkCommandPool handle = 0;
     public:
-    explicit CommandPool() = default;
+    CommandPool() = default;
     CommandPool([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit CommandPool(VkCommandPool handle) noexcept : handle(handle){}
     VkCommandPool get() { return handle; }
@@ -2602,7 +2602,7 @@ class CommandPool {
 class Buffer {
     VkBuffer handle = 0;
     public:
-    explicit Buffer() = default;
+    Buffer() = default;
     Buffer([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit Buffer(VkBuffer handle) noexcept : handle(handle){}
     VkBuffer get() { return handle; }
@@ -2613,7 +2613,7 @@ class Buffer {
 class BufferView {
     VkBufferView handle = 0;
     public:
-    explicit BufferView() = default;
+    BufferView() = default;
     BufferView([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit BufferView(VkBufferView handle) noexcept : handle(handle){}
     VkBufferView get() { return handle; }
@@ -2624,7 +2624,7 @@ class BufferView {
 class Image {
     VkImage handle = 0;
     public:
-    explicit Image() = default;
+    Image() = default;
     Image([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit Image(VkImage handle) noexcept : handle(handle){}
     VkImage get() { return handle; }
@@ -2635,7 +2635,7 @@ class Image {
 class ImageView {
     VkImageView handle = 0;
     public:
-    explicit ImageView() = default;
+    ImageView() = default;
     ImageView([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit ImageView(VkImageView handle) noexcept : handle(handle){}
     VkImageView get() { return handle; }
@@ -2646,7 +2646,7 @@ class ImageView {
 class ShaderModule {
     VkShaderModule handle = 0;
     public:
-    explicit ShaderModule() = default;
+    ShaderModule() = default;
     ShaderModule([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit ShaderModule(VkShaderModule handle) noexcept : handle(handle){}
     VkShaderModule get() { return handle; }
@@ -2657,7 +2657,7 @@ class ShaderModule {
 class Pipeline {
     VkPipeline handle = 0;
     public:
-    explicit Pipeline() = default;
+    Pipeline() = default;
     Pipeline([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit Pipeline(VkPipeline handle) noexcept : handle(handle){}
     VkPipeline get() { return handle; }
@@ -2668,7 +2668,7 @@ class Pipeline {
 class PipelineLayout {
     VkPipelineLayout handle = 0;
     public:
-    explicit PipelineLayout() = default;
+    PipelineLayout() = default;
     PipelineLayout([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit PipelineLayout(VkPipelineLayout handle) noexcept : handle(handle){}
     VkPipelineLayout get() { return handle; }
@@ -2679,7 +2679,7 @@ class PipelineLayout {
 class Sampler {
     VkSampler handle = 0;
     public:
-    explicit Sampler() = default;
+    Sampler() = default;
     Sampler([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit Sampler(VkSampler handle) noexcept : handle(handle){}
     VkSampler get() { return handle; }
@@ -2690,7 +2690,7 @@ class Sampler {
 class DescriptorSet {
     VkDescriptorSet handle = 0;
     public:
-    explicit DescriptorSet() = default;
+    DescriptorSet() = default;
     DescriptorSet([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit DescriptorSet(VkDescriptorSet handle) noexcept : handle(handle){}
     VkDescriptorSet get() { return handle; }
@@ -2701,7 +2701,7 @@ class DescriptorSet {
 class DescriptorSetLayout {
     VkDescriptorSetLayout handle = 0;
     public:
-    explicit DescriptorSetLayout() = default;
+    DescriptorSetLayout() = default;
     DescriptorSetLayout([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit DescriptorSetLayout(VkDescriptorSetLayout handle) noexcept : handle(handle){}
     VkDescriptorSetLayout get() { return handle; }
@@ -2712,7 +2712,7 @@ class DescriptorSetLayout {
 class DescriptorPool {
     VkDescriptorPool handle = 0;
     public:
-    explicit DescriptorPool() = default;
+    DescriptorPool() = default;
     DescriptorPool([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit DescriptorPool(VkDescriptorPool handle) noexcept : handle(handle){}
     VkDescriptorPool get() { return handle; }
@@ -2723,7 +2723,7 @@ class DescriptorPool {
 class Fence {
     VkFence handle = 0;
     public:
-    explicit Fence() = default;
+    Fence() = default;
     Fence([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit Fence(VkFence handle) noexcept : handle(handle){}
     VkFence get() { return handle; }
@@ -2734,7 +2734,7 @@ class Fence {
 class Semaphore {
     VkSemaphore handle = 0;
     public:
-    explicit Semaphore() = default;
+    Semaphore() = default;
     Semaphore([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit Semaphore(VkSemaphore handle) noexcept : handle(handle){}
     VkSemaphore get() { return handle; }
@@ -2745,7 +2745,7 @@ class Semaphore {
 class Event {
     VkEvent handle = 0;
     public:
-    explicit Event() = default;
+    Event() = default;
     Event([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit Event(VkEvent handle) noexcept : handle(handle){}
     VkEvent get() { return handle; }
@@ -2756,7 +2756,7 @@ class Event {
 class QueryPool {
     VkQueryPool handle = 0;
     public:
-    explicit QueryPool() = default;
+    QueryPool() = default;
     QueryPool([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit QueryPool(VkQueryPool handle) noexcept : handle(handle){}
     VkQueryPool get() { return handle; }
@@ -2767,7 +2767,7 @@ class QueryPool {
 class Framebuffer {
     VkFramebuffer handle = 0;
     public:
-    explicit Framebuffer() = default;
+    Framebuffer() = default;
     Framebuffer([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit Framebuffer(VkFramebuffer handle) noexcept : handle(handle){}
     VkFramebuffer get() { return handle; }
@@ -2778,7 +2778,7 @@ class Framebuffer {
 class RenderPass {
     VkRenderPass handle = 0;
     public:
-    explicit RenderPass() = default;
+    RenderPass() = default;
     RenderPass([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit RenderPass(VkRenderPass handle) noexcept : handle(handle){}
     VkRenderPass get() { return handle; }
@@ -2789,7 +2789,7 @@ class RenderPass {
 class PipelineCache {
     VkPipelineCache handle = 0;
     public:
-    explicit PipelineCache() = default;
+    PipelineCache() = default;
     PipelineCache([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit PipelineCache(VkPipelineCache handle) noexcept : handle(handle){}
     VkPipelineCache get() { return handle; }
@@ -2800,7 +2800,7 @@ class PipelineCache {
 class IndirectCommandsLayoutNV {
     VkIndirectCommandsLayoutNV handle = 0;
     public:
-    explicit IndirectCommandsLayoutNV() = default;
+    IndirectCommandsLayoutNV() = default;
     IndirectCommandsLayoutNV([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit IndirectCommandsLayoutNV(VkIndirectCommandsLayoutNV handle) noexcept : handle(handle){}
     VkIndirectCommandsLayoutNV get() { return handle; }
@@ -2811,7 +2811,7 @@ class IndirectCommandsLayoutNV {
 class DescriptorUpdateTemplate {
     VkDescriptorUpdateTemplate handle = 0;
     public:
-    explicit DescriptorUpdateTemplate() = default;
+    DescriptorUpdateTemplate() = default;
     DescriptorUpdateTemplate([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit DescriptorUpdateTemplate(VkDescriptorUpdateTemplate handle) noexcept : handle(handle){}
     VkDescriptorUpdateTemplate get() { return handle; }
@@ -2823,7 +2823,7 @@ using DescriptorUpdateTemplateKHR = DescriptorUpdateTemplate;
 class SamplerYcbcrConversion {
     VkSamplerYcbcrConversion handle = 0;
     public:
-    explicit SamplerYcbcrConversion() = default;
+    SamplerYcbcrConversion() = default;
     SamplerYcbcrConversion([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit SamplerYcbcrConversion(VkSamplerYcbcrConversion handle) noexcept : handle(handle){}
     VkSamplerYcbcrConversion get() { return handle; }
@@ -2835,7 +2835,7 @@ using SamplerYcbcrConversionKHR = SamplerYcbcrConversion;
 class ValidationCacheEXT {
     VkValidationCacheEXT handle = 0;
     public:
-    explicit ValidationCacheEXT() = default;
+    ValidationCacheEXT() = default;
     ValidationCacheEXT([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit ValidationCacheEXT(VkValidationCacheEXT handle) noexcept : handle(handle){}
     VkValidationCacheEXT get() { return handle; }
@@ -2846,7 +2846,7 @@ class ValidationCacheEXT {
 class AccelerationStructureKHR {
     VkAccelerationStructureKHR handle = 0;
     public:
-    explicit AccelerationStructureKHR() = default;
+    AccelerationStructureKHR() = default;
     AccelerationStructureKHR([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit AccelerationStructureKHR(VkAccelerationStructureKHR handle) noexcept : handle(handle){}
     VkAccelerationStructureKHR get() { return handle; }
@@ -2857,7 +2857,7 @@ class AccelerationStructureKHR {
 class AccelerationStructureNV {
     VkAccelerationStructureNV handle = 0;
     public:
-    explicit AccelerationStructureNV() = default;
+    AccelerationStructureNV() = default;
     AccelerationStructureNV([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit AccelerationStructureNV(VkAccelerationStructureNV handle) noexcept : handle(handle){}
     VkAccelerationStructureNV get() { return handle; }
@@ -2868,7 +2868,7 @@ class AccelerationStructureNV {
 class PerformanceConfigurationINTEL {
     VkPerformanceConfigurationINTEL handle = 0;
     public:
-    explicit PerformanceConfigurationINTEL() = default;
+    PerformanceConfigurationINTEL() = default;
     PerformanceConfigurationINTEL([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit PerformanceConfigurationINTEL(VkPerformanceConfigurationINTEL handle) noexcept : handle(handle){}
     VkPerformanceConfigurationINTEL get() { return handle; }
@@ -2879,7 +2879,7 @@ class PerformanceConfigurationINTEL {
 class DeferredOperationKHR {
     VkDeferredOperationKHR handle = 0;
     public:
-    explicit DeferredOperationKHR() = default;
+    DeferredOperationKHR() = default;
     DeferredOperationKHR([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit DeferredOperationKHR(VkDeferredOperationKHR handle) noexcept : handle(handle){}
     VkDeferredOperationKHR get() { return handle; }
@@ -2890,7 +2890,7 @@ class DeferredOperationKHR {
 class PrivateDataSlotEXT {
     VkPrivateDataSlotEXT handle = 0;
     public:
-    explicit PrivateDataSlotEXT() = default;
+    PrivateDataSlotEXT() = default;
     PrivateDataSlotEXT([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit PrivateDataSlotEXT(VkPrivateDataSlotEXT handle) noexcept : handle(handle){}
     VkPrivateDataSlotEXT get() { return handle; }
@@ -2901,7 +2901,7 @@ class PrivateDataSlotEXT {
 class DisplayKHR {
     VkDisplayKHR handle = 0;
     public:
-    explicit DisplayKHR() = default;
+    DisplayKHR() = default;
     DisplayKHR([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit DisplayKHR(VkDisplayKHR handle) noexcept : handle(handle){}
     VkDisplayKHR get() { return handle; }
@@ -2912,7 +2912,7 @@ class DisplayKHR {
 class DisplayModeKHR {
     VkDisplayModeKHR handle = 0;
     public:
-    explicit DisplayModeKHR() = default;
+    DisplayModeKHR() = default;
     DisplayModeKHR([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit DisplayModeKHR(VkDisplayModeKHR handle) noexcept : handle(handle){}
     VkDisplayModeKHR get() { return handle; }
@@ -2923,7 +2923,7 @@ class DisplayModeKHR {
 class SurfaceKHR {
     VkSurfaceKHR handle = 0;
     public:
-    explicit SurfaceKHR() = default;
+    SurfaceKHR() = default;
     SurfaceKHR([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit SurfaceKHR(VkSurfaceKHR handle) noexcept : handle(handle){}
     VkSurfaceKHR get() { return handle; }
@@ -2934,7 +2934,7 @@ class SurfaceKHR {
 class SwapchainKHR {
     VkSwapchainKHR handle = 0;
     public:
-    explicit SwapchainKHR() = default;
+    SwapchainKHR() = default;
     SwapchainKHR([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit SwapchainKHR(VkSwapchainKHR handle) noexcept : handle(handle){}
     VkSwapchainKHR get() { return handle; }
@@ -2945,7 +2945,7 @@ class SwapchainKHR {
 class DebugReportCallbackEXT {
     VkDebugReportCallbackEXT handle = 0;
     public:
-    explicit DebugReportCallbackEXT() = default;
+    DebugReportCallbackEXT() = default;
     DebugReportCallbackEXT([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit DebugReportCallbackEXT(VkDebugReportCallbackEXT handle) noexcept : handle(handle){}
     VkDebugReportCallbackEXT get() { return handle; }
@@ -2956,7 +2956,7 @@ class DebugReportCallbackEXT {
 class DebugUtilsMessengerEXT {
     VkDebugUtilsMessengerEXT handle = 0;
     public:
-    explicit DebugUtilsMessengerEXT() = default;
+    DebugUtilsMessengerEXT() = default;
     DebugUtilsMessengerEXT([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit DebugUtilsMessengerEXT(VkDebugUtilsMessengerEXT handle) noexcept : handle(handle){}
     VkDebugUtilsMessengerEXT get() { return handle; }
@@ -8610,7 +8610,7 @@ namespace detail {
 template<typename T>
 class span {
 public:
-    constexpr explicit span() noexcept = default;
+    constexpr span() noexcept = default;
     constexpr span(T const& value) noexcept : _data{&value}, _count{1} {}
     constexpr explicit span(T* data, uint32_t count) noexcept : _data{data}, _count{count} {}
 
@@ -8686,7 +8686,7 @@ struct GlobalFunctions {
     return pfn_GetInstanceProcAddr(instance,
         pName);
 }
-[[nodiscard]] expected<detail::fixed_vector<ExtensionProperties>> EnumerateInstanceExtensionProperties(const char* pLayerName) const {
+[[nodiscard]] expected<detail::fixed_vector<ExtensionProperties>> EnumerateInstanceExtensionProperties(const char* pLayerName = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPropertyCount = 0;
         Result result = pfn_EnumerateInstanceExtensionProperties(pLayerName,
@@ -8719,7 +8719,7 @@ struct GlobalFunctions {
         Result result = pfn_EnumerateInstanceVersion(&pApiVersion);
     return expected<uint32_t>(pApiVersion, result);
 }
-explicit GlobalFunctions() noexcept {}
+GlobalFunctions() noexcept {}
 explicit GlobalFunctions(DynamicLibrary const& library) noexcept {
     detail::PFN_GetInstanceProcAddr get_instance_proc_addr = reinterpret_cast<detail::PFN_GetInstanceProcAddr>(library.get());
     pfn_CreateInstance = reinterpret_cast<detail::PFN_CreateInstance>(get_instance_proc_addr(nullptr,"vkCreateInstance"));
@@ -8918,7 +8918,7 @@ pfn_GetPhysicalDeviceQueueFamilyProperties(physicalDevice,
     ImageType type, 
     ImageTiling tiling, 
     ImageUsageFlags usage, 
-    ImageCreateFlags flags) const {
+    ImageCreateFlags flags = {}) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     ImageFormatProperties pImageFormatProperties;
         Result result = pfn_GetPhysicalDeviceImageFormatProperties(physicalDevice,
@@ -8942,7 +8942,7 @@ pfn_GetPhysicalDeviceQueueFamilyProperties(physicalDevice,
     return expected<Device>(pDevice, result);
 }
 [[nodiscard]] expected<detail::fixed_vector<ExtensionProperties>> EnumerateDeviceExtensionProperties(PhysicalDevice physicalDevice, 
-    const char* pLayerName) const {
+    const char* pLayerName = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPropertyCount = 0;
         Result result = pfn_EnumerateDeviceExtensionProperties(physicalDevice,
@@ -9095,7 +9095,7 @@ pfn_GetPhysicalDeviceSparseImageFormatProperties2(physicalDevice,
         &pExternalSemaphoreProperties);
     return pExternalSemaphoreProperties;
 }
-void DestroySurfaceKHR(SurfaceKHR surface, 
+void DestroySurfaceKHR(SurfaceKHR surface = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroySurfaceKHR(instance,
@@ -9382,7 +9382,7 @@ void DestroySurfaceKHR(SurfaceKHR surface,
         &pCallback);
     return expected<DebugReportCallbackEXT>(pCallback, result);
 }
-void DestroyDebugReportCallbackEXT(DebugReportCallbackEXT callback, 
+void DestroyDebugReportCallbackEXT(DebugReportCallbackEXT callback = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyDebugReportCallbackEXT(instance,
@@ -9423,8 +9423,8 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
     ImageType type, 
     ImageTiling tiling, 
     ImageUsageFlags usage, 
-    ImageCreateFlags flags, 
-    ExternalMemoryHandleTypeFlagsNV externalHandleType) const {
+    ImageCreateFlags flags = {}, 
+    ExternalMemoryHandleTypeFlagsNV externalHandleType = {}) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     ExternalImageFormatPropertiesNV pExternalImageFormatProperties;
         Result result = pfn_GetPhysicalDeviceExternalImageFormatPropertiesNV(physicalDevice,
@@ -9490,8 +9490,8 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
 [[nodiscard]] Result EnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR(PhysicalDevice physicalDevice, 
     uint32_t queueFamilyIndex, 
     uint32_t&  pCounterCount, 
-    PerformanceCounterKHR* pCounters, 
-    PerformanceCounterDescriptionKHR* pCounterDescriptions) const {
+    PerformanceCounterKHR* pCounters = nullptr, 
+    PerformanceCounterDescriptionKHR* pCounterDescriptions = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_EnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR(physicalDevice,
         queueFamilyIndex,
@@ -9622,7 +9622,7 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
         &pMessenger);
     return expected<DebugUtilsMessengerEXT>(pMessenger, result);
 }
-void DestroyDebugUtilsMessengerEXT(DebugUtilsMessengerEXT messenger, 
+void DestroyDebugUtilsMessengerEXT(DebugUtilsMessengerEXT messenger = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyDebugUtilsMessengerEXT(instance,
@@ -9793,7 +9793,7 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
     return expected<IDirectFB>(dfb, result);
 }
 #endif // VK_USE_PLATFORM_DIRECTFB_EXT
-explicit InstanceFunctions() noexcept {}
+InstanceFunctions() noexcept {}
 explicit InstanceFunctions(GlobalFunctions const& global_functions, Instance instance) noexcept 
     :instance(instance) { 
     detail::PFN_GetInstanceProcAddr get_instance_proc_addr = global_functions.pfn_GetInstanceProcAddr;
@@ -10264,7 +10264,7 @@ void DestroyDevice(const AllocationCallbacks* pAllocator = nullptr) const {
 }
 [[nodiscard]] Result QueueSubmit(Queue queue, 
     detail::span<const SubmitInfo> Submits, 
-    Fence fence) const {
+    Fence fence = {}) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t submitCount = Submits.size();
     return pfn_QueueSubmit(queue,
@@ -10290,7 +10290,7 @@ void DestroyDevice(const AllocationCallbacks* pAllocator = nullptr) const {
         &pMemory);
     return expected<DeviceMemory>(pMemory, result);
 }
-void FreeMemory(DeviceMemory memory, 
+void FreeMemory(DeviceMemory memory = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_FreeMemory(device,
@@ -10300,7 +10300,7 @@ void FreeMemory(DeviceMemory memory,
 [[nodiscard]] expected<void*> MapMemory(DeviceMemory memory, 
     DeviceSize offset, 
     DeviceSize size, 
-    MemoryMapFlags flags) const {
+    MemoryMapFlags flags = {}) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     void* ppData;
         Result result = pfn_MapMemory(device,
@@ -10389,7 +10389,7 @@ pfn_GetImageSparseMemoryRequirements(device,
 }
 [[nodiscard]] Result QueueBindSparse(Queue queue, 
     detail::span<const BindSparseInfo> BindInfo, 
-    Fence fence) const {
+    Fence fence = {}) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t bindInfoCount = BindInfo.size();
     return pfn_QueueBindSparse(queue,
@@ -10407,7 +10407,7 @@ pfn_GetImageSparseMemoryRequirements(device,
         &pFence);
     return expected<Fence>(pFence, result);
 }
-void DestroyFence(Fence fence, 
+void DestroyFence(Fence fence = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyFence(device,
@@ -10447,7 +10447,7 @@ void DestroyFence(Fence fence,
         &pSemaphore);
     return expected<Semaphore>(pSemaphore, result);
 }
-void DestroySemaphore(Semaphore semaphore, 
+void DestroySemaphore(Semaphore semaphore = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroySemaphore(device,
@@ -10464,7 +10464,7 @@ void DestroySemaphore(Semaphore semaphore,
         &pEvent);
     return expected<Event>(pEvent, result);
 }
-void DestroyEvent(Event event, 
+void DestroyEvent(Event event = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyEvent(device,
@@ -10496,7 +10496,7 @@ void DestroyEvent(Event event,
         &pQueryPool);
     return expected<QueryPool>(pQueryPool, result);
 }
-void DestroyQueryPool(QueryPool queryPool, 
+void DestroyQueryPool(QueryPool queryPool = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyQueryPool(device,
@@ -10508,7 +10508,7 @@ void DestroyQueryPool(QueryPool queryPool,
     uint32_t queryCount, 
     detail::span<std::byte> Data, 
     DeviceSize stride, 
-    QueryResultFlags flags) const {
+    QueryResultFlags flags = {}) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     size_t dataSize = Data.size();
     return pfn_GetQueryPoolResults(device,
@@ -10530,7 +10530,7 @@ void DestroyQueryPool(QueryPool queryPool,
         &pBuffer);
     return expected<Buffer>(pBuffer, result);
 }
-void DestroyBuffer(Buffer buffer, 
+void DestroyBuffer(Buffer buffer = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyBuffer(device,
@@ -10547,7 +10547,7 @@ void DestroyBuffer(Buffer buffer,
         &pView);
     return expected<BufferView>(pView, result);
 }
-void DestroyBufferView(BufferView bufferView, 
+void DestroyBufferView(BufferView bufferView = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyBufferView(device,
@@ -10564,7 +10564,7 @@ void DestroyBufferView(BufferView bufferView,
         &pImage);
     return expected<Image>(pImage, result);
 }
-void DestroyImage(Image image, 
+void DestroyImage(Image image = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyImage(device,
@@ -10591,7 +10591,7 @@ void DestroyImage(Image image,
         &pView);
     return expected<ImageView>(pView, result);
 }
-void DestroyImageView(ImageView imageView, 
+void DestroyImageView(ImageView imageView = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyImageView(device,
@@ -10608,7 +10608,7 @@ void DestroyImageView(ImageView imageView,
         &pShaderModule);
     return expected<ShaderModule>(pShaderModule, result);
 }
-void DestroyShaderModule(ShaderModule shaderModule, 
+void DestroyShaderModule(ShaderModule shaderModule = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyShaderModule(device,
@@ -10625,7 +10625,7 @@ void DestroyShaderModule(ShaderModule shaderModule,
         &pPipelineCache);
     return expected<PipelineCache>(pPipelineCache, result);
 }
-void DestroyPipelineCache(PipelineCache pipelineCache, 
+void DestroyPipelineCache(PipelineCache pipelineCache = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyPipelineCache(device,
@@ -10685,7 +10685,7 @@ void DestroyPipelineCache(PipelineCache pipelineCache,
         pPipelines.data());
     return expected<detail::fixed_vector<Pipeline>>(std::move(pPipelines), result);
 }
-void DestroyPipeline(Pipeline pipeline, 
+void DestroyPipeline(Pipeline pipeline = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyPipeline(device,
@@ -10702,7 +10702,7 @@ void DestroyPipeline(Pipeline pipeline,
         &pPipelineLayout);
     return expected<PipelineLayout>(pPipelineLayout, result);
 }
-void DestroyPipelineLayout(PipelineLayout pipelineLayout, 
+void DestroyPipelineLayout(PipelineLayout pipelineLayout = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyPipelineLayout(device,
@@ -10719,7 +10719,7 @@ void DestroyPipelineLayout(PipelineLayout pipelineLayout,
         &pSampler);
     return expected<Sampler>(pSampler, result);
 }
-void DestroySampler(Sampler sampler, 
+void DestroySampler(Sampler sampler = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroySampler(device,
@@ -10736,7 +10736,7 @@ void DestroySampler(Sampler sampler,
         &pSetLayout);
     return expected<DescriptorSetLayout>(pSetLayout, result);
 }
-void DestroyDescriptorSetLayout(DescriptorSetLayout descriptorSetLayout, 
+void DestroyDescriptorSetLayout(DescriptorSetLayout descriptorSetLayout = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyDescriptorSetLayout(device,
@@ -10753,7 +10753,7 @@ void DestroyDescriptorSetLayout(DescriptorSetLayout descriptorSetLayout,
         &pDescriptorPool);
     return expected<DescriptorPool>(pDescriptorPool, result);
 }
-void DestroyDescriptorPool(DescriptorPool descriptorPool, 
+void DestroyDescriptorPool(DescriptorPool descriptorPool = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyDescriptorPool(device,
@@ -10761,7 +10761,7 @@ void DestroyDescriptorPool(DescriptorPool descriptorPool,
         pAllocator);
 }
 [[nodiscard]] Result ResetDescriptorPool(DescriptorPool descriptorPool, 
-    DescriptorPoolResetFlags flags) const {
+    DescriptorPoolResetFlags flags = {}) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_ResetDescriptorPool(device,
         descriptorPool,
@@ -10805,7 +10805,7 @@ void UpdateDescriptorSets(detail::span<const WriteDescriptorSet> DescriptorWrite
         &pFramebuffer);
     return expected<Framebuffer>(pFramebuffer, result);
 }
-void DestroyFramebuffer(Framebuffer framebuffer, 
+void DestroyFramebuffer(Framebuffer framebuffer = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyFramebuffer(device,
@@ -10822,7 +10822,7 @@ void DestroyFramebuffer(Framebuffer framebuffer,
         &pRenderPass);
     return expected<RenderPass>(pRenderPass, result);
 }
-void DestroyRenderPass(RenderPass renderPass, 
+void DestroyRenderPass(RenderPass renderPass = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyRenderPass(device,
@@ -10847,7 +10847,7 @@ void DestroyRenderPass(RenderPass renderPass,
         &pCommandPool);
     return expected<CommandPool>(pCommandPool, result);
 }
-void DestroyCommandPool(CommandPool commandPool, 
+void DestroyCommandPool(CommandPool commandPool = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyCommandPool(device,
@@ -10855,7 +10855,7 @@ void DestroyCommandPool(CommandPool commandPool,
         pAllocator);
 }
 [[nodiscard]] Result ResetCommandPool(CommandPool commandPool, 
-    CommandPoolResetFlags flags) const {
+    CommandPoolResetFlags flags = {}) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_ResetCommandPool(device,
         commandPool,
@@ -10889,7 +10889,7 @@ void FreeCommandBuffers(CommandPool commandPool,
     return pfn_EndCommandBuffer(commandBuffer);
 }
 [[nodiscard]] Result ResetCommandBuffer(CommandBuffer commandBuffer, 
-    CommandBufferResetFlags flags) const {
+    CommandBufferResetFlags flags = {}) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_ResetCommandBuffer(commandBuffer,
         flags);
@@ -11303,7 +11303,7 @@ void CmdPipelineBarrier(CommandBuffer commandBuffer,
 void CmdBeginQuery(CommandBuffer commandBuffer, 
     QueryPool queryPool, 
     uint32_t query, 
-    QueryControlFlags flags) const {
+    QueryControlFlags flags = {}) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdBeginQuery(commandBuffer,
         queryPool,
@@ -11345,7 +11345,7 @@ void CmdCopyQueryPoolResults(CommandBuffer commandBuffer,
     Buffer dstBuffer, 
     DeviceSize dstOffset, 
     DeviceSize stride, 
-    QueryResultFlags flags) const {
+    QueryResultFlags flags = {}) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdCopyQueryPoolResults(commandBuffer,
         queryPool,
@@ -11476,7 +11476,7 @@ pfn_GetImageSparseMemoryRequirements2(device,
     return pSparseMemoryRequirements;
 }
 void TrimCommandPool(CommandPool commandPool, 
-    CommandPoolTrimFlags flags) const {
+    CommandPoolTrimFlags flags = {}) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_TrimCommandPool(device,
         commandPool,
@@ -11500,7 +11500,7 @@ void TrimCommandPool(CommandPool commandPool,
         &pYcbcrConversion);
     return expected<SamplerYcbcrConversion>(pYcbcrConversion, result);
 }
-void DestroySamplerYcbcrConversion(SamplerYcbcrConversion ycbcrConversion, 
+void DestroySamplerYcbcrConversion(SamplerYcbcrConversion ycbcrConversion = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroySamplerYcbcrConversion(device,
@@ -11517,7 +11517,7 @@ void DestroySamplerYcbcrConversion(SamplerYcbcrConversion ycbcrConversion,
         &pDescriptorUpdateTemplate);
     return expected<DescriptorUpdateTemplate>(pDescriptorUpdateTemplate, result);
 }
-void DestroyDescriptorUpdateTemplate(DescriptorUpdateTemplate descriptorUpdateTemplate, 
+void DestroyDescriptorUpdateTemplate(DescriptorUpdateTemplate descriptorUpdateTemplate = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyDescriptorUpdateTemplate(device,
@@ -11659,7 +11659,7 @@ void ResetQueryPool(QueryPool queryPool,
         &pSwapchain);
     return expected<SwapchainKHR>(pSwapchain, result);
 }
-void DestroySwapchainKHR(SwapchainKHR swapchain, 
+void DestroySwapchainKHR(SwapchainKHR swapchain = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroySwapchainKHR(device,
@@ -11684,8 +11684,8 @@ void DestroySwapchainKHR(SwapchainKHR swapchain,
 }
 [[nodiscard]] expected<uint32_t> AcquireNextImageKHR(SwapchainKHR swapchain, 
     uint64_t timeout, 
-    Semaphore semaphore, 
-    Fence fence) const {
+    Semaphore semaphore = {}, 
+    Fence fence = {}) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pImageIndex;
         Result result = pfn_AcquireNextImageKHR(device,
@@ -11766,7 +11766,7 @@ void CmdBindTransformFeedbackBuffersEXT(CommandBuffer commandBuffer,
     uint32_t firstBinding, 
     detail::span<const Buffer> Buffers, 
     detail::span<const DeviceSize> Offsets, 
-    detail::span<const DeviceSize> Sizes) const {
+    detail::span<const DeviceSize> Sizes = {}) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t bindingCount = Buffers.size();
     pfn_CmdBindTransformFeedbackBuffersEXT(commandBuffer,
@@ -11779,7 +11779,7 @@ void CmdBindTransformFeedbackBuffersEXT(CommandBuffer commandBuffer,
 void CmdBeginTransformFeedbackEXT(CommandBuffer commandBuffer, 
     uint32_t firstCounterBuffer, 
     detail::span<const Buffer> CounterBuffers, 
-    detail::span<const DeviceSize> CounterBufferOffsets) const {
+    detail::span<const DeviceSize> CounterBufferOffsets = {}) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t counterBufferCount = CounterBuffers.size();
     pfn_CmdBeginTransformFeedbackEXT(commandBuffer,
@@ -11791,7 +11791,7 @@ void CmdBeginTransformFeedbackEXT(CommandBuffer commandBuffer,
 void CmdEndTransformFeedbackEXT(CommandBuffer commandBuffer, 
     uint32_t firstCounterBuffer, 
     detail::span<const Buffer> CounterBuffers, 
-    detail::span<const DeviceSize> CounterBufferOffsets) const {
+    detail::span<const DeviceSize> CounterBufferOffsets = {}) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t counterBufferCount = CounterBuffers.size();
     pfn_CmdEndTransformFeedbackEXT(commandBuffer,
@@ -12195,7 +12195,7 @@ void CmdSetSampleLocationsEXT(CommandBuffer commandBuffer,
     pfn_CmdSetSampleLocationsEXT(commandBuffer,
         &pSampleLocationsInfo);
 }
-void DestroyAccelerationStructureKHR(AccelerationStructureKHR accelerationStructure, 
+void DestroyAccelerationStructureKHR(AccelerationStructureKHR accelerationStructure = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyAccelerationStructureKHR(device,
@@ -12446,7 +12446,7 @@ void CmdSetRayTracingPipelineStackSizeKHR(CommandBuffer commandBuffer,
         &pValidationCache);
     return expected<ValidationCacheEXT>(pValidationCache, result);
 }
-void DestroyValidationCacheEXT(ValidationCacheEXT validationCache, 
+void DestroyValidationCacheEXT(ValidationCacheEXT validationCache = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyValidationCacheEXT(device,
@@ -12523,7 +12523,7 @@ void CmdSetCoarseSampleOrderNV(CommandBuffer commandBuffer,
         &pAccelerationStructure);
     return expected<AccelerationStructureNV>(pAccelerationStructure, result);
 }
-void DestroyAccelerationStructureNV(AccelerationStructureNV accelerationStructure, 
+void DestroyAccelerationStructureNV(AccelerationStructureNV accelerationStructure = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyAccelerationStructureNV(device,
@@ -12777,7 +12777,7 @@ void UninitializePerformanceApiINTEL() const {
         &pConfiguration);
     return expected<PerformanceConfigurationINTEL>(pConfiguration, result);
 }
-[[nodiscard]] Result ReleasePerformanceConfigurationINTEL(PerformanceConfigurationINTEL configuration) const {
+[[nodiscard]] Result ReleasePerformanceConfigurationINTEL(PerformanceConfigurationINTEL configuration = {}) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_ReleasePerformanceConfigurationINTEL(device,
         configuration);
@@ -12844,7 +12844,7 @@ void CmdSetLineStippleEXT(CommandBuffer commandBuffer,
         lineStipplePattern);
 }
 void CmdSetCullModeEXT(CommandBuffer commandBuffer, 
-    CullModeFlags cullMode) const {
+    CullModeFlags cullMode = {}) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdSetCullModeEXT(commandBuffer,
         cullMode);
@@ -12881,8 +12881,8 @@ void CmdBindVertexBuffers2EXT(CommandBuffer commandBuffer,
     uint32_t firstBinding, 
     detail::span<const Buffer> Buffers, 
     detail::span<const DeviceSize> Offsets, 
-    detail::span<const DeviceSize> Sizes, 
-    detail::span<const DeviceSize> Strides) const {
+    detail::span<const DeviceSize> Sizes = {}, 
+    detail::span<const DeviceSize> Strides = {}) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t bindingCount = Buffers.size();
     pfn_CmdBindVertexBuffers2EXT(commandBuffer,
@@ -12945,7 +12945,7 @@ void CmdSetStencilOpEXT(CommandBuffer commandBuffer,
         &pDeferredOperation);
     return expected<DeferredOperationKHR>(pDeferredOperation, result);
 }
-void DestroyDeferredOperationKHR(DeferredOperationKHR operation, 
+void DestroyDeferredOperationKHR(DeferredOperationKHR operation = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyDeferredOperationKHR(device,
@@ -13057,7 +13057,7 @@ void CmdBindPipelineShaderGroupNV(CommandBuffer commandBuffer,
         &pIndirectCommandsLayout);
     return expected<IndirectCommandsLayoutNV>(pIndirectCommandsLayout, result);
 }
-void DestroyIndirectCommandsLayoutNV(IndirectCommandsLayoutNV indirectCommandsLayout, 
+void DestroyIndirectCommandsLayoutNV(IndirectCommandsLayoutNV indirectCommandsLayout = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyIndirectCommandsLayoutNV(device,
@@ -13074,7 +13074,7 @@ void DestroyIndirectCommandsLayoutNV(IndirectCommandsLayoutNV indirectCommandsLa
         &pPrivateDataSlot);
     return expected<PrivateDataSlotEXT>(pPrivateDataSlot, result);
 }
-void DestroyPrivateDataSlotEXT(PrivateDataSlotEXT privateDataSlot, 
+void DestroyPrivateDataSlotEXT(PrivateDataSlotEXT privateDataSlot = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyPrivateDataSlotEXT(device,
@@ -13148,7 +13148,7 @@ void CmdResolveImage2KHR(CommandBuffer commandBuffer,
     pfn_CmdResolveImage2KHR(commandBuffer,
         &pResolveImageInfo);
 }
-explicit DeviceFunctions() noexcept {}
+DeviceFunctions() noexcept {}
 explicit DeviceFunctions(InstanceFunctions const& instance_functions, Device device) noexcept 
     :device(device) {
     detail::PFN_GetDeviceProcAddr get_device_proc_addr = instance_functions.pfn_GetDeviceProcAddr;
@@ -13509,11 +13509,11 @@ struct PhysicalDeviceFunctions {
     return instance_functions->GetPhysicalDeviceFeatures(physicaldevice); }
 [[nodiscard]] FormatProperties GetFormatProperties(Format format) const {
     return instance_functions->GetPhysicalDeviceFormatProperties(physicaldevice, format); }
-[[nodiscard]] expected<ImageFormatProperties> GetImageFormatProperties(Format format, ImageType type, ImageTiling tiling, ImageUsageFlags usage, ImageCreateFlags flags) const {
+[[nodiscard]] expected<ImageFormatProperties> GetImageFormatProperties(Format format, ImageType type, ImageTiling tiling, ImageUsageFlags usage, ImageCreateFlags flags = {}) const {
     return instance_functions->GetPhysicalDeviceImageFormatProperties(physicaldevice, format, type, tiling, usage, flags); }
-[[nodiscard]] expected<Device> CreateDevice(const DeviceCreateInfo&  pCreateInfo, const AllocationCallbacks* pAllocator) const {
+[[nodiscard]] expected<Device> CreateDevice(const DeviceCreateInfo&  pCreateInfo, const AllocationCallbacks* pAllocator = nullptr) const {
     return instance_functions->CreateDevice(physicaldevice, pCreateInfo, pAllocator); }
-[[nodiscard]] expected<detail::fixed_vector<ExtensionProperties>> EnumerateDeviceExtensionProperties(const char* pLayerName) const {
+[[nodiscard]] expected<detail::fixed_vector<ExtensionProperties>> EnumerateDeviceExtensionProperties(const char* pLayerName = nullptr) const {
     return instance_functions->EnumerateDeviceExtensionProperties(physicaldevice, pLayerName); }
 [[nodiscard]] detail::fixed_vector<SparseImageFormatProperties> GetSparseImageFormatProperties(Format format, ImageType type, SampleCountFlagBits samples, ImageUsageFlags usage, ImageTiling tiling) const {
     return instance_functions->GetPhysicalDeviceSparseImageFormatProperties(physicaldevice, format, type, samples, usage, tiling); }
@@ -13525,7 +13525,7 @@ struct PhysicalDeviceFunctions {
     return instance_functions->GetDisplayPlaneSupportedDisplaysKHR(physicaldevice, planeIndex); }
 [[nodiscard]] expected<detail::fixed_vector<DisplayModePropertiesKHR>> GetDisplayModePropertiesKHR(DisplayKHR display) const {
     return instance_functions->GetDisplayModePropertiesKHR(physicaldevice, display); }
-[[nodiscard]] expected<DisplayModeKHR> CreateDisplayModeKHR(DisplayKHR display, const DisplayModeCreateInfoKHR&  pCreateInfo, const AllocationCallbacks* pAllocator) const {
+[[nodiscard]] expected<DisplayModeKHR> CreateDisplayModeKHR(DisplayKHR display, const DisplayModeCreateInfoKHR&  pCreateInfo, const AllocationCallbacks* pAllocator = nullptr) const {
     return instance_functions->CreateDisplayModeKHR(physicaldevice, display, pCreateInfo, pAllocator); }
 [[nodiscard]] expected<DisplayPlaneCapabilitiesKHR> GetDisplayPlaneCapabilitiesKHR(DisplayModeKHR mode, uint32_t planeIndex) const {
     return instance_functions->GetDisplayPlaneCapabilitiesKHR(physicaldevice, mode, planeIndex); }
@@ -13557,7 +13557,7 @@ struct PhysicalDeviceFunctions {
 [[nodiscard]] expected<IDirectFB> GetDirectFBPresentationSupportEXT(uint32_t queueFamilyIndex) const {
     return instance_functions->GetPhysicalDeviceDirectFBPresentationSupportEXT(physicaldevice, queueFamilyIndex); }
 #endif // defined(VK_USE_PLATFORM_DIRECTFB_EXT)
-[[nodiscard]] expected<ExternalImageFormatPropertiesNV> GetExternalImageFormatPropertiesNV(Format format, ImageType type, ImageTiling tiling, ImageUsageFlags usage, ImageCreateFlags flags, ExternalMemoryHandleTypeFlagsNV externalHandleType) const {
+[[nodiscard]] expected<ExternalImageFormatPropertiesNV> GetExternalImageFormatPropertiesNV(Format format, ImageType type, ImageTiling tiling, ImageUsageFlags usage, ImageCreateFlags flags = {}, ExternalMemoryHandleTypeFlagsNV externalHandleType = {}) const {
     return instance_functions->GetPhysicalDeviceExternalImageFormatPropertiesNV(physicaldevice, format, type, tiling, usage, flags, externalHandleType); }
 [[nodiscard]] PhysicalDeviceFeatures2 GetFeatures2() const {
     return instance_functions->GetPhysicalDeviceFeatures2(physicaldevice); }
@@ -13613,7 +13613,7 @@ struct PhysicalDeviceFunctions {
 [[nodiscard]] expected<detail::fixed_vector<PresentModeKHR>> GetSurfacePresentModes2EXT(const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) const {
     return instance_functions->GetPhysicalDeviceSurfacePresentModes2EXT(physicaldevice, pSurfaceInfo); }
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
-[[nodiscard]] Result EnumerateQueueFamilyPerformanceQueryCountersKHR(uint32_t queueFamilyIndex, uint32_t&  pCounterCount, PerformanceCounterKHR* pCounters, PerformanceCounterDescriptionKHR* pCounterDescriptions) const {
+[[nodiscard]] Result EnumerateQueueFamilyPerformanceQueryCountersKHR(uint32_t queueFamilyIndex, uint32_t&  pCounterCount, PerformanceCounterKHR* pCounters = nullptr, PerformanceCounterDescriptionKHR* pCounterDescriptions = nullptr) const {
     return instance_functions->EnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR(physicaldevice, queueFamilyIndex, pCounterCount, pCounters, pCounterDescriptions); }
 [[nodiscard]] uint32_t GetQueueFamilyPerformanceQueryPassesKHR(const QueryPoolPerformanceCreateInfoKHR&  pPerformanceQueryCreateInfo) const {
     return instance_functions->GetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR(physicaldevice, pPerformanceQueryCreateInfo); }
@@ -13630,11 +13630,11 @@ struct QueueFunctions {
     QueueFunctions() noexcept {}
     QueueFunctions(DeviceFunctions const& device_functions, Queue const queue) noexcept:
     device_functions{&device_functions}, queue{queue} {}
-[[nodiscard]] Result Submit(detail::span<const SubmitInfo> Submits, Fence fence) const {
+[[nodiscard]] Result Submit(detail::span<const SubmitInfo> Submits, Fence fence = {}) const {
     return device_functions->QueueSubmit(queue, Submits, fence); }
 [[nodiscard]] Result WaitIdle() const {
     return device_functions->QueueWaitIdle(queue); }
-[[nodiscard]] Result BindSparse(detail::span<const BindSparseInfo> BindInfo, Fence fence) const {
+[[nodiscard]] Result BindSparse(detail::span<const BindSparseInfo> BindInfo, Fence fence = {}) const {
     return device_functions->QueueBindSparse(queue, BindInfo, fence); }
 [[nodiscard]] Result PresentKHR(const PresentInfoKHR&  pPresentInfo) const {
     return device_functions->QueuePresentKHR(queue, pPresentInfo); }
@@ -13659,7 +13659,7 @@ struct CommandBufferFunctions {
     return device_functions->BeginCommandBuffer(commandbuffer, pBeginInfo); }
 [[nodiscard]] Result End() const {
     return device_functions->EndCommandBuffer(commandbuffer); }
-[[nodiscard]] Result Reset(CommandBufferResetFlags flags) const {
+[[nodiscard]] Result Reset(CommandBufferResetFlags flags = {}) const {
     return device_functions->ResetCommandBuffer(commandbuffer, flags); }
 CommandBufferFunctions const& BindPipeline(PipelineBindPoint pipelineBindPoint, Pipeline pipeline) const {
     device_functions->CmdBindPipeline(commandbuffer, pipelineBindPoint, pipeline);
@@ -13763,7 +13763,7 @@ CommandBufferFunctions const& WaitEvents(detail::span<const Event> Events, Pipel
 CommandBufferFunctions const& PipelineBarrier(PipelineStageFlags srcStageMask, PipelineStageFlags dstStageMask, DependencyFlags dependencyFlags, detail::span<const MemoryBarrier> MemoryBarriers, detail::span<const BufferMemoryBarrier> BufferMemoryBarriers, detail::span<const ImageMemoryBarrier> ImageMemoryBarriers) const {
     device_functions->CmdPipelineBarrier(commandbuffer, srcStageMask, dstStageMask, dependencyFlags, MemoryBarriers, BufferMemoryBarriers, ImageMemoryBarriers);
     return *this; }
-CommandBufferFunctions const& BeginQuery(QueryPool queryPool, uint32_t query, QueryControlFlags flags) const {
+CommandBufferFunctions const& BeginQuery(QueryPool queryPool, uint32_t query, QueryControlFlags flags = {}) const {
     device_functions->CmdBeginQuery(commandbuffer, queryPool, query, flags);
     return *this; }
 CommandBufferFunctions const& EndQuery(QueryPool queryPool, uint32_t query) const {
@@ -13781,7 +13781,7 @@ CommandBufferFunctions const& ResetQueryPool(QueryPool queryPool, uint32_t first
 CommandBufferFunctions const& WriteTimestamp(PipelineStageFlagBits pipelineStage, QueryPool queryPool, uint32_t query) const {
     device_functions->CmdWriteTimestamp(commandbuffer, pipelineStage, queryPool, query);
     return *this; }
-CommandBufferFunctions const& CopyQueryPoolResults(QueryPool queryPool, uint32_t firstQuery, uint32_t queryCount, Buffer dstBuffer, DeviceSize dstOffset, DeviceSize stride, QueryResultFlags flags) const {
+CommandBufferFunctions const& CopyQueryPoolResults(QueryPool queryPool, uint32_t firstQuery, uint32_t queryCount, Buffer dstBuffer, DeviceSize dstOffset, DeviceSize stride, QueryResultFlags flags = {}) const {
     device_functions->CmdCopyQueryPoolResults(commandbuffer, queryPool, firstQuery, queryCount, dstBuffer, dstOffset, stride, flags);
     return *this; }
 CommandBufferFunctions const& PushConstants(PipelineLayout layout, ShaderStageFlags stageFlags, uint32_t offset, detail::span<const std::byte> Values) const {
@@ -13868,13 +13868,13 @@ CommandBufferFunctions const& DrawIndexedIndirectCount(Buffer buffer, DeviceSize
 CommandBufferFunctions const& SetCheckpointNV(const void* pCheckpointMarker) const {
     device_functions->CmdSetCheckpointNV(commandbuffer, pCheckpointMarker);
     return *this; }
-CommandBufferFunctions const& BindTransformFeedbackBuffersEXT(uint32_t firstBinding, detail::span<const Buffer> Buffers, detail::span<const DeviceSize> Offsets, detail::span<const DeviceSize> Sizes) const {
+CommandBufferFunctions const& BindTransformFeedbackBuffersEXT(uint32_t firstBinding, detail::span<const Buffer> Buffers, detail::span<const DeviceSize> Offsets, detail::span<const DeviceSize> Sizes = {}) const {
     device_functions->CmdBindTransformFeedbackBuffersEXT(commandbuffer, firstBinding, Buffers, Offsets, Sizes);
     return *this; }
-CommandBufferFunctions const& BeginTransformFeedbackEXT(uint32_t firstCounterBuffer, detail::span<const Buffer> CounterBuffers, detail::span<const DeviceSize> CounterBufferOffsets) const {
+CommandBufferFunctions const& BeginTransformFeedbackEXT(uint32_t firstCounterBuffer, detail::span<const Buffer> CounterBuffers, detail::span<const DeviceSize> CounterBufferOffsets = {}) const {
     device_functions->CmdBeginTransformFeedbackEXT(commandbuffer, firstCounterBuffer, CounterBuffers, CounterBufferOffsets);
     return *this; }
-CommandBufferFunctions const& EndTransformFeedbackEXT(uint32_t firstCounterBuffer, detail::span<const Buffer> CounterBuffers, detail::span<const DeviceSize> CounterBufferOffsets) const {
+CommandBufferFunctions const& EndTransformFeedbackEXT(uint32_t firstCounterBuffer, detail::span<const Buffer> CounterBuffers, detail::span<const DeviceSize> CounterBufferOffsets = {}) const {
     device_functions->CmdEndTransformFeedbackEXT(commandbuffer, firstCounterBuffer, CounterBuffers, CounterBufferOffsets);
     return *this; }
 CommandBufferFunctions const& BeginQueryIndexedEXT(QueryPool queryPool, uint32_t query, QueryControlFlags flags, uint32_t index) const {
@@ -13955,7 +13955,7 @@ CommandBufferFunctions const& BuildAccelerationStructuresKHR(detail::span<const 
 CommandBufferFunctions const& BuildAccelerationStructuresIndirectKHR(detail::span<const AccelerationStructureBuildGeometryInfoKHR> Infos, detail::span<const DeviceAddress> IndirectDeviceAddresses, detail::span<const uint32_t> IndirectStrides, detail::span<const uint32_t*> pMaxPrimitiveCounts) const {
     device_functions->CmdBuildAccelerationStructuresIndirectKHR(commandbuffer, Infos, IndirectDeviceAddresses, IndirectStrides, pMaxPrimitiveCounts);
     return *this; }
-CommandBufferFunctions const& SetCullModeEXT(CullModeFlags cullMode) const {
+CommandBufferFunctions const& SetCullModeEXT(CullModeFlags cullMode = {}) const {
     device_functions->CmdSetCullModeEXT(commandbuffer, cullMode);
     return *this; }
 CommandBufferFunctions const& SetFrontFaceEXT(FrontFace frontFace) const {
@@ -13970,7 +13970,7 @@ CommandBufferFunctions const& SetViewportWithCountEXT(detail::span<const Viewpor
 CommandBufferFunctions const& SetScissorWithCountEXT(detail::span<const Rect2D> Scissors) const {
     device_functions->CmdSetScissorWithCountEXT(commandbuffer, Scissors);
     return *this; }
-CommandBufferFunctions const& BindVertexBuffers2EXT(uint32_t firstBinding, detail::span<const Buffer> Buffers, detail::span<const DeviceSize> Offsets, detail::span<const DeviceSize> Sizes, detail::span<const DeviceSize> Strides) const {
+CommandBufferFunctions const& BindVertexBuffers2EXT(uint32_t firstBinding, detail::span<const Buffer> Buffers, detail::span<const DeviceSize> Offsets, detail::span<const DeviceSize> Sizes = {}, detail::span<const DeviceSize> Strides = {}) const {
     device_functions->CmdBindVertexBuffers2EXT(commandbuffer, firstBinding, Buffers, Offsets, Sizes, Strides);
     return *this; }
 CommandBufferFunctions const& SetDepthTestEnableEXT(Bool32 depthTestEnable) const {
