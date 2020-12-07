@@ -11,6 +11,8 @@
 #include <utility>
 #include "vk_platform.h"
 
+//maybe temporary
+#include <vector>
 
 // Compatability with compilers that don't support __has_feature
 #ifndef __has_feature
@@ -3412,8 +3414,8 @@ struct DeviceCreateInfo {
     DeviceCreateFlags flags{};
     uint32_t queueCreateInfoCount{0};
     const DeviceQueueCreateInfo* pQueueCreateInfos = nullptr;
-[[deprecated]]    uint32_t enabledLayerCount{0};
-[[deprecated]]    const char* const* ppEnabledLayerNames = nullptr;
+/*deprecated*/    uint32_t enabledLayerCount{0};
+/*deprecated*/    const char* const* ppEnabledLayerNames = nullptr;
     uint32_t enabledExtensionCount{0};
     const char* const* ppEnabledExtensionNames = nullptr;
     const PhysicalDeviceFeatures* pEnabledFeatures = nullptr;
@@ -8474,7 +8476,6 @@ private:
     
 };
 
-
 namespace detail {
 /* Array data structure where the length is determined at construction time.
  * Cannot resize, add, or delete elements from.
@@ -8543,8 +8544,6 @@ struct fixed_vector
 };
 } // namespace detail
 
-
-
 /* Return type for Vulkan Module API functions which return a value or values
  * Holds a T value or a vk::Result for indicating the error
  * Do not use with success codes other than zero
@@ -8604,14 +8603,12 @@ namespace std {
 }
 
 namespace vk {
-
-
 namespace detail {
 template<typename T>
 class span {
 public:
     constexpr span() noexcept = default;
-    constexpr span(T const& value) noexcept : _data{&value}, _count{1} {}
+    constexpr span(T const& value) noexcept : _data{ std::addressof(const_cast<T&>(value)) }, _count{1} {}
     constexpr explicit span(T* data, uint32_t count) noexcept : _data{data}, _count{count} {}
 
     // requires std::data(Range const&)
@@ -8662,7 +8659,93 @@ private:
     T* _data;
     uint32_t _count;
 };
+
+template<typename T>
+struct optional {
+    T _value;
+    bool _has_value = false;
+
+    constexpr optional() noexcept = default;
+    constexpr explicit optional(T value) noexcept :_value(value), _has_value(true) {}
+
+    constexpr optional& operator=(T value) noexcept { _value = value; _has_value = true; return *this; };
+
+    constexpr void reset() noexcept { _has_value = false; }
+
+    constexpr T* ptr_or_nullptr() noexcept { return _has_value ? &_value : nullptr; }
+    constexpr T const* ptr_or_nullptr() const noexcept { return _has_value ? &_value : nullptr; }
+
+    constexpr bool has_value() const noexcept { return _has_value; }
+
+};
+
 } // namespace detail
+
+// Unique Handle wrapper for RAII handle types
+// DispatchableHandle is a `VkInstance` or `VkDevice` handle
+// HandleType is a `vk::Handle` type
+// Delete is a PFN_vk*** function that matches the desired type
+template <typename DispatchableHandle, typename HandleType, typename Deleter>
+class unique_handle
+{
+public:
+    unique_handle() = default;
+    explicit unique_handle(DispatchableHandle dispatch_handle, HandleType handle, Deleter deleter) noexcept
+        : dispatch_handle(dispatch_handle), handle(handle), deleter(deleter) { }
+    ~unique_handle() noexcept { reset(); };
+    unique_handle(unique_handle const& other) = delete;
+    unique_handle& operator=(unique_handle const& other) = delete;
+
+    unique_handle(unique_handle&& other) noexcept
+        : dispatch_handle{other.dispatch_handle}, 
+          handle{std::exchange(other.handle, nullptr)}, 
+          deleter{other.deleter} { }
+    unique_handle& operator=(unique_handle&& other) noexcept
+    {
+        if (this != &other)
+        {
+            reset();
+            dispatch_handle = other.dispatch_handle;
+            handle = std::exchange(other.handle, {}); 
+            deleter = other.deleter;
+        }
+        return *this;
+    }
+
+    HandleType release() noexcept {
+        return std::exchange(handle, {});
+    }
+
+    void reset() noexcept {
+        if (handle)
+        {
+            deleter(dispatch_handle, handle.get(), nullptr);
+        }
+    }
+
+    const HandleType address() const noexcept {
+        return std::addressof(handle.get());
+    }
+
+    HandleType operator*() const noexcept {
+        return handle;
+    }
+
+    [[nodiscard]] HandleType get() const noexcept { return handle; }
+
+    HandleType operator->() const noexcept { return handle; }
+
+    explicit operator bool() const noexcept { return handle; }
+
+    DispatchableHandle dispatch_handle;
+    HandleType handle;
+    Deleter deleter;
+};
+
+// Add special case for VkInstance
+
+
+
 
 
 struct GlobalFunctions {
@@ -12296,13 +12379,13 @@ void CmdBuildAccelerationStructuresIndirectKHR(CommandBuffer commandBuffer,
 }
 [[nodiscard]] AccelerationStructureBuildSizesInfoKHR GetAccelerationStructureBuildSizesKHR(AccelerationStructureBuildTypeKHR buildType, 
     const AccelerationStructureBuildGeometryInfoKHR&  pBuildInfo, 
-    const uint32_t* pMaxPrimitiveCounts) const {
+    detail::span<const uint32_t> MaxPrimitiveCounts) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     AccelerationStructureBuildSizesInfoKHR pSizeInfo;
     pfn_GetAccelerationStructureBuildSizesKHR(device,
         buildType,
         &pBuildInfo,
-        pMaxPrimitiveCounts,
+        MaxPrimitiveCounts.data(),
         &pSizeInfo);
     return pSizeInfo;
 }
@@ -13960,6 +14043,5243 @@ CommandBufferFunctions const& SetFragmentShadingRateKHR(const Extent2D&  pFragme
 CommandBufferFunctions const& SetFragmentShadingRateEnumNV(FragmentShadingRateNV shadingRate, const FragmentShadingRateCombinerOpKHR combinerOps[2]) const {
     device_functions->CmdSetFragmentShadingRateEnumNV(commandbuffer, shadingRate, combinerOps);
     return *this; }
+};
+class BaseOutStructureBuilder {
+    BaseOutStructure data;
+    std::vector<void*> pNext;
+    public:
+    BaseOutStructureBuilder() noexcept{}
+    BaseOutStructure build() {
+        BaseOutStructure out{data};
+        return out; }
+};
+class BaseInStructureBuilder {
+    BaseInStructure data;
+    std::vector<void*> pNext;
+    public:
+    BaseInStructureBuilder() noexcept{}
+    BaseInStructure build() {
+        BaseInStructure out{data};
+        return out; }
+};
+class ApplicationInfoBuilder {
+    ApplicationInfo data;
+    std::vector<void*> pNext;
+    std::string pApplicationName;
+    std::string pEngineName;
+    public:
+    ApplicationInfoBuilder() noexcept{}
+    ApplicationInfoBuilder& addApplicationName(std::string pApplicationName) { this->pApplicationName = pApplicationName; return *this; }
+    ApplicationInfoBuilder& setApplicationVersion(uint32_t applicationVersion) { this->data.applicationVersion = applicationVersion; return *this; }
+    ApplicationInfoBuilder& addEngineName(std::string pEngineName) { this->pEngineName = pEngineName; return *this; }
+    ApplicationInfoBuilder& setEngineVersion(uint32_t engineVersion) { this->data.engineVersion = engineVersion; return *this; }
+    ApplicationInfoBuilder& setApiVersion(uint32_t apiVersion) { this->data.apiVersion = apiVersion; return *this; }
+    ApplicationInfo build() {
+        ApplicationInfo out{data};
+        out.pApplicationName = pApplicationName.data();
+        out.pEngineName = pEngineName.data();
+        return out; }
+};
+class AllocationCallbacksBuilder {
+    AllocationCallbacks data;
+    public:
+    AllocationCallbacksBuilder() noexcept{}
+    AllocationCallbacksBuilder& setPfnAllocation(PFN_AllocationFunction pfnAllocation) { this->data.pfnAllocation = pfnAllocation; return *this; }
+    AllocationCallbacksBuilder& setPfnReallocation(PFN_ReallocationFunction pfnReallocation) { this->data.pfnReallocation = pfnReallocation; return *this; }
+    AllocationCallbacksBuilder& setPfnFree(PFN_FreeFunction pfnFree) { this->data.pfnFree = pfnFree; return *this; }
+    AllocationCallbacksBuilder& setPfnInternalAllocation(PFN_InternalAllocationNotification pfnInternalAllocation) { this->data.pfnInternalAllocation = pfnInternalAllocation; return *this; }
+    AllocationCallbacksBuilder& setPfnInternalFree(PFN_InternalFreeNotification pfnInternalFree) { this->data.pfnInternalFree = pfnInternalFree; return *this; }
+    AllocationCallbacks build() {
+        AllocationCallbacks out{data};
+        return out; }
+};
+class DeviceQueueCreateInfoBuilder {
+    DeviceQueueCreateInfo data;
+    std::vector<void*> pNext;
+    std::vector<float> pQueuePriorities;
+    public:
+    DeviceQueueCreateInfoBuilder() noexcept{}
+    DeviceQueueCreateInfoBuilder& setFlags(DeviceQueueCreateFlags flags) { this->data.flags = flags; return *this; }
+    DeviceQueueCreateInfoBuilder& setQueueFamilyIndex(uint32_t queueFamilyIndex) { this->data.queueFamilyIndex = queueFamilyIndex; return *this; }
+    DeviceQueueCreateInfoBuilder& addQueuePriorities(float pQueuePriorities) { this->pQueuePriorities.push_back(pQueuePriorities); return *this; }
+    DeviceQueueCreateInfo build() {
+        DeviceQueueCreateInfo out{data};
+        out.queueCount = (uint32_t)pQueuePriorities.size();
+        out.pQueuePriorities = pQueuePriorities.data();
+        return out; }
+};
+class DeviceCreateInfoBuilder {
+    DeviceCreateInfo data;
+    std::vector<void*> pNext;
+    std::vector<DeviceQueueCreateInfo> pQueueCreateInfos;
+    std::vector<std::string> ppEnabledExtensionNames;
+    std::vector<const char *> ppEnabledExtensionNames_c_str;
+    detail::optional<PhysicalDeviceFeatures> pEnabledFeatures;
+    public:
+    DeviceCreateInfoBuilder() noexcept{}
+    DeviceCreateInfoBuilder& setFlags(DeviceCreateFlags flags) { this->data.flags = flags; return *this; }
+    DeviceCreateInfoBuilder& addQueueCreateInfos(DeviceQueueCreateInfo pQueueCreateInfos) { this->pQueueCreateInfos.push_back(pQueueCreateInfos); return *this; }
+    DeviceCreateInfoBuilder& addEnabledExtensionNames(std::string ppEnabledExtensionNames) { this->ppEnabledExtensionNames.push_back(ppEnabledExtensionNames);this->ppEnabledExtensionNames_c_str.push_back(this->ppEnabledExtensionNames.back().c_str()); return *this; }
+    DeviceCreateInfoBuilder& setEnabledFeatures(PhysicalDeviceFeatures pEnabledFeatures) { this->pEnabledFeatures = pEnabledFeatures; return *this; }
+    DeviceCreateInfo build() {
+        DeviceCreateInfo out{data};
+        out.queueCreateInfoCount = (uint32_t)pQueueCreateInfos.size();
+        out.pQueueCreateInfos = pQueueCreateInfos.data();
+        out.enabledExtensionCount = (uint32_t)ppEnabledExtensionNames.size();
+        out.ppEnabledExtensionNames = ppEnabledExtensionNames_c_str.data();
+        out.pEnabledFeatures = pEnabledFeatures.ptr_or_nullptr();
+        return out; }
+};
+class InstanceCreateInfoBuilder {
+    InstanceCreateInfo data;
+    std::vector<void*> pNext;
+    detail::optional<ApplicationInfo> pApplicationInfo;
+    std::vector<std::string> ppEnabledLayerNames;
+    std::vector<const char *> ppEnabledLayerNames_c_str;
+    std::vector<std::string> ppEnabledExtensionNames;
+    std::vector<const char *> ppEnabledExtensionNames_c_str;
+    public:
+    InstanceCreateInfoBuilder() noexcept{}
+    InstanceCreateInfoBuilder& setFlags(InstanceCreateFlags flags) { this->data.flags = flags; return *this; }
+    InstanceCreateInfoBuilder& setApplicationInfo(ApplicationInfo pApplicationInfo) { this->pApplicationInfo = pApplicationInfo; return *this; }
+    InstanceCreateInfoBuilder& addEnabledLayerNames(std::string ppEnabledLayerNames) { this->ppEnabledLayerNames.push_back(ppEnabledLayerNames);this->ppEnabledLayerNames_c_str.push_back(this->ppEnabledLayerNames.back().c_str()); return *this; }
+    InstanceCreateInfoBuilder& addEnabledExtensionNames(std::string ppEnabledExtensionNames) { this->ppEnabledExtensionNames.push_back(ppEnabledExtensionNames);this->ppEnabledExtensionNames_c_str.push_back(this->ppEnabledExtensionNames.back().c_str()); return *this; }
+    InstanceCreateInfo build() {
+        InstanceCreateInfo out{data};
+        out.pApplicationInfo = pApplicationInfo.ptr_or_nullptr();
+        out.enabledLayerCount = (uint32_t)ppEnabledLayerNames.size();
+        out.ppEnabledLayerNames = ppEnabledLayerNames_c_str.data();
+        out.enabledExtensionCount = (uint32_t)ppEnabledExtensionNames.size();
+        out.ppEnabledExtensionNames = ppEnabledExtensionNames_c_str.data();
+        return out; }
+};
+class MemoryAllocateInfoBuilder {
+    MemoryAllocateInfo data;
+    std::vector<void*> pNext;
+    public:
+    MemoryAllocateInfoBuilder() noexcept{}
+    MemoryAllocateInfoBuilder& setAllocationSize(DeviceSize allocationSize) { this->data.allocationSize = allocationSize; return *this; }
+    MemoryAllocateInfoBuilder& setMemoryTypeIndex(uint32_t memoryTypeIndex) { this->data.memoryTypeIndex = memoryTypeIndex; return *this; }
+    MemoryAllocateInfo build() {
+        MemoryAllocateInfo out{data};
+        return out; }
+};
+class MappedMemoryRangeBuilder {
+    MappedMemoryRange data;
+    std::vector<void*> pNext;
+    public:
+    MappedMemoryRangeBuilder() noexcept{}
+    MappedMemoryRangeBuilder& setMemory(DeviceMemory memory) { this->data.memory = memory; return *this; }
+    MappedMemoryRangeBuilder& setOffset(DeviceSize offset) { this->data.offset = offset; return *this; }
+    MappedMemoryRangeBuilder& setSize(DeviceSize size) { this->data.size = size; return *this; }
+    MappedMemoryRange build() {
+        MappedMemoryRange out{data};
+        return out; }
+};
+class WriteDescriptorSetBuilder {
+    WriteDescriptorSet data;
+    std::vector<void*> pNext;
+    std::vector<DescriptorImageInfo> pImageInfo;
+    std::vector<DescriptorBufferInfo> pBufferInfo;
+    std::vector<BufferView> pTexelBufferView;
+    public:
+    WriteDescriptorSetBuilder() noexcept{}
+    WriteDescriptorSetBuilder& setDstSet(DescriptorSet dstSet) { this->data.dstSet = dstSet; return *this; }
+    WriteDescriptorSetBuilder& setDstBinding(uint32_t dstBinding) { this->data.dstBinding = dstBinding; return *this; }
+    WriteDescriptorSetBuilder& setDstArrayElement(uint32_t dstArrayElement) { this->data.dstArrayElement = dstArrayElement; return *this; }
+    WriteDescriptorSetBuilder& setDescriptorType(DescriptorType descriptorType) { this->data.descriptorType = descriptorType; return *this; }
+    WriteDescriptorSetBuilder& addImageInfo(DescriptorImageInfo pImageInfo) { this->pImageInfo.push_back(pImageInfo); return *this; }
+    WriteDescriptorSetBuilder& addBufferInfo(DescriptorBufferInfo pBufferInfo) { this->pBufferInfo.push_back(pBufferInfo); return *this; }
+    WriteDescriptorSetBuilder& addTexelBufferView(BufferView pTexelBufferView) { this->pTexelBufferView.push_back(pTexelBufferView); return *this; }
+    WriteDescriptorSet build() {
+        WriteDescriptorSet out{data};
+        out.descriptorCount = (uint32_t)pImageInfo.size();
+        out.pImageInfo = pImageInfo.data();
+        out.pBufferInfo = pBufferInfo.data();
+        out.pTexelBufferView = pTexelBufferView.data();
+        return out; }
+};
+class CopyDescriptorSetBuilder {
+    CopyDescriptorSet data;
+    std::vector<void*> pNext;
+    public:
+    CopyDescriptorSetBuilder() noexcept{}
+    CopyDescriptorSetBuilder& setSrcSet(DescriptorSet srcSet) { this->data.srcSet = srcSet; return *this; }
+    CopyDescriptorSetBuilder& setSrcBinding(uint32_t srcBinding) { this->data.srcBinding = srcBinding; return *this; }
+    CopyDescriptorSetBuilder& setSrcArrayElement(uint32_t srcArrayElement) { this->data.srcArrayElement = srcArrayElement; return *this; }
+    CopyDescriptorSetBuilder& setDstSet(DescriptorSet dstSet) { this->data.dstSet = dstSet; return *this; }
+    CopyDescriptorSetBuilder& setDstBinding(uint32_t dstBinding) { this->data.dstBinding = dstBinding; return *this; }
+    CopyDescriptorSetBuilder& setDstArrayElement(uint32_t dstArrayElement) { this->data.dstArrayElement = dstArrayElement; return *this; }
+    CopyDescriptorSetBuilder& setDescriptorCount(uint32_t descriptorCount) { this->data.descriptorCount = descriptorCount; return *this; }
+    CopyDescriptorSet build() {
+        CopyDescriptorSet out{data};
+        return out; }
+};
+class BufferCreateInfoBuilder {
+    BufferCreateInfo data;
+    std::vector<void*> pNext;
+    std::vector<uint32_t> pQueueFamilyIndices;
+    public:
+    BufferCreateInfoBuilder() noexcept{}
+    BufferCreateInfoBuilder& setFlags(BufferCreateFlags flags) { this->data.flags = flags; return *this; }
+    BufferCreateInfoBuilder& setSize(DeviceSize size) { this->data.size = size; return *this; }
+    BufferCreateInfoBuilder& setUsage(BufferUsageFlags usage) { this->data.usage = usage; return *this; }
+    BufferCreateInfoBuilder& setSharingMode(SharingMode sharingMode) { this->data.sharingMode = sharingMode; return *this; }
+    BufferCreateInfoBuilder& addQueueFamilyIndices(uint32_t pQueueFamilyIndices) { this->pQueueFamilyIndices.push_back(pQueueFamilyIndices); return *this; }
+    BufferCreateInfo build() {
+        BufferCreateInfo out{data};
+        out.queueFamilyIndexCount = (uint32_t)pQueueFamilyIndices.size();
+        out.pQueueFamilyIndices = pQueueFamilyIndices.data();
+        return out; }
+};
+class BufferViewCreateInfoBuilder {
+    BufferViewCreateInfo data;
+    std::vector<void*> pNext;
+    public:
+    BufferViewCreateInfoBuilder() noexcept{}
+    BufferViewCreateInfoBuilder& setFlags(BufferViewCreateFlags flags) { this->data.flags = flags; return *this; }
+    BufferViewCreateInfoBuilder& setBuffer(Buffer buffer) { this->data.buffer = buffer; return *this; }
+    BufferViewCreateInfoBuilder& setFormat(Format format) { this->data.format = format; return *this; }
+    BufferViewCreateInfoBuilder& setOffset(DeviceSize offset) { this->data.offset = offset; return *this; }
+    BufferViewCreateInfoBuilder& setRange(DeviceSize range) { this->data.range = range; return *this; }
+    BufferViewCreateInfo build() {
+        BufferViewCreateInfo out{data};
+        return out; }
+};
+class MemoryBarrierBuilder {
+    MemoryBarrier data;
+    std::vector<void*> pNext;
+    public:
+    MemoryBarrierBuilder() noexcept{}
+    MemoryBarrierBuilder& setSrcAccessMask(AccessFlags srcAccessMask) { this->data.srcAccessMask = srcAccessMask; return *this; }
+    MemoryBarrierBuilder& setDstAccessMask(AccessFlags dstAccessMask) { this->data.dstAccessMask = dstAccessMask; return *this; }
+    MemoryBarrier build() {
+        MemoryBarrier out{data};
+        return out; }
+};
+class BufferMemoryBarrierBuilder {
+    BufferMemoryBarrier data;
+    std::vector<void*> pNext;
+    public:
+    BufferMemoryBarrierBuilder() noexcept{}
+    BufferMemoryBarrierBuilder& setSrcAccessMask(AccessFlags srcAccessMask) { this->data.srcAccessMask = srcAccessMask; return *this; }
+    BufferMemoryBarrierBuilder& setDstAccessMask(AccessFlags dstAccessMask) { this->data.dstAccessMask = dstAccessMask; return *this; }
+    BufferMemoryBarrierBuilder& setSrcQueueFamilyIndex(uint32_t srcQueueFamilyIndex) { this->data.srcQueueFamilyIndex = srcQueueFamilyIndex; return *this; }
+    BufferMemoryBarrierBuilder& setDstQueueFamilyIndex(uint32_t dstQueueFamilyIndex) { this->data.dstQueueFamilyIndex = dstQueueFamilyIndex; return *this; }
+    BufferMemoryBarrierBuilder& setBuffer(Buffer buffer) { this->data.buffer = buffer; return *this; }
+    BufferMemoryBarrierBuilder& setOffset(DeviceSize offset) { this->data.offset = offset; return *this; }
+    BufferMemoryBarrierBuilder& setSize(DeviceSize size) { this->data.size = size; return *this; }
+    BufferMemoryBarrier build() {
+        BufferMemoryBarrier out{data};
+        return out; }
+};
+class ImageMemoryBarrierBuilder {
+    ImageMemoryBarrier data;
+    std::vector<void*> pNext;
+    public:
+    ImageMemoryBarrierBuilder() noexcept{}
+    ImageMemoryBarrierBuilder& setSrcAccessMask(AccessFlags srcAccessMask) { this->data.srcAccessMask = srcAccessMask; return *this; }
+    ImageMemoryBarrierBuilder& setDstAccessMask(AccessFlags dstAccessMask) { this->data.dstAccessMask = dstAccessMask; return *this; }
+    ImageMemoryBarrierBuilder& setOldLayout(ImageLayout oldLayout) { this->data.oldLayout = oldLayout; return *this; }
+    ImageMemoryBarrierBuilder& setNewLayout(ImageLayout newLayout) { this->data.newLayout = newLayout; return *this; }
+    ImageMemoryBarrierBuilder& setSrcQueueFamilyIndex(uint32_t srcQueueFamilyIndex) { this->data.srcQueueFamilyIndex = srcQueueFamilyIndex; return *this; }
+    ImageMemoryBarrierBuilder& setDstQueueFamilyIndex(uint32_t dstQueueFamilyIndex) { this->data.dstQueueFamilyIndex = dstQueueFamilyIndex; return *this; }
+    ImageMemoryBarrierBuilder& setImage(Image image) { this->data.image = image; return *this; }
+    ImageMemoryBarrierBuilder& setSubresourceRange(ImageSubresourceRange subresourceRange) { this->data.subresourceRange = subresourceRange; return *this; }
+    ImageMemoryBarrier build() {
+        ImageMemoryBarrier out{data};
+        return out; }
+};
+class ImageCreateInfoBuilder {
+    ImageCreateInfo data;
+    std::vector<void*> pNext;
+    std::vector<uint32_t> pQueueFamilyIndices;
+    public:
+    ImageCreateInfoBuilder() noexcept{}
+    ImageCreateInfoBuilder& setFlags(ImageCreateFlags flags) { this->data.flags = flags; return *this; }
+    ImageCreateInfoBuilder& setImageType(ImageType imageType) { this->data.imageType = imageType; return *this; }
+    ImageCreateInfoBuilder& setFormat(Format format) { this->data.format = format; return *this; }
+    ImageCreateInfoBuilder& setExtent(Extent3D extent) { this->data.extent = extent; return *this; }
+    ImageCreateInfoBuilder& setMipLevels(uint32_t mipLevels) { this->data.mipLevels = mipLevels; return *this; }
+    ImageCreateInfoBuilder& setArrayLayers(uint32_t arrayLayers) { this->data.arrayLayers = arrayLayers; return *this; }
+    ImageCreateInfoBuilder& setSamples(SampleCountFlagBits samples) { this->data.samples = samples; return *this; }
+    ImageCreateInfoBuilder& setTiling(ImageTiling tiling) { this->data.tiling = tiling; return *this; }
+    ImageCreateInfoBuilder& setUsage(ImageUsageFlags usage) { this->data.usage = usage; return *this; }
+    ImageCreateInfoBuilder& setSharingMode(SharingMode sharingMode) { this->data.sharingMode = sharingMode; return *this; }
+    ImageCreateInfoBuilder& addQueueFamilyIndices(uint32_t pQueueFamilyIndices) { this->pQueueFamilyIndices.push_back(pQueueFamilyIndices); return *this; }
+    ImageCreateInfoBuilder& setInitialLayout(ImageLayout initialLayout) { this->data.initialLayout = initialLayout; return *this; }
+    ImageCreateInfo build() {
+        ImageCreateInfo out{data};
+        out.queueFamilyIndexCount = (uint32_t)pQueueFamilyIndices.size();
+        out.pQueueFamilyIndices = pQueueFamilyIndices.data();
+        return out; }
+};
+class ImageViewCreateInfoBuilder {
+    ImageViewCreateInfo data;
+    std::vector<void*> pNext;
+    public:
+    ImageViewCreateInfoBuilder() noexcept{}
+    ImageViewCreateInfoBuilder& setFlags(ImageViewCreateFlags flags) { this->data.flags = flags; return *this; }
+    ImageViewCreateInfoBuilder& setImage(Image image) { this->data.image = image; return *this; }
+    ImageViewCreateInfoBuilder& setViewType(ImageViewType viewType) { this->data.viewType = viewType; return *this; }
+    ImageViewCreateInfoBuilder& setFormat(Format format) { this->data.format = format; return *this; }
+    ImageViewCreateInfoBuilder& setComponents(ComponentMapping components) { this->data.components = components; return *this; }
+    ImageViewCreateInfoBuilder& setSubresourceRange(ImageSubresourceRange subresourceRange) { this->data.subresourceRange = subresourceRange; return *this; }
+    ImageViewCreateInfo build() {
+        ImageViewCreateInfo out{data};
+        return out; }
+};
+class SparseBufferMemoryBindInfoBuilder {
+    SparseBufferMemoryBindInfo data;
+    std::vector<SparseMemoryBind> pBinds;
+    public:
+    SparseBufferMemoryBindInfoBuilder() noexcept{}
+    SparseBufferMemoryBindInfoBuilder& setBuffer(Buffer buffer) { this->data.buffer = buffer; return *this; }
+    SparseBufferMemoryBindInfoBuilder& addBinds(SparseMemoryBind pBinds) { this->pBinds.push_back(pBinds); return *this; }
+    SparseBufferMemoryBindInfo build() {
+        SparseBufferMemoryBindInfo out{data};
+        out.bindCount = (uint32_t)pBinds.size();
+        out.pBinds = pBinds.data();
+        return out; }
+};
+class SparseImageOpaqueMemoryBindInfoBuilder {
+    SparseImageOpaqueMemoryBindInfo data;
+    std::vector<SparseMemoryBind> pBinds;
+    public:
+    SparseImageOpaqueMemoryBindInfoBuilder() noexcept{}
+    SparseImageOpaqueMemoryBindInfoBuilder& setImage(Image image) { this->data.image = image; return *this; }
+    SparseImageOpaqueMemoryBindInfoBuilder& addBinds(SparseMemoryBind pBinds) { this->pBinds.push_back(pBinds); return *this; }
+    SparseImageOpaqueMemoryBindInfo build() {
+        SparseImageOpaqueMemoryBindInfo out{data};
+        out.bindCount = (uint32_t)pBinds.size();
+        out.pBinds = pBinds.data();
+        return out; }
+};
+class SparseImageMemoryBindInfoBuilder {
+    SparseImageMemoryBindInfo data;
+    std::vector<SparseImageMemoryBind> pBinds;
+    public:
+    SparseImageMemoryBindInfoBuilder() noexcept{}
+    SparseImageMemoryBindInfoBuilder& setImage(Image image) { this->data.image = image; return *this; }
+    SparseImageMemoryBindInfoBuilder& addBinds(SparseImageMemoryBind pBinds) { this->pBinds.push_back(pBinds); return *this; }
+    SparseImageMemoryBindInfo build() {
+        SparseImageMemoryBindInfo out{data};
+        out.bindCount = (uint32_t)pBinds.size();
+        out.pBinds = pBinds.data();
+        return out; }
+};
+class BindSparseInfoBuilder {
+    BindSparseInfo data;
+    std::vector<void*> pNext;
+    std::vector<Semaphore> pWaitSemaphores;
+    std::vector<SparseBufferMemoryBindInfo> pBufferBinds;
+    std::vector<SparseImageOpaqueMemoryBindInfo> pImageOpaqueBinds;
+    std::vector<SparseImageMemoryBindInfo> pImageBinds;
+    std::vector<Semaphore> pSignalSemaphores;
+    public:
+    BindSparseInfoBuilder() noexcept{}
+    BindSparseInfoBuilder& addWaitSemaphores(Semaphore pWaitSemaphores) { this->pWaitSemaphores.push_back(pWaitSemaphores); return *this; }
+    BindSparseInfoBuilder& addBufferBinds(SparseBufferMemoryBindInfo pBufferBinds) { this->pBufferBinds.push_back(pBufferBinds); return *this; }
+    BindSparseInfoBuilder& addImageOpaqueBinds(SparseImageOpaqueMemoryBindInfo pImageOpaqueBinds) { this->pImageOpaqueBinds.push_back(pImageOpaqueBinds); return *this; }
+    BindSparseInfoBuilder& addImageBinds(SparseImageMemoryBindInfo pImageBinds) { this->pImageBinds.push_back(pImageBinds); return *this; }
+    BindSparseInfoBuilder& addSignalSemaphores(Semaphore pSignalSemaphores) { this->pSignalSemaphores.push_back(pSignalSemaphores); return *this; }
+    BindSparseInfo build() {
+        BindSparseInfo out{data};
+        out.waitSemaphoreCount = (uint32_t)pWaitSemaphores.size();
+        out.pWaitSemaphores = pWaitSemaphores.data();
+        out.bufferBindCount = (uint32_t)pBufferBinds.size();
+        out.pBufferBinds = pBufferBinds.data();
+        out.imageOpaqueBindCount = (uint32_t)pImageOpaqueBinds.size();
+        out.pImageOpaqueBinds = pImageOpaqueBinds.data();
+        out.imageBindCount = (uint32_t)pImageBinds.size();
+        out.pImageBinds = pImageBinds.data();
+        out.signalSemaphoreCount = (uint32_t)pSignalSemaphores.size();
+        out.pSignalSemaphores = pSignalSemaphores.data();
+        return out; }
+};
+class ImageBlitBuilder {
+    ImageBlit data;
+    public:
+    ImageBlitBuilder() noexcept{}
+    ImageBlitBuilder& setSrcSubresource(ImageSubresourceLayers srcSubresource) { this->data.srcSubresource = srcSubresource; return *this; }
+    ImageBlitBuilder& setSrcOffsets(std::array<Offset3D, 2> srcOffsets) { for(uint32_t i = 0; i < 2; i++) this->data.srcOffsets[i] = srcOffsets[i]; return *this; }
+    ImageBlitBuilder& setDstSubresource(ImageSubresourceLayers dstSubresource) { this->data.dstSubresource = dstSubresource; return *this; }
+    ImageBlitBuilder& setDstOffsets(std::array<Offset3D, 2> dstOffsets) { for(uint32_t i = 0; i < 2; i++) this->data.dstOffsets[i] = dstOffsets[i]; return *this; }
+    ImageBlit build() {
+        ImageBlit out{data};
+        return out; }
+};
+class ShaderModuleCreateInfoBuilder {
+    ShaderModuleCreateInfo data;
+    std::vector<void*> pNext;
+    std::vector<uint32_t> pCode;
+    public:
+    ShaderModuleCreateInfoBuilder() noexcept{}
+    ShaderModuleCreateInfoBuilder& setFlags(ShaderModuleCreateFlags flags) { this->data.flags = flags; return *this; }
+    ShaderModuleCreateInfoBuilder& addCode(uint32_t pCode) { this->pCode.push_back(pCode); return *this; }
+    ShaderModuleCreateInfo build() {
+        ShaderModuleCreateInfo out{data};
+        out.codeSize = (uint32_t)pCode.size();
+        out.pCode = pCode.data();
+        return out; }
+};
+class DescriptorSetLayoutBindingBuilder {
+    DescriptorSetLayoutBinding data;
+    std::vector<Sampler> pImmutableSamplers;
+    public:
+    DescriptorSetLayoutBindingBuilder() noexcept{}
+    DescriptorSetLayoutBindingBuilder& setBinding(uint32_t binding) { this->data.binding = binding; return *this; }
+    DescriptorSetLayoutBindingBuilder& setDescriptorType(DescriptorType descriptorType) { this->data.descriptorType = descriptorType; return *this; }
+    DescriptorSetLayoutBindingBuilder& setDescriptorCount(uint32_t descriptorCount) { this->data.descriptorCount = descriptorCount; return *this; }
+    DescriptorSetLayoutBindingBuilder& setStageFlags(ShaderStageFlags stageFlags) { this->data.stageFlags = stageFlags; return *this; }
+    DescriptorSetLayoutBindingBuilder& addImmutableSamplers(Sampler pImmutableSamplers) { this->pImmutableSamplers.push_back(pImmutableSamplers); return *this; }
+    DescriptorSetLayoutBinding build() {
+        DescriptorSetLayoutBinding out{data};
+        out.pImmutableSamplers = pImmutableSamplers.data();
+        return out; }
+};
+class DescriptorSetLayoutCreateInfoBuilder {
+    DescriptorSetLayoutCreateInfo data;
+    std::vector<void*> pNext;
+    std::vector<DescriptorSetLayoutBinding> pBindings;
+    public:
+    DescriptorSetLayoutCreateInfoBuilder() noexcept{}
+    DescriptorSetLayoutCreateInfoBuilder& setFlags(DescriptorSetLayoutCreateFlags flags) { this->data.flags = flags; return *this; }
+    DescriptorSetLayoutCreateInfoBuilder& addBindings(DescriptorSetLayoutBinding pBindings) { this->pBindings.push_back(pBindings); return *this; }
+    DescriptorSetLayoutCreateInfo build() {
+        DescriptorSetLayoutCreateInfo out{data};
+        out.bindingCount = (uint32_t)pBindings.size();
+        out.pBindings = pBindings.data();
+        return out; }
+};
+class DescriptorPoolCreateInfoBuilder {
+    DescriptorPoolCreateInfo data;
+    std::vector<void*> pNext;
+    std::vector<DescriptorPoolSize> pPoolSizes;
+    public:
+    DescriptorPoolCreateInfoBuilder() noexcept{}
+    DescriptorPoolCreateInfoBuilder& setFlags(DescriptorPoolCreateFlags flags) { this->data.flags = flags; return *this; }
+    DescriptorPoolCreateInfoBuilder& setMaxSets(uint32_t maxSets) { this->data.maxSets = maxSets; return *this; }
+    DescriptorPoolCreateInfoBuilder& addPoolSizes(DescriptorPoolSize pPoolSizes) { this->pPoolSizes.push_back(pPoolSizes); return *this; }
+    DescriptorPoolCreateInfo build() {
+        DescriptorPoolCreateInfo out{data};
+        out.poolSizeCount = (uint32_t)pPoolSizes.size();
+        out.pPoolSizes = pPoolSizes.data();
+        return out; }
+};
+class DescriptorSetAllocateInfoBuilder {
+    DescriptorSetAllocateInfo data;
+    std::vector<void*> pNext;
+    std::vector<DescriptorSetLayout> pSetLayouts;
+    public:
+    DescriptorSetAllocateInfoBuilder() noexcept{}
+    DescriptorSetAllocateInfoBuilder& setDescriptorPool(DescriptorPool descriptorPool) { this->data.descriptorPool = descriptorPool; return *this; }
+    DescriptorSetAllocateInfoBuilder& addSetLayouts(DescriptorSetLayout pSetLayouts) { this->pSetLayouts.push_back(pSetLayouts); return *this; }
+    DescriptorSetAllocateInfo build() {
+        DescriptorSetAllocateInfo out{data};
+        out.descriptorSetCount = (uint32_t)pSetLayouts.size();
+        out.pSetLayouts = pSetLayouts.data();
+        return out; }
+};
+class SpecializationInfoBuilder {
+    SpecializationInfo data;
+    std::vector<SpecializationMapEntry> pMapEntries;
+    std::vector<std::byte> pData;
+    public:
+    SpecializationInfoBuilder() noexcept{}
+    SpecializationInfoBuilder& addMapEntries(SpecializationMapEntry pMapEntries) { this->pMapEntries.push_back(pMapEntries); return *this; }
+    SpecializationInfoBuilder& addData(std::byte pData) { this->pData.push_back(pData); return *this; }
+    SpecializationInfo build() {
+        SpecializationInfo out{data};
+        out.mapEntryCount = (uint32_t)pMapEntries.size();
+        out.pMapEntries = pMapEntries.data();
+        out.dataSize = (uint32_t)pData.size();
+        out.pData = pData.data();
+        return out; }
+};
+class PipelineShaderStageCreateInfoBuilder {
+    PipelineShaderStageCreateInfo data;
+    std::vector<void*> pNext;
+    std::string pName;
+    detail::optional<SpecializationInfo> pSpecializationInfo;
+    public:
+    PipelineShaderStageCreateInfoBuilder() noexcept{}
+    PipelineShaderStageCreateInfoBuilder& setFlags(PipelineShaderStageCreateFlags flags) { this->data.flags = flags; return *this; }
+    PipelineShaderStageCreateInfoBuilder& setStage(ShaderStageFlagBits stage) { this->data.stage = stage; return *this; }
+    PipelineShaderStageCreateInfoBuilder& setModule(ShaderModule module) { this->data.module = module; return *this; }
+    PipelineShaderStageCreateInfoBuilder& addName(std::string pName) { this->pName = pName; return *this; }
+    PipelineShaderStageCreateInfoBuilder& setSpecializationInfo(SpecializationInfo pSpecializationInfo) { this->pSpecializationInfo = pSpecializationInfo; return *this; }
+    PipelineShaderStageCreateInfo build() {
+        PipelineShaderStageCreateInfo out{data};
+        out.pName = pName.data();
+        out.pSpecializationInfo = pSpecializationInfo.ptr_or_nullptr();
+        return out; }
+};
+class ComputePipelineCreateInfoBuilder {
+    ComputePipelineCreateInfo data;
+    std::vector<void*> pNext;
+    public:
+    ComputePipelineCreateInfoBuilder() noexcept{}
+    ComputePipelineCreateInfoBuilder& setFlags(PipelineCreateFlags flags) { this->data.flags = flags; return *this; }
+    ComputePipelineCreateInfoBuilder& setStage(PipelineShaderStageCreateInfo stage) { this->data.stage = stage; return *this; }
+    ComputePipelineCreateInfoBuilder& setLayout(PipelineLayout layout) { this->data.layout = layout; return *this; }
+    ComputePipelineCreateInfoBuilder& setBasePipelineHandle(Pipeline basePipelineHandle) { this->data.basePipelineHandle = basePipelineHandle; return *this; }
+    ComputePipelineCreateInfoBuilder& setBasePipelineIndex(int32_t basePipelineIndex) { this->data.basePipelineIndex = basePipelineIndex; return *this; }
+    ComputePipelineCreateInfo build() {
+        ComputePipelineCreateInfo out{data};
+        return out; }
+};
+class PipelineVertexInputStateCreateInfoBuilder {
+    PipelineVertexInputStateCreateInfo data;
+    std::vector<void*> pNext;
+    std::vector<VertexInputBindingDescription> pVertexBindingDescriptions;
+    std::vector<VertexInputAttributeDescription> pVertexAttributeDescriptions;
+    public:
+    PipelineVertexInputStateCreateInfoBuilder() noexcept{}
+    PipelineVertexInputStateCreateInfoBuilder& setFlags(PipelineVertexInputStateCreateFlags flags) { this->data.flags = flags; return *this; }
+    PipelineVertexInputStateCreateInfoBuilder& addVertexBindingDescriptions(VertexInputBindingDescription pVertexBindingDescriptions) { this->pVertexBindingDescriptions.push_back(pVertexBindingDescriptions); return *this; }
+    PipelineVertexInputStateCreateInfoBuilder& addVertexAttributeDescriptions(VertexInputAttributeDescription pVertexAttributeDescriptions) { this->pVertexAttributeDescriptions.push_back(pVertexAttributeDescriptions); return *this; }
+    PipelineVertexInputStateCreateInfo build() {
+        PipelineVertexInputStateCreateInfo out{data};
+        out.vertexBindingDescriptionCount = (uint32_t)pVertexBindingDescriptions.size();
+        out.pVertexBindingDescriptions = pVertexBindingDescriptions.data();
+        out.vertexAttributeDescriptionCount = (uint32_t)pVertexAttributeDescriptions.size();
+        out.pVertexAttributeDescriptions = pVertexAttributeDescriptions.data();
+        return out; }
+};
+class PipelineInputAssemblyStateCreateInfoBuilder {
+    PipelineInputAssemblyStateCreateInfo data;
+    std::vector<void*> pNext;
+    public:
+    PipelineInputAssemblyStateCreateInfoBuilder() noexcept{}
+    PipelineInputAssemblyStateCreateInfoBuilder& setFlags(PipelineInputAssemblyStateCreateFlags flags) { this->data.flags = flags; return *this; }
+    PipelineInputAssemblyStateCreateInfoBuilder& setTopology(PrimitiveTopology topology) { this->data.topology = topology; return *this; }
+    PipelineInputAssemblyStateCreateInfoBuilder& setPrimitiveRestartEnable(Bool32 primitiveRestartEnable) { this->data.primitiveRestartEnable = primitiveRestartEnable; return *this; }
+    PipelineInputAssemblyStateCreateInfo build() {
+        PipelineInputAssemblyStateCreateInfo out{data};
+        return out; }
+};
+class PipelineTessellationStateCreateInfoBuilder {
+    PipelineTessellationStateCreateInfo data;
+    std::vector<void*> pNext;
+    public:
+    PipelineTessellationStateCreateInfoBuilder() noexcept{}
+    PipelineTessellationStateCreateInfoBuilder& setFlags(PipelineTessellationStateCreateFlags flags) { this->data.flags = flags; return *this; }
+    PipelineTessellationStateCreateInfoBuilder& setPatchControlPoints(uint32_t patchControlPoints) { this->data.patchControlPoints = patchControlPoints; return *this; }
+    PipelineTessellationStateCreateInfo build() {
+        PipelineTessellationStateCreateInfo out{data};
+        return out; }
+};
+class PipelineViewportStateCreateInfoBuilder {
+    PipelineViewportStateCreateInfo data;
+    std::vector<void*> pNext;
+    std::vector<Viewport> pViewports;
+    std::vector<Rect2D> pScissors;
+    public:
+    PipelineViewportStateCreateInfoBuilder() noexcept{}
+    PipelineViewportStateCreateInfoBuilder& setFlags(PipelineViewportStateCreateFlags flags) { this->data.flags = flags; return *this; }
+    PipelineViewportStateCreateInfoBuilder& setViewportCount(uint32_t viewportCount) { this->data.viewportCount = viewportCount; return *this; }
+    PipelineViewportStateCreateInfoBuilder& addViewports(Viewport pViewports) { this->pViewports.push_back(pViewports); return *this; }
+    PipelineViewportStateCreateInfoBuilder& setScissorCount(uint32_t scissorCount) { this->data.scissorCount = scissorCount; return *this; }
+    PipelineViewportStateCreateInfoBuilder& addScissors(Rect2D pScissors) { this->pScissors.push_back(pScissors); return *this; }
+    PipelineViewportStateCreateInfo build() {
+        PipelineViewportStateCreateInfo out{data};
+        out.pViewports = pViewports.data();
+        out.pScissors = pScissors.data();
+        return out; }
+};
+class PipelineRasterizationStateCreateInfoBuilder {
+    PipelineRasterizationStateCreateInfo data;
+    std::vector<void*> pNext;
+    public:
+    PipelineRasterizationStateCreateInfoBuilder() noexcept{}
+    PipelineRasterizationStateCreateInfoBuilder& setFlags(PipelineRasterizationStateCreateFlags flags) { this->data.flags = flags; return *this; }
+    PipelineRasterizationStateCreateInfoBuilder& setDepthClampEnable(Bool32 depthClampEnable) { this->data.depthClampEnable = depthClampEnable; return *this; }
+    PipelineRasterizationStateCreateInfoBuilder& setRasterizerDiscardEnable(Bool32 rasterizerDiscardEnable) { this->data.rasterizerDiscardEnable = rasterizerDiscardEnable; return *this; }
+    PipelineRasterizationStateCreateInfoBuilder& setPolygonMode(PolygonMode polygonMode) { this->data.polygonMode = polygonMode; return *this; }
+    PipelineRasterizationStateCreateInfoBuilder& setCullMode(CullModeFlags cullMode) { this->data.cullMode = cullMode; return *this; }
+    PipelineRasterizationStateCreateInfoBuilder& setFrontFace(FrontFace frontFace) { this->data.frontFace = frontFace; return *this; }
+    PipelineRasterizationStateCreateInfoBuilder& setDepthBiasEnable(Bool32 depthBiasEnable) { this->data.depthBiasEnable = depthBiasEnable; return *this; }
+    PipelineRasterizationStateCreateInfoBuilder& setDepthBiasConstantFactor(float depthBiasConstantFactor) { this->data.depthBiasConstantFactor = depthBiasConstantFactor; return *this; }
+    PipelineRasterizationStateCreateInfoBuilder& setDepthBiasClamp(float depthBiasClamp) { this->data.depthBiasClamp = depthBiasClamp; return *this; }
+    PipelineRasterizationStateCreateInfoBuilder& setDepthBiasSlopeFactor(float depthBiasSlopeFactor) { this->data.depthBiasSlopeFactor = depthBiasSlopeFactor; return *this; }
+    PipelineRasterizationStateCreateInfoBuilder& setLineWidth(float lineWidth) { this->data.lineWidth = lineWidth; return *this; }
+    PipelineRasterizationStateCreateInfo build() {
+        PipelineRasterizationStateCreateInfo out{data};
+        return out; }
+};
+class PipelineMultisampleStateCreateInfoBuilder {
+    PipelineMultisampleStateCreateInfo data;
+    std::vector<void*> pNext;
+    std::vector<SampleMask> pSampleMask;
+    public:
+    PipelineMultisampleStateCreateInfoBuilder() noexcept{}
+    PipelineMultisampleStateCreateInfoBuilder& setFlags(PipelineMultisampleStateCreateFlags flags) { this->data.flags = flags; return *this; }
+    PipelineMultisampleStateCreateInfoBuilder& setRasterizationSamples(SampleCountFlagBits rasterizationSamples) { this->data.rasterizationSamples = rasterizationSamples; return *this; }
+    PipelineMultisampleStateCreateInfoBuilder& setSampleShadingEnable(Bool32 sampleShadingEnable) { this->data.sampleShadingEnable = sampleShadingEnable; return *this; }
+    PipelineMultisampleStateCreateInfoBuilder& setMinSampleShading(float minSampleShading) { this->data.minSampleShading = minSampleShading; return *this; }
+    PipelineMultisampleStateCreateInfoBuilder& addSampleMask(SampleMask pSampleMask) { this->pSampleMask.push_back(pSampleMask); return *this; }
+    PipelineMultisampleStateCreateInfoBuilder& setAlphaToCoverageEnable(Bool32 alphaToCoverageEnable) { this->data.alphaToCoverageEnable = alphaToCoverageEnable; return *this; }
+    PipelineMultisampleStateCreateInfoBuilder& setAlphaToOneEnable(Bool32 alphaToOneEnable) { this->data.alphaToOneEnable = alphaToOneEnable; return *this; }
+    PipelineMultisampleStateCreateInfo build() {
+        PipelineMultisampleStateCreateInfo out{data};
+        out.pSampleMask = pSampleMask.data();
+        return out; }
+};
+class PipelineColorBlendStateCreateInfoBuilder {
+    PipelineColorBlendStateCreateInfo data;
+    std::vector<void*> pNext;
+    std::vector<PipelineColorBlendAttachmentState> pAttachments;
+    public:
+    PipelineColorBlendStateCreateInfoBuilder() noexcept{}
+    PipelineColorBlendStateCreateInfoBuilder& setFlags(PipelineColorBlendStateCreateFlags flags) { this->data.flags = flags; return *this; }
+    PipelineColorBlendStateCreateInfoBuilder& setLogicOpEnable(Bool32 logicOpEnable) { this->data.logicOpEnable = logicOpEnable; return *this; }
+    PipelineColorBlendStateCreateInfoBuilder& setLogicOp(LogicOp logicOp) { this->data.logicOp = logicOp; return *this; }
+    PipelineColorBlendStateCreateInfoBuilder& addAttachments(PipelineColorBlendAttachmentState pAttachments) { this->pAttachments.push_back(pAttachments); return *this; }
+    PipelineColorBlendStateCreateInfoBuilder& setBlendConstants(std::array<float, 4> blendConstants) { for(uint32_t i = 0; i < 4; i++) this->data.blendConstants[i] = blendConstants[i]; return *this; }
+    PipelineColorBlendStateCreateInfo build() {
+        PipelineColorBlendStateCreateInfo out{data};
+        out.attachmentCount = (uint32_t)pAttachments.size();
+        out.pAttachments = pAttachments.data();
+        return out; }
+};
+class PipelineDynamicStateCreateInfoBuilder {
+    PipelineDynamicStateCreateInfo data;
+    std::vector<void*> pNext;
+    std::vector<DynamicState> pDynamicStates;
+    public:
+    PipelineDynamicStateCreateInfoBuilder() noexcept{}
+    PipelineDynamicStateCreateInfoBuilder& setFlags(PipelineDynamicStateCreateFlags flags) { this->data.flags = flags; return *this; }
+    PipelineDynamicStateCreateInfoBuilder& addDynamicStates(DynamicState pDynamicStates) { this->pDynamicStates.push_back(pDynamicStates); return *this; }
+    PipelineDynamicStateCreateInfo build() {
+        PipelineDynamicStateCreateInfo out{data};
+        out.dynamicStateCount = (uint32_t)pDynamicStates.size();
+        out.pDynamicStates = pDynamicStates.data();
+        return out; }
+};
+class PipelineDepthStencilStateCreateInfoBuilder {
+    PipelineDepthStencilStateCreateInfo data;
+    std::vector<void*> pNext;
+    public:
+    PipelineDepthStencilStateCreateInfoBuilder() noexcept{}
+    PipelineDepthStencilStateCreateInfoBuilder& setFlags(PipelineDepthStencilStateCreateFlags flags) { this->data.flags = flags; return *this; }
+    PipelineDepthStencilStateCreateInfoBuilder& setDepthTestEnable(Bool32 depthTestEnable) { this->data.depthTestEnable = depthTestEnable; return *this; }
+    PipelineDepthStencilStateCreateInfoBuilder& setDepthWriteEnable(Bool32 depthWriteEnable) { this->data.depthWriteEnable = depthWriteEnable; return *this; }
+    PipelineDepthStencilStateCreateInfoBuilder& setDepthCompareOp(CompareOp depthCompareOp) { this->data.depthCompareOp = depthCompareOp; return *this; }
+    PipelineDepthStencilStateCreateInfoBuilder& setDepthBoundsTestEnable(Bool32 depthBoundsTestEnable) { this->data.depthBoundsTestEnable = depthBoundsTestEnable; return *this; }
+    PipelineDepthStencilStateCreateInfoBuilder& setStencilTestEnable(Bool32 stencilTestEnable) { this->data.stencilTestEnable = stencilTestEnable; return *this; }
+    PipelineDepthStencilStateCreateInfoBuilder& setFront(StencilOpState front) { this->data.front = front; return *this; }
+    PipelineDepthStencilStateCreateInfoBuilder& setBack(StencilOpState back) { this->data.back = back; return *this; }
+    PipelineDepthStencilStateCreateInfoBuilder& setMinDepthBounds(float minDepthBounds) { this->data.minDepthBounds = minDepthBounds; return *this; }
+    PipelineDepthStencilStateCreateInfoBuilder& setMaxDepthBounds(float maxDepthBounds) { this->data.maxDepthBounds = maxDepthBounds; return *this; }
+    PipelineDepthStencilStateCreateInfo build() {
+        PipelineDepthStencilStateCreateInfo out{data};
+        return out; }
+};
+class GraphicsPipelineCreateInfoBuilder {
+    GraphicsPipelineCreateInfo data;
+    std::vector<void*> pNext;
+    std::vector<PipelineShaderStageCreateInfo> pStages;
+    detail::optional<PipelineVertexInputStateCreateInfo> pVertexInputState;
+    detail::optional<PipelineInputAssemblyStateCreateInfo> pInputAssemblyState;
+    detail::optional<PipelineTessellationStateCreateInfo> pTessellationState;
+    detail::optional<PipelineViewportStateCreateInfo> pViewportState;
+    PipelineRasterizationStateCreateInfo pRasterizationState;
+    detail::optional<PipelineMultisampleStateCreateInfo> pMultisampleState;
+    detail::optional<PipelineDepthStencilStateCreateInfo> pDepthStencilState;
+    detail::optional<PipelineColorBlendStateCreateInfo> pColorBlendState;
+    detail::optional<PipelineDynamicStateCreateInfo> pDynamicState;
+    public:
+    GraphicsPipelineCreateInfoBuilder() noexcept{}
+    GraphicsPipelineCreateInfoBuilder& setFlags(PipelineCreateFlags flags) { this->data.flags = flags; return *this; }
+    GraphicsPipelineCreateInfoBuilder& addStages(PipelineShaderStageCreateInfo pStages) { this->pStages.push_back(pStages); return *this; }
+    GraphicsPipelineCreateInfoBuilder& setVertexInputState(PipelineVertexInputStateCreateInfo pVertexInputState) { this->pVertexInputState = pVertexInputState; return *this; }
+    GraphicsPipelineCreateInfoBuilder& setInputAssemblyState(PipelineInputAssemblyStateCreateInfo pInputAssemblyState) { this->pInputAssemblyState = pInputAssemblyState; return *this; }
+    GraphicsPipelineCreateInfoBuilder& setTessellationState(PipelineTessellationStateCreateInfo pTessellationState) { this->pTessellationState = pTessellationState; return *this; }
+    GraphicsPipelineCreateInfoBuilder& setViewportState(PipelineViewportStateCreateInfo pViewportState) { this->pViewportState = pViewportState; return *this; }
+    GraphicsPipelineCreateInfoBuilder& setRasterizationState(PipelineRasterizationStateCreateInfo pRasterizationState) { this->pRasterizationState = pRasterizationState; return *this; }
+    GraphicsPipelineCreateInfoBuilder& setMultisampleState(PipelineMultisampleStateCreateInfo pMultisampleState) { this->pMultisampleState = pMultisampleState; return *this; }
+    GraphicsPipelineCreateInfoBuilder& setDepthStencilState(PipelineDepthStencilStateCreateInfo pDepthStencilState) { this->pDepthStencilState = pDepthStencilState; return *this; }
+    GraphicsPipelineCreateInfoBuilder& setColorBlendState(PipelineColorBlendStateCreateInfo pColorBlendState) { this->pColorBlendState = pColorBlendState; return *this; }
+    GraphicsPipelineCreateInfoBuilder& setDynamicState(PipelineDynamicStateCreateInfo pDynamicState) { this->pDynamicState = pDynamicState; return *this; }
+    GraphicsPipelineCreateInfoBuilder& setLayout(PipelineLayout layout) { this->data.layout = layout; return *this; }
+    GraphicsPipelineCreateInfoBuilder& setRenderPass(RenderPass renderPass) { this->data.renderPass = renderPass; return *this; }
+    GraphicsPipelineCreateInfoBuilder& setSubpass(uint32_t subpass) { this->data.subpass = subpass; return *this; }
+    GraphicsPipelineCreateInfoBuilder& setBasePipelineHandle(Pipeline basePipelineHandle) { this->data.basePipelineHandle = basePipelineHandle; return *this; }
+    GraphicsPipelineCreateInfoBuilder& setBasePipelineIndex(int32_t basePipelineIndex) { this->data.basePipelineIndex = basePipelineIndex; return *this; }
+    GraphicsPipelineCreateInfo build() {
+        GraphicsPipelineCreateInfo out{data};
+        out.stageCount = (uint32_t)pStages.size();
+        out.pStages = pStages.data();
+        out.pVertexInputState = pVertexInputState.ptr_or_nullptr();
+        out.pInputAssemblyState = pInputAssemblyState.ptr_or_nullptr();
+        out.pTessellationState = pTessellationState.ptr_or_nullptr();
+        out.pViewportState = pViewportState.ptr_or_nullptr();
+        out.pRasterizationState = &pRasterizationState;
+        out.pMultisampleState = pMultisampleState.ptr_or_nullptr();
+        out.pDepthStencilState = pDepthStencilState.ptr_or_nullptr();
+        out.pColorBlendState = pColorBlendState.ptr_or_nullptr();
+        out.pDynamicState = pDynamicState.ptr_or_nullptr();
+        return out; }
+};
+class PipelineCacheCreateInfoBuilder {
+    PipelineCacheCreateInfo data;
+    std::vector<void*> pNext;
+    std::vector<std::byte> pInitialData;
+    public:
+    PipelineCacheCreateInfoBuilder() noexcept{}
+    PipelineCacheCreateInfoBuilder& setFlags(PipelineCacheCreateFlags flags) { this->data.flags = flags; return *this; }
+    PipelineCacheCreateInfoBuilder& addInitialData(std::byte pInitialData) { this->pInitialData.push_back(pInitialData); return *this; }
+    PipelineCacheCreateInfo build() {
+        PipelineCacheCreateInfo out{data};
+        out.initialDataSize = (uint32_t)pInitialData.size();
+        out.pInitialData = pInitialData.data();
+        return out; }
+};
+class PipelineLayoutCreateInfoBuilder {
+    PipelineLayoutCreateInfo data;
+    std::vector<void*> pNext;
+    std::vector<DescriptorSetLayout> pSetLayouts;
+    std::vector<PushConstantRange> pPushConstantRanges;
+    public:
+    PipelineLayoutCreateInfoBuilder() noexcept{}
+    PipelineLayoutCreateInfoBuilder& setFlags(PipelineLayoutCreateFlags flags) { this->data.flags = flags; return *this; }
+    PipelineLayoutCreateInfoBuilder& addSetLayouts(DescriptorSetLayout pSetLayouts) { this->pSetLayouts.push_back(pSetLayouts); return *this; }
+    PipelineLayoutCreateInfoBuilder& addPushConstantRanges(PushConstantRange pPushConstantRanges) { this->pPushConstantRanges.push_back(pPushConstantRanges); return *this; }
+    PipelineLayoutCreateInfo build() {
+        PipelineLayoutCreateInfo out{data};
+        out.setLayoutCount = (uint32_t)pSetLayouts.size();
+        out.pSetLayouts = pSetLayouts.data();
+        out.pushConstantRangeCount = (uint32_t)pPushConstantRanges.size();
+        out.pPushConstantRanges = pPushConstantRanges.data();
+        return out; }
+};
+class SamplerCreateInfoBuilder {
+    SamplerCreateInfo data;
+    std::vector<void*> pNext;
+    public:
+    SamplerCreateInfoBuilder() noexcept{}
+    SamplerCreateInfoBuilder& setFlags(SamplerCreateFlags flags) { this->data.flags = flags; return *this; }
+    SamplerCreateInfoBuilder& setMagFilter(Filter magFilter) { this->data.magFilter = magFilter; return *this; }
+    SamplerCreateInfoBuilder& setMinFilter(Filter minFilter) { this->data.minFilter = minFilter; return *this; }
+    SamplerCreateInfoBuilder& setMipmapMode(SamplerMipmapMode mipmapMode) { this->data.mipmapMode = mipmapMode; return *this; }
+    SamplerCreateInfoBuilder& setAddressModeU(SamplerAddressMode addressModeU) { this->data.addressModeU = addressModeU; return *this; }
+    SamplerCreateInfoBuilder& setAddressModeV(SamplerAddressMode addressModeV) { this->data.addressModeV = addressModeV; return *this; }
+    SamplerCreateInfoBuilder& setAddressModeW(SamplerAddressMode addressModeW) { this->data.addressModeW = addressModeW; return *this; }
+    SamplerCreateInfoBuilder& setMipLodBias(float mipLodBias) { this->data.mipLodBias = mipLodBias; return *this; }
+    SamplerCreateInfoBuilder& setAnisotropyEnable(Bool32 anisotropyEnable) { this->data.anisotropyEnable = anisotropyEnable; return *this; }
+    SamplerCreateInfoBuilder& setMaxAnisotropy(float maxAnisotropy) { this->data.maxAnisotropy = maxAnisotropy; return *this; }
+    SamplerCreateInfoBuilder& setCompareEnable(Bool32 compareEnable) { this->data.compareEnable = compareEnable; return *this; }
+    SamplerCreateInfoBuilder& setCompareOp(CompareOp compareOp) { this->data.compareOp = compareOp; return *this; }
+    SamplerCreateInfoBuilder& setMinLod(float minLod) { this->data.minLod = minLod; return *this; }
+    SamplerCreateInfoBuilder& setMaxLod(float maxLod) { this->data.maxLod = maxLod; return *this; }
+    SamplerCreateInfoBuilder& setBorderColor(BorderColor borderColor) { this->data.borderColor = borderColor; return *this; }
+    SamplerCreateInfoBuilder& setUnnormalizedCoordinates(Bool32 unnormalizedCoordinates) { this->data.unnormalizedCoordinates = unnormalizedCoordinates; return *this; }
+    SamplerCreateInfo build() {
+        SamplerCreateInfo out{data};
+        return out; }
+};
+class CommandPoolCreateInfoBuilder {
+    CommandPoolCreateInfo data;
+    std::vector<void*> pNext;
+    public:
+    CommandPoolCreateInfoBuilder() noexcept{}
+    CommandPoolCreateInfoBuilder& setFlags(CommandPoolCreateFlags flags) { this->data.flags = flags; return *this; }
+    CommandPoolCreateInfoBuilder& setQueueFamilyIndex(uint32_t queueFamilyIndex) { this->data.queueFamilyIndex = queueFamilyIndex; return *this; }
+    CommandPoolCreateInfo build() {
+        CommandPoolCreateInfo out{data};
+        return out; }
+};
+class CommandBufferAllocateInfoBuilder {
+    CommandBufferAllocateInfo data;
+    std::vector<void*> pNext;
+    public:
+    CommandBufferAllocateInfoBuilder() noexcept{}
+    CommandBufferAllocateInfoBuilder& setCommandPool(CommandPool commandPool) { this->data.commandPool = commandPool; return *this; }
+    CommandBufferAllocateInfoBuilder& setLevel(CommandBufferLevel level) { this->data.level = level; return *this; }
+    CommandBufferAllocateInfoBuilder& setCommandBufferCount(uint32_t commandBufferCount) { this->data.commandBufferCount = commandBufferCount; return *this; }
+    CommandBufferAllocateInfo build() {
+        CommandBufferAllocateInfo out{data};
+        return out; }
+};
+class CommandBufferInheritanceInfoBuilder {
+    CommandBufferInheritanceInfo data;
+    std::vector<void*> pNext;
+    public:
+    CommandBufferInheritanceInfoBuilder() noexcept{}
+    CommandBufferInheritanceInfoBuilder& setRenderPass(RenderPass renderPass) { this->data.renderPass = renderPass; return *this; }
+    CommandBufferInheritanceInfoBuilder& setSubpass(uint32_t subpass) { this->data.subpass = subpass; return *this; }
+    CommandBufferInheritanceInfoBuilder& setFramebuffer(Framebuffer framebuffer) { this->data.framebuffer = framebuffer; return *this; }
+    CommandBufferInheritanceInfoBuilder& setOcclusionQueryEnable(Bool32 occlusionQueryEnable) { this->data.occlusionQueryEnable = occlusionQueryEnable; return *this; }
+    CommandBufferInheritanceInfoBuilder& setQueryFlags(QueryControlFlags queryFlags) { this->data.queryFlags = queryFlags; return *this; }
+    CommandBufferInheritanceInfoBuilder& setPipelineStatistics(QueryPipelineStatisticFlags pipelineStatistics) { this->data.pipelineStatistics = pipelineStatistics; return *this; }
+    CommandBufferInheritanceInfo build() {
+        CommandBufferInheritanceInfo out{data};
+        return out; }
+};
+class CommandBufferBeginInfoBuilder {
+    CommandBufferBeginInfo data;
+    std::vector<void*> pNext;
+    detail::optional<CommandBufferInheritanceInfo> pInheritanceInfo;
+    public:
+    CommandBufferBeginInfoBuilder() noexcept{}
+    CommandBufferBeginInfoBuilder& setFlags(CommandBufferUsageFlags flags) { this->data.flags = flags; return *this; }
+    CommandBufferBeginInfoBuilder& setInheritanceInfo(CommandBufferInheritanceInfo pInheritanceInfo) { this->pInheritanceInfo = pInheritanceInfo; return *this; }
+    CommandBufferBeginInfo build() {
+        CommandBufferBeginInfo out{data};
+        out.pInheritanceInfo = pInheritanceInfo.ptr_or_nullptr();
+        return out; }
+};
+class ClearColorValueBuilder {
+    ClearColorValue data;
+    public:
+    ClearColorValueBuilder() noexcept{}
+    ClearColorValueBuilder& setFloat32(std::array<float, 4> float32) { for(uint32_t i = 0; i < 4; i++) this->data.float32[i] = float32[i]; return *this; }
+    ClearColorValueBuilder& setInt32(std::array<int32_t, 4> int32) { for(uint32_t i = 0; i < 4; i++) this->data.int32[i] = int32[i]; return *this; }
+    ClearColorValueBuilder& setUint32(std::array<uint32_t, 4> uint32) { for(uint32_t i = 0; i < 4; i++) this->data.uint32[i] = uint32[i]; return *this; }
+    ClearColorValue build() {
+        ClearColorValue out{data};
+        return out; }
+};
+class RenderPassBeginInfoBuilder {
+    RenderPassBeginInfo data;
+    std::vector<void*> pNext;
+    std::vector<ClearValue> pClearValues;
+    public:
+    RenderPassBeginInfoBuilder() noexcept{}
+    RenderPassBeginInfoBuilder& setRenderPass(RenderPass renderPass) { this->data.renderPass = renderPass; return *this; }
+    RenderPassBeginInfoBuilder& setFramebuffer(Framebuffer framebuffer) { this->data.framebuffer = framebuffer; return *this; }
+    RenderPassBeginInfoBuilder& setRenderArea(Rect2D renderArea) { this->data.renderArea = renderArea; return *this; }
+    RenderPassBeginInfoBuilder& addClearValues(ClearValue pClearValues) { this->pClearValues.push_back(pClearValues); return *this; }
+    RenderPassBeginInfo build() {
+        RenderPassBeginInfo out{data};
+        out.clearValueCount = (uint32_t)pClearValues.size();
+        out.pClearValues = pClearValues.data();
+        return out; }
+};
+class SubpassDescriptionBuilder {
+    SubpassDescription data;
+    std::vector<AttachmentReference> pInputAttachments;
+    std::vector<AttachmentReference> pColorAttachments;
+    std::vector<AttachmentReference> pResolveAttachments;
+    detail::optional<AttachmentReference> pDepthStencilAttachment;
+    std::vector<uint32_t> pPreserveAttachments;
+    public:
+    SubpassDescriptionBuilder() noexcept{}
+    SubpassDescriptionBuilder& setFlags(SubpassDescriptionFlags flags) { this->data.flags = flags; return *this; }
+    SubpassDescriptionBuilder& setPipelineBindPoint(PipelineBindPoint pipelineBindPoint) { this->data.pipelineBindPoint = pipelineBindPoint; return *this; }
+    SubpassDescriptionBuilder& addInputAttachments(AttachmentReference pInputAttachments) { this->pInputAttachments.push_back(pInputAttachments); return *this; }
+    SubpassDescriptionBuilder& addColorAttachments(AttachmentReference pColorAttachments) { this->pColorAttachments.push_back(pColorAttachments); return *this; }
+    SubpassDescriptionBuilder& addResolveAttachments(AttachmentReference pResolveAttachments) { this->pResolveAttachments.push_back(pResolveAttachments); return *this; }
+    SubpassDescriptionBuilder& setDepthStencilAttachment(AttachmentReference pDepthStencilAttachment) { this->pDepthStencilAttachment = pDepthStencilAttachment; return *this; }
+    SubpassDescriptionBuilder& addPreserveAttachments(uint32_t pPreserveAttachments) { this->pPreserveAttachments.push_back(pPreserveAttachments); return *this; }
+    SubpassDescription build() {
+        SubpassDescription out{data};
+        out.inputAttachmentCount = (uint32_t)pInputAttachments.size();
+        out.pInputAttachments = pInputAttachments.data();
+        out.colorAttachmentCount = (uint32_t)pColorAttachments.size();
+        out.pColorAttachments = pColorAttachments.data();
+        out.pResolveAttachments = pResolveAttachments.data();
+        out.pDepthStencilAttachment = pDepthStencilAttachment.ptr_or_nullptr();
+        out.preserveAttachmentCount = (uint32_t)pPreserveAttachments.size();
+        out.pPreserveAttachments = pPreserveAttachments.data();
+        return out; }
+};
+class RenderPassCreateInfoBuilder {
+    RenderPassCreateInfo data;
+    std::vector<void*> pNext;
+    std::vector<AttachmentDescription> pAttachments;
+    std::vector<SubpassDescription> pSubpasses;
+    std::vector<SubpassDependency> pDependencies;
+    public:
+    RenderPassCreateInfoBuilder() noexcept{}
+    RenderPassCreateInfoBuilder& setFlags(RenderPassCreateFlags flags) { this->data.flags = flags; return *this; }
+    RenderPassCreateInfoBuilder& addAttachments(AttachmentDescription pAttachments) { this->pAttachments.push_back(pAttachments); return *this; }
+    RenderPassCreateInfoBuilder& addSubpasses(SubpassDescription pSubpasses) { this->pSubpasses.push_back(pSubpasses); return *this; }
+    RenderPassCreateInfoBuilder& addDependencies(SubpassDependency pDependencies) { this->pDependencies.push_back(pDependencies); return *this; }
+    RenderPassCreateInfo build() {
+        RenderPassCreateInfo out{data};
+        out.attachmentCount = (uint32_t)pAttachments.size();
+        out.pAttachments = pAttachments.data();
+        out.subpassCount = (uint32_t)pSubpasses.size();
+        out.pSubpasses = pSubpasses.data();
+        out.dependencyCount = (uint32_t)pDependencies.size();
+        out.pDependencies = pDependencies.data();
+        return out; }
+};
+class EventCreateInfoBuilder {
+    EventCreateInfo data;
+    std::vector<void*> pNext;
+    public:
+    EventCreateInfoBuilder() noexcept{}
+    EventCreateInfoBuilder& setFlags(EventCreateFlags flags) { this->data.flags = flags; return *this; }
+    EventCreateInfo build() {
+        EventCreateInfo out{data};
+        return out; }
+};
+class FenceCreateInfoBuilder {
+    FenceCreateInfo data;
+    std::vector<void*> pNext;
+    public:
+    FenceCreateInfoBuilder() noexcept{}
+    FenceCreateInfoBuilder& setFlags(FenceCreateFlags flags) { this->data.flags = flags; return *this; }
+    FenceCreateInfo build() {
+        FenceCreateInfo out{data};
+        return out; }
+};
+class SemaphoreCreateInfoBuilder {
+    SemaphoreCreateInfo data;
+    std::vector<void*> pNext;
+    public:
+    SemaphoreCreateInfoBuilder() noexcept{}
+    SemaphoreCreateInfoBuilder& setFlags(SemaphoreCreateFlags flags) { this->data.flags = flags; return *this; }
+    SemaphoreCreateInfo build() {
+        SemaphoreCreateInfo out{data};
+        return out; }
+};
+class QueryPoolCreateInfoBuilder {
+    QueryPoolCreateInfo data;
+    std::vector<void*> pNext;
+    public:
+    QueryPoolCreateInfoBuilder() noexcept{}
+    QueryPoolCreateInfoBuilder& setFlags(QueryPoolCreateFlags flags) { this->data.flags = flags; return *this; }
+    QueryPoolCreateInfoBuilder& setQueryType(QueryType queryType) { this->data.queryType = queryType; return *this; }
+    QueryPoolCreateInfoBuilder& setQueryCount(uint32_t queryCount) { this->data.queryCount = queryCount; return *this; }
+    QueryPoolCreateInfoBuilder& setPipelineStatistics(QueryPipelineStatisticFlags pipelineStatistics) { this->data.pipelineStatistics = pipelineStatistics; return *this; }
+    QueryPoolCreateInfo build() {
+        QueryPoolCreateInfo out{data};
+        return out; }
+};
+class FramebufferCreateInfoBuilder {
+    FramebufferCreateInfo data;
+    std::vector<void*> pNext;
+    std::vector<ImageView> pAttachments;
+    public:
+    FramebufferCreateInfoBuilder() noexcept{}
+    FramebufferCreateInfoBuilder& setFlags(FramebufferCreateFlags flags) { this->data.flags = flags; return *this; }
+    FramebufferCreateInfoBuilder& setRenderPass(RenderPass renderPass) { this->data.renderPass = renderPass; return *this; }
+    FramebufferCreateInfoBuilder& addAttachments(ImageView pAttachments) { this->pAttachments.push_back(pAttachments); return *this; }
+    FramebufferCreateInfoBuilder& setWidth(uint32_t width) { this->data.width = width; return *this; }
+    FramebufferCreateInfoBuilder& setHeight(uint32_t height) { this->data.height = height; return *this; }
+    FramebufferCreateInfoBuilder& setLayers(uint32_t layers) { this->data.layers = layers; return *this; }
+    FramebufferCreateInfo build() {
+        FramebufferCreateInfo out{data};
+        out.attachmentCount = (uint32_t)pAttachments.size();
+        out.pAttachments = pAttachments.data();
+        return out; }
+};
+class SubmitInfoBuilder {
+    SubmitInfo data;
+    std::vector<void*> pNext;
+    std::vector<Semaphore> pWaitSemaphores;
+    std::vector<PipelineStageFlags> pWaitDstStageMask;
+    std::vector<CommandBuffer> pCommandBuffers;
+    std::vector<Semaphore> pSignalSemaphores;
+    public:
+    SubmitInfoBuilder() noexcept{}
+    SubmitInfoBuilder& addWaitSemaphores(Semaphore pWaitSemaphores) { this->pWaitSemaphores.push_back(pWaitSemaphores); return *this; }
+    SubmitInfoBuilder& addWaitDstStageMask(PipelineStageFlags pWaitDstStageMask) { this->pWaitDstStageMask.push_back(pWaitDstStageMask); return *this; }
+    SubmitInfoBuilder& addCommandBuffers(CommandBuffer pCommandBuffers) { this->pCommandBuffers.push_back(pCommandBuffers); return *this; }
+    SubmitInfoBuilder& addSignalSemaphores(Semaphore pSignalSemaphores) { this->pSignalSemaphores.push_back(pSignalSemaphores); return *this; }
+    SubmitInfo build() {
+        SubmitInfo out{data};
+        out.waitSemaphoreCount = (uint32_t)pWaitSemaphores.size();
+        out.pWaitSemaphores = pWaitSemaphores.data();
+        out.pWaitDstStageMask = pWaitDstStageMask.data();
+        out.commandBufferCount = (uint32_t)pCommandBuffers.size();
+        out.pCommandBuffers = pCommandBuffers.data();
+        out.signalSemaphoreCount = (uint32_t)pSignalSemaphores.size();
+        out.pSignalSemaphores = pSignalSemaphores.data();
+        return out; }
+};
+class DisplayModeCreateInfoKHRBuilder {
+    DisplayModeCreateInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    DisplayModeCreateInfoKHRBuilder() noexcept{}
+    DisplayModeCreateInfoKHRBuilder& setFlags(DisplayModeCreateFlagsKHR flags) { this->data.flags = flags; return *this; }
+    DisplayModeCreateInfoKHRBuilder& setParameters(DisplayModeParametersKHR parameters) { this->data.parameters = parameters; return *this; }
+    DisplayModeCreateInfoKHR build() {
+        DisplayModeCreateInfoKHR out{data};
+        return out; }
+};
+class DisplaySurfaceCreateInfoKHRBuilder {
+    DisplaySurfaceCreateInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    DisplaySurfaceCreateInfoKHRBuilder() noexcept{}
+    DisplaySurfaceCreateInfoKHRBuilder& setFlags(DisplaySurfaceCreateFlagsKHR flags) { this->data.flags = flags; return *this; }
+    DisplaySurfaceCreateInfoKHRBuilder& setDisplayMode(DisplayModeKHR displayMode) { this->data.displayMode = displayMode; return *this; }
+    DisplaySurfaceCreateInfoKHRBuilder& setPlaneIndex(uint32_t planeIndex) { this->data.planeIndex = planeIndex; return *this; }
+    DisplaySurfaceCreateInfoKHRBuilder& setPlaneStackIndex(uint32_t planeStackIndex) { this->data.planeStackIndex = planeStackIndex; return *this; }
+    DisplaySurfaceCreateInfoKHRBuilder& setTransform(SurfaceTransformFlagBitsKHR transform) { this->data.transform = transform; return *this; }
+    DisplaySurfaceCreateInfoKHRBuilder& setGlobalAlpha(float globalAlpha) { this->data.globalAlpha = globalAlpha; return *this; }
+    DisplaySurfaceCreateInfoKHRBuilder& setAlphaMode(DisplayPlaneAlphaFlagBitsKHR alphaMode) { this->data.alphaMode = alphaMode; return *this; }
+    DisplaySurfaceCreateInfoKHRBuilder& setImageExtent(Extent2D imageExtent) { this->data.imageExtent = imageExtent; return *this; }
+    DisplaySurfaceCreateInfoKHR build() {
+        DisplaySurfaceCreateInfoKHR out{data};
+        return out; }
+};
+class DisplayPresentInfoKHRBuilder {
+    DisplayPresentInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    DisplayPresentInfoKHRBuilder() noexcept{}
+    DisplayPresentInfoKHRBuilder& setSrcRect(Rect2D srcRect) { this->data.srcRect = srcRect; return *this; }
+    DisplayPresentInfoKHRBuilder& setDstRect(Rect2D dstRect) { this->data.dstRect = dstRect; return *this; }
+    DisplayPresentInfoKHRBuilder& setPersistent(Bool32 persistent) { this->data.persistent = persistent; return *this; }
+    DisplayPresentInfoKHR build() {
+        DisplayPresentInfoKHR out{data};
+        return out; }
+};
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
+class AndroidSurfaceCreateInfoKHRBuilder {
+    AndroidSurfaceCreateInfoKHR data;
+    std::vector<void*> pNext;
+    ANativeWindow window;
+    public:
+    AndroidSurfaceCreateInfoKHRBuilder() noexcept{}
+    AndroidSurfaceCreateInfoKHRBuilder& setFlags(AndroidSurfaceCreateFlagsKHR flags) { this->data.flags = flags; return *this; }
+    AndroidSurfaceCreateInfoKHRBuilder& setWindow(ANativeWindow window) { this->window = window; return *this; }
+    AndroidSurfaceCreateInfoKHR build() {
+        AndroidSurfaceCreateInfoKHR out{data};
+        out.window = &window;
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
+#if defined(VK_USE_PLATFORM_VI_NN)
+class ViSurfaceCreateInfoNNBuilder {
+    ViSurfaceCreateInfoNN data;
+    std::vector<void*> pNext;
+    public:
+    ViSurfaceCreateInfoNNBuilder() noexcept{}
+    ViSurfaceCreateInfoNNBuilder& setFlags(ViSurfaceCreateFlagsNN flags) { this->data.flags = flags; return *this; }
+    ViSurfaceCreateInfoNN build() {
+        ViSurfaceCreateInfoNN out{data};
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_VI_NN)
+#if defined(VK_USE_PLATFORM_WAYLAND_KHR)
+class WaylandSurfaceCreateInfoKHRBuilder {
+    WaylandSurfaceCreateInfoKHR data;
+    std::vector<void*> pNext;
+    wl_display display;
+    wl_surface surface;
+    public:
+    WaylandSurfaceCreateInfoKHRBuilder() noexcept{}
+    WaylandSurfaceCreateInfoKHRBuilder& setFlags(WaylandSurfaceCreateFlagsKHR flags) { this->data.flags = flags; return *this; }
+    WaylandSurfaceCreateInfoKHRBuilder& setDisplay(wl_display display) { this->display = display; return *this; }
+    WaylandSurfaceCreateInfoKHRBuilder& setSurface(wl_surface surface) { this->surface = surface; return *this; }
+    WaylandSurfaceCreateInfoKHR build() {
+        WaylandSurfaceCreateInfoKHR out{data};
+        out.display = &display;
+        out.surface = &surface;
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_WAYLAND_KHR)
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+class Win32SurfaceCreateInfoKHRBuilder {
+    Win32SurfaceCreateInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    Win32SurfaceCreateInfoKHRBuilder() noexcept{}
+    Win32SurfaceCreateInfoKHRBuilder& setFlags(Win32SurfaceCreateFlagsKHR flags) { this->data.flags = flags; return *this; }
+    Win32SurfaceCreateInfoKHRBuilder& setHinstance(HINSTANCE hinstance) { this->data.hinstance = hinstance; return *this; }
+    Win32SurfaceCreateInfoKHRBuilder& setHwnd(HWND hwnd) { this->data.hwnd = hwnd; return *this; }
+    Win32SurfaceCreateInfoKHR build() {
+        Win32SurfaceCreateInfoKHR out{data};
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+#if defined(VK_USE_PLATFORM_XLIB_KHR)
+class XlibSurfaceCreateInfoKHRBuilder {
+    XlibSurfaceCreateInfoKHR data;
+    std::vector<void*> pNext;
+    Display dpy;
+    public:
+    XlibSurfaceCreateInfoKHRBuilder() noexcept{}
+    XlibSurfaceCreateInfoKHRBuilder& setFlags(XlibSurfaceCreateFlagsKHR flags) { this->data.flags = flags; return *this; }
+    XlibSurfaceCreateInfoKHRBuilder& setDpy(Display dpy) { this->dpy = dpy; return *this; }
+    XlibSurfaceCreateInfoKHRBuilder& setWindow(Window window) { this->data.window = window; return *this; }
+    XlibSurfaceCreateInfoKHR build() {
+        XlibSurfaceCreateInfoKHR out{data};
+        out.dpy = &dpy;
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_XLIB_KHR)
+#if defined(VK_USE_PLATFORM_XCB_KHR)
+class XcbSurfaceCreateInfoKHRBuilder {
+    XcbSurfaceCreateInfoKHR data;
+    std::vector<void*> pNext;
+    xcb_connection_t connection;
+    public:
+    XcbSurfaceCreateInfoKHRBuilder() noexcept{}
+    XcbSurfaceCreateInfoKHRBuilder& setFlags(XcbSurfaceCreateFlagsKHR flags) { this->data.flags = flags; return *this; }
+    XcbSurfaceCreateInfoKHRBuilder& setConnection(xcb_connection_t connection) { this->connection = connection; return *this; }
+    XcbSurfaceCreateInfoKHRBuilder& setWindow(xcb_window_t window) { this->data.window = window; return *this; }
+    XcbSurfaceCreateInfoKHR build() {
+        XcbSurfaceCreateInfoKHR out{data};
+        out.connection = &connection;
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_XCB_KHR)
+#if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
+class DirectFBSurfaceCreateInfoEXTBuilder {
+    DirectFBSurfaceCreateInfoEXT data;
+    std::vector<void*> pNext;
+    IDirectFB dfb;
+    IDirectFBSurface surface;
+    public:
+    DirectFBSurfaceCreateInfoEXTBuilder() noexcept{}
+    DirectFBSurfaceCreateInfoEXTBuilder& setFlags(DirectFBSurfaceCreateFlagsEXT flags) { this->data.flags = flags; return *this; }
+    DirectFBSurfaceCreateInfoEXTBuilder& setDfb(IDirectFB dfb) { this->dfb = dfb; return *this; }
+    DirectFBSurfaceCreateInfoEXTBuilder& setSurface(IDirectFBSurface surface) { this->surface = surface; return *this; }
+    DirectFBSurfaceCreateInfoEXT build() {
+        DirectFBSurfaceCreateInfoEXT out{data};
+        out.dfb = &dfb;
+        out.surface = &surface;
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_DIRECTFB_EXT)
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+class ImagePipeSurfaceCreateInfoFUCHSIABuilder {
+    ImagePipeSurfaceCreateInfoFUCHSIA data;
+    std::vector<void*> pNext;
+    public:
+    ImagePipeSurfaceCreateInfoFUCHSIABuilder() noexcept{}
+    ImagePipeSurfaceCreateInfoFUCHSIABuilder& setFlags(ImagePipeSurfaceCreateFlagsFUCHSIA flags) { this->data.flags = flags; return *this; }
+    ImagePipeSurfaceCreateInfoFUCHSIABuilder& setImagePipeHandle(zx_handle_t imagePipeHandle) { this->data.imagePipeHandle = imagePipeHandle; return *this; }
+    ImagePipeSurfaceCreateInfoFUCHSIA build() {
+        ImagePipeSurfaceCreateInfoFUCHSIA out{data};
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
+#if defined(VK_USE_PLATFORM_GGP)
+class StreamDescriptorSurfaceCreateInfoGGPBuilder {
+    StreamDescriptorSurfaceCreateInfoGGP data;
+    std::vector<void*> pNext;
+    public:
+    StreamDescriptorSurfaceCreateInfoGGPBuilder() noexcept{}
+    StreamDescriptorSurfaceCreateInfoGGPBuilder& setFlags(StreamDescriptorSurfaceCreateFlagsGGP flags) { this->data.flags = flags; return *this; }
+    StreamDescriptorSurfaceCreateInfoGGPBuilder& setStreamDescriptor(GgpStreamDescriptor streamDescriptor) { this->data.streamDescriptor = streamDescriptor; return *this; }
+    StreamDescriptorSurfaceCreateInfoGGP build() {
+        StreamDescriptorSurfaceCreateInfoGGP out{data};
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_GGP)
+class SwapchainCreateInfoKHRBuilder {
+    SwapchainCreateInfoKHR data;
+    std::vector<void*> pNext;
+    std::vector<uint32_t> pQueueFamilyIndices;
+    public:
+    SwapchainCreateInfoKHRBuilder() noexcept{}
+    SwapchainCreateInfoKHRBuilder& setFlags(SwapchainCreateFlagsKHR flags) { this->data.flags = flags; return *this; }
+    SwapchainCreateInfoKHRBuilder& setSurface(SurfaceKHR surface) { this->data.surface = surface; return *this; }
+    SwapchainCreateInfoKHRBuilder& setMinImageCount(uint32_t minImageCount) { this->data.minImageCount = minImageCount; return *this; }
+    SwapchainCreateInfoKHRBuilder& setImageFormat(Format imageFormat) { this->data.imageFormat = imageFormat; return *this; }
+    SwapchainCreateInfoKHRBuilder& setImageColorSpace(ColorSpaceKHR imageColorSpace) { this->data.imageColorSpace = imageColorSpace; return *this; }
+    SwapchainCreateInfoKHRBuilder& setImageExtent(Extent2D imageExtent) { this->data.imageExtent = imageExtent; return *this; }
+    SwapchainCreateInfoKHRBuilder& setImageArrayLayers(uint32_t imageArrayLayers) { this->data.imageArrayLayers = imageArrayLayers; return *this; }
+    SwapchainCreateInfoKHRBuilder& setImageUsage(ImageUsageFlags imageUsage) { this->data.imageUsage = imageUsage; return *this; }
+    SwapchainCreateInfoKHRBuilder& setImageSharingMode(SharingMode imageSharingMode) { this->data.imageSharingMode = imageSharingMode; return *this; }
+    SwapchainCreateInfoKHRBuilder& addQueueFamilyIndices(uint32_t pQueueFamilyIndices) { this->pQueueFamilyIndices.push_back(pQueueFamilyIndices); return *this; }
+    SwapchainCreateInfoKHRBuilder& setPreTransform(SurfaceTransformFlagBitsKHR preTransform) { this->data.preTransform = preTransform; return *this; }
+    SwapchainCreateInfoKHRBuilder& setCompositeAlpha(CompositeAlphaFlagBitsKHR compositeAlpha) { this->data.compositeAlpha = compositeAlpha; return *this; }
+    SwapchainCreateInfoKHRBuilder& setPresentMode(PresentModeKHR presentMode) { this->data.presentMode = presentMode; return *this; }
+    SwapchainCreateInfoKHRBuilder& setClipped(Bool32 clipped) { this->data.clipped = clipped; return *this; }
+    SwapchainCreateInfoKHRBuilder& setOldSwapchain(SwapchainKHR oldSwapchain) { this->data.oldSwapchain = oldSwapchain; return *this; }
+    SwapchainCreateInfoKHR build() {
+        SwapchainCreateInfoKHR out{data};
+        out.queueFamilyIndexCount = (uint32_t)pQueueFamilyIndices.size();
+        out.pQueueFamilyIndices = pQueueFamilyIndices.data();
+        return out; }
+};
+class PresentInfoKHRBuilder {
+    PresentInfoKHR data;
+    std::vector<void*> pNext;
+    std::vector<Semaphore> pWaitSemaphores;
+    std::vector<SwapchainKHR> pSwapchains;
+    std::vector<uint32_t> pImageIndices;
+    std::vector<Result> pResults;
+    public:
+    PresentInfoKHRBuilder() noexcept{}
+    PresentInfoKHRBuilder& addWaitSemaphores(Semaphore pWaitSemaphores) { this->pWaitSemaphores.push_back(pWaitSemaphores); return *this; }
+    PresentInfoKHRBuilder& addSwapchains(SwapchainKHR pSwapchains) { this->pSwapchains.push_back(pSwapchains); return *this; }
+    PresentInfoKHRBuilder& addImageIndices(uint32_t pImageIndices) { this->pImageIndices.push_back(pImageIndices); return *this; }
+    PresentInfoKHRBuilder& addResults(Result pResults) { this->pResults.push_back(pResults); return *this; }
+    PresentInfoKHR build() {
+        PresentInfoKHR out{data};
+        out.waitSemaphoreCount = (uint32_t)pWaitSemaphores.size();
+        out.pWaitSemaphores = pWaitSemaphores.data();
+        out.swapchainCount = (uint32_t)pSwapchains.size();
+        out.pSwapchains = pSwapchains.data();
+        out.pImageIndices = pImageIndices.data();
+        out.pResults = pResults.data();
+        return out; }
+};
+class DebugReportCallbackCreateInfoEXTBuilder {
+    DebugReportCallbackCreateInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    DebugReportCallbackCreateInfoEXTBuilder() noexcept{}
+    DebugReportCallbackCreateInfoEXTBuilder& setFlags(DebugReportFlagsEXT flags) { this->data.flags = flags; return *this; }
+    DebugReportCallbackCreateInfoEXTBuilder& setPfnCallback(PFN_DebugReportCallbackEXT pfnCallback) { this->data.pfnCallback = pfnCallback; return *this; }
+    DebugReportCallbackCreateInfoEXT build() {
+        DebugReportCallbackCreateInfoEXT out{data};
+        return out; }
+};
+class ValidationFlagsEXTBuilder {
+    ValidationFlagsEXT data;
+    std::vector<void*> pNext;
+    std::vector<ValidationCheckEXT> pDisabledValidationChecks;
+    public:
+    ValidationFlagsEXTBuilder() noexcept{}
+    ValidationFlagsEXTBuilder& addDisabledValidationChecks(ValidationCheckEXT pDisabledValidationChecks) { this->pDisabledValidationChecks.push_back(pDisabledValidationChecks); return *this; }
+    ValidationFlagsEXT build() {
+        ValidationFlagsEXT out{data};
+        out.disabledValidationCheckCount = (uint32_t)pDisabledValidationChecks.size();
+        out.pDisabledValidationChecks = pDisabledValidationChecks.data();
+        return out; }
+};
+class ValidationFeaturesEXTBuilder {
+    ValidationFeaturesEXT data;
+    std::vector<void*> pNext;
+    std::vector<ValidationFeatureEnableEXT> pEnabledValidationFeatures;
+    std::vector<ValidationFeatureDisableEXT> pDisabledValidationFeatures;
+    public:
+    ValidationFeaturesEXTBuilder() noexcept{}
+    ValidationFeaturesEXTBuilder& addEnabledValidationFeatures(ValidationFeatureEnableEXT pEnabledValidationFeatures) { this->pEnabledValidationFeatures.push_back(pEnabledValidationFeatures); return *this; }
+    ValidationFeaturesEXTBuilder& addDisabledValidationFeatures(ValidationFeatureDisableEXT pDisabledValidationFeatures) { this->pDisabledValidationFeatures.push_back(pDisabledValidationFeatures); return *this; }
+    ValidationFeaturesEXT build() {
+        ValidationFeaturesEXT out{data};
+        out.enabledValidationFeatureCount = (uint32_t)pEnabledValidationFeatures.size();
+        out.pEnabledValidationFeatures = pEnabledValidationFeatures.data();
+        out.disabledValidationFeatureCount = (uint32_t)pDisabledValidationFeatures.size();
+        out.pDisabledValidationFeatures = pDisabledValidationFeatures.data();
+        return out; }
+};
+class PipelineRasterizationStateRasterizationOrderAMDBuilder {
+    PipelineRasterizationStateRasterizationOrderAMD data;
+    std::vector<void*> pNext;
+    public:
+    PipelineRasterizationStateRasterizationOrderAMDBuilder() noexcept{}
+    PipelineRasterizationStateRasterizationOrderAMDBuilder& setRasterizationOrder(RasterizationOrderAMD rasterizationOrder) { this->data.rasterizationOrder = rasterizationOrder; return *this; }
+    PipelineRasterizationStateRasterizationOrderAMD build() {
+        PipelineRasterizationStateRasterizationOrderAMD out{data};
+        return out; }
+};
+class DebugMarkerObjectNameInfoEXTBuilder {
+    DebugMarkerObjectNameInfoEXT data;
+    std::vector<void*> pNext;
+    std::string pObjectName;
+    public:
+    DebugMarkerObjectNameInfoEXTBuilder() noexcept{}
+    DebugMarkerObjectNameInfoEXTBuilder& setObjectType(DebugReportObjectTypeEXT objectType) { this->data.objectType = objectType; return *this; }
+    DebugMarkerObjectNameInfoEXTBuilder& setObject(uint64_t object) { this->data.object = object; return *this; }
+    DebugMarkerObjectNameInfoEXTBuilder& addObjectName(std::string pObjectName) { this->pObjectName = pObjectName; return *this; }
+    DebugMarkerObjectNameInfoEXT build() {
+        DebugMarkerObjectNameInfoEXT out{data};
+        out.pObjectName = pObjectName.data();
+        return out; }
+};
+class DebugMarkerObjectTagInfoEXTBuilder {
+    DebugMarkerObjectTagInfoEXT data;
+    std::vector<void*> pNext;
+    std::vector<std::byte> pTag;
+    public:
+    DebugMarkerObjectTagInfoEXTBuilder() noexcept{}
+    DebugMarkerObjectTagInfoEXTBuilder& setObjectType(DebugReportObjectTypeEXT objectType) { this->data.objectType = objectType; return *this; }
+    DebugMarkerObjectTagInfoEXTBuilder& setObject(uint64_t object) { this->data.object = object; return *this; }
+    DebugMarkerObjectTagInfoEXTBuilder& setTagName(uint64_t tagName) { this->data.tagName = tagName; return *this; }
+    DebugMarkerObjectTagInfoEXTBuilder& addTag(std::byte pTag) { this->pTag.push_back(pTag); return *this; }
+    DebugMarkerObjectTagInfoEXT build() {
+        DebugMarkerObjectTagInfoEXT out{data};
+        out.tagSize = (uint32_t)pTag.size();
+        out.pTag = pTag.data();
+        return out; }
+};
+class DebugMarkerMarkerInfoEXTBuilder {
+    DebugMarkerMarkerInfoEXT data;
+    std::vector<void*> pNext;
+    std::string pMarkerName;
+    public:
+    DebugMarkerMarkerInfoEXTBuilder() noexcept{}
+    DebugMarkerMarkerInfoEXTBuilder& addMarkerName(std::string pMarkerName) { this->pMarkerName = pMarkerName; return *this; }
+    DebugMarkerMarkerInfoEXTBuilder& setColor(std::array<float, 4> color) { for(uint32_t i = 0; i < 4; i++) this->data.color[i] = color[i]; return *this; }
+    DebugMarkerMarkerInfoEXT build() {
+        DebugMarkerMarkerInfoEXT out{data};
+        out.pMarkerName = pMarkerName.data();
+        return out; }
+};
+class DedicatedAllocationImageCreateInfoNVBuilder {
+    DedicatedAllocationImageCreateInfoNV data;
+    std::vector<void*> pNext;
+    public:
+    DedicatedAllocationImageCreateInfoNVBuilder() noexcept{}
+    DedicatedAllocationImageCreateInfoNVBuilder& setDedicatedAllocation(Bool32 dedicatedAllocation) { this->data.dedicatedAllocation = dedicatedAllocation; return *this; }
+    DedicatedAllocationImageCreateInfoNV build() {
+        DedicatedAllocationImageCreateInfoNV out{data};
+        return out; }
+};
+class DedicatedAllocationBufferCreateInfoNVBuilder {
+    DedicatedAllocationBufferCreateInfoNV data;
+    std::vector<void*> pNext;
+    public:
+    DedicatedAllocationBufferCreateInfoNVBuilder() noexcept{}
+    DedicatedAllocationBufferCreateInfoNVBuilder& setDedicatedAllocation(Bool32 dedicatedAllocation) { this->data.dedicatedAllocation = dedicatedAllocation; return *this; }
+    DedicatedAllocationBufferCreateInfoNV build() {
+        DedicatedAllocationBufferCreateInfoNV out{data};
+        return out; }
+};
+class DedicatedAllocationMemoryAllocateInfoNVBuilder {
+    DedicatedAllocationMemoryAllocateInfoNV data;
+    std::vector<void*> pNext;
+    public:
+    DedicatedAllocationMemoryAllocateInfoNVBuilder() noexcept{}
+    DedicatedAllocationMemoryAllocateInfoNVBuilder& setImage(Image image) { this->data.image = image; return *this; }
+    DedicatedAllocationMemoryAllocateInfoNVBuilder& setBuffer(Buffer buffer) { this->data.buffer = buffer; return *this; }
+    DedicatedAllocationMemoryAllocateInfoNV build() {
+        DedicatedAllocationMemoryAllocateInfoNV out{data};
+        return out; }
+};
+class ExternalMemoryImageCreateInfoNVBuilder {
+    ExternalMemoryImageCreateInfoNV data;
+    std::vector<void*> pNext;
+    public:
+    ExternalMemoryImageCreateInfoNVBuilder() noexcept{}
+    ExternalMemoryImageCreateInfoNVBuilder& setHandleTypes(ExternalMemoryHandleTypeFlagsNV handleTypes) { this->data.handleTypes = handleTypes; return *this; }
+    ExternalMemoryImageCreateInfoNV build() {
+        ExternalMemoryImageCreateInfoNV out{data};
+        return out; }
+};
+class ExportMemoryAllocateInfoNVBuilder {
+    ExportMemoryAllocateInfoNV data;
+    std::vector<void*> pNext;
+    public:
+    ExportMemoryAllocateInfoNVBuilder() noexcept{}
+    ExportMemoryAllocateInfoNVBuilder& setHandleTypes(ExternalMemoryHandleTypeFlagsNV handleTypes) { this->data.handleTypes = handleTypes; return *this; }
+    ExportMemoryAllocateInfoNV build() {
+        ExportMemoryAllocateInfoNV out{data};
+        return out; }
+};
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+class ImportMemoryWin32HandleInfoNVBuilder {
+    ImportMemoryWin32HandleInfoNV data;
+    std::vector<void*> pNext;
+    public:
+    ImportMemoryWin32HandleInfoNVBuilder() noexcept{}
+    ImportMemoryWin32HandleInfoNVBuilder& setHandleType(ExternalMemoryHandleTypeFlagsNV handleType) { this->data.handleType = handleType; return *this; }
+    ImportMemoryWin32HandleInfoNVBuilder& setHandle(HANDLE handle) { this->data.handle = handle; return *this; }
+    ImportMemoryWin32HandleInfoNV build() {
+        ImportMemoryWin32HandleInfoNV out{data};
+        return out; }
+};
+class ExportMemoryWin32HandleInfoNVBuilder {
+    ExportMemoryWin32HandleInfoNV data;
+    std::vector<void*> pNext;
+    detail::optional<SECURITY_ATTRIBUTES> pAttributes;
+    public:
+    ExportMemoryWin32HandleInfoNVBuilder() noexcept{}
+    ExportMemoryWin32HandleInfoNVBuilder& setAttributes(SECURITY_ATTRIBUTES pAttributes) { this->pAttributes = pAttributes; return *this; }
+    ExportMemoryWin32HandleInfoNVBuilder& setDwAccess(DWORD dwAccess) { this->data.dwAccess = dwAccess; return *this; }
+    ExportMemoryWin32HandleInfoNV build() {
+        ExportMemoryWin32HandleInfoNV out{data};
+        out.pAttributes = pAttributes.ptr_or_nullptr();
+        return out; }
+};
+class Win32KeyedMutexAcquireReleaseInfoNVBuilder {
+    Win32KeyedMutexAcquireReleaseInfoNV data;
+    std::vector<void*> pNext;
+    std::vector<DeviceMemory> pAcquireSyncs;
+    std::vector<uint64_t> pAcquireKeys;
+    std::vector<uint32_t> pAcquireTimeoutMilliseconds;
+    std::vector<DeviceMemory> pReleaseSyncs;
+    std::vector<uint64_t> pReleaseKeys;
+    public:
+    Win32KeyedMutexAcquireReleaseInfoNVBuilder() noexcept{}
+    Win32KeyedMutexAcquireReleaseInfoNVBuilder& addAcquireSyncs(DeviceMemory pAcquireSyncs) { this->pAcquireSyncs.push_back(pAcquireSyncs); return *this; }
+    Win32KeyedMutexAcquireReleaseInfoNVBuilder& addAcquireKeys(uint64_t pAcquireKeys) { this->pAcquireKeys.push_back(pAcquireKeys); return *this; }
+    Win32KeyedMutexAcquireReleaseInfoNVBuilder& addAcquireTimeoutMilliseconds(uint32_t pAcquireTimeoutMilliseconds) { this->pAcquireTimeoutMilliseconds.push_back(pAcquireTimeoutMilliseconds); return *this; }
+    Win32KeyedMutexAcquireReleaseInfoNVBuilder& addReleaseSyncs(DeviceMemory pReleaseSyncs) { this->pReleaseSyncs.push_back(pReleaseSyncs); return *this; }
+    Win32KeyedMutexAcquireReleaseInfoNVBuilder& addReleaseKeys(uint64_t pReleaseKeys) { this->pReleaseKeys.push_back(pReleaseKeys); return *this; }
+    Win32KeyedMutexAcquireReleaseInfoNV build() {
+        Win32KeyedMutexAcquireReleaseInfoNV out{data};
+        out.acquireCount = (uint32_t)pAcquireSyncs.size();
+        out.pAcquireSyncs = pAcquireSyncs.data();
+        out.pAcquireKeys = pAcquireKeys.data();
+        out.pAcquireTimeoutMilliseconds = pAcquireTimeoutMilliseconds.data();
+        out.releaseCount = (uint32_t)pReleaseSyncs.size();
+        out.pReleaseSyncs = pReleaseSyncs.data();
+        out.pReleaseKeys = pReleaseKeys.data();
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+class PhysicalDeviceDeviceGeneratedCommandsFeaturesNVBuilder {
+    PhysicalDeviceDeviceGeneratedCommandsFeaturesNV data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceDeviceGeneratedCommandsFeaturesNVBuilder() noexcept{}
+    PhysicalDeviceDeviceGeneratedCommandsFeaturesNVBuilder& setDeviceGeneratedCommands(Bool32 deviceGeneratedCommands) { this->data.deviceGeneratedCommands = deviceGeneratedCommands; return *this; }
+    PhysicalDeviceDeviceGeneratedCommandsFeaturesNV build() {
+        PhysicalDeviceDeviceGeneratedCommandsFeaturesNV out{data};
+        return out; }
+};
+class DevicePrivateDataCreateInfoEXTBuilder {
+    DevicePrivateDataCreateInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    DevicePrivateDataCreateInfoEXTBuilder() noexcept{}
+    DevicePrivateDataCreateInfoEXTBuilder& setPrivateDataSlotRequestCount(uint32_t privateDataSlotRequestCount) { this->data.privateDataSlotRequestCount = privateDataSlotRequestCount; return *this; }
+    DevicePrivateDataCreateInfoEXT build() {
+        DevicePrivateDataCreateInfoEXT out{data};
+        return out; }
+};
+class PrivateDataSlotCreateInfoEXTBuilder {
+    PrivateDataSlotCreateInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    PrivateDataSlotCreateInfoEXTBuilder() noexcept{}
+    PrivateDataSlotCreateInfoEXTBuilder& setFlags(PrivateDataSlotCreateFlagsEXT flags) { this->data.flags = flags; return *this; }
+    PrivateDataSlotCreateInfoEXT build() {
+        PrivateDataSlotCreateInfoEXT out{data};
+        return out; }
+};
+class PhysicalDevicePrivateDataFeaturesEXTBuilder {
+    PhysicalDevicePrivateDataFeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDevicePrivateDataFeaturesEXTBuilder() noexcept{}
+    PhysicalDevicePrivateDataFeaturesEXTBuilder& setPrivateData(Bool32 privateData) { this->data.privateData = privateData; return *this; }
+    PhysicalDevicePrivateDataFeaturesEXT build() {
+        PhysicalDevicePrivateDataFeaturesEXT out{data};
+        return out; }
+};
+class GraphicsShaderGroupCreateInfoNVBuilder {
+    GraphicsShaderGroupCreateInfoNV data;
+    std::vector<void*> pNext;
+    std::vector<PipelineShaderStageCreateInfo> pStages;
+    detail::optional<PipelineVertexInputStateCreateInfo> pVertexInputState;
+    detail::optional<PipelineTessellationStateCreateInfo> pTessellationState;
+    public:
+    GraphicsShaderGroupCreateInfoNVBuilder() noexcept{}
+    GraphicsShaderGroupCreateInfoNVBuilder& addStages(PipelineShaderStageCreateInfo pStages) { this->pStages.push_back(pStages); return *this; }
+    GraphicsShaderGroupCreateInfoNVBuilder& setVertexInputState(PipelineVertexInputStateCreateInfo pVertexInputState) { this->pVertexInputState = pVertexInputState; return *this; }
+    GraphicsShaderGroupCreateInfoNVBuilder& setTessellationState(PipelineTessellationStateCreateInfo pTessellationState) { this->pTessellationState = pTessellationState; return *this; }
+    GraphicsShaderGroupCreateInfoNV build() {
+        GraphicsShaderGroupCreateInfoNV out{data};
+        out.stageCount = (uint32_t)pStages.size();
+        out.pStages = pStages.data();
+        out.pVertexInputState = pVertexInputState.ptr_or_nullptr();
+        out.pTessellationState = pTessellationState.ptr_or_nullptr();
+        return out; }
+};
+class GraphicsPipelineShaderGroupsCreateInfoNVBuilder {
+    GraphicsPipelineShaderGroupsCreateInfoNV data;
+    std::vector<void*> pNext;
+    std::vector<GraphicsShaderGroupCreateInfoNV> pGroups;
+    std::vector<Pipeline> pPipelines;
+    public:
+    GraphicsPipelineShaderGroupsCreateInfoNVBuilder() noexcept{}
+    GraphicsPipelineShaderGroupsCreateInfoNVBuilder& addGroups(GraphicsShaderGroupCreateInfoNV pGroups) { this->pGroups.push_back(pGroups); return *this; }
+    GraphicsPipelineShaderGroupsCreateInfoNVBuilder& addPipelines(Pipeline pPipelines) { this->pPipelines.push_back(pPipelines); return *this; }
+    GraphicsPipelineShaderGroupsCreateInfoNV build() {
+        GraphicsPipelineShaderGroupsCreateInfoNV out{data};
+        out.groupCount = (uint32_t)pGroups.size();
+        out.pGroups = pGroups.data();
+        out.pipelineCount = (uint32_t)pPipelines.size();
+        out.pPipelines = pPipelines.data();
+        return out; }
+};
+class IndirectCommandsLayoutTokenNVBuilder {
+    IndirectCommandsLayoutTokenNV data;
+    std::vector<void*> pNext;
+    std::vector<IndexType> pIndexTypes;
+    std::vector<uint32_t> pIndexTypeValues;
+    public:
+    IndirectCommandsLayoutTokenNVBuilder() noexcept{}
+    IndirectCommandsLayoutTokenNVBuilder& setTokenType(IndirectCommandsTokenTypeNV tokenType) { this->data.tokenType = tokenType; return *this; }
+    IndirectCommandsLayoutTokenNVBuilder& setStream(uint32_t stream) { this->data.stream = stream; return *this; }
+    IndirectCommandsLayoutTokenNVBuilder& setOffset(uint32_t offset) { this->data.offset = offset; return *this; }
+    IndirectCommandsLayoutTokenNVBuilder& setVertexBindingUnit(uint32_t vertexBindingUnit) { this->data.vertexBindingUnit = vertexBindingUnit; return *this; }
+    IndirectCommandsLayoutTokenNVBuilder& setVertexDynamicStride(Bool32 vertexDynamicStride) { this->data.vertexDynamicStride = vertexDynamicStride; return *this; }
+    IndirectCommandsLayoutTokenNVBuilder& setPushconstantPipelineLayout(PipelineLayout pushconstantPipelineLayout) { this->data.pushconstantPipelineLayout = pushconstantPipelineLayout; return *this; }
+    IndirectCommandsLayoutTokenNVBuilder& setPushconstantShaderStageFlags(ShaderStageFlags pushconstantShaderStageFlags) { this->data.pushconstantShaderStageFlags = pushconstantShaderStageFlags; return *this; }
+    IndirectCommandsLayoutTokenNVBuilder& setPushconstantOffset(uint32_t pushconstantOffset) { this->data.pushconstantOffset = pushconstantOffset; return *this; }
+    IndirectCommandsLayoutTokenNVBuilder& setPushconstantSize(uint32_t pushconstantSize) { this->data.pushconstantSize = pushconstantSize; return *this; }
+    IndirectCommandsLayoutTokenNVBuilder& setIndirectStateFlags(IndirectStateFlagsNV indirectStateFlags) { this->data.indirectStateFlags = indirectStateFlags; return *this; }
+    IndirectCommandsLayoutTokenNVBuilder& addIndexTypes(IndexType pIndexTypes) { this->pIndexTypes.push_back(pIndexTypes); return *this; }
+    IndirectCommandsLayoutTokenNVBuilder& addIndexTypeValues(uint32_t pIndexTypeValues) { this->pIndexTypeValues.push_back(pIndexTypeValues); return *this; }
+    IndirectCommandsLayoutTokenNV build() {
+        IndirectCommandsLayoutTokenNV out{data};
+        out.indexTypeCount = (uint32_t)pIndexTypes.size();
+        out.pIndexTypes = pIndexTypes.data();
+        out.pIndexTypeValues = pIndexTypeValues.data();
+        return out; }
+};
+class IndirectCommandsLayoutCreateInfoNVBuilder {
+    IndirectCommandsLayoutCreateInfoNV data;
+    std::vector<void*> pNext;
+    std::vector<IndirectCommandsLayoutTokenNV> pTokens;
+    std::vector<uint32_t> pStreamStrides;
+    public:
+    IndirectCommandsLayoutCreateInfoNVBuilder() noexcept{}
+    IndirectCommandsLayoutCreateInfoNVBuilder& setFlags(IndirectCommandsLayoutUsageFlagsNV flags) { this->data.flags = flags; return *this; }
+    IndirectCommandsLayoutCreateInfoNVBuilder& setPipelineBindPoint(PipelineBindPoint pipelineBindPoint) { this->data.pipelineBindPoint = pipelineBindPoint; return *this; }
+    IndirectCommandsLayoutCreateInfoNVBuilder& addTokens(IndirectCommandsLayoutTokenNV pTokens) { this->pTokens.push_back(pTokens); return *this; }
+    IndirectCommandsLayoutCreateInfoNVBuilder& addStreamStrides(uint32_t pStreamStrides) { this->pStreamStrides.push_back(pStreamStrides); return *this; }
+    IndirectCommandsLayoutCreateInfoNV build() {
+        IndirectCommandsLayoutCreateInfoNV out{data};
+        out.tokenCount = (uint32_t)pTokens.size();
+        out.pTokens = pTokens.data();
+        out.streamCount = (uint32_t)pStreamStrides.size();
+        out.pStreamStrides = pStreamStrides.data();
+        return out; }
+};
+class GeneratedCommandsInfoNVBuilder {
+    GeneratedCommandsInfoNV data;
+    std::vector<void*> pNext;
+    std::vector<IndirectCommandsStreamNV> pStreams;
+    public:
+    GeneratedCommandsInfoNVBuilder() noexcept{}
+    GeneratedCommandsInfoNVBuilder& setPipelineBindPoint(PipelineBindPoint pipelineBindPoint) { this->data.pipelineBindPoint = pipelineBindPoint; return *this; }
+    GeneratedCommandsInfoNVBuilder& setPipeline(Pipeline pipeline) { this->data.pipeline = pipeline; return *this; }
+    GeneratedCommandsInfoNVBuilder& setIndirectCommandsLayout(IndirectCommandsLayoutNV indirectCommandsLayout) { this->data.indirectCommandsLayout = indirectCommandsLayout; return *this; }
+    GeneratedCommandsInfoNVBuilder& addStreams(IndirectCommandsStreamNV pStreams) { this->pStreams.push_back(pStreams); return *this; }
+    GeneratedCommandsInfoNVBuilder& setSequencesCount(uint32_t sequencesCount) { this->data.sequencesCount = sequencesCount; return *this; }
+    GeneratedCommandsInfoNVBuilder& setPreprocessBuffer(Buffer preprocessBuffer) { this->data.preprocessBuffer = preprocessBuffer; return *this; }
+    GeneratedCommandsInfoNVBuilder& setPreprocessOffset(DeviceSize preprocessOffset) { this->data.preprocessOffset = preprocessOffset; return *this; }
+    GeneratedCommandsInfoNVBuilder& setPreprocessSize(DeviceSize preprocessSize) { this->data.preprocessSize = preprocessSize; return *this; }
+    GeneratedCommandsInfoNVBuilder& setSequencesCountBuffer(Buffer sequencesCountBuffer) { this->data.sequencesCountBuffer = sequencesCountBuffer; return *this; }
+    GeneratedCommandsInfoNVBuilder& setSequencesCountOffset(DeviceSize sequencesCountOffset) { this->data.sequencesCountOffset = sequencesCountOffset; return *this; }
+    GeneratedCommandsInfoNVBuilder& setSequencesIndexBuffer(Buffer sequencesIndexBuffer) { this->data.sequencesIndexBuffer = sequencesIndexBuffer; return *this; }
+    GeneratedCommandsInfoNVBuilder& setSequencesIndexOffset(DeviceSize sequencesIndexOffset) { this->data.sequencesIndexOffset = sequencesIndexOffset; return *this; }
+    GeneratedCommandsInfoNV build() {
+        GeneratedCommandsInfoNV out{data};
+        out.streamCount = (uint32_t)pStreams.size();
+        out.pStreams = pStreams.data();
+        return out; }
+};
+class GeneratedCommandsMemoryRequirementsInfoNVBuilder {
+    GeneratedCommandsMemoryRequirementsInfoNV data;
+    std::vector<void*> pNext;
+    public:
+    GeneratedCommandsMemoryRequirementsInfoNVBuilder() noexcept{}
+    GeneratedCommandsMemoryRequirementsInfoNVBuilder& setPipelineBindPoint(PipelineBindPoint pipelineBindPoint) { this->data.pipelineBindPoint = pipelineBindPoint; return *this; }
+    GeneratedCommandsMemoryRequirementsInfoNVBuilder& setPipeline(Pipeline pipeline) { this->data.pipeline = pipeline; return *this; }
+    GeneratedCommandsMemoryRequirementsInfoNVBuilder& setIndirectCommandsLayout(IndirectCommandsLayoutNV indirectCommandsLayout) { this->data.indirectCommandsLayout = indirectCommandsLayout; return *this; }
+    GeneratedCommandsMemoryRequirementsInfoNVBuilder& setMaxSequencesCount(uint32_t maxSequencesCount) { this->data.maxSequencesCount = maxSequencesCount; return *this; }
+    GeneratedCommandsMemoryRequirementsInfoNV build() {
+        GeneratedCommandsMemoryRequirementsInfoNV out{data};
+        return out; }
+};
+class PhysicalDeviceFeatures2Builder {
+    PhysicalDeviceFeatures2 data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceFeatures2Builder() noexcept{}
+    PhysicalDeviceFeatures2Builder& setFeatures(PhysicalDeviceFeatures features) { this->data.features = features; return *this; }
+    PhysicalDeviceFeatures2 build() {
+        PhysicalDeviceFeatures2 out{data};
+        return out; }
+};
+class PhysicalDeviceImageFormatInfo2Builder {
+    PhysicalDeviceImageFormatInfo2 data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceImageFormatInfo2Builder() noexcept{}
+    PhysicalDeviceImageFormatInfo2Builder& setFormat(Format format) { this->data.format = format; return *this; }
+    PhysicalDeviceImageFormatInfo2Builder& setType(ImageType type) { this->data.type = type; return *this; }
+    PhysicalDeviceImageFormatInfo2Builder& setTiling(ImageTiling tiling) { this->data.tiling = tiling; return *this; }
+    PhysicalDeviceImageFormatInfo2Builder& setUsage(ImageUsageFlags usage) { this->data.usage = usage; return *this; }
+    PhysicalDeviceImageFormatInfo2Builder& setFlags(ImageCreateFlags flags) { this->data.flags = flags; return *this; }
+    PhysicalDeviceImageFormatInfo2 build() {
+        PhysicalDeviceImageFormatInfo2 out{data};
+        return out; }
+};
+class PhysicalDeviceSparseImageFormatInfo2Builder {
+    PhysicalDeviceSparseImageFormatInfo2 data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceSparseImageFormatInfo2Builder() noexcept{}
+    PhysicalDeviceSparseImageFormatInfo2Builder& setFormat(Format format) { this->data.format = format; return *this; }
+    PhysicalDeviceSparseImageFormatInfo2Builder& setType(ImageType type) { this->data.type = type; return *this; }
+    PhysicalDeviceSparseImageFormatInfo2Builder& setSamples(SampleCountFlagBits samples) { this->data.samples = samples; return *this; }
+    PhysicalDeviceSparseImageFormatInfo2Builder& setUsage(ImageUsageFlags usage) { this->data.usage = usage; return *this; }
+    PhysicalDeviceSparseImageFormatInfo2Builder& setTiling(ImageTiling tiling) { this->data.tiling = tiling; return *this; }
+    PhysicalDeviceSparseImageFormatInfo2 build() {
+        PhysicalDeviceSparseImageFormatInfo2 out{data};
+        return out; }
+};
+class PresentRegionKHRBuilder {
+    PresentRegionKHR data;
+    std::vector<RectLayerKHR> pRectangles;
+    public:
+    PresentRegionKHRBuilder() noexcept{}
+    PresentRegionKHRBuilder& setRectangleCount(uint32_t rectangleCount) { this->data.rectangleCount = rectangleCount; return *this; }
+    PresentRegionKHRBuilder& addRectangles(RectLayerKHR pRectangles) { this->pRectangles.push_back(pRectangles); return *this; }
+    PresentRegionKHR build() {
+        PresentRegionKHR out{data};
+        out.pRectangles = pRectangles.data();
+        return out; }
+};
+class PresentRegionsKHRBuilder {
+    PresentRegionsKHR data;
+    std::vector<void*> pNext;
+    std::vector<PresentRegionKHR> pRegions;
+    public:
+    PresentRegionsKHRBuilder() noexcept{}
+    PresentRegionsKHRBuilder& setSwapchainCount(uint32_t swapchainCount) { this->data.swapchainCount = swapchainCount; return *this; }
+    PresentRegionsKHRBuilder& addRegions(PresentRegionKHR pRegions) { this->pRegions.push_back(pRegions); return *this; }
+    PresentRegionsKHR build() {
+        PresentRegionsKHR out{data};
+        out.pRegions = pRegions.data();
+        return out; }
+};
+class PhysicalDeviceVariablePointersFeaturesBuilder {
+    PhysicalDeviceVariablePointersFeatures data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceVariablePointersFeaturesBuilder() noexcept{}
+    PhysicalDeviceVariablePointersFeaturesBuilder& setVariablePointersStorageBuffer(Bool32 variablePointersStorageBuffer) { this->data.variablePointersStorageBuffer = variablePointersStorageBuffer; return *this; }
+    PhysicalDeviceVariablePointersFeaturesBuilder& setVariablePointers(Bool32 variablePointers) { this->data.variablePointers = variablePointers; return *this; }
+    PhysicalDeviceVariablePointersFeatures build() {
+        PhysicalDeviceVariablePointersFeatures out{data};
+        return out; }
+};
+class PhysicalDeviceExternalImageFormatInfoBuilder {
+    PhysicalDeviceExternalImageFormatInfo data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceExternalImageFormatInfoBuilder() noexcept{}
+    PhysicalDeviceExternalImageFormatInfoBuilder& setHandleType(ExternalMemoryHandleTypeFlagBits handleType) { this->data.handleType = handleType; return *this; }
+    PhysicalDeviceExternalImageFormatInfo build() {
+        PhysicalDeviceExternalImageFormatInfo out{data};
+        return out; }
+};
+class PhysicalDeviceExternalBufferInfoBuilder {
+    PhysicalDeviceExternalBufferInfo data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceExternalBufferInfoBuilder() noexcept{}
+    PhysicalDeviceExternalBufferInfoBuilder& setFlags(BufferCreateFlags flags) { this->data.flags = flags; return *this; }
+    PhysicalDeviceExternalBufferInfoBuilder& setUsage(BufferUsageFlags usage) { this->data.usage = usage; return *this; }
+    PhysicalDeviceExternalBufferInfoBuilder& setHandleType(ExternalMemoryHandleTypeFlagBits handleType) { this->data.handleType = handleType; return *this; }
+    PhysicalDeviceExternalBufferInfo build() {
+        PhysicalDeviceExternalBufferInfo out{data};
+        return out; }
+};
+class ExternalMemoryImageCreateInfoBuilder {
+    ExternalMemoryImageCreateInfo data;
+    std::vector<void*> pNext;
+    public:
+    ExternalMemoryImageCreateInfoBuilder() noexcept{}
+    ExternalMemoryImageCreateInfoBuilder& setHandleTypes(ExternalMemoryHandleTypeFlags handleTypes) { this->data.handleTypes = handleTypes; return *this; }
+    ExternalMemoryImageCreateInfo build() {
+        ExternalMemoryImageCreateInfo out{data};
+        return out; }
+};
+class ExternalMemoryBufferCreateInfoBuilder {
+    ExternalMemoryBufferCreateInfo data;
+    std::vector<void*> pNext;
+    public:
+    ExternalMemoryBufferCreateInfoBuilder() noexcept{}
+    ExternalMemoryBufferCreateInfoBuilder& setHandleTypes(ExternalMemoryHandleTypeFlags handleTypes) { this->data.handleTypes = handleTypes; return *this; }
+    ExternalMemoryBufferCreateInfo build() {
+        ExternalMemoryBufferCreateInfo out{data};
+        return out; }
+};
+class ExportMemoryAllocateInfoBuilder {
+    ExportMemoryAllocateInfo data;
+    std::vector<void*> pNext;
+    public:
+    ExportMemoryAllocateInfoBuilder() noexcept{}
+    ExportMemoryAllocateInfoBuilder& setHandleTypes(ExternalMemoryHandleTypeFlags handleTypes) { this->data.handleTypes = handleTypes; return *this; }
+    ExportMemoryAllocateInfo build() {
+        ExportMemoryAllocateInfo out{data};
+        return out; }
+};
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+class ImportMemoryWin32HandleInfoKHRBuilder {
+    ImportMemoryWin32HandleInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    ImportMemoryWin32HandleInfoKHRBuilder() noexcept{}
+    ImportMemoryWin32HandleInfoKHRBuilder& setHandleType(ExternalMemoryHandleTypeFlagBits handleType) { this->data.handleType = handleType; return *this; }
+    ImportMemoryWin32HandleInfoKHRBuilder& setHandle(HANDLE handle) { this->data.handle = handle; return *this; }
+    ImportMemoryWin32HandleInfoKHRBuilder& setName(LPCWSTR name) { this->data.name = name; return *this; }
+    ImportMemoryWin32HandleInfoKHR build() {
+        ImportMemoryWin32HandleInfoKHR out{data};
+        return out; }
+};
+class ExportMemoryWin32HandleInfoKHRBuilder {
+    ExportMemoryWin32HandleInfoKHR data;
+    std::vector<void*> pNext;
+    detail::optional<SECURITY_ATTRIBUTES> pAttributes;
+    public:
+    ExportMemoryWin32HandleInfoKHRBuilder() noexcept{}
+    ExportMemoryWin32HandleInfoKHRBuilder& setAttributes(SECURITY_ATTRIBUTES pAttributes) { this->pAttributes = pAttributes; return *this; }
+    ExportMemoryWin32HandleInfoKHRBuilder& setDwAccess(DWORD dwAccess) { this->data.dwAccess = dwAccess; return *this; }
+    ExportMemoryWin32HandleInfoKHRBuilder& setName(LPCWSTR name) { this->data.name = name; return *this; }
+    ExportMemoryWin32HandleInfoKHR build() {
+        ExportMemoryWin32HandleInfoKHR out{data};
+        out.pAttributes = pAttributes.ptr_or_nullptr();
+        return out; }
+};
+class MemoryGetWin32HandleInfoKHRBuilder {
+    MemoryGetWin32HandleInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    MemoryGetWin32HandleInfoKHRBuilder() noexcept{}
+    MemoryGetWin32HandleInfoKHRBuilder& setMemory(DeviceMemory memory) { this->data.memory = memory; return *this; }
+    MemoryGetWin32HandleInfoKHRBuilder& setHandleType(ExternalMemoryHandleTypeFlagBits handleType) { this->data.handleType = handleType; return *this; }
+    MemoryGetWin32HandleInfoKHR build() {
+        MemoryGetWin32HandleInfoKHR out{data};
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+class ImportMemoryFdInfoKHRBuilder {
+    ImportMemoryFdInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    ImportMemoryFdInfoKHRBuilder() noexcept{}
+    ImportMemoryFdInfoKHRBuilder& setHandleType(ExternalMemoryHandleTypeFlagBits handleType) { this->data.handleType = handleType; return *this; }
+    ImportMemoryFdInfoKHRBuilder& setFd(int fd) { this->data.fd = fd; return *this; }
+    ImportMemoryFdInfoKHR build() {
+        ImportMemoryFdInfoKHR out{data};
+        return out; }
+};
+class MemoryGetFdInfoKHRBuilder {
+    MemoryGetFdInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    MemoryGetFdInfoKHRBuilder() noexcept{}
+    MemoryGetFdInfoKHRBuilder& setMemory(DeviceMemory memory) { this->data.memory = memory; return *this; }
+    MemoryGetFdInfoKHRBuilder& setHandleType(ExternalMemoryHandleTypeFlagBits handleType) { this->data.handleType = handleType; return *this; }
+    MemoryGetFdInfoKHR build() {
+        MemoryGetFdInfoKHR out{data};
+        return out; }
+};
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+class Win32KeyedMutexAcquireReleaseInfoKHRBuilder {
+    Win32KeyedMutexAcquireReleaseInfoKHR data;
+    std::vector<void*> pNext;
+    std::vector<DeviceMemory> pAcquireSyncs;
+    std::vector<uint64_t> pAcquireKeys;
+    std::vector<uint32_t> pAcquireTimeouts;
+    std::vector<DeviceMemory> pReleaseSyncs;
+    std::vector<uint64_t> pReleaseKeys;
+    public:
+    Win32KeyedMutexAcquireReleaseInfoKHRBuilder() noexcept{}
+    Win32KeyedMutexAcquireReleaseInfoKHRBuilder& addAcquireSyncs(DeviceMemory pAcquireSyncs) { this->pAcquireSyncs.push_back(pAcquireSyncs); return *this; }
+    Win32KeyedMutexAcquireReleaseInfoKHRBuilder& addAcquireKeys(uint64_t pAcquireKeys) { this->pAcquireKeys.push_back(pAcquireKeys); return *this; }
+    Win32KeyedMutexAcquireReleaseInfoKHRBuilder& addAcquireTimeouts(uint32_t pAcquireTimeouts) { this->pAcquireTimeouts.push_back(pAcquireTimeouts); return *this; }
+    Win32KeyedMutexAcquireReleaseInfoKHRBuilder& addReleaseSyncs(DeviceMemory pReleaseSyncs) { this->pReleaseSyncs.push_back(pReleaseSyncs); return *this; }
+    Win32KeyedMutexAcquireReleaseInfoKHRBuilder& addReleaseKeys(uint64_t pReleaseKeys) { this->pReleaseKeys.push_back(pReleaseKeys); return *this; }
+    Win32KeyedMutexAcquireReleaseInfoKHR build() {
+        Win32KeyedMutexAcquireReleaseInfoKHR out{data};
+        out.acquireCount = (uint32_t)pAcquireSyncs.size();
+        out.pAcquireSyncs = pAcquireSyncs.data();
+        out.pAcquireKeys = pAcquireKeys.data();
+        out.pAcquireTimeouts = pAcquireTimeouts.data();
+        out.releaseCount = (uint32_t)pReleaseSyncs.size();
+        out.pReleaseSyncs = pReleaseSyncs.data();
+        out.pReleaseKeys = pReleaseKeys.data();
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+class PhysicalDeviceExternalSemaphoreInfoBuilder {
+    PhysicalDeviceExternalSemaphoreInfo data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceExternalSemaphoreInfoBuilder() noexcept{}
+    PhysicalDeviceExternalSemaphoreInfoBuilder& setHandleType(ExternalSemaphoreHandleTypeFlagBits handleType) { this->data.handleType = handleType; return *this; }
+    PhysicalDeviceExternalSemaphoreInfo build() {
+        PhysicalDeviceExternalSemaphoreInfo out{data};
+        return out; }
+};
+class ExportSemaphoreCreateInfoBuilder {
+    ExportSemaphoreCreateInfo data;
+    std::vector<void*> pNext;
+    public:
+    ExportSemaphoreCreateInfoBuilder() noexcept{}
+    ExportSemaphoreCreateInfoBuilder& setHandleTypes(ExternalSemaphoreHandleTypeFlags handleTypes) { this->data.handleTypes = handleTypes; return *this; }
+    ExportSemaphoreCreateInfo build() {
+        ExportSemaphoreCreateInfo out{data};
+        return out; }
+};
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+class ImportSemaphoreWin32HandleInfoKHRBuilder {
+    ImportSemaphoreWin32HandleInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    ImportSemaphoreWin32HandleInfoKHRBuilder() noexcept{}
+    ImportSemaphoreWin32HandleInfoKHRBuilder& setSemaphore(Semaphore semaphore) { this->data.semaphore = semaphore; return *this; }
+    ImportSemaphoreWin32HandleInfoKHRBuilder& setFlags(SemaphoreImportFlags flags) { this->data.flags = flags; return *this; }
+    ImportSemaphoreWin32HandleInfoKHRBuilder& setHandleType(ExternalSemaphoreHandleTypeFlagBits handleType) { this->data.handleType = handleType; return *this; }
+    ImportSemaphoreWin32HandleInfoKHRBuilder& setHandle(HANDLE handle) { this->data.handle = handle; return *this; }
+    ImportSemaphoreWin32HandleInfoKHRBuilder& setName(LPCWSTR name) { this->data.name = name; return *this; }
+    ImportSemaphoreWin32HandleInfoKHR build() {
+        ImportSemaphoreWin32HandleInfoKHR out{data};
+        return out; }
+};
+class ExportSemaphoreWin32HandleInfoKHRBuilder {
+    ExportSemaphoreWin32HandleInfoKHR data;
+    std::vector<void*> pNext;
+    detail::optional<SECURITY_ATTRIBUTES> pAttributes;
+    public:
+    ExportSemaphoreWin32HandleInfoKHRBuilder() noexcept{}
+    ExportSemaphoreWin32HandleInfoKHRBuilder& setAttributes(SECURITY_ATTRIBUTES pAttributes) { this->pAttributes = pAttributes; return *this; }
+    ExportSemaphoreWin32HandleInfoKHRBuilder& setDwAccess(DWORD dwAccess) { this->data.dwAccess = dwAccess; return *this; }
+    ExportSemaphoreWin32HandleInfoKHRBuilder& setName(LPCWSTR name) { this->data.name = name; return *this; }
+    ExportSemaphoreWin32HandleInfoKHR build() {
+        ExportSemaphoreWin32HandleInfoKHR out{data};
+        out.pAttributes = pAttributes.ptr_or_nullptr();
+        return out; }
+};
+class D3D12FenceSubmitInfoKHRBuilder {
+    D3D12FenceSubmitInfoKHR data;
+    std::vector<void*> pNext;
+    std::vector<uint64_t> pWaitSemaphoreValues;
+    std::vector<uint64_t> pSignalSemaphoreValues;
+    public:
+    D3D12FenceSubmitInfoKHRBuilder() noexcept{}
+    D3D12FenceSubmitInfoKHRBuilder& setWaitSemaphoreValuesCount(uint32_t waitSemaphoreValuesCount) { this->data.waitSemaphoreValuesCount = waitSemaphoreValuesCount; return *this; }
+    D3D12FenceSubmitInfoKHRBuilder& addWaitSemaphoreValues(uint64_t pWaitSemaphoreValues) { this->pWaitSemaphoreValues.push_back(pWaitSemaphoreValues); return *this; }
+    D3D12FenceSubmitInfoKHRBuilder& setSignalSemaphoreValuesCount(uint32_t signalSemaphoreValuesCount) { this->data.signalSemaphoreValuesCount = signalSemaphoreValuesCount; return *this; }
+    D3D12FenceSubmitInfoKHRBuilder& addSignalSemaphoreValues(uint64_t pSignalSemaphoreValues) { this->pSignalSemaphoreValues.push_back(pSignalSemaphoreValues); return *this; }
+    D3D12FenceSubmitInfoKHR build() {
+        D3D12FenceSubmitInfoKHR out{data};
+        out.pWaitSemaphoreValues = pWaitSemaphoreValues.data();
+        out.pSignalSemaphoreValues = pSignalSemaphoreValues.data();
+        return out; }
+};
+class SemaphoreGetWin32HandleInfoKHRBuilder {
+    SemaphoreGetWin32HandleInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    SemaphoreGetWin32HandleInfoKHRBuilder() noexcept{}
+    SemaphoreGetWin32HandleInfoKHRBuilder& setSemaphore(Semaphore semaphore) { this->data.semaphore = semaphore; return *this; }
+    SemaphoreGetWin32HandleInfoKHRBuilder& setHandleType(ExternalSemaphoreHandleTypeFlagBits handleType) { this->data.handleType = handleType; return *this; }
+    SemaphoreGetWin32HandleInfoKHR build() {
+        SemaphoreGetWin32HandleInfoKHR out{data};
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+class ImportSemaphoreFdInfoKHRBuilder {
+    ImportSemaphoreFdInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    ImportSemaphoreFdInfoKHRBuilder() noexcept{}
+    ImportSemaphoreFdInfoKHRBuilder& setSemaphore(Semaphore semaphore) { this->data.semaphore = semaphore; return *this; }
+    ImportSemaphoreFdInfoKHRBuilder& setFlags(SemaphoreImportFlags flags) { this->data.flags = flags; return *this; }
+    ImportSemaphoreFdInfoKHRBuilder& setHandleType(ExternalSemaphoreHandleTypeFlagBits handleType) { this->data.handleType = handleType; return *this; }
+    ImportSemaphoreFdInfoKHRBuilder& setFd(int fd) { this->data.fd = fd; return *this; }
+    ImportSemaphoreFdInfoKHR build() {
+        ImportSemaphoreFdInfoKHR out{data};
+        return out; }
+};
+class SemaphoreGetFdInfoKHRBuilder {
+    SemaphoreGetFdInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    SemaphoreGetFdInfoKHRBuilder() noexcept{}
+    SemaphoreGetFdInfoKHRBuilder& setSemaphore(Semaphore semaphore) { this->data.semaphore = semaphore; return *this; }
+    SemaphoreGetFdInfoKHRBuilder& setHandleType(ExternalSemaphoreHandleTypeFlagBits handleType) { this->data.handleType = handleType; return *this; }
+    SemaphoreGetFdInfoKHR build() {
+        SemaphoreGetFdInfoKHR out{data};
+        return out; }
+};
+class PhysicalDeviceExternalFenceInfoBuilder {
+    PhysicalDeviceExternalFenceInfo data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceExternalFenceInfoBuilder() noexcept{}
+    PhysicalDeviceExternalFenceInfoBuilder& setHandleType(ExternalFenceHandleTypeFlagBits handleType) { this->data.handleType = handleType; return *this; }
+    PhysicalDeviceExternalFenceInfo build() {
+        PhysicalDeviceExternalFenceInfo out{data};
+        return out; }
+};
+class ExportFenceCreateInfoBuilder {
+    ExportFenceCreateInfo data;
+    std::vector<void*> pNext;
+    public:
+    ExportFenceCreateInfoBuilder() noexcept{}
+    ExportFenceCreateInfoBuilder& setHandleTypes(ExternalFenceHandleTypeFlags handleTypes) { this->data.handleTypes = handleTypes; return *this; }
+    ExportFenceCreateInfo build() {
+        ExportFenceCreateInfo out{data};
+        return out; }
+};
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+class ImportFenceWin32HandleInfoKHRBuilder {
+    ImportFenceWin32HandleInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    ImportFenceWin32HandleInfoKHRBuilder() noexcept{}
+    ImportFenceWin32HandleInfoKHRBuilder& setFence(Fence fence) { this->data.fence = fence; return *this; }
+    ImportFenceWin32HandleInfoKHRBuilder& setFlags(FenceImportFlags flags) { this->data.flags = flags; return *this; }
+    ImportFenceWin32HandleInfoKHRBuilder& setHandleType(ExternalFenceHandleTypeFlagBits handleType) { this->data.handleType = handleType; return *this; }
+    ImportFenceWin32HandleInfoKHRBuilder& setHandle(HANDLE handle) { this->data.handle = handle; return *this; }
+    ImportFenceWin32HandleInfoKHRBuilder& setName(LPCWSTR name) { this->data.name = name; return *this; }
+    ImportFenceWin32HandleInfoKHR build() {
+        ImportFenceWin32HandleInfoKHR out{data};
+        return out; }
+};
+class ExportFenceWin32HandleInfoKHRBuilder {
+    ExportFenceWin32HandleInfoKHR data;
+    std::vector<void*> pNext;
+    detail::optional<SECURITY_ATTRIBUTES> pAttributes;
+    public:
+    ExportFenceWin32HandleInfoKHRBuilder() noexcept{}
+    ExportFenceWin32HandleInfoKHRBuilder& setAttributes(SECURITY_ATTRIBUTES pAttributes) { this->pAttributes = pAttributes; return *this; }
+    ExportFenceWin32HandleInfoKHRBuilder& setDwAccess(DWORD dwAccess) { this->data.dwAccess = dwAccess; return *this; }
+    ExportFenceWin32HandleInfoKHRBuilder& setName(LPCWSTR name) { this->data.name = name; return *this; }
+    ExportFenceWin32HandleInfoKHR build() {
+        ExportFenceWin32HandleInfoKHR out{data};
+        out.pAttributes = pAttributes.ptr_or_nullptr();
+        return out; }
+};
+class FenceGetWin32HandleInfoKHRBuilder {
+    FenceGetWin32HandleInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    FenceGetWin32HandleInfoKHRBuilder() noexcept{}
+    FenceGetWin32HandleInfoKHRBuilder& setFence(Fence fence) { this->data.fence = fence; return *this; }
+    FenceGetWin32HandleInfoKHRBuilder& setHandleType(ExternalFenceHandleTypeFlagBits handleType) { this->data.handleType = handleType; return *this; }
+    FenceGetWin32HandleInfoKHR build() {
+        FenceGetWin32HandleInfoKHR out{data};
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+class ImportFenceFdInfoKHRBuilder {
+    ImportFenceFdInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    ImportFenceFdInfoKHRBuilder() noexcept{}
+    ImportFenceFdInfoKHRBuilder& setFence(Fence fence) { this->data.fence = fence; return *this; }
+    ImportFenceFdInfoKHRBuilder& setFlags(FenceImportFlags flags) { this->data.flags = flags; return *this; }
+    ImportFenceFdInfoKHRBuilder& setHandleType(ExternalFenceHandleTypeFlagBits handleType) { this->data.handleType = handleType; return *this; }
+    ImportFenceFdInfoKHRBuilder& setFd(int fd) { this->data.fd = fd; return *this; }
+    ImportFenceFdInfoKHR build() {
+        ImportFenceFdInfoKHR out{data};
+        return out; }
+};
+class FenceGetFdInfoKHRBuilder {
+    FenceGetFdInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    FenceGetFdInfoKHRBuilder() noexcept{}
+    FenceGetFdInfoKHRBuilder& setFence(Fence fence) { this->data.fence = fence; return *this; }
+    FenceGetFdInfoKHRBuilder& setHandleType(ExternalFenceHandleTypeFlagBits handleType) { this->data.handleType = handleType; return *this; }
+    FenceGetFdInfoKHR build() {
+        FenceGetFdInfoKHR out{data};
+        return out; }
+};
+class PhysicalDeviceMultiviewFeaturesBuilder {
+    PhysicalDeviceMultiviewFeatures data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceMultiviewFeaturesBuilder() noexcept{}
+    PhysicalDeviceMultiviewFeaturesBuilder& setMultiview(Bool32 multiview) { this->data.multiview = multiview; return *this; }
+    PhysicalDeviceMultiviewFeaturesBuilder& setMultiviewGeometryShader(Bool32 multiviewGeometryShader) { this->data.multiviewGeometryShader = multiviewGeometryShader; return *this; }
+    PhysicalDeviceMultiviewFeaturesBuilder& setMultiviewTessellationShader(Bool32 multiviewTessellationShader) { this->data.multiviewTessellationShader = multiviewTessellationShader; return *this; }
+    PhysicalDeviceMultiviewFeatures build() {
+        PhysicalDeviceMultiviewFeatures out{data};
+        return out; }
+};
+class RenderPassMultiviewCreateInfoBuilder {
+    RenderPassMultiviewCreateInfo data;
+    std::vector<void*> pNext;
+    std::vector<uint32_t> pViewMasks;
+    std::vector<int32_t> pViewOffsets;
+    std::vector<uint32_t> pCorrelationMasks;
+    public:
+    RenderPassMultiviewCreateInfoBuilder() noexcept{}
+    RenderPassMultiviewCreateInfoBuilder& addViewMasks(uint32_t pViewMasks) { this->pViewMasks.push_back(pViewMasks); return *this; }
+    RenderPassMultiviewCreateInfoBuilder& addViewOffsets(int32_t pViewOffsets) { this->pViewOffsets.push_back(pViewOffsets); return *this; }
+    RenderPassMultiviewCreateInfoBuilder& addCorrelationMasks(uint32_t pCorrelationMasks) { this->pCorrelationMasks.push_back(pCorrelationMasks); return *this; }
+    RenderPassMultiviewCreateInfo build() {
+        RenderPassMultiviewCreateInfo out{data};
+        out.subpassCount = (uint32_t)pViewMasks.size();
+        out.pViewMasks = pViewMasks.data();
+        out.dependencyCount = (uint32_t)pViewOffsets.size();
+        out.pViewOffsets = pViewOffsets.data();
+        out.correlationMaskCount = (uint32_t)pCorrelationMasks.size();
+        out.pCorrelationMasks = pCorrelationMasks.data();
+        return out; }
+};
+class DisplayPowerInfoEXTBuilder {
+    DisplayPowerInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    DisplayPowerInfoEXTBuilder() noexcept{}
+    DisplayPowerInfoEXTBuilder& setPowerState(DisplayPowerStateEXT powerState) { this->data.powerState = powerState; return *this; }
+    DisplayPowerInfoEXT build() {
+        DisplayPowerInfoEXT out{data};
+        return out; }
+};
+class DeviceEventInfoEXTBuilder {
+    DeviceEventInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    DeviceEventInfoEXTBuilder() noexcept{}
+    DeviceEventInfoEXTBuilder& setDeviceEvent(DeviceEventTypeEXT deviceEvent) { this->data.deviceEvent = deviceEvent; return *this; }
+    DeviceEventInfoEXT build() {
+        DeviceEventInfoEXT out{data};
+        return out; }
+};
+class DisplayEventInfoEXTBuilder {
+    DisplayEventInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    DisplayEventInfoEXTBuilder() noexcept{}
+    DisplayEventInfoEXTBuilder& setDisplayEvent(DisplayEventTypeEXT displayEvent) { this->data.displayEvent = displayEvent; return *this; }
+    DisplayEventInfoEXT build() {
+        DisplayEventInfoEXT out{data};
+        return out; }
+};
+class SwapchainCounterCreateInfoEXTBuilder {
+    SwapchainCounterCreateInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    SwapchainCounterCreateInfoEXTBuilder() noexcept{}
+    SwapchainCounterCreateInfoEXTBuilder& setSurfaceCounters(SurfaceCounterFlagsEXT surfaceCounters) { this->data.surfaceCounters = surfaceCounters; return *this; }
+    SwapchainCounterCreateInfoEXT build() {
+        SwapchainCounterCreateInfoEXT out{data};
+        return out; }
+};
+class MemoryAllocateFlagsInfoBuilder {
+    MemoryAllocateFlagsInfo data;
+    std::vector<void*> pNext;
+    public:
+    MemoryAllocateFlagsInfoBuilder() noexcept{}
+    MemoryAllocateFlagsInfoBuilder& setFlags(MemoryAllocateFlags flags) { this->data.flags = flags; return *this; }
+    MemoryAllocateFlagsInfoBuilder& setDeviceMask(uint32_t deviceMask) { this->data.deviceMask = deviceMask; return *this; }
+    MemoryAllocateFlagsInfo build() {
+        MemoryAllocateFlagsInfo out{data};
+        return out; }
+};
+class BindBufferMemoryInfoBuilder {
+    BindBufferMemoryInfo data;
+    std::vector<void*> pNext;
+    public:
+    BindBufferMemoryInfoBuilder() noexcept{}
+    BindBufferMemoryInfoBuilder& setBuffer(Buffer buffer) { this->data.buffer = buffer; return *this; }
+    BindBufferMemoryInfoBuilder& setMemory(DeviceMemory memory) { this->data.memory = memory; return *this; }
+    BindBufferMemoryInfoBuilder& setMemoryOffset(DeviceSize memoryOffset) { this->data.memoryOffset = memoryOffset; return *this; }
+    BindBufferMemoryInfo build() {
+        BindBufferMemoryInfo out{data};
+        return out; }
+};
+class BindBufferMemoryDeviceGroupInfoBuilder {
+    BindBufferMemoryDeviceGroupInfo data;
+    std::vector<void*> pNext;
+    std::vector<uint32_t> pDeviceIndices;
+    public:
+    BindBufferMemoryDeviceGroupInfoBuilder() noexcept{}
+    BindBufferMemoryDeviceGroupInfoBuilder& addDeviceIndices(uint32_t pDeviceIndices) { this->pDeviceIndices.push_back(pDeviceIndices); return *this; }
+    BindBufferMemoryDeviceGroupInfo build() {
+        BindBufferMemoryDeviceGroupInfo out{data};
+        out.deviceIndexCount = (uint32_t)pDeviceIndices.size();
+        out.pDeviceIndices = pDeviceIndices.data();
+        return out; }
+};
+class BindImageMemoryInfoBuilder {
+    BindImageMemoryInfo data;
+    std::vector<void*> pNext;
+    public:
+    BindImageMemoryInfoBuilder() noexcept{}
+    BindImageMemoryInfoBuilder& setImage(Image image) { this->data.image = image; return *this; }
+    BindImageMemoryInfoBuilder& setMemory(DeviceMemory memory) { this->data.memory = memory; return *this; }
+    BindImageMemoryInfoBuilder& setMemoryOffset(DeviceSize memoryOffset) { this->data.memoryOffset = memoryOffset; return *this; }
+    BindImageMemoryInfo build() {
+        BindImageMemoryInfo out{data};
+        return out; }
+};
+class BindImageMemoryDeviceGroupInfoBuilder {
+    BindImageMemoryDeviceGroupInfo data;
+    std::vector<void*> pNext;
+    std::vector<uint32_t> pDeviceIndices;
+    std::vector<Rect2D> pSplitInstanceBindRegions;
+    public:
+    BindImageMemoryDeviceGroupInfoBuilder() noexcept{}
+    BindImageMemoryDeviceGroupInfoBuilder& addDeviceIndices(uint32_t pDeviceIndices) { this->pDeviceIndices.push_back(pDeviceIndices); return *this; }
+    BindImageMemoryDeviceGroupInfoBuilder& addSplitInstanceBindRegions(Rect2D pSplitInstanceBindRegions) { this->pSplitInstanceBindRegions.push_back(pSplitInstanceBindRegions); return *this; }
+    BindImageMemoryDeviceGroupInfo build() {
+        BindImageMemoryDeviceGroupInfo out{data};
+        out.deviceIndexCount = (uint32_t)pDeviceIndices.size();
+        out.pDeviceIndices = pDeviceIndices.data();
+        out.splitInstanceBindRegionCount = (uint32_t)pSplitInstanceBindRegions.size();
+        out.pSplitInstanceBindRegions = pSplitInstanceBindRegions.data();
+        return out; }
+};
+class DeviceGroupRenderPassBeginInfoBuilder {
+    DeviceGroupRenderPassBeginInfo data;
+    std::vector<void*> pNext;
+    std::vector<Rect2D> pDeviceRenderAreas;
+    public:
+    DeviceGroupRenderPassBeginInfoBuilder() noexcept{}
+    DeviceGroupRenderPassBeginInfoBuilder& setDeviceMask(uint32_t deviceMask) { this->data.deviceMask = deviceMask; return *this; }
+    DeviceGroupRenderPassBeginInfoBuilder& addDeviceRenderAreas(Rect2D pDeviceRenderAreas) { this->pDeviceRenderAreas.push_back(pDeviceRenderAreas); return *this; }
+    DeviceGroupRenderPassBeginInfo build() {
+        DeviceGroupRenderPassBeginInfo out{data};
+        out.deviceRenderAreaCount = (uint32_t)pDeviceRenderAreas.size();
+        out.pDeviceRenderAreas = pDeviceRenderAreas.data();
+        return out; }
+};
+class DeviceGroupCommandBufferBeginInfoBuilder {
+    DeviceGroupCommandBufferBeginInfo data;
+    std::vector<void*> pNext;
+    public:
+    DeviceGroupCommandBufferBeginInfoBuilder() noexcept{}
+    DeviceGroupCommandBufferBeginInfoBuilder& setDeviceMask(uint32_t deviceMask) { this->data.deviceMask = deviceMask; return *this; }
+    DeviceGroupCommandBufferBeginInfo build() {
+        DeviceGroupCommandBufferBeginInfo out{data};
+        return out; }
+};
+class DeviceGroupSubmitInfoBuilder {
+    DeviceGroupSubmitInfo data;
+    std::vector<void*> pNext;
+    std::vector<uint32_t> pWaitSemaphoreDeviceIndices;
+    std::vector<uint32_t> pCommandBufferDeviceMasks;
+    std::vector<uint32_t> pSignalSemaphoreDeviceIndices;
+    public:
+    DeviceGroupSubmitInfoBuilder() noexcept{}
+    DeviceGroupSubmitInfoBuilder& addWaitSemaphoreDeviceIndices(uint32_t pWaitSemaphoreDeviceIndices) { this->pWaitSemaphoreDeviceIndices.push_back(pWaitSemaphoreDeviceIndices); return *this; }
+    DeviceGroupSubmitInfoBuilder& addCommandBufferDeviceMasks(uint32_t pCommandBufferDeviceMasks) { this->pCommandBufferDeviceMasks.push_back(pCommandBufferDeviceMasks); return *this; }
+    DeviceGroupSubmitInfoBuilder& addSignalSemaphoreDeviceIndices(uint32_t pSignalSemaphoreDeviceIndices) { this->pSignalSemaphoreDeviceIndices.push_back(pSignalSemaphoreDeviceIndices); return *this; }
+    DeviceGroupSubmitInfo build() {
+        DeviceGroupSubmitInfo out{data};
+        out.waitSemaphoreCount = (uint32_t)pWaitSemaphoreDeviceIndices.size();
+        out.pWaitSemaphoreDeviceIndices = pWaitSemaphoreDeviceIndices.data();
+        out.commandBufferCount = (uint32_t)pCommandBufferDeviceMasks.size();
+        out.pCommandBufferDeviceMasks = pCommandBufferDeviceMasks.data();
+        out.signalSemaphoreCount = (uint32_t)pSignalSemaphoreDeviceIndices.size();
+        out.pSignalSemaphoreDeviceIndices = pSignalSemaphoreDeviceIndices.data();
+        return out; }
+};
+class DeviceGroupBindSparseInfoBuilder {
+    DeviceGroupBindSparseInfo data;
+    std::vector<void*> pNext;
+    public:
+    DeviceGroupBindSparseInfoBuilder() noexcept{}
+    DeviceGroupBindSparseInfoBuilder& setResourceDeviceIndex(uint32_t resourceDeviceIndex) { this->data.resourceDeviceIndex = resourceDeviceIndex; return *this; }
+    DeviceGroupBindSparseInfoBuilder& setMemoryDeviceIndex(uint32_t memoryDeviceIndex) { this->data.memoryDeviceIndex = memoryDeviceIndex; return *this; }
+    DeviceGroupBindSparseInfo build() {
+        DeviceGroupBindSparseInfo out{data};
+        return out; }
+};
+class ImageSwapchainCreateInfoKHRBuilder {
+    ImageSwapchainCreateInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    ImageSwapchainCreateInfoKHRBuilder() noexcept{}
+    ImageSwapchainCreateInfoKHRBuilder& setSwapchain(SwapchainKHR swapchain) { this->data.swapchain = swapchain; return *this; }
+    ImageSwapchainCreateInfoKHR build() {
+        ImageSwapchainCreateInfoKHR out{data};
+        return out; }
+};
+class BindImageMemorySwapchainInfoKHRBuilder {
+    BindImageMemorySwapchainInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    BindImageMemorySwapchainInfoKHRBuilder() noexcept{}
+    BindImageMemorySwapchainInfoKHRBuilder& setSwapchain(SwapchainKHR swapchain) { this->data.swapchain = swapchain; return *this; }
+    BindImageMemorySwapchainInfoKHRBuilder& setImageIndex(uint32_t imageIndex) { this->data.imageIndex = imageIndex; return *this; }
+    BindImageMemorySwapchainInfoKHR build() {
+        BindImageMemorySwapchainInfoKHR out{data};
+        return out; }
+};
+class AcquireNextImageInfoKHRBuilder {
+    AcquireNextImageInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    AcquireNextImageInfoKHRBuilder() noexcept{}
+    AcquireNextImageInfoKHRBuilder& setSwapchain(SwapchainKHR swapchain) { this->data.swapchain = swapchain; return *this; }
+    AcquireNextImageInfoKHRBuilder& setTimeout(uint64_t timeout) { this->data.timeout = timeout; return *this; }
+    AcquireNextImageInfoKHRBuilder& setSemaphore(Semaphore semaphore) { this->data.semaphore = semaphore; return *this; }
+    AcquireNextImageInfoKHRBuilder& setFence(Fence fence) { this->data.fence = fence; return *this; }
+    AcquireNextImageInfoKHRBuilder& setDeviceMask(uint32_t deviceMask) { this->data.deviceMask = deviceMask; return *this; }
+    AcquireNextImageInfoKHR build() {
+        AcquireNextImageInfoKHR out{data};
+        return out; }
+};
+class DeviceGroupPresentInfoKHRBuilder {
+    DeviceGroupPresentInfoKHR data;
+    std::vector<void*> pNext;
+    std::vector<uint32_t> pDeviceMasks;
+    public:
+    DeviceGroupPresentInfoKHRBuilder() noexcept{}
+    DeviceGroupPresentInfoKHRBuilder& addDeviceMasks(uint32_t pDeviceMasks) { this->pDeviceMasks.push_back(pDeviceMasks); return *this; }
+    DeviceGroupPresentInfoKHRBuilder& setMode(DeviceGroupPresentModeFlagBitsKHR mode) { this->data.mode = mode; return *this; }
+    DeviceGroupPresentInfoKHR build() {
+        DeviceGroupPresentInfoKHR out{data};
+        out.swapchainCount = (uint32_t)pDeviceMasks.size();
+        out.pDeviceMasks = pDeviceMasks.data();
+        return out; }
+};
+class DeviceGroupDeviceCreateInfoBuilder {
+    DeviceGroupDeviceCreateInfo data;
+    std::vector<void*> pNext;
+    std::vector<PhysicalDevice> pPhysicalDevices;
+    public:
+    DeviceGroupDeviceCreateInfoBuilder() noexcept{}
+    DeviceGroupDeviceCreateInfoBuilder& addPhysicalDevices(PhysicalDevice pPhysicalDevices) { this->pPhysicalDevices.push_back(pPhysicalDevices); return *this; }
+    DeviceGroupDeviceCreateInfo build() {
+        DeviceGroupDeviceCreateInfo out{data};
+        out.physicalDeviceCount = (uint32_t)pPhysicalDevices.size();
+        out.pPhysicalDevices = pPhysicalDevices.data();
+        return out; }
+};
+class DeviceGroupSwapchainCreateInfoKHRBuilder {
+    DeviceGroupSwapchainCreateInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    DeviceGroupSwapchainCreateInfoKHRBuilder() noexcept{}
+    DeviceGroupSwapchainCreateInfoKHRBuilder& setModes(DeviceGroupPresentModeFlagsKHR modes) { this->data.modes = modes; return *this; }
+    DeviceGroupSwapchainCreateInfoKHR build() {
+        DeviceGroupSwapchainCreateInfoKHR out{data};
+        return out; }
+};
+class DescriptorUpdateTemplateCreateInfoBuilder {
+    DescriptorUpdateTemplateCreateInfo data;
+    std::vector<void*> pNext;
+    std::vector<DescriptorUpdateTemplateEntry> pDescriptorUpdateEntries;
+    public:
+    DescriptorUpdateTemplateCreateInfoBuilder() noexcept{}
+    DescriptorUpdateTemplateCreateInfoBuilder& setFlags(DescriptorUpdateTemplateCreateFlags flags) { this->data.flags = flags; return *this; }
+    DescriptorUpdateTemplateCreateInfoBuilder& addDescriptorUpdateEntries(DescriptorUpdateTemplateEntry pDescriptorUpdateEntries) { this->pDescriptorUpdateEntries.push_back(pDescriptorUpdateEntries); return *this; }
+    DescriptorUpdateTemplateCreateInfoBuilder& setTemplateType(DescriptorUpdateTemplateType templateType) { this->data.templateType = templateType; return *this; }
+    DescriptorUpdateTemplateCreateInfoBuilder& setDescriptorSetLayout(DescriptorSetLayout descriptorSetLayout) { this->data.descriptorSetLayout = descriptorSetLayout; return *this; }
+    DescriptorUpdateTemplateCreateInfoBuilder& setPipelineBindPoint(PipelineBindPoint pipelineBindPoint) { this->data.pipelineBindPoint = pipelineBindPoint; return *this; }
+    DescriptorUpdateTemplateCreateInfoBuilder& setPipelineLayout(PipelineLayout pipelineLayout) { this->data.pipelineLayout = pipelineLayout; return *this; }
+    DescriptorUpdateTemplateCreateInfoBuilder& setSet(uint32_t set) { this->data.set = set; return *this; }
+    DescriptorUpdateTemplateCreateInfo build() {
+        DescriptorUpdateTemplateCreateInfo out{data};
+        out.descriptorUpdateEntryCount = (uint32_t)pDescriptorUpdateEntries.size();
+        out.pDescriptorUpdateEntries = pDescriptorUpdateEntries.data();
+        return out; }
+};
+class HdrMetadataEXTBuilder {
+    HdrMetadataEXT data;
+    std::vector<void*> pNext;
+    public:
+    HdrMetadataEXTBuilder() noexcept{}
+    HdrMetadataEXTBuilder& setDisplayPrimaryRed(XYColorEXT displayPrimaryRed) { this->data.displayPrimaryRed = displayPrimaryRed; return *this; }
+    HdrMetadataEXTBuilder& setDisplayPrimaryGreen(XYColorEXT displayPrimaryGreen) { this->data.displayPrimaryGreen = displayPrimaryGreen; return *this; }
+    HdrMetadataEXTBuilder& setDisplayPrimaryBlue(XYColorEXT displayPrimaryBlue) { this->data.displayPrimaryBlue = displayPrimaryBlue; return *this; }
+    HdrMetadataEXTBuilder& setWhitePoint(XYColorEXT whitePoint) { this->data.whitePoint = whitePoint; return *this; }
+    HdrMetadataEXTBuilder& setMaxLuminance(float maxLuminance) { this->data.maxLuminance = maxLuminance; return *this; }
+    HdrMetadataEXTBuilder& setMinLuminance(float minLuminance) { this->data.minLuminance = minLuminance; return *this; }
+    HdrMetadataEXTBuilder& setMaxContentLightLevel(float maxContentLightLevel) { this->data.maxContentLightLevel = maxContentLightLevel; return *this; }
+    HdrMetadataEXTBuilder& setMaxFrameAverageLightLevel(float maxFrameAverageLightLevel) { this->data.maxFrameAverageLightLevel = maxFrameAverageLightLevel; return *this; }
+    HdrMetadataEXT build() {
+        HdrMetadataEXT out{data};
+        return out; }
+};
+class SwapchainDisplayNativeHdrCreateInfoAMDBuilder {
+    SwapchainDisplayNativeHdrCreateInfoAMD data;
+    std::vector<void*> pNext;
+    public:
+    SwapchainDisplayNativeHdrCreateInfoAMDBuilder() noexcept{}
+    SwapchainDisplayNativeHdrCreateInfoAMDBuilder& setLocalDimmingEnable(Bool32 localDimmingEnable) { this->data.localDimmingEnable = localDimmingEnable; return *this; }
+    SwapchainDisplayNativeHdrCreateInfoAMD build() {
+        SwapchainDisplayNativeHdrCreateInfoAMD out{data};
+        return out; }
+};
+class PresentTimesInfoGOOGLEBuilder {
+    PresentTimesInfoGOOGLE data;
+    std::vector<void*> pNext;
+    std::vector<PresentTimeGOOGLE> pTimes;
+    public:
+    PresentTimesInfoGOOGLEBuilder() noexcept{}
+    PresentTimesInfoGOOGLEBuilder& setSwapchainCount(uint32_t swapchainCount) { this->data.swapchainCount = swapchainCount; return *this; }
+    PresentTimesInfoGOOGLEBuilder& addTimes(PresentTimeGOOGLE pTimes) { this->pTimes.push_back(pTimes); return *this; }
+    PresentTimesInfoGOOGLE build() {
+        PresentTimesInfoGOOGLE out{data};
+        out.pTimes = pTimes.data();
+        return out; }
+};
+#if defined(VK_USE_PLATFORM_IOS_MVK)
+class IOSSurfaceCreateInfoMVKBuilder {
+    IOSSurfaceCreateInfoMVK data;
+    std::vector<void*> pNext;
+    public:
+    IOSSurfaceCreateInfoMVKBuilder() noexcept{}
+    IOSSurfaceCreateInfoMVKBuilder& setFlags(IOSSurfaceCreateFlagsMVK flags) { this->data.flags = flags; return *this; }
+    IOSSurfaceCreateInfoMVK build() {
+        IOSSurfaceCreateInfoMVK out{data};
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_IOS_MVK)
+#if defined(VK_USE_PLATFORM_MACOS_MVK)
+class MacOSSurfaceCreateInfoMVKBuilder {
+    MacOSSurfaceCreateInfoMVK data;
+    std::vector<void*> pNext;
+    public:
+    MacOSSurfaceCreateInfoMVKBuilder() noexcept{}
+    MacOSSurfaceCreateInfoMVKBuilder& setFlags(MacOSSurfaceCreateFlagsMVK flags) { this->data.flags = flags; return *this; }
+    MacOSSurfaceCreateInfoMVK build() {
+        MacOSSurfaceCreateInfoMVK out{data};
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_MACOS_MVK)
+#if defined(VK_USE_PLATFORM_METAL_EXT)
+class MetalSurfaceCreateInfoEXTBuilder {
+    MetalSurfaceCreateInfoEXT data;
+    std::vector<void*> pNext;
+    CAMetalLayer pLayer;
+    public:
+    MetalSurfaceCreateInfoEXTBuilder() noexcept{}
+    MetalSurfaceCreateInfoEXTBuilder& setFlags(MetalSurfaceCreateFlagsEXT flags) { this->data.flags = flags; return *this; }
+    MetalSurfaceCreateInfoEXTBuilder& setLayer(CAMetalLayer pLayer) { this->pLayer = pLayer; return *this; }
+    MetalSurfaceCreateInfoEXT build() {
+        MetalSurfaceCreateInfoEXT out{data};
+        out.pLayer = &pLayer;
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_METAL_EXT)
+class PipelineViewportWScalingStateCreateInfoNVBuilder {
+    PipelineViewportWScalingStateCreateInfoNV data;
+    std::vector<void*> pNext;
+    std::vector<ViewportWScalingNV> pViewportWScalings;
+    public:
+    PipelineViewportWScalingStateCreateInfoNVBuilder() noexcept{}
+    PipelineViewportWScalingStateCreateInfoNVBuilder& setViewportWScalingEnable(Bool32 viewportWScalingEnable) { this->data.viewportWScalingEnable = viewportWScalingEnable; return *this; }
+    PipelineViewportWScalingStateCreateInfoNVBuilder& setViewportCount(uint32_t viewportCount) { this->data.viewportCount = viewportCount; return *this; }
+    PipelineViewportWScalingStateCreateInfoNVBuilder& addViewportWScalings(ViewportWScalingNV pViewportWScalings) { this->pViewportWScalings.push_back(pViewportWScalings); return *this; }
+    PipelineViewportWScalingStateCreateInfoNV build() {
+        PipelineViewportWScalingStateCreateInfoNV out{data};
+        out.pViewportWScalings = pViewportWScalings.data();
+        return out; }
+};
+class PipelineViewportSwizzleStateCreateInfoNVBuilder {
+    PipelineViewportSwizzleStateCreateInfoNV data;
+    std::vector<void*> pNext;
+    std::vector<ViewportSwizzleNV> pViewportSwizzles;
+    public:
+    PipelineViewportSwizzleStateCreateInfoNVBuilder() noexcept{}
+    PipelineViewportSwizzleStateCreateInfoNVBuilder& setFlags(PipelineViewportSwizzleStateCreateFlagsNV flags) { this->data.flags = flags; return *this; }
+    PipelineViewportSwizzleStateCreateInfoNVBuilder& addViewportSwizzles(ViewportSwizzleNV pViewportSwizzles) { this->pViewportSwizzles.push_back(pViewportSwizzles); return *this; }
+    PipelineViewportSwizzleStateCreateInfoNV build() {
+        PipelineViewportSwizzleStateCreateInfoNV out{data};
+        out.viewportCount = (uint32_t)pViewportSwizzles.size();
+        out.pViewportSwizzles = pViewportSwizzles.data();
+        return out; }
+};
+class PipelineDiscardRectangleStateCreateInfoEXTBuilder {
+    PipelineDiscardRectangleStateCreateInfoEXT data;
+    std::vector<void*> pNext;
+    std::vector<Rect2D> pDiscardRectangles;
+    public:
+    PipelineDiscardRectangleStateCreateInfoEXTBuilder() noexcept{}
+    PipelineDiscardRectangleStateCreateInfoEXTBuilder& setFlags(PipelineDiscardRectangleStateCreateFlagsEXT flags) { this->data.flags = flags; return *this; }
+    PipelineDiscardRectangleStateCreateInfoEXTBuilder& setDiscardRectangleMode(DiscardRectangleModeEXT discardRectangleMode) { this->data.discardRectangleMode = discardRectangleMode; return *this; }
+    PipelineDiscardRectangleStateCreateInfoEXTBuilder& addDiscardRectangles(Rect2D pDiscardRectangles) { this->pDiscardRectangles.push_back(pDiscardRectangles); return *this; }
+    PipelineDiscardRectangleStateCreateInfoEXT build() {
+        PipelineDiscardRectangleStateCreateInfoEXT out{data};
+        out.discardRectangleCount = (uint32_t)pDiscardRectangles.size();
+        out.pDiscardRectangles = pDiscardRectangles.data();
+        return out; }
+};
+class RenderPassInputAttachmentAspectCreateInfoBuilder {
+    RenderPassInputAttachmentAspectCreateInfo data;
+    std::vector<void*> pNext;
+    std::vector<InputAttachmentAspectReference> pAspectReferences;
+    public:
+    RenderPassInputAttachmentAspectCreateInfoBuilder() noexcept{}
+    RenderPassInputAttachmentAspectCreateInfoBuilder& addAspectReferences(InputAttachmentAspectReference pAspectReferences) { this->pAspectReferences.push_back(pAspectReferences); return *this; }
+    RenderPassInputAttachmentAspectCreateInfo build() {
+        RenderPassInputAttachmentAspectCreateInfo out{data};
+        out.aspectReferenceCount = (uint32_t)pAspectReferences.size();
+        out.pAspectReferences = pAspectReferences.data();
+        return out; }
+};
+class PhysicalDeviceSurfaceInfo2KHRBuilder {
+    PhysicalDeviceSurfaceInfo2KHR data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceSurfaceInfo2KHRBuilder() noexcept{}
+    PhysicalDeviceSurfaceInfo2KHRBuilder& setSurface(SurfaceKHR surface) { this->data.surface = surface; return *this; }
+    PhysicalDeviceSurfaceInfo2KHR build() {
+        PhysicalDeviceSurfaceInfo2KHR out{data};
+        return out; }
+};
+class DisplayPlaneInfo2KHRBuilder {
+    DisplayPlaneInfo2KHR data;
+    std::vector<void*> pNext;
+    public:
+    DisplayPlaneInfo2KHRBuilder() noexcept{}
+    DisplayPlaneInfo2KHRBuilder& setMode(DisplayModeKHR mode) { this->data.mode = mode; return *this; }
+    DisplayPlaneInfo2KHRBuilder& setPlaneIndex(uint32_t planeIndex) { this->data.planeIndex = planeIndex; return *this; }
+    DisplayPlaneInfo2KHR build() {
+        DisplayPlaneInfo2KHR out{data};
+        return out; }
+};
+class PhysicalDevice16BitStorageFeaturesBuilder {
+    PhysicalDevice16BitStorageFeatures data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDevice16BitStorageFeaturesBuilder() noexcept{}
+    PhysicalDevice16BitStorageFeaturesBuilder& setStorageBuffer16BitAccess(Bool32 storageBuffer16BitAccess) { this->data.storageBuffer16BitAccess = storageBuffer16BitAccess; return *this; }
+    PhysicalDevice16BitStorageFeaturesBuilder& setUniformAndStorageBuffer16BitAccess(Bool32 uniformAndStorageBuffer16BitAccess) { this->data.uniformAndStorageBuffer16BitAccess = uniformAndStorageBuffer16BitAccess; return *this; }
+    PhysicalDevice16BitStorageFeaturesBuilder& setStoragePushConstant16(Bool32 storagePushConstant16) { this->data.storagePushConstant16 = storagePushConstant16; return *this; }
+    PhysicalDevice16BitStorageFeaturesBuilder& setStorageInputOutput16(Bool32 storageInputOutput16) { this->data.storageInputOutput16 = storageInputOutput16; return *this; }
+    PhysicalDevice16BitStorageFeatures build() {
+        PhysicalDevice16BitStorageFeatures out{data};
+        return out; }
+};
+class PhysicalDeviceShaderSubgroupExtendedTypesFeaturesBuilder {
+    PhysicalDeviceShaderSubgroupExtendedTypesFeatures data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceShaderSubgroupExtendedTypesFeaturesBuilder() noexcept{}
+    PhysicalDeviceShaderSubgroupExtendedTypesFeaturesBuilder& setShaderSubgroupExtendedTypes(Bool32 shaderSubgroupExtendedTypes) { this->data.shaderSubgroupExtendedTypes = shaderSubgroupExtendedTypes; return *this; }
+    PhysicalDeviceShaderSubgroupExtendedTypesFeatures build() {
+        PhysicalDeviceShaderSubgroupExtendedTypesFeatures out{data};
+        return out; }
+};
+class BufferMemoryRequirementsInfo2Builder {
+    BufferMemoryRequirementsInfo2 data;
+    std::vector<void*> pNext;
+    public:
+    BufferMemoryRequirementsInfo2Builder() noexcept{}
+    BufferMemoryRequirementsInfo2Builder& setBuffer(Buffer buffer) { this->data.buffer = buffer; return *this; }
+    BufferMemoryRequirementsInfo2 build() {
+        BufferMemoryRequirementsInfo2 out{data};
+        return out; }
+};
+class ImageMemoryRequirementsInfo2Builder {
+    ImageMemoryRequirementsInfo2 data;
+    std::vector<void*> pNext;
+    public:
+    ImageMemoryRequirementsInfo2Builder() noexcept{}
+    ImageMemoryRequirementsInfo2Builder& setImage(Image image) { this->data.image = image; return *this; }
+    ImageMemoryRequirementsInfo2 build() {
+        ImageMemoryRequirementsInfo2 out{data};
+        return out; }
+};
+class ImageSparseMemoryRequirementsInfo2Builder {
+    ImageSparseMemoryRequirementsInfo2 data;
+    std::vector<void*> pNext;
+    public:
+    ImageSparseMemoryRequirementsInfo2Builder() noexcept{}
+    ImageSparseMemoryRequirementsInfo2Builder& setImage(Image image) { this->data.image = image; return *this; }
+    ImageSparseMemoryRequirementsInfo2 build() {
+        ImageSparseMemoryRequirementsInfo2 out{data};
+        return out; }
+};
+class MemoryDedicatedAllocateInfoBuilder {
+    MemoryDedicatedAllocateInfo data;
+    std::vector<void*> pNext;
+    public:
+    MemoryDedicatedAllocateInfoBuilder() noexcept{}
+    MemoryDedicatedAllocateInfoBuilder& setImage(Image image) { this->data.image = image; return *this; }
+    MemoryDedicatedAllocateInfoBuilder& setBuffer(Buffer buffer) { this->data.buffer = buffer; return *this; }
+    MemoryDedicatedAllocateInfo build() {
+        MemoryDedicatedAllocateInfo out{data};
+        return out; }
+};
+class ImageViewUsageCreateInfoBuilder {
+    ImageViewUsageCreateInfo data;
+    std::vector<void*> pNext;
+    public:
+    ImageViewUsageCreateInfoBuilder() noexcept{}
+    ImageViewUsageCreateInfoBuilder& setUsage(ImageUsageFlags usage) { this->data.usage = usage; return *this; }
+    ImageViewUsageCreateInfo build() {
+        ImageViewUsageCreateInfo out{data};
+        return out; }
+};
+class PipelineTessellationDomainOriginStateCreateInfoBuilder {
+    PipelineTessellationDomainOriginStateCreateInfo data;
+    std::vector<void*> pNext;
+    public:
+    PipelineTessellationDomainOriginStateCreateInfoBuilder() noexcept{}
+    PipelineTessellationDomainOriginStateCreateInfoBuilder& setDomainOrigin(TessellationDomainOrigin domainOrigin) { this->data.domainOrigin = domainOrigin; return *this; }
+    PipelineTessellationDomainOriginStateCreateInfo build() {
+        PipelineTessellationDomainOriginStateCreateInfo out{data};
+        return out; }
+};
+class SamplerYcbcrConversionInfoBuilder {
+    SamplerYcbcrConversionInfo data;
+    std::vector<void*> pNext;
+    public:
+    SamplerYcbcrConversionInfoBuilder() noexcept{}
+    SamplerYcbcrConversionInfoBuilder& setConversion(SamplerYcbcrConversion conversion) { this->data.conversion = conversion; return *this; }
+    SamplerYcbcrConversionInfo build() {
+        SamplerYcbcrConversionInfo out{data};
+        return out; }
+};
+class SamplerYcbcrConversionCreateInfoBuilder {
+    SamplerYcbcrConversionCreateInfo data;
+    std::vector<void*> pNext;
+    public:
+    SamplerYcbcrConversionCreateInfoBuilder() noexcept{}
+    SamplerYcbcrConversionCreateInfoBuilder& setFormat(Format format) { this->data.format = format; return *this; }
+    SamplerYcbcrConversionCreateInfoBuilder& setYcbcrModel(SamplerYcbcrModelConversion ycbcrModel) { this->data.ycbcrModel = ycbcrModel; return *this; }
+    SamplerYcbcrConversionCreateInfoBuilder& setYcbcrRange(SamplerYcbcrRange ycbcrRange) { this->data.ycbcrRange = ycbcrRange; return *this; }
+    SamplerYcbcrConversionCreateInfoBuilder& setComponents(ComponentMapping components) { this->data.components = components; return *this; }
+    SamplerYcbcrConversionCreateInfoBuilder& setXChromaOffset(ChromaLocation xChromaOffset) { this->data.xChromaOffset = xChromaOffset; return *this; }
+    SamplerYcbcrConversionCreateInfoBuilder& setYChromaOffset(ChromaLocation yChromaOffset) { this->data.yChromaOffset = yChromaOffset; return *this; }
+    SamplerYcbcrConversionCreateInfoBuilder& setChromaFilter(Filter chromaFilter) { this->data.chromaFilter = chromaFilter; return *this; }
+    SamplerYcbcrConversionCreateInfoBuilder& setForceExplicitReconstruction(Bool32 forceExplicitReconstruction) { this->data.forceExplicitReconstruction = forceExplicitReconstruction; return *this; }
+    SamplerYcbcrConversionCreateInfo build() {
+        SamplerYcbcrConversionCreateInfo out{data};
+        return out; }
+};
+class BindImagePlaneMemoryInfoBuilder {
+    BindImagePlaneMemoryInfo data;
+    std::vector<void*> pNext;
+    public:
+    BindImagePlaneMemoryInfoBuilder() noexcept{}
+    BindImagePlaneMemoryInfoBuilder& setPlaneAspect(ImageAspectFlagBits planeAspect) { this->data.planeAspect = planeAspect; return *this; }
+    BindImagePlaneMemoryInfo build() {
+        BindImagePlaneMemoryInfo out{data};
+        return out; }
+};
+class ImagePlaneMemoryRequirementsInfoBuilder {
+    ImagePlaneMemoryRequirementsInfo data;
+    std::vector<void*> pNext;
+    public:
+    ImagePlaneMemoryRequirementsInfoBuilder() noexcept{}
+    ImagePlaneMemoryRequirementsInfoBuilder& setPlaneAspect(ImageAspectFlagBits planeAspect) { this->data.planeAspect = planeAspect; return *this; }
+    ImagePlaneMemoryRequirementsInfo build() {
+        ImagePlaneMemoryRequirementsInfo out{data};
+        return out; }
+};
+class PhysicalDeviceSamplerYcbcrConversionFeaturesBuilder {
+    PhysicalDeviceSamplerYcbcrConversionFeatures data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceSamplerYcbcrConversionFeaturesBuilder() noexcept{}
+    PhysicalDeviceSamplerYcbcrConversionFeaturesBuilder& setSamplerYcbcrConversion(Bool32 samplerYcbcrConversion) { this->data.samplerYcbcrConversion = samplerYcbcrConversion; return *this; }
+    PhysicalDeviceSamplerYcbcrConversionFeatures build() {
+        PhysicalDeviceSamplerYcbcrConversionFeatures out{data};
+        return out; }
+};
+class ConditionalRenderingBeginInfoEXTBuilder {
+    ConditionalRenderingBeginInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    ConditionalRenderingBeginInfoEXTBuilder() noexcept{}
+    ConditionalRenderingBeginInfoEXTBuilder& setBuffer(Buffer buffer) { this->data.buffer = buffer; return *this; }
+    ConditionalRenderingBeginInfoEXTBuilder& setOffset(DeviceSize offset) { this->data.offset = offset; return *this; }
+    ConditionalRenderingBeginInfoEXTBuilder& setFlags(ConditionalRenderingFlagsEXT flags) { this->data.flags = flags; return *this; }
+    ConditionalRenderingBeginInfoEXT build() {
+        ConditionalRenderingBeginInfoEXT out{data};
+        return out; }
+};
+class ProtectedSubmitInfoBuilder {
+    ProtectedSubmitInfo data;
+    std::vector<void*> pNext;
+    public:
+    ProtectedSubmitInfoBuilder() noexcept{}
+    ProtectedSubmitInfoBuilder& setProtectedSubmit(Bool32 protectedSubmit) { this->data.protectedSubmit = protectedSubmit; return *this; }
+    ProtectedSubmitInfo build() {
+        ProtectedSubmitInfo out{data};
+        return out; }
+};
+class PhysicalDeviceProtectedMemoryFeaturesBuilder {
+    PhysicalDeviceProtectedMemoryFeatures data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceProtectedMemoryFeaturesBuilder() noexcept{}
+    PhysicalDeviceProtectedMemoryFeaturesBuilder& setProtectedMemory(Bool32 protectedMemory) { this->data.protectedMemory = protectedMemory; return *this; }
+    PhysicalDeviceProtectedMemoryFeatures build() {
+        PhysicalDeviceProtectedMemoryFeatures out{data};
+        return out; }
+};
+class DeviceQueueInfo2Builder {
+    DeviceQueueInfo2 data;
+    std::vector<void*> pNext;
+    public:
+    DeviceQueueInfo2Builder() noexcept{}
+    DeviceQueueInfo2Builder& setFlags(DeviceQueueCreateFlags flags) { this->data.flags = flags; return *this; }
+    DeviceQueueInfo2Builder& setQueueFamilyIndex(uint32_t queueFamilyIndex) { this->data.queueFamilyIndex = queueFamilyIndex; return *this; }
+    DeviceQueueInfo2Builder& setQueueIndex(uint32_t queueIndex) { this->data.queueIndex = queueIndex; return *this; }
+    DeviceQueueInfo2 build() {
+        DeviceQueueInfo2 out{data};
+        return out; }
+};
+class PipelineCoverageToColorStateCreateInfoNVBuilder {
+    PipelineCoverageToColorStateCreateInfoNV data;
+    std::vector<void*> pNext;
+    public:
+    PipelineCoverageToColorStateCreateInfoNVBuilder() noexcept{}
+    PipelineCoverageToColorStateCreateInfoNVBuilder& setFlags(PipelineCoverageToColorStateCreateFlagsNV flags) { this->data.flags = flags; return *this; }
+    PipelineCoverageToColorStateCreateInfoNVBuilder& setCoverageToColorEnable(Bool32 coverageToColorEnable) { this->data.coverageToColorEnable = coverageToColorEnable; return *this; }
+    PipelineCoverageToColorStateCreateInfoNVBuilder& setCoverageToColorLocation(uint32_t coverageToColorLocation) { this->data.coverageToColorLocation = coverageToColorLocation; return *this; }
+    PipelineCoverageToColorStateCreateInfoNV build() {
+        PipelineCoverageToColorStateCreateInfoNV out{data};
+        return out; }
+};
+class SampleLocationsInfoEXTBuilder {
+    SampleLocationsInfoEXT data;
+    std::vector<void*> pNext;
+    std::vector<SampleLocationEXT> pSampleLocations;
+    public:
+    SampleLocationsInfoEXTBuilder() noexcept{}
+    SampleLocationsInfoEXTBuilder& setSampleLocationsPerPixel(SampleCountFlagBits sampleLocationsPerPixel) { this->data.sampleLocationsPerPixel = sampleLocationsPerPixel; return *this; }
+    SampleLocationsInfoEXTBuilder& setSampleLocationGridSize(Extent2D sampleLocationGridSize) { this->data.sampleLocationGridSize = sampleLocationGridSize; return *this; }
+    SampleLocationsInfoEXTBuilder& addSampleLocations(SampleLocationEXT pSampleLocations) { this->pSampleLocations.push_back(pSampleLocations); return *this; }
+    SampleLocationsInfoEXT build() {
+        SampleLocationsInfoEXT out{data};
+        out.sampleLocationsCount = (uint32_t)pSampleLocations.size();
+        out.pSampleLocations = pSampleLocations.data();
+        return out; }
+};
+class RenderPassSampleLocationsBeginInfoEXTBuilder {
+    RenderPassSampleLocationsBeginInfoEXT data;
+    std::vector<void*> pNext;
+    std::vector<AttachmentSampleLocationsEXT> pAttachmentInitialSampleLocations;
+    std::vector<SubpassSampleLocationsEXT> pPostSubpassSampleLocations;
+    public:
+    RenderPassSampleLocationsBeginInfoEXTBuilder() noexcept{}
+    RenderPassSampleLocationsBeginInfoEXTBuilder& addAttachmentInitialSampleLocations(AttachmentSampleLocationsEXT pAttachmentInitialSampleLocations) { this->pAttachmentInitialSampleLocations.push_back(pAttachmentInitialSampleLocations); return *this; }
+    RenderPassSampleLocationsBeginInfoEXTBuilder& addPostSubpassSampleLocations(SubpassSampleLocationsEXT pPostSubpassSampleLocations) { this->pPostSubpassSampleLocations.push_back(pPostSubpassSampleLocations); return *this; }
+    RenderPassSampleLocationsBeginInfoEXT build() {
+        RenderPassSampleLocationsBeginInfoEXT out{data};
+        out.attachmentInitialSampleLocationsCount = (uint32_t)pAttachmentInitialSampleLocations.size();
+        out.pAttachmentInitialSampleLocations = pAttachmentInitialSampleLocations.data();
+        out.postSubpassSampleLocationsCount = (uint32_t)pPostSubpassSampleLocations.size();
+        out.pPostSubpassSampleLocations = pPostSubpassSampleLocations.data();
+        return out; }
+};
+class PipelineSampleLocationsStateCreateInfoEXTBuilder {
+    PipelineSampleLocationsStateCreateInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    PipelineSampleLocationsStateCreateInfoEXTBuilder() noexcept{}
+    PipelineSampleLocationsStateCreateInfoEXTBuilder& setSampleLocationsEnable(Bool32 sampleLocationsEnable) { this->data.sampleLocationsEnable = sampleLocationsEnable; return *this; }
+    PipelineSampleLocationsStateCreateInfoEXTBuilder& setSampleLocationsInfo(SampleLocationsInfoEXT sampleLocationsInfo) { this->data.sampleLocationsInfo = sampleLocationsInfo; return *this; }
+    PipelineSampleLocationsStateCreateInfoEXT build() {
+        PipelineSampleLocationsStateCreateInfoEXT out{data};
+        return out; }
+};
+class SamplerReductionModeCreateInfoBuilder {
+    SamplerReductionModeCreateInfo data;
+    std::vector<void*> pNext;
+    public:
+    SamplerReductionModeCreateInfoBuilder() noexcept{}
+    SamplerReductionModeCreateInfoBuilder& setReductionMode(SamplerReductionMode reductionMode) { this->data.reductionMode = reductionMode; return *this; }
+    SamplerReductionModeCreateInfo build() {
+        SamplerReductionModeCreateInfo out{data};
+        return out; }
+};
+class PhysicalDeviceBlendOperationAdvancedFeaturesEXTBuilder {
+    PhysicalDeviceBlendOperationAdvancedFeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceBlendOperationAdvancedFeaturesEXTBuilder() noexcept{}
+    PhysicalDeviceBlendOperationAdvancedFeaturesEXTBuilder& setAdvancedBlendCoherentOperations(Bool32 advancedBlendCoherentOperations) { this->data.advancedBlendCoherentOperations = advancedBlendCoherentOperations; return *this; }
+    PhysicalDeviceBlendOperationAdvancedFeaturesEXT build() {
+        PhysicalDeviceBlendOperationAdvancedFeaturesEXT out{data};
+        return out; }
+};
+class PipelineColorBlendAdvancedStateCreateInfoEXTBuilder {
+    PipelineColorBlendAdvancedStateCreateInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    PipelineColorBlendAdvancedStateCreateInfoEXTBuilder() noexcept{}
+    PipelineColorBlendAdvancedStateCreateInfoEXTBuilder& setSrcPremultiplied(Bool32 srcPremultiplied) { this->data.srcPremultiplied = srcPremultiplied; return *this; }
+    PipelineColorBlendAdvancedStateCreateInfoEXTBuilder& setDstPremultiplied(Bool32 dstPremultiplied) { this->data.dstPremultiplied = dstPremultiplied; return *this; }
+    PipelineColorBlendAdvancedStateCreateInfoEXTBuilder& setBlendOverlap(BlendOverlapEXT blendOverlap) { this->data.blendOverlap = blendOverlap; return *this; }
+    PipelineColorBlendAdvancedStateCreateInfoEXT build() {
+        PipelineColorBlendAdvancedStateCreateInfoEXT out{data};
+        return out; }
+};
+class PhysicalDeviceInlineUniformBlockFeaturesEXTBuilder {
+    PhysicalDeviceInlineUniformBlockFeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceInlineUniformBlockFeaturesEXTBuilder() noexcept{}
+    PhysicalDeviceInlineUniformBlockFeaturesEXTBuilder& setInlineUniformBlock(Bool32 inlineUniformBlock) { this->data.inlineUniformBlock = inlineUniformBlock; return *this; }
+    PhysicalDeviceInlineUniformBlockFeaturesEXTBuilder& setDescriptorBindingInlineUniformBlockUpdateAfterBind(Bool32 descriptorBindingInlineUniformBlockUpdateAfterBind) { this->data.descriptorBindingInlineUniformBlockUpdateAfterBind = descriptorBindingInlineUniformBlockUpdateAfterBind; return *this; }
+    PhysicalDeviceInlineUniformBlockFeaturesEXT build() {
+        PhysicalDeviceInlineUniformBlockFeaturesEXT out{data};
+        return out; }
+};
+class WriteDescriptorSetInlineUniformBlockEXTBuilder {
+    WriteDescriptorSetInlineUniformBlockEXT data;
+    std::vector<void*> pNext;
+    std::vector<std::byte> pData;
+    public:
+    WriteDescriptorSetInlineUniformBlockEXTBuilder() noexcept{}
+    WriteDescriptorSetInlineUniformBlockEXTBuilder& addData(std::byte pData) { this->pData.push_back(pData); return *this; }
+    WriteDescriptorSetInlineUniformBlockEXT build() {
+        WriteDescriptorSetInlineUniformBlockEXT out{data};
+        out.dataSize = (uint32_t)pData.size();
+        out.pData = pData.data();
+        return out; }
+};
+class DescriptorPoolInlineUniformBlockCreateInfoEXTBuilder {
+    DescriptorPoolInlineUniformBlockCreateInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    DescriptorPoolInlineUniformBlockCreateInfoEXTBuilder() noexcept{}
+    DescriptorPoolInlineUniformBlockCreateInfoEXTBuilder& setMaxInlineUniformBlockBindings(uint32_t maxInlineUniformBlockBindings) { this->data.maxInlineUniformBlockBindings = maxInlineUniformBlockBindings; return *this; }
+    DescriptorPoolInlineUniformBlockCreateInfoEXT build() {
+        DescriptorPoolInlineUniformBlockCreateInfoEXT out{data};
+        return out; }
+};
+class PipelineCoverageModulationStateCreateInfoNVBuilder {
+    PipelineCoverageModulationStateCreateInfoNV data;
+    std::vector<void*> pNext;
+    std::vector<float> pCoverageModulationTable;
+    public:
+    PipelineCoverageModulationStateCreateInfoNVBuilder() noexcept{}
+    PipelineCoverageModulationStateCreateInfoNVBuilder& setFlags(PipelineCoverageModulationStateCreateFlagsNV flags) { this->data.flags = flags; return *this; }
+    PipelineCoverageModulationStateCreateInfoNVBuilder& setCoverageModulationMode(CoverageModulationModeNV coverageModulationMode) { this->data.coverageModulationMode = coverageModulationMode; return *this; }
+    PipelineCoverageModulationStateCreateInfoNVBuilder& setCoverageModulationTableEnable(Bool32 coverageModulationTableEnable) { this->data.coverageModulationTableEnable = coverageModulationTableEnable; return *this; }
+    PipelineCoverageModulationStateCreateInfoNVBuilder& setCoverageModulationTableCount(uint32_t coverageModulationTableCount) { this->data.coverageModulationTableCount = coverageModulationTableCount; return *this; }
+    PipelineCoverageModulationStateCreateInfoNVBuilder& addCoverageModulationTable(float pCoverageModulationTable) { this->pCoverageModulationTable.push_back(pCoverageModulationTable); return *this; }
+    PipelineCoverageModulationStateCreateInfoNV build() {
+        PipelineCoverageModulationStateCreateInfoNV out{data};
+        out.pCoverageModulationTable = pCoverageModulationTable.data();
+        return out; }
+};
+class ImageFormatListCreateInfoBuilder {
+    ImageFormatListCreateInfo data;
+    std::vector<void*> pNext;
+    std::vector<Format> pViewFormats;
+    public:
+    ImageFormatListCreateInfoBuilder() noexcept{}
+    ImageFormatListCreateInfoBuilder& addViewFormats(Format pViewFormats) { this->pViewFormats.push_back(pViewFormats); return *this; }
+    ImageFormatListCreateInfo build() {
+        ImageFormatListCreateInfo out{data};
+        out.viewFormatCount = (uint32_t)pViewFormats.size();
+        out.pViewFormats = pViewFormats.data();
+        return out; }
+};
+class ValidationCacheCreateInfoEXTBuilder {
+    ValidationCacheCreateInfoEXT data;
+    std::vector<void*> pNext;
+    std::vector<std::byte> pInitialData;
+    public:
+    ValidationCacheCreateInfoEXTBuilder() noexcept{}
+    ValidationCacheCreateInfoEXTBuilder& setFlags(ValidationCacheCreateFlagsEXT flags) { this->data.flags = flags; return *this; }
+    ValidationCacheCreateInfoEXTBuilder& addInitialData(std::byte pInitialData) { this->pInitialData.push_back(pInitialData); return *this; }
+    ValidationCacheCreateInfoEXT build() {
+        ValidationCacheCreateInfoEXT out{data};
+        out.initialDataSize = (uint32_t)pInitialData.size();
+        out.pInitialData = pInitialData.data();
+        return out; }
+};
+class ShaderModuleValidationCacheCreateInfoEXTBuilder {
+    ShaderModuleValidationCacheCreateInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    ShaderModuleValidationCacheCreateInfoEXTBuilder() noexcept{}
+    ShaderModuleValidationCacheCreateInfoEXTBuilder& setValidationCache(ValidationCacheEXT validationCache) { this->data.validationCache = validationCache; return *this; }
+    ShaderModuleValidationCacheCreateInfoEXT build() {
+        ShaderModuleValidationCacheCreateInfoEXT out{data};
+        return out; }
+};
+class PhysicalDeviceShaderDrawParametersFeaturesBuilder {
+    PhysicalDeviceShaderDrawParametersFeatures data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceShaderDrawParametersFeaturesBuilder() noexcept{}
+    PhysicalDeviceShaderDrawParametersFeaturesBuilder& setShaderDrawParameters(Bool32 shaderDrawParameters) { this->data.shaderDrawParameters = shaderDrawParameters; return *this; }
+    PhysicalDeviceShaderDrawParametersFeatures build() {
+        PhysicalDeviceShaderDrawParametersFeatures out{data};
+        return out; }
+};
+class PhysicalDeviceShaderFloat16Int8FeaturesBuilder {
+    PhysicalDeviceShaderFloat16Int8Features data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceShaderFloat16Int8FeaturesBuilder() noexcept{}
+    PhysicalDeviceShaderFloat16Int8FeaturesBuilder& setShaderFloat16(Bool32 shaderFloat16) { this->data.shaderFloat16 = shaderFloat16; return *this; }
+    PhysicalDeviceShaderFloat16Int8FeaturesBuilder& setShaderInt8(Bool32 shaderInt8) { this->data.shaderInt8 = shaderInt8; return *this; }
+    PhysicalDeviceShaderFloat16Int8Features build() {
+        PhysicalDeviceShaderFloat16Int8Features out{data};
+        return out; }
+};
+class PhysicalDeviceHostQueryResetFeaturesBuilder {
+    PhysicalDeviceHostQueryResetFeatures data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceHostQueryResetFeaturesBuilder() noexcept{}
+    PhysicalDeviceHostQueryResetFeaturesBuilder& setHostQueryReset(Bool32 hostQueryReset) { this->data.hostQueryReset = hostQueryReset; return *this; }
+    PhysicalDeviceHostQueryResetFeatures build() {
+        PhysicalDeviceHostQueryResetFeatures out{data};
+        return out; }
+};
+class DeviceQueueGlobalPriorityCreateInfoEXTBuilder {
+    DeviceQueueGlobalPriorityCreateInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    DeviceQueueGlobalPriorityCreateInfoEXTBuilder() noexcept{}
+    DeviceQueueGlobalPriorityCreateInfoEXTBuilder& setGlobalPriority(QueueGlobalPriorityEXT globalPriority) { this->data.globalPriority = globalPriority; return *this; }
+    DeviceQueueGlobalPriorityCreateInfoEXT build() {
+        DeviceQueueGlobalPriorityCreateInfoEXT out{data};
+        return out; }
+};
+class DebugUtilsObjectNameInfoEXTBuilder {
+    DebugUtilsObjectNameInfoEXT data;
+    std::vector<void*> pNext;
+    std::string pObjectName;
+    public:
+    DebugUtilsObjectNameInfoEXTBuilder() noexcept{}
+    DebugUtilsObjectNameInfoEXTBuilder& setObjectType(ObjectType objectType) { this->data.objectType = objectType; return *this; }
+    DebugUtilsObjectNameInfoEXTBuilder& setObjectHandle(uint64_t objectHandle) { this->data.objectHandle = objectHandle; return *this; }
+    DebugUtilsObjectNameInfoEXTBuilder& addObjectName(std::string pObjectName) { this->pObjectName = pObjectName; return *this; }
+    DebugUtilsObjectNameInfoEXT build() {
+        DebugUtilsObjectNameInfoEXT out{data};
+        out.pObjectName = pObjectName.data();
+        return out; }
+};
+class DebugUtilsObjectTagInfoEXTBuilder {
+    DebugUtilsObjectTagInfoEXT data;
+    std::vector<void*> pNext;
+    std::vector<std::byte> pTag;
+    public:
+    DebugUtilsObjectTagInfoEXTBuilder() noexcept{}
+    DebugUtilsObjectTagInfoEXTBuilder& setObjectType(ObjectType objectType) { this->data.objectType = objectType; return *this; }
+    DebugUtilsObjectTagInfoEXTBuilder& setObjectHandle(uint64_t objectHandle) { this->data.objectHandle = objectHandle; return *this; }
+    DebugUtilsObjectTagInfoEXTBuilder& setTagName(uint64_t tagName) { this->data.tagName = tagName; return *this; }
+    DebugUtilsObjectTagInfoEXTBuilder& addTag(std::byte pTag) { this->pTag.push_back(pTag); return *this; }
+    DebugUtilsObjectTagInfoEXT build() {
+        DebugUtilsObjectTagInfoEXT out{data};
+        out.tagSize = (uint32_t)pTag.size();
+        out.pTag = pTag.data();
+        return out; }
+};
+class DebugUtilsLabelEXTBuilder {
+    DebugUtilsLabelEXT data;
+    std::vector<void*> pNext;
+    std::string pLabelName;
+    public:
+    DebugUtilsLabelEXTBuilder() noexcept{}
+    DebugUtilsLabelEXTBuilder& addLabelName(std::string pLabelName) { this->pLabelName = pLabelName; return *this; }
+    DebugUtilsLabelEXTBuilder& setColor(std::array<float, 4> color) { for(uint32_t i = 0; i < 4; i++) this->data.color[i] = color[i]; return *this; }
+    DebugUtilsLabelEXT build() {
+        DebugUtilsLabelEXT out{data};
+        out.pLabelName = pLabelName.data();
+        return out; }
+};
+class DebugUtilsMessengerCreateInfoEXTBuilder {
+    DebugUtilsMessengerCreateInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    DebugUtilsMessengerCreateInfoEXTBuilder() noexcept{}
+    DebugUtilsMessengerCreateInfoEXTBuilder& setFlags(DebugUtilsMessengerCreateFlagsEXT flags) { this->data.flags = flags; return *this; }
+    DebugUtilsMessengerCreateInfoEXTBuilder& setMessageSeverity(DebugUtilsMessageSeverityFlagsEXT messageSeverity) { this->data.messageSeverity = messageSeverity; return *this; }
+    DebugUtilsMessengerCreateInfoEXTBuilder& setMessageType(DebugUtilsMessageTypeFlagsEXT messageType) { this->data.messageType = messageType; return *this; }
+    DebugUtilsMessengerCreateInfoEXTBuilder& setPfnUserCallback(PFN_DebugUtilsMessengerCallbackEXT pfnUserCallback) { this->data.pfnUserCallback = pfnUserCallback; return *this; }
+    DebugUtilsMessengerCreateInfoEXT build() {
+        DebugUtilsMessengerCreateInfoEXT out{data};
+        return out; }
+};
+class DebugUtilsMessengerCallbackDataEXTBuilder {
+    DebugUtilsMessengerCallbackDataEXT data;
+    std::vector<void*> pNext;
+    std::string pMessageIdName;
+    std::string pMessage;
+    std::vector<DebugUtilsLabelEXT> pQueueLabels;
+    std::vector<DebugUtilsLabelEXT> pCmdBufLabels;
+    std::vector<DebugUtilsObjectNameInfoEXT> pObjects;
+    public:
+    DebugUtilsMessengerCallbackDataEXTBuilder() noexcept{}
+    DebugUtilsMessengerCallbackDataEXTBuilder& setFlags(DebugUtilsMessengerCallbackDataFlagsEXT flags) { this->data.flags = flags; return *this; }
+    DebugUtilsMessengerCallbackDataEXTBuilder& addMessageIdName(std::string pMessageIdName) { this->pMessageIdName = pMessageIdName; return *this; }
+    DebugUtilsMessengerCallbackDataEXTBuilder& setMessageIdNumber(int32_t messageIdNumber) { this->data.messageIdNumber = messageIdNumber; return *this; }
+    DebugUtilsMessengerCallbackDataEXTBuilder& addMessage(std::string pMessage) { this->pMessage = pMessage; return *this; }
+    DebugUtilsMessengerCallbackDataEXTBuilder& addQueueLabels(DebugUtilsLabelEXT pQueueLabels) { this->pQueueLabels.push_back(pQueueLabels); return *this; }
+    DebugUtilsMessengerCallbackDataEXTBuilder& addCmdBufLabels(DebugUtilsLabelEXT pCmdBufLabels) { this->pCmdBufLabels.push_back(pCmdBufLabels); return *this; }
+    DebugUtilsMessengerCallbackDataEXTBuilder& addObjects(DebugUtilsObjectNameInfoEXT pObjects) { this->pObjects.push_back(pObjects); return *this; }
+    DebugUtilsMessengerCallbackDataEXT build() {
+        DebugUtilsMessengerCallbackDataEXT out{data};
+        out.pMessageIdName = pMessageIdName.data();
+        out.pMessage = pMessage.data();
+        out.queueLabelCount = (uint32_t)pQueueLabels.size();
+        out.pQueueLabels = pQueueLabels.data();
+        out.cmdBufLabelCount = (uint32_t)pCmdBufLabels.size();
+        out.pCmdBufLabels = pCmdBufLabels.data();
+        out.objectCount = (uint32_t)pObjects.size();
+        out.pObjects = pObjects.data();
+        return out; }
+};
+class PhysicalDeviceDeviceMemoryReportFeaturesEXTBuilder {
+    PhysicalDeviceDeviceMemoryReportFeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceDeviceMemoryReportFeaturesEXTBuilder() noexcept{}
+    PhysicalDeviceDeviceMemoryReportFeaturesEXTBuilder& setDeviceMemoryReport(Bool32 deviceMemoryReport) { this->data.deviceMemoryReport = deviceMemoryReport; return *this; }
+    PhysicalDeviceDeviceMemoryReportFeaturesEXT build() {
+        PhysicalDeviceDeviceMemoryReportFeaturesEXT out{data};
+        return out; }
+};
+class DeviceDeviceMemoryReportCreateInfoEXTBuilder {
+    DeviceDeviceMemoryReportCreateInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    DeviceDeviceMemoryReportCreateInfoEXTBuilder() noexcept{}
+    DeviceDeviceMemoryReportCreateInfoEXTBuilder& setFlags(DeviceMemoryReportFlagsEXT flags) { this->data.flags = flags; return *this; }
+    DeviceDeviceMemoryReportCreateInfoEXTBuilder& setPfnUserCallback(PFN_DeviceMemoryReportCallbackEXT pfnUserCallback) { this->data.pfnUserCallback = pfnUserCallback; return *this; }
+    DeviceDeviceMemoryReportCreateInfoEXT build() {
+        DeviceDeviceMemoryReportCreateInfoEXT out{data};
+        return out; }
+};
+class ImportMemoryHostPointerInfoEXTBuilder {
+    ImportMemoryHostPointerInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    ImportMemoryHostPointerInfoEXTBuilder() noexcept{}
+    ImportMemoryHostPointerInfoEXTBuilder& setHandleType(ExternalMemoryHandleTypeFlagBits handleType) { this->data.handleType = handleType; return *this; }
+    ImportMemoryHostPointerInfoEXT build() {
+        ImportMemoryHostPointerInfoEXT out{data};
+        return out; }
+};
+class CalibratedTimestampInfoEXTBuilder {
+    CalibratedTimestampInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    CalibratedTimestampInfoEXTBuilder() noexcept{}
+    CalibratedTimestampInfoEXTBuilder& setTimeDomain(TimeDomainEXT timeDomain) { this->data.timeDomain = timeDomain; return *this; }
+    CalibratedTimestampInfoEXT build() {
+        CalibratedTimestampInfoEXT out{data};
+        return out; }
+};
+class PipelineRasterizationConservativeStateCreateInfoEXTBuilder {
+    PipelineRasterizationConservativeStateCreateInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    PipelineRasterizationConservativeStateCreateInfoEXTBuilder() noexcept{}
+    PipelineRasterizationConservativeStateCreateInfoEXTBuilder& setFlags(PipelineRasterizationConservativeStateCreateFlagsEXT flags) { this->data.flags = flags; return *this; }
+    PipelineRasterizationConservativeStateCreateInfoEXTBuilder& setConservativeRasterizationMode(ConservativeRasterizationModeEXT conservativeRasterizationMode) { this->data.conservativeRasterizationMode = conservativeRasterizationMode; return *this; }
+    PipelineRasterizationConservativeStateCreateInfoEXTBuilder& setExtraPrimitiveOverestimationSize(float extraPrimitiveOverestimationSize) { this->data.extraPrimitiveOverestimationSize = extraPrimitiveOverestimationSize; return *this; }
+    PipelineRasterizationConservativeStateCreateInfoEXT build() {
+        PipelineRasterizationConservativeStateCreateInfoEXT out{data};
+        return out; }
+};
+class PhysicalDeviceDescriptorIndexingFeaturesBuilder {
+    PhysicalDeviceDescriptorIndexingFeatures data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceDescriptorIndexingFeaturesBuilder() noexcept{}
+    PhysicalDeviceDescriptorIndexingFeaturesBuilder& setShaderInputAttachmentArrayDynamicIndexing(Bool32 shaderInputAttachmentArrayDynamicIndexing) { this->data.shaderInputAttachmentArrayDynamicIndexing = shaderInputAttachmentArrayDynamicIndexing; return *this; }
+    PhysicalDeviceDescriptorIndexingFeaturesBuilder& setShaderUniformTexelBufferArrayDynamicIndexing(Bool32 shaderUniformTexelBufferArrayDynamicIndexing) { this->data.shaderUniformTexelBufferArrayDynamicIndexing = shaderUniformTexelBufferArrayDynamicIndexing; return *this; }
+    PhysicalDeviceDescriptorIndexingFeaturesBuilder& setShaderStorageTexelBufferArrayDynamicIndexing(Bool32 shaderStorageTexelBufferArrayDynamicIndexing) { this->data.shaderStorageTexelBufferArrayDynamicIndexing = shaderStorageTexelBufferArrayDynamicIndexing; return *this; }
+    PhysicalDeviceDescriptorIndexingFeaturesBuilder& setShaderUniformBufferArrayNonUniformIndexing(Bool32 shaderUniformBufferArrayNonUniformIndexing) { this->data.shaderUniformBufferArrayNonUniformIndexing = shaderUniformBufferArrayNonUniformIndexing; return *this; }
+    PhysicalDeviceDescriptorIndexingFeaturesBuilder& setShaderSampledImageArrayNonUniformIndexing(Bool32 shaderSampledImageArrayNonUniformIndexing) { this->data.shaderSampledImageArrayNonUniformIndexing = shaderSampledImageArrayNonUniformIndexing; return *this; }
+    PhysicalDeviceDescriptorIndexingFeaturesBuilder& setShaderStorageBufferArrayNonUniformIndexing(Bool32 shaderStorageBufferArrayNonUniformIndexing) { this->data.shaderStorageBufferArrayNonUniformIndexing = shaderStorageBufferArrayNonUniformIndexing; return *this; }
+    PhysicalDeviceDescriptorIndexingFeaturesBuilder& setShaderStorageImageArrayNonUniformIndexing(Bool32 shaderStorageImageArrayNonUniformIndexing) { this->data.shaderStorageImageArrayNonUniformIndexing = shaderStorageImageArrayNonUniformIndexing; return *this; }
+    PhysicalDeviceDescriptorIndexingFeaturesBuilder& setShaderInputAttachmentArrayNonUniformIndexing(Bool32 shaderInputAttachmentArrayNonUniformIndexing) { this->data.shaderInputAttachmentArrayNonUniformIndexing = shaderInputAttachmentArrayNonUniformIndexing; return *this; }
+    PhysicalDeviceDescriptorIndexingFeaturesBuilder& setShaderUniformTexelBufferArrayNonUniformIndexing(Bool32 shaderUniformTexelBufferArrayNonUniformIndexing) { this->data.shaderUniformTexelBufferArrayNonUniformIndexing = shaderUniformTexelBufferArrayNonUniformIndexing; return *this; }
+    PhysicalDeviceDescriptorIndexingFeaturesBuilder& setShaderStorageTexelBufferArrayNonUniformIndexing(Bool32 shaderStorageTexelBufferArrayNonUniformIndexing) { this->data.shaderStorageTexelBufferArrayNonUniformIndexing = shaderStorageTexelBufferArrayNonUniformIndexing; return *this; }
+    PhysicalDeviceDescriptorIndexingFeaturesBuilder& setDescriptorBindingUniformBufferUpdateAfterBind(Bool32 descriptorBindingUniformBufferUpdateAfterBind) { this->data.descriptorBindingUniformBufferUpdateAfterBind = descriptorBindingUniformBufferUpdateAfterBind; return *this; }
+    PhysicalDeviceDescriptorIndexingFeaturesBuilder& setDescriptorBindingSampledImageUpdateAfterBind(Bool32 descriptorBindingSampledImageUpdateAfterBind) { this->data.descriptorBindingSampledImageUpdateAfterBind = descriptorBindingSampledImageUpdateAfterBind; return *this; }
+    PhysicalDeviceDescriptorIndexingFeaturesBuilder& setDescriptorBindingStorageImageUpdateAfterBind(Bool32 descriptorBindingStorageImageUpdateAfterBind) { this->data.descriptorBindingStorageImageUpdateAfterBind = descriptorBindingStorageImageUpdateAfterBind; return *this; }
+    PhysicalDeviceDescriptorIndexingFeaturesBuilder& setDescriptorBindingStorageBufferUpdateAfterBind(Bool32 descriptorBindingStorageBufferUpdateAfterBind) { this->data.descriptorBindingStorageBufferUpdateAfterBind = descriptorBindingStorageBufferUpdateAfterBind; return *this; }
+    PhysicalDeviceDescriptorIndexingFeaturesBuilder& setDescriptorBindingUniformTexelBufferUpdateAfterBind(Bool32 descriptorBindingUniformTexelBufferUpdateAfterBind) { this->data.descriptorBindingUniformTexelBufferUpdateAfterBind = descriptorBindingUniformTexelBufferUpdateAfterBind; return *this; }
+    PhysicalDeviceDescriptorIndexingFeaturesBuilder& setDescriptorBindingStorageTexelBufferUpdateAfterBind(Bool32 descriptorBindingStorageTexelBufferUpdateAfterBind) { this->data.descriptorBindingStorageTexelBufferUpdateAfterBind = descriptorBindingStorageTexelBufferUpdateAfterBind; return *this; }
+    PhysicalDeviceDescriptorIndexingFeaturesBuilder& setDescriptorBindingUpdateUnusedWhilePending(Bool32 descriptorBindingUpdateUnusedWhilePending) { this->data.descriptorBindingUpdateUnusedWhilePending = descriptorBindingUpdateUnusedWhilePending; return *this; }
+    PhysicalDeviceDescriptorIndexingFeaturesBuilder& setDescriptorBindingPartiallyBound(Bool32 descriptorBindingPartiallyBound) { this->data.descriptorBindingPartiallyBound = descriptorBindingPartiallyBound; return *this; }
+    PhysicalDeviceDescriptorIndexingFeaturesBuilder& setDescriptorBindingVariableDescriptorCount(Bool32 descriptorBindingVariableDescriptorCount) { this->data.descriptorBindingVariableDescriptorCount = descriptorBindingVariableDescriptorCount; return *this; }
+    PhysicalDeviceDescriptorIndexingFeaturesBuilder& setRuntimeDescriptorArray(Bool32 runtimeDescriptorArray) { this->data.runtimeDescriptorArray = runtimeDescriptorArray; return *this; }
+    PhysicalDeviceDescriptorIndexingFeatures build() {
+        PhysicalDeviceDescriptorIndexingFeatures out{data};
+        return out; }
+};
+class DescriptorSetLayoutBindingFlagsCreateInfoBuilder {
+    DescriptorSetLayoutBindingFlagsCreateInfo data;
+    std::vector<void*> pNext;
+    std::vector<DescriptorBindingFlags> pBindingFlags;
+    public:
+    DescriptorSetLayoutBindingFlagsCreateInfoBuilder() noexcept{}
+    DescriptorSetLayoutBindingFlagsCreateInfoBuilder& setBindingCount(uint32_t bindingCount) { this->data.bindingCount = bindingCount; return *this; }
+    DescriptorSetLayoutBindingFlagsCreateInfoBuilder& addBindingFlags(DescriptorBindingFlags pBindingFlags) { this->pBindingFlags.push_back(pBindingFlags); return *this; }
+    DescriptorSetLayoutBindingFlagsCreateInfo build() {
+        DescriptorSetLayoutBindingFlagsCreateInfo out{data};
+        out.pBindingFlags = pBindingFlags.data();
+        return out; }
+};
+class DescriptorSetVariableDescriptorCountAllocateInfoBuilder {
+    DescriptorSetVariableDescriptorCountAllocateInfo data;
+    std::vector<void*> pNext;
+    std::vector<uint32_t> pDescriptorCounts;
+    public:
+    DescriptorSetVariableDescriptorCountAllocateInfoBuilder() noexcept{}
+    DescriptorSetVariableDescriptorCountAllocateInfoBuilder& addDescriptorCounts(uint32_t pDescriptorCounts) { this->pDescriptorCounts.push_back(pDescriptorCounts); return *this; }
+    DescriptorSetVariableDescriptorCountAllocateInfo build() {
+        DescriptorSetVariableDescriptorCountAllocateInfo out{data};
+        out.descriptorSetCount = (uint32_t)pDescriptorCounts.size();
+        out.pDescriptorCounts = pDescriptorCounts.data();
+        return out; }
+};
+class AttachmentDescription2Builder {
+    AttachmentDescription2 data;
+    std::vector<void*> pNext;
+    public:
+    AttachmentDescription2Builder() noexcept{}
+    AttachmentDescription2Builder& setFlags(AttachmentDescriptionFlags flags) { this->data.flags = flags; return *this; }
+    AttachmentDescription2Builder& setFormat(Format format) { this->data.format = format; return *this; }
+    AttachmentDescription2Builder& setSamples(SampleCountFlagBits samples) { this->data.samples = samples; return *this; }
+    AttachmentDescription2Builder& setLoadOp(AttachmentLoadOp loadOp) { this->data.loadOp = loadOp; return *this; }
+    AttachmentDescription2Builder& setStoreOp(AttachmentStoreOp storeOp) { this->data.storeOp = storeOp; return *this; }
+    AttachmentDescription2Builder& setStencilLoadOp(AttachmentLoadOp stencilLoadOp) { this->data.stencilLoadOp = stencilLoadOp; return *this; }
+    AttachmentDescription2Builder& setStencilStoreOp(AttachmentStoreOp stencilStoreOp) { this->data.stencilStoreOp = stencilStoreOp; return *this; }
+    AttachmentDescription2Builder& setInitialLayout(ImageLayout initialLayout) { this->data.initialLayout = initialLayout; return *this; }
+    AttachmentDescription2Builder& setFinalLayout(ImageLayout finalLayout) { this->data.finalLayout = finalLayout; return *this; }
+    AttachmentDescription2 build() {
+        AttachmentDescription2 out{data};
+        return out; }
+};
+class AttachmentReference2Builder {
+    AttachmentReference2 data;
+    std::vector<void*> pNext;
+    public:
+    AttachmentReference2Builder() noexcept{}
+    AttachmentReference2Builder& setAttachment(uint32_t attachment) { this->data.attachment = attachment; return *this; }
+    AttachmentReference2Builder& setLayout(ImageLayout layout) { this->data.layout = layout; return *this; }
+    AttachmentReference2Builder& setAspectMask(ImageAspectFlags aspectMask) { this->data.aspectMask = aspectMask; return *this; }
+    AttachmentReference2 build() {
+        AttachmentReference2 out{data};
+        return out; }
+};
+class SubpassDescription2Builder {
+    SubpassDescription2 data;
+    std::vector<void*> pNext;
+    std::vector<AttachmentReference2> pInputAttachments;
+    std::vector<AttachmentReference2> pColorAttachments;
+    std::vector<AttachmentReference2> pResolveAttachments;
+    detail::optional<AttachmentReference2> pDepthStencilAttachment;
+    std::vector<uint32_t> pPreserveAttachments;
+    public:
+    SubpassDescription2Builder() noexcept{}
+    SubpassDescription2Builder& setFlags(SubpassDescriptionFlags flags) { this->data.flags = flags; return *this; }
+    SubpassDescription2Builder& setPipelineBindPoint(PipelineBindPoint pipelineBindPoint) { this->data.pipelineBindPoint = pipelineBindPoint; return *this; }
+    SubpassDescription2Builder& setViewMask(uint32_t viewMask) { this->data.viewMask = viewMask; return *this; }
+    SubpassDescription2Builder& addInputAttachments(AttachmentReference2 pInputAttachments) { this->pInputAttachments.push_back(pInputAttachments); return *this; }
+    SubpassDescription2Builder& addColorAttachments(AttachmentReference2 pColorAttachments) { this->pColorAttachments.push_back(pColorAttachments); return *this; }
+    SubpassDescription2Builder& addResolveAttachments(AttachmentReference2 pResolveAttachments) { this->pResolveAttachments.push_back(pResolveAttachments); return *this; }
+    SubpassDescription2Builder& setDepthStencilAttachment(AttachmentReference2 pDepthStencilAttachment) { this->pDepthStencilAttachment = pDepthStencilAttachment; return *this; }
+    SubpassDescription2Builder& addPreserveAttachments(uint32_t pPreserveAttachments) { this->pPreserveAttachments.push_back(pPreserveAttachments); return *this; }
+    SubpassDescription2 build() {
+        SubpassDescription2 out{data};
+        out.inputAttachmentCount = (uint32_t)pInputAttachments.size();
+        out.pInputAttachments = pInputAttachments.data();
+        out.colorAttachmentCount = (uint32_t)pColorAttachments.size();
+        out.pColorAttachments = pColorAttachments.data();
+        out.pResolveAttachments = pResolveAttachments.data();
+        out.pDepthStencilAttachment = pDepthStencilAttachment.ptr_or_nullptr();
+        out.preserveAttachmentCount = (uint32_t)pPreserveAttachments.size();
+        out.pPreserveAttachments = pPreserveAttachments.data();
+        return out; }
+};
+class SubpassDependency2Builder {
+    SubpassDependency2 data;
+    std::vector<void*> pNext;
+    public:
+    SubpassDependency2Builder() noexcept{}
+    SubpassDependency2Builder& setSrcSubpass(uint32_t srcSubpass) { this->data.srcSubpass = srcSubpass; return *this; }
+    SubpassDependency2Builder& setDstSubpass(uint32_t dstSubpass) { this->data.dstSubpass = dstSubpass; return *this; }
+    SubpassDependency2Builder& setSrcStageMask(PipelineStageFlags srcStageMask) { this->data.srcStageMask = srcStageMask; return *this; }
+    SubpassDependency2Builder& setDstStageMask(PipelineStageFlags dstStageMask) { this->data.dstStageMask = dstStageMask; return *this; }
+    SubpassDependency2Builder& setSrcAccessMask(AccessFlags srcAccessMask) { this->data.srcAccessMask = srcAccessMask; return *this; }
+    SubpassDependency2Builder& setDstAccessMask(AccessFlags dstAccessMask) { this->data.dstAccessMask = dstAccessMask; return *this; }
+    SubpassDependency2Builder& setDependencyFlags(DependencyFlags dependencyFlags) { this->data.dependencyFlags = dependencyFlags; return *this; }
+    SubpassDependency2Builder& setViewOffset(int32_t viewOffset) { this->data.viewOffset = viewOffset; return *this; }
+    SubpassDependency2 build() {
+        SubpassDependency2 out{data};
+        return out; }
+};
+class RenderPassCreateInfo2Builder {
+    RenderPassCreateInfo2 data;
+    std::vector<void*> pNext;
+    std::vector<AttachmentDescription2> pAttachments;
+    std::vector<SubpassDescription2> pSubpasses;
+    std::vector<SubpassDependency2> pDependencies;
+    std::vector<uint32_t> pCorrelatedViewMasks;
+    public:
+    RenderPassCreateInfo2Builder() noexcept{}
+    RenderPassCreateInfo2Builder& setFlags(RenderPassCreateFlags flags) { this->data.flags = flags; return *this; }
+    RenderPassCreateInfo2Builder& addAttachments(AttachmentDescription2 pAttachments) { this->pAttachments.push_back(pAttachments); return *this; }
+    RenderPassCreateInfo2Builder& addSubpasses(SubpassDescription2 pSubpasses) { this->pSubpasses.push_back(pSubpasses); return *this; }
+    RenderPassCreateInfo2Builder& addDependencies(SubpassDependency2 pDependencies) { this->pDependencies.push_back(pDependencies); return *this; }
+    RenderPassCreateInfo2Builder& addCorrelatedViewMasks(uint32_t pCorrelatedViewMasks) { this->pCorrelatedViewMasks.push_back(pCorrelatedViewMasks); return *this; }
+    RenderPassCreateInfo2 build() {
+        RenderPassCreateInfo2 out{data};
+        out.attachmentCount = (uint32_t)pAttachments.size();
+        out.pAttachments = pAttachments.data();
+        out.subpassCount = (uint32_t)pSubpasses.size();
+        out.pSubpasses = pSubpasses.data();
+        out.dependencyCount = (uint32_t)pDependencies.size();
+        out.pDependencies = pDependencies.data();
+        out.correlatedViewMaskCount = (uint32_t)pCorrelatedViewMasks.size();
+        out.pCorrelatedViewMasks = pCorrelatedViewMasks.data();
+        return out; }
+};
+class SubpassBeginInfoBuilder {
+    SubpassBeginInfo data;
+    std::vector<void*> pNext;
+    public:
+    SubpassBeginInfoBuilder() noexcept{}
+    SubpassBeginInfoBuilder& setContents(SubpassContents contents) { this->data.contents = contents; return *this; }
+    SubpassBeginInfo build() {
+        SubpassBeginInfo out{data};
+        return out; }
+};
+class SubpassEndInfoBuilder {
+    SubpassEndInfo data;
+    std::vector<void*> pNext;
+    public:
+    SubpassEndInfoBuilder() noexcept{}
+    SubpassEndInfo build() {
+        SubpassEndInfo out{data};
+        return out; }
+};
+class PhysicalDeviceTimelineSemaphoreFeaturesBuilder {
+    PhysicalDeviceTimelineSemaphoreFeatures data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceTimelineSemaphoreFeaturesBuilder() noexcept{}
+    PhysicalDeviceTimelineSemaphoreFeaturesBuilder& setTimelineSemaphore(Bool32 timelineSemaphore) { this->data.timelineSemaphore = timelineSemaphore; return *this; }
+    PhysicalDeviceTimelineSemaphoreFeatures build() {
+        PhysicalDeviceTimelineSemaphoreFeatures out{data};
+        return out; }
+};
+class SemaphoreTypeCreateInfoBuilder {
+    SemaphoreTypeCreateInfo data;
+    std::vector<void*> pNext;
+    public:
+    SemaphoreTypeCreateInfoBuilder() noexcept{}
+    SemaphoreTypeCreateInfoBuilder& setSemaphoreType(SemaphoreType semaphoreType) { this->data.semaphoreType = semaphoreType; return *this; }
+    SemaphoreTypeCreateInfoBuilder& setInitialValue(uint64_t initialValue) { this->data.initialValue = initialValue; return *this; }
+    SemaphoreTypeCreateInfo build() {
+        SemaphoreTypeCreateInfo out{data};
+        return out; }
+};
+class TimelineSemaphoreSubmitInfoBuilder {
+    TimelineSemaphoreSubmitInfo data;
+    std::vector<void*> pNext;
+    std::vector<uint64_t> pWaitSemaphoreValues;
+    std::vector<uint64_t> pSignalSemaphoreValues;
+    public:
+    TimelineSemaphoreSubmitInfoBuilder() noexcept{}
+    TimelineSemaphoreSubmitInfoBuilder& setWaitSemaphoreValueCount(uint32_t waitSemaphoreValueCount) { this->data.waitSemaphoreValueCount = waitSemaphoreValueCount; return *this; }
+    TimelineSemaphoreSubmitInfoBuilder& addWaitSemaphoreValues(uint64_t pWaitSemaphoreValues) { this->pWaitSemaphoreValues.push_back(pWaitSemaphoreValues); return *this; }
+    TimelineSemaphoreSubmitInfoBuilder& setSignalSemaphoreValueCount(uint32_t signalSemaphoreValueCount) { this->data.signalSemaphoreValueCount = signalSemaphoreValueCount; return *this; }
+    TimelineSemaphoreSubmitInfoBuilder& addSignalSemaphoreValues(uint64_t pSignalSemaphoreValues) { this->pSignalSemaphoreValues.push_back(pSignalSemaphoreValues); return *this; }
+    TimelineSemaphoreSubmitInfo build() {
+        TimelineSemaphoreSubmitInfo out{data};
+        out.pWaitSemaphoreValues = pWaitSemaphoreValues.data();
+        out.pSignalSemaphoreValues = pSignalSemaphoreValues.data();
+        return out; }
+};
+class SemaphoreWaitInfoBuilder {
+    SemaphoreWaitInfo data;
+    std::vector<void*> pNext;
+    std::vector<Semaphore> pSemaphores;
+    std::vector<uint64_t> pValues;
+    public:
+    SemaphoreWaitInfoBuilder() noexcept{}
+    SemaphoreWaitInfoBuilder& setFlags(SemaphoreWaitFlags flags) { this->data.flags = flags; return *this; }
+    SemaphoreWaitInfoBuilder& addSemaphores(Semaphore pSemaphores) { this->pSemaphores.push_back(pSemaphores); return *this; }
+    SemaphoreWaitInfoBuilder& addValues(uint64_t pValues) { this->pValues.push_back(pValues); return *this; }
+    SemaphoreWaitInfo build() {
+        SemaphoreWaitInfo out{data};
+        out.semaphoreCount = (uint32_t)pSemaphores.size();
+        out.pSemaphores = pSemaphores.data();
+        out.pValues = pValues.data();
+        return out; }
+};
+class SemaphoreSignalInfoBuilder {
+    SemaphoreSignalInfo data;
+    std::vector<void*> pNext;
+    public:
+    SemaphoreSignalInfoBuilder() noexcept{}
+    SemaphoreSignalInfoBuilder& setSemaphore(Semaphore semaphore) { this->data.semaphore = semaphore; return *this; }
+    SemaphoreSignalInfoBuilder& setValue(uint64_t value) { this->data.value = value; return *this; }
+    SemaphoreSignalInfo build() {
+        SemaphoreSignalInfo out{data};
+        return out; }
+};
+class PipelineVertexInputDivisorStateCreateInfoEXTBuilder {
+    PipelineVertexInputDivisorStateCreateInfoEXT data;
+    std::vector<void*> pNext;
+    std::vector<VertexInputBindingDivisorDescriptionEXT> pVertexBindingDivisors;
+    public:
+    PipelineVertexInputDivisorStateCreateInfoEXTBuilder() noexcept{}
+    PipelineVertexInputDivisorStateCreateInfoEXTBuilder& addVertexBindingDivisors(VertexInputBindingDivisorDescriptionEXT pVertexBindingDivisors) { this->pVertexBindingDivisors.push_back(pVertexBindingDivisors); return *this; }
+    PipelineVertexInputDivisorStateCreateInfoEXT build() {
+        PipelineVertexInputDivisorStateCreateInfoEXT out{data};
+        out.vertexBindingDivisorCount = (uint32_t)pVertexBindingDivisors.size();
+        out.pVertexBindingDivisors = pVertexBindingDivisors.data();
+        return out; }
+};
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
+class ImportAndroidHardwareBufferInfoANDROIDBuilder {
+    ImportAndroidHardwareBufferInfoANDROID data;
+    std::vector<void*> pNext;
+    AHardwareBuffer buffer;
+    public:
+    ImportAndroidHardwareBufferInfoANDROIDBuilder() noexcept{}
+    ImportAndroidHardwareBufferInfoANDROIDBuilder& setBuffer(AHardwareBuffer buffer) { this->buffer = buffer; return *this; }
+    ImportAndroidHardwareBufferInfoANDROID build() {
+        ImportAndroidHardwareBufferInfoANDROID out{data};
+        out.buffer = &buffer;
+        return out; }
+};
+class MemoryGetAndroidHardwareBufferInfoANDROIDBuilder {
+    MemoryGetAndroidHardwareBufferInfoANDROID data;
+    std::vector<void*> pNext;
+    public:
+    MemoryGetAndroidHardwareBufferInfoANDROIDBuilder() noexcept{}
+    MemoryGetAndroidHardwareBufferInfoANDROIDBuilder& setMemory(DeviceMemory memory) { this->data.memory = memory; return *this; }
+    MemoryGetAndroidHardwareBufferInfoANDROID build() {
+        MemoryGetAndroidHardwareBufferInfoANDROID out{data};
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
+class CommandBufferInheritanceConditionalRenderingInfoEXTBuilder {
+    CommandBufferInheritanceConditionalRenderingInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    CommandBufferInheritanceConditionalRenderingInfoEXTBuilder() noexcept{}
+    CommandBufferInheritanceConditionalRenderingInfoEXTBuilder& setConditionalRenderingEnable(Bool32 conditionalRenderingEnable) { this->data.conditionalRenderingEnable = conditionalRenderingEnable; return *this; }
+    CommandBufferInheritanceConditionalRenderingInfoEXT build() {
+        CommandBufferInheritanceConditionalRenderingInfoEXT out{data};
+        return out; }
+};
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
+class ExternalFormatANDROIDBuilder {
+    ExternalFormatANDROID data;
+    std::vector<void*> pNext;
+    public:
+    ExternalFormatANDROIDBuilder() noexcept{}
+    ExternalFormatANDROIDBuilder& setExternalFormat(uint64_t externalFormat) { this->data.externalFormat = externalFormat; return *this; }
+    ExternalFormatANDROID build() {
+        ExternalFormatANDROID out{data};
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
+class PhysicalDevice8BitStorageFeaturesBuilder {
+    PhysicalDevice8BitStorageFeatures data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDevice8BitStorageFeaturesBuilder() noexcept{}
+    PhysicalDevice8BitStorageFeaturesBuilder& setStorageBuffer8BitAccess(Bool32 storageBuffer8BitAccess) { this->data.storageBuffer8BitAccess = storageBuffer8BitAccess; return *this; }
+    PhysicalDevice8BitStorageFeaturesBuilder& setUniformAndStorageBuffer8BitAccess(Bool32 uniformAndStorageBuffer8BitAccess) { this->data.uniformAndStorageBuffer8BitAccess = uniformAndStorageBuffer8BitAccess; return *this; }
+    PhysicalDevice8BitStorageFeaturesBuilder& setStoragePushConstant8(Bool32 storagePushConstant8) { this->data.storagePushConstant8 = storagePushConstant8; return *this; }
+    PhysicalDevice8BitStorageFeatures build() {
+        PhysicalDevice8BitStorageFeatures out{data};
+        return out; }
+};
+class PhysicalDeviceConditionalRenderingFeaturesEXTBuilder {
+    PhysicalDeviceConditionalRenderingFeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceConditionalRenderingFeaturesEXTBuilder() noexcept{}
+    PhysicalDeviceConditionalRenderingFeaturesEXTBuilder& setConditionalRendering(Bool32 conditionalRendering) { this->data.conditionalRendering = conditionalRendering; return *this; }
+    PhysicalDeviceConditionalRenderingFeaturesEXTBuilder& setInheritedConditionalRendering(Bool32 inheritedConditionalRendering) { this->data.inheritedConditionalRendering = inheritedConditionalRendering; return *this; }
+    PhysicalDeviceConditionalRenderingFeaturesEXT build() {
+        PhysicalDeviceConditionalRenderingFeaturesEXT out{data};
+        return out; }
+};
+class PhysicalDeviceVulkanMemoryModelFeaturesBuilder {
+    PhysicalDeviceVulkanMemoryModelFeatures data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceVulkanMemoryModelFeaturesBuilder() noexcept{}
+    PhysicalDeviceVulkanMemoryModelFeaturesBuilder& setVulkanMemoryModel(Bool32 vulkanMemoryModel) { this->data.vulkanMemoryModel = vulkanMemoryModel; return *this; }
+    PhysicalDeviceVulkanMemoryModelFeaturesBuilder& setVulkanMemoryModelDeviceScope(Bool32 vulkanMemoryModelDeviceScope) { this->data.vulkanMemoryModelDeviceScope = vulkanMemoryModelDeviceScope; return *this; }
+    PhysicalDeviceVulkanMemoryModelFeaturesBuilder& setVulkanMemoryModelAvailabilityVisibilityChains(Bool32 vulkanMemoryModelAvailabilityVisibilityChains) { this->data.vulkanMemoryModelAvailabilityVisibilityChains = vulkanMemoryModelAvailabilityVisibilityChains; return *this; }
+    PhysicalDeviceVulkanMemoryModelFeatures build() {
+        PhysicalDeviceVulkanMemoryModelFeatures out{data};
+        return out; }
+};
+class PhysicalDeviceShaderAtomicInt64FeaturesBuilder {
+    PhysicalDeviceShaderAtomicInt64Features data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceShaderAtomicInt64FeaturesBuilder() noexcept{}
+    PhysicalDeviceShaderAtomicInt64FeaturesBuilder& setShaderBufferInt64Atomics(Bool32 shaderBufferInt64Atomics) { this->data.shaderBufferInt64Atomics = shaderBufferInt64Atomics; return *this; }
+    PhysicalDeviceShaderAtomicInt64FeaturesBuilder& setShaderSharedInt64Atomics(Bool32 shaderSharedInt64Atomics) { this->data.shaderSharedInt64Atomics = shaderSharedInt64Atomics; return *this; }
+    PhysicalDeviceShaderAtomicInt64Features build() {
+        PhysicalDeviceShaderAtomicInt64Features out{data};
+        return out; }
+};
+class PhysicalDeviceShaderAtomicFloatFeaturesEXTBuilder {
+    PhysicalDeviceShaderAtomicFloatFeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceShaderAtomicFloatFeaturesEXTBuilder() noexcept{}
+    PhysicalDeviceShaderAtomicFloatFeaturesEXTBuilder& setShaderBufferFloat32Atomics(Bool32 shaderBufferFloat32Atomics) { this->data.shaderBufferFloat32Atomics = shaderBufferFloat32Atomics; return *this; }
+    PhysicalDeviceShaderAtomicFloatFeaturesEXTBuilder& setShaderBufferFloat32AtomicAdd(Bool32 shaderBufferFloat32AtomicAdd) { this->data.shaderBufferFloat32AtomicAdd = shaderBufferFloat32AtomicAdd; return *this; }
+    PhysicalDeviceShaderAtomicFloatFeaturesEXTBuilder& setShaderBufferFloat64Atomics(Bool32 shaderBufferFloat64Atomics) { this->data.shaderBufferFloat64Atomics = shaderBufferFloat64Atomics; return *this; }
+    PhysicalDeviceShaderAtomicFloatFeaturesEXTBuilder& setShaderBufferFloat64AtomicAdd(Bool32 shaderBufferFloat64AtomicAdd) { this->data.shaderBufferFloat64AtomicAdd = shaderBufferFloat64AtomicAdd; return *this; }
+    PhysicalDeviceShaderAtomicFloatFeaturesEXTBuilder& setShaderSharedFloat32Atomics(Bool32 shaderSharedFloat32Atomics) { this->data.shaderSharedFloat32Atomics = shaderSharedFloat32Atomics; return *this; }
+    PhysicalDeviceShaderAtomicFloatFeaturesEXTBuilder& setShaderSharedFloat32AtomicAdd(Bool32 shaderSharedFloat32AtomicAdd) { this->data.shaderSharedFloat32AtomicAdd = shaderSharedFloat32AtomicAdd; return *this; }
+    PhysicalDeviceShaderAtomicFloatFeaturesEXTBuilder& setShaderSharedFloat64Atomics(Bool32 shaderSharedFloat64Atomics) { this->data.shaderSharedFloat64Atomics = shaderSharedFloat64Atomics; return *this; }
+    PhysicalDeviceShaderAtomicFloatFeaturesEXTBuilder& setShaderSharedFloat64AtomicAdd(Bool32 shaderSharedFloat64AtomicAdd) { this->data.shaderSharedFloat64AtomicAdd = shaderSharedFloat64AtomicAdd; return *this; }
+    PhysicalDeviceShaderAtomicFloatFeaturesEXTBuilder& setShaderImageFloat32Atomics(Bool32 shaderImageFloat32Atomics) { this->data.shaderImageFloat32Atomics = shaderImageFloat32Atomics; return *this; }
+    PhysicalDeviceShaderAtomicFloatFeaturesEXTBuilder& setShaderImageFloat32AtomicAdd(Bool32 shaderImageFloat32AtomicAdd) { this->data.shaderImageFloat32AtomicAdd = shaderImageFloat32AtomicAdd; return *this; }
+    PhysicalDeviceShaderAtomicFloatFeaturesEXTBuilder& setSparseImageFloat32Atomics(Bool32 sparseImageFloat32Atomics) { this->data.sparseImageFloat32Atomics = sparseImageFloat32Atomics; return *this; }
+    PhysicalDeviceShaderAtomicFloatFeaturesEXTBuilder& setSparseImageFloat32AtomicAdd(Bool32 sparseImageFloat32AtomicAdd) { this->data.sparseImageFloat32AtomicAdd = sparseImageFloat32AtomicAdd; return *this; }
+    PhysicalDeviceShaderAtomicFloatFeaturesEXT build() {
+        PhysicalDeviceShaderAtomicFloatFeaturesEXT out{data};
+        return out; }
+};
+class PhysicalDeviceVertexAttributeDivisorFeaturesEXTBuilder {
+    PhysicalDeviceVertexAttributeDivisorFeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceVertexAttributeDivisorFeaturesEXTBuilder() noexcept{}
+    PhysicalDeviceVertexAttributeDivisorFeaturesEXTBuilder& setVertexAttributeInstanceRateDivisor(Bool32 vertexAttributeInstanceRateDivisor) { this->data.vertexAttributeInstanceRateDivisor = vertexAttributeInstanceRateDivisor; return *this; }
+    PhysicalDeviceVertexAttributeDivisorFeaturesEXTBuilder& setVertexAttributeInstanceRateZeroDivisor(Bool32 vertexAttributeInstanceRateZeroDivisor) { this->data.vertexAttributeInstanceRateZeroDivisor = vertexAttributeInstanceRateZeroDivisor; return *this; }
+    PhysicalDeviceVertexAttributeDivisorFeaturesEXT build() {
+        PhysicalDeviceVertexAttributeDivisorFeaturesEXT out{data};
+        return out; }
+};
+class SubpassDescriptionDepthStencilResolveBuilder {
+    SubpassDescriptionDepthStencilResolve data;
+    std::vector<void*> pNext;
+    detail::optional<AttachmentReference2> pDepthStencilResolveAttachment;
+    public:
+    SubpassDescriptionDepthStencilResolveBuilder() noexcept{}
+    SubpassDescriptionDepthStencilResolveBuilder& setDepthResolveMode(ResolveModeFlagBits depthResolveMode) { this->data.depthResolveMode = depthResolveMode; return *this; }
+    SubpassDescriptionDepthStencilResolveBuilder& setStencilResolveMode(ResolveModeFlagBits stencilResolveMode) { this->data.stencilResolveMode = stencilResolveMode; return *this; }
+    SubpassDescriptionDepthStencilResolveBuilder& setDepthStencilResolveAttachment(AttachmentReference2 pDepthStencilResolveAttachment) { this->pDepthStencilResolveAttachment = pDepthStencilResolveAttachment; return *this; }
+    SubpassDescriptionDepthStencilResolve build() {
+        SubpassDescriptionDepthStencilResolve out{data};
+        out.pDepthStencilResolveAttachment = pDepthStencilResolveAttachment.ptr_or_nullptr();
+        return out; }
+};
+class ImageViewASTCDecodeModeEXTBuilder {
+    ImageViewASTCDecodeModeEXT data;
+    std::vector<void*> pNext;
+    public:
+    ImageViewASTCDecodeModeEXTBuilder() noexcept{}
+    ImageViewASTCDecodeModeEXTBuilder& setDecodeMode(Format decodeMode) { this->data.decodeMode = decodeMode; return *this; }
+    ImageViewASTCDecodeModeEXT build() {
+        ImageViewASTCDecodeModeEXT out{data};
+        return out; }
+};
+class PhysicalDeviceASTCDecodeFeaturesEXTBuilder {
+    PhysicalDeviceASTCDecodeFeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceASTCDecodeFeaturesEXTBuilder() noexcept{}
+    PhysicalDeviceASTCDecodeFeaturesEXTBuilder& setDecodeModeSharedExponent(Bool32 decodeModeSharedExponent) { this->data.decodeModeSharedExponent = decodeModeSharedExponent; return *this; }
+    PhysicalDeviceASTCDecodeFeaturesEXT build() {
+        PhysicalDeviceASTCDecodeFeaturesEXT out{data};
+        return out; }
+};
+class PhysicalDeviceTransformFeedbackFeaturesEXTBuilder {
+    PhysicalDeviceTransformFeedbackFeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceTransformFeedbackFeaturesEXTBuilder() noexcept{}
+    PhysicalDeviceTransformFeedbackFeaturesEXTBuilder& setTransformFeedback(Bool32 transformFeedback) { this->data.transformFeedback = transformFeedback; return *this; }
+    PhysicalDeviceTransformFeedbackFeaturesEXTBuilder& setGeometryStreams(Bool32 geometryStreams) { this->data.geometryStreams = geometryStreams; return *this; }
+    PhysicalDeviceTransformFeedbackFeaturesEXT build() {
+        PhysicalDeviceTransformFeedbackFeaturesEXT out{data};
+        return out; }
+};
+class PipelineRasterizationStateStreamCreateInfoEXTBuilder {
+    PipelineRasterizationStateStreamCreateInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    PipelineRasterizationStateStreamCreateInfoEXTBuilder() noexcept{}
+    PipelineRasterizationStateStreamCreateInfoEXTBuilder& setFlags(PipelineRasterizationStateStreamCreateFlagsEXT flags) { this->data.flags = flags; return *this; }
+    PipelineRasterizationStateStreamCreateInfoEXTBuilder& setRasterizationStream(uint32_t rasterizationStream) { this->data.rasterizationStream = rasterizationStream; return *this; }
+    PipelineRasterizationStateStreamCreateInfoEXT build() {
+        PipelineRasterizationStateStreamCreateInfoEXT out{data};
+        return out; }
+};
+class PhysicalDeviceRepresentativeFragmentTestFeaturesNVBuilder {
+    PhysicalDeviceRepresentativeFragmentTestFeaturesNV data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceRepresentativeFragmentTestFeaturesNVBuilder() noexcept{}
+    PhysicalDeviceRepresentativeFragmentTestFeaturesNVBuilder& setRepresentativeFragmentTest(Bool32 representativeFragmentTest) { this->data.representativeFragmentTest = representativeFragmentTest; return *this; }
+    PhysicalDeviceRepresentativeFragmentTestFeaturesNV build() {
+        PhysicalDeviceRepresentativeFragmentTestFeaturesNV out{data};
+        return out; }
+};
+class PipelineRepresentativeFragmentTestStateCreateInfoNVBuilder {
+    PipelineRepresentativeFragmentTestStateCreateInfoNV data;
+    std::vector<void*> pNext;
+    public:
+    PipelineRepresentativeFragmentTestStateCreateInfoNVBuilder() noexcept{}
+    PipelineRepresentativeFragmentTestStateCreateInfoNVBuilder& setRepresentativeFragmentTestEnable(Bool32 representativeFragmentTestEnable) { this->data.representativeFragmentTestEnable = representativeFragmentTestEnable; return *this; }
+    PipelineRepresentativeFragmentTestStateCreateInfoNV build() {
+        PipelineRepresentativeFragmentTestStateCreateInfoNV out{data};
+        return out; }
+};
+class PhysicalDeviceExclusiveScissorFeaturesNVBuilder {
+    PhysicalDeviceExclusiveScissorFeaturesNV data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceExclusiveScissorFeaturesNVBuilder() noexcept{}
+    PhysicalDeviceExclusiveScissorFeaturesNVBuilder& setExclusiveScissor(Bool32 exclusiveScissor) { this->data.exclusiveScissor = exclusiveScissor; return *this; }
+    PhysicalDeviceExclusiveScissorFeaturesNV build() {
+        PhysicalDeviceExclusiveScissorFeaturesNV out{data};
+        return out; }
+};
+class PipelineViewportExclusiveScissorStateCreateInfoNVBuilder {
+    PipelineViewportExclusiveScissorStateCreateInfoNV data;
+    std::vector<void*> pNext;
+    std::vector<Rect2D> pExclusiveScissors;
+    public:
+    PipelineViewportExclusiveScissorStateCreateInfoNVBuilder() noexcept{}
+    PipelineViewportExclusiveScissorStateCreateInfoNVBuilder& addExclusiveScissors(Rect2D pExclusiveScissors) { this->pExclusiveScissors.push_back(pExclusiveScissors); return *this; }
+    PipelineViewportExclusiveScissorStateCreateInfoNV build() {
+        PipelineViewportExclusiveScissorStateCreateInfoNV out{data};
+        out.exclusiveScissorCount = (uint32_t)pExclusiveScissors.size();
+        out.pExclusiveScissors = pExclusiveScissors.data();
+        return out; }
+};
+class PhysicalDeviceCornerSampledImageFeaturesNVBuilder {
+    PhysicalDeviceCornerSampledImageFeaturesNV data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceCornerSampledImageFeaturesNVBuilder() noexcept{}
+    PhysicalDeviceCornerSampledImageFeaturesNVBuilder& setCornerSampledImage(Bool32 cornerSampledImage) { this->data.cornerSampledImage = cornerSampledImage; return *this; }
+    PhysicalDeviceCornerSampledImageFeaturesNV build() {
+        PhysicalDeviceCornerSampledImageFeaturesNV out{data};
+        return out; }
+};
+class PhysicalDeviceComputeShaderDerivativesFeaturesNVBuilder {
+    PhysicalDeviceComputeShaderDerivativesFeaturesNV data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceComputeShaderDerivativesFeaturesNVBuilder() noexcept{}
+    PhysicalDeviceComputeShaderDerivativesFeaturesNVBuilder& setComputeDerivativeGroupQuads(Bool32 computeDerivativeGroupQuads) { this->data.computeDerivativeGroupQuads = computeDerivativeGroupQuads; return *this; }
+    PhysicalDeviceComputeShaderDerivativesFeaturesNVBuilder& setComputeDerivativeGroupLinear(Bool32 computeDerivativeGroupLinear) { this->data.computeDerivativeGroupLinear = computeDerivativeGroupLinear; return *this; }
+    PhysicalDeviceComputeShaderDerivativesFeaturesNV build() {
+        PhysicalDeviceComputeShaderDerivativesFeaturesNV out{data};
+        return out; }
+};
+class PhysicalDeviceFragmentShaderBarycentricFeaturesNVBuilder {
+    PhysicalDeviceFragmentShaderBarycentricFeaturesNV data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceFragmentShaderBarycentricFeaturesNVBuilder() noexcept{}
+    PhysicalDeviceFragmentShaderBarycentricFeaturesNVBuilder& setFragmentShaderBarycentric(Bool32 fragmentShaderBarycentric) { this->data.fragmentShaderBarycentric = fragmentShaderBarycentric; return *this; }
+    PhysicalDeviceFragmentShaderBarycentricFeaturesNV build() {
+        PhysicalDeviceFragmentShaderBarycentricFeaturesNV out{data};
+        return out; }
+};
+class PhysicalDeviceShaderImageFootprintFeaturesNVBuilder {
+    PhysicalDeviceShaderImageFootprintFeaturesNV data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceShaderImageFootprintFeaturesNVBuilder() noexcept{}
+    PhysicalDeviceShaderImageFootprintFeaturesNVBuilder& setImageFootprint(Bool32 imageFootprint) { this->data.imageFootprint = imageFootprint; return *this; }
+    PhysicalDeviceShaderImageFootprintFeaturesNV build() {
+        PhysicalDeviceShaderImageFootprintFeaturesNV out{data};
+        return out; }
+};
+class PhysicalDeviceDedicatedAllocationImageAliasingFeaturesNVBuilder {
+    PhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceDedicatedAllocationImageAliasingFeaturesNVBuilder() noexcept{}
+    PhysicalDeviceDedicatedAllocationImageAliasingFeaturesNVBuilder& setDedicatedAllocationImageAliasing(Bool32 dedicatedAllocationImageAliasing) { this->data.dedicatedAllocationImageAliasing = dedicatedAllocationImageAliasing; return *this; }
+    PhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV build() {
+        PhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV out{data};
+        return out; }
+};
+class ShadingRatePaletteNVBuilder {
+    ShadingRatePaletteNV data;
+    std::vector<ShadingRatePaletteEntryNV> pShadingRatePaletteEntries;
+    public:
+    ShadingRatePaletteNVBuilder() noexcept{}
+    ShadingRatePaletteNVBuilder& addShadingRatePaletteEntries(ShadingRatePaletteEntryNV pShadingRatePaletteEntries) { this->pShadingRatePaletteEntries.push_back(pShadingRatePaletteEntries); return *this; }
+    ShadingRatePaletteNV build() {
+        ShadingRatePaletteNV out{data};
+        out.shadingRatePaletteEntryCount = (uint32_t)pShadingRatePaletteEntries.size();
+        out.pShadingRatePaletteEntries = pShadingRatePaletteEntries.data();
+        return out; }
+};
+class PipelineViewportShadingRateImageStateCreateInfoNVBuilder {
+    PipelineViewportShadingRateImageStateCreateInfoNV data;
+    std::vector<void*> pNext;
+    std::vector<ShadingRatePaletteNV> pShadingRatePalettes;
+    public:
+    PipelineViewportShadingRateImageStateCreateInfoNVBuilder() noexcept{}
+    PipelineViewportShadingRateImageStateCreateInfoNVBuilder& setShadingRateImageEnable(Bool32 shadingRateImageEnable) { this->data.shadingRateImageEnable = shadingRateImageEnable; return *this; }
+    PipelineViewportShadingRateImageStateCreateInfoNVBuilder& addShadingRatePalettes(ShadingRatePaletteNV pShadingRatePalettes) { this->pShadingRatePalettes.push_back(pShadingRatePalettes); return *this; }
+    PipelineViewportShadingRateImageStateCreateInfoNV build() {
+        PipelineViewportShadingRateImageStateCreateInfoNV out{data};
+        out.viewportCount = (uint32_t)pShadingRatePalettes.size();
+        out.pShadingRatePalettes = pShadingRatePalettes.data();
+        return out; }
+};
+class PhysicalDeviceShadingRateImageFeaturesNVBuilder {
+    PhysicalDeviceShadingRateImageFeaturesNV data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceShadingRateImageFeaturesNVBuilder() noexcept{}
+    PhysicalDeviceShadingRateImageFeaturesNVBuilder& setShadingRateImage(Bool32 shadingRateImage) { this->data.shadingRateImage = shadingRateImage; return *this; }
+    PhysicalDeviceShadingRateImageFeaturesNVBuilder& setShadingRateCoarseSampleOrder(Bool32 shadingRateCoarseSampleOrder) { this->data.shadingRateCoarseSampleOrder = shadingRateCoarseSampleOrder; return *this; }
+    PhysicalDeviceShadingRateImageFeaturesNV build() {
+        PhysicalDeviceShadingRateImageFeaturesNV out{data};
+        return out; }
+};
+class CoarseSampleOrderCustomNVBuilder {
+    CoarseSampleOrderCustomNV data;
+    std::vector<CoarseSampleLocationNV> pSampleLocations;
+    public:
+    CoarseSampleOrderCustomNVBuilder() noexcept{}
+    CoarseSampleOrderCustomNVBuilder& setShadingRate(ShadingRatePaletteEntryNV shadingRate) { this->data.shadingRate = shadingRate; return *this; }
+    CoarseSampleOrderCustomNVBuilder& setSampleCount(uint32_t sampleCount) { this->data.sampleCount = sampleCount; return *this; }
+    CoarseSampleOrderCustomNVBuilder& addSampleLocations(CoarseSampleLocationNV pSampleLocations) { this->pSampleLocations.push_back(pSampleLocations); return *this; }
+    CoarseSampleOrderCustomNV build() {
+        CoarseSampleOrderCustomNV out{data};
+        out.sampleLocationCount = (uint32_t)pSampleLocations.size();
+        out.pSampleLocations = pSampleLocations.data();
+        return out; }
+};
+class PipelineViewportCoarseSampleOrderStateCreateInfoNVBuilder {
+    PipelineViewportCoarseSampleOrderStateCreateInfoNV data;
+    std::vector<void*> pNext;
+    std::vector<CoarseSampleOrderCustomNV> pCustomSampleOrders;
+    public:
+    PipelineViewportCoarseSampleOrderStateCreateInfoNVBuilder() noexcept{}
+    PipelineViewportCoarseSampleOrderStateCreateInfoNVBuilder& setSampleOrderType(CoarseSampleOrderTypeNV sampleOrderType) { this->data.sampleOrderType = sampleOrderType; return *this; }
+    PipelineViewportCoarseSampleOrderStateCreateInfoNVBuilder& addCustomSampleOrders(CoarseSampleOrderCustomNV pCustomSampleOrders) { this->pCustomSampleOrders.push_back(pCustomSampleOrders); return *this; }
+    PipelineViewportCoarseSampleOrderStateCreateInfoNV build() {
+        PipelineViewportCoarseSampleOrderStateCreateInfoNV out{data};
+        out.customSampleOrderCount = (uint32_t)pCustomSampleOrders.size();
+        out.pCustomSampleOrders = pCustomSampleOrders.data();
+        return out; }
+};
+class PhysicalDeviceMeshShaderFeaturesNVBuilder {
+    PhysicalDeviceMeshShaderFeaturesNV data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceMeshShaderFeaturesNVBuilder() noexcept{}
+    PhysicalDeviceMeshShaderFeaturesNVBuilder& setTaskShader(Bool32 taskShader) { this->data.taskShader = taskShader; return *this; }
+    PhysicalDeviceMeshShaderFeaturesNVBuilder& setMeshShader(Bool32 meshShader) { this->data.meshShader = meshShader; return *this; }
+    PhysicalDeviceMeshShaderFeaturesNV build() {
+        PhysicalDeviceMeshShaderFeaturesNV out{data};
+        return out; }
+};
+class RayTracingShaderGroupCreateInfoNVBuilder {
+    RayTracingShaderGroupCreateInfoNV data;
+    std::vector<void*> pNext;
+    public:
+    RayTracingShaderGroupCreateInfoNVBuilder() noexcept{}
+    RayTracingShaderGroupCreateInfoNVBuilder& setType(RayTracingShaderGroupTypeKHR type) { this->data.type = type; return *this; }
+    RayTracingShaderGroupCreateInfoNVBuilder& setGeneralShader(uint32_t generalShader) { this->data.generalShader = generalShader; return *this; }
+    RayTracingShaderGroupCreateInfoNVBuilder& setClosestHitShader(uint32_t closestHitShader) { this->data.closestHitShader = closestHitShader; return *this; }
+    RayTracingShaderGroupCreateInfoNVBuilder& setAnyHitShader(uint32_t anyHitShader) { this->data.anyHitShader = anyHitShader; return *this; }
+    RayTracingShaderGroupCreateInfoNVBuilder& setIntersectionShader(uint32_t intersectionShader) { this->data.intersectionShader = intersectionShader; return *this; }
+    RayTracingShaderGroupCreateInfoNV build() {
+        RayTracingShaderGroupCreateInfoNV out{data};
+        return out; }
+};
+class RayTracingShaderGroupCreateInfoKHRBuilder {
+    RayTracingShaderGroupCreateInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    RayTracingShaderGroupCreateInfoKHRBuilder() noexcept{}
+    RayTracingShaderGroupCreateInfoKHRBuilder& setType(RayTracingShaderGroupTypeKHR type) { this->data.type = type; return *this; }
+    RayTracingShaderGroupCreateInfoKHRBuilder& setGeneralShader(uint32_t generalShader) { this->data.generalShader = generalShader; return *this; }
+    RayTracingShaderGroupCreateInfoKHRBuilder& setClosestHitShader(uint32_t closestHitShader) { this->data.closestHitShader = closestHitShader; return *this; }
+    RayTracingShaderGroupCreateInfoKHRBuilder& setAnyHitShader(uint32_t anyHitShader) { this->data.anyHitShader = anyHitShader; return *this; }
+    RayTracingShaderGroupCreateInfoKHRBuilder& setIntersectionShader(uint32_t intersectionShader) { this->data.intersectionShader = intersectionShader; return *this; }
+    RayTracingShaderGroupCreateInfoKHR build() {
+        RayTracingShaderGroupCreateInfoKHR out{data};
+        return out; }
+};
+class RayTracingPipelineCreateInfoNVBuilder {
+    RayTracingPipelineCreateInfoNV data;
+    std::vector<void*> pNext;
+    std::vector<PipelineShaderStageCreateInfo> pStages;
+    std::vector<RayTracingShaderGroupCreateInfoNV> pGroups;
+    public:
+    RayTracingPipelineCreateInfoNVBuilder() noexcept{}
+    RayTracingPipelineCreateInfoNVBuilder& setFlags(PipelineCreateFlags flags) { this->data.flags = flags; return *this; }
+    RayTracingPipelineCreateInfoNVBuilder& addStages(PipelineShaderStageCreateInfo pStages) { this->pStages.push_back(pStages); return *this; }
+    RayTracingPipelineCreateInfoNVBuilder& addGroups(RayTracingShaderGroupCreateInfoNV pGroups) { this->pGroups.push_back(pGroups); return *this; }
+    RayTracingPipelineCreateInfoNVBuilder& setMaxRecursionDepth(uint32_t maxRecursionDepth) { this->data.maxRecursionDepth = maxRecursionDepth; return *this; }
+    RayTracingPipelineCreateInfoNVBuilder& setLayout(PipelineLayout layout) { this->data.layout = layout; return *this; }
+    RayTracingPipelineCreateInfoNVBuilder& setBasePipelineHandle(Pipeline basePipelineHandle) { this->data.basePipelineHandle = basePipelineHandle; return *this; }
+    RayTracingPipelineCreateInfoNVBuilder& setBasePipelineIndex(int32_t basePipelineIndex) { this->data.basePipelineIndex = basePipelineIndex; return *this; }
+    RayTracingPipelineCreateInfoNV build() {
+        RayTracingPipelineCreateInfoNV out{data};
+        out.stageCount = (uint32_t)pStages.size();
+        out.pStages = pStages.data();
+        out.groupCount = (uint32_t)pGroups.size();
+        out.pGroups = pGroups.data();
+        return out; }
+};
+class RayTracingPipelineInterfaceCreateInfoKHRBuilder {
+    RayTracingPipelineInterfaceCreateInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    RayTracingPipelineInterfaceCreateInfoKHRBuilder() noexcept{}
+    RayTracingPipelineInterfaceCreateInfoKHRBuilder& setMaxPipelineRayPayloadSize(uint32_t maxPipelineRayPayloadSize) { this->data.maxPipelineRayPayloadSize = maxPipelineRayPayloadSize; return *this; }
+    RayTracingPipelineInterfaceCreateInfoKHRBuilder& setMaxPipelineRayHitAttributeSize(uint32_t maxPipelineRayHitAttributeSize) { this->data.maxPipelineRayHitAttributeSize = maxPipelineRayHitAttributeSize; return *this; }
+    RayTracingPipelineInterfaceCreateInfoKHR build() {
+        RayTracingPipelineInterfaceCreateInfoKHR out{data};
+        return out; }
+};
+class PipelineLibraryCreateInfoKHRBuilder {
+    PipelineLibraryCreateInfoKHR data;
+    std::vector<void*> pNext;
+    std::vector<Pipeline> pLibraries;
+    public:
+    PipelineLibraryCreateInfoKHRBuilder() noexcept{}
+    PipelineLibraryCreateInfoKHRBuilder& addLibraries(Pipeline pLibraries) { this->pLibraries.push_back(pLibraries); return *this; }
+    PipelineLibraryCreateInfoKHR build() {
+        PipelineLibraryCreateInfoKHR out{data};
+        out.libraryCount = (uint32_t)pLibraries.size();
+        out.pLibraries = pLibraries.data();
+        return out; }
+};
+class RayTracingPipelineCreateInfoKHRBuilder {
+    RayTracingPipelineCreateInfoKHR data;
+    std::vector<void*> pNext;
+    std::vector<PipelineShaderStageCreateInfo> pStages;
+    std::vector<RayTracingShaderGroupCreateInfoKHR> pGroups;
+    detail::optional<PipelineLibraryCreateInfoKHR> pLibraryInfo;
+    detail::optional<RayTracingPipelineInterfaceCreateInfoKHR> pLibraryInterface;
+    detail::optional<PipelineDynamicStateCreateInfo> pDynamicState;
+    public:
+    RayTracingPipelineCreateInfoKHRBuilder() noexcept{}
+    RayTracingPipelineCreateInfoKHRBuilder& setFlags(PipelineCreateFlags flags) { this->data.flags = flags; return *this; }
+    RayTracingPipelineCreateInfoKHRBuilder& addStages(PipelineShaderStageCreateInfo pStages) { this->pStages.push_back(pStages); return *this; }
+    RayTracingPipelineCreateInfoKHRBuilder& addGroups(RayTracingShaderGroupCreateInfoKHR pGroups) { this->pGroups.push_back(pGroups); return *this; }
+    RayTracingPipelineCreateInfoKHRBuilder& setMaxPipelineRayRecursionDepth(uint32_t maxPipelineRayRecursionDepth) { this->data.maxPipelineRayRecursionDepth = maxPipelineRayRecursionDepth; return *this; }
+    RayTracingPipelineCreateInfoKHRBuilder& setLibraryInfo(PipelineLibraryCreateInfoKHR pLibraryInfo) { this->pLibraryInfo = pLibraryInfo; return *this; }
+    RayTracingPipelineCreateInfoKHRBuilder& setLibraryInterface(RayTracingPipelineInterfaceCreateInfoKHR pLibraryInterface) { this->pLibraryInterface = pLibraryInterface; return *this; }
+    RayTracingPipelineCreateInfoKHRBuilder& setDynamicState(PipelineDynamicStateCreateInfo pDynamicState) { this->pDynamicState = pDynamicState; return *this; }
+    RayTracingPipelineCreateInfoKHRBuilder& setLayout(PipelineLayout layout) { this->data.layout = layout; return *this; }
+    RayTracingPipelineCreateInfoKHRBuilder& setBasePipelineHandle(Pipeline basePipelineHandle) { this->data.basePipelineHandle = basePipelineHandle; return *this; }
+    RayTracingPipelineCreateInfoKHRBuilder& setBasePipelineIndex(int32_t basePipelineIndex) { this->data.basePipelineIndex = basePipelineIndex; return *this; }
+    RayTracingPipelineCreateInfoKHR build() {
+        RayTracingPipelineCreateInfoKHR out{data};
+        out.stageCount = (uint32_t)pStages.size();
+        out.pStages = pStages.data();
+        out.groupCount = (uint32_t)pGroups.size();
+        out.pGroups = pGroups.data();
+        out.pLibraryInfo = pLibraryInfo.ptr_or_nullptr();
+        out.pLibraryInterface = pLibraryInterface.ptr_or_nullptr();
+        out.pDynamicState = pDynamicState.ptr_or_nullptr();
+        return out; }
+};
+class GeometryTrianglesNVBuilder {
+    GeometryTrianglesNV data;
+    std::vector<void*> pNext;
+    public:
+    GeometryTrianglesNVBuilder() noexcept{}
+    GeometryTrianglesNVBuilder& setVertexData(Buffer vertexData) { this->data.vertexData = vertexData; return *this; }
+    GeometryTrianglesNVBuilder& setVertexOffset(DeviceSize vertexOffset) { this->data.vertexOffset = vertexOffset; return *this; }
+    GeometryTrianglesNVBuilder& setVertexCount(uint32_t vertexCount) { this->data.vertexCount = vertexCount; return *this; }
+    GeometryTrianglesNVBuilder& setVertexStride(DeviceSize vertexStride) { this->data.vertexStride = vertexStride; return *this; }
+    GeometryTrianglesNVBuilder& setVertexFormat(Format vertexFormat) { this->data.vertexFormat = vertexFormat; return *this; }
+    GeometryTrianglesNVBuilder& setIndexData(Buffer indexData) { this->data.indexData = indexData; return *this; }
+    GeometryTrianglesNVBuilder& setIndexOffset(DeviceSize indexOffset) { this->data.indexOffset = indexOffset; return *this; }
+    GeometryTrianglesNVBuilder& setIndexCount(uint32_t indexCount) { this->data.indexCount = indexCount; return *this; }
+    GeometryTrianglesNVBuilder& setIndexType(IndexType indexType) { this->data.indexType = indexType; return *this; }
+    GeometryTrianglesNVBuilder& setTransformData(Buffer transformData) { this->data.transformData = transformData; return *this; }
+    GeometryTrianglesNVBuilder& setTransformOffset(DeviceSize transformOffset) { this->data.transformOffset = transformOffset; return *this; }
+    GeometryTrianglesNV build() {
+        GeometryTrianglesNV out{data};
+        return out; }
+};
+class GeometryAABBNVBuilder {
+    GeometryAABBNV data;
+    std::vector<void*> pNext;
+    public:
+    GeometryAABBNVBuilder() noexcept{}
+    GeometryAABBNVBuilder& setAabbData(Buffer aabbData) { this->data.aabbData = aabbData; return *this; }
+    GeometryAABBNVBuilder& setNumAABBs(uint32_t numAABBs) { this->data.numAABBs = numAABBs; return *this; }
+    GeometryAABBNVBuilder& setStride(uint32_t stride) { this->data.stride = stride; return *this; }
+    GeometryAABBNVBuilder& setOffset(DeviceSize offset) { this->data.offset = offset; return *this; }
+    GeometryAABBNV build() {
+        GeometryAABBNV out{data};
+        return out; }
+};
+class GeometryNVBuilder {
+    GeometryNV data;
+    std::vector<void*> pNext;
+    public:
+    GeometryNVBuilder() noexcept{}
+    GeometryNVBuilder& setGeometryType(GeometryTypeKHR geometryType) { this->data.geometryType = geometryType; return *this; }
+    GeometryNVBuilder& setGeometry(GeometryDataNV geometry) { this->data.geometry = geometry; return *this; }
+    GeometryNVBuilder& setFlags(GeometryFlagsKHR flags) { this->data.flags = flags; return *this; }
+    GeometryNV build() {
+        GeometryNV out{data};
+        return out; }
+};
+class AccelerationStructureInfoNVBuilder {
+    AccelerationStructureInfoNV data;
+    std::vector<void*> pNext;
+    std::vector<GeometryNV> pGeometries;
+    public:
+    AccelerationStructureInfoNVBuilder() noexcept{}
+    AccelerationStructureInfoNVBuilder& setType(AccelerationStructureTypeNV type) { this->data.type = type; return *this; }
+    AccelerationStructureInfoNVBuilder& setFlags(BuildAccelerationStructureFlagsNV flags) { this->data.flags = flags; return *this; }
+    AccelerationStructureInfoNVBuilder& setInstanceCount(uint32_t instanceCount) { this->data.instanceCount = instanceCount; return *this; }
+    AccelerationStructureInfoNVBuilder& addGeometries(GeometryNV pGeometries) { this->pGeometries.push_back(pGeometries); return *this; }
+    AccelerationStructureInfoNV build() {
+        AccelerationStructureInfoNV out{data};
+        out.geometryCount = (uint32_t)pGeometries.size();
+        out.pGeometries = pGeometries.data();
+        return out; }
+};
+class AccelerationStructureCreateInfoNVBuilder {
+    AccelerationStructureCreateInfoNV data;
+    std::vector<void*> pNext;
+    public:
+    AccelerationStructureCreateInfoNVBuilder() noexcept{}
+    AccelerationStructureCreateInfoNVBuilder& setCompactedSize(DeviceSize compactedSize) { this->data.compactedSize = compactedSize; return *this; }
+    AccelerationStructureCreateInfoNVBuilder& setInfo(AccelerationStructureInfoNV info) { this->data.info = info; return *this; }
+    AccelerationStructureCreateInfoNV build() {
+        AccelerationStructureCreateInfoNV out{data};
+        return out; }
+};
+class BindAccelerationStructureMemoryInfoNVBuilder {
+    BindAccelerationStructureMemoryInfoNV data;
+    std::vector<void*> pNext;
+    std::vector<uint32_t> pDeviceIndices;
+    public:
+    BindAccelerationStructureMemoryInfoNVBuilder() noexcept{}
+    BindAccelerationStructureMemoryInfoNVBuilder& setAccelerationStructure(AccelerationStructureNV accelerationStructure) { this->data.accelerationStructure = accelerationStructure; return *this; }
+    BindAccelerationStructureMemoryInfoNVBuilder& setMemory(DeviceMemory memory) { this->data.memory = memory; return *this; }
+    BindAccelerationStructureMemoryInfoNVBuilder& setMemoryOffset(DeviceSize memoryOffset) { this->data.memoryOffset = memoryOffset; return *this; }
+    BindAccelerationStructureMemoryInfoNVBuilder& addDeviceIndices(uint32_t pDeviceIndices) { this->pDeviceIndices.push_back(pDeviceIndices); return *this; }
+    BindAccelerationStructureMemoryInfoNV build() {
+        BindAccelerationStructureMemoryInfoNV out{data};
+        out.deviceIndexCount = (uint32_t)pDeviceIndices.size();
+        out.pDeviceIndices = pDeviceIndices.data();
+        return out; }
+};
+class WriteDescriptorSetAccelerationStructureKHRBuilder {
+    WriteDescriptorSetAccelerationStructureKHR data;
+    std::vector<void*> pNext;
+    std::vector<AccelerationStructureKHR> pAccelerationStructures;
+    public:
+    WriteDescriptorSetAccelerationStructureKHRBuilder() noexcept{}
+    WriteDescriptorSetAccelerationStructureKHRBuilder& setAccelerationStructureCount(uint32_t accelerationStructureCount) { this->data.accelerationStructureCount = accelerationStructureCount; return *this; }
+    WriteDescriptorSetAccelerationStructureKHRBuilder& addAccelerationStructures(AccelerationStructureKHR pAccelerationStructures) { this->pAccelerationStructures.push_back(pAccelerationStructures); return *this; }
+    WriteDescriptorSetAccelerationStructureKHR build() {
+        WriteDescriptorSetAccelerationStructureKHR out{data};
+        out.pAccelerationStructures = pAccelerationStructures.data();
+        return out; }
+};
+class WriteDescriptorSetAccelerationStructureNVBuilder {
+    WriteDescriptorSetAccelerationStructureNV data;
+    std::vector<void*> pNext;
+    std::vector<AccelerationStructureNV> pAccelerationStructures;
+    public:
+    WriteDescriptorSetAccelerationStructureNVBuilder() noexcept{}
+    WriteDescriptorSetAccelerationStructureNVBuilder& setAccelerationStructureCount(uint32_t accelerationStructureCount) { this->data.accelerationStructureCount = accelerationStructureCount; return *this; }
+    WriteDescriptorSetAccelerationStructureNVBuilder& addAccelerationStructures(AccelerationStructureNV pAccelerationStructures) { this->pAccelerationStructures.push_back(pAccelerationStructures); return *this; }
+    WriteDescriptorSetAccelerationStructureNV build() {
+        WriteDescriptorSetAccelerationStructureNV out{data};
+        out.pAccelerationStructures = pAccelerationStructures.data();
+        return out; }
+};
+class AccelerationStructureMemoryRequirementsInfoNVBuilder {
+    AccelerationStructureMemoryRequirementsInfoNV data;
+    std::vector<void*> pNext;
+    public:
+    AccelerationStructureMemoryRequirementsInfoNVBuilder() noexcept{}
+    AccelerationStructureMemoryRequirementsInfoNVBuilder& setType(AccelerationStructureMemoryRequirementsTypeNV type) { this->data.type = type; return *this; }
+    AccelerationStructureMemoryRequirementsInfoNVBuilder& setAccelerationStructure(AccelerationStructureNV accelerationStructure) { this->data.accelerationStructure = accelerationStructure; return *this; }
+    AccelerationStructureMemoryRequirementsInfoNV build() {
+        AccelerationStructureMemoryRequirementsInfoNV out{data};
+        return out; }
+};
+class PhysicalDeviceAccelerationStructureFeaturesKHRBuilder {
+    PhysicalDeviceAccelerationStructureFeaturesKHR data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceAccelerationStructureFeaturesKHRBuilder() noexcept{}
+    PhysicalDeviceAccelerationStructureFeaturesKHRBuilder& setAccelerationStructure(Bool32 accelerationStructure) { this->data.accelerationStructure = accelerationStructure; return *this; }
+    PhysicalDeviceAccelerationStructureFeaturesKHRBuilder& setAccelerationStructureCaptureReplay(Bool32 accelerationStructureCaptureReplay) { this->data.accelerationStructureCaptureReplay = accelerationStructureCaptureReplay; return *this; }
+    PhysicalDeviceAccelerationStructureFeaturesKHRBuilder& setAccelerationStructureIndirectBuild(Bool32 accelerationStructureIndirectBuild) { this->data.accelerationStructureIndirectBuild = accelerationStructureIndirectBuild; return *this; }
+    PhysicalDeviceAccelerationStructureFeaturesKHRBuilder& setAccelerationStructureHostCommands(Bool32 accelerationStructureHostCommands) { this->data.accelerationStructureHostCommands = accelerationStructureHostCommands; return *this; }
+    PhysicalDeviceAccelerationStructureFeaturesKHRBuilder& setDescriptorBindingAccelerationStructureUpdateAfterBind(Bool32 descriptorBindingAccelerationStructureUpdateAfterBind) { this->data.descriptorBindingAccelerationStructureUpdateAfterBind = descriptorBindingAccelerationStructureUpdateAfterBind; return *this; }
+    PhysicalDeviceAccelerationStructureFeaturesKHR build() {
+        PhysicalDeviceAccelerationStructureFeaturesKHR out{data};
+        return out; }
+};
+class PhysicalDeviceRayTracingPipelineFeaturesKHRBuilder {
+    PhysicalDeviceRayTracingPipelineFeaturesKHR data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceRayTracingPipelineFeaturesKHRBuilder() noexcept{}
+    PhysicalDeviceRayTracingPipelineFeaturesKHRBuilder& setRayTracingPipeline(Bool32 rayTracingPipeline) { this->data.rayTracingPipeline = rayTracingPipeline; return *this; }
+    PhysicalDeviceRayTracingPipelineFeaturesKHRBuilder& setRayTracingPipelineShaderGroupHandleCaptureReplay(Bool32 rayTracingPipelineShaderGroupHandleCaptureReplay) { this->data.rayTracingPipelineShaderGroupHandleCaptureReplay = rayTracingPipelineShaderGroupHandleCaptureReplay; return *this; }
+    PhysicalDeviceRayTracingPipelineFeaturesKHRBuilder& setRayTracingPipelineShaderGroupHandleCaptureReplayMixed(Bool32 rayTracingPipelineShaderGroupHandleCaptureReplayMixed) { this->data.rayTracingPipelineShaderGroupHandleCaptureReplayMixed = rayTracingPipelineShaderGroupHandleCaptureReplayMixed; return *this; }
+    PhysicalDeviceRayTracingPipelineFeaturesKHRBuilder& setRayTracingPipelineTraceRaysIndirect(Bool32 rayTracingPipelineTraceRaysIndirect) { this->data.rayTracingPipelineTraceRaysIndirect = rayTracingPipelineTraceRaysIndirect; return *this; }
+    PhysicalDeviceRayTracingPipelineFeaturesKHRBuilder& setRayTraversalPrimitiveCulling(Bool32 rayTraversalPrimitiveCulling) { this->data.rayTraversalPrimitiveCulling = rayTraversalPrimitiveCulling; return *this; }
+    PhysicalDeviceRayTracingPipelineFeaturesKHR build() {
+        PhysicalDeviceRayTracingPipelineFeaturesKHR out{data};
+        return out; }
+};
+class PhysicalDeviceRayQueryFeaturesKHRBuilder {
+    PhysicalDeviceRayQueryFeaturesKHR data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceRayQueryFeaturesKHRBuilder() noexcept{}
+    PhysicalDeviceRayQueryFeaturesKHRBuilder& setRayQuery(Bool32 rayQuery) { this->data.rayQuery = rayQuery; return *this; }
+    PhysicalDeviceRayQueryFeaturesKHR build() {
+        PhysicalDeviceRayQueryFeaturesKHR out{data};
+        return out; }
+};
+class PhysicalDeviceImageDrmFormatModifierInfoEXTBuilder {
+    PhysicalDeviceImageDrmFormatModifierInfoEXT data;
+    std::vector<void*> pNext;
+    std::vector<uint32_t> pQueueFamilyIndices;
+    public:
+    PhysicalDeviceImageDrmFormatModifierInfoEXTBuilder() noexcept{}
+    PhysicalDeviceImageDrmFormatModifierInfoEXTBuilder& setDrmFormatModifier(uint64_t drmFormatModifier) { this->data.drmFormatModifier = drmFormatModifier; return *this; }
+    PhysicalDeviceImageDrmFormatModifierInfoEXTBuilder& setSharingMode(SharingMode sharingMode) { this->data.sharingMode = sharingMode; return *this; }
+    PhysicalDeviceImageDrmFormatModifierInfoEXTBuilder& addQueueFamilyIndices(uint32_t pQueueFamilyIndices) { this->pQueueFamilyIndices.push_back(pQueueFamilyIndices); return *this; }
+    PhysicalDeviceImageDrmFormatModifierInfoEXT build() {
+        PhysicalDeviceImageDrmFormatModifierInfoEXT out{data};
+        out.queueFamilyIndexCount = (uint32_t)pQueueFamilyIndices.size();
+        out.pQueueFamilyIndices = pQueueFamilyIndices.data();
+        return out; }
+};
+class ImageDrmFormatModifierListCreateInfoEXTBuilder {
+    ImageDrmFormatModifierListCreateInfoEXT data;
+    std::vector<void*> pNext;
+    std::vector<uint64_t> pDrmFormatModifiers;
+    public:
+    ImageDrmFormatModifierListCreateInfoEXTBuilder() noexcept{}
+    ImageDrmFormatModifierListCreateInfoEXTBuilder& addDrmFormatModifiers(uint64_t pDrmFormatModifiers) { this->pDrmFormatModifiers.push_back(pDrmFormatModifiers); return *this; }
+    ImageDrmFormatModifierListCreateInfoEXT build() {
+        ImageDrmFormatModifierListCreateInfoEXT out{data};
+        out.drmFormatModifierCount = (uint32_t)pDrmFormatModifiers.size();
+        out.pDrmFormatModifiers = pDrmFormatModifiers.data();
+        return out; }
+};
+class ImageDrmFormatModifierExplicitCreateInfoEXTBuilder {
+    ImageDrmFormatModifierExplicitCreateInfoEXT data;
+    std::vector<void*> pNext;
+    std::vector<SubresourceLayout> pPlaneLayouts;
+    public:
+    ImageDrmFormatModifierExplicitCreateInfoEXTBuilder() noexcept{}
+    ImageDrmFormatModifierExplicitCreateInfoEXTBuilder& setDrmFormatModifier(uint64_t drmFormatModifier) { this->data.drmFormatModifier = drmFormatModifier; return *this; }
+    ImageDrmFormatModifierExplicitCreateInfoEXTBuilder& addPlaneLayouts(SubresourceLayout pPlaneLayouts) { this->pPlaneLayouts.push_back(pPlaneLayouts); return *this; }
+    ImageDrmFormatModifierExplicitCreateInfoEXT build() {
+        ImageDrmFormatModifierExplicitCreateInfoEXT out{data};
+        out.drmFormatModifierPlaneCount = (uint32_t)pPlaneLayouts.size();
+        out.pPlaneLayouts = pPlaneLayouts.data();
+        return out; }
+};
+class ImageStencilUsageCreateInfoBuilder {
+    ImageStencilUsageCreateInfo data;
+    std::vector<void*> pNext;
+    public:
+    ImageStencilUsageCreateInfoBuilder() noexcept{}
+    ImageStencilUsageCreateInfoBuilder& setStencilUsage(ImageUsageFlags stencilUsage) { this->data.stencilUsage = stencilUsage; return *this; }
+    ImageStencilUsageCreateInfo build() {
+        ImageStencilUsageCreateInfo out{data};
+        return out; }
+};
+class DeviceMemoryOverallocationCreateInfoAMDBuilder {
+    DeviceMemoryOverallocationCreateInfoAMD data;
+    std::vector<void*> pNext;
+    public:
+    DeviceMemoryOverallocationCreateInfoAMDBuilder() noexcept{}
+    DeviceMemoryOverallocationCreateInfoAMDBuilder& setOverallocationBehavior(MemoryOverallocationBehaviorAMD overallocationBehavior) { this->data.overallocationBehavior = overallocationBehavior; return *this; }
+    DeviceMemoryOverallocationCreateInfoAMD build() {
+        DeviceMemoryOverallocationCreateInfoAMD out{data};
+        return out; }
+};
+class PhysicalDeviceFragmentDensityMapFeaturesEXTBuilder {
+    PhysicalDeviceFragmentDensityMapFeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceFragmentDensityMapFeaturesEXTBuilder() noexcept{}
+    PhysicalDeviceFragmentDensityMapFeaturesEXTBuilder& setFragmentDensityMap(Bool32 fragmentDensityMap) { this->data.fragmentDensityMap = fragmentDensityMap; return *this; }
+    PhysicalDeviceFragmentDensityMapFeaturesEXTBuilder& setFragmentDensityMapDynamic(Bool32 fragmentDensityMapDynamic) { this->data.fragmentDensityMapDynamic = fragmentDensityMapDynamic; return *this; }
+    PhysicalDeviceFragmentDensityMapFeaturesEXTBuilder& setFragmentDensityMapNonSubsampledImages(Bool32 fragmentDensityMapNonSubsampledImages) { this->data.fragmentDensityMapNonSubsampledImages = fragmentDensityMapNonSubsampledImages; return *this; }
+    PhysicalDeviceFragmentDensityMapFeaturesEXT build() {
+        PhysicalDeviceFragmentDensityMapFeaturesEXT out{data};
+        return out; }
+};
+class PhysicalDeviceFragmentDensityMap2FeaturesEXTBuilder {
+    PhysicalDeviceFragmentDensityMap2FeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceFragmentDensityMap2FeaturesEXTBuilder() noexcept{}
+    PhysicalDeviceFragmentDensityMap2FeaturesEXTBuilder& setFragmentDensityMapDeferred(Bool32 fragmentDensityMapDeferred) { this->data.fragmentDensityMapDeferred = fragmentDensityMapDeferred; return *this; }
+    PhysicalDeviceFragmentDensityMap2FeaturesEXT build() {
+        PhysicalDeviceFragmentDensityMap2FeaturesEXT out{data};
+        return out; }
+};
+class RenderPassFragmentDensityMapCreateInfoEXTBuilder {
+    RenderPassFragmentDensityMapCreateInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    RenderPassFragmentDensityMapCreateInfoEXTBuilder() noexcept{}
+    RenderPassFragmentDensityMapCreateInfoEXTBuilder& setFragmentDensityMapAttachment(AttachmentReference fragmentDensityMapAttachment) { this->data.fragmentDensityMapAttachment = fragmentDensityMapAttachment; return *this; }
+    RenderPassFragmentDensityMapCreateInfoEXT build() {
+        RenderPassFragmentDensityMapCreateInfoEXT out{data};
+        return out; }
+};
+class PhysicalDeviceScalarBlockLayoutFeaturesBuilder {
+    PhysicalDeviceScalarBlockLayoutFeatures data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceScalarBlockLayoutFeaturesBuilder() noexcept{}
+    PhysicalDeviceScalarBlockLayoutFeaturesBuilder& setScalarBlockLayout(Bool32 scalarBlockLayout) { this->data.scalarBlockLayout = scalarBlockLayout; return *this; }
+    PhysicalDeviceScalarBlockLayoutFeatures build() {
+        PhysicalDeviceScalarBlockLayoutFeatures out{data};
+        return out; }
+};
+class SurfaceProtectedCapabilitiesKHRBuilder {
+    SurfaceProtectedCapabilitiesKHR data;
+    std::vector<void*> pNext;
+    public:
+    SurfaceProtectedCapabilitiesKHRBuilder() noexcept{}
+    SurfaceProtectedCapabilitiesKHRBuilder& setSupportsProtected(Bool32 supportsProtected) { this->data.supportsProtected = supportsProtected; return *this; }
+    SurfaceProtectedCapabilitiesKHR build() {
+        SurfaceProtectedCapabilitiesKHR out{data};
+        return out; }
+};
+class PhysicalDeviceUniformBufferStandardLayoutFeaturesBuilder {
+    PhysicalDeviceUniformBufferStandardLayoutFeatures data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceUniformBufferStandardLayoutFeaturesBuilder() noexcept{}
+    PhysicalDeviceUniformBufferStandardLayoutFeaturesBuilder& setUniformBufferStandardLayout(Bool32 uniformBufferStandardLayout) { this->data.uniformBufferStandardLayout = uniformBufferStandardLayout; return *this; }
+    PhysicalDeviceUniformBufferStandardLayoutFeatures build() {
+        PhysicalDeviceUniformBufferStandardLayoutFeatures out{data};
+        return out; }
+};
+class PhysicalDeviceDepthClipEnableFeaturesEXTBuilder {
+    PhysicalDeviceDepthClipEnableFeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceDepthClipEnableFeaturesEXTBuilder() noexcept{}
+    PhysicalDeviceDepthClipEnableFeaturesEXTBuilder& setDepthClipEnable(Bool32 depthClipEnable) { this->data.depthClipEnable = depthClipEnable; return *this; }
+    PhysicalDeviceDepthClipEnableFeaturesEXT build() {
+        PhysicalDeviceDepthClipEnableFeaturesEXT out{data};
+        return out; }
+};
+class PipelineRasterizationDepthClipStateCreateInfoEXTBuilder {
+    PipelineRasterizationDepthClipStateCreateInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    PipelineRasterizationDepthClipStateCreateInfoEXTBuilder() noexcept{}
+    PipelineRasterizationDepthClipStateCreateInfoEXTBuilder& setFlags(PipelineRasterizationDepthClipStateCreateFlagsEXT flags) { this->data.flags = flags; return *this; }
+    PipelineRasterizationDepthClipStateCreateInfoEXTBuilder& setDepthClipEnable(Bool32 depthClipEnable) { this->data.depthClipEnable = depthClipEnable; return *this; }
+    PipelineRasterizationDepthClipStateCreateInfoEXT build() {
+        PipelineRasterizationDepthClipStateCreateInfoEXT out{data};
+        return out; }
+};
+class PhysicalDeviceMemoryPriorityFeaturesEXTBuilder {
+    PhysicalDeviceMemoryPriorityFeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceMemoryPriorityFeaturesEXTBuilder() noexcept{}
+    PhysicalDeviceMemoryPriorityFeaturesEXTBuilder& setMemoryPriority(Bool32 memoryPriority) { this->data.memoryPriority = memoryPriority; return *this; }
+    PhysicalDeviceMemoryPriorityFeaturesEXT build() {
+        PhysicalDeviceMemoryPriorityFeaturesEXT out{data};
+        return out; }
+};
+class MemoryPriorityAllocateInfoEXTBuilder {
+    MemoryPriorityAllocateInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    MemoryPriorityAllocateInfoEXTBuilder() noexcept{}
+    MemoryPriorityAllocateInfoEXTBuilder& setPriority(float priority) { this->data.priority = priority; return *this; }
+    MemoryPriorityAllocateInfoEXT build() {
+        MemoryPriorityAllocateInfoEXT out{data};
+        return out; }
+};
+class PhysicalDeviceBufferDeviceAddressFeaturesBuilder {
+    PhysicalDeviceBufferDeviceAddressFeatures data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceBufferDeviceAddressFeaturesBuilder() noexcept{}
+    PhysicalDeviceBufferDeviceAddressFeaturesBuilder& setBufferDeviceAddress(Bool32 bufferDeviceAddress) { this->data.bufferDeviceAddress = bufferDeviceAddress; return *this; }
+    PhysicalDeviceBufferDeviceAddressFeaturesBuilder& setBufferDeviceAddressCaptureReplay(Bool32 bufferDeviceAddressCaptureReplay) { this->data.bufferDeviceAddressCaptureReplay = bufferDeviceAddressCaptureReplay; return *this; }
+    PhysicalDeviceBufferDeviceAddressFeaturesBuilder& setBufferDeviceAddressMultiDevice(Bool32 bufferDeviceAddressMultiDevice) { this->data.bufferDeviceAddressMultiDevice = bufferDeviceAddressMultiDevice; return *this; }
+    PhysicalDeviceBufferDeviceAddressFeatures build() {
+        PhysicalDeviceBufferDeviceAddressFeatures out{data};
+        return out; }
+};
+class PhysicalDeviceBufferDeviceAddressFeaturesEXTBuilder {
+    PhysicalDeviceBufferDeviceAddressFeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceBufferDeviceAddressFeaturesEXTBuilder() noexcept{}
+    PhysicalDeviceBufferDeviceAddressFeaturesEXTBuilder& setBufferDeviceAddress(Bool32 bufferDeviceAddress) { this->data.bufferDeviceAddress = bufferDeviceAddress; return *this; }
+    PhysicalDeviceBufferDeviceAddressFeaturesEXTBuilder& setBufferDeviceAddressCaptureReplay(Bool32 bufferDeviceAddressCaptureReplay) { this->data.bufferDeviceAddressCaptureReplay = bufferDeviceAddressCaptureReplay; return *this; }
+    PhysicalDeviceBufferDeviceAddressFeaturesEXTBuilder& setBufferDeviceAddressMultiDevice(Bool32 bufferDeviceAddressMultiDevice) { this->data.bufferDeviceAddressMultiDevice = bufferDeviceAddressMultiDevice; return *this; }
+    PhysicalDeviceBufferDeviceAddressFeaturesEXT build() {
+        PhysicalDeviceBufferDeviceAddressFeaturesEXT out{data};
+        return out; }
+};
+class BufferDeviceAddressInfoBuilder {
+    BufferDeviceAddressInfo data;
+    std::vector<void*> pNext;
+    public:
+    BufferDeviceAddressInfoBuilder() noexcept{}
+    BufferDeviceAddressInfoBuilder& setBuffer(Buffer buffer) { this->data.buffer = buffer; return *this; }
+    BufferDeviceAddressInfo build() {
+        BufferDeviceAddressInfo out{data};
+        return out; }
+};
+class BufferOpaqueCaptureAddressCreateInfoBuilder {
+    BufferOpaqueCaptureAddressCreateInfo data;
+    std::vector<void*> pNext;
+    public:
+    BufferOpaqueCaptureAddressCreateInfoBuilder() noexcept{}
+    BufferOpaqueCaptureAddressCreateInfoBuilder& setOpaqueCaptureAddress(uint64_t opaqueCaptureAddress) { this->data.opaqueCaptureAddress = opaqueCaptureAddress; return *this; }
+    BufferOpaqueCaptureAddressCreateInfo build() {
+        BufferOpaqueCaptureAddressCreateInfo out{data};
+        return out; }
+};
+class BufferDeviceAddressCreateInfoEXTBuilder {
+    BufferDeviceAddressCreateInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    BufferDeviceAddressCreateInfoEXTBuilder() noexcept{}
+    BufferDeviceAddressCreateInfoEXTBuilder& setDeviceAddress(DeviceAddress deviceAddress) { this->data.deviceAddress = deviceAddress; return *this; }
+    BufferDeviceAddressCreateInfoEXT build() {
+        BufferDeviceAddressCreateInfoEXT out{data};
+        return out; }
+};
+class PhysicalDeviceImageViewImageFormatInfoEXTBuilder {
+    PhysicalDeviceImageViewImageFormatInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceImageViewImageFormatInfoEXTBuilder() noexcept{}
+    PhysicalDeviceImageViewImageFormatInfoEXTBuilder& setImageViewType(ImageViewType imageViewType) { this->data.imageViewType = imageViewType; return *this; }
+    PhysicalDeviceImageViewImageFormatInfoEXT build() {
+        PhysicalDeviceImageViewImageFormatInfoEXT out{data};
+        return out; }
+};
+class PhysicalDeviceImagelessFramebufferFeaturesBuilder {
+    PhysicalDeviceImagelessFramebufferFeatures data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceImagelessFramebufferFeaturesBuilder() noexcept{}
+    PhysicalDeviceImagelessFramebufferFeaturesBuilder& setImagelessFramebuffer(Bool32 imagelessFramebuffer) { this->data.imagelessFramebuffer = imagelessFramebuffer; return *this; }
+    PhysicalDeviceImagelessFramebufferFeatures build() {
+        PhysicalDeviceImagelessFramebufferFeatures out{data};
+        return out; }
+};
+class FramebufferAttachmentImageInfoBuilder {
+    FramebufferAttachmentImageInfo data;
+    std::vector<void*> pNext;
+    std::vector<Format> pViewFormats;
+    public:
+    FramebufferAttachmentImageInfoBuilder() noexcept{}
+    FramebufferAttachmentImageInfoBuilder& setFlags(ImageCreateFlags flags) { this->data.flags = flags; return *this; }
+    FramebufferAttachmentImageInfoBuilder& setUsage(ImageUsageFlags usage) { this->data.usage = usage; return *this; }
+    FramebufferAttachmentImageInfoBuilder& setWidth(uint32_t width) { this->data.width = width; return *this; }
+    FramebufferAttachmentImageInfoBuilder& setHeight(uint32_t height) { this->data.height = height; return *this; }
+    FramebufferAttachmentImageInfoBuilder& setLayerCount(uint32_t layerCount) { this->data.layerCount = layerCount; return *this; }
+    FramebufferAttachmentImageInfoBuilder& addViewFormats(Format pViewFormats) { this->pViewFormats.push_back(pViewFormats); return *this; }
+    FramebufferAttachmentImageInfo build() {
+        FramebufferAttachmentImageInfo out{data};
+        out.viewFormatCount = (uint32_t)pViewFormats.size();
+        out.pViewFormats = pViewFormats.data();
+        return out; }
+};
+class FramebufferAttachmentsCreateInfoBuilder {
+    FramebufferAttachmentsCreateInfo data;
+    std::vector<void*> pNext;
+    std::vector<FramebufferAttachmentImageInfo> pAttachmentImageInfos;
+    public:
+    FramebufferAttachmentsCreateInfoBuilder() noexcept{}
+    FramebufferAttachmentsCreateInfoBuilder& addAttachmentImageInfos(FramebufferAttachmentImageInfo pAttachmentImageInfos) { this->pAttachmentImageInfos.push_back(pAttachmentImageInfos); return *this; }
+    FramebufferAttachmentsCreateInfo build() {
+        FramebufferAttachmentsCreateInfo out{data};
+        out.attachmentImageInfoCount = (uint32_t)pAttachmentImageInfos.size();
+        out.pAttachmentImageInfos = pAttachmentImageInfos.data();
+        return out; }
+};
+class RenderPassAttachmentBeginInfoBuilder {
+    RenderPassAttachmentBeginInfo data;
+    std::vector<void*> pNext;
+    std::vector<ImageView> pAttachments;
+    public:
+    RenderPassAttachmentBeginInfoBuilder() noexcept{}
+    RenderPassAttachmentBeginInfoBuilder& addAttachments(ImageView pAttachments) { this->pAttachments.push_back(pAttachments); return *this; }
+    RenderPassAttachmentBeginInfo build() {
+        RenderPassAttachmentBeginInfo out{data};
+        out.attachmentCount = (uint32_t)pAttachments.size();
+        out.pAttachments = pAttachments.data();
+        return out; }
+};
+class PhysicalDeviceTextureCompressionASTCHDRFeaturesEXTBuilder {
+    PhysicalDeviceTextureCompressionASTCHDRFeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceTextureCompressionASTCHDRFeaturesEXTBuilder() noexcept{}
+    PhysicalDeviceTextureCompressionASTCHDRFeaturesEXTBuilder& setTextureCompressionASTC_HDR(Bool32 textureCompressionASTC_HDR) { this->data.textureCompressionASTC_HDR = textureCompressionASTC_HDR; return *this; }
+    PhysicalDeviceTextureCompressionASTCHDRFeaturesEXT build() {
+        PhysicalDeviceTextureCompressionASTCHDRFeaturesEXT out{data};
+        return out; }
+};
+class PhysicalDeviceCooperativeMatrixFeaturesNVBuilder {
+    PhysicalDeviceCooperativeMatrixFeaturesNV data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceCooperativeMatrixFeaturesNVBuilder() noexcept{}
+    PhysicalDeviceCooperativeMatrixFeaturesNVBuilder& setCooperativeMatrix(Bool32 cooperativeMatrix) { this->data.cooperativeMatrix = cooperativeMatrix; return *this; }
+    PhysicalDeviceCooperativeMatrixFeaturesNVBuilder& setCooperativeMatrixRobustBufferAccess(Bool32 cooperativeMatrixRobustBufferAccess) { this->data.cooperativeMatrixRobustBufferAccess = cooperativeMatrixRobustBufferAccess; return *this; }
+    PhysicalDeviceCooperativeMatrixFeaturesNV build() {
+        PhysicalDeviceCooperativeMatrixFeaturesNV out{data};
+        return out; }
+};
+class CooperativeMatrixPropertiesNVBuilder {
+    CooperativeMatrixPropertiesNV data;
+    std::vector<void*> pNext;
+    public:
+    CooperativeMatrixPropertiesNVBuilder() noexcept{}
+    CooperativeMatrixPropertiesNVBuilder& setMSize(uint32_t MSize) { this->data.MSize = MSize; return *this; }
+    CooperativeMatrixPropertiesNVBuilder& setNSize(uint32_t NSize) { this->data.NSize = NSize; return *this; }
+    CooperativeMatrixPropertiesNVBuilder& setKSize(uint32_t KSize) { this->data.KSize = KSize; return *this; }
+    CooperativeMatrixPropertiesNVBuilder& setAType(ComponentTypeNV AType) { this->data.AType = AType; return *this; }
+    CooperativeMatrixPropertiesNVBuilder& setBType(ComponentTypeNV BType) { this->data.BType = BType; return *this; }
+    CooperativeMatrixPropertiesNVBuilder& setCType(ComponentTypeNV CType) { this->data.CType = CType; return *this; }
+    CooperativeMatrixPropertiesNVBuilder& setDType(ComponentTypeNV DType) { this->data.DType = DType; return *this; }
+    CooperativeMatrixPropertiesNVBuilder& setScope(ScopeNV scope) { this->data.scope = scope; return *this; }
+    CooperativeMatrixPropertiesNV build() {
+        CooperativeMatrixPropertiesNV out{data};
+        return out; }
+};
+class PhysicalDeviceYcbcrImageArraysFeaturesEXTBuilder {
+    PhysicalDeviceYcbcrImageArraysFeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceYcbcrImageArraysFeaturesEXTBuilder() noexcept{}
+    PhysicalDeviceYcbcrImageArraysFeaturesEXTBuilder& setYcbcrImageArrays(Bool32 ycbcrImageArrays) { this->data.ycbcrImageArrays = ycbcrImageArrays; return *this; }
+    PhysicalDeviceYcbcrImageArraysFeaturesEXT build() {
+        PhysicalDeviceYcbcrImageArraysFeaturesEXT out{data};
+        return out; }
+};
+class ImageViewHandleInfoNVXBuilder {
+    ImageViewHandleInfoNVX data;
+    std::vector<void*> pNext;
+    public:
+    ImageViewHandleInfoNVXBuilder() noexcept{}
+    ImageViewHandleInfoNVXBuilder& setImageView(ImageView imageView) { this->data.imageView = imageView; return *this; }
+    ImageViewHandleInfoNVXBuilder& setDescriptorType(DescriptorType descriptorType) { this->data.descriptorType = descriptorType; return *this; }
+    ImageViewHandleInfoNVXBuilder& setSampler(Sampler sampler) { this->data.sampler = sampler; return *this; }
+    ImageViewHandleInfoNVX build() {
+        ImageViewHandleInfoNVX out{data};
+        return out; }
+};
+#if defined(VK_USE_PLATFORM_GGP)
+class PresentFrameTokenGGPBuilder {
+    PresentFrameTokenGGP data;
+    std::vector<void*> pNext;
+    public:
+    PresentFrameTokenGGPBuilder() noexcept{}
+    PresentFrameTokenGGPBuilder& setFrameToken(GgpFrameToken frameToken) { this->data.frameToken = frameToken; return *this; }
+    PresentFrameTokenGGP build() {
+        PresentFrameTokenGGP out{data};
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_GGP)
+class PipelineCreationFeedbackCreateInfoEXTBuilder {
+    PipelineCreationFeedbackCreateInfoEXT data;
+    std::vector<void*> pNext;
+    PipelineCreationFeedbackEXT pPipelineCreationFeedback;
+    std::vector<PipelineCreationFeedbackEXT> pPipelineStageCreationFeedbacks;
+    public:
+    PipelineCreationFeedbackCreateInfoEXTBuilder() noexcept{}
+    PipelineCreationFeedbackCreateInfoEXTBuilder& setPipelineCreationFeedback(PipelineCreationFeedbackEXT pPipelineCreationFeedback) { this->pPipelineCreationFeedback = pPipelineCreationFeedback; return *this; }
+    PipelineCreationFeedbackCreateInfoEXTBuilder& addPipelineStageCreationFeedbacks(PipelineCreationFeedbackEXT pPipelineStageCreationFeedbacks) { this->pPipelineStageCreationFeedbacks.push_back(pPipelineStageCreationFeedbacks); return *this; }
+    PipelineCreationFeedbackCreateInfoEXT build() {
+        PipelineCreationFeedbackCreateInfoEXT out{data};
+        out.pPipelineCreationFeedback = &pPipelineCreationFeedback;
+        out.pipelineStageCreationFeedbackCount = (uint32_t)pPipelineStageCreationFeedbacks.size();
+        out.pPipelineStageCreationFeedbacks = pPipelineStageCreationFeedbacks.data();
+        return out; }
+};
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+class SurfaceFullScreenExclusiveInfoEXTBuilder {
+    SurfaceFullScreenExclusiveInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    SurfaceFullScreenExclusiveInfoEXTBuilder() noexcept{}
+    SurfaceFullScreenExclusiveInfoEXTBuilder& setFullScreenExclusive(FullScreenExclusiveEXT fullScreenExclusive) { this->data.fullScreenExclusive = fullScreenExclusive; return *this; }
+    SurfaceFullScreenExclusiveInfoEXT build() {
+        SurfaceFullScreenExclusiveInfoEXT out{data};
+        return out; }
+};
+class SurfaceFullScreenExclusiveWin32InfoEXTBuilder {
+    SurfaceFullScreenExclusiveWin32InfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    SurfaceFullScreenExclusiveWin32InfoEXTBuilder() noexcept{}
+    SurfaceFullScreenExclusiveWin32InfoEXTBuilder& setHmonitor(HMONITOR hmonitor) { this->data.hmonitor = hmonitor; return *this; }
+    SurfaceFullScreenExclusiveWin32InfoEXT build() {
+        SurfaceFullScreenExclusiveWin32InfoEXT out{data};
+        return out; }
+};
+class SurfaceCapabilitiesFullScreenExclusiveEXTBuilder {
+    SurfaceCapabilitiesFullScreenExclusiveEXT data;
+    std::vector<void*> pNext;
+    public:
+    SurfaceCapabilitiesFullScreenExclusiveEXTBuilder() noexcept{}
+    SurfaceCapabilitiesFullScreenExclusiveEXTBuilder& setFullScreenExclusiveSupported(Bool32 fullScreenExclusiveSupported) { this->data.fullScreenExclusiveSupported = fullScreenExclusiveSupported; return *this; }
+    SurfaceCapabilitiesFullScreenExclusiveEXT build() {
+        SurfaceCapabilitiesFullScreenExclusiveEXT out{data};
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+class PhysicalDevicePerformanceQueryFeaturesKHRBuilder {
+    PhysicalDevicePerformanceQueryFeaturesKHR data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDevicePerformanceQueryFeaturesKHRBuilder() noexcept{}
+    PhysicalDevicePerformanceQueryFeaturesKHRBuilder& setPerformanceCounterQueryPools(Bool32 performanceCounterQueryPools) { this->data.performanceCounterQueryPools = performanceCounterQueryPools; return *this; }
+    PhysicalDevicePerformanceQueryFeaturesKHRBuilder& setPerformanceCounterMultipleQueryPools(Bool32 performanceCounterMultipleQueryPools) { this->data.performanceCounterMultipleQueryPools = performanceCounterMultipleQueryPools; return *this; }
+    PhysicalDevicePerformanceQueryFeaturesKHR build() {
+        PhysicalDevicePerformanceQueryFeaturesKHR out{data};
+        return out; }
+};
+class QueryPoolPerformanceCreateInfoKHRBuilder {
+    QueryPoolPerformanceCreateInfoKHR data;
+    std::vector<void*> pNext;
+    std::vector<uint32_t> pCounterIndices;
+    public:
+    QueryPoolPerformanceCreateInfoKHRBuilder() noexcept{}
+    QueryPoolPerformanceCreateInfoKHRBuilder& setQueueFamilyIndex(uint32_t queueFamilyIndex) { this->data.queueFamilyIndex = queueFamilyIndex; return *this; }
+    QueryPoolPerformanceCreateInfoKHRBuilder& addCounterIndices(uint32_t pCounterIndices) { this->pCounterIndices.push_back(pCounterIndices); return *this; }
+    QueryPoolPerformanceCreateInfoKHR build() {
+        QueryPoolPerformanceCreateInfoKHR out{data};
+        out.counterIndexCount = (uint32_t)pCounterIndices.size();
+        out.pCounterIndices = pCounterIndices.data();
+        return out; }
+};
+class AcquireProfilingLockInfoKHRBuilder {
+    AcquireProfilingLockInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    AcquireProfilingLockInfoKHRBuilder() noexcept{}
+    AcquireProfilingLockInfoKHRBuilder& setFlags(AcquireProfilingLockFlagsKHR flags) { this->data.flags = flags; return *this; }
+    AcquireProfilingLockInfoKHRBuilder& setTimeout(uint64_t timeout) { this->data.timeout = timeout; return *this; }
+    AcquireProfilingLockInfoKHR build() {
+        AcquireProfilingLockInfoKHR out{data};
+        return out; }
+};
+class PerformanceQuerySubmitInfoKHRBuilder {
+    PerformanceQuerySubmitInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    PerformanceQuerySubmitInfoKHRBuilder() noexcept{}
+    PerformanceQuerySubmitInfoKHRBuilder& setCounterPassIndex(uint32_t counterPassIndex) { this->data.counterPassIndex = counterPassIndex; return *this; }
+    PerformanceQuerySubmitInfoKHR build() {
+        PerformanceQuerySubmitInfoKHR out{data};
+        return out; }
+};
+class HeadlessSurfaceCreateInfoEXTBuilder {
+    HeadlessSurfaceCreateInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    HeadlessSurfaceCreateInfoEXTBuilder() noexcept{}
+    HeadlessSurfaceCreateInfoEXTBuilder& setFlags(HeadlessSurfaceCreateFlagsEXT flags) { this->data.flags = flags; return *this; }
+    HeadlessSurfaceCreateInfoEXT build() {
+        HeadlessSurfaceCreateInfoEXT out{data};
+        return out; }
+};
+class PhysicalDeviceCoverageReductionModeFeaturesNVBuilder {
+    PhysicalDeviceCoverageReductionModeFeaturesNV data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceCoverageReductionModeFeaturesNVBuilder() noexcept{}
+    PhysicalDeviceCoverageReductionModeFeaturesNVBuilder& setCoverageReductionMode(Bool32 coverageReductionMode) { this->data.coverageReductionMode = coverageReductionMode; return *this; }
+    PhysicalDeviceCoverageReductionModeFeaturesNV build() {
+        PhysicalDeviceCoverageReductionModeFeaturesNV out{data};
+        return out; }
+};
+class PipelineCoverageReductionStateCreateInfoNVBuilder {
+    PipelineCoverageReductionStateCreateInfoNV data;
+    std::vector<void*> pNext;
+    public:
+    PipelineCoverageReductionStateCreateInfoNVBuilder() noexcept{}
+    PipelineCoverageReductionStateCreateInfoNVBuilder& setFlags(PipelineCoverageReductionStateCreateFlagsNV flags) { this->data.flags = flags; return *this; }
+    PipelineCoverageReductionStateCreateInfoNVBuilder& setCoverageReductionMode(CoverageReductionModeNV coverageReductionMode) { this->data.coverageReductionMode = coverageReductionMode; return *this; }
+    PipelineCoverageReductionStateCreateInfoNV build() {
+        PipelineCoverageReductionStateCreateInfoNV out{data};
+        return out; }
+};
+class PhysicalDeviceShaderIntegerFunctions2FeaturesINTELBuilder {
+    PhysicalDeviceShaderIntegerFunctions2FeaturesINTEL data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceShaderIntegerFunctions2FeaturesINTELBuilder() noexcept{}
+    PhysicalDeviceShaderIntegerFunctions2FeaturesINTELBuilder& setShaderIntegerFunctions2(Bool32 shaderIntegerFunctions2) { this->data.shaderIntegerFunctions2 = shaderIntegerFunctions2; return *this; }
+    PhysicalDeviceShaderIntegerFunctions2FeaturesINTEL build() {
+        PhysicalDeviceShaderIntegerFunctions2FeaturesINTEL out{data};
+        return out; }
+};
+class PerformanceValueDataINTELBuilder {
+    PerformanceValueDataINTEL data;
+    std::string valueString;
+    public:
+    PerformanceValueDataINTELBuilder() noexcept{}
+    PerformanceValueDataINTELBuilder& setValue32(uint32_t value32) { this->data.value32 = value32; return *this; }
+    PerformanceValueDataINTELBuilder& setValue64(uint64_t value64) { this->data.value64 = value64; return *this; }
+    PerformanceValueDataINTELBuilder& setValueFloat(float valueFloat) { this->data.valueFloat = valueFloat; return *this; }
+    PerformanceValueDataINTELBuilder& setValueBool(Bool32 valueBool) { this->data.valueBool = valueBool; return *this; }
+    PerformanceValueDataINTELBuilder& addValueString(std::string valueString) { this->valueString = valueString; return *this; }
+    PerformanceValueDataINTEL build() {
+        PerformanceValueDataINTEL out{data};
+        out.valueString = valueString.data();
+        return out; }
+};
+class InitializePerformanceApiInfoINTELBuilder {
+    InitializePerformanceApiInfoINTEL data;
+    std::vector<void*> pNext;
+    public:
+    InitializePerformanceApiInfoINTELBuilder() noexcept{}
+    InitializePerformanceApiInfoINTEL build() {
+        InitializePerformanceApiInfoINTEL out{data};
+        return out; }
+};
+class QueryPoolPerformanceQueryCreateInfoINTELBuilder {
+    QueryPoolPerformanceQueryCreateInfoINTEL data;
+    std::vector<void*> pNext;
+    public:
+    QueryPoolPerformanceQueryCreateInfoINTELBuilder() noexcept{}
+    QueryPoolPerformanceQueryCreateInfoINTELBuilder& setPerformanceCountersSampling(QueryPoolSamplingModeINTEL performanceCountersSampling) { this->data.performanceCountersSampling = performanceCountersSampling; return *this; }
+    QueryPoolPerformanceQueryCreateInfoINTEL build() {
+        QueryPoolPerformanceQueryCreateInfoINTEL out{data};
+        return out; }
+};
+class PerformanceMarkerInfoINTELBuilder {
+    PerformanceMarkerInfoINTEL data;
+    std::vector<void*> pNext;
+    public:
+    PerformanceMarkerInfoINTELBuilder() noexcept{}
+    PerformanceMarkerInfoINTELBuilder& setMarker(uint64_t marker) { this->data.marker = marker; return *this; }
+    PerformanceMarkerInfoINTEL build() {
+        PerformanceMarkerInfoINTEL out{data};
+        return out; }
+};
+class PerformanceStreamMarkerInfoINTELBuilder {
+    PerformanceStreamMarkerInfoINTEL data;
+    std::vector<void*> pNext;
+    public:
+    PerformanceStreamMarkerInfoINTELBuilder() noexcept{}
+    PerformanceStreamMarkerInfoINTELBuilder& setMarker(uint32_t marker) { this->data.marker = marker; return *this; }
+    PerformanceStreamMarkerInfoINTEL build() {
+        PerformanceStreamMarkerInfoINTEL out{data};
+        return out; }
+};
+class PerformanceOverrideInfoINTELBuilder {
+    PerformanceOverrideInfoINTEL data;
+    std::vector<void*> pNext;
+    public:
+    PerformanceOverrideInfoINTELBuilder() noexcept{}
+    PerformanceOverrideInfoINTELBuilder& setType(PerformanceOverrideTypeINTEL type) { this->data.type = type; return *this; }
+    PerformanceOverrideInfoINTELBuilder& setEnable(Bool32 enable) { this->data.enable = enable; return *this; }
+    PerformanceOverrideInfoINTELBuilder& setParameter(uint64_t parameter) { this->data.parameter = parameter; return *this; }
+    PerformanceOverrideInfoINTEL build() {
+        PerformanceOverrideInfoINTEL out{data};
+        return out; }
+};
+class PerformanceConfigurationAcquireInfoINTELBuilder {
+    PerformanceConfigurationAcquireInfoINTEL data;
+    std::vector<void*> pNext;
+    public:
+    PerformanceConfigurationAcquireInfoINTELBuilder() noexcept{}
+    PerformanceConfigurationAcquireInfoINTELBuilder& setType(PerformanceConfigurationTypeINTEL type) { this->data.type = type; return *this; }
+    PerformanceConfigurationAcquireInfoINTEL build() {
+        PerformanceConfigurationAcquireInfoINTEL out{data};
+        return out; }
+};
+class PhysicalDeviceShaderClockFeaturesKHRBuilder {
+    PhysicalDeviceShaderClockFeaturesKHR data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceShaderClockFeaturesKHRBuilder() noexcept{}
+    PhysicalDeviceShaderClockFeaturesKHRBuilder& setShaderSubgroupClock(Bool32 shaderSubgroupClock) { this->data.shaderSubgroupClock = shaderSubgroupClock; return *this; }
+    PhysicalDeviceShaderClockFeaturesKHRBuilder& setShaderDeviceClock(Bool32 shaderDeviceClock) { this->data.shaderDeviceClock = shaderDeviceClock; return *this; }
+    PhysicalDeviceShaderClockFeaturesKHR build() {
+        PhysicalDeviceShaderClockFeaturesKHR out{data};
+        return out; }
+};
+class PhysicalDeviceIndexTypeUint8FeaturesEXTBuilder {
+    PhysicalDeviceIndexTypeUint8FeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceIndexTypeUint8FeaturesEXTBuilder() noexcept{}
+    PhysicalDeviceIndexTypeUint8FeaturesEXTBuilder& setIndexTypeUint8(Bool32 indexTypeUint8) { this->data.indexTypeUint8 = indexTypeUint8; return *this; }
+    PhysicalDeviceIndexTypeUint8FeaturesEXT build() {
+        PhysicalDeviceIndexTypeUint8FeaturesEXT out{data};
+        return out; }
+};
+class PhysicalDeviceShaderSMBuiltinsFeaturesNVBuilder {
+    PhysicalDeviceShaderSMBuiltinsFeaturesNV data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceShaderSMBuiltinsFeaturesNVBuilder() noexcept{}
+    PhysicalDeviceShaderSMBuiltinsFeaturesNVBuilder& setShaderSMBuiltins(Bool32 shaderSMBuiltins) { this->data.shaderSMBuiltins = shaderSMBuiltins; return *this; }
+    PhysicalDeviceShaderSMBuiltinsFeaturesNV build() {
+        PhysicalDeviceShaderSMBuiltinsFeaturesNV out{data};
+        return out; }
+};
+class PhysicalDeviceFragmentShaderInterlockFeaturesEXTBuilder {
+    PhysicalDeviceFragmentShaderInterlockFeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceFragmentShaderInterlockFeaturesEXTBuilder() noexcept{}
+    PhysicalDeviceFragmentShaderInterlockFeaturesEXTBuilder& setFragmentShaderSampleInterlock(Bool32 fragmentShaderSampleInterlock) { this->data.fragmentShaderSampleInterlock = fragmentShaderSampleInterlock; return *this; }
+    PhysicalDeviceFragmentShaderInterlockFeaturesEXTBuilder& setFragmentShaderPixelInterlock(Bool32 fragmentShaderPixelInterlock) { this->data.fragmentShaderPixelInterlock = fragmentShaderPixelInterlock; return *this; }
+    PhysicalDeviceFragmentShaderInterlockFeaturesEXTBuilder& setFragmentShaderShadingRateInterlock(Bool32 fragmentShaderShadingRateInterlock) { this->data.fragmentShaderShadingRateInterlock = fragmentShaderShadingRateInterlock; return *this; }
+    PhysicalDeviceFragmentShaderInterlockFeaturesEXT build() {
+        PhysicalDeviceFragmentShaderInterlockFeaturesEXT out{data};
+        return out; }
+};
+class PhysicalDeviceSeparateDepthStencilLayoutsFeaturesBuilder {
+    PhysicalDeviceSeparateDepthStencilLayoutsFeatures data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceSeparateDepthStencilLayoutsFeaturesBuilder() noexcept{}
+    PhysicalDeviceSeparateDepthStencilLayoutsFeaturesBuilder& setSeparateDepthStencilLayouts(Bool32 separateDepthStencilLayouts) { this->data.separateDepthStencilLayouts = separateDepthStencilLayouts; return *this; }
+    PhysicalDeviceSeparateDepthStencilLayoutsFeatures build() {
+        PhysicalDeviceSeparateDepthStencilLayoutsFeatures out{data};
+        return out; }
+};
+class AttachmentReferenceStencilLayoutBuilder {
+    AttachmentReferenceStencilLayout data;
+    std::vector<void*> pNext;
+    public:
+    AttachmentReferenceStencilLayoutBuilder() noexcept{}
+    AttachmentReferenceStencilLayoutBuilder& setStencilLayout(ImageLayout stencilLayout) { this->data.stencilLayout = stencilLayout; return *this; }
+    AttachmentReferenceStencilLayout build() {
+        AttachmentReferenceStencilLayout out{data};
+        return out; }
+};
+class AttachmentDescriptionStencilLayoutBuilder {
+    AttachmentDescriptionStencilLayout data;
+    std::vector<void*> pNext;
+    public:
+    AttachmentDescriptionStencilLayoutBuilder() noexcept{}
+    AttachmentDescriptionStencilLayoutBuilder& setStencilInitialLayout(ImageLayout stencilInitialLayout) { this->data.stencilInitialLayout = stencilInitialLayout; return *this; }
+    AttachmentDescriptionStencilLayoutBuilder& setStencilFinalLayout(ImageLayout stencilFinalLayout) { this->data.stencilFinalLayout = stencilFinalLayout; return *this; }
+    AttachmentDescriptionStencilLayout build() {
+        AttachmentDescriptionStencilLayout out{data};
+        return out; }
+};
+class PhysicalDevicePipelineExecutablePropertiesFeaturesKHRBuilder {
+    PhysicalDevicePipelineExecutablePropertiesFeaturesKHR data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDevicePipelineExecutablePropertiesFeaturesKHRBuilder() noexcept{}
+    PhysicalDevicePipelineExecutablePropertiesFeaturesKHRBuilder& setPipelineExecutableInfo(Bool32 pipelineExecutableInfo) { this->data.pipelineExecutableInfo = pipelineExecutableInfo; return *this; }
+    PhysicalDevicePipelineExecutablePropertiesFeaturesKHR build() {
+        PhysicalDevicePipelineExecutablePropertiesFeaturesKHR out{data};
+        return out; }
+};
+class PipelineInfoKHRBuilder {
+    PipelineInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    PipelineInfoKHRBuilder() noexcept{}
+    PipelineInfoKHRBuilder& setPipeline(Pipeline pipeline) { this->data.pipeline = pipeline; return *this; }
+    PipelineInfoKHR build() {
+        PipelineInfoKHR out{data};
+        return out; }
+};
+class PipelineExecutableInfoKHRBuilder {
+    PipelineExecutableInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    PipelineExecutableInfoKHRBuilder() noexcept{}
+    PipelineExecutableInfoKHRBuilder& setPipeline(Pipeline pipeline) { this->data.pipeline = pipeline; return *this; }
+    PipelineExecutableInfoKHRBuilder& setExecutableIndex(uint32_t executableIndex) { this->data.executableIndex = executableIndex; return *this; }
+    PipelineExecutableInfoKHR build() {
+        PipelineExecutableInfoKHR out{data};
+        return out; }
+};
+class PhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXTBuilder {
+    PhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXTBuilder() noexcept{}
+    PhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXTBuilder& setShaderDemoteToHelperInvocation(Bool32 shaderDemoteToHelperInvocation) { this->data.shaderDemoteToHelperInvocation = shaderDemoteToHelperInvocation; return *this; }
+    PhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXT build() {
+        PhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXT out{data};
+        return out; }
+};
+class PhysicalDeviceTexelBufferAlignmentFeaturesEXTBuilder {
+    PhysicalDeviceTexelBufferAlignmentFeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceTexelBufferAlignmentFeaturesEXTBuilder() noexcept{}
+    PhysicalDeviceTexelBufferAlignmentFeaturesEXTBuilder& setTexelBufferAlignment(Bool32 texelBufferAlignment) { this->data.texelBufferAlignment = texelBufferAlignment; return *this; }
+    PhysicalDeviceTexelBufferAlignmentFeaturesEXT build() {
+        PhysicalDeviceTexelBufferAlignmentFeaturesEXT out{data};
+        return out; }
+};
+class PhysicalDeviceSubgroupSizeControlFeaturesEXTBuilder {
+    PhysicalDeviceSubgroupSizeControlFeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceSubgroupSizeControlFeaturesEXTBuilder() noexcept{}
+    PhysicalDeviceSubgroupSizeControlFeaturesEXTBuilder& setSubgroupSizeControl(Bool32 subgroupSizeControl) { this->data.subgroupSizeControl = subgroupSizeControl; return *this; }
+    PhysicalDeviceSubgroupSizeControlFeaturesEXTBuilder& setComputeFullSubgroups(Bool32 computeFullSubgroups) { this->data.computeFullSubgroups = computeFullSubgroups; return *this; }
+    PhysicalDeviceSubgroupSizeControlFeaturesEXT build() {
+        PhysicalDeviceSubgroupSizeControlFeaturesEXT out{data};
+        return out; }
+};
+class MemoryOpaqueCaptureAddressAllocateInfoBuilder {
+    MemoryOpaqueCaptureAddressAllocateInfo data;
+    std::vector<void*> pNext;
+    public:
+    MemoryOpaqueCaptureAddressAllocateInfoBuilder() noexcept{}
+    MemoryOpaqueCaptureAddressAllocateInfoBuilder& setOpaqueCaptureAddress(uint64_t opaqueCaptureAddress) { this->data.opaqueCaptureAddress = opaqueCaptureAddress; return *this; }
+    MemoryOpaqueCaptureAddressAllocateInfo build() {
+        MemoryOpaqueCaptureAddressAllocateInfo out{data};
+        return out; }
+};
+class DeviceMemoryOpaqueCaptureAddressInfoBuilder {
+    DeviceMemoryOpaqueCaptureAddressInfo data;
+    std::vector<void*> pNext;
+    public:
+    DeviceMemoryOpaqueCaptureAddressInfoBuilder() noexcept{}
+    DeviceMemoryOpaqueCaptureAddressInfoBuilder& setMemory(DeviceMemory memory) { this->data.memory = memory; return *this; }
+    DeviceMemoryOpaqueCaptureAddressInfo build() {
+        DeviceMemoryOpaqueCaptureAddressInfo out{data};
+        return out; }
+};
+class PhysicalDeviceLineRasterizationFeaturesEXTBuilder {
+    PhysicalDeviceLineRasterizationFeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceLineRasterizationFeaturesEXTBuilder() noexcept{}
+    PhysicalDeviceLineRasterizationFeaturesEXTBuilder& setRectangularLines(Bool32 rectangularLines) { this->data.rectangularLines = rectangularLines; return *this; }
+    PhysicalDeviceLineRasterizationFeaturesEXTBuilder& setBresenhamLines(Bool32 bresenhamLines) { this->data.bresenhamLines = bresenhamLines; return *this; }
+    PhysicalDeviceLineRasterizationFeaturesEXTBuilder& setSmoothLines(Bool32 smoothLines) { this->data.smoothLines = smoothLines; return *this; }
+    PhysicalDeviceLineRasterizationFeaturesEXTBuilder& setStippledRectangularLines(Bool32 stippledRectangularLines) { this->data.stippledRectangularLines = stippledRectangularLines; return *this; }
+    PhysicalDeviceLineRasterizationFeaturesEXTBuilder& setStippledBresenhamLines(Bool32 stippledBresenhamLines) { this->data.stippledBresenhamLines = stippledBresenhamLines; return *this; }
+    PhysicalDeviceLineRasterizationFeaturesEXTBuilder& setStippledSmoothLines(Bool32 stippledSmoothLines) { this->data.stippledSmoothLines = stippledSmoothLines; return *this; }
+    PhysicalDeviceLineRasterizationFeaturesEXT build() {
+        PhysicalDeviceLineRasterizationFeaturesEXT out{data};
+        return out; }
+};
+class PipelineRasterizationLineStateCreateInfoEXTBuilder {
+    PipelineRasterizationLineStateCreateInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    PipelineRasterizationLineStateCreateInfoEXTBuilder() noexcept{}
+    PipelineRasterizationLineStateCreateInfoEXTBuilder& setLineRasterizationMode(LineRasterizationModeEXT lineRasterizationMode) { this->data.lineRasterizationMode = lineRasterizationMode; return *this; }
+    PipelineRasterizationLineStateCreateInfoEXTBuilder& setStippledLineEnable(Bool32 stippledLineEnable) { this->data.stippledLineEnable = stippledLineEnable; return *this; }
+    PipelineRasterizationLineStateCreateInfoEXTBuilder& setLineStippleFactor(uint32_t lineStippleFactor) { this->data.lineStippleFactor = lineStippleFactor; return *this; }
+    PipelineRasterizationLineStateCreateInfoEXTBuilder& setLineStipplePattern(uint16_t lineStipplePattern) { this->data.lineStipplePattern = lineStipplePattern; return *this; }
+    PipelineRasterizationLineStateCreateInfoEXT build() {
+        PipelineRasterizationLineStateCreateInfoEXT out{data};
+        return out; }
+};
+class PhysicalDevicePipelineCreationCacheControlFeaturesEXTBuilder {
+    PhysicalDevicePipelineCreationCacheControlFeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDevicePipelineCreationCacheControlFeaturesEXTBuilder() noexcept{}
+    PhysicalDevicePipelineCreationCacheControlFeaturesEXTBuilder& setPipelineCreationCacheControl(Bool32 pipelineCreationCacheControl) { this->data.pipelineCreationCacheControl = pipelineCreationCacheControl; return *this; }
+    PhysicalDevicePipelineCreationCacheControlFeaturesEXT build() {
+        PhysicalDevicePipelineCreationCacheControlFeaturesEXT out{data};
+        return out; }
+};
+class PhysicalDeviceVulkan11FeaturesBuilder {
+    PhysicalDeviceVulkan11Features data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceVulkan11FeaturesBuilder() noexcept{}
+    PhysicalDeviceVulkan11FeaturesBuilder& setStorageBuffer16BitAccess(Bool32 storageBuffer16BitAccess) { this->data.storageBuffer16BitAccess = storageBuffer16BitAccess; return *this; }
+    PhysicalDeviceVulkan11FeaturesBuilder& setUniformAndStorageBuffer16BitAccess(Bool32 uniformAndStorageBuffer16BitAccess) { this->data.uniformAndStorageBuffer16BitAccess = uniformAndStorageBuffer16BitAccess; return *this; }
+    PhysicalDeviceVulkan11FeaturesBuilder& setStoragePushConstant16(Bool32 storagePushConstant16) { this->data.storagePushConstant16 = storagePushConstant16; return *this; }
+    PhysicalDeviceVulkan11FeaturesBuilder& setStorageInputOutput16(Bool32 storageInputOutput16) { this->data.storageInputOutput16 = storageInputOutput16; return *this; }
+    PhysicalDeviceVulkan11FeaturesBuilder& setMultiview(Bool32 multiview) { this->data.multiview = multiview; return *this; }
+    PhysicalDeviceVulkan11FeaturesBuilder& setMultiviewGeometryShader(Bool32 multiviewGeometryShader) { this->data.multiviewGeometryShader = multiviewGeometryShader; return *this; }
+    PhysicalDeviceVulkan11FeaturesBuilder& setMultiviewTessellationShader(Bool32 multiviewTessellationShader) { this->data.multiviewTessellationShader = multiviewTessellationShader; return *this; }
+    PhysicalDeviceVulkan11FeaturesBuilder& setVariablePointersStorageBuffer(Bool32 variablePointersStorageBuffer) { this->data.variablePointersStorageBuffer = variablePointersStorageBuffer; return *this; }
+    PhysicalDeviceVulkan11FeaturesBuilder& setVariablePointers(Bool32 variablePointers) { this->data.variablePointers = variablePointers; return *this; }
+    PhysicalDeviceVulkan11FeaturesBuilder& setProtectedMemory(Bool32 protectedMemory) { this->data.protectedMemory = protectedMemory; return *this; }
+    PhysicalDeviceVulkan11FeaturesBuilder& setSamplerYcbcrConversion(Bool32 samplerYcbcrConversion) { this->data.samplerYcbcrConversion = samplerYcbcrConversion; return *this; }
+    PhysicalDeviceVulkan11FeaturesBuilder& setShaderDrawParameters(Bool32 shaderDrawParameters) { this->data.shaderDrawParameters = shaderDrawParameters; return *this; }
+    PhysicalDeviceVulkan11Features build() {
+        PhysicalDeviceVulkan11Features out{data};
+        return out; }
+};
+class PhysicalDeviceVulkan12FeaturesBuilder {
+    PhysicalDeviceVulkan12Features data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceVulkan12FeaturesBuilder() noexcept{}
+    PhysicalDeviceVulkan12FeaturesBuilder& setSamplerMirrorClampToEdge(Bool32 samplerMirrorClampToEdge) { this->data.samplerMirrorClampToEdge = samplerMirrorClampToEdge; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setDrawIndirectCount(Bool32 drawIndirectCount) { this->data.drawIndirectCount = drawIndirectCount; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setStorageBuffer8BitAccess(Bool32 storageBuffer8BitAccess) { this->data.storageBuffer8BitAccess = storageBuffer8BitAccess; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setUniformAndStorageBuffer8BitAccess(Bool32 uniformAndStorageBuffer8BitAccess) { this->data.uniformAndStorageBuffer8BitAccess = uniformAndStorageBuffer8BitAccess; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setStoragePushConstant8(Bool32 storagePushConstant8) { this->data.storagePushConstant8 = storagePushConstant8; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setShaderBufferInt64Atomics(Bool32 shaderBufferInt64Atomics) { this->data.shaderBufferInt64Atomics = shaderBufferInt64Atomics; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setShaderSharedInt64Atomics(Bool32 shaderSharedInt64Atomics) { this->data.shaderSharedInt64Atomics = shaderSharedInt64Atomics; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setShaderFloat16(Bool32 shaderFloat16) { this->data.shaderFloat16 = shaderFloat16; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setShaderInt8(Bool32 shaderInt8) { this->data.shaderInt8 = shaderInt8; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setDescriptorIndexing(Bool32 descriptorIndexing) { this->data.descriptorIndexing = descriptorIndexing; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setShaderInputAttachmentArrayDynamicIndexing(Bool32 shaderInputAttachmentArrayDynamicIndexing) { this->data.shaderInputAttachmentArrayDynamicIndexing = shaderInputAttachmentArrayDynamicIndexing; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setShaderUniformTexelBufferArrayDynamicIndexing(Bool32 shaderUniformTexelBufferArrayDynamicIndexing) { this->data.shaderUniformTexelBufferArrayDynamicIndexing = shaderUniformTexelBufferArrayDynamicIndexing; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setShaderStorageTexelBufferArrayDynamicIndexing(Bool32 shaderStorageTexelBufferArrayDynamicIndexing) { this->data.shaderStorageTexelBufferArrayDynamicIndexing = shaderStorageTexelBufferArrayDynamicIndexing; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setShaderUniformBufferArrayNonUniformIndexing(Bool32 shaderUniformBufferArrayNonUniformIndexing) { this->data.shaderUniformBufferArrayNonUniformIndexing = shaderUniformBufferArrayNonUniformIndexing; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setShaderSampledImageArrayNonUniformIndexing(Bool32 shaderSampledImageArrayNonUniformIndexing) { this->data.shaderSampledImageArrayNonUniformIndexing = shaderSampledImageArrayNonUniformIndexing; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setShaderStorageBufferArrayNonUniformIndexing(Bool32 shaderStorageBufferArrayNonUniformIndexing) { this->data.shaderStorageBufferArrayNonUniformIndexing = shaderStorageBufferArrayNonUniformIndexing; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setShaderStorageImageArrayNonUniformIndexing(Bool32 shaderStorageImageArrayNonUniformIndexing) { this->data.shaderStorageImageArrayNonUniformIndexing = shaderStorageImageArrayNonUniformIndexing; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setShaderInputAttachmentArrayNonUniformIndexing(Bool32 shaderInputAttachmentArrayNonUniformIndexing) { this->data.shaderInputAttachmentArrayNonUniformIndexing = shaderInputAttachmentArrayNonUniformIndexing; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setShaderUniformTexelBufferArrayNonUniformIndexing(Bool32 shaderUniformTexelBufferArrayNonUniformIndexing) { this->data.shaderUniformTexelBufferArrayNonUniformIndexing = shaderUniformTexelBufferArrayNonUniformIndexing; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setShaderStorageTexelBufferArrayNonUniformIndexing(Bool32 shaderStorageTexelBufferArrayNonUniformIndexing) { this->data.shaderStorageTexelBufferArrayNonUniformIndexing = shaderStorageTexelBufferArrayNonUniformIndexing; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setDescriptorBindingUniformBufferUpdateAfterBind(Bool32 descriptorBindingUniformBufferUpdateAfterBind) { this->data.descriptorBindingUniformBufferUpdateAfterBind = descriptorBindingUniformBufferUpdateAfterBind; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setDescriptorBindingSampledImageUpdateAfterBind(Bool32 descriptorBindingSampledImageUpdateAfterBind) { this->data.descriptorBindingSampledImageUpdateAfterBind = descriptorBindingSampledImageUpdateAfterBind; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setDescriptorBindingStorageImageUpdateAfterBind(Bool32 descriptorBindingStorageImageUpdateAfterBind) { this->data.descriptorBindingStorageImageUpdateAfterBind = descriptorBindingStorageImageUpdateAfterBind; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setDescriptorBindingStorageBufferUpdateAfterBind(Bool32 descriptorBindingStorageBufferUpdateAfterBind) { this->data.descriptorBindingStorageBufferUpdateAfterBind = descriptorBindingStorageBufferUpdateAfterBind; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setDescriptorBindingUniformTexelBufferUpdateAfterBind(Bool32 descriptorBindingUniformTexelBufferUpdateAfterBind) { this->data.descriptorBindingUniformTexelBufferUpdateAfterBind = descriptorBindingUniformTexelBufferUpdateAfterBind; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setDescriptorBindingStorageTexelBufferUpdateAfterBind(Bool32 descriptorBindingStorageTexelBufferUpdateAfterBind) { this->data.descriptorBindingStorageTexelBufferUpdateAfterBind = descriptorBindingStorageTexelBufferUpdateAfterBind; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setDescriptorBindingUpdateUnusedWhilePending(Bool32 descriptorBindingUpdateUnusedWhilePending) { this->data.descriptorBindingUpdateUnusedWhilePending = descriptorBindingUpdateUnusedWhilePending; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setDescriptorBindingPartiallyBound(Bool32 descriptorBindingPartiallyBound) { this->data.descriptorBindingPartiallyBound = descriptorBindingPartiallyBound; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setDescriptorBindingVariableDescriptorCount(Bool32 descriptorBindingVariableDescriptorCount) { this->data.descriptorBindingVariableDescriptorCount = descriptorBindingVariableDescriptorCount; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setRuntimeDescriptorArray(Bool32 runtimeDescriptorArray) { this->data.runtimeDescriptorArray = runtimeDescriptorArray; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setSamplerFilterMinmax(Bool32 samplerFilterMinmax) { this->data.samplerFilterMinmax = samplerFilterMinmax; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setScalarBlockLayout(Bool32 scalarBlockLayout) { this->data.scalarBlockLayout = scalarBlockLayout; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setImagelessFramebuffer(Bool32 imagelessFramebuffer) { this->data.imagelessFramebuffer = imagelessFramebuffer; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setUniformBufferStandardLayout(Bool32 uniformBufferStandardLayout) { this->data.uniformBufferStandardLayout = uniformBufferStandardLayout; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setShaderSubgroupExtendedTypes(Bool32 shaderSubgroupExtendedTypes) { this->data.shaderSubgroupExtendedTypes = shaderSubgroupExtendedTypes; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setSeparateDepthStencilLayouts(Bool32 separateDepthStencilLayouts) { this->data.separateDepthStencilLayouts = separateDepthStencilLayouts; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setHostQueryReset(Bool32 hostQueryReset) { this->data.hostQueryReset = hostQueryReset; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setTimelineSemaphore(Bool32 timelineSemaphore) { this->data.timelineSemaphore = timelineSemaphore; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setBufferDeviceAddress(Bool32 bufferDeviceAddress) { this->data.bufferDeviceAddress = bufferDeviceAddress; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setBufferDeviceAddressCaptureReplay(Bool32 bufferDeviceAddressCaptureReplay) { this->data.bufferDeviceAddressCaptureReplay = bufferDeviceAddressCaptureReplay; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setBufferDeviceAddressMultiDevice(Bool32 bufferDeviceAddressMultiDevice) { this->data.bufferDeviceAddressMultiDevice = bufferDeviceAddressMultiDevice; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setVulkanMemoryModel(Bool32 vulkanMemoryModel) { this->data.vulkanMemoryModel = vulkanMemoryModel; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setVulkanMemoryModelDeviceScope(Bool32 vulkanMemoryModelDeviceScope) { this->data.vulkanMemoryModelDeviceScope = vulkanMemoryModelDeviceScope; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setVulkanMemoryModelAvailabilityVisibilityChains(Bool32 vulkanMemoryModelAvailabilityVisibilityChains) { this->data.vulkanMemoryModelAvailabilityVisibilityChains = vulkanMemoryModelAvailabilityVisibilityChains; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setShaderOutputViewportIndex(Bool32 shaderOutputViewportIndex) { this->data.shaderOutputViewportIndex = shaderOutputViewportIndex; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setShaderOutputLayer(Bool32 shaderOutputLayer) { this->data.shaderOutputLayer = shaderOutputLayer; return *this; }
+    PhysicalDeviceVulkan12FeaturesBuilder& setSubgroupBroadcastDynamicId(Bool32 subgroupBroadcastDynamicId) { this->data.subgroupBroadcastDynamicId = subgroupBroadcastDynamicId; return *this; }
+    PhysicalDeviceVulkan12Features build() {
+        PhysicalDeviceVulkan12Features out{data};
+        return out; }
+};
+class PipelineCompilerControlCreateInfoAMDBuilder {
+    PipelineCompilerControlCreateInfoAMD data;
+    std::vector<void*> pNext;
+    public:
+    PipelineCompilerControlCreateInfoAMDBuilder() noexcept{}
+    PipelineCompilerControlCreateInfoAMDBuilder& setCompilerControlFlags(PipelineCompilerControlFlagsAMD compilerControlFlags) { this->data.compilerControlFlags = compilerControlFlags; return *this; }
+    PipelineCompilerControlCreateInfoAMD build() {
+        PipelineCompilerControlCreateInfoAMD out{data};
+        return out; }
+};
+class PhysicalDeviceCoherentMemoryFeaturesAMDBuilder {
+    PhysicalDeviceCoherentMemoryFeaturesAMD data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceCoherentMemoryFeaturesAMDBuilder() noexcept{}
+    PhysicalDeviceCoherentMemoryFeaturesAMDBuilder& setDeviceCoherentMemory(Bool32 deviceCoherentMemory) { this->data.deviceCoherentMemory = deviceCoherentMemory; return *this; }
+    PhysicalDeviceCoherentMemoryFeaturesAMD build() {
+        PhysicalDeviceCoherentMemoryFeaturesAMD out{data};
+        return out; }
+};
+class SamplerCustomBorderColorCreateInfoEXTBuilder {
+    SamplerCustomBorderColorCreateInfoEXT data;
+    std::vector<void*> pNext;
+    public:
+    SamplerCustomBorderColorCreateInfoEXTBuilder() noexcept{}
+    SamplerCustomBorderColorCreateInfoEXTBuilder& setCustomBorderColor(ClearColorValue customBorderColor) { this->data.customBorderColor = customBorderColor; return *this; }
+    SamplerCustomBorderColorCreateInfoEXTBuilder& setFormat(Format format) { this->data.format = format; return *this; }
+    SamplerCustomBorderColorCreateInfoEXT build() {
+        SamplerCustomBorderColorCreateInfoEXT out{data};
+        return out; }
+};
+class PhysicalDeviceCustomBorderColorFeaturesEXTBuilder {
+    PhysicalDeviceCustomBorderColorFeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceCustomBorderColorFeaturesEXTBuilder() noexcept{}
+    PhysicalDeviceCustomBorderColorFeaturesEXTBuilder& setCustomBorderColors(Bool32 customBorderColors) { this->data.customBorderColors = customBorderColors; return *this; }
+    PhysicalDeviceCustomBorderColorFeaturesEXTBuilder& setCustomBorderColorWithoutFormat(Bool32 customBorderColorWithoutFormat) { this->data.customBorderColorWithoutFormat = customBorderColorWithoutFormat; return *this; }
+    PhysicalDeviceCustomBorderColorFeaturesEXT build() {
+        PhysicalDeviceCustomBorderColorFeaturesEXT out{data};
+        return out; }
+};
+class DeviceOrHostAddressKHRBuilder {
+    DeviceOrHostAddressKHR data;
+    public:
+    DeviceOrHostAddressKHRBuilder() noexcept{}
+    DeviceOrHostAddressKHRBuilder& setDeviceAddress(DeviceAddress deviceAddress) { this->data.deviceAddress = deviceAddress; return *this; }
+    DeviceOrHostAddressKHR build() {
+        DeviceOrHostAddressKHR out{data};
+        return out; }
+};
+class DeviceOrHostAddressConstKHRBuilder {
+    DeviceOrHostAddressConstKHR data;
+    public:
+    DeviceOrHostAddressConstKHRBuilder() noexcept{}
+    DeviceOrHostAddressConstKHRBuilder& setDeviceAddress(DeviceAddress deviceAddress) { this->data.deviceAddress = deviceAddress; return *this; }
+    DeviceOrHostAddressConstKHR build() {
+        DeviceOrHostAddressConstKHR out{data};
+        return out; }
+};
+class AccelerationStructureGeometryTrianglesDataKHRBuilder {
+    AccelerationStructureGeometryTrianglesDataKHR data;
+    std::vector<void*> pNext;
+    public:
+    AccelerationStructureGeometryTrianglesDataKHRBuilder() noexcept{}
+    AccelerationStructureGeometryTrianglesDataKHRBuilder& setVertexFormat(Format vertexFormat) { this->data.vertexFormat = vertexFormat; return *this; }
+    AccelerationStructureGeometryTrianglesDataKHRBuilder& setVertexData(DeviceOrHostAddressConstKHR vertexData) { this->data.vertexData = vertexData; return *this; }
+    AccelerationStructureGeometryTrianglesDataKHRBuilder& setVertexStride(DeviceSize vertexStride) { this->data.vertexStride = vertexStride; return *this; }
+    AccelerationStructureGeometryTrianglesDataKHRBuilder& setMaxVertex(uint32_t maxVertex) { this->data.maxVertex = maxVertex; return *this; }
+    AccelerationStructureGeometryTrianglesDataKHRBuilder& setIndexType(IndexType indexType) { this->data.indexType = indexType; return *this; }
+    AccelerationStructureGeometryTrianglesDataKHRBuilder& setIndexData(DeviceOrHostAddressConstKHR indexData) { this->data.indexData = indexData; return *this; }
+    AccelerationStructureGeometryTrianglesDataKHRBuilder& setTransformData(DeviceOrHostAddressConstKHR transformData) { this->data.transformData = transformData; return *this; }
+    AccelerationStructureGeometryTrianglesDataKHR build() {
+        AccelerationStructureGeometryTrianglesDataKHR out{data};
+        return out; }
+};
+class AccelerationStructureGeometryAabbsDataKHRBuilder {
+    AccelerationStructureGeometryAabbsDataKHR data;
+    std::vector<void*> pNext;
+    public:
+    AccelerationStructureGeometryAabbsDataKHRBuilder() noexcept{}
+    AccelerationStructureGeometryAabbsDataKHRBuilder& setData(DeviceOrHostAddressConstKHR data) { this->data.data = data; return *this; }
+    AccelerationStructureGeometryAabbsDataKHRBuilder& setStride(DeviceSize stride) { this->data.stride = stride; return *this; }
+    AccelerationStructureGeometryAabbsDataKHR build() {
+        AccelerationStructureGeometryAabbsDataKHR out{data};
+        return out; }
+};
+class AccelerationStructureGeometryInstancesDataKHRBuilder {
+    AccelerationStructureGeometryInstancesDataKHR data;
+    std::vector<void*> pNext;
+    public:
+    AccelerationStructureGeometryInstancesDataKHRBuilder() noexcept{}
+    AccelerationStructureGeometryInstancesDataKHRBuilder& setArrayOfPointers(Bool32 arrayOfPointers) { this->data.arrayOfPointers = arrayOfPointers; return *this; }
+    AccelerationStructureGeometryInstancesDataKHRBuilder& setData(DeviceOrHostAddressConstKHR data) { this->data.data = data; return *this; }
+    AccelerationStructureGeometryInstancesDataKHR build() {
+        AccelerationStructureGeometryInstancesDataKHR out{data};
+        return out; }
+};
+class AccelerationStructureGeometryKHRBuilder {
+    AccelerationStructureGeometryKHR data;
+    std::vector<void*> pNext;
+    public:
+    AccelerationStructureGeometryKHRBuilder() noexcept{}
+    AccelerationStructureGeometryKHRBuilder& setGeometryType(GeometryTypeKHR geometryType) { this->data.geometryType = geometryType; return *this; }
+    AccelerationStructureGeometryKHRBuilder& setGeometry(AccelerationStructureGeometryDataKHR geometry) { this->data.geometry = geometry; return *this; }
+    AccelerationStructureGeometryKHRBuilder& setFlags(GeometryFlagsKHR flags) { this->data.flags = flags; return *this; }
+    AccelerationStructureGeometryKHR build() {
+        AccelerationStructureGeometryKHR out{data};
+        return out; }
+};
+class AccelerationStructureBuildGeometryInfoKHRBuilder {
+    AccelerationStructureBuildGeometryInfoKHR data;
+    std::vector<void*> pNext;
+    std::vector<AccelerationStructureGeometryKHR> pGeometries;
+    std::vector<std::vector<AccelerationStructureGeometryKHR>> ppGeometries;
+    std::vector<AccelerationStructureGeometryKHR*> ppGeometries_ptr;
+    public:
+    AccelerationStructureBuildGeometryInfoKHRBuilder() noexcept{}
+    AccelerationStructureBuildGeometryInfoKHRBuilder& setType(AccelerationStructureTypeKHR type) { this->data.type = type; return *this; }
+    AccelerationStructureBuildGeometryInfoKHRBuilder& setFlags(BuildAccelerationStructureFlagsKHR flags) { this->data.flags = flags; return *this; }
+    AccelerationStructureBuildGeometryInfoKHRBuilder& setMode(BuildAccelerationStructureModeKHR mode) { this->data.mode = mode; return *this; }
+    AccelerationStructureBuildGeometryInfoKHRBuilder& setSrcAccelerationStructure(AccelerationStructureKHR srcAccelerationStructure) { this->data.srcAccelerationStructure = srcAccelerationStructure; return *this; }
+    AccelerationStructureBuildGeometryInfoKHRBuilder& setDstAccelerationStructure(AccelerationStructureKHR dstAccelerationStructure) { this->data.dstAccelerationStructure = dstAccelerationStructure; return *this; }
+    AccelerationStructureBuildGeometryInfoKHRBuilder& setGeometryCount(uint32_t geometryCount) { this->data.geometryCount = geometryCount; return *this; }
+    AccelerationStructureBuildGeometryInfoKHRBuilder& addGeometries(AccelerationStructureGeometryKHR pGeometries) { this->pGeometries.push_back(pGeometries); return *this; }
+    AccelerationStructureBuildGeometryInfoKHRBuilder& addPpGeometries(std::vector<AccelerationStructureGeometryKHR> ppGeometries) { this->ppGeometries.push_back(ppGeometries);this->ppGeometries_ptr.push_back(this->ppGeometries.back().data()); return *this; }
+    AccelerationStructureBuildGeometryInfoKHRBuilder& setScratchData(DeviceOrHostAddressKHR scratchData) { this->data.scratchData = scratchData; return *this; }
+    AccelerationStructureBuildGeometryInfoKHR build() {
+        AccelerationStructureBuildGeometryInfoKHR out{data};
+        out.pGeometries = pGeometries.data();
+        out.ppGeometries = ppGeometries_ptr.data();
+        return out; }
+};
+class AccelerationStructureCreateInfoKHRBuilder {
+    AccelerationStructureCreateInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    AccelerationStructureCreateInfoKHRBuilder() noexcept{}
+    AccelerationStructureCreateInfoKHRBuilder& setCreateFlags(AccelerationStructureCreateFlagsKHR createFlags) { this->data.createFlags = createFlags; return *this; }
+    AccelerationStructureCreateInfoKHRBuilder& setBuffer(Buffer buffer) { this->data.buffer = buffer; return *this; }
+    AccelerationStructureCreateInfoKHRBuilder& setOffset(DeviceSize offset) { this->data.offset = offset; return *this; }
+    AccelerationStructureCreateInfoKHRBuilder& setSize(DeviceSize size) { this->data.size = size; return *this; }
+    AccelerationStructureCreateInfoKHRBuilder& setType(AccelerationStructureTypeKHR type) { this->data.type = type; return *this; }
+    AccelerationStructureCreateInfoKHRBuilder& setDeviceAddress(DeviceAddress deviceAddress) { this->data.deviceAddress = deviceAddress; return *this; }
+    AccelerationStructureCreateInfoKHR build() {
+        AccelerationStructureCreateInfoKHR out{data};
+        return out; }
+};
+class TransformMatrixKHRBuilder {
+    TransformMatrixKHR data;
+    public:
+    TransformMatrixKHRBuilder() noexcept{}
+    TransformMatrixKHRBuilder& setMatrix(std::array<std::array<float, 3>, 4> matrix) { 
+        for(uint32_t i = 0; i < 3; i++){ for(uint32_t j = 0; j < 4; j++){
+        this->data.matrix[i][j] = matrix[i][j];}} return *this; }
+    TransformMatrixKHR build() {
+        TransformMatrixKHR out{data};
+        return out; }
+};
+class AccelerationStructureDeviceAddressInfoKHRBuilder {
+    AccelerationStructureDeviceAddressInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    AccelerationStructureDeviceAddressInfoKHRBuilder() noexcept{}
+    AccelerationStructureDeviceAddressInfoKHRBuilder& setAccelerationStructure(AccelerationStructureKHR accelerationStructure) { this->data.accelerationStructure = accelerationStructure; return *this; }
+    AccelerationStructureDeviceAddressInfoKHR build() {
+        AccelerationStructureDeviceAddressInfoKHR out{data};
+        return out; }
+};
+class AccelerationStructureVersionInfoKHRBuilder {
+    AccelerationStructureVersionInfoKHR data;
+    std::vector<void*> pNext;
+    std::vector<uint8_t> pVersionData;
+    public:
+    AccelerationStructureVersionInfoKHRBuilder() noexcept{}
+    AccelerationStructureVersionInfoKHRBuilder& addVersionData(uint8_t pVersionData) { this->pVersionData.push_back(pVersionData); return *this; }
+    AccelerationStructureVersionInfoKHR build() {
+        AccelerationStructureVersionInfoKHR out{data};
+        out.pVersionData = pVersionData.data();
+        return out; }
+};
+class CopyAccelerationStructureInfoKHRBuilder {
+    CopyAccelerationStructureInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    CopyAccelerationStructureInfoKHRBuilder() noexcept{}
+    CopyAccelerationStructureInfoKHRBuilder& setSrc(AccelerationStructureKHR src) { this->data.src = src; return *this; }
+    CopyAccelerationStructureInfoKHRBuilder& setDst(AccelerationStructureKHR dst) { this->data.dst = dst; return *this; }
+    CopyAccelerationStructureInfoKHRBuilder& setMode(CopyAccelerationStructureModeKHR mode) { this->data.mode = mode; return *this; }
+    CopyAccelerationStructureInfoKHR build() {
+        CopyAccelerationStructureInfoKHR out{data};
+        return out; }
+};
+class CopyAccelerationStructureToMemoryInfoKHRBuilder {
+    CopyAccelerationStructureToMemoryInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    CopyAccelerationStructureToMemoryInfoKHRBuilder() noexcept{}
+    CopyAccelerationStructureToMemoryInfoKHRBuilder& setSrc(AccelerationStructureKHR src) { this->data.src = src; return *this; }
+    CopyAccelerationStructureToMemoryInfoKHRBuilder& setDst(DeviceOrHostAddressKHR dst) { this->data.dst = dst; return *this; }
+    CopyAccelerationStructureToMemoryInfoKHRBuilder& setMode(CopyAccelerationStructureModeKHR mode) { this->data.mode = mode; return *this; }
+    CopyAccelerationStructureToMemoryInfoKHR build() {
+        CopyAccelerationStructureToMemoryInfoKHR out{data};
+        return out; }
+};
+class CopyMemoryToAccelerationStructureInfoKHRBuilder {
+    CopyMemoryToAccelerationStructureInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    CopyMemoryToAccelerationStructureInfoKHRBuilder() noexcept{}
+    CopyMemoryToAccelerationStructureInfoKHRBuilder& setSrc(DeviceOrHostAddressConstKHR src) { this->data.src = src; return *this; }
+    CopyMemoryToAccelerationStructureInfoKHRBuilder& setDst(AccelerationStructureKHR dst) { this->data.dst = dst; return *this; }
+    CopyMemoryToAccelerationStructureInfoKHRBuilder& setMode(CopyAccelerationStructureModeKHR mode) { this->data.mode = mode; return *this; }
+    CopyMemoryToAccelerationStructureInfoKHR build() {
+        CopyMemoryToAccelerationStructureInfoKHR out{data};
+        return out; }
+};
+class PhysicalDeviceExtendedDynamicStateFeaturesEXTBuilder {
+    PhysicalDeviceExtendedDynamicStateFeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceExtendedDynamicStateFeaturesEXTBuilder() noexcept{}
+    PhysicalDeviceExtendedDynamicStateFeaturesEXTBuilder& setExtendedDynamicState(Bool32 extendedDynamicState) { this->data.extendedDynamicState = extendedDynamicState; return *this; }
+    PhysicalDeviceExtendedDynamicStateFeaturesEXT build() {
+        PhysicalDeviceExtendedDynamicStateFeaturesEXT out{data};
+        return out; }
+};
+class RenderPassTransformBeginInfoQCOMBuilder {
+    RenderPassTransformBeginInfoQCOM data;
+    std::vector<void*> pNext;
+    public:
+    RenderPassTransformBeginInfoQCOMBuilder() noexcept{}
+    RenderPassTransformBeginInfoQCOMBuilder& setTransform(SurfaceTransformFlagBitsKHR transform) { this->data.transform = transform; return *this; }
+    RenderPassTransformBeginInfoQCOM build() {
+        RenderPassTransformBeginInfoQCOM out{data};
+        return out; }
+};
+class CopyCommandTransformInfoQCOMBuilder {
+    CopyCommandTransformInfoQCOM data;
+    std::vector<void*> pNext;
+    public:
+    CopyCommandTransformInfoQCOMBuilder() noexcept{}
+    CopyCommandTransformInfoQCOMBuilder& setTransform(SurfaceTransformFlagBitsKHR transform) { this->data.transform = transform; return *this; }
+    CopyCommandTransformInfoQCOM build() {
+        CopyCommandTransformInfoQCOM out{data};
+        return out; }
+};
+class CommandBufferInheritanceRenderPassTransformInfoQCOMBuilder {
+    CommandBufferInheritanceRenderPassTransformInfoQCOM data;
+    std::vector<void*> pNext;
+    public:
+    CommandBufferInheritanceRenderPassTransformInfoQCOMBuilder() noexcept{}
+    CommandBufferInheritanceRenderPassTransformInfoQCOMBuilder& setTransform(SurfaceTransformFlagBitsKHR transform) { this->data.transform = transform; return *this; }
+    CommandBufferInheritanceRenderPassTransformInfoQCOMBuilder& setRenderArea(Rect2D renderArea) { this->data.renderArea = renderArea; return *this; }
+    CommandBufferInheritanceRenderPassTransformInfoQCOM build() {
+        CommandBufferInheritanceRenderPassTransformInfoQCOM out{data};
+        return out; }
+};
+class PhysicalDeviceDiagnosticsConfigFeaturesNVBuilder {
+    PhysicalDeviceDiagnosticsConfigFeaturesNV data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceDiagnosticsConfigFeaturesNVBuilder() noexcept{}
+    PhysicalDeviceDiagnosticsConfigFeaturesNVBuilder& setDiagnosticsConfig(Bool32 diagnosticsConfig) { this->data.diagnosticsConfig = diagnosticsConfig; return *this; }
+    PhysicalDeviceDiagnosticsConfigFeaturesNV build() {
+        PhysicalDeviceDiagnosticsConfigFeaturesNV out{data};
+        return out; }
+};
+class DeviceDiagnosticsConfigCreateInfoNVBuilder {
+    DeviceDiagnosticsConfigCreateInfoNV data;
+    std::vector<void*> pNext;
+    public:
+    DeviceDiagnosticsConfigCreateInfoNVBuilder() noexcept{}
+    DeviceDiagnosticsConfigCreateInfoNVBuilder& setFlags(DeviceDiagnosticsConfigFlagsNV flags) { this->data.flags = flags; return *this; }
+    DeviceDiagnosticsConfigCreateInfoNV build() {
+        DeviceDiagnosticsConfigCreateInfoNV out{data};
+        return out; }
+};
+class PhysicalDeviceRobustness2FeaturesEXTBuilder {
+    PhysicalDeviceRobustness2FeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceRobustness2FeaturesEXTBuilder() noexcept{}
+    PhysicalDeviceRobustness2FeaturesEXTBuilder& setRobustBufferAccess2(Bool32 robustBufferAccess2) { this->data.robustBufferAccess2 = robustBufferAccess2; return *this; }
+    PhysicalDeviceRobustness2FeaturesEXTBuilder& setRobustImageAccess2(Bool32 robustImageAccess2) { this->data.robustImageAccess2 = robustImageAccess2; return *this; }
+    PhysicalDeviceRobustness2FeaturesEXTBuilder& setNullDescriptor(Bool32 nullDescriptor) { this->data.nullDescriptor = nullDescriptor; return *this; }
+    PhysicalDeviceRobustness2FeaturesEXT build() {
+        PhysicalDeviceRobustness2FeaturesEXT out{data};
+        return out; }
+};
+class PhysicalDeviceImageRobustnessFeaturesEXTBuilder {
+    PhysicalDeviceImageRobustnessFeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceImageRobustnessFeaturesEXTBuilder() noexcept{}
+    PhysicalDeviceImageRobustnessFeaturesEXTBuilder& setRobustImageAccess(Bool32 robustImageAccess) { this->data.robustImageAccess = robustImageAccess; return *this; }
+    PhysicalDeviceImageRobustnessFeaturesEXT build() {
+        PhysicalDeviceImageRobustnessFeaturesEXT out{data};
+        return out; }
+};
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+class PhysicalDevicePortabilitySubsetFeaturesKHRBuilder {
+    PhysicalDevicePortabilitySubsetFeaturesKHR data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDevicePortabilitySubsetFeaturesKHRBuilder() noexcept{}
+    PhysicalDevicePortabilitySubsetFeaturesKHRBuilder& setConstantAlphaColorBlendFactors(Bool32 constantAlphaColorBlendFactors) { this->data.constantAlphaColorBlendFactors = constantAlphaColorBlendFactors; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHRBuilder& setEvents(Bool32 events) { this->data.events = events; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHRBuilder& setImageViewFormatReinterpretation(Bool32 imageViewFormatReinterpretation) { this->data.imageViewFormatReinterpretation = imageViewFormatReinterpretation; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHRBuilder& setImageViewFormatSwizzle(Bool32 imageViewFormatSwizzle) { this->data.imageViewFormatSwizzle = imageViewFormatSwizzle; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHRBuilder& setImageView2DOn3DImage(Bool32 imageView2DOn3DImage) { this->data.imageView2DOn3DImage = imageView2DOn3DImage; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHRBuilder& setMultisampleArrayImage(Bool32 multisampleArrayImage) { this->data.multisampleArrayImage = multisampleArrayImage; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHRBuilder& setMutableComparisonSamplers(Bool32 mutableComparisonSamplers) { this->data.mutableComparisonSamplers = mutableComparisonSamplers; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHRBuilder& setPointPolygons(Bool32 pointPolygons) { this->data.pointPolygons = pointPolygons; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHRBuilder& setSamplerMipLodBias(Bool32 samplerMipLodBias) { this->data.samplerMipLodBias = samplerMipLodBias; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHRBuilder& setSeparateStencilMaskRef(Bool32 separateStencilMaskRef) { this->data.separateStencilMaskRef = separateStencilMaskRef; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHRBuilder& setShaderSampleRateInterpolationFunctions(Bool32 shaderSampleRateInterpolationFunctions) { this->data.shaderSampleRateInterpolationFunctions = shaderSampleRateInterpolationFunctions; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHRBuilder& setTessellationIsolines(Bool32 tessellationIsolines) { this->data.tessellationIsolines = tessellationIsolines; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHRBuilder& setTessellationPointMode(Bool32 tessellationPointMode) { this->data.tessellationPointMode = tessellationPointMode; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHRBuilder& setTriangleFans(Bool32 triangleFans) { this->data.triangleFans = triangleFans; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHRBuilder& setVertexAttributeAccessBeyondStride(Bool32 vertexAttributeAccessBeyondStride) { this->data.vertexAttributeAccessBeyondStride = vertexAttributeAccessBeyondStride; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHR build() {
+        PhysicalDevicePortabilitySubsetFeaturesKHR out{data};
+        return out; }
+};
+class PhysicalDevicePortabilitySubsetPropertiesKHRBuilder {
+    PhysicalDevicePortabilitySubsetPropertiesKHR data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDevicePortabilitySubsetPropertiesKHRBuilder() noexcept{}
+    PhysicalDevicePortabilitySubsetPropertiesKHRBuilder& setMinVertexInputBindingStrideAlignment(uint32_t minVertexInputBindingStrideAlignment) { this->data.minVertexInputBindingStrideAlignment = minVertexInputBindingStrideAlignment; return *this; }
+    PhysicalDevicePortabilitySubsetPropertiesKHR build() {
+        PhysicalDevicePortabilitySubsetPropertiesKHR out{data};
+        return out; }
+};
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
+class PhysicalDevice4444FormatsFeaturesEXTBuilder {
+    PhysicalDevice4444FormatsFeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDevice4444FormatsFeaturesEXTBuilder() noexcept{}
+    PhysicalDevice4444FormatsFeaturesEXTBuilder& setFormatA4R4G4B4(Bool32 formatA4R4G4B4) { this->data.formatA4R4G4B4 = formatA4R4G4B4; return *this; }
+    PhysicalDevice4444FormatsFeaturesEXTBuilder& setFormatA4B4G4R4(Bool32 formatA4B4G4R4) { this->data.formatA4B4G4R4 = formatA4B4G4R4; return *this; }
+    PhysicalDevice4444FormatsFeaturesEXT build() {
+        PhysicalDevice4444FormatsFeaturesEXT out{data};
+        return out; }
+};
+class BufferCopy2KHRBuilder {
+    BufferCopy2KHR data;
+    std::vector<void*> pNext;
+    public:
+    BufferCopy2KHRBuilder() noexcept{}
+    BufferCopy2KHRBuilder& setSrcOffset(DeviceSize srcOffset) { this->data.srcOffset = srcOffset; return *this; }
+    BufferCopy2KHRBuilder& setDstOffset(DeviceSize dstOffset) { this->data.dstOffset = dstOffset; return *this; }
+    BufferCopy2KHRBuilder& setSize(DeviceSize size) { this->data.size = size; return *this; }
+    BufferCopy2KHR build() {
+        BufferCopy2KHR out{data};
+        return out; }
+};
+class ImageCopy2KHRBuilder {
+    ImageCopy2KHR data;
+    std::vector<void*> pNext;
+    public:
+    ImageCopy2KHRBuilder() noexcept{}
+    ImageCopy2KHRBuilder& setSrcSubresource(ImageSubresourceLayers srcSubresource) { this->data.srcSubresource = srcSubresource; return *this; }
+    ImageCopy2KHRBuilder& setSrcOffset(Offset3D srcOffset) { this->data.srcOffset = srcOffset; return *this; }
+    ImageCopy2KHRBuilder& setDstSubresource(ImageSubresourceLayers dstSubresource) { this->data.dstSubresource = dstSubresource; return *this; }
+    ImageCopy2KHRBuilder& setDstOffset(Offset3D dstOffset) { this->data.dstOffset = dstOffset; return *this; }
+    ImageCopy2KHRBuilder& setExtent(Extent3D extent) { this->data.extent = extent; return *this; }
+    ImageCopy2KHR build() {
+        ImageCopy2KHR out{data};
+        return out; }
+};
+class ImageBlit2KHRBuilder {
+    ImageBlit2KHR data;
+    std::vector<void*> pNext;
+    public:
+    ImageBlit2KHRBuilder() noexcept{}
+    ImageBlit2KHRBuilder& setSrcSubresource(ImageSubresourceLayers srcSubresource) { this->data.srcSubresource = srcSubresource; return *this; }
+    ImageBlit2KHRBuilder& setSrcOffsets(std::array<Offset3D, 2> srcOffsets) { for(uint32_t i = 0; i < 2; i++) this->data.srcOffsets[i] = srcOffsets[i]; return *this; }
+    ImageBlit2KHRBuilder& setDstSubresource(ImageSubresourceLayers dstSubresource) { this->data.dstSubresource = dstSubresource; return *this; }
+    ImageBlit2KHRBuilder& setDstOffsets(std::array<Offset3D, 2> dstOffsets) { for(uint32_t i = 0; i < 2; i++) this->data.dstOffsets[i] = dstOffsets[i]; return *this; }
+    ImageBlit2KHR build() {
+        ImageBlit2KHR out{data};
+        return out; }
+};
+class BufferImageCopy2KHRBuilder {
+    BufferImageCopy2KHR data;
+    std::vector<void*> pNext;
+    public:
+    BufferImageCopy2KHRBuilder() noexcept{}
+    BufferImageCopy2KHRBuilder& setBufferOffset(DeviceSize bufferOffset) { this->data.bufferOffset = bufferOffset; return *this; }
+    BufferImageCopy2KHRBuilder& setBufferRowLength(uint32_t bufferRowLength) { this->data.bufferRowLength = bufferRowLength; return *this; }
+    BufferImageCopy2KHRBuilder& setBufferImageHeight(uint32_t bufferImageHeight) { this->data.bufferImageHeight = bufferImageHeight; return *this; }
+    BufferImageCopy2KHRBuilder& setImageSubresource(ImageSubresourceLayers imageSubresource) { this->data.imageSubresource = imageSubresource; return *this; }
+    BufferImageCopy2KHRBuilder& setImageOffset(Offset3D imageOffset) { this->data.imageOffset = imageOffset; return *this; }
+    BufferImageCopy2KHRBuilder& setImageExtent(Extent3D imageExtent) { this->data.imageExtent = imageExtent; return *this; }
+    BufferImageCopy2KHR build() {
+        BufferImageCopy2KHR out{data};
+        return out; }
+};
+class ImageResolve2KHRBuilder {
+    ImageResolve2KHR data;
+    std::vector<void*> pNext;
+    public:
+    ImageResolve2KHRBuilder() noexcept{}
+    ImageResolve2KHRBuilder& setSrcSubresource(ImageSubresourceLayers srcSubresource) { this->data.srcSubresource = srcSubresource; return *this; }
+    ImageResolve2KHRBuilder& setSrcOffset(Offset3D srcOffset) { this->data.srcOffset = srcOffset; return *this; }
+    ImageResolve2KHRBuilder& setDstSubresource(ImageSubresourceLayers dstSubresource) { this->data.dstSubresource = dstSubresource; return *this; }
+    ImageResolve2KHRBuilder& setDstOffset(Offset3D dstOffset) { this->data.dstOffset = dstOffset; return *this; }
+    ImageResolve2KHRBuilder& setExtent(Extent3D extent) { this->data.extent = extent; return *this; }
+    ImageResolve2KHR build() {
+        ImageResolve2KHR out{data};
+        return out; }
+};
+class CopyBufferInfo2KHRBuilder {
+    CopyBufferInfo2KHR data;
+    std::vector<void*> pNext;
+    std::vector<BufferCopy2KHR> pRegions;
+    public:
+    CopyBufferInfo2KHRBuilder() noexcept{}
+    CopyBufferInfo2KHRBuilder& setSrcBuffer(Buffer srcBuffer) { this->data.srcBuffer = srcBuffer; return *this; }
+    CopyBufferInfo2KHRBuilder& setDstBuffer(Buffer dstBuffer) { this->data.dstBuffer = dstBuffer; return *this; }
+    CopyBufferInfo2KHRBuilder& addRegions(BufferCopy2KHR pRegions) { this->pRegions.push_back(pRegions); return *this; }
+    CopyBufferInfo2KHR build() {
+        CopyBufferInfo2KHR out{data};
+        out.regionCount = (uint32_t)pRegions.size();
+        out.pRegions = pRegions.data();
+        return out; }
+};
+class CopyImageInfo2KHRBuilder {
+    CopyImageInfo2KHR data;
+    std::vector<void*> pNext;
+    std::vector<ImageCopy2KHR> pRegions;
+    public:
+    CopyImageInfo2KHRBuilder() noexcept{}
+    CopyImageInfo2KHRBuilder& setSrcImage(Image srcImage) { this->data.srcImage = srcImage; return *this; }
+    CopyImageInfo2KHRBuilder& setSrcImageLayout(ImageLayout srcImageLayout) { this->data.srcImageLayout = srcImageLayout; return *this; }
+    CopyImageInfo2KHRBuilder& setDstImage(Image dstImage) { this->data.dstImage = dstImage; return *this; }
+    CopyImageInfo2KHRBuilder& setDstImageLayout(ImageLayout dstImageLayout) { this->data.dstImageLayout = dstImageLayout; return *this; }
+    CopyImageInfo2KHRBuilder& addRegions(ImageCopy2KHR pRegions) { this->pRegions.push_back(pRegions); return *this; }
+    CopyImageInfo2KHR build() {
+        CopyImageInfo2KHR out{data};
+        out.regionCount = (uint32_t)pRegions.size();
+        out.pRegions = pRegions.data();
+        return out; }
+};
+class BlitImageInfo2KHRBuilder {
+    BlitImageInfo2KHR data;
+    std::vector<void*> pNext;
+    std::vector<ImageBlit2KHR> pRegions;
+    public:
+    BlitImageInfo2KHRBuilder() noexcept{}
+    BlitImageInfo2KHRBuilder& setSrcImage(Image srcImage) { this->data.srcImage = srcImage; return *this; }
+    BlitImageInfo2KHRBuilder& setSrcImageLayout(ImageLayout srcImageLayout) { this->data.srcImageLayout = srcImageLayout; return *this; }
+    BlitImageInfo2KHRBuilder& setDstImage(Image dstImage) { this->data.dstImage = dstImage; return *this; }
+    BlitImageInfo2KHRBuilder& setDstImageLayout(ImageLayout dstImageLayout) { this->data.dstImageLayout = dstImageLayout; return *this; }
+    BlitImageInfo2KHRBuilder& addRegions(ImageBlit2KHR pRegions) { this->pRegions.push_back(pRegions); return *this; }
+    BlitImageInfo2KHRBuilder& setFilter(Filter filter) { this->data.filter = filter; return *this; }
+    BlitImageInfo2KHR build() {
+        BlitImageInfo2KHR out{data};
+        out.regionCount = (uint32_t)pRegions.size();
+        out.pRegions = pRegions.data();
+        return out; }
+};
+class CopyBufferToImageInfo2KHRBuilder {
+    CopyBufferToImageInfo2KHR data;
+    std::vector<void*> pNext;
+    std::vector<BufferImageCopy2KHR> pRegions;
+    public:
+    CopyBufferToImageInfo2KHRBuilder() noexcept{}
+    CopyBufferToImageInfo2KHRBuilder& setSrcBuffer(Buffer srcBuffer) { this->data.srcBuffer = srcBuffer; return *this; }
+    CopyBufferToImageInfo2KHRBuilder& setDstImage(Image dstImage) { this->data.dstImage = dstImage; return *this; }
+    CopyBufferToImageInfo2KHRBuilder& setDstImageLayout(ImageLayout dstImageLayout) { this->data.dstImageLayout = dstImageLayout; return *this; }
+    CopyBufferToImageInfo2KHRBuilder& addRegions(BufferImageCopy2KHR pRegions) { this->pRegions.push_back(pRegions); return *this; }
+    CopyBufferToImageInfo2KHR build() {
+        CopyBufferToImageInfo2KHR out{data};
+        out.regionCount = (uint32_t)pRegions.size();
+        out.pRegions = pRegions.data();
+        return out; }
+};
+class CopyImageToBufferInfo2KHRBuilder {
+    CopyImageToBufferInfo2KHR data;
+    std::vector<void*> pNext;
+    std::vector<BufferImageCopy2KHR> pRegions;
+    public:
+    CopyImageToBufferInfo2KHRBuilder() noexcept{}
+    CopyImageToBufferInfo2KHRBuilder& setSrcImage(Image srcImage) { this->data.srcImage = srcImage; return *this; }
+    CopyImageToBufferInfo2KHRBuilder& setSrcImageLayout(ImageLayout srcImageLayout) { this->data.srcImageLayout = srcImageLayout; return *this; }
+    CopyImageToBufferInfo2KHRBuilder& setDstBuffer(Buffer dstBuffer) { this->data.dstBuffer = dstBuffer; return *this; }
+    CopyImageToBufferInfo2KHRBuilder& addRegions(BufferImageCopy2KHR pRegions) { this->pRegions.push_back(pRegions); return *this; }
+    CopyImageToBufferInfo2KHR build() {
+        CopyImageToBufferInfo2KHR out{data};
+        out.regionCount = (uint32_t)pRegions.size();
+        out.pRegions = pRegions.data();
+        return out; }
+};
+class ResolveImageInfo2KHRBuilder {
+    ResolveImageInfo2KHR data;
+    std::vector<void*> pNext;
+    std::vector<ImageResolve2KHR> pRegions;
+    public:
+    ResolveImageInfo2KHRBuilder() noexcept{}
+    ResolveImageInfo2KHRBuilder& setSrcImage(Image srcImage) { this->data.srcImage = srcImage; return *this; }
+    ResolveImageInfo2KHRBuilder& setSrcImageLayout(ImageLayout srcImageLayout) { this->data.srcImageLayout = srcImageLayout; return *this; }
+    ResolveImageInfo2KHRBuilder& setDstImage(Image dstImage) { this->data.dstImage = dstImage; return *this; }
+    ResolveImageInfo2KHRBuilder& setDstImageLayout(ImageLayout dstImageLayout) { this->data.dstImageLayout = dstImageLayout; return *this; }
+    ResolveImageInfo2KHRBuilder& addRegions(ImageResolve2KHR pRegions) { this->pRegions.push_back(pRegions); return *this; }
+    ResolveImageInfo2KHR build() {
+        ResolveImageInfo2KHR out{data};
+        out.regionCount = (uint32_t)pRegions.size();
+        out.pRegions = pRegions.data();
+        return out; }
+};
+class PhysicalDeviceShaderImageAtomicInt64FeaturesEXTBuilder {
+    PhysicalDeviceShaderImageAtomicInt64FeaturesEXT data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceShaderImageAtomicInt64FeaturesEXTBuilder() noexcept{}
+    PhysicalDeviceShaderImageAtomicInt64FeaturesEXTBuilder& setShaderImageInt64Atomics(Bool32 shaderImageInt64Atomics) { this->data.shaderImageInt64Atomics = shaderImageInt64Atomics; return *this; }
+    PhysicalDeviceShaderImageAtomicInt64FeaturesEXTBuilder& setSparseImageInt64Atomics(Bool32 sparseImageInt64Atomics) { this->data.sparseImageInt64Atomics = sparseImageInt64Atomics; return *this; }
+    PhysicalDeviceShaderImageAtomicInt64FeaturesEXT build() {
+        PhysicalDeviceShaderImageAtomicInt64FeaturesEXT out{data};
+        return out; }
+};
+class FragmentShadingRateAttachmentInfoKHRBuilder {
+    FragmentShadingRateAttachmentInfoKHR data;
+    std::vector<void*> pNext;
+    AttachmentReference2 pFragmentShadingRateAttachment;
+    public:
+    FragmentShadingRateAttachmentInfoKHRBuilder() noexcept{}
+    FragmentShadingRateAttachmentInfoKHRBuilder& setFragmentShadingRateAttachment(AttachmentReference2 pFragmentShadingRateAttachment) { this->pFragmentShadingRateAttachment = pFragmentShadingRateAttachment; return *this; }
+    FragmentShadingRateAttachmentInfoKHRBuilder& setShadingRateAttachmentTexelSize(Extent2D shadingRateAttachmentTexelSize) { this->data.shadingRateAttachmentTexelSize = shadingRateAttachmentTexelSize; return *this; }
+    FragmentShadingRateAttachmentInfoKHR build() {
+        FragmentShadingRateAttachmentInfoKHR out{data};
+        out.pFragmentShadingRateAttachment = &pFragmentShadingRateAttachment;
+        return out; }
+};
+class PipelineFragmentShadingRateStateCreateInfoKHRBuilder {
+    PipelineFragmentShadingRateStateCreateInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    PipelineFragmentShadingRateStateCreateInfoKHRBuilder() noexcept{}
+    PipelineFragmentShadingRateStateCreateInfoKHRBuilder& setFragmentSize(Extent2D fragmentSize) { this->data.fragmentSize = fragmentSize; return *this; }
+    PipelineFragmentShadingRateStateCreateInfoKHRBuilder& setCombinerOps(std::array<FragmentShadingRateCombinerOpKHR, 2> combinerOps) { for(uint32_t i = 0; i < 2; i++) this->data.combinerOps[i] = combinerOps[i]; return *this; }
+    PipelineFragmentShadingRateStateCreateInfoKHR build() {
+        PipelineFragmentShadingRateStateCreateInfoKHR out{data};
+        return out; }
+};
+class PhysicalDeviceFragmentShadingRateFeaturesKHRBuilder {
+    PhysicalDeviceFragmentShadingRateFeaturesKHR data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceFragmentShadingRateFeaturesKHRBuilder() noexcept{}
+    PhysicalDeviceFragmentShadingRateFeaturesKHRBuilder& setPipelineFragmentShadingRate(Bool32 pipelineFragmentShadingRate) { this->data.pipelineFragmentShadingRate = pipelineFragmentShadingRate; return *this; }
+    PhysicalDeviceFragmentShadingRateFeaturesKHRBuilder& setPrimitiveFragmentShadingRate(Bool32 primitiveFragmentShadingRate) { this->data.primitiveFragmentShadingRate = primitiveFragmentShadingRate; return *this; }
+    PhysicalDeviceFragmentShadingRateFeaturesKHRBuilder& setAttachmentFragmentShadingRate(Bool32 attachmentFragmentShadingRate) { this->data.attachmentFragmentShadingRate = attachmentFragmentShadingRate; return *this; }
+    PhysicalDeviceFragmentShadingRateFeaturesKHR build() {
+        PhysicalDeviceFragmentShadingRateFeaturesKHR out{data};
+        return out; }
+};
+class PhysicalDeviceShaderTerminateInvocationFeaturesKHRBuilder {
+    PhysicalDeviceShaderTerminateInvocationFeaturesKHR data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceShaderTerminateInvocationFeaturesKHRBuilder() noexcept{}
+    PhysicalDeviceShaderTerminateInvocationFeaturesKHRBuilder& setShaderTerminateInvocation(Bool32 shaderTerminateInvocation) { this->data.shaderTerminateInvocation = shaderTerminateInvocation; return *this; }
+    PhysicalDeviceShaderTerminateInvocationFeaturesKHR build() {
+        PhysicalDeviceShaderTerminateInvocationFeaturesKHR out{data};
+        return out; }
+};
+class PhysicalDeviceFragmentShadingRateEnumsFeaturesNVBuilder {
+    PhysicalDeviceFragmentShadingRateEnumsFeaturesNV data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceFragmentShadingRateEnumsFeaturesNVBuilder() noexcept{}
+    PhysicalDeviceFragmentShadingRateEnumsFeaturesNVBuilder& setFragmentShadingRateEnums(Bool32 fragmentShadingRateEnums) { this->data.fragmentShadingRateEnums = fragmentShadingRateEnums; return *this; }
+    PhysicalDeviceFragmentShadingRateEnumsFeaturesNVBuilder& setSupersampleFragmentShadingRates(Bool32 supersampleFragmentShadingRates) { this->data.supersampleFragmentShadingRates = supersampleFragmentShadingRates; return *this; }
+    PhysicalDeviceFragmentShadingRateEnumsFeaturesNVBuilder& setNoInvocationFragmentShadingRates(Bool32 noInvocationFragmentShadingRates) { this->data.noInvocationFragmentShadingRates = noInvocationFragmentShadingRates; return *this; }
+    PhysicalDeviceFragmentShadingRateEnumsFeaturesNV build() {
+        PhysicalDeviceFragmentShadingRateEnumsFeaturesNV out{data};
+        return out; }
+};
+class PhysicalDeviceFragmentShadingRateEnumsPropertiesNVBuilder {
+    PhysicalDeviceFragmentShadingRateEnumsPropertiesNV data;
+    std::vector<void*> pNext;
+    public:
+    PhysicalDeviceFragmentShadingRateEnumsPropertiesNVBuilder() noexcept{}
+    PhysicalDeviceFragmentShadingRateEnumsPropertiesNVBuilder& setMaxFragmentShadingRateInvocationCount(SampleCountFlagBits maxFragmentShadingRateInvocationCount) { this->data.maxFragmentShadingRateInvocationCount = maxFragmentShadingRateInvocationCount; return *this; }
+    PhysicalDeviceFragmentShadingRateEnumsPropertiesNV build() {
+        PhysicalDeviceFragmentShadingRateEnumsPropertiesNV out{data};
+        return out; }
+};
+class PipelineFragmentShadingRateEnumStateCreateInfoNVBuilder {
+    PipelineFragmentShadingRateEnumStateCreateInfoNV data;
+    std::vector<void*> pNext;
+    public:
+    PipelineFragmentShadingRateEnumStateCreateInfoNVBuilder() noexcept{}
+    PipelineFragmentShadingRateEnumStateCreateInfoNVBuilder& setShadingRateType(FragmentShadingRateTypeNV shadingRateType) { this->data.shadingRateType = shadingRateType; return *this; }
+    PipelineFragmentShadingRateEnumStateCreateInfoNVBuilder& setShadingRate(FragmentShadingRateNV shadingRate) { this->data.shadingRate = shadingRate; return *this; }
+    PipelineFragmentShadingRateEnumStateCreateInfoNVBuilder& setCombinerOps(std::array<FragmentShadingRateCombinerOpKHR, 2> combinerOps) { for(uint32_t i = 0; i < 2; i++) this->data.combinerOps[i] = combinerOps[i]; return *this; }
+    PipelineFragmentShadingRateEnumStateCreateInfoNV build() {
+        PipelineFragmentShadingRateEnumStateCreateInfoNV out{data};
+        return out; }
+};
+class AccelerationStructureBuildSizesInfoKHRBuilder {
+    AccelerationStructureBuildSizesInfoKHR data;
+    std::vector<void*> pNext;
+    public:
+    AccelerationStructureBuildSizesInfoKHRBuilder() noexcept{}
+    AccelerationStructureBuildSizesInfoKHRBuilder& setAccelerationStructureSize(DeviceSize accelerationStructureSize) { this->data.accelerationStructureSize = accelerationStructureSize; return *this; }
+    AccelerationStructureBuildSizesInfoKHRBuilder& setUpdateScratchSize(DeviceSize updateScratchSize) { this->data.updateScratchSize = updateScratchSize; return *this; }
+    AccelerationStructureBuildSizesInfoKHRBuilder& setBuildScratchSize(DeviceSize buildScratchSize) { this->data.buildScratchSize = buildScratchSize; return *this; }
+    AccelerationStructureBuildSizesInfoKHR build() {
+        AccelerationStructureBuildSizesInfoKHR out{data};
+        return out; }
 };
 inline const char * to_string(AttachmentLoadOp val) {
     switch(val) {

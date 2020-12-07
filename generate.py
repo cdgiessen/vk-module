@@ -56,7 +56,7 @@ def TrimVkFromPFN(in_string):
     return f'PFN_{in_string[6:]}' if in_string[:6] == 'PFN_vk' else in_string
 
 def TrimVkFromAll(in_string):
-    return TrimVkFromPFN(TrimVkFromType(in_string))
+    return TrimVkFromType(TrimVkFromPFN(in_string))
 
 class ApiConstant:
     def __init__(self, node):
@@ -358,18 +358,21 @@ class Variable:
         # attributes
         self.optional = node.get('optional')
         self.len_attrib = node.get('len')
+        if self.len_attrib is not None:
+            if self.len_attrib[:9] == 'latexmath':
+                self.len_attrib = re.search(r'\{[A-Za-z]*\}', self.len_attrib).group()[1:-1]
+        self.alt_len = node.get('altlen')
+        self.length_ref = None
 
         # type characteristics
         self.is_const = False
-        self.is_single_ptr = False
-        self.is_double_ptr = False
-        self.is_const_double_ptr = False
-        self.array_lengths = []  # multi-dimensional
+        self.pointer_type = 'none'
+        self.array_lengths = []
         self.default_value = None
-        self.is_comparable = True
+        self.is_equatable = True
         self.bitfield = None
         self.is_ref_eligible = False
-
+           
         self.base_type = node.find('type').text
         self.base_type_modified = TrimVkFromAll(self.base_type)
         # special case cause of bitfields
@@ -392,14 +395,13 @@ class Variable:
         if type_list[cur] == self.base_type:
             cur += 1
         if type_list[cur] == '*':
-            self.is_single_ptr = True
+            self.pointer_type = 'single'
             cur += 1
         if type_list[cur] == '**':
-            self.is_double_ptr = True
+            self.pointer_type = 'double'
             cur += 1
         if type_list[cur] == 'const*':
-            self.is_const_double_ptr = True
-            self.is_single_ptr = False
+            self.pointer_type = 'const double'
             cur += 1
         if type_list[cur] == self.name:
             cur += 1
@@ -435,15 +437,40 @@ class Variable:
 
         self.is_handle = self.base_type in handles
 
-        if self.is_handle or self.is_ptr():
-            self.is_comparable = False
+        self.is_equatable = not (self.is_handle or self.is_ptr())
 
-        if (not self.optional or self.optional != 'true') and (self.len_attrib is None) \
-            and ((self.is_single_ptr and self.base_type != "void") or (self.is_double_ptr)):
-            self.is_ref_eligible = True
+        self.is_ref_eligible = (not self.optional or self.optional != 'true') and (self.len_attrib is None) \
+            and ((self.pointer_type == 'single' and self.base_type != "void") or (self.pointer_type == 'double'))
+
+        self.value_category = 'value'
+        if self.name in ['sType', 'pNext']:
+            self.value_category = self.name
+
+        elif self.len_attrib is None and self.pointer_type == 'single' and self.base_type == 'void':
+            self.value_category = 'user_ptr'
+        elif not self.optional and self.len_attrib is None and self.pointer_type == 'single' and self.base_type != 'void':
+            self.value_category = 'single_ptr'
+        elif self.len_attrib is not None and self.len_attrib.find('null-terminated') == -1 and self.pointer_type == 'single':
+            self.value_category = 'vector'
+        elif self.len_attrib is not None and self.len_attrib.find('null-terminated') == -1 and self.pointer_type in ['double', 'const double']:
+            self.value_category = 'vector_of_vector'
+        elif self.pointer_type == 'single' and self.optional and self.len_attrib is None:
+            self.value_category = 'optional'
+        elif len(self.array_lengths) > 0 and self.len_attrib is None:
+            self.value_category = 'array'
+        elif self.len_attrib == 'null-terminated':        
+            self.value_category = 'string'
+        elif self.len_attrib is not None and self.len_attrib.find(',null-terminated') != -1:
+            self.value_category = 'vector_of_string'
+            self.len_attrib = self.len_attrib[0: self.len_attrib.find(',')]
+        # 'len_param' category set by parent object (struct/function)
+        # this is because a Variable doesn't know if other variables use it    
 
     def is_ptr(self):
-        return self.is_single_ptr or self.is_double_ptr or self.is_const_double_ptr
+        return self.pointer_type != 'none'
+
+    def is_double_ptr(self):
+        return self.pointer_type in ['double', 'const double']
 
     def get_base_type(self):
         if self.base_type == 'void' and self.is_ptr():
@@ -454,7 +481,7 @@ class Variable:
         out = ''
         if self.base_type == 'void' and self.is_ptr():
             out = 'std::byte'
-        elif self.is_double_ptr or self.is_const_double_ptr:
+        elif self.is_double_ptr():
             out = f'{self.base_type_modified}*'
         else:
             out = self.base_type_modified
@@ -462,31 +489,34 @@ class Variable:
             out = 'const ' + out
         return out
 
-    def get_type_decl(self, use_vk_type=True, use_references=False, downgrade_ptr_type=False):
-        type_decl = ''
-        type_decl += 'const ' if self.is_const else ''
-        type_decl += self.base_type_modified if use_vk_type else self.base_type
+    def get_type_decl(self, use_references=False, downgrade_ptr_type=False):
+        type_decl = 'const ' if self.is_const else ''
+        type_decl += self.base_type_modified
         if downgrade_ptr_type:
-            type_decl += '*' if self.is_double_ptr else ''
-            type_decl += 'const*' if self.is_const_double_ptr else ''
+            if self.pointer_type == 'double':
+                type_decl += '*'
+            elif self.pointer_type == 'const double':
+                type_decl += 'const*'
         else:
             if use_references and self.is_ref_eligible:
                 type_decl += '& '
             else:
-                type_decl += '*' if self.is_single_ptr else ''
-                type_decl += '**' if self.is_double_ptr else ''
-                type_decl += '* const*' if self.is_const_double_ptr else ''
+                if self.pointer_type == 'single':
+                    type_decl += '*'
+                elif self.pointer_type == 'double':
+                    type_decl += '**'
+                elif self.pointer_type == 'const double':
+                    type_decl += '* const*'
         return type_decl
 
     def get_type_decl_w_arr(self):
-        type_decl = self.get_type_decl(use_vk_type=False)
+        type_decl = self.get_type_decl()
         for arr in self.array_lengths:
             type_decl += f'[{arr}]'
         return type_decl
 
-    def get_parameter_decl(self, use_references = False):
-        local_use_refs = use_references
-        type_decl = f'{self.get_type_decl(use_references=local_use_refs)} '
+    def get_parameter_decl(self, use_references):
+        type_decl = f'{self.get_type_decl(use_references=use_references)} '
         type_decl += self.name
         if self.bitfield is not None:
             type_decl += f':{self.bitfield}'
@@ -505,13 +535,34 @@ class Variable:
             return '{}'
 
     def get_struct_member_decl(self, default_init):
-        type_decl = self.get_parameter_decl()
+        type_decl = self.get_parameter_decl(use_references=False)
         if default_init and self.bitfield is None:
             type_decl += self.get_init()
         type_decl += ';'
         return type_decl
 
-def print_custom_comparator(file, member_list, name):
+    def get_builder_parameter_decl(self):
+        type_decl = ''
+        if len(self.array_lengths) > 0:
+            if len(self.array_lengths) == 1:
+                type_decl = f'std::array<{self.base_type_modified}, {self.array_lengths[0]}>'
+            else:
+                type_decl += f'{self.base_type_modified}'
+                for length in self.array_lengths:
+                    type_decl = f'std::array<{type_decl}, {length}>'
+        else:
+            type_decl += self.get_base_type()
+        type_decl += f' {self.name}'
+        return type_decl
+
+def get_len_attrib_names(variables):
+    names = set()
+    for var in variables:
+        if var.len_attrib is not None and var.len_attrib != 'null-terminated' and var.optional is None:
+            names.add(var.len_attrib)
+    return names
+
+def print_custom_equivalence(file, member_list, name):
     file.write(f'    constexpr bool operator==({name} const& value) const {{\n')
     comp_str = ''
     counter = 0
@@ -554,6 +605,14 @@ def print_custom_comparator(file, member_list, name):
     file.write(';}\n')
     file.write(f'    constexpr bool operator!=({name} const& value) const {{return !(*this == value);}}\n')
 
+def MakeBuilderFunctionNames(in_str):
+    if in_str.find('ppEnabled') != -1:
+        return in_str[2:]
+    if in_str[0] == 'p' and in_str[1].isupper():
+        return in_str[1:]
+    else:
+        return in_str[0:1].capitalize() + in_str[1:]
+
 # Contains both structs and unions
 class Structure:
     def __init__(self, node, handles, default_values):
@@ -568,15 +627,33 @@ class Structure:
         for member in node.findall('member'):
             self.members.append(Variable(member, handles, default_values))
 
-        self.is_comparable = True
+        self.is_equatable = True
         for member in self.members:
-            if not member.is_comparable:
-                self.is_comparable = False
+            if not member.is_equatable:
+                self.is_equatable = False
                 break
+
+        self.vector_members = get_len_attrib_names(self.members)
+        for member in self.members:
+            if member.name in self.vector_members:
+                member.value_category = 'len_param'
+                for member_in in self.members:
+                    if member_in.len_attrib == member.name:
+                        if member.length_ref is None:
+                            member.length_ref = member_in.name
+        
+        self.is_trivial = True
+        for member in self.members:
+            if member.value_category != 'value':
+                self.is_trivial = False
     
     def check_platform(self, platform, ext_types):
         if self.name in ext_types or (self.alias is not None and self.alias in ext_types):
             self.platform = platform
+
+    def check_builder(self, functions):
+        for function in functions:
+            pass
 
     def print_base(self, file, cpp20mode = True):
         if self.alias is not None:
@@ -586,11 +663,107 @@ class Structure:
             file.write(f'{self.category} {self.name[2:]} {{\n')
             for member in self.members:
                 if self.name == 'VkDeviceCreateInfo' and member.name in ['ppEnabledLayerNames', 'enabledLayerCount']:
-                    file.write('[[deprecated]]')
+                    file.write('/*deprecated*/')
                 file.write(f'    {member.get_struct_member_decl(default_init=should_init)}\n')
-            if self.is_comparable:
-                print_custom_comparator(file, self.members, self.name[2:])
+            if self.is_equatable:
+                print_custom_equivalence(file, self.members, self.name[2:])
             file.write('};\n')
+
+    def print_builder(self, file):
+        if self.alias is not None or self.is_trivial or self.returnedonly:
+            return
+        file.write(f'class {self.name[2:]}Builder {{\n')
+        file.write(f'    {self.name[2:]} data;\n')
+
+        for member in self.members:
+            if self.name == 'VkDeviceCreateInfo' and member.name in ['ppEnabledLayerNames', 'enabledLayerCount']:
+                continue
+            elif member.value_category in ['sType', 'len_param', 'value']:
+                continue
+            elif member.value_category == 'pNext':
+                file.write(f'    std::vector<void*> pNext;\n')
+            elif member.value_category == 'single_ptr':
+                file.write(f'    {member.get_base_type()} {member.name};\n')
+            elif member.value_category == 'vector':
+                file.write(f'    std::vector<{member.get_base_type()}> {member.name};\n')
+            elif member.value_category == 'vector_of_vector':
+                file.write(f'    std::vector<std::vector<{member.get_base_type()}>> {member.name};\n')
+                file.write(f'    std::vector<{member.get_base_type()}*> {member.name}_ptr;\n')
+            elif member.value_category == 'optional':
+                file.write(f'    detail::optional<{member.get_base_type()}> {member.name};\n')
+            elif member.value_category == 'string':
+                file.write(f'    std::string {member.name};\n')
+            elif member.value_category == 'vector_of_string':
+                file.write(f'    std::vector<std::string> {member.name};\n')
+                file.write(f'    std::vector<const char *> {member.name}_c_str;\n')
+                
+        file.write(f'    public:\n')
+        file.write(f'    {self.name[2:]}Builder() noexcept{{}}\n')
+        for member in self.members:
+            if self.name == 'VkDeviceCreateInfo' and member.name in ['ppEnabledLayerNames', 'enabledLayerCount']:
+                continue
+            
+            elif member.value_category in ['sType', 'len_param']:
+                continue
+            elif member.value_category == 'pNext':
+                pass
+            elif member.value_category == 'single_ptr':
+                file.write(f'    {self.name[2:]}Builder& set{MakeBuilderFunctionNames(member.name)}({member.get_builder_parameter_decl()}) {{ ')
+                file.write(f'this->{member.name} = {member.name}; return *this; }}\n')
+            elif member.value_category == 'vector':
+                file.write(f'    {self.name[2:]}Builder& add{MakeBuilderFunctionNames(member.name)}({member.get_builder_parameter_decl()}) {{ ')
+                file.write(f'this->{member.name}.push_back({member.name}); return *this; }}\n')
+            elif member.value_category == 'vector_of_vector':
+                file.write(f'    {self.name[2:]}Builder& add{MakeBuilderFunctionNames(member.name)}(std::vector<{member.get_base_type()}> {member.name}) {{ ')
+                file.write(f'this->{member.name}.push_back({member.name});')
+                file.write(f'this->{member.name}_ptr.push_back(this->{member.name}.back().data()); return *this; }}\n')
+            elif member.value_category == 'optional':
+                file.write(f'    {self.name[2:]}Builder& set{MakeBuilderFunctionNames(member.name)}({member.get_builder_parameter_decl()}) {{ ')
+                file.write(f'this->{member.name} = {member.name}; return *this; }}\n')
+            elif member.value_category == 'array':
+                file.write(f'    {self.name[2:]}Builder& set{MakeBuilderFunctionNames(member.name)}({member.get_builder_parameter_decl()}) {{ ')
+                if len(member.array_lengths) == 1:
+                    file.write(f'for(uint32_t i = 0; i < {member.array_lengths[0]}; i++) this->data.{member.name}[i] = {member.name}[i]; return *this; }}\n')
+                if len(member.array_lengths) == 2:
+                    file.write(f'\n        for(uint32_t i = 0; i < {member.array_lengths[0]}; i++){{ for(uint32_t j = 0; j < {member.array_lengths[1]}; j++){{\n')
+                    file.write(f'        this->data.{member.name}[i][j] = {member.name}[i][j];}}}} return *this; }}\n')
+            elif member.value_category == 'value':
+                file.write(f'    {self.name[2:]}Builder& set{MakeBuilderFunctionNames(member.name)}({member.get_builder_parameter_decl()}) {{ ')
+                file.write(f'this->data.{member.name} = {member.name}; return *this; }}\n')
+            elif member.value_category == 'string':
+                file.write(f'    {self.name[2:]}Builder& add{MakeBuilderFunctionNames(member.name)}(std::string {member.name}) {{ ')
+                file.write(f'this->{member.name} = {member.name}; return *this; }}\n')
+            elif member.value_category == 'vector_of_string':
+                file.write(f'    {self.name[2:]}Builder& add{MakeBuilderFunctionNames(member.name)}(std::string {member.name}) {{ ')
+                file.write(f'this->{member.name}.push_back({member.name});')
+                file.write(f'this->{member.name}_c_str.push_back(this->{member.name}.back().c_str()); return *this; }}\n')
+        
+        file.write(f'    {self.name[2:]} build() {{\n')
+        file.write(f'        {self.name[2:]} out{{data}};\n')
+        for member in self.members:
+            if self.name == 'VkDeviceCreateInfo' and member.name in ['ppEnabledLayerNames', 'enabledLayerCount']:
+                continue
+            elif member.value_category in ['sType', 'value']:
+                continue
+            elif member.name == 'pNext':
+                #needs special handling
+                pass
+            elif member.value_category == 'len_param':
+                file.write(f'        out.{member.name} = (uint32_t){member.length_ref}.size();\n')
+            elif member.value_category == 'single_ptr':
+                file.write(f'        out.{member.name} = &{member.name};\n')
+            elif member.value_category == 'vector':
+                file.write(f'        out.{member.name} = {member.name}.data();\n')
+            elif member.value_category == 'vector_of_vector':
+                file.write(f'        out.{member.name} = {member.name}_ptr.data();\n')
+            elif member.value_category == 'optional':
+                file.write(f'        out.{member.name} = {member.name}.ptr_or_nullptr();\n')
+            elif member.value_category == 'string':
+                file.write(f'        out.{member.name} = {member.name}.data();\n')
+            elif member.value_category == 'vector_of_string':
+                file.write(f'        out.{member.name} = {member.name}_c_str.data();\n')
+        file.write(f'        return out; }}\n')
+        file.write(f'}};\n')
 
     def print_static_asserts(self, file):
         if self.category == 'struct':
@@ -629,12 +802,10 @@ class Function:
         if len(self.parameters) > 0 and self.parameters[0].base_type in dispatchable_handles:
             self.dispatch_handle = self.parameters[0].base_type
         
-        self.span_params = set()
+        self.span_params = get_len_attrib_names(self.parameters)
         for param in self.parameters:
-            if param.len_attrib is not None and param.len_attrib != "null-terminated" and param.optional is None:
-                for inner_param in self.parameters:
-                    if inner_param.name == param.len_attrib:
-                        self.span_params.add(param.len_attrib)
+            if param.name in self.span_params:
+                param.value_category = 'len_param'
 
         self.function_category = 'basic'
         self.full_return_type = None
@@ -669,7 +840,7 @@ class Function:
                 self.function_category = 'enumeration' 
                 self.modified_param_list = self.parameters[:-2]
                 self.query_type = self.parameters[-1].get_type_decl(downgrade_ptr_type=self.parameters[-1].base_type != 'void')
-                self.base_query_type =self.parameters[-1].get_type_decl(use_vk_type=False)
+                self.base_query_type =self.parameters[-1].get_type_decl()
                 self.query_name = self.parameters[-1].name
                 self.count_type = self.parameters[-2].base_type
                 self.count_name = self.parameters[-2].name
@@ -729,21 +900,21 @@ class Function:
             print_function_name = print_function_name.replace(str_from, '')
         file.write(f'{print_function_name}')
 
-    def print_parameters(self, file, parameter_list, break_between=True, condense_spans=False, print_defaults=False):
+    def print_parameters(self, file, parameter_list, break_between=True, print_defaults=False):
         should_print_comma = False #prevents printing of a comma before the first real parameter
         index = -1
         for param in parameter_list:
             index = index + 1
             if param != parameter_list[0]:
-                if condense_spans == False or param.name not in self.span_params: 
+                if param.name not in self.span_params: 
                     if should_print_comma:
                         file.write(', ')
                         if break_between:
                             file.write(f'\n    ')
                 
-            if condense_spans and param.name in self.span_params: 
+            if param.name in self.span_params: 
                 continue            
-            elif condense_spans and param.len_attrib is not None and param.len_attrib in self.span_params:
+            elif param.len_attrib is not None and param.len_attrib in self.span_params:
                 file.write(f'detail::span<{param.get_span_type()}> {param.name[1:]}')
             else:
                 file.write(f'{param.get_parameter_decl(use_references=True)}')
@@ -760,7 +931,7 @@ class Function:
                         file.write(' = {}')
             should_print_comma = True
 
-    def print_c_api_call(self, file, dispatch_handle = None, dispatch_handle_name = None, pfn_source=None, last_arg=None, init_result=None, condense_spans=False):
+    def print_c_api_call(self, file, dispatch_handle = None, dispatch_handle_name = None, pfn_source=None, last_arg=None, init_result=None):
         if self.return_type != 'void':
             if init_result == 'init_result': 
                 file.write(f'    Result result = ')
@@ -780,7 +951,7 @@ class Function:
                 file.write(f',\n        ')
 
             param_name = f'{param.name}'
-            if condense_spans and param.len_attrib in self.span_params:
+            if param.len_attrib in self.span_params:
                 param_name = f'{param_name[1:]}.data()' 
             # the last argument
             if last_arg is not None and param == self.parameters[-1]:
@@ -800,41 +971,39 @@ class Function:
                 file.write(param_name)
         file.write(');\n')
 
-    def inner_print_function(self, file, dispatch_handle = None, dispatch_handle_name = None, replace_list=[], \
-            struct_source='', pfn_source=None, make_void_return_this=None, print_spans=False):
-        file.write(f'{self.get_return_type(replace_list, self.full_return_type)}')
-        self.print_name(file, replace_list)
+    def inner_print_function(self, file, dispatch_handle = None, dispatch_handle_name = None, pfn_source=None):
+        file.write(f'{self.get_return_type(full_return_type=self.full_return_type)}')
+        self.print_name(file)
         parameter_list = self.modified_param_list
         if dispatch_handle is not None and f'{dispatch_handle}' == self.dispatch_handle:
             parameter_list = parameter_list[1:]
         file.write('(')
-        self.print_parameters(file, parameter_list, condense_spans=print_spans, print_defaults=True)
+        self.print_parameters(file, parameter_list, print_defaults=True)
         file.write(') const {\n')
         file.write('    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE\n')
         if self.name == 'vkEnumerateInstanceVersion':
             #early return because 1.0 doesn't support the function, will be null and shouldn't cause a crash
             file.write(f'    if (pfn_EnumerateInstanceVersion == 0) return expected<uint32_t>(make_vk_version(1,0,0), Result::Success);\n')
-        if print_spans:
-            for param in self.parameters:
-                if param.name in self.span_params:
-                    file.write(f'    {param.get_base_type()} {param.name} = ')
-                    for inner_param in self.parameters:
-                        if inner_param.len_attrib is not None and inner_param.len_attrib == param.name:
-                            file.write(f'{inner_param.name[1:]}.size();\n')
-                            break
+        for param in self.parameters:
+            if param.name in self.span_params:
+                file.write(f'    {param.get_base_type()} {param.name} = ')
+                for inner_param in self.parameters:
+                    if inner_param.len_attrib is not None and inner_param.len_attrib == param.name:
+                        file.write(f'{inner_param.name[1:]}.size();\n')
+                        break
 
         if self.function_category == 'basic':
             file.write(f'    ')
             if self.return_type != 'void':
                 file.write(f'return ')
-            self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, pfn_source, condense_spans=print_spans)
+            self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, pfn_source)
         if self.function_category == 'single_query':
             file.write(f'    {self.query_type} {self.query_name};\n    ')
-            self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, pfn_source, init_result='init_result', condense_spans=print_spans)
+            self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, pfn_source, init_result='init_result')
             file.write(f'    {self.return_statement}')
         elif self.function_category == 'multi_query':
             file.write(f'    detail::fixed_vector<{self.query_type}> {self.query_name}{{{self.count_name}}};\n')
-            self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, pfn_source, last_arg=f'{self.query_name}.data()', init_result='init_result', condense_spans=print_spans)
+            self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, pfn_source, last_arg=f'{self.query_name}.data()', init_result='init_result')
             file.write(f'    {self.return_statement}')
         elif self.function_category == 'enumeration':
             file.write(f'    {self.count_type} {self.count_name} = 0;\n    ')
@@ -842,34 +1011,20 @@ class Function:
             if self.return_type != 'void':
                 file.write(f'    if (result < Result::Success) return expected(detail::fixed_vector<{self.query_type}>{{}}, result);\n')
             file.write(f'    detail::fixed_vector<{self.query_type}> {self.query_name}{{{self.count_name}}};\n')
-            self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, pfn_source, last_arg=f'{self.query_name}.data()',init_result='assign_result', condense_spans=print_spans)
+            self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, pfn_source, last_arg=f'{self.query_name}.data()',init_result='assign_result')
             file.write(f'    if ({self.count_name} < {self.query_name}.size()) {self.query_name}.shrink({self.count_name});\n')
             file.write(f'    {self.return_statement}')
 
         file.write(f'}}\n')
 
-    def print_function(self, file, dispatch_handle = None, dispatch_handle_name = None, replace_list=[], \
-            struct_source='', pfn_source=None, make_void_return_this=None, cpp20mode=False):
+    def print_function(self, file, dispatch_handle = None, dispatch_handle_name = None, pfn_source=None, cpp20mode=False):
         if self.alias is not None:
             file.write(f'const auto {self.name[2:]} = {self.alias[2:]};\n')
             return
-        self.inner_print_function(file, dispatch_handle, dispatch_handle_name, replace_list, struct_source, pfn_source, make_void_return_this, print_spans=True)
-
-    def print_forwarding_function_call(self, file, parameter_list, dispatch_handle_name, print_spans):
-        for param in parameter_list:
-            if param == parameter_list[0]:
-                file.write(f'{dispatch_handle_name}')
-            else:
-                if print_spans:
-                    if param.name in self.span_params:
-                        continue
-                    elif param.len_attrib is not None and param.len_attrib in self.span_params:
-                        file.write(f', {param.name[1:]}')
-                        continue
-                file.write(f', {param.name}')
+        self.inner_print_function(file, dispatch_handle, dispatch_handle_name, pfn_source)
 
     def inner_print_forwarding_function(self, file, dispatch_handle = None, dispatch_handle_name = None, replace_list=[], \
-            struct_source='', pfn_source=None, make_void_return_this=None, print_spans=False):
+            pfn_source=None, make_void_return_this=None):
         if make_void_return_this is not None and self.return_type == 'void':
             file.write(f'{self.get_return_type(replace_list, make_void_return_this)}')
         else:
@@ -878,24 +1033,35 @@ class Function:
         self.print_name(file, replace_list)
         file.write('(')
        
-        self.print_parameters(file, self.modified_param_list[1:], break_between=False, condense_spans=print_spans)
+        self.print_parameters(file, self.modified_param_list[1:], break_between=False)
         file.write(') const {\n')
         file.write(f'    ')
         if self.return_type != 'void' or self.full_return_type != None:
             file.write(f'return ')
         file.write(f'{pfn_source}->{self.name[2:]}(')
-        self.print_forwarding_function_call(file, self.modified_param_list, dispatch_handle_name, print_spans)
+        #print parameters in call to source
+        for param in self.modified_param_list:
+            if param == self.modified_param_list[0]:
+                file.write(f'{dispatch_handle_name}')
+            else:
+                if param.name in self.span_params:
+                    continue
+                elif param.len_attrib is not None and param.len_attrib in self.span_params:
+                    file.write(f', {param.name[1:]}')
+                    continue
+                file.write(f', {param.name}')
+        
         file.write(f');')
         if self.return_type == 'void' and make_void_return_this is not None:
             file.write(f'\n    return *this;')
         file.write(f' }}\n')
 
     def print_forwarding_function(self, file, dispatch_handle = None, dispatch_handle_name = None, replace_list=None, \
-            struct_source='', pfn_source=None, make_void_return_this=None, cpp20mode=False):
+            pfn_source=None, make_void_return_this=None, cpp20mode=False):
         if self.alias is not None:
             file.write(f'const auto {self.name[2:]} = {self.alias[2:]};\n')
             return
-        self.inner_print_forwarding_function(file, dispatch_handle, dispatch_handle_name, replace_list, struct_source, pfn_source, make_void_return_this, print_spans=True)
+        self.inner_print_forwarding_function(file, dispatch_handle, dispatch_handle_name, replace_list, pfn_source, make_void_return_this)
 
 class FuncPointer:
     def __init__(self, node):
@@ -1020,10 +1186,7 @@ class DispatchTable:
         self.dispatch_handle = f'Vk{self.dispatch_type.title()}' if self.dispatch_type != 'global' else None
         self.gpa_val = f'{self.dispatch_type}' if self.dispatch_type != 'global' else 'nullptr'
 
-    def print_definition(self, file, cpp20mode):
-        if len(self.functions) == 0:
-            return
-                
+    def print_definition(self, file, cpp20mode):                
         file.write(f'struct {self.name}Functions {{\n')
         #function pointers
         if self.dispatch_type != 'global':
@@ -1032,7 +1195,7 @@ class DispatchTable:
 
         #functions
         PrintConsecutivePlatforms(file, self.functions.values(), "print_function", dispatch_handle=self.dispatch_handle\
-            ,dispatch_handle_name=self.dispatch_type, struct_source=f'{self.name}Functions', cpp20mode=cpp20mode)
+            ,dispatch_handle_name=self.dispatch_type, cpp20mode=cpp20mode)
              
         #constructor
         file.write(f'{self.name}Functions() noexcept {{}}\n')   
@@ -1079,7 +1242,7 @@ class DispatchableHandleDispatchTable:
     {self.type_name}Functions({self.functions_type} const& {self.functions_name}, {self.type_name} const {self.var_name}) noexcept:
     {self.functions_name}{{&{self.functions_name}}}, {self.var_name}{{{self.var_name}}} {{}}''')
         PrintConsecutivePlatforms(file, self.functions, "print_forwarding_function", dispatch_handle=self.name, dispatch_handle_name=self.var_name, replace_list=self.replace_list, \
-                struct_source=f'{self.type_name}Functions', pfn_source=self.functions_name, make_void_return_this=command_buffer_return_type, cpp20mode=cpp20mode)
+                pfn_source=self.functions_name, make_void_return_this=command_buffer_return_type, cpp20mode=cpp20mode)
         file.write('};\n')
             
 class BindingGenerator:
@@ -1162,16 +1325,16 @@ class BindingGenerator:
 
         # determine which structures are comparable
         for structure in self.structures:
-            if not structure.is_comparable:
+            if not structure.is_equatable:
                 continue
             comparable = True
             for member in structure.members:
                 for sub_type in self.structures:
                     if member.base_type == sub_type.name:
-                        if not sub_type.is_comparable:
+                        if not sub_type.is_equatable:
                             comparable = False
                             break
-            structure.is_comparable = comparable
+            structure.is_equatable = comparable
 
         for enum in root.findall("enums"):
             if enum.get('type') == 'enum':
@@ -1263,12 +1426,10 @@ def print_bindings(bindings, cpp20mode, cpp20str):
 
         #dispatch function objects
         vkm.write(vulkan_library_text + '\n')
-        vkm.write(fixed_vector_text + '\n')
-        vkm.write(vulkan_expected_type + '\n')
-        vkm.write(custom_span_type + '\n')
 
         [ dispatch_table.print_definition(vkm, cpp20mode) for dispatch_table in bindings.dispatch_tables ]
         [ table.print_definition(vkm, cpp20mode) for table in bindings.dispatchable_handle_tables ]
+        PrintConsecutivePlatforms(vkm, bindings.structures, 'print_builder')
 
         #to_string
         #vkm.write('#pragma warning( disable : 4065 )\n')
@@ -1287,13 +1448,6 @@ def print_c_interop(bindings, cpp20mode, cpp20str):
         PrintConsecutivePlatforms(c_interop, bindings.flags_dict.values(), 'print_c_interop')
         #PrintConsecutivePlatforms(c_interop, bindings.structures, 'print_c_interop')
         c_interop.write('} // namespace vk\n// clang-format on\n')
-
-def print_bindings_version(bindings, cpp20mode, cpp20str):
-    print_vkm_main(bindings, cpp20mode, cpp20str)
-    print_vkm_core(bindings, cpp20mode, cpp20str)
-    print_c_definitions(bindings, cpp20mode, cpp20str)
-    print_vkm_function(bindings, cpp20mode, cpp20str)
-    print_vkm_string(bindings, cpp20mode, cpp20str)
 
 def main():
     tree = xml.etree.ElementTree.parse('registry/vk.xml')

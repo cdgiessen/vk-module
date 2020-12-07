@@ -124,10 +124,16 @@ void create_renderer_context(RendererContext& context)
 
     std::vector<const char*> layers_to_enable;
     bool found_validation = false;
+    bool found_api_dump = false;
+
     for (auto& layer : layers) {
         found_validation = std::string(layer.layerName) == std::string("VK_LAYER_KHRONOS_validation");
-        layers_to_enable.push_back("VK_LAYER_KHRONOS_validation");
+        found_api_dump = std::string(layer.layerName) == std::string("VK_LAYER_LUNARG_api_dump");
     }
+    if (found_validation)
+        layers_to_enable.push_back("VK_LAYER_KHRONOS_validation");
+    // if (found_api_dump)
+    //    layers_to_enable.push_back("VK_LAYER_LUNARG_api_dump");
 
     auto [instance, instance_ret] = global_functions.CreateInstance({
       .enabledLayerCount = static_cast<uint32_t>(layers_to_enable.size()),
@@ -216,7 +222,7 @@ void setup_swapchain(DeviceContext& device)
       .pQueueFamilyIndices = &queue_family_indices,
       .preTransform = vk::SurfaceTransformFlagBitsKHR::IdentityBitKHR,
       .compositeAlpha = vk::CompositeAlphaFlagBitsKHR::OpaqueBitKHR,
-      .presentMode = vk::PresentModeKHR::FifoRelaxedKHR,
+      .presentMode = vk::PresentModeKHR::FifoKHR,
     });
     check_res(swap_ret, "Unable to create Swapchain");
 
@@ -275,6 +281,37 @@ void setup_renderpass(DeviceContext& device)
       .dependencyCount = 1,
       .pDependencies = &dependency,
     });
+    check_res(rp_ret, "Failed to create renderpass");
+    device.render_pass = rp_ret.value();
+}
+
+void setup_renderpass_best(DeviceContext& device)
+{
+    auto rp_ret = device.functions.CreateRenderPass(
+      vk::RenderPassCreateInfoBuilder{}
+        .addAttachments({
+          .format = device.swapchain_img_format,
+          .samples = vk::SampleCountFlagBits::e1,
+          .loadOp = vk::AttachmentLoadOp::Clear,
+          .storeOp = vk::AttachmentStoreOp::Store,
+          .stencilLoadOp = vk::AttachmentLoadOp::DontCare,
+          .stencilStoreOp = vk::AttachmentStoreOp::DontCare,
+          .initialLayout = vk::ImageLayout::Undefined,
+          .finalLayout = vk::ImageLayout::PresentSrcKHR,
+        })
+        .addSubpasses(vk::SubpassDescriptionBuilder{}
+                        .setPipelineBindPoint(vk::PipelineBindPoint::Graphics)
+                        .addColorAttachments({ .attachment = 0, .layout = vk::ImageLayout::ColorAttachmentOptimal })
+                        .build())
+        .addDependencies({
+          .srcSubpass = vk::SUBPASS_EXTERNAL,
+          .dstSubpass = 0,
+          .srcStageMask = vk::PipelineStageFlagBits::ColorAttachmentOutput,
+          .dstStageMask = vk::PipelineStageFlagBits::ColorAttachmentOutput,
+          .dstAccessMask = vk::AccessFlagBits::ColorAttachmentRead | vk::AccessFlagBits::ColorAttachmentWrite,
+        })
+        .build());
+
     check_res(rp_ret, "Failed to create renderpass");
     device.render_pass = rp_ret.value();
 }
@@ -532,7 +569,7 @@ int main()
     create_device_context(context, device);
     setup_queues(device, context.physical_device_functions);
     setup_swapchain(device);
-    setup_renderpass(device);
+    setup_renderpass_best(device);
     create_framebuffers(device);
     create_pipeline(device);
     create_command_buffers(device);

@@ -12,6 +12,8 @@ vk_module_file_header = '''
 #include <utility>
 #include "vk_platform.h"
 
+//maybe temporary
+#include <vector>
 
 // Compatability with compilers that don't support __has_feature
 #ifndef __has_feature
@@ -46,211 +48,6 @@ constexpr uint32_t make_vk_version(uint32_t major, uint32_t minor, uint32_t patc
         #define VK_DEFINE_NON_DISPATCHABLE_HANDLE(object) typedef uint64_t object;
 #endif
 #endif
-'''
-
-fixed_vector_text = '''
-namespace detail {
-/* Array data structure where the length is determined at construction time.
- * Cannot resize, add, or delete elements from.
- * Used for returning a collection from the Vulkan API
- * Does not throw any exceptions
- */
-template<typename T>
-struct fixed_vector
-{
-    explicit fixed_vector() noexcept {}
-    explicit fixed_vector(size_t count) noexcept
-    {
-        _count = count;
-        _data = new (std::nothrow) T[count];
-        for (size_t i = 0; i < count; i++)
-            _data[i] = T(); // some vulkan structs have default values, so must be initialized
-    }
-    ~fixed_vector() noexcept { delete[] _data; }
-    fixed_vector(fixed_vector const& value) noexcept
-    {
-        _count = value._count;
-        _data = new (std::nothrow) T[value.count];
-        for (size_t i = 0; i < value.count; i++)
-            _data[i] = value[i];
-    }
-    fixed_vector& operator=(fixed_vector const& value) noexcept
-    {
-        _count = value._count;
-        _data = new (std::nothrow) T[value.count];
-        for (size_t i = 0; i < value.count; i++)
-            _data[i] = value[i];
-    }
-    fixed_vector(fixed_vector&& other) noexcept
-      : _count(std::exchange(other._count, 0))
-      , _data(std::exchange(other._data, nullptr))
-    {}
-    fixed_vector& operator=(fixed_vector&& other) noexcept
-    {
-        if (this != &other) {
-            delete _data;
-            _count = std::exchange(other._count, 0);
-            _data = std::exchange(other._data, nullptr);
-        }
-        return *this;
-    }
-
-    [[nodiscard]] size_t size() noexcept { return _count; }
-    [[nodiscard]] size_t size() const noexcept { return _count; }
-    [[nodiscard]] bool empty() noexcept { return _count == 0; }
-    [[nodiscard]] bool empty() const noexcept { return _count == 0; }
-    [[nodiscard]] T* data() noexcept { return _data; }
-    [[nodiscard]] const T* data() const noexcept { return _data; }
-    void shrink(size_t count) noexcept { if (count < _count) _count = count;}
-
-    [[nodiscard]] T& operator[](size_t count) & noexcept { return _data[count]; }
-    [[nodiscard]] T const& operator[](size_t count) const& noexcept { return _data[count]; }
-
-    [[nodiscard]] const T* begin() const noexcept { return _data + 0; }
-    [[nodiscard]] T* begin() noexcept { return _data + 0; }
-    [[nodiscard]] const T* end() const noexcept { return _data + _count; }
-    [[nodiscard]] T* end() noexcept { return _data + _count; }
-
-  private:
-    size_t _count = 0;
-    T* _data = nullptr;
-};
-} // namespace detail
-'''
-
-vulkan_expected_type = '''
-
-/* Return type for Vulkan Module API functions which return a value or values
- * Holds a T value or a vk::Result for indicating the error
- * Do not use with success codes other than zero
- * Example in function definition
- * vk::expected<vk::Buffer> CreateBuffer(const BufferCreateInfo& pCreateInfo, const AllocationCallbacks* pAllocator = nullptr) { ... }
- * Example usage:
- * auto buffer_return  = CreateBuffer( ... );
- * if (!buffer_return)
- *     error_exit("Failed to create buffer", buffer_return.error());
- * vk::Buffer buffer = buffer_return.value(); //Get value now that we've check for errors
- */
-template<typename T>
-struct expected {
-	explicit expected (T const& value, Result result) noexcept: _value{ value}, _result{ result } {}
-	explicit expected (T&& value, Result result) noexcept: _value{ std::move(value) }, _result{ result } {}
-
-    const T* operator-> () const noexcept { VULKAN_CUSTOM_ASSERT (_result == Result::Success); return &_value; }
-	T*       operator-> ()       noexcept { VULKAN_CUSTOM_ASSERT (_result == Result::Success); return &_value; }
-	const T& operator* () const& noexcept { VULKAN_CUSTOM_ASSERT (_result == Result::Success); return _value; }
-	T&       operator* () &      noexcept { VULKAN_CUSTOM_ASSERT (_result == Result::Success); return _value; }
-	T&&      operator* () &&	 noexcept { VULKAN_CUSTOM_ASSERT (_result == Result::Success); return std::move (_value); }
-	const T&  value () const&    noexcept { VULKAN_CUSTOM_ASSERT (_result == Result::Success); return _value; }
-	T&        value () &         noexcept { VULKAN_CUSTOM_ASSERT (_result == Result::Success); return _value; }
-	const T&& value () const&&   noexcept { VULKAN_CUSTOM_ASSERT (_result == Result::Success); return std::move(_value); }
-	T&&       value () &&        noexcept { VULKAN_CUSTOM_ASSERT (_result == Result::Success); return std::move(_value); }
-
-    Result error() const noexcept { VULKAN_CUSTOM_ASSERT (_result != Result::Success); return _result; }
-    Result raw_result() const noexcept { return _result; }
-
-    bool has_value () const noexcept { return _result == Result::Success; }
-	explicit operator bool () const noexcept { return _result == Result::Success; }
-    bool operator!() const noexcept { return _result != Result::Success; }
-
-    template <size_t N>
-    auto const& get() const noexcept {
-       if constexpr (N == 0) return _value;
-       else if constexpr (N == 1) return _result;
-    }
-    template <size_t N>
-    auto& get() noexcept {
-       if constexpr (N == 0) return _value;
-       else if constexpr (N == 1) return _result;
-    }
-
-private:
-    T _value;
-    Result _result = Result::Success;
-};
-
-} //namespace vk
-
-namespace std {
-    template<typename T>
-    struct tuple_size<vk::expected<T>>: std::integral_constant<size_t, 2> {};
-    template<typename T> struct tuple_element<0, vk::expected<T>> { using type = T; };
-    template<typename T> struct tuple_element<1, vk::expected<T>> { using type = vk::Result; };
-}
-
-namespace vk {
-'''
-
-unique_handle_def = '''
-// Unique Handle wrapper for RAII handle types
-// DispatchableHandle is a `VkInstance` or `VkDevice` handle
-// HandleType is a `vk::Handle` type
-// Delete is a PFN_vk*** function that matches the desired type
-template <typename DispatchableHandle, typename HandleType, typename Deleter>
-class unique_handle
-{
-public:
-    unique_handle() = default;
-    explicit unique_handle(DispatchableHandle dispatch_handle, HandleType handle, Deleter deleter) noexcept
-        : device(device), handle(handle), deleter(deleter) { }
-    ~unique_handle() noexcept { reset(); };
-    unique_handle(unique_handle const& other) = delete;
-    unique_handle& operator=(unique_handle const& other) = delete;
-
-    unique_handle(unique_handle&& other) noexcept
-        : dispatch_handle{other.dispatch_handle}, 
-          handle{std::exchange(other.handle, nullptr)}, 
-          deleter{other.deleter} { }
-    unique_handle& operator=(unique_handle&& other) noexcept
-    {
-        if (this != &other)
-        {
-            reset();
-            device = other.device;
-            handle = std::exchange(other.handle, nullptr); 
-            deleter = other.deleter;
-        }
-        return *this;
-    }
-
-    HandleType release() noexcept {
-        return std::exchange(handle, HandleType());
-    }
-
-    void reset() noexcept {
-        if (handle)
-        {
-            deleter(device, handle.get(), nullptr);
-        }
-    }
-
-    const HandleType address() const noexcept {
-        return std::addressof(handle.get());
-    }
-
-    Type operator*() const noexcept {
-        return handle.get();
-    }
-
-    Type operator->() const noexcept {
-        return handle.get();
-    }
-
-    explicit operator bool() const noexcept {
-        return handle != nullptr;
-    }
-
-    [[nodiscard]] HandleType get() const noexcept {
-        return handle.get();
-    }
-
-    DispatchableHandle dispatch_handle = VK_NULL_HANDLE;
-    HandleType handle = HandleType();
-    Deleter deleter;
-};
-
-// Add special case for VkInstance
-
 '''
 
 bitmask_flags_macro = '''
@@ -306,68 +103,6 @@ constexpr FLAG_TYPE operator^(FLAG_BITS a, FLAG_BITS b) noexcept {              
     return static_cast<FLAG_TYPE>(static_cast<BASE_TYPE>(a) ^ static_cast<BASE_TYPE>(b));  \\
 }                                                                                          \\
 '''
-
-custom_span_type = '''
-namespace detail {
-template<typename T>
-class span {
-public:
-    constexpr span() noexcept = default;
-    constexpr span(T const& value) noexcept : _data{&value}, _count{1} {}
-    constexpr explicit span(T* data, uint32_t count) noexcept : _data{data}, _count{count} {}
-
-    // requires std::data(Range const&)
-    // requires std::size(Range const&)
-    template <typename Range>
-    explicit span(Range const& range) noexcept : 
-        _data{std::data(range)}, _count{std::size(range)} {}
-    
-    template< std::size_t N >
-    span(std::array<T, N>& arr ) noexcept : 
-        _data{std::data(arr)}, _count{std::size(arr)} {}
-
-    template< std::size_t N >
-    span(std::array<T, N> const& arr ) noexcept : 
-        _data{std::data(arr)}, _count{std::size(arr)} {}
-    
-    span( std::initializer_list<T>& data ) noexcept : 
-        _data{data.begin()}, _count{static_cast<uint32_t>(data.size())} {}
-
-    span( std::initializer_list<T> const& data ) noexcept : 
-        _data{data.begin()}, _count{static_cast<uint32_t>(data.size())} {}
-
-    template <typename A = T, typename std::enable_if<std::is_const<A>::value, int>::type = 0>
-    span( std::initializer_list<typename std::remove_const<T>::type> const& data ) noexcept : 
-        _data{data.begin()}, _count{static_cast<uint32_t>(data.size())} {}
-
-    template <typename A = T, typename std::enable_if<std::is_const<A>::value, int>::type = 0>
-    span( std::initializer_list<typename std::remove_const<T>::type> & data ) noexcept : 
-        _data{data.begin()}, _count{static_cast<uint32_t>(data.size())} {}
-
-    [[nodiscard]] uint32_t size() noexcept { return _count; }
-    [[nodiscard]] uint32_t size() const noexcept { return _count; }
-    [[nodiscard]] uint32_t size_bytes() const noexcept { return _count * sizeof(T); }
-
-    [[nodiscard]] T* data() noexcept { return _data; }
-    [[nodiscard]] const T* data() const noexcept { return _data; }
-    [[nodiscard]] bool empty() noexcept { return _count == 0; }
-    [[nodiscard]] bool empty() const noexcept { return _count == 0; }
-
-    [[nodiscard]] T const& operator[](uint32_t count) & noexcept { return _data[count]; }
-    [[nodiscard]] T const& operator[](uint32_t count) const& noexcept { return _data[count]; }
-
-    [[nodiscard]] const T* begin() const noexcept { return _data + 0; }
-    [[nodiscard]] const T* begin() noexcept { return _data + 0; }
-    [[nodiscard]] const T* end() const noexcept { return _data + _count; }
-    [[nodiscard]] const T* end() noexcept { return _data + _count; }
-private:
-    T* _data;
-    uint32_t _count;
-};
-} // namespace detail
-
-'''
-
 vulkan_library_text = '''
 } // namespace vk 
 #if !defined(VULKAN_CUSTOM_ASSERT)
@@ -481,4 +216,276 @@ private:
     PFN_vkGetInstanceProcAddr get_instance_proc_addr = nullptr;
     
 };
+
+namespace detail {
+/* Array data structure where the length is determined at construction time.
+ * Cannot resize, add, or delete elements from.
+ * Used for returning a collection from the Vulkan API
+ * Does not throw any exceptions
+ */
+template<typename T>
+struct fixed_vector
+{
+    explicit fixed_vector() noexcept {}
+    explicit fixed_vector(size_t count) noexcept
+    {
+        _count = count;
+        _data = new (std::nothrow) T[count];
+        for (size_t i = 0; i < count; i++)
+            _data[i] = T(); // some vulkan structs have default values, so must be initialized
+    }
+    ~fixed_vector() noexcept { delete[] _data; }
+    fixed_vector(fixed_vector const& value) noexcept
+    {
+        _count = value._count;
+        _data = new (std::nothrow) T[value.count];
+        for (size_t i = 0; i < value.count; i++)
+            _data[i] = value[i];
+    }
+    fixed_vector& operator=(fixed_vector const& value) noexcept
+    {
+        _count = value._count;
+        _data = new (std::nothrow) T[value.count];
+        for (size_t i = 0; i < value.count; i++)
+            _data[i] = value[i];
+    }
+    fixed_vector(fixed_vector&& other) noexcept
+      : _count(std::exchange(other._count, 0))
+      , _data(std::exchange(other._data, nullptr))
+    {}
+    fixed_vector& operator=(fixed_vector&& other) noexcept
+    {
+        if (this != &other) {
+            delete _data;
+            _count = std::exchange(other._count, 0);
+            _data = std::exchange(other._data, nullptr);
+        }
+        return *this;
+    }
+
+    [[nodiscard]] size_t size() noexcept { return _count; }
+    [[nodiscard]] size_t size() const noexcept { return _count; }
+    [[nodiscard]] bool empty() noexcept { return _count == 0; }
+    [[nodiscard]] bool empty() const noexcept { return _count == 0; }
+    [[nodiscard]] T* data() noexcept { return _data; }
+    [[nodiscard]] const T* data() const noexcept { return _data; }
+    void shrink(size_t count) noexcept { if (count < _count) _count = count;}
+
+    [[nodiscard]] T& operator[](size_t count) & noexcept { return _data[count]; }
+    [[nodiscard]] T const& operator[](size_t count) const& noexcept { return _data[count]; }
+
+    [[nodiscard]] const T* begin() const noexcept { return _data + 0; }
+    [[nodiscard]] T* begin() noexcept { return _data + 0; }
+    [[nodiscard]] const T* end() const noexcept { return _data + _count; }
+    [[nodiscard]] T* end() noexcept { return _data + _count; }
+
+  private:
+    size_t _count = 0;
+    T* _data = nullptr;
+};
+} // namespace detail
+
+/* Return type for Vulkan Module API functions which return a value or values
+ * Holds a T value or a vk::Result for indicating the error
+ * Do not use with success codes other than zero
+ * Example in function definition
+ * vk::expected<vk::Buffer> CreateBuffer(const BufferCreateInfo& pCreateInfo, const AllocationCallbacks* pAllocator = nullptr) { ... }
+ * Example usage:
+ * auto buffer_return  = CreateBuffer( ... );
+ * if (!buffer_return)
+ *     error_exit("Failed to create buffer", buffer_return.error());
+ * vk::Buffer buffer = buffer_return.value(); //Get value now that we've check for errors
+ */
+template<typename T>
+struct expected {
+	explicit expected (T const& value, Result result) noexcept: _value{ value}, _result{ result } {}
+	explicit expected (T&& value, Result result) noexcept: _value{ std::move(value) }, _result{ result } {}
+
+    const T* operator-> () const noexcept { VULKAN_CUSTOM_ASSERT (_result == Result::Success); return &_value; }
+	T*       operator-> ()       noexcept { VULKAN_CUSTOM_ASSERT (_result == Result::Success); return &_value; }
+	const T& operator* () const& noexcept { VULKAN_CUSTOM_ASSERT (_result == Result::Success); return _value; }
+	T&       operator* () &      noexcept { VULKAN_CUSTOM_ASSERT (_result == Result::Success); return _value; }
+	T&&      operator* () &&	 noexcept { VULKAN_CUSTOM_ASSERT (_result == Result::Success); return std::move (_value); }
+	const T&  value () const&    noexcept { VULKAN_CUSTOM_ASSERT (_result == Result::Success); return _value; }
+	T&        value () &         noexcept { VULKAN_CUSTOM_ASSERT (_result == Result::Success); return _value; }
+	const T&& value () const&&   noexcept { VULKAN_CUSTOM_ASSERT (_result == Result::Success); return std::move(_value); }
+	T&&       value () &&        noexcept { VULKAN_CUSTOM_ASSERT (_result == Result::Success); return std::move(_value); }
+
+    Result error() const noexcept { VULKAN_CUSTOM_ASSERT (_result != Result::Success); return _result; }
+    Result raw_result() const noexcept { return _result; }
+
+    bool has_value () const noexcept { return _result == Result::Success; }
+	explicit operator bool () const noexcept { return _result == Result::Success; }
+    bool operator!() const noexcept { return _result != Result::Success; }
+
+    template <size_t N>
+    auto const& get() const noexcept {
+       if constexpr (N == 0) return _value;
+       else if constexpr (N == 1) return _result;
+    }
+    template <size_t N>
+    auto& get() noexcept {
+       if constexpr (N == 0) return _value;
+       else if constexpr (N == 1) return _result;
+    }
+
+private:
+    T _value;
+    Result _result = Result::Success;
+};
+
+} //namespace vk
+
+namespace std {
+    template<typename T>
+    struct tuple_size<vk::expected<T>>: std::integral_constant<size_t, 2> {};
+    template<typename T> struct tuple_element<0, vk::expected<T>> { using type = T; };
+    template<typename T> struct tuple_element<1, vk::expected<T>> { using type = vk::Result; };
+}
+
+namespace vk {
+namespace detail {
+template<typename T>
+class span {
+public:
+    constexpr span() noexcept = default;
+    constexpr span(T const& value) noexcept : _data{ std::addressof(const_cast<T&>(value)) }, _count{1} {}
+    constexpr explicit span(T* data, uint32_t count) noexcept : _data{data}, _count{count} {}
+
+    // requires std::data(Range const&)
+    // requires std::size(Range const&)
+    template <typename Range>
+    explicit span(Range const& range) noexcept : 
+        _data{std::data(range)}, _count{std::size(range)} {}
+    
+    template< std::size_t N >
+    span(std::array<T, N>& arr ) noexcept : 
+        _data{std::data(arr)}, _count{std::size(arr)} {}
+
+    template< std::size_t N >
+    span(std::array<T, N> const& arr ) noexcept : 
+        _data{std::data(arr)}, _count{std::size(arr)} {}
+    
+    span( std::initializer_list<T>& data ) noexcept : 
+        _data{data.begin()}, _count{static_cast<uint32_t>(data.size())} {}
+
+    span( std::initializer_list<T> const& data ) noexcept : 
+        _data{data.begin()}, _count{static_cast<uint32_t>(data.size())} {}
+
+    template <typename A = T, typename std::enable_if<std::is_const<A>::value, int>::type = 0>
+    span( std::initializer_list<typename std::remove_const<T>::type> const& data ) noexcept : 
+        _data{data.begin()}, _count{static_cast<uint32_t>(data.size())} {}
+
+    template <typename A = T, typename std::enable_if<std::is_const<A>::value, int>::type = 0>
+    span( std::initializer_list<typename std::remove_const<T>::type> & data ) noexcept : 
+        _data{data.begin()}, _count{static_cast<uint32_t>(data.size())} {}
+
+    [[nodiscard]] uint32_t size() noexcept { return _count; }
+    [[nodiscard]] uint32_t size() const noexcept { return _count; }
+    [[nodiscard]] uint32_t size_bytes() const noexcept { return _count * sizeof(T); }
+
+    [[nodiscard]] T* data() noexcept { return _data; }
+    [[nodiscard]] const T* data() const noexcept { return _data; }
+    [[nodiscard]] bool empty() noexcept { return _count == 0; }
+    [[nodiscard]] bool empty() const noexcept { return _count == 0; }
+
+    [[nodiscard]] T const& operator[](uint32_t count) & noexcept { return _data[count]; }
+    [[nodiscard]] T const& operator[](uint32_t count) const& noexcept { return _data[count]; }
+
+    [[nodiscard]] const T* begin() const noexcept { return _data + 0; }
+    [[nodiscard]] const T* begin() noexcept { return _data + 0; }
+    [[nodiscard]] const T* end() const noexcept { return _data + _count; }
+    [[nodiscard]] const T* end() noexcept { return _data + _count; }
+private:
+    T* _data;
+    uint32_t _count;
+};
+
+template<typename T>
+struct optional {
+    T _value;
+    bool _has_value = false;
+
+    constexpr optional() noexcept = default;
+    constexpr explicit optional(T value) noexcept :_value(value), _has_value(true) {}
+
+    constexpr optional& operator=(T value) noexcept { _value = value; _has_value = true; return *this; };
+
+    constexpr void reset() noexcept { _has_value = false; }
+
+    constexpr T* ptr_or_nullptr() noexcept { return _has_value ? &_value : nullptr; }
+    constexpr T const* ptr_or_nullptr() const noexcept { return _has_value ? &_value : nullptr; }
+
+    constexpr bool has_value() const noexcept { return _has_value; }
+
+};
+
+} // namespace detail
+
+// Unique Handle wrapper for RAII handle types
+// DispatchableHandle is a `VkInstance` or `VkDevice` handle
+// HandleType is a `vk::Handle` type
+// Delete is a PFN_vk*** function that matches the desired type
+template <typename DispatchableHandle, typename HandleType, typename Deleter>
+class unique_handle
+{
+public:
+    unique_handle() = default;
+    explicit unique_handle(DispatchableHandle dispatch_handle, HandleType handle, Deleter deleter) noexcept
+        : dispatch_handle(dispatch_handle), handle(handle), deleter(deleter) { }
+    ~unique_handle() noexcept { reset(); };
+    unique_handle(unique_handle const& other) = delete;
+    unique_handle& operator=(unique_handle const& other) = delete;
+
+    unique_handle(unique_handle&& other) noexcept
+        : dispatch_handle{other.dispatch_handle}, 
+          handle{std::exchange(other.handle, nullptr)}, 
+          deleter{other.deleter} { }
+    unique_handle& operator=(unique_handle&& other) noexcept
+    {
+        if (this != &other)
+        {
+            reset();
+            dispatch_handle = other.dispatch_handle;
+            handle = std::exchange(other.handle, {}); 
+            deleter = other.deleter;
+        }
+        return *this;
+    }
+
+    HandleType release() noexcept {
+        return std::exchange(handle, {});
+    }
+
+    void reset() noexcept {
+        if (handle)
+        {
+            deleter(dispatch_handle, handle.get(), nullptr);
+        }
+    }
+
+    const HandleType address() const noexcept {
+        return std::addressof(handle.get());
+    }
+
+    HandleType operator*() const noexcept {
+        return handle;
+    }
+
+    [[nodiscard]] HandleType get() const noexcept { return handle; }
+
+    HandleType operator->() const noexcept { return handle; }
+
+    explicit operator bool() const noexcept { return handle; }
+
+    DispatchableHandle dispatch_handle;
+    HandleType handle;
+    Deleter deleter;
+};
+
+// Add special case for VkInstance
+
+
+
+
 '''
