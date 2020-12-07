@@ -8764,10 +8764,10 @@ struct GlobalFunctions {
     return expected<Instance>(pInstance, result);
 }
 [[nodiscard]] PFN_VoidFunction GetInstanceProcAddr(Instance instance, 
-    const char* pName) const {
+    detail::span<const char> Name) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_GetInstanceProcAddr(instance,
-        pName);
+        Name.data());
 }
 [[nodiscard]] expected<detail::fixed_vector<ExtensionProperties>> EnumerateInstanceExtensionProperties(const char* pLayerName = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
@@ -8943,15 +8943,15 @@ void DestroyInstance(const AllocationCallbacks* pAllocator = nullptr) const {
     return expected(std::move(pPhysicalDevices), result);
 }
 [[nodiscard]] PFN_VoidFunction GetDeviceProcAddr(Device device, 
-    const char* pName) const {
+    detail::span<const char> Name) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_GetDeviceProcAddr(device,
-        pName);
+        Name.data());
 }
-[[nodiscard]] PFN_VoidFunction GetInstanceProcAddr(const char* pName) const {
+[[nodiscard]] PFN_VoidFunction GetInstanceProcAddr(detail::span<const char> Name) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     return pfn_GetInstanceProcAddr(instance,
-        pName);
+        Name.data());
 }
 [[nodiscard]] PhysicalDeviceProperties GetPhysicalDeviceProperties(PhysicalDevice physicalDevice) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
@@ -9469,8 +9469,8 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
     uint64_t object, 
     size_t location, 
     int32_t messageCode, 
-    const char* pLayerPrefix, 
-    const char* pMessage) const {
+    detail::span<const char> LayerPrefix, 
+    detail::span<const char> Message) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DebugReportMessageEXT(instance,
         flags,
@@ -9478,8 +9478,8 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
         object,
         location,
         messageCode,
-        pLayerPrefix,
-        pMessage);
+        LayerPrefix.data(),
+        Message.data());
 }
 #if defined(VK_USE_PLATFORM_GGP)
 [[nodiscard]] expected<SurfaceKHR> CreateStreamDescriptorSurfaceGGP(const StreamDescriptorSurfaceCreateInfoGGP&  pCreateInfo, 
@@ -14119,13 +14119,15 @@ class DeviceCreateInfoBuilder {
     DeviceCreateInfoBuilder() noexcept{}
     DeviceCreateInfoBuilder& setFlags(DeviceCreateFlags flags) { this->data.flags = flags; return *this; }
     DeviceCreateInfoBuilder& addQueueCreateInfos(DeviceQueueCreateInfo pQueueCreateInfos) { this->pQueueCreateInfos.push_back(pQueueCreateInfos); return *this; }
-    DeviceCreateInfoBuilder& addEnabledExtensionNames(std::string ppEnabledExtensionNames) { this->ppEnabledExtensionNames.push_back(ppEnabledExtensionNames);this->ppEnabledExtensionNames_c_str.push_back(this->ppEnabledExtensionNames.back().c_str()); return *this; }
+    DeviceCreateInfoBuilder& addEnabledExtensionNames(std::string ppEnabledExtensionNames) {this->ppEnabledExtensionNames.push_back(ppEnabledExtensionNames); return *this; }
     DeviceCreateInfoBuilder& setEnabledFeatures(PhysicalDeviceFeatures pEnabledFeatures) { this->pEnabledFeatures = pEnabledFeatures; return *this; }
     DeviceCreateInfo build() {
         DeviceCreateInfo out{data};
         out.queueCreateInfoCount = (uint32_t)pQueueCreateInfos.size();
         out.pQueueCreateInfos = pQueueCreateInfos.data();
         out.enabledExtensionCount = (uint32_t)ppEnabledExtensionNames.size();
+        ppEnabledExtensionNames_c_str.clear(); ppEnabledExtensionNames_c_str.reserve(ppEnabledExtensionNames.size());
+        for(auto& val : ppEnabledExtensionNames) { ppEnabledExtensionNames_c_str.push_back(val.c_str()); }
         out.ppEnabledExtensionNames = ppEnabledExtensionNames_c_str.data();
         out.pEnabledFeatures = pEnabledFeatures.ptr_or_nullptr();
         return out; }
@@ -14142,14 +14144,18 @@ class InstanceCreateInfoBuilder {
     InstanceCreateInfoBuilder() noexcept{}
     InstanceCreateInfoBuilder& setFlags(InstanceCreateFlags flags) { this->data.flags = flags; return *this; }
     InstanceCreateInfoBuilder& setApplicationInfo(ApplicationInfo pApplicationInfo) { this->pApplicationInfo = pApplicationInfo; return *this; }
-    InstanceCreateInfoBuilder& addEnabledLayerNames(std::string ppEnabledLayerNames) { this->ppEnabledLayerNames.push_back(ppEnabledLayerNames);this->ppEnabledLayerNames_c_str.push_back(this->ppEnabledLayerNames.back().c_str()); return *this; }
-    InstanceCreateInfoBuilder& addEnabledExtensionNames(std::string ppEnabledExtensionNames) { this->ppEnabledExtensionNames.push_back(ppEnabledExtensionNames);this->ppEnabledExtensionNames_c_str.push_back(this->ppEnabledExtensionNames.back().c_str()); return *this; }
+    InstanceCreateInfoBuilder& addEnabledLayerNames(std::string ppEnabledLayerNames) {this->ppEnabledLayerNames.push_back(ppEnabledLayerNames); return *this; }
+    InstanceCreateInfoBuilder& addEnabledExtensionNames(std::string ppEnabledExtensionNames) {this->ppEnabledExtensionNames.push_back(ppEnabledExtensionNames); return *this; }
     InstanceCreateInfo build() {
         InstanceCreateInfo out{data};
         out.pApplicationInfo = pApplicationInfo.ptr_or_nullptr();
         out.enabledLayerCount = (uint32_t)ppEnabledLayerNames.size();
+        ppEnabledLayerNames_c_str.clear(); ppEnabledLayerNames_c_str.reserve(ppEnabledLayerNames.size());
+        for(auto& val : ppEnabledLayerNames) { ppEnabledLayerNames_c_str.push_back(val.c_str()); }
         out.ppEnabledLayerNames = ppEnabledLayerNames_c_str.data();
         out.enabledExtensionCount = (uint32_t)ppEnabledExtensionNames.size();
+        ppEnabledExtensionNames_c_str.clear(); ppEnabledExtensionNames_c_str.reserve(ppEnabledExtensionNames.size());
+        for(auto& val : ppEnabledExtensionNames) { ppEnabledExtensionNames_c_str.push_back(val.c_str()); }
         out.ppEnabledExtensionNames = ppEnabledExtensionNames_c_str.data();
         return out; }
 };
@@ -14430,11 +14436,11 @@ class DescriptorSetLayoutBindingBuilder {
     DescriptorSetLayoutBindingBuilder() noexcept{}
     DescriptorSetLayoutBindingBuilder& setBinding(uint32_t binding) { this->data.binding = binding; return *this; }
     DescriptorSetLayoutBindingBuilder& setDescriptorType(DescriptorType descriptorType) { this->data.descriptorType = descriptorType; return *this; }
-    DescriptorSetLayoutBindingBuilder& setDescriptorCount(uint32_t descriptorCount) { this->data.descriptorCount = descriptorCount; return *this; }
     DescriptorSetLayoutBindingBuilder& setStageFlags(ShaderStageFlags stageFlags) { this->data.stageFlags = stageFlags; return *this; }
     DescriptorSetLayoutBindingBuilder& addImmutableSamplers(Sampler pImmutableSamplers) { this->pImmutableSamplers.push_back(pImmutableSamplers); return *this; }
     DescriptorSetLayoutBinding build() {
         DescriptorSetLayoutBinding out{data};
+        out.descriptorCount = (uint32_t)pImmutableSamplers.size();
         out.pImmutableSamplers = pImmutableSamplers.data();
         return out; }
 };
@@ -14578,13 +14584,13 @@ class PipelineViewportStateCreateInfoBuilder {
     public:
     PipelineViewportStateCreateInfoBuilder() noexcept{}
     PipelineViewportStateCreateInfoBuilder& setFlags(PipelineViewportStateCreateFlags flags) { this->data.flags = flags; return *this; }
-    PipelineViewportStateCreateInfoBuilder& setViewportCount(uint32_t viewportCount) { this->data.viewportCount = viewportCount; return *this; }
     PipelineViewportStateCreateInfoBuilder& addViewports(Viewport pViewports) { this->pViewports.push_back(pViewports); return *this; }
-    PipelineViewportStateCreateInfoBuilder& setScissorCount(uint32_t scissorCount) { this->data.scissorCount = scissorCount; return *this; }
     PipelineViewportStateCreateInfoBuilder& addScissors(Rect2D pScissors) { this->pScissors.push_back(pScissors); return *this; }
     PipelineViewportStateCreateInfo build() {
         PipelineViewportStateCreateInfo out{data};
+        out.viewportCount = (uint32_t)pViewports.size();
         out.pViewports = pViewports.data();
+        out.scissorCount = (uint32_t)pScissors.size();
         out.pScissors = pScissors.data();
         return out; }
 };
@@ -14615,7 +14621,6 @@ class PipelineMultisampleStateCreateInfoBuilder {
     public:
     PipelineMultisampleStateCreateInfoBuilder() noexcept{}
     PipelineMultisampleStateCreateInfoBuilder& setFlags(PipelineMultisampleStateCreateFlags flags) { this->data.flags = flags; return *this; }
-    PipelineMultisampleStateCreateInfoBuilder& setRasterizationSamples(SampleCountFlagBits rasterizationSamples) { this->data.rasterizationSamples = rasterizationSamples; return *this; }
     PipelineMultisampleStateCreateInfoBuilder& setSampleShadingEnable(Bool32 sampleShadingEnable) { this->data.sampleShadingEnable = sampleShadingEnable; return *this; }
     PipelineMultisampleStateCreateInfoBuilder& setMinSampleShading(float minSampleShading) { this->data.minSampleShading = minSampleShading; return *this; }
     PipelineMultisampleStateCreateInfoBuilder& addSampleMask(SampleMask pSampleMask) { this->pSampleMask.push_back(pSampleMask); return *this; }
@@ -15615,10 +15620,10 @@ class PresentRegionKHRBuilder {
     std::vector<RectLayerKHR> pRectangles;
     public:
     PresentRegionKHRBuilder() noexcept{}
-    PresentRegionKHRBuilder& setRectangleCount(uint32_t rectangleCount) { this->data.rectangleCount = rectangleCount; return *this; }
     PresentRegionKHRBuilder& addRectangles(RectLayerKHR pRectangles) { this->pRectangles.push_back(pRectangles); return *this; }
     PresentRegionKHR build() {
         PresentRegionKHR out{data};
+        out.rectangleCount = (uint32_t)pRectangles.size();
         out.pRectangles = pRectangles.data();
         return out; }
 };
@@ -15628,10 +15633,10 @@ class PresentRegionsKHRBuilder {
     std::vector<PresentRegionKHR> pRegions;
     public:
     PresentRegionsKHRBuilder() noexcept{}
-    PresentRegionsKHRBuilder& setSwapchainCount(uint32_t swapchainCount) { this->data.swapchainCount = swapchainCount; return *this; }
     PresentRegionsKHRBuilder& addRegions(PresentRegionKHR pRegions) { this->pRegions.push_back(pRegions); return *this; }
     PresentRegionsKHR build() {
         PresentRegionsKHR out{data};
+        out.swapchainCount = (uint32_t)pRegions.size();
         out.pRegions = pRegions.data();
         return out; }
 };
@@ -15843,13 +15848,13 @@ class D3D12FenceSubmitInfoKHRBuilder {
     std::vector<uint64_t> pSignalSemaphoreValues;
     public:
     D3D12FenceSubmitInfoKHRBuilder() noexcept{}
-    D3D12FenceSubmitInfoKHRBuilder& setWaitSemaphoreValuesCount(uint32_t waitSemaphoreValuesCount) { this->data.waitSemaphoreValuesCount = waitSemaphoreValuesCount; return *this; }
     D3D12FenceSubmitInfoKHRBuilder& addWaitSemaphoreValues(uint64_t pWaitSemaphoreValues) { this->pWaitSemaphoreValues.push_back(pWaitSemaphoreValues); return *this; }
-    D3D12FenceSubmitInfoKHRBuilder& setSignalSemaphoreValuesCount(uint32_t signalSemaphoreValuesCount) { this->data.signalSemaphoreValuesCount = signalSemaphoreValuesCount; return *this; }
     D3D12FenceSubmitInfoKHRBuilder& addSignalSemaphoreValues(uint64_t pSignalSemaphoreValues) { this->pSignalSemaphoreValues.push_back(pSignalSemaphoreValues); return *this; }
     D3D12FenceSubmitInfoKHR build() {
         D3D12FenceSubmitInfoKHR out{data};
+        out.waitSemaphoreValuesCount = (uint32_t)pWaitSemaphoreValues.size();
         out.pWaitSemaphoreValues = pWaitSemaphoreValues.data();
+        out.signalSemaphoreValuesCount = (uint32_t)pSignalSemaphoreValues.size();
         out.pSignalSemaphoreValues = pSignalSemaphoreValues.data();
         return out; }
 };
@@ -16292,10 +16297,10 @@ class PresentTimesInfoGOOGLEBuilder {
     std::vector<PresentTimeGOOGLE> pTimes;
     public:
     PresentTimesInfoGOOGLEBuilder() noexcept{}
-    PresentTimesInfoGOOGLEBuilder& setSwapchainCount(uint32_t swapchainCount) { this->data.swapchainCount = swapchainCount; return *this; }
     PresentTimesInfoGOOGLEBuilder& addTimes(PresentTimeGOOGLE pTimes) { this->pTimes.push_back(pTimes); return *this; }
     PresentTimesInfoGOOGLE build() {
         PresentTimesInfoGOOGLE out{data};
+        out.swapchainCount = (uint32_t)pTimes.size();
         out.pTimes = pTimes.data();
         return out; }
 };
@@ -16345,10 +16350,10 @@ class PipelineViewportWScalingStateCreateInfoNVBuilder {
     public:
     PipelineViewportWScalingStateCreateInfoNVBuilder() noexcept{}
     PipelineViewportWScalingStateCreateInfoNVBuilder& setViewportWScalingEnable(Bool32 viewportWScalingEnable) { this->data.viewportWScalingEnable = viewportWScalingEnable; return *this; }
-    PipelineViewportWScalingStateCreateInfoNVBuilder& setViewportCount(uint32_t viewportCount) { this->data.viewportCount = viewportCount; return *this; }
     PipelineViewportWScalingStateCreateInfoNVBuilder& addViewportWScalings(ViewportWScalingNV pViewportWScalings) { this->pViewportWScalings.push_back(pViewportWScalings); return *this; }
     PipelineViewportWScalingStateCreateInfoNV build() {
         PipelineViewportWScalingStateCreateInfoNV out{data};
+        out.viewportCount = (uint32_t)pViewportWScalings.size();
         out.pViewportWScalings = pViewportWScalings.data();
         return out; }
 };
@@ -16730,10 +16735,10 @@ class PipelineCoverageModulationStateCreateInfoNVBuilder {
     PipelineCoverageModulationStateCreateInfoNVBuilder& setFlags(PipelineCoverageModulationStateCreateFlagsNV flags) { this->data.flags = flags; return *this; }
     PipelineCoverageModulationStateCreateInfoNVBuilder& setCoverageModulationMode(CoverageModulationModeNV coverageModulationMode) { this->data.coverageModulationMode = coverageModulationMode; return *this; }
     PipelineCoverageModulationStateCreateInfoNVBuilder& setCoverageModulationTableEnable(Bool32 coverageModulationTableEnable) { this->data.coverageModulationTableEnable = coverageModulationTableEnable; return *this; }
-    PipelineCoverageModulationStateCreateInfoNVBuilder& setCoverageModulationTableCount(uint32_t coverageModulationTableCount) { this->data.coverageModulationTableCount = coverageModulationTableCount; return *this; }
     PipelineCoverageModulationStateCreateInfoNVBuilder& addCoverageModulationTable(float pCoverageModulationTable) { this->pCoverageModulationTable.push_back(pCoverageModulationTable); return *this; }
     PipelineCoverageModulationStateCreateInfoNV build() {
         PipelineCoverageModulationStateCreateInfoNV out{data};
+        out.coverageModulationTableCount = (uint32_t)pCoverageModulationTable.size();
         out.pCoverageModulationTable = pCoverageModulationTable.data();
         return out; }
 };
@@ -16988,10 +16993,10 @@ class DescriptorSetLayoutBindingFlagsCreateInfoBuilder {
     std::vector<DescriptorBindingFlags> pBindingFlags;
     public:
     DescriptorSetLayoutBindingFlagsCreateInfoBuilder() noexcept{}
-    DescriptorSetLayoutBindingFlagsCreateInfoBuilder& setBindingCount(uint32_t bindingCount) { this->data.bindingCount = bindingCount; return *this; }
     DescriptorSetLayoutBindingFlagsCreateInfoBuilder& addBindingFlags(DescriptorBindingFlags pBindingFlags) { this->pBindingFlags.push_back(pBindingFlags); return *this; }
     DescriptorSetLayoutBindingFlagsCreateInfo build() {
         DescriptorSetLayoutBindingFlagsCreateInfo out{data};
+        out.bindingCount = (uint32_t)pBindingFlags.size();
         out.pBindingFlags = pBindingFlags.data();
         return out; }
 };
@@ -17158,13 +17163,13 @@ class TimelineSemaphoreSubmitInfoBuilder {
     std::vector<uint64_t> pSignalSemaphoreValues;
     public:
     TimelineSemaphoreSubmitInfoBuilder() noexcept{}
-    TimelineSemaphoreSubmitInfoBuilder& setWaitSemaphoreValueCount(uint32_t waitSemaphoreValueCount) { this->data.waitSemaphoreValueCount = waitSemaphoreValueCount; return *this; }
     TimelineSemaphoreSubmitInfoBuilder& addWaitSemaphoreValues(uint64_t pWaitSemaphoreValues) { this->pWaitSemaphoreValues.push_back(pWaitSemaphoreValues); return *this; }
-    TimelineSemaphoreSubmitInfoBuilder& setSignalSemaphoreValueCount(uint32_t signalSemaphoreValueCount) { this->data.signalSemaphoreValueCount = signalSemaphoreValueCount; return *this; }
     TimelineSemaphoreSubmitInfoBuilder& addSignalSemaphoreValues(uint64_t pSignalSemaphoreValues) { this->pSignalSemaphoreValues.push_back(pSignalSemaphoreValues); return *this; }
     TimelineSemaphoreSubmitInfo build() {
         TimelineSemaphoreSubmitInfo out{data};
+        out.waitSemaphoreValueCount = (uint32_t)pWaitSemaphoreValues.size();
         out.pWaitSemaphoreValues = pWaitSemaphoreValues.data();
+        out.signalSemaphoreValueCount = (uint32_t)pSignalSemaphoreValues.size();
         out.pSignalSemaphoreValues = pSignalSemaphoreValues.data();
         return out; }
 };
@@ -17758,10 +17763,10 @@ class WriteDescriptorSetAccelerationStructureKHRBuilder {
     std::vector<AccelerationStructureKHR> pAccelerationStructures;
     public:
     WriteDescriptorSetAccelerationStructureKHRBuilder() noexcept{}
-    WriteDescriptorSetAccelerationStructureKHRBuilder& setAccelerationStructureCount(uint32_t accelerationStructureCount) { this->data.accelerationStructureCount = accelerationStructureCount; return *this; }
     WriteDescriptorSetAccelerationStructureKHRBuilder& addAccelerationStructures(AccelerationStructureKHR pAccelerationStructures) { this->pAccelerationStructures.push_back(pAccelerationStructures); return *this; }
     WriteDescriptorSetAccelerationStructureKHR build() {
         WriteDescriptorSetAccelerationStructureKHR out{data};
+        out.accelerationStructureCount = (uint32_t)pAccelerationStructures.size();
         out.pAccelerationStructures = pAccelerationStructures.data();
         return out; }
 };
@@ -17771,10 +17776,10 @@ class WriteDescriptorSetAccelerationStructureNVBuilder {
     std::vector<AccelerationStructureNV> pAccelerationStructures;
     public:
     WriteDescriptorSetAccelerationStructureNVBuilder() noexcept{}
-    WriteDescriptorSetAccelerationStructureNVBuilder& setAccelerationStructureCount(uint32_t accelerationStructureCount) { this->data.accelerationStructureCount = accelerationStructureCount; return *this; }
     WriteDescriptorSetAccelerationStructureNVBuilder& addAccelerationStructures(AccelerationStructureNV pAccelerationStructures) { this->pAccelerationStructures.push_back(pAccelerationStructures); return *this; }
     WriteDescriptorSetAccelerationStructureNV build() {
         WriteDescriptorSetAccelerationStructureNV out{data};
+        out.accelerationStructureCount = (uint32_t)pAccelerationStructures.size();
         out.pAccelerationStructures = pAccelerationStructures.data();
         return out; }
 };
@@ -18787,13 +18792,15 @@ class AccelerationStructureBuildGeometryInfoKHRBuilder {
     AccelerationStructureBuildGeometryInfoKHRBuilder& setMode(BuildAccelerationStructureModeKHR mode) { this->data.mode = mode; return *this; }
     AccelerationStructureBuildGeometryInfoKHRBuilder& setSrcAccelerationStructure(AccelerationStructureKHR srcAccelerationStructure) { this->data.srcAccelerationStructure = srcAccelerationStructure; return *this; }
     AccelerationStructureBuildGeometryInfoKHRBuilder& setDstAccelerationStructure(AccelerationStructureKHR dstAccelerationStructure) { this->data.dstAccelerationStructure = dstAccelerationStructure; return *this; }
-    AccelerationStructureBuildGeometryInfoKHRBuilder& setGeometryCount(uint32_t geometryCount) { this->data.geometryCount = geometryCount; return *this; }
     AccelerationStructureBuildGeometryInfoKHRBuilder& addGeometries(AccelerationStructureGeometryKHR pGeometries) { this->pGeometries.push_back(pGeometries); return *this; }
-    AccelerationStructureBuildGeometryInfoKHRBuilder& addPpGeometries(std::vector<AccelerationStructureGeometryKHR> ppGeometries) { this->ppGeometries.push_back(ppGeometries);this->ppGeometries_ptr.push_back(this->ppGeometries.back().data()); return *this; }
+    AccelerationStructureBuildGeometryInfoKHRBuilder& addPpGeometries(std::vector<AccelerationStructureGeometryKHR> ppGeometries) {this->ppGeometries.push_back(ppGeometries); return *this; }
     AccelerationStructureBuildGeometryInfoKHRBuilder& setScratchData(DeviceOrHostAddressKHR scratchData) { this->data.scratchData = scratchData; return *this; }
     AccelerationStructureBuildGeometryInfoKHR build() {
         AccelerationStructureBuildGeometryInfoKHR out{data};
+        out.geometryCount = (uint32_t)pGeometries.size();
         out.pGeometries = pGeometries.data();
+        ppGeometries_ptr.clear(); ppGeometries_ptr.reserve(ppGeometries.size());
+        for(auto& val : ppGeometries) { ppGeometries_ptr.push_back(val.data()); }
         out.ppGeometries = ppGeometries_ptr.data();
         return out; }
 };

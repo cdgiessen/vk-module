@@ -112,35 +112,23 @@ void create_renderer_context(RendererContext& context)
 
     vk::GlobalFunctions global_functions = vk::GlobalFunctions(context.library);
 
+    vk::InstanceCreateInfoBuilder inst_builder{};
     uint32_t glfw_extension_count = 0;
     const char** glfw_extensions = glfwGetRequiredInstanceExtensions(&glfw_extension_count);
-    std::vector<const char*> exts_to_enable;
     for (uint32_t i = 0; i < glfw_extension_count; i++) {
-        exts_to_enable.push_back(glfw_extensions[i]);
+        inst_builder.addEnabledExtensionNames(glfw_extensions[i]);
     }
 
     auto [layers, layers_ret] = global_functions.EnumerateInstanceLayerProperties();
     check_res(layers_ret, "Couldn't get layers\n");
 
-    std::vector<const char*> layers_to_enable;
-    bool found_validation = false;
-    bool found_api_dump = false;
-
     for (auto& layer : layers) {
-        found_validation = std::string(layer.layerName) == std::string("VK_LAYER_KHRONOS_validation");
-        found_api_dump = std::string(layer.layerName) == std::string("VK_LAYER_LUNARG_api_dump");
+        if (std::string(layer.layerName) == std::string("VK_LAYER_KHRONOS_validation"))
+            inst_builder.addEnabledLayerNames("VK_LAYER_KHRONOS_validation");
     }
-    if (found_validation)
-        layers_to_enable.push_back("VK_LAYER_KHRONOS_validation");
-    // if (found_api_dump)
-    //    layers_to_enable.push_back("VK_LAYER_LUNARG_api_dump");
 
-    auto [instance, instance_ret] = global_functions.CreateInstance({
-      .enabledLayerCount = static_cast<uint32_t>(layers_to_enable.size()),
-      .ppEnabledLayerNames = layers_to_enable.data(),
-      .enabledExtensionCount = static_cast<uint32_t>(exts_to_enable.size()),
-      .ppEnabledExtensionNames = exts_to_enable.data(),
-    });
+    auto [instance, instance_ret] = global_functions.CreateInstance(inst_builder.build());
+
     check_res(instance_ret, "Failed to init Vulkan Instance");
 
     context.instance = instance;
@@ -163,16 +151,12 @@ void create_renderer_context(RendererContext& context)
 
 void create_device_context(RendererContext& render_context, DeviceContext& device_context)
 {
-    float priority = 0.f;
-    vk::DeviceQueueCreateInfo queue_info;
-    queue_info.queueCount = 1;
-    queue_info.pQueuePriorities = &priority;
-    const char* enabled_exts[] = { "VK_KHR_swapchain" };
-    auto device_ret = render_context.functions.CreateDevice(render_context.physical_device,
-                                                            { .queueCreateInfoCount = 1,
-                                                              .pQueueCreateInfos = &queue_info,
-                                                              .enabledExtensionCount = 1,
-                                                              .ppEnabledExtensionNames = enabled_exts });
+    auto device_ret = render_context.functions.CreateDevice(
+      render_context.physical_device,
+      vk::DeviceCreateInfoBuilder{}
+        .addEnabledExtensionNames("VK_KHR_swapchain")
+        .addQueueCreateInfos(vk::DeviceQueueCreateInfoBuilder{}.setQueueFamilyIndex(0).addQueuePriorities(1.f).build())
+        .build());
     check_res(device_ret, "Failed to create a vulkan device");
 
     device_context.device = device_ret.value();
@@ -205,25 +189,23 @@ void setup_swapchain(DeviceContext& device)
     check_res(surf_formats.size() > 0, "No surface formats available");
 
     device.swapchain_img_format = surf_formats[0].format;
-    vk::ColorSpaceKHR img_color_space = surf_formats[0].colorSpace;
 
     device.image_count = 3;
-    uint32_t queue_family_indices = 0;
-    auto [swapchain, swap_ret] = device.functions.CreateSwapchainKHR({
-      .surface = device.surface,
-      .minImageCount = 3,
-      .imageFormat = device.swapchain_img_format,
-      .imageColorSpace = img_color_space,
-      .imageExtent = { width, height },
-      .imageArrayLayers = 1,
-      .imageUsage = vk::ImageUsageFlagBits::ColorAttachment,
-      .imageSharingMode = vk::SharingMode::Exclusive,
-      .queueFamilyIndexCount = 1,
-      .pQueueFamilyIndices = &queue_family_indices,
-      .preTransform = vk::SurfaceTransformFlagBitsKHR::IdentityBitKHR,
-      .compositeAlpha = vk::CompositeAlphaFlagBitsKHR::OpaqueBitKHR,
-      .presentMode = vk::PresentModeKHR::FifoKHR,
-    });
+    auto [swapchain, swap_ret] =
+      device.functions.CreateSwapchainKHR(vk::SwapchainCreateInfoKHRBuilder{}
+                                            .setSurface(device.surface)
+                                            .setMinImageCount(3)
+                                            .setImageFormat(device.swapchain_img_format)
+                                            .setImageColorSpace(surf_formats[0].colorSpace)
+                                            .setImageExtent({ width, height })
+                                            .setImageArrayLayers(1)
+                                            .setImageUsage(vk::ImageUsageFlagBits::ColorAttachment)
+                                            .setImageSharingMode(vk::SharingMode::Exclusive)
+                                            .addQueueFamilyIndices(0)
+                                            .setPreTransform(vk::SurfaceTransformFlagBitsKHR::IdentityBitKHR)
+                                            .setCompositeAlpha(vk::CompositeAlphaFlagBitsKHR::OpaqueBitKHR)
+                                            .setPresentMode(vk::PresentModeKHR::FifoKHR)
+                                            .build());
     check_res(swap_ret, "Unable to create Swapchain");
 
     device.swapchain = swapchain;
@@ -234,10 +216,12 @@ void setup_swapchain(DeviceContext& device)
     for (auto& image : swap_images_ret.value()) {
         device.swapchain_images.push_back(image);
         auto [view, ret] = device.functions.CreateImageView(
-          { .image = image,
-            .viewType = vk::ImageViewType::e2D,
-            .format = device.swapchain_img_format,
-            .subresourceRange = { .aspectMask = vk::ImageAspectFlagBits::Color, .levelCount = 1, .layerCount = 1 } });
+          vk::ImageViewCreateInfoBuilder{}
+            .setImage(image)
+            .setViewType(vk::ImageViewType::e2D)
+            .setFormat(device.swapchain_img_format)
+            .setSubresourceRange({ .aspectMask = vk::ImageAspectFlagBits::Color, .levelCount = 1, .layerCount = 1 })
+            .build());
         check_res(ret, "Failed to create swapchain image view");
 
         device.swapchain_image_views.push_back(view);
@@ -245,47 +229,6 @@ void setup_swapchain(DeviceContext& device)
 }
 
 void setup_renderpass(DeviceContext& device)
-{
-    vk::AttachmentDescription color_attachment = {
-        .format = device.swapchain_img_format,
-        .samples = vk::SampleCountFlagBits::e1,
-        .loadOp = vk::AttachmentLoadOp::Clear,
-        .storeOp = vk::AttachmentStoreOp::Store,
-        .stencilLoadOp = vk::AttachmentLoadOp::DontCare,
-        .stencilStoreOp = vk::AttachmentStoreOp::DontCare,
-        .initialLayout = vk::ImageLayout::Undefined,
-        .finalLayout = vk::ImageLayout::PresentSrcKHR,
-    };
-
-    vk::AttachmentReference color_reference{ .attachment = 0, .layout = vk::ImageLayout::ColorAttachmentOptimal };
-
-    vk::SubpassDescription subpass_description{
-        .pipelineBindPoint = vk::PipelineBindPoint::Graphics,
-        .colorAttachmentCount = 1,
-        .pColorAttachments = &color_reference,
-    };
-
-    vk::SubpassDependency dependency{
-        .srcSubpass = vk::SUBPASS_EXTERNAL,
-        .dstSubpass = 0,
-        .srcStageMask = vk::PipelineStageFlagBits::ColorAttachmentOutput,
-        .dstStageMask = vk::PipelineStageFlagBits::ColorAttachmentOutput,
-        .dstAccessMask = vk::AccessFlagBits::ColorAttachmentRead | vk::AccessFlagBits::ColorAttachmentWrite,
-    };
-
-    auto rp_ret = device.functions.CreateRenderPass({
-      .attachmentCount = 1,
-      .pAttachments = &color_attachment,
-      .subpassCount = 1,
-      .pSubpasses = &subpass_description,
-      .dependencyCount = 1,
-      .pDependencies = &dependency,
-    });
-    check_res(rp_ret, "Failed to create renderpass");
-    device.render_pass = rp_ret.value();
-}
-
-void setup_renderpass_best(DeviceContext& device)
 {
     auto rp_ret = device.functions.CreateRenderPass(
       vk::RenderPassCreateInfoBuilder{}
@@ -318,14 +261,13 @@ void setup_renderpass_best(DeviceContext& device)
 void create_framebuffers(DeviceContext& device)
 {
     for (auto& view : device.swapchain_image_views) {
-        auto ret = device.functions.CreateFramebuffer({
-          .renderPass = device.render_pass,
-          .attachmentCount = 1,
-          .pAttachments = &view,
-          .width = width,
-          .height = height,
-          .layers = 1,
-        });
+        auto ret = device.functions.CreateFramebuffer(vk::FramebufferCreateInfoBuilder{}
+                                                        .setRenderPass(device.render_pass)
+                                                        .addAttachments(view)
+                                                        .setWidth(width)
+                                                        .setHeight(height)
+                                                        .setLayers(1)
+                                                        .build());
         check_res(ret, "Failed to create framebuffer");
         device.framebuffers.push_back(ret.value());
     }
@@ -357,53 +299,42 @@ void create_pipeline(DeviceContext& device)
 {
     vk::ShaderModule vert = create_shader_module(device, "vert.spv");
     vk::ShaderModule frag = create_shader_module(device, "frag.spv");
-
-    vk::PipelineShaderStageCreateInfo vert_stage{ .stage = vk::ShaderStageFlagBits::Vertex, .module = vert, .pName = "main" };
-    vk::PipelineShaderStageCreateInfo frag_stage{ .stage = vk::ShaderStageFlagBits::Fragment, .module = frag, .pName = "main" };
-    std::array<vk::PipelineShaderStageCreateInfo, 2> shader_stages{ vert_stage, frag_stage };
-
-    vk::PipelineVertexInputStateCreateInfo vert_input_info;
-    vk::PipelineInputAssemblyStateCreateInfo input_assembly{ .topology = vk::PrimitiveTopology::TriangleList };
-    vk::Viewport viewport = { 0.f, 0.f, static_cast<float>(width), static_cast<float>(height), 0.f, 1.f };
-    vk::Rect2D scissor = { .offset = { 0, 0 }, .extent = { width, height } };
-    vk::PipelineViewportStateCreateInfo viewport_info{
-        .viewportCount = 1, .pViewports = &viewport, .scissorCount = 1, .pScissors = &scissor
-    };
-    vk::PipelineRasterizationStateCreateInfo rasterizer{ .polygonMode = vk::PolygonMode::Fill,
-                                                         .cullMode = vk::CullModeFlagBits::Back,
-                                                         .frontFace = vk::FrontFace::Clockwise,
-                                                         .lineWidth = 1.f };
-    vk::PipelineMultisampleStateCreateInfo multisample{ .rasterizationSamples = vk::SampleCountFlagBits::e1,
-                                                        .sampleShadingEnable = false };
-    vk::PipelineColorBlendAttachmentState blend_attachment{ .blendEnable = false,
-                                                            .colorWriteMask =
-                                                              vk::ColorComponentFlagBits::R | vk::ColorComponentFlagBits::G |
-                                                              vk::ColorComponentFlagBits::B | vk::ColorComponentFlagBits::A };
-    vk::PipelineColorBlendStateCreateInfo color_blend{
-        .logicOpEnable = false, .attachmentCount = 1, .pAttachments = &blend_attachment, .blendConstants = { 0.f, 0.f, 0.f, 0.f }
-    };
     auto pipeline_layout_ret = device.functions.CreatePipelineLayout({ .setLayoutCount = 0, .pushConstantRangeCount = 0 });
     check_res(pipeline_layout_ret, "Failed to create pipeline layout");
-
     device.pipeline_layout = pipeline_layout_ret.value();
-    std::array<vk::DynamicState, 2> dynamic_states = { vk::DynamicState::Viewport, vk::DynamicState::Scissor };
-    vk::PipelineDynamicStateCreateInfo dynamic_state{ .dynamicStateCount = static_cast<uint32_t>(dynamic_states.size()),
-                                                      .pDynamicStates = dynamic_states.data() };
 
-    vk::GraphicsPipelineCreateInfo pipe_info{
-        .stageCount = static_cast<uint32_t>(shader_stages.size()),
-        .pStages = shader_stages.data(),
-        .pVertexInputState = &vert_input_info,
-        .pInputAssemblyState = &input_assembly,
-        .pViewportState = &viewport_info,
-        .pRasterizationState = &rasterizer,
-        .pMultisampleState = &multisample,
-        .pColorBlendState = &color_blend,
-        .pDynamicState = &dynamic_state,
-        .layout = pipeline_layout_ret.value(),
-        .renderPass = device.render_pass,
-    };
-    auto [pipelines, pipeline_ret] = device.functions.CreateGraphicsPipelines(nullptr, pipe_info, nullptr);
+    auto [pipelines, pipeline_ret] = device.functions.CreateGraphicsPipelines(
+      nullptr,
+      { vk::GraphicsPipelineCreateInfoBuilder{}
+          .addStages({ .stage = vk::ShaderStageFlagBits::Vertex, .module = vert, .pName = "main" })
+          .addStages({ .stage = vk::ShaderStageFlagBits::Fragment, .module = frag, .pName = "main" })
+          .setVertexInputState({})
+          .setInputAssemblyState({ .topology = vk::PrimitiveTopology::TriangleList })
+          .setViewportState(vk::PipelineViewportStateCreateInfoBuilder{}
+                              .addViewports({ 0.f, 0.f, static_cast<float>(width), static_cast<float>(height), 0.f, 1.f })
+                              .addScissors({ .offset = { 0, 0 }, .extent = { width, height } })
+                              .build())
+          .setRasterizationState({ .polygonMode = vk::PolygonMode::Fill,
+                                   .cullMode = vk::CullModeFlagBits::Back,
+                                   .frontFace = vk::FrontFace::Clockwise,
+                                   .lineWidth = 1.f })
+          .setMultisampleState({ .rasterizationSamples = vk::SampleCountFlagBits::e1, .sampleShadingEnable = false })
+          .setColorBlendState(vk::PipelineColorBlendStateCreateInfoBuilder{}
+                                .setLogicOpEnable(false)
+                                .setBlendConstants({ 0.f, 0.f, 0.f, 0.f })
+                                .addAttachments({ .blendEnable = false,
+                                                  .colorWriteMask = vk::ColorComponentFlagBits::R | vk::ColorComponentFlagBits::G |
+                                                                    vk::ColorComponentFlagBits::B | vk::ColorComponentFlagBits::A })
+                                .build())
+          .setDynamicState(vk::PipelineDynamicStateCreateInfoBuilder{}
+                             .addDynamicStates(vk::DynamicState::Viewport)
+                             .addDynamicStates(vk::DynamicState::Scissor)
+                             .build())
+          .setLayout(pipeline_layout_ret.value())
+          .setRenderPass(device.render_pass)
+          .build() },
+      nullptr);
+
     check_res(pipeline_ret, "Failed to create graphipcs pipeline");
     device.pipeline = pipelines[0];
     device.functions.DestroyShaderModule(vert);
@@ -426,15 +357,15 @@ void create_command_buffers(DeviceContext& device)
         cmd_ret = funcs.Begin({});
         check_res(cmd_ret, "Failed to begin command buffer");
 
-        vk::ClearValue clear{ .color = { { 0.f, 0.f, 0.f, 1.f } } };
         vk::Viewport viewport = { 0.f, 0.f, static_cast<float>(width), static_cast<float>(height), 0.f, 1.f };
         vk::Rect2D scissor = { .offset = { 0, 0 }, .extent = { width, height } };
         funcs
-          .BeginRenderPass({ .renderPass = device.render_pass,
-                             .framebuffer = device.framebuffers[i],
-                             .renderArea = scissor,
-                             .clearValueCount = 1,
-                             .pClearValues = &clear },
+          .BeginRenderPass(vk::RenderPassBeginInfoBuilder{}
+                             .setRenderPass(device.render_pass)
+                             .setFramebuffer(device.framebuffers[i])
+                             .setRenderArea(scissor)
+                             .addClearValues({ .color = { { 0.f, 0.f, 0.f, 1.f } } })
+                             .build(),
                            vk::SubpassContents::Inline)
           .BindPipeline(vk::PipelineBindPoint::Graphics, device.pipeline)
           .SetViewport(0, viewport)
@@ -500,26 +431,19 @@ void draw_frame(DeviceContext& device)
         std::cerr << "failed to acquire swapchain image. Error " << vk::to_string(image_index_ret.raw_result()) << "\n";
     }
 
-    vk::PipelineStageFlags wait_mask = vk::PipelineStageFlagBits::ColorAttachmentOutput;
-    vk::SubmitInfo submit_info{
-        .waitSemaphoreCount = 1,
-        .pWaitSemaphores = &device.available_semaphores[device.current_frame],
-        .pWaitDstStageMask = &wait_mask,
-        .commandBufferCount = 1,
-        .pCommandBuffers = &device.cmd_buffers[image_index_ret.value()],
-        .signalSemaphoreCount = 1,
-        .pSignalSemaphores = &device.finished_semaphores[device.current_frame],
-    };
-    auto submit_ret = device.queue_functions.Submit(submit_info, device.fences[device.current_frame]);
+    vk::SubmitInfoBuilder submit_info{};
+    submit_info.addWaitSemaphores(device.available_semaphores[device.current_frame])
+      .addWaitDstStageMask(vk::PipelineStageFlagBits::ColorAttachmentOutput)
+      .addCommandBuffers(device.cmd_buffers[image_index_ret.value()])
+      .addSignalSemaphores(device.finished_semaphores[device.current_frame]);
+    auto submit_ret = device.queue_functions.Submit(submit_info.build(), device.fences[device.current_frame]);
     check_res(submit_ret, "Failed to submit command buffer");
 
-    auto present_ret = device.queue_functions.PresentKHR({
-      .waitSemaphoreCount = 1,
-      .pWaitSemaphores = &device.finished_semaphores[device.current_frame],
-      .swapchainCount = 1,
-      .pSwapchains = &device.swapchain,
-      .pImageIndices = &image_index_ret.value(),
-    });
+    auto present_ret = device.queue_functions.PresentKHR(vk::PresentInfoKHRBuilder{}
+                                                           .addWaitSemaphores(device.finished_semaphores[device.current_frame])
+                                                           .addSwapchains(device.swapchain)
+                                                           .addImageIndices(image_index_ret.value())
+                                                           .build());
     if (present_ret == vk::Result::ErrorOutOfDateKHR || present_ret == vk::Result::SuboptimalKHR) {
         return recreate_swapchain(device);
     }
@@ -569,7 +493,7 @@ int main()
     create_device_context(context, device);
     setup_queues(device, context.physical_device_functions);
     setup_swapchain(device);
-    setup_renderpass_best(device);
+    setup_renderpass(device);
     create_framebuffers(device);
     create_pipeline(device);
     create_command_buffers(device);

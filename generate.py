@@ -455,7 +455,7 @@ class Variable:
         elif self.len_attrib is not None and self.len_attrib.find('null-terminated') == -1 and self.pointer_type in ['double', 'const double']:
             self.value_category = 'vector_of_vector'
         elif self.pointer_type == 'single' and self.optional and self.len_attrib is None:
-            self.value_category = 'optional'
+            self.value_category = 'optional_ptr'
         elif len(self.array_lengths) > 0 and self.len_attrib is None:
             self.value_category = 'array'
         elif self.len_attrib == 'null-terminated':        
@@ -555,10 +555,17 @@ class Variable:
         type_decl += f' {self.name}'
         return type_decl
 
-def get_len_attrib_names(variables):
+def get_struct_len_attrib_names(variables):
     names = set()
     for var in variables:
-        if var.len_attrib is not None and var.len_attrib != 'null-terminated' and var.optional is None:
+        if var.len_attrib is not None:
+            names.add(var.len_attrib)
+    return names
+
+def get_function_len_attrib_names(variables):
+    names = set()
+    for var in variables:
+        if var.len_attrib is not None and var.optional is None:
             names.add(var.len_attrib)
     return names
 
@@ -633,7 +640,7 @@ class Structure:
                 self.is_equatable = False
                 break
 
-        self.vector_members = get_len_attrib_names(self.members)
+        self.vector_members = get_struct_len_attrib_names(self.members)
         for member in self.members:
             if member.name in self.vector_members:
                 member.value_category = 'len_param'
@@ -689,7 +696,7 @@ class Structure:
             elif member.value_category == 'vector_of_vector':
                 file.write(f'    std::vector<std::vector<{member.get_base_type()}>> {member.name};\n')
                 file.write(f'    std::vector<{member.get_base_type()}*> {member.name}_ptr;\n')
-            elif member.value_category == 'optional':
+            elif member.value_category == 'optional_ptr':
                 file.write(f'    detail::optional<{member.get_base_type()}> {member.name};\n')
             elif member.value_category == 'string':
                 file.write(f'    std::string {member.name};\n')
@@ -714,10 +721,9 @@ class Structure:
                 file.write(f'    {self.name[2:]}Builder& add{MakeBuilderFunctionNames(member.name)}({member.get_builder_parameter_decl()}) {{ ')
                 file.write(f'this->{member.name}.push_back({member.name}); return *this; }}\n')
             elif member.value_category == 'vector_of_vector':
-                file.write(f'    {self.name[2:]}Builder& add{MakeBuilderFunctionNames(member.name)}(std::vector<{member.get_base_type()}> {member.name}) {{ ')
-                file.write(f'this->{member.name}.push_back({member.name});')
-                file.write(f'this->{member.name}_ptr.push_back(this->{member.name}.back().data()); return *this; }}\n')
-            elif member.value_category == 'optional':
+                file.write(f'    {self.name[2:]}Builder& add{MakeBuilderFunctionNames(member.name)}(std::vector<{member.get_base_type()}> {member.name}) {{')
+                file.write(f'this->{member.name}.push_back({member.name}); return *this; }}\n')
+            elif member.value_category == 'optional_ptr':
                 file.write(f'    {self.name[2:]}Builder& set{MakeBuilderFunctionNames(member.name)}({member.get_builder_parameter_decl()}) {{ ')
                 file.write(f'this->{member.name} = {member.name}; return *this; }}\n')
             elif member.value_category == 'array':
@@ -734,9 +740,8 @@ class Structure:
                 file.write(f'    {self.name[2:]}Builder& add{MakeBuilderFunctionNames(member.name)}(std::string {member.name}) {{ ')
                 file.write(f'this->{member.name} = {member.name}; return *this; }}\n')
             elif member.value_category == 'vector_of_string':
-                file.write(f'    {self.name[2:]}Builder& add{MakeBuilderFunctionNames(member.name)}(std::string {member.name}) {{ ')
-                file.write(f'this->{member.name}.push_back({member.name});')
-                file.write(f'this->{member.name}_c_str.push_back(this->{member.name}.back().c_str()); return *this; }}\n')
+                file.write(f'    {self.name[2:]}Builder& add{MakeBuilderFunctionNames(member.name)}(std::string {member.name}) {{')
+                file.write(f'this->{member.name}.push_back({member.name}); return *this; }}\n')
         
         file.write(f'    {self.name[2:]} build() {{\n')
         file.write(f'        {self.name[2:]} out{{data}};\n')
@@ -749,18 +754,26 @@ class Structure:
                 #needs special handling
                 pass
             elif member.value_category == 'len_param':
-                file.write(f'        out.{member.name} = (uint32_t){member.length_ref}.size();\n')
+                if member.name == 'rasterizationSamples':
+                    #Aaaaaaa stupid latexmath and using a flag bits to do vector lengths
+                    pass
+                else:
+                    file.write(f'        out.{member.name} = (uint32_t){member.length_ref}.size();\n')
             elif member.value_category == 'single_ptr':
                 file.write(f'        out.{member.name} = &{member.name};\n')
             elif member.value_category == 'vector':
                 file.write(f'        out.{member.name} = {member.name}.data();\n')
             elif member.value_category == 'vector_of_vector':
+                file.write(f'        {member.name}_ptr.clear(); {member.name}_ptr.reserve({member.name}.size());\n')
+                file.write(f'        for(auto& val : {member.name}) {{ {member.name}_ptr.push_back(val.data()); }}\n')
                 file.write(f'        out.{member.name} = {member.name}_ptr.data();\n')
-            elif member.value_category == 'optional':
+            elif member.value_category == 'optional_ptr':
                 file.write(f'        out.{member.name} = {member.name}.ptr_or_nullptr();\n')
             elif member.value_category == 'string':
                 file.write(f'        out.{member.name} = {member.name}.data();\n')
             elif member.value_category == 'vector_of_string':
+                file.write(f'        {member.name}_c_str.clear(); {member.name}_c_str.reserve({member.name}.size());\n')
+                file.write(f'        for(auto& val : {member.name}) {{ {member.name}_c_str.push_back(val.c_str()); }}\n')
                 file.write(f'        out.{member.name} = {member.name}_c_str.data();\n')
         file.write(f'        return out; }}\n')
         file.write(f'}};\n')
@@ -802,7 +815,7 @@ class Function:
         if len(self.parameters) > 0 and self.parameters[0].base_type in dispatchable_handles:
             self.dispatch_handle = self.parameters[0].base_type
         
-        self.span_params = get_len_attrib_names(self.parameters)
+        self.span_params = get_function_len_attrib_names(self.parameters)
         for param in self.parameters:
             if param.name in self.span_params:
                 param.value_category = 'len_param'
@@ -986,10 +999,9 @@ class Function:
             file.write(f'    if (pfn_EnumerateInstanceVersion == 0) return expected<uint32_t>(make_vk_version(1,0,0), Result::Success);\n')
         for param in self.parameters:
             if param.name in self.span_params:
-                file.write(f'    {param.get_base_type()} {param.name} = ')
                 for inner_param in self.parameters:
                     if inner_param.len_attrib is not None and inner_param.len_attrib == param.name:
-                        file.write(f'{inner_param.name[1:]}.size();\n')
+                        file.write(f'    {param.get_base_type()} {param.name} = {inner_param.name[1:]}.size();\n')
                         break
 
         if self.function_category == 'basic':
