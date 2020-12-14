@@ -680,7 +680,7 @@ class Structure:
         if self.alias is not None or self.is_trivial or self.returnedonly:
             return
         file.write(f'class {self.name[2:]}Builder {{\n')
-        file.write(f'    {self.name[2:]} data;\n')
+        file.write(f'    {self.name[2:]} m_data;\n')
 
         for member in self.members:
             if self.name == 'VkDeviceCreateInfo' and member.name in ['ppEnabledLayerNames', 'enabledLayerCount']:
@@ -690,22 +690,24 @@ class Structure:
             elif member.value_category == 'pNext':
                 file.write(f'    std::vector<void*> pNext;\n')
             elif member.value_category == 'single_ptr':
-                file.write(f'    {member.get_base_type()} {member.name};\n')
+                file.write(f'    {member.get_base_type()} m_{member.name};\n')
             elif member.value_category == 'vector':
-                file.write(f'    std::vector<{member.get_base_type()}> {member.name};\n')
+                file.write(f'    std::vector<{member.get_base_type()}> m_{member.name};\n')
             elif member.value_category == 'vector_of_vector':
-                file.write(f'    std::vector<std::vector<{member.get_base_type()}>> {member.name};\n')
-                file.write(f'    std::vector<{member.get_base_type()}*> {member.name}_ptr;\n')
+                file.write(f'    std::vector<std::vector<{member.get_base_type()}>> m_{member.name};\n')
+                file.write(f'    std::vector<{member.get_base_type()}*> m_{member.name}_ptr;\n')
             elif member.value_category == 'optional_ptr':
-                file.write(f'    detail::optional<{member.get_base_type()}> {member.name};\n')
+                file.write(f'    detail::optional<{member.get_base_type()}> m_{member.name};\n')
             elif member.value_category == 'string':
-                file.write(f'    std::string {member.name};\n')
+                file.write(f'    std::string m_{member.name};\n')
             elif member.value_category == 'vector_of_string':
-                file.write(f'    std::vector<std::string> {member.name};\n')
-                file.write(f'    std::vector<const char *> {member.name}_c_str;\n')
+                file.write(f'    std::vector<std::string> m_{member.name};\n')
+                file.write(f'    std::vector<const char *> m_{member.name}_c_str;\n')
                 
         file.write(f'    public:\n')
         file.write(f'    {self.name[2:]}Builder() noexcept{{}}\n')
+        file.write(f'    {self.name[2:]}Builder({self.name[2:]} data) noexcept : m_data(data) {{}}\n')
+
         for member in self.members:
             if self.name == 'VkDeviceCreateInfo' and member.name in ['ppEnabledLayerNames', 'enabledLayerCount']:
                 continue
@@ -716,35 +718,35 @@ class Structure:
                 pass
             elif member.value_category == 'single_ptr':
                 file.write(f'    {self.name[2:]}Builder& set{MakeBuilderFunctionNames(member.name)}({member.get_builder_parameter_decl()}) {{ ')
-                file.write(f'this->{member.name} = {member.name}; return *this; }}\n')
+                file.write(f'this->m_{member.name} = {member.name}; return *this; }}\n')
             elif member.value_category == 'vector':
                 file.write(f'    {self.name[2:]}Builder& add{MakeBuilderFunctionNames(member.name)}({member.get_builder_parameter_decl()}) {{ ')
-                file.write(f'this->{member.name}.push_back({member.name}); return *this; }}\n')
+                file.write(f'this->m_{member.name}.push_back({member.name}); return *this; }}\n')
             elif member.value_category == 'vector_of_vector':
                 file.write(f'    {self.name[2:]}Builder& add{MakeBuilderFunctionNames(member.name)}(std::vector<{member.get_base_type()}> {member.name}) {{')
-                file.write(f'this->{member.name}.push_back({member.name}); return *this; }}\n')
+                file.write(f'this->m_{member.name}.push_back({member.name}); return *this; }}\n')
             elif member.value_category == 'optional_ptr':
                 file.write(f'    {self.name[2:]}Builder& set{MakeBuilderFunctionNames(member.name)}({member.get_builder_parameter_decl()}) {{ ')
-                file.write(f'this->{member.name} = {member.name}; return *this; }}\n')
+                file.write(f'this->m_{member.name} = {member.name}; return *this; }}\n')
             elif member.value_category == 'array':
                 file.write(f'    {self.name[2:]}Builder& set{MakeBuilderFunctionNames(member.name)}({member.get_builder_parameter_decl()}) {{ ')
                 if len(member.array_lengths) == 1:
-                    file.write(f'for(uint32_t i = 0; i < {member.array_lengths[0]}; i++) this->data.{member.name}[i] = {member.name}[i]; return *this; }}\n')
+                    file.write(f'for(uint32_t i = 0; i < {member.array_lengths[0]}; i++) this->m_data.{member.name}[i] = {member.name}[i]; return *this; }}\n')
                 if len(member.array_lengths) == 2:
                     file.write(f'\n        for(uint32_t i = 0; i < {member.array_lengths[0]}; i++){{ for(uint32_t j = 0; j < {member.array_lengths[1]}; j++){{\n')
-                    file.write(f'        this->data.{member.name}[i][j] = {member.name}[i][j];}}}} return *this; }}\n')
+                    file.write(f'        this->m_data.{member.name}[i][j] = {member.name}[i][j];}}}} return *this; }}\n')
             elif member.value_category == 'value':
                 file.write(f'    {self.name[2:]}Builder& set{MakeBuilderFunctionNames(member.name)}({member.get_builder_parameter_decl()}) {{ ')
-                file.write(f'this->data.{member.name} = {member.name}; return *this; }}\n')
+                file.write(f'this->m_data.{member.name} = {member.name}; return *this; }}\n')
             elif member.value_category == 'string':
                 file.write(f'    {self.name[2:]}Builder& add{MakeBuilderFunctionNames(member.name)}(std::string {member.name}) {{ ')
-                file.write(f'this->{member.name} = {member.name}; return *this; }}\n')
+                file.write(f'this->m_{member.name} = {member.name}; return *this; }}\n')
             elif member.value_category == 'vector_of_string':
                 file.write(f'    {self.name[2:]}Builder& add{MakeBuilderFunctionNames(member.name)}(std::string {member.name}) {{')
-                file.write(f'this->{member.name}.push_back({member.name}); return *this; }}\n')
+                file.write(f'this->m_{member.name}.push_back({member.name}); return *this; }}\n')
         
         file.write(f'    {self.name[2:]} build() {{\n')
-        file.write(f'        {self.name[2:]} out{{data}};\n')
+        file.write(f'        {self.name[2:]} out{{m_data}};\n')
         for member in self.members:
             if self.name == 'VkDeviceCreateInfo' and member.name in ['ppEnabledLayerNames', 'enabledLayerCount']:
                 continue
@@ -758,23 +760,23 @@ class Structure:
                     #Aaaaaaa stupid latexmath and using a flag bits to do vector lengths
                     pass
                 else:
-                    file.write(f'        out.{member.name} = (uint32_t){member.length_ref}.size();\n')
+                    file.write(f'        out.{member.name} = (uint32_t)m_{member.length_ref}.size();\n')
             elif member.value_category == 'single_ptr':
-                file.write(f'        out.{member.name} = &{member.name};\n')
+                file.write(f'        out.{member.name} = &m_{member.name};\n')
             elif member.value_category == 'vector':
-                file.write(f'        out.{member.name} = {member.name}.data();\n')
+                file.write(f'        out.{member.name} = m_{member.name}.data();\n')
             elif member.value_category == 'vector_of_vector':
-                file.write(f'        {member.name}_ptr.clear(); {member.name}_ptr.reserve({member.name}.size());\n')
-                file.write(f'        for(auto& val : {member.name}) {{ {member.name}_ptr.push_back(val.data()); }}\n')
-                file.write(f'        out.{member.name} = {member.name}_ptr.data();\n')
+                file.write(f'        m_{member.name}_ptr.clear(); m_{member.name}_ptr.reserve(m_{member.name}.size());\n')
+                file.write(f'        for(auto& val : m_{member.name}) {{ m_{member.name}_ptr.push_back(val.data()); }}\n')
+                file.write(f'        out.{member.name} = m_{member.name}_ptr.data();\n')
             elif member.value_category == 'optional_ptr':
-                file.write(f'        out.{member.name} = {member.name}.ptr_or_nullptr();\n')
+                file.write(f'        out.{member.name} = m_{member.name}.ptr_or_nullptr();\n')
             elif member.value_category == 'string':
-                file.write(f'        out.{member.name} = {member.name}.data();\n')
+                file.write(f'        out.{member.name} = m_{member.name}.data();\n')
             elif member.value_category == 'vector_of_string':
-                file.write(f'        {member.name}_c_str.clear(); {member.name}_c_str.reserve({member.name}.size());\n')
-                file.write(f'        for(auto& val : {member.name}) {{ {member.name}_c_str.push_back(val.c_str()); }}\n')
-                file.write(f'        out.{member.name} = {member.name}_c_str.data();\n')
+                file.write(f'        m_{member.name}_c_str.clear(); m_{member.name}_c_str.reserve(m_{member.name}.size());\n')
+                file.write(f'        for(auto& val : m_{member.name}) {{ m_{member.name}_c_str.push_back(val.c_str()); }}\n')
+                file.write(f'        out.{member.name} = m_{member.name}_c_str.data();\n')
         file.write(f'        return out; }}\n')
         file.write(f'}};\n')
 
@@ -1444,9 +1446,12 @@ def print_bindings(bindings, cpp20mode, cpp20str):
         PrintConsecutivePlatforms(vkm, bindings.structures, 'print_builder')
 
         #to_string
-        #vkm.write('#pragma warning( disable : 4065 )\n')
+        vkm.write('#pragma warning( push )\n')
+        vkm.write('#pragma warning( disable : 4065 )\n')
         PrintConsecutivePlatforms(vkm, bindings.enum_dict.values(), 'print_string')
         PrintConsecutivePlatforms(vkm, bindings.bitmask_dict.values(), 'print_string')
+        vkm.write('#pragma warning( pop )\n')
+
         vkm.write('} // namespace vk\n// clang-format on\n')
 
 def print_c_interop(bindings, cpp20mode, cpp20str):

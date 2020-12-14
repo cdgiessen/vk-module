@@ -283,6 +283,88 @@ struct fixed_vector
     size_t _count = 0;
     T* _data = nullptr;
 };
+
+template<typename T, size_t internal_buffer_count>
+struct static_vector
+{
+    explicit static_vector() noexcept 
+    {
+    }
+    ~static_vector() noexcept { delete[] _data; }
+    static_vector(static_vector const& value) noexcept
+    {
+        if (value.count < internal_buffer_count){
+            for (size_t i = 0; i < value.count; i++)
+                _static_data[i] = value[i];
+        } else {
+            _count = value._count;
+            _data = new (std::nothrow) T[value.count];
+            for (size_t i = 0; i < value.count; i++)
+                _data[i] = value[i];
+        }
+    }
+    static_vector& operator=(static_vector const& value) noexcept
+    {
+        if (value.count < internal_buffer_count){
+            for (size_t i = 0; i < value.count; i++)
+                _static_data[i] = value[i];
+        } else {
+            _count = value._count;
+            _data = new (std::nothrow) T[value.count];
+            for (size_t i = 0; i < value.count; i++)
+                _data[i] = value[i];
+        }
+    }
+    static_vector(static_vector&& other) noexcept
+      : _count(std::exchange(other._count, 0))
+      , _data(std::exchange(other._data, nullptr))
+    {}
+    static_vector& operator=(static_vector&& other) noexcept
+    {
+        if (this != &other) {
+            delete _data;
+            _count = std::exchange(other._count, 0);
+            _data = std::exchange(other._data, nullptr);
+        }
+        return *this;
+    }
+
+    [[nodiscard]] size_t size() noexcept { return _count; }
+    [[nodiscard]] size_t size() const noexcept { return _count; }
+    [[nodiscard]] bool empty() noexcept { return _count == 0; }
+    [[nodiscard]] bool empty() const noexcept { return _count == 0; }
+    [[nodiscard]] T* data() noexcept { return _data; }
+    [[nodiscard]] const T* data() const noexcept { return _data; }
+
+    void resize() { 
+
+    }
+    [[nodiscard]] void push_back(T const& value) noexcept {
+
+    }
+    [[nodiscard]] void push_back(T&& value) noexcept {}
+
+    [[nodiscard]] T& operator[](size_t count) & noexcept { return _data[count]; }
+    [[nodiscard]] T const& operator[](size_t count) const& noexcept { return _data[count]; }
+
+    [[nodiscard]] const T* begin() const noexcept { return _data + 0; }
+    [[nodiscard]] T* begin() noexcept { return _data + 0; }
+    [[nodiscard]] const T* end() const noexcept { return _data + _count; }
+    [[nodiscard]] T* end() noexcept { return _data + _count; }
+
+  private:
+    size_t _count = 0;
+    size_t _capacity = internal_buffer_count * 2;
+    T* _data = nullptr;
+    T _static_data[internal_buffer_count];
+
+    void switch_to_heap_storage() {
+        _data = new (std::nothrow) T[count * 2];
+        for (size_t i = 0; i < count; i++)
+            _data[i] = _static_data[i]; 
+        count *= 2;
+    }
+};
 } // namespace detail
 
 /* Return type for Vulkan Module API functions which return a value or values

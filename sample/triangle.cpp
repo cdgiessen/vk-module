@@ -121,7 +121,6 @@ void create_renderer_context(RendererContext& context)
 
     auto [layers, layers_ret] = global_functions.EnumerateInstanceLayerProperties();
     check_res(layers_ret, "Couldn't get layers\n");
-
     for (auto& layer : layers) {
         if (std::string(layer.layerName) == std::string("VK_LAYER_KHRONOS_validation"))
             inst_builder.addEnabledLayerNames("VK_LAYER_KHRONOS_validation");
