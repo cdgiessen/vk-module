@@ -305,8 +305,8 @@ void create_pipeline(DeviceContext& device)
     auto [pipelines, pipeline_ret] = device.functions.CreateGraphicsPipelines(
       nullptr,
       { vk::GraphicsPipelineCreateInfoBuilder{}
-          .addStages({ .stage = vk::ShaderStageFlagBits::Vertex, .module = vert, .pName = "main" })
-          .addStages({ .stage = vk::ShaderStageFlagBits::Fragment, .module = frag, .pName = "main" })
+          .addStages({ { .stage = vk::ShaderStageFlagBits::Vertex, .module = vert, .pName = "main" },
+                       { .stage = vk::ShaderStageFlagBits::Fragment, .module = frag, .pName = "main" } })
           .setVertexInputState({})
           .setInputAssemblyState({ .topology = vk::PrimitiveTopology::TriangleList })
           .setViewportState(vk::PipelineViewportStateCreateInfoBuilder{}

@@ -676,8 +676,74 @@ class Structure:
                 print_custom_equivalence(file, self.members, self.name[2:])
             file.write('};\n')
 
+    def print_maker(self, file):
+        if self.alias is not None or self.is_trivial or self.returnedonly:
+            return
+        if self.name in ['VkBaseInStructure', 'VkBaseOutStructure']:
+            return
+        file.write(f'class {self.name[2:]}Maker {{\n')
+
+        for member in self.members:
+            if self.name == 'VkDeviceCreateInfo' and member.name in ['ppEnabledLayerNames', 'enabledLayerCount']:
+                continue
+            elif member.value_category in ['sType', 'len_param']:
+                continue
+            elif member.value_category in ['value']:
+                file.write(f'    {member.get_base_type()} {member.name}{{}};\n')
+            elif member.value_category == 'pNext':
+                file.write(f'    void* pNext = nullptr;\n')
+            elif member.value_category == 'single_ptr':
+                file.write(f'    {member.get_base_type()} {member.name};\n')
+            elif member.value_category == 'vector':
+                file.write(f'    detail::span<{member.get_base_type()}> {member.name};\n')
+            elif member.value_category == 'vector_of_vector':
+                file.write(f'    detail::span<{member.get_base_type()}*> {member.name};\n')
+            elif member.value_category == 'optional_ptr':
+                file.write(f'    detail::optional<{member.get_base_type()}> {member.name};\n')
+            elif member.value_category == 'string':
+                file.write(f'    const char * {member.name} = nullptr;\n')
+            elif member.value_category == 'vector_of_string':
+                file.write(f'    detail::span<const char *> {member.name};\n')
+        # file.write(f'    {self.name[2:]} m_data;\n')
+        file.write(f'    {self.name[2:]} build() noexcept {{\n')
+        file.write(f'        {self.name[2:]} out{{}};\n')
+        for member in self.members:
+            if self.name == 'VkDeviceCreateInfo' and member.name in ['ppEnabledLayerNames', 'enabledLayerCount']:
+                continue
+            elif member.value_category in ['sType']:
+                continue
+            elif member.value_category in ['value']:
+                file.write(f'        out.{member.name} = {member.name};\n')
+            elif member.name == 'pNext':
+                #needs special handling
+                file.write(f'        out.{member.name} = {member.name};\n')
+                pass
+            elif member.value_category == 'len_param':
+                #Aaaaaaa stupid latexmath and using a flag bits to do vector lengths
+                if member.name == 'rasterizationSamples':
+                    pass
+                else:
+                    file.write(f'        out.{member.name} = (uint32_t){member.length_ref}.size();\n')
+            elif member.value_category == 'single_ptr':
+                file.write(f'        out.{member.name} = &{member.name};\n')
+            elif member.value_category == 'vector':
+                file.write(f'        out.{member.name} = {member.name}.data();\n')
+            elif member.value_category == 'vector_of_vector':
+                file.write(f'        out.{member.name} = {member.name}.data();\n')
+            elif member.value_category == 'optional_ptr':
+                file.write(f'        out.{member.name} = {member.name}.ptr_or_nullptr();\n')
+            elif member.value_category == 'string':
+                file.write(f'        out.{member.name} = {member.name};\n')
+            elif member.value_category == 'vector_of_string':
+                file.write(f'        out.{member.name} = {member.name}.data();\n')
+        file.write(f'        return out; }}\n')
+        file.write(f'}};\n')
+
+        
     def print_builder(self, file):
         if self.alias is not None or self.is_trivial or self.returnedonly:
+            return
+        if self.name in ['VkBaseInStructure', 'VkBaseOutStructure']:
             return
         file.write(f'class {self.name[2:]}Builder {{\n')
         file.write(f'    {self.name[2:]} m_data;\n')
@@ -722,6 +788,8 @@ class Structure:
             elif member.value_category == 'vector':
                 file.write(f'    {self.name[2:]}Builder& add{MakeBuilderFunctionNames(member.name)}({member.get_builder_parameter_decl()}) {{ ')
                 file.write(f'this->m_{member.name}.push_back({member.name}); return *this; }}\n')
+                file.write(f'    {self.name[2:]}Builder& add{MakeBuilderFunctionNames(member.name)}(detail::span<{member.get_span_type()}> {member.name}s) {{ ')
+                file.write(f'this->m_{member.name}.insert( m_{member.name}.end(), {member.name}s.begin(), {member.name}s.end()); return *this; }}\n')
             elif member.value_category == 'vector_of_vector':
                 file.write(f'    {self.name[2:]}Builder& add{MakeBuilderFunctionNames(member.name)}(std::vector<{member.get_base_type()}> {member.name}) {{')
                 file.write(f'this->m_{member.name}.push_back({member.name}); return *this; }}\n')
@@ -1444,13 +1512,19 @@ def print_bindings(bindings, cpp20mode, cpp20str):
         [ dispatch_table.print_definition(vkm, cpp20mode) for dispatch_table in bindings.dispatch_tables ]
         [ table.print_definition(vkm, cpp20mode) for table in bindings.dispatchable_handle_tables ]
         PrintConsecutivePlatforms(vkm, bindings.structures, 'print_builder')
+        PrintConsecutivePlatforms(vkm, bindings.structures, 'print_maker')
 
         #to_string
+        vkm.write('#ifdef _MSC_VER\n')
         vkm.write('#pragma warning( push )\n')
         vkm.write('#pragma warning( disable : 4065 )\n')
+        vkm.write('#endif //_MSC_VER\n')
+
         PrintConsecutivePlatforms(vkm, bindings.enum_dict.values(), 'print_string')
         PrintConsecutivePlatforms(vkm, bindings.bitmask_dict.values(), 'print_string')
+        vkm.write('#ifdef _MSC_VER\n')
         vkm.write('#pragma warning( pop )\n')
+        vkm.write('#endif //_MSC_VER\n')
 
         vkm.write('} // namespace vk\n// clang-format on\n')
 

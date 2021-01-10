@@ -8496,17 +8496,14 @@ struct fixed_vector
     ~fixed_vector() noexcept { delete[] _data; }
     fixed_vector(fixed_vector const& value) noexcept
     {
-        _count = value._count;
-        _data = new (std::nothrow) T[value.count];
-        for (size_t i = 0; i < value.count; i++)
-            _data[i] = value[i];
+        common_copy_impl(value);
     }
     fixed_vector& operator=(fixed_vector const& value) noexcept
     {
-        _count = value._count;
-        _data = new (std::nothrow) T[value.count];
-        for (size_t i = 0; i < value.count; i++)
-            _data[i] = value[i];
+        if (this != &value) {
+            common_copy_impl(value);
+        }
+        return *this;
     }
     fixed_vector(fixed_vector&& other) noexcept
       : _count(std::exchange(other._count, 0))
@@ -8541,6 +8538,90 @@ struct fixed_vector
   private:
     size_t _count = 0;
     T* _data = nullptr;
+
+    void common_copy_impl(fixed_vector const& value) {
+        _count = value._count;
+        _data = new (std::nothrow) T[value.count];
+        for (size_t i = 0; i < value.count; i++)
+            _data[i] = value[i];
+    }
+};
+
+template<typename T, uint32_t internal_buffer_count>
+struct sbo_vector
+{
+    explicit sbo_vector() noexcept 
+    {
+    }
+    ~sbo_vector() noexcept { delete[] _data; }
+    sbo_vector(sbo_vector const& value) noexcept
+    {
+        if (value.count < internal_buffer_count){
+            for (uint32_t i = 0; i < value.count; i++)
+                _static_data[i] = value[i];
+        } else {
+            _count = value._count;
+            _data = new (std::nothrow) T[value.count];
+            for (uint32_t i = 0; i < value.count; i++)
+                _data[i] = value[i];
+        }
+    }
+    sbo_vector& operator=(sbo_vector const& value) noexcept
+    {
+        if (value.count < internal_buffer_count){
+            for (uint32_t i = 0; i < value.count; i++)
+                _static_data[i] = value[i];
+        } else {
+            _count = value._count;
+            _data = new (std::nothrow) T[value.count];
+            for (uint32_t i = 0; i < value.count; i++)
+                _data[i] = value[i];
+        }
+    }
+    sbo_vector(sbo_vector&& other) noexcept
+      : _count(std::exchange(other._count, 0))
+      , _data(std::exchange(other._data, nullptr))
+    {}
+    sbo_vector& operator=(sbo_vector&& other) noexcept
+    {
+        if (this != &other) {
+            delete _data;
+            _count = std::exchange(other._count, 0);
+            _data = std::exchange(other._data, nullptr);
+        }
+        return *this;
+    }
+
+    [[nodiscard]] uint32_t size() noexcept { return _count; }
+    [[nodiscard]] uint32_t size() const noexcept { return _count; }
+    [[nodiscard]] bool empty() noexcept { return _count == 0; }
+    [[nodiscard]] bool empty() const noexcept { return _count == 0; }
+    [[nodiscard]] T* data() noexcept { return _data; }
+    [[nodiscard]] const T* data() const noexcept { return _data; }
+
+    void resize() { 
+        _count = 0;
+    }
+    void push_back(T const& value) noexcept {
+        _data[_count++] = value;
+    }
+    void push_back(T&& value) noexcept {
+        _data[_count++] = std::move(value);
+    }
+
+    [[nodiscard]] T& operator[](uint32_t count) & noexcept { return _data[count]; }
+    [[nodiscard]] T const& operator[](uint32_t count) const& noexcept { return _data[count]; }
+
+    [[nodiscard]] const T* begin() const noexcept { return _data + 0; }
+    [[nodiscard]] T* begin() noexcept { return _data + 0; }
+    [[nodiscard]] const T* end() const noexcept { return _data + _count; }
+    [[nodiscard]] T* end() noexcept { return _data + _count; }
+
+  private:
+    uint32_t _count = 0;
+    uint32_t _capacity = internal_buffer_count * 2;
+    T* _data = nullptr;
+    T _static_data[internal_buffer_count];
 };
 } // namespace detail
 
@@ -14044,26 +14125,6 @@ CommandBufferFunctions const& SetFragmentShadingRateEnumNV(FragmentShadingRateNV
     device_functions->CmdSetFragmentShadingRateEnumNV(commandbuffer, shadingRate, combinerOps);
     return *this; }
 };
-class BaseOutStructureBuilder {
-    BaseOutStructure m_data;
-    std::vector<void*> pNext;
-    public:
-    BaseOutStructureBuilder() noexcept{}
-    BaseOutStructureBuilder(BaseOutStructure data) noexcept : m_data(data) {}
-    BaseOutStructure build() {
-        BaseOutStructure out{m_data};
-        return out; }
-};
-class BaseInStructureBuilder {
-    BaseInStructure m_data;
-    std::vector<void*> pNext;
-    public:
-    BaseInStructureBuilder() noexcept{}
-    BaseInStructureBuilder(BaseInStructure data) noexcept : m_data(data) {}
-    BaseInStructure build() {
-        BaseInStructure out{m_data};
-        return out; }
-};
 class ApplicationInfoBuilder {
     ApplicationInfo m_data;
     std::vector<void*> pNext;
@@ -14107,6 +14168,7 @@ class DeviceQueueCreateInfoBuilder {
     DeviceQueueCreateInfoBuilder& setFlags(DeviceQueueCreateFlags flags) { this->m_data.flags = flags; return *this; }
     DeviceQueueCreateInfoBuilder& setQueueFamilyIndex(uint32_t queueFamilyIndex) { this->m_data.queueFamilyIndex = queueFamilyIndex; return *this; }
     DeviceQueueCreateInfoBuilder& addQueuePriorities(float pQueuePriorities) { this->m_pQueuePriorities.push_back(pQueuePriorities); return *this; }
+    DeviceQueueCreateInfoBuilder& addQueuePriorities(detail::span<const float> pQueuePrioritiess) { this->m_pQueuePriorities.insert( m_pQueuePriorities.end(), pQueuePrioritiess.begin(), pQueuePrioritiess.end()); return *this; }
     DeviceQueueCreateInfo build() {
         DeviceQueueCreateInfo out{m_data};
         out.queueCount = (uint32_t)m_pQueuePriorities.size();
@@ -14125,6 +14187,7 @@ class DeviceCreateInfoBuilder {
     DeviceCreateInfoBuilder(DeviceCreateInfo data) noexcept : m_data(data) {}
     DeviceCreateInfoBuilder& setFlags(DeviceCreateFlags flags) { this->m_data.flags = flags; return *this; }
     DeviceCreateInfoBuilder& addQueueCreateInfos(DeviceQueueCreateInfo pQueueCreateInfos) { this->m_pQueueCreateInfos.push_back(pQueueCreateInfos); return *this; }
+    DeviceCreateInfoBuilder& addQueueCreateInfos(detail::span<const DeviceQueueCreateInfo> pQueueCreateInfoss) { this->m_pQueueCreateInfos.insert( m_pQueueCreateInfos.end(), pQueueCreateInfoss.begin(), pQueueCreateInfoss.end()); return *this; }
     DeviceCreateInfoBuilder& addEnabledExtensionNames(std::string ppEnabledExtensionNames) {this->m_ppEnabledExtensionNames.push_back(ppEnabledExtensionNames); return *this; }
     DeviceCreateInfoBuilder& setEnabledFeatures(PhysicalDeviceFeatures pEnabledFeatures) { this->m_pEnabledFeatures = pEnabledFeatures; return *this; }
     DeviceCreateInfo build() {
@@ -14205,8 +14268,11 @@ class WriteDescriptorSetBuilder {
     WriteDescriptorSetBuilder& setDstArrayElement(uint32_t dstArrayElement) { this->m_data.dstArrayElement = dstArrayElement; return *this; }
     WriteDescriptorSetBuilder& setDescriptorType(DescriptorType descriptorType) { this->m_data.descriptorType = descriptorType; return *this; }
     WriteDescriptorSetBuilder& addImageInfo(DescriptorImageInfo pImageInfo) { this->m_pImageInfo.push_back(pImageInfo); return *this; }
+    WriteDescriptorSetBuilder& addImageInfo(detail::span<const DescriptorImageInfo> pImageInfos) { this->m_pImageInfo.insert( m_pImageInfo.end(), pImageInfos.begin(), pImageInfos.end()); return *this; }
     WriteDescriptorSetBuilder& addBufferInfo(DescriptorBufferInfo pBufferInfo) { this->m_pBufferInfo.push_back(pBufferInfo); return *this; }
+    WriteDescriptorSetBuilder& addBufferInfo(detail::span<const DescriptorBufferInfo> pBufferInfos) { this->m_pBufferInfo.insert( m_pBufferInfo.end(), pBufferInfos.begin(), pBufferInfos.end()); return *this; }
     WriteDescriptorSetBuilder& addTexelBufferView(BufferView pTexelBufferView) { this->m_pTexelBufferView.push_back(pTexelBufferView); return *this; }
+    WriteDescriptorSetBuilder& addTexelBufferView(detail::span<const BufferView> pTexelBufferViews) { this->m_pTexelBufferView.insert( m_pTexelBufferView.end(), pTexelBufferViews.begin(), pTexelBufferViews.end()); return *this; }
     WriteDescriptorSet build() {
         WriteDescriptorSet out{m_data};
         out.descriptorCount = (uint32_t)m_pImageInfo.size();
@@ -14244,6 +14310,7 @@ class BufferCreateInfoBuilder {
     BufferCreateInfoBuilder& setUsage(BufferUsageFlags usage) { this->m_data.usage = usage; return *this; }
     BufferCreateInfoBuilder& setSharingMode(SharingMode sharingMode) { this->m_data.sharingMode = sharingMode; return *this; }
     BufferCreateInfoBuilder& addQueueFamilyIndices(uint32_t pQueueFamilyIndices) { this->m_pQueueFamilyIndices.push_back(pQueueFamilyIndices); return *this; }
+    BufferCreateInfoBuilder& addQueueFamilyIndices(detail::span<const uint32_t> pQueueFamilyIndicess) { this->m_pQueueFamilyIndices.insert( m_pQueueFamilyIndices.end(), pQueueFamilyIndicess.begin(), pQueueFamilyIndicess.end()); return *this; }
     BufferCreateInfo build() {
         BufferCreateInfo out{m_data};
         out.queueFamilyIndexCount = (uint32_t)m_pQueueFamilyIndices.size();
@@ -14330,6 +14397,7 @@ class ImageCreateInfoBuilder {
     ImageCreateInfoBuilder& setUsage(ImageUsageFlags usage) { this->m_data.usage = usage; return *this; }
     ImageCreateInfoBuilder& setSharingMode(SharingMode sharingMode) { this->m_data.sharingMode = sharingMode; return *this; }
     ImageCreateInfoBuilder& addQueueFamilyIndices(uint32_t pQueueFamilyIndices) { this->m_pQueueFamilyIndices.push_back(pQueueFamilyIndices); return *this; }
+    ImageCreateInfoBuilder& addQueueFamilyIndices(detail::span<const uint32_t> pQueueFamilyIndicess) { this->m_pQueueFamilyIndices.insert( m_pQueueFamilyIndices.end(), pQueueFamilyIndicess.begin(), pQueueFamilyIndicess.end()); return *this; }
     ImageCreateInfoBuilder& setInitialLayout(ImageLayout initialLayout) { this->m_data.initialLayout = initialLayout; return *this; }
     ImageCreateInfo build() {
         ImageCreateInfo out{m_data};
@@ -14361,6 +14429,7 @@ class SparseBufferMemoryBindInfoBuilder {
     SparseBufferMemoryBindInfoBuilder(SparseBufferMemoryBindInfo data) noexcept : m_data(data) {}
     SparseBufferMemoryBindInfoBuilder& setBuffer(Buffer buffer) { this->m_data.buffer = buffer; return *this; }
     SparseBufferMemoryBindInfoBuilder& addBinds(SparseMemoryBind pBinds) { this->m_pBinds.push_back(pBinds); return *this; }
+    SparseBufferMemoryBindInfoBuilder& addBinds(detail::span<const SparseMemoryBind> pBindss) { this->m_pBinds.insert( m_pBinds.end(), pBindss.begin(), pBindss.end()); return *this; }
     SparseBufferMemoryBindInfo build() {
         SparseBufferMemoryBindInfo out{m_data};
         out.bindCount = (uint32_t)m_pBinds.size();
@@ -14375,6 +14444,7 @@ class SparseImageOpaqueMemoryBindInfoBuilder {
     SparseImageOpaqueMemoryBindInfoBuilder(SparseImageOpaqueMemoryBindInfo data) noexcept : m_data(data) {}
     SparseImageOpaqueMemoryBindInfoBuilder& setImage(Image image) { this->m_data.image = image; return *this; }
     SparseImageOpaqueMemoryBindInfoBuilder& addBinds(SparseMemoryBind pBinds) { this->m_pBinds.push_back(pBinds); return *this; }
+    SparseImageOpaqueMemoryBindInfoBuilder& addBinds(detail::span<const SparseMemoryBind> pBindss) { this->m_pBinds.insert( m_pBinds.end(), pBindss.begin(), pBindss.end()); return *this; }
     SparseImageOpaqueMemoryBindInfo build() {
         SparseImageOpaqueMemoryBindInfo out{m_data};
         out.bindCount = (uint32_t)m_pBinds.size();
@@ -14389,6 +14459,7 @@ class SparseImageMemoryBindInfoBuilder {
     SparseImageMemoryBindInfoBuilder(SparseImageMemoryBindInfo data) noexcept : m_data(data) {}
     SparseImageMemoryBindInfoBuilder& setImage(Image image) { this->m_data.image = image; return *this; }
     SparseImageMemoryBindInfoBuilder& addBinds(SparseImageMemoryBind pBinds) { this->m_pBinds.push_back(pBinds); return *this; }
+    SparseImageMemoryBindInfoBuilder& addBinds(detail::span<const SparseImageMemoryBind> pBindss) { this->m_pBinds.insert( m_pBinds.end(), pBindss.begin(), pBindss.end()); return *this; }
     SparseImageMemoryBindInfo build() {
         SparseImageMemoryBindInfo out{m_data};
         out.bindCount = (uint32_t)m_pBinds.size();
@@ -14407,10 +14478,15 @@ class BindSparseInfoBuilder {
     BindSparseInfoBuilder() noexcept{}
     BindSparseInfoBuilder(BindSparseInfo data) noexcept : m_data(data) {}
     BindSparseInfoBuilder& addWaitSemaphores(Semaphore pWaitSemaphores) { this->m_pWaitSemaphores.push_back(pWaitSemaphores); return *this; }
+    BindSparseInfoBuilder& addWaitSemaphores(detail::span<const Semaphore> pWaitSemaphoress) { this->m_pWaitSemaphores.insert( m_pWaitSemaphores.end(), pWaitSemaphoress.begin(), pWaitSemaphoress.end()); return *this; }
     BindSparseInfoBuilder& addBufferBinds(SparseBufferMemoryBindInfo pBufferBinds) { this->m_pBufferBinds.push_back(pBufferBinds); return *this; }
+    BindSparseInfoBuilder& addBufferBinds(detail::span<const SparseBufferMemoryBindInfo> pBufferBindss) { this->m_pBufferBinds.insert( m_pBufferBinds.end(), pBufferBindss.begin(), pBufferBindss.end()); return *this; }
     BindSparseInfoBuilder& addImageOpaqueBinds(SparseImageOpaqueMemoryBindInfo pImageOpaqueBinds) { this->m_pImageOpaqueBinds.push_back(pImageOpaqueBinds); return *this; }
+    BindSparseInfoBuilder& addImageOpaqueBinds(detail::span<const SparseImageOpaqueMemoryBindInfo> pImageOpaqueBindss) { this->m_pImageOpaqueBinds.insert( m_pImageOpaqueBinds.end(), pImageOpaqueBindss.begin(), pImageOpaqueBindss.end()); return *this; }
     BindSparseInfoBuilder& addImageBinds(SparseImageMemoryBindInfo pImageBinds) { this->m_pImageBinds.push_back(pImageBinds); return *this; }
+    BindSparseInfoBuilder& addImageBinds(detail::span<const SparseImageMemoryBindInfo> pImageBindss) { this->m_pImageBinds.insert( m_pImageBinds.end(), pImageBindss.begin(), pImageBindss.end()); return *this; }
     BindSparseInfoBuilder& addSignalSemaphores(Semaphore pSignalSemaphores) { this->m_pSignalSemaphores.push_back(pSignalSemaphores); return *this; }
+    BindSparseInfoBuilder& addSignalSemaphores(detail::span<const Semaphore> pSignalSemaphoress) { this->m_pSignalSemaphores.insert( m_pSignalSemaphores.end(), pSignalSemaphoress.begin(), pSignalSemaphoress.end()); return *this; }
     BindSparseInfo build() {
         BindSparseInfo out{m_data};
         out.waitSemaphoreCount = (uint32_t)m_pWaitSemaphores.size();
@@ -14447,6 +14523,7 @@ class ShaderModuleCreateInfoBuilder {
     ShaderModuleCreateInfoBuilder(ShaderModuleCreateInfo data) noexcept : m_data(data) {}
     ShaderModuleCreateInfoBuilder& setFlags(ShaderModuleCreateFlags flags) { this->m_data.flags = flags; return *this; }
     ShaderModuleCreateInfoBuilder& addCode(uint32_t pCode) { this->m_pCode.push_back(pCode); return *this; }
+    ShaderModuleCreateInfoBuilder& addCode(detail::span<const uint32_t> pCodes) { this->m_pCode.insert( m_pCode.end(), pCodes.begin(), pCodes.end()); return *this; }
     ShaderModuleCreateInfo build() {
         ShaderModuleCreateInfo out{m_data};
         out.codeSize = (uint32_t)m_pCode.size();
@@ -14463,6 +14540,7 @@ class DescriptorSetLayoutBindingBuilder {
     DescriptorSetLayoutBindingBuilder& setDescriptorType(DescriptorType descriptorType) { this->m_data.descriptorType = descriptorType; return *this; }
     DescriptorSetLayoutBindingBuilder& setStageFlags(ShaderStageFlags stageFlags) { this->m_data.stageFlags = stageFlags; return *this; }
     DescriptorSetLayoutBindingBuilder& addImmutableSamplers(Sampler pImmutableSamplers) { this->m_pImmutableSamplers.push_back(pImmutableSamplers); return *this; }
+    DescriptorSetLayoutBindingBuilder& addImmutableSamplers(detail::span<const Sampler> pImmutableSamplerss) { this->m_pImmutableSamplers.insert( m_pImmutableSamplers.end(), pImmutableSamplerss.begin(), pImmutableSamplerss.end()); return *this; }
     DescriptorSetLayoutBinding build() {
         DescriptorSetLayoutBinding out{m_data};
         out.descriptorCount = (uint32_t)m_pImmutableSamplers.size();
@@ -14478,6 +14556,7 @@ class DescriptorSetLayoutCreateInfoBuilder {
     DescriptorSetLayoutCreateInfoBuilder(DescriptorSetLayoutCreateInfo data) noexcept : m_data(data) {}
     DescriptorSetLayoutCreateInfoBuilder& setFlags(DescriptorSetLayoutCreateFlags flags) { this->m_data.flags = flags; return *this; }
     DescriptorSetLayoutCreateInfoBuilder& addBindings(DescriptorSetLayoutBinding pBindings) { this->m_pBindings.push_back(pBindings); return *this; }
+    DescriptorSetLayoutCreateInfoBuilder& addBindings(detail::span<const DescriptorSetLayoutBinding> pBindingss) { this->m_pBindings.insert( m_pBindings.end(), pBindingss.begin(), pBindingss.end()); return *this; }
     DescriptorSetLayoutCreateInfo build() {
         DescriptorSetLayoutCreateInfo out{m_data};
         out.bindingCount = (uint32_t)m_pBindings.size();
@@ -14494,6 +14573,7 @@ class DescriptorPoolCreateInfoBuilder {
     DescriptorPoolCreateInfoBuilder& setFlags(DescriptorPoolCreateFlags flags) { this->m_data.flags = flags; return *this; }
     DescriptorPoolCreateInfoBuilder& setMaxSets(uint32_t maxSets) { this->m_data.maxSets = maxSets; return *this; }
     DescriptorPoolCreateInfoBuilder& addPoolSizes(DescriptorPoolSize pPoolSizes) { this->m_pPoolSizes.push_back(pPoolSizes); return *this; }
+    DescriptorPoolCreateInfoBuilder& addPoolSizes(detail::span<const DescriptorPoolSize> pPoolSizess) { this->m_pPoolSizes.insert( m_pPoolSizes.end(), pPoolSizess.begin(), pPoolSizess.end()); return *this; }
     DescriptorPoolCreateInfo build() {
         DescriptorPoolCreateInfo out{m_data};
         out.poolSizeCount = (uint32_t)m_pPoolSizes.size();
@@ -14509,6 +14589,7 @@ class DescriptorSetAllocateInfoBuilder {
     DescriptorSetAllocateInfoBuilder(DescriptorSetAllocateInfo data) noexcept : m_data(data) {}
     DescriptorSetAllocateInfoBuilder& setDescriptorPool(DescriptorPool descriptorPool) { this->m_data.descriptorPool = descriptorPool; return *this; }
     DescriptorSetAllocateInfoBuilder& addSetLayouts(DescriptorSetLayout pSetLayouts) { this->m_pSetLayouts.push_back(pSetLayouts); return *this; }
+    DescriptorSetAllocateInfoBuilder& addSetLayouts(detail::span<const DescriptorSetLayout> pSetLayoutss) { this->m_pSetLayouts.insert( m_pSetLayouts.end(), pSetLayoutss.begin(), pSetLayoutss.end()); return *this; }
     DescriptorSetAllocateInfo build() {
         DescriptorSetAllocateInfo out{m_data};
         out.descriptorSetCount = (uint32_t)m_pSetLayouts.size();
@@ -14523,7 +14604,9 @@ class SpecializationInfoBuilder {
     SpecializationInfoBuilder() noexcept{}
     SpecializationInfoBuilder(SpecializationInfo data) noexcept : m_data(data) {}
     SpecializationInfoBuilder& addMapEntries(SpecializationMapEntry pMapEntries) { this->m_pMapEntries.push_back(pMapEntries); return *this; }
+    SpecializationInfoBuilder& addMapEntries(detail::span<const SpecializationMapEntry> pMapEntriess) { this->m_pMapEntries.insert( m_pMapEntries.end(), pMapEntriess.begin(), pMapEntriess.end()); return *this; }
     SpecializationInfoBuilder& addData(std::byte pData) { this->m_pData.push_back(pData); return *this; }
+    SpecializationInfoBuilder& addData(detail::span<const std::byte> pDatas) { this->m_pData.insert( m_pData.end(), pDatas.begin(), pDatas.end()); return *this; }
     SpecializationInfo build() {
         SpecializationInfo out{m_data};
         out.mapEntryCount = (uint32_t)m_pMapEntries.size();
@@ -14576,7 +14659,9 @@ class PipelineVertexInputStateCreateInfoBuilder {
     PipelineVertexInputStateCreateInfoBuilder(PipelineVertexInputStateCreateInfo data) noexcept : m_data(data) {}
     PipelineVertexInputStateCreateInfoBuilder& setFlags(PipelineVertexInputStateCreateFlags flags) { this->m_data.flags = flags; return *this; }
     PipelineVertexInputStateCreateInfoBuilder& addVertexBindingDescriptions(VertexInputBindingDescription pVertexBindingDescriptions) { this->m_pVertexBindingDescriptions.push_back(pVertexBindingDescriptions); return *this; }
+    PipelineVertexInputStateCreateInfoBuilder& addVertexBindingDescriptions(detail::span<const VertexInputBindingDescription> pVertexBindingDescriptionss) { this->m_pVertexBindingDescriptions.insert( m_pVertexBindingDescriptions.end(), pVertexBindingDescriptionss.begin(), pVertexBindingDescriptionss.end()); return *this; }
     PipelineVertexInputStateCreateInfoBuilder& addVertexAttributeDescriptions(VertexInputAttributeDescription pVertexAttributeDescriptions) { this->m_pVertexAttributeDescriptions.push_back(pVertexAttributeDescriptions); return *this; }
+    PipelineVertexInputStateCreateInfoBuilder& addVertexAttributeDescriptions(detail::span<const VertexInputAttributeDescription> pVertexAttributeDescriptionss) { this->m_pVertexAttributeDescriptions.insert( m_pVertexAttributeDescriptions.end(), pVertexAttributeDescriptionss.begin(), pVertexAttributeDescriptionss.end()); return *this; }
     PipelineVertexInputStateCreateInfo build() {
         PipelineVertexInputStateCreateInfo out{m_data};
         out.vertexBindingDescriptionCount = (uint32_t)m_pVertexBindingDescriptions.size();
@@ -14620,7 +14705,9 @@ class PipelineViewportStateCreateInfoBuilder {
     PipelineViewportStateCreateInfoBuilder(PipelineViewportStateCreateInfo data) noexcept : m_data(data) {}
     PipelineViewportStateCreateInfoBuilder& setFlags(PipelineViewportStateCreateFlags flags) { this->m_data.flags = flags; return *this; }
     PipelineViewportStateCreateInfoBuilder& addViewports(Viewport pViewports) { this->m_pViewports.push_back(pViewports); return *this; }
+    PipelineViewportStateCreateInfoBuilder& addViewports(detail::span<const Viewport> pViewportss) { this->m_pViewports.insert( m_pViewports.end(), pViewportss.begin(), pViewportss.end()); return *this; }
     PipelineViewportStateCreateInfoBuilder& addScissors(Rect2D pScissors) { this->m_pScissors.push_back(pScissors); return *this; }
+    PipelineViewportStateCreateInfoBuilder& addScissors(detail::span<const Rect2D> pScissorss) { this->m_pScissors.insert( m_pScissors.end(), pScissorss.begin(), pScissorss.end()); return *this; }
     PipelineViewportStateCreateInfo build() {
         PipelineViewportStateCreateInfo out{m_data};
         out.viewportCount = (uint32_t)m_pViewports.size();
@@ -14661,6 +14748,7 @@ class PipelineMultisampleStateCreateInfoBuilder {
     PipelineMultisampleStateCreateInfoBuilder& setSampleShadingEnable(Bool32 sampleShadingEnable) { this->m_data.sampleShadingEnable = sampleShadingEnable; return *this; }
     PipelineMultisampleStateCreateInfoBuilder& setMinSampleShading(float minSampleShading) { this->m_data.minSampleShading = minSampleShading; return *this; }
     PipelineMultisampleStateCreateInfoBuilder& addSampleMask(SampleMask pSampleMask) { this->m_pSampleMask.push_back(pSampleMask); return *this; }
+    PipelineMultisampleStateCreateInfoBuilder& addSampleMask(detail::span<const SampleMask> pSampleMasks) { this->m_pSampleMask.insert( m_pSampleMask.end(), pSampleMasks.begin(), pSampleMasks.end()); return *this; }
     PipelineMultisampleStateCreateInfoBuilder& setAlphaToCoverageEnable(Bool32 alphaToCoverageEnable) { this->m_data.alphaToCoverageEnable = alphaToCoverageEnable; return *this; }
     PipelineMultisampleStateCreateInfoBuilder& setAlphaToOneEnable(Bool32 alphaToOneEnable) { this->m_data.alphaToOneEnable = alphaToOneEnable; return *this; }
     PipelineMultisampleStateCreateInfo build() {
@@ -14679,6 +14767,7 @@ class PipelineColorBlendStateCreateInfoBuilder {
     PipelineColorBlendStateCreateInfoBuilder& setLogicOpEnable(Bool32 logicOpEnable) { this->m_data.logicOpEnable = logicOpEnable; return *this; }
     PipelineColorBlendStateCreateInfoBuilder& setLogicOp(LogicOp logicOp) { this->m_data.logicOp = logicOp; return *this; }
     PipelineColorBlendStateCreateInfoBuilder& addAttachments(PipelineColorBlendAttachmentState pAttachments) { this->m_pAttachments.push_back(pAttachments); return *this; }
+    PipelineColorBlendStateCreateInfoBuilder& addAttachments(detail::span<const PipelineColorBlendAttachmentState> pAttachmentss) { this->m_pAttachments.insert( m_pAttachments.end(), pAttachmentss.begin(), pAttachmentss.end()); return *this; }
     PipelineColorBlendStateCreateInfoBuilder& setBlendConstants(std::array<float, 4> blendConstants) { for(uint32_t i = 0; i < 4; i++) this->m_data.blendConstants[i] = blendConstants[i]; return *this; }
     PipelineColorBlendStateCreateInfo build() {
         PipelineColorBlendStateCreateInfo out{m_data};
@@ -14695,6 +14784,7 @@ class PipelineDynamicStateCreateInfoBuilder {
     PipelineDynamicStateCreateInfoBuilder(PipelineDynamicStateCreateInfo data) noexcept : m_data(data) {}
     PipelineDynamicStateCreateInfoBuilder& setFlags(PipelineDynamicStateCreateFlags flags) { this->m_data.flags = flags; return *this; }
     PipelineDynamicStateCreateInfoBuilder& addDynamicStates(DynamicState pDynamicStates) { this->m_pDynamicStates.push_back(pDynamicStates); return *this; }
+    PipelineDynamicStateCreateInfoBuilder& addDynamicStates(detail::span<const DynamicState> pDynamicStatess) { this->m_pDynamicStates.insert( m_pDynamicStates.end(), pDynamicStatess.begin(), pDynamicStatess.end()); return *this; }
     PipelineDynamicStateCreateInfo build() {
         PipelineDynamicStateCreateInfo out{m_data};
         out.dynamicStateCount = (uint32_t)m_pDynamicStates.size();
@@ -14739,6 +14829,7 @@ class GraphicsPipelineCreateInfoBuilder {
     GraphicsPipelineCreateInfoBuilder(GraphicsPipelineCreateInfo data) noexcept : m_data(data) {}
     GraphicsPipelineCreateInfoBuilder& setFlags(PipelineCreateFlags flags) { this->m_data.flags = flags; return *this; }
     GraphicsPipelineCreateInfoBuilder& addStages(PipelineShaderStageCreateInfo pStages) { this->m_pStages.push_back(pStages); return *this; }
+    GraphicsPipelineCreateInfoBuilder& addStages(detail::span<const PipelineShaderStageCreateInfo> pStagess) { this->m_pStages.insert( m_pStages.end(), pStagess.begin(), pStagess.end()); return *this; }
     GraphicsPipelineCreateInfoBuilder& setVertexInputState(PipelineVertexInputStateCreateInfo pVertexInputState) { this->m_pVertexInputState = pVertexInputState; return *this; }
     GraphicsPipelineCreateInfoBuilder& setInputAssemblyState(PipelineInputAssemblyStateCreateInfo pInputAssemblyState) { this->m_pInputAssemblyState = pInputAssemblyState; return *this; }
     GraphicsPipelineCreateInfoBuilder& setTessellationState(PipelineTessellationStateCreateInfo pTessellationState) { this->m_pTessellationState = pTessellationState; return *this; }
@@ -14777,6 +14868,7 @@ class PipelineCacheCreateInfoBuilder {
     PipelineCacheCreateInfoBuilder(PipelineCacheCreateInfo data) noexcept : m_data(data) {}
     PipelineCacheCreateInfoBuilder& setFlags(PipelineCacheCreateFlags flags) { this->m_data.flags = flags; return *this; }
     PipelineCacheCreateInfoBuilder& addInitialData(std::byte pInitialData) { this->m_pInitialData.push_back(pInitialData); return *this; }
+    PipelineCacheCreateInfoBuilder& addInitialData(detail::span<const std::byte> pInitialDatas) { this->m_pInitialData.insert( m_pInitialData.end(), pInitialDatas.begin(), pInitialDatas.end()); return *this; }
     PipelineCacheCreateInfo build() {
         PipelineCacheCreateInfo out{m_data};
         out.initialDataSize = (uint32_t)m_pInitialData.size();
@@ -14793,7 +14885,9 @@ class PipelineLayoutCreateInfoBuilder {
     PipelineLayoutCreateInfoBuilder(PipelineLayoutCreateInfo data) noexcept : m_data(data) {}
     PipelineLayoutCreateInfoBuilder& setFlags(PipelineLayoutCreateFlags flags) { this->m_data.flags = flags; return *this; }
     PipelineLayoutCreateInfoBuilder& addSetLayouts(DescriptorSetLayout pSetLayouts) { this->m_pSetLayouts.push_back(pSetLayouts); return *this; }
+    PipelineLayoutCreateInfoBuilder& addSetLayouts(detail::span<const DescriptorSetLayout> pSetLayoutss) { this->m_pSetLayouts.insert( m_pSetLayouts.end(), pSetLayoutss.begin(), pSetLayoutss.end()); return *this; }
     PipelineLayoutCreateInfoBuilder& addPushConstantRanges(PushConstantRange pPushConstantRanges) { this->m_pPushConstantRanges.push_back(pPushConstantRanges); return *this; }
+    PipelineLayoutCreateInfoBuilder& addPushConstantRanges(detail::span<const PushConstantRange> pPushConstantRangess) { this->m_pPushConstantRanges.insert( m_pPushConstantRanges.end(), pPushConstantRangess.begin(), pPushConstantRangess.end()); return *this; }
     PipelineLayoutCreateInfo build() {
         PipelineLayoutCreateInfo out{m_data};
         out.setLayoutCount = (uint32_t)m_pSetLayouts.size();
@@ -14906,6 +15000,7 @@ class RenderPassBeginInfoBuilder {
     RenderPassBeginInfoBuilder& setFramebuffer(Framebuffer framebuffer) { this->m_data.framebuffer = framebuffer; return *this; }
     RenderPassBeginInfoBuilder& setRenderArea(Rect2D renderArea) { this->m_data.renderArea = renderArea; return *this; }
     RenderPassBeginInfoBuilder& addClearValues(ClearValue pClearValues) { this->m_pClearValues.push_back(pClearValues); return *this; }
+    RenderPassBeginInfoBuilder& addClearValues(detail::span<const ClearValue> pClearValuess) { this->m_pClearValues.insert( m_pClearValues.end(), pClearValuess.begin(), pClearValuess.end()); return *this; }
     RenderPassBeginInfo build() {
         RenderPassBeginInfo out{m_data};
         out.clearValueCount = (uint32_t)m_pClearValues.size();
@@ -14925,10 +15020,14 @@ class SubpassDescriptionBuilder {
     SubpassDescriptionBuilder& setFlags(SubpassDescriptionFlags flags) { this->m_data.flags = flags; return *this; }
     SubpassDescriptionBuilder& setPipelineBindPoint(PipelineBindPoint pipelineBindPoint) { this->m_data.pipelineBindPoint = pipelineBindPoint; return *this; }
     SubpassDescriptionBuilder& addInputAttachments(AttachmentReference pInputAttachments) { this->m_pInputAttachments.push_back(pInputAttachments); return *this; }
+    SubpassDescriptionBuilder& addInputAttachments(detail::span<const AttachmentReference> pInputAttachmentss) { this->m_pInputAttachments.insert( m_pInputAttachments.end(), pInputAttachmentss.begin(), pInputAttachmentss.end()); return *this; }
     SubpassDescriptionBuilder& addColorAttachments(AttachmentReference pColorAttachments) { this->m_pColorAttachments.push_back(pColorAttachments); return *this; }
+    SubpassDescriptionBuilder& addColorAttachments(detail::span<const AttachmentReference> pColorAttachmentss) { this->m_pColorAttachments.insert( m_pColorAttachments.end(), pColorAttachmentss.begin(), pColorAttachmentss.end()); return *this; }
     SubpassDescriptionBuilder& addResolveAttachments(AttachmentReference pResolveAttachments) { this->m_pResolveAttachments.push_back(pResolveAttachments); return *this; }
+    SubpassDescriptionBuilder& addResolveAttachments(detail::span<const AttachmentReference> pResolveAttachmentss) { this->m_pResolveAttachments.insert( m_pResolveAttachments.end(), pResolveAttachmentss.begin(), pResolveAttachmentss.end()); return *this; }
     SubpassDescriptionBuilder& setDepthStencilAttachment(AttachmentReference pDepthStencilAttachment) { this->m_pDepthStencilAttachment = pDepthStencilAttachment; return *this; }
     SubpassDescriptionBuilder& addPreserveAttachments(uint32_t pPreserveAttachments) { this->m_pPreserveAttachments.push_back(pPreserveAttachments); return *this; }
+    SubpassDescriptionBuilder& addPreserveAttachments(detail::span<const uint32_t> pPreserveAttachmentss) { this->m_pPreserveAttachments.insert( m_pPreserveAttachments.end(), pPreserveAttachmentss.begin(), pPreserveAttachmentss.end()); return *this; }
     SubpassDescription build() {
         SubpassDescription out{m_data};
         out.inputAttachmentCount = (uint32_t)m_pInputAttachments.size();
@@ -14952,8 +15051,11 @@ class RenderPassCreateInfoBuilder {
     RenderPassCreateInfoBuilder(RenderPassCreateInfo data) noexcept : m_data(data) {}
     RenderPassCreateInfoBuilder& setFlags(RenderPassCreateFlags flags) { this->m_data.flags = flags; return *this; }
     RenderPassCreateInfoBuilder& addAttachments(AttachmentDescription pAttachments) { this->m_pAttachments.push_back(pAttachments); return *this; }
+    RenderPassCreateInfoBuilder& addAttachments(detail::span<const AttachmentDescription> pAttachmentss) { this->m_pAttachments.insert( m_pAttachments.end(), pAttachmentss.begin(), pAttachmentss.end()); return *this; }
     RenderPassCreateInfoBuilder& addSubpasses(SubpassDescription pSubpasses) { this->m_pSubpasses.push_back(pSubpasses); return *this; }
+    RenderPassCreateInfoBuilder& addSubpasses(detail::span<const SubpassDescription> pSubpassess) { this->m_pSubpasses.insert( m_pSubpasses.end(), pSubpassess.begin(), pSubpassess.end()); return *this; }
     RenderPassCreateInfoBuilder& addDependencies(SubpassDependency pDependencies) { this->m_pDependencies.push_back(pDependencies); return *this; }
+    RenderPassCreateInfoBuilder& addDependencies(detail::span<const SubpassDependency> pDependenciess) { this->m_pDependencies.insert( m_pDependencies.end(), pDependenciess.begin(), pDependenciess.end()); return *this; }
     RenderPassCreateInfo build() {
         RenderPassCreateInfo out{m_data};
         out.attachmentCount = (uint32_t)m_pAttachments.size();
@@ -15021,6 +15123,7 @@ class FramebufferCreateInfoBuilder {
     FramebufferCreateInfoBuilder& setFlags(FramebufferCreateFlags flags) { this->m_data.flags = flags; return *this; }
     FramebufferCreateInfoBuilder& setRenderPass(RenderPass renderPass) { this->m_data.renderPass = renderPass; return *this; }
     FramebufferCreateInfoBuilder& addAttachments(ImageView pAttachments) { this->m_pAttachments.push_back(pAttachments); return *this; }
+    FramebufferCreateInfoBuilder& addAttachments(detail::span<const ImageView> pAttachmentss) { this->m_pAttachments.insert( m_pAttachments.end(), pAttachmentss.begin(), pAttachmentss.end()); return *this; }
     FramebufferCreateInfoBuilder& setWidth(uint32_t width) { this->m_data.width = width; return *this; }
     FramebufferCreateInfoBuilder& setHeight(uint32_t height) { this->m_data.height = height; return *this; }
     FramebufferCreateInfoBuilder& setLayers(uint32_t layers) { this->m_data.layers = layers; return *this; }
@@ -15041,9 +15144,13 @@ class SubmitInfoBuilder {
     SubmitInfoBuilder() noexcept{}
     SubmitInfoBuilder(SubmitInfo data) noexcept : m_data(data) {}
     SubmitInfoBuilder& addWaitSemaphores(Semaphore pWaitSemaphores) { this->m_pWaitSemaphores.push_back(pWaitSemaphores); return *this; }
+    SubmitInfoBuilder& addWaitSemaphores(detail::span<const Semaphore> pWaitSemaphoress) { this->m_pWaitSemaphores.insert( m_pWaitSemaphores.end(), pWaitSemaphoress.begin(), pWaitSemaphoress.end()); return *this; }
     SubmitInfoBuilder& addWaitDstStageMask(PipelineStageFlags pWaitDstStageMask) { this->m_pWaitDstStageMask.push_back(pWaitDstStageMask); return *this; }
+    SubmitInfoBuilder& addWaitDstStageMask(detail::span<const PipelineStageFlags> pWaitDstStageMasks) { this->m_pWaitDstStageMask.insert( m_pWaitDstStageMask.end(), pWaitDstStageMasks.begin(), pWaitDstStageMasks.end()); return *this; }
     SubmitInfoBuilder& addCommandBuffers(CommandBuffer pCommandBuffers) { this->m_pCommandBuffers.push_back(pCommandBuffers); return *this; }
+    SubmitInfoBuilder& addCommandBuffers(detail::span<const CommandBuffer> pCommandBufferss) { this->m_pCommandBuffers.insert( m_pCommandBuffers.end(), pCommandBufferss.begin(), pCommandBufferss.end()); return *this; }
     SubmitInfoBuilder& addSignalSemaphores(Semaphore pSignalSemaphores) { this->m_pSignalSemaphores.push_back(pSignalSemaphores); return *this; }
+    SubmitInfoBuilder& addSignalSemaphores(detail::span<const Semaphore> pSignalSemaphoress) { this->m_pSignalSemaphores.insert( m_pSignalSemaphores.end(), pSignalSemaphoress.begin(), pSignalSemaphoress.end()); return *this; }
     SubmitInfo build() {
         SubmitInfo out{m_data};
         out.waitSemaphoreCount = (uint32_t)m_pWaitSemaphores.size();
@@ -15259,6 +15366,7 @@ class SwapchainCreateInfoKHRBuilder {
     SwapchainCreateInfoKHRBuilder& setImageUsage(ImageUsageFlags imageUsage) { this->m_data.imageUsage = imageUsage; return *this; }
     SwapchainCreateInfoKHRBuilder& setImageSharingMode(SharingMode imageSharingMode) { this->m_data.imageSharingMode = imageSharingMode; return *this; }
     SwapchainCreateInfoKHRBuilder& addQueueFamilyIndices(uint32_t pQueueFamilyIndices) { this->m_pQueueFamilyIndices.push_back(pQueueFamilyIndices); return *this; }
+    SwapchainCreateInfoKHRBuilder& addQueueFamilyIndices(detail::span<const uint32_t> pQueueFamilyIndicess) { this->m_pQueueFamilyIndices.insert( m_pQueueFamilyIndices.end(), pQueueFamilyIndicess.begin(), pQueueFamilyIndicess.end()); return *this; }
     SwapchainCreateInfoKHRBuilder& setPreTransform(SurfaceTransformFlagBitsKHR preTransform) { this->m_data.preTransform = preTransform; return *this; }
     SwapchainCreateInfoKHRBuilder& setCompositeAlpha(CompositeAlphaFlagBitsKHR compositeAlpha) { this->m_data.compositeAlpha = compositeAlpha; return *this; }
     SwapchainCreateInfoKHRBuilder& setPresentMode(PresentModeKHR presentMode) { this->m_data.presentMode = presentMode; return *this; }
@@ -15281,9 +15389,13 @@ class PresentInfoKHRBuilder {
     PresentInfoKHRBuilder() noexcept{}
     PresentInfoKHRBuilder(PresentInfoKHR data) noexcept : m_data(data) {}
     PresentInfoKHRBuilder& addWaitSemaphores(Semaphore pWaitSemaphores) { this->m_pWaitSemaphores.push_back(pWaitSemaphores); return *this; }
+    PresentInfoKHRBuilder& addWaitSemaphores(detail::span<const Semaphore> pWaitSemaphoress) { this->m_pWaitSemaphores.insert( m_pWaitSemaphores.end(), pWaitSemaphoress.begin(), pWaitSemaphoress.end()); return *this; }
     PresentInfoKHRBuilder& addSwapchains(SwapchainKHR pSwapchains) { this->m_pSwapchains.push_back(pSwapchains); return *this; }
+    PresentInfoKHRBuilder& addSwapchains(detail::span<const SwapchainKHR> pSwapchainss) { this->m_pSwapchains.insert( m_pSwapchains.end(), pSwapchainss.begin(), pSwapchainss.end()); return *this; }
     PresentInfoKHRBuilder& addImageIndices(uint32_t pImageIndices) { this->m_pImageIndices.push_back(pImageIndices); return *this; }
+    PresentInfoKHRBuilder& addImageIndices(detail::span<const uint32_t> pImageIndicess) { this->m_pImageIndices.insert( m_pImageIndices.end(), pImageIndicess.begin(), pImageIndicess.end()); return *this; }
     PresentInfoKHRBuilder& addResults(Result pResults) { this->m_pResults.push_back(pResults); return *this; }
+    PresentInfoKHRBuilder& addResults(detail::span<Result> pResultss) { this->m_pResults.insert( m_pResults.end(), pResultss.begin(), pResultss.end()); return *this; }
     PresentInfoKHR build() {
         PresentInfoKHR out{m_data};
         out.waitSemaphoreCount = (uint32_t)m_pWaitSemaphores.size();
@@ -15314,6 +15426,7 @@ class ValidationFlagsEXTBuilder {
     ValidationFlagsEXTBuilder() noexcept{}
     ValidationFlagsEXTBuilder(ValidationFlagsEXT data) noexcept : m_data(data) {}
     ValidationFlagsEXTBuilder& addDisabledValidationChecks(ValidationCheckEXT pDisabledValidationChecks) { this->m_pDisabledValidationChecks.push_back(pDisabledValidationChecks); return *this; }
+    ValidationFlagsEXTBuilder& addDisabledValidationChecks(detail::span<const ValidationCheckEXT> pDisabledValidationCheckss) { this->m_pDisabledValidationChecks.insert( m_pDisabledValidationChecks.end(), pDisabledValidationCheckss.begin(), pDisabledValidationCheckss.end()); return *this; }
     ValidationFlagsEXT build() {
         ValidationFlagsEXT out{m_data};
         out.disabledValidationCheckCount = (uint32_t)m_pDisabledValidationChecks.size();
@@ -15329,7 +15442,9 @@ class ValidationFeaturesEXTBuilder {
     ValidationFeaturesEXTBuilder() noexcept{}
     ValidationFeaturesEXTBuilder(ValidationFeaturesEXT data) noexcept : m_data(data) {}
     ValidationFeaturesEXTBuilder& addEnabledValidationFeatures(ValidationFeatureEnableEXT pEnabledValidationFeatures) { this->m_pEnabledValidationFeatures.push_back(pEnabledValidationFeatures); return *this; }
+    ValidationFeaturesEXTBuilder& addEnabledValidationFeatures(detail::span<const ValidationFeatureEnableEXT> pEnabledValidationFeaturess) { this->m_pEnabledValidationFeatures.insert( m_pEnabledValidationFeatures.end(), pEnabledValidationFeaturess.begin(), pEnabledValidationFeaturess.end()); return *this; }
     ValidationFeaturesEXTBuilder& addDisabledValidationFeatures(ValidationFeatureDisableEXT pDisabledValidationFeatures) { this->m_pDisabledValidationFeatures.push_back(pDisabledValidationFeatures); return *this; }
+    ValidationFeaturesEXTBuilder& addDisabledValidationFeatures(detail::span<const ValidationFeatureDisableEXT> pDisabledValidationFeaturess) { this->m_pDisabledValidationFeatures.insert( m_pDisabledValidationFeatures.end(), pDisabledValidationFeaturess.begin(), pDisabledValidationFeaturess.end()); return *this; }
     ValidationFeaturesEXT build() {
         ValidationFeaturesEXT out{m_data};
         out.enabledValidationFeatureCount = (uint32_t)m_pEnabledValidationFeatures.size();
@@ -15375,6 +15490,7 @@ class DebugMarkerObjectTagInfoEXTBuilder {
     DebugMarkerObjectTagInfoEXTBuilder& setObject(uint64_t object) { this->m_data.object = object; return *this; }
     DebugMarkerObjectTagInfoEXTBuilder& setTagName(uint64_t tagName) { this->m_data.tagName = tagName; return *this; }
     DebugMarkerObjectTagInfoEXTBuilder& addTag(std::byte pTag) { this->m_pTag.push_back(pTag); return *this; }
+    DebugMarkerObjectTagInfoEXTBuilder& addTag(detail::span<const std::byte> pTags) { this->m_pTag.insert( m_pTag.end(), pTags.begin(), pTags.end()); return *this; }
     DebugMarkerObjectTagInfoEXT build() {
         DebugMarkerObjectTagInfoEXT out{m_data};
         out.tagSize = (uint32_t)m_pTag.size();
@@ -15490,10 +15606,15 @@ class Win32KeyedMutexAcquireReleaseInfoNVBuilder {
     Win32KeyedMutexAcquireReleaseInfoNVBuilder() noexcept{}
     Win32KeyedMutexAcquireReleaseInfoNVBuilder(Win32KeyedMutexAcquireReleaseInfoNV data) noexcept : m_data(data) {}
     Win32KeyedMutexAcquireReleaseInfoNVBuilder& addAcquireSyncs(DeviceMemory pAcquireSyncs) { this->m_pAcquireSyncs.push_back(pAcquireSyncs); return *this; }
+    Win32KeyedMutexAcquireReleaseInfoNVBuilder& addAcquireSyncs(detail::span<const DeviceMemory> pAcquireSyncss) { this->m_pAcquireSyncs.insert( m_pAcquireSyncs.end(), pAcquireSyncss.begin(), pAcquireSyncss.end()); return *this; }
     Win32KeyedMutexAcquireReleaseInfoNVBuilder& addAcquireKeys(uint64_t pAcquireKeys) { this->m_pAcquireKeys.push_back(pAcquireKeys); return *this; }
+    Win32KeyedMutexAcquireReleaseInfoNVBuilder& addAcquireKeys(detail::span<const uint64_t> pAcquireKeyss) { this->m_pAcquireKeys.insert( m_pAcquireKeys.end(), pAcquireKeyss.begin(), pAcquireKeyss.end()); return *this; }
     Win32KeyedMutexAcquireReleaseInfoNVBuilder& addAcquireTimeoutMilliseconds(uint32_t pAcquireTimeoutMilliseconds) { this->m_pAcquireTimeoutMilliseconds.push_back(pAcquireTimeoutMilliseconds); return *this; }
+    Win32KeyedMutexAcquireReleaseInfoNVBuilder& addAcquireTimeoutMilliseconds(detail::span<const uint32_t> pAcquireTimeoutMillisecondss) { this->m_pAcquireTimeoutMilliseconds.insert( m_pAcquireTimeoutMilliseconds.end(), pAcquireTimeoutMillisecondss.begin(), pAcquireTimeoutMillisecondss.end()); return *this; }
     Win32KeyedMutexAcquireReleaseInfoNVBuilder& addReleaseSyncs(DeviceMemory pReleaseSyncs) { this->m_pReleaseSyncs.push_back(pReleaseSyncs); return *this; }
+    Win32KeyedMutexAcquireReleaseInfoNVBuilder& addReleaseSyncs(detail::span<const DeviceMemory> pReleaseSyncss) { this->m_pReleaseSyncs.insert( m_pReleaseSyncs.end(), pReleaseSyncss.begin(), pReleaseSyncss.end()); return *this; }
     Win32KeyedMutexAcquireReleaseInfoNVBuilder& addReleaseKeys(uint64_t pReleaseKeys) { this->m_pReleaseKeys.push_back(pReleaseKeys); return *this; }
+    Win32KeyedMutexAcquireReleaseInfoNVBuilder& addReleaseKeys(detail::span<const uint64_t> pReleaseKeyss) { this->m_pReleaseKeys.insert( m_pReleaseKeys.end(), pReleaseKeyss.begin(), pReleaseKeyss.end()); return *this; }
     Win32KeyedMutexAcquireReleaseInfoNV build() {
         Win32KeyedMutexAcquireReleaseInfoNV out{m_data};
         out.acquireCount = (uint32_t)m_pAcquireSyncs.size();
@@ -15560,6 +15681,7 @@ class GraphicsShaderGroupCreateInfoNVBuilder {
     GraphicsShaderGroupCreateInfoNVBuilder() noexcept{}
     GraphicsShaderGroupCreateInfoNVBuilder(GraphicsShaderGroupCreateInfoNV data) noexcept : m_data(data) {}
     GraphicsShaderGroupCreateInfoNVBuilder& addStages(PipelineShaderStageCreateInfo pStages) { this->m_pStages.push_back(pStages); return *this; }
+    GraphicsShaderGroupCreateInfoNVBuilder& addStages(detail::span<const PipelineShaderStageCreateInfo> pStagess) { this->m_pStages.insert( m_pStages.end(), pStagess.begin(), pStagess.end()); return *this; }
     GraphicsShaderGroupCreateInfoNVBuilder& setVertexInputState(PipelineVertexInputStateCreateInfo pVertexInputState) { this->m_pVertexInputState = pVertexInputState; return *this; }
     GraphicsShaderGroupCreateInfoNVBuilder& setTessellationState(PipelineTessellationStateCreateInfo pTessellationState) { this->m_pTessellationState = pTessellationState; return *this; }
     GraphicsShaderGroupCreateInfoNV build() {
@@ -15579,7 +15701,9 @@ class GraphicsPipelineShaderGroupsCreateInfoNVBuilder {
     GraphicsPipelineShaderGroupsCreateInfoNVBuilder() noexcept{}
     GraphicsPipelineShaderGroupsCreateInfoNVBuilder(GraphicsPipelineShaderGroupsCreateInfoNV data) noexcept : m_data(data) {}
     GraphicsPipelineShaderGroupsCreateInfoNVBuilder& addGroups(GraphicsShaderGroupCreateInfoNV pGroups) { this->m_pGroups.push_back(pGroups); return *this; }
+    GraphicsPipelineShaderGroupsCreateInfoNVBuilder& addGroups(detail::span<const GraphicsShaderGroupCreateInfoNV> pGroupss) { this->m_pGroups.insert( m_pGroups.end(), pGroupss.begin(), pGroupss.end()); return *this; }
     GraphicsPipelineShaderGroupsCreateInfoNVBuilder& addPipelines(Pipeline pPipelines) { this->m_pPipelines.push_back(pPipelines); return *this; }
+    GraphicsPipelineShaderGroupsCreateInfoNVBuilder& addPipelines(detail::span<const Pipeline> pPipeliness) { this->m_pPipelines.insert( m_pPipelines.end(), pPipeliness.begin(), pPipeliness.end()); return *this; }
     GraphicsPipelineShaderGroupsCreateInfoNV build() {
         GraphicsPipelineShaderGroupsCreateInfoNV out{m_data};
         out.groupCount = (uint32_t)m_pGroups.size();
@@ -15607,7 +15731,9 @@ class IndirectCommandsLayoutTokenNVBuilder {
     IndirectCommandsLayoutTokenNVBuilder& setPushconstantSize(uint32_t pushconstantSize) { this->m_data.pushconstantSize = pushconstantSize; return *this; }
     IndirectCommandsLayoutTokenNVBuilder& setIndirectStateFlags(IndirectStateFlagsNV indirectStateFlags) { this->m_data.indirectStateFlags = indirectStateFlags; return *this; }
     IndirectCommandsLayoutTokenNVBuilder& addIndexTypes(IndexType pIndexTypes) { this->m_pIndexTypes.push_back(pIndexTypes); return *this; }
+    IndirectCommandsLayoutTokenNVBuilder& addIndexTypes(detail::span<const IndexType> pIndexTypess) { this->m_pIndexTypes.insert( m_pIndexTypes.end(), pIndexTypess.begin(), pIndexTypess.end()); return *this; }
     IndirectCommandsLayoutTokenNVBuilder& addIndexTypeValues(uint32_t pIndexTypeValues) { this->m_pIndexTypeValues.push_back(pIndexTypeValues); return *this; }
+    IndirectCommandsLayoutTokenNVBuilder& addIndexTypeValues(detail::span<const uint32_t> pIndexTypeValuess) { this->m_pIndexTypeValues.insert( m_pIndexTypeValues.end(), pIndexTypeValuess.begin(), pIndexTypeValuess.end()); return *this; }
     IndirectCommandsLayoutTokenNV build() {
         IndirectCommandsLayoutTokenNV out{m_data};
         out.indexTypeCount = (uint32_t)m_pIndexTypes.size();
@@ -15626,7 +15752,9 @@ class IndirectCommandsLayoutCreateInfoNVBuilder {
     IndirectCommandsLayoutCreateInfoNVBuilder& setFlags(IndirectCommandsLayoutUsageFlagsNV flags) { this->m_data.flags = flags; return *this; }
     IndirectCommandsLayoutCreateInfoNVBuilder& setPipelineBindPoint(PipelineBindPoint pipelineBindPoint) { this->m_data.pipelineBindPoint = pipelineBindPoint; return *this; }
     IndirectCommandsLayoutCreateInfoNVBuilder& addTokens(IndirectCommandsLayoutTokenNV pTokens) { this->m_pTokens.push_back(pTokens); return *this; }
+    IndirectCommandsLayoutCreateInfoNVBuilder& addTokens(detail::span<const IndirectCommandsLayoutTokenNV> pTokenss) { this->m_pTokens.insert( m_pTokens.end(), pTokenss.begin(), pTokenss.end()); return *this; }
     IndirectCommandsLayoutCreateInfoNVBuilder& addStreamStrides(uint32_t pStreamStrides) { this->m_pStreamStrides.push_back(pStreamStrides); return *this; }
+    IndirectCommandsLayoutCreateInfoNVBuilder& addStreamStrides(detail::span<const uint32_t> pStreamStridess) { this->m_pStreamStrides.insert( m_pStreamStrides.end(), pStreamStridess.begin(), pStreamStridess.end()); return *this; }
     IndirectCommandsLayoutCreateInfoNV build() {
         IndirectCommandsLayoutCreateInfoNV out{m_data};
         out.tokenCount = (uint32_t)m_pTokens.size();
@@ -15646,6 +15774,7 @@ class GeneratedCommandsInfoNVBuilder {
     GeneratedCommandsInfoNVBuilder& setPipeline(Pipeline pipeline) { this->m_data.pipeline = pipeline; return *this; }
     GeneratedCommandsInfoNVBuilder& setIndirectCommandsLayout(IndirectCommandsLayoutNV indirectCommandsLayout) { this->m_data.indirectCommandsLayout = indirectCommandsLayout; return *this; }
     GeneratedCommandsInfoNVBuilder& addStreams(IndirectCommandsStreamNV pStreams) { this->m_pStreams.push_back(pStreams); return *this; }
+    GeneratedCommandsInfoNVBuilder& addStreams(detail::span<const IndirectCommandsStreamNV> pStreamss) { this->m_pStreams.insert( m_pStreams.end(), pStreamss.begin(), pStreamss.end()); return *this; }
     GeneratedCommandsInfoNVBuilder& setSequencesCount(uint32_t sequencesCount) { this->m_data.sequencesCount = sequencesCount; return *this; }
     GeneratedCommandsInfoNVBuilder& setPreprocessBuffer(Buffer preprocessBuffer) { this->m_data.preprocessBuffer = preprocessBuffer; return *this; }
     GeneratedCommandsInfoNVBuilder& setPreprocessOffset(DeviceSize preprocessOffset) { this->m_data.preprocessOffset = preprocessOffset; return *this; }
@@ -15722,6 +15851,7 @@ class PresentRegionKHRBuilder {
     PresentRegionKHRBuilder() noexcept{}
     PresentRegionKHRBuilder(PresentRegionKHR data) noexcept : m_data(data) {}
     PresentRegionKHRBuilder& addRectangles(RectLayerKHR pRectangles) { this->m_pRectangles.push_back(pRectangles); return *this; }
+    PresentRegionKHRBuilder& addRectangles(detail::span<const RectLayerKHR> pRectangless) { this->m_pRectangles.insert( m_pRectangles.end(), pRectangless.begin(), pRectangless.end()); return *this; }
     PresentRegionKHR build() {
         PresentRegionKHR out{m_data};
         out.rectangleCount = (uint32_t)m_pRectangles.size();
@@ -15736,6 +15866,7 @@ class PresentRegionsKHRBuilder {
     PresentRegionsKHRBuilder() noexcept{}
     PresentRegionsKHRBuilder(PresentRegionsKHR data) noexcept : m_data(data) {}
     PresentRegionsKHRBuilder& addRegions(PresentRegionKHR pRegions) { this->m_pRegions.push_back(pRegions); return *this; }
+    PresentRegionsKHRBuilder& addRegions(detail::span<const PresentRegionKHR> pRegionss) { this->m_pRegions.insert( m_pRegions.end(), pRegionss.begin(), pRegionss.end()); return *this; }
     PresentRegionsKHR build() {
         PresentRegionsKHR out{m_data};
         out.swapchainCount = (uint32_t)m_pRegions.size();
@@ -15890,10 +16021,15 @@ class Win32KeyedMutexAcquireReleaseInfoKHRBuilder {
     Win32KeyedMutexAcquireReleaseInfoKHRBuilder() noexcept{}
     Win32KeyedMutexAcquireReleaseInfoKHRBuilder(Win32KeyedMutexAcquireReleaseInfoKHR data) noexcept : m_data(data) {}
     Win32KeyedMutexAcquireReleaseInfoKHRBuilder& addAcquireSyncs(DeviceMemory pAcquireSyncs) { this->m_pAcquireSyncs.push_back(pAcquireSyncs); return *this; }
+    Win32KeyedMutexAcquireReleaseInfoKHRBuilder& addAcquireSyncs(detail::span<const DeviceMemory> pAcquireSyncss) { this->m_pAcquireSyncs.insert( m_pAcquireSyncs.end(), pAcquireSyncss.begin(), pAcquireSyncss.end()); return *this; }
     Win32KeyedMutexAcquireReleaseInfoKHRBuilder& addAcquireKeys(uint64_t pAcquireKeys) { this->m_pAcquireKeys.push_back(pAcquireKeys); return *this; }
+    Win32KeyedMutexAcquireReleaseInfoKHRBuilder& addAcquireKeys(detail::span<const uint64_t> pAcquireKeyss) { this->m_pAcquireKeys.insert( m_pAcquireKeys.end(), pAcquireKeyss.begin(), pAcquireKeyss.end()); return *this; }
     Win32KeyedMutexAcquireReleaseInfoKHRBuilder& addAcquireTimeouts(uint32_t pAcquireTimeouts) { this->m_pAcquireTimeouts.push_back(pAcquireTimeouts); return *this; }
+    Win32KeyedMutexAcquireReleaseInfoKHRBuilder& addAcquireTimeouts(detail::span<const uint32_t> pAcquireTimeoutss) { this->m_pAcquireTimeouts.insert( m_pAcquireTimeouts.end(), pAcquireTimeoutss.begin(), pAcquireTimeoutss.end()); return *this; }
     Win32KeyedMutexAcquireReleaseInfoKHRBuilder& addReleaseSyncs(DeviceMemory pReleaseSyncs) { this->m_pReleaseSyncs.push_back(pReleaseSyncs); return *this; }
+    Win32KeyedMutexAcquireReleaseInfoKHRBuilder& addReleaseSyncs(detail::span<const DeviceMemory> pReleaseSyncss) { this->m_pReleaseSyncs.insert( m_pReleaseSyncs.end(), pReleaseSyncss.begin(), pReleaseSyncss.end()); return *this; }
     Win32KeyedMutexAcquireReleaseInfoKHRBuilder& addReleaseKeys(uint64_t pReleaseKeys) { this->m_pReleaseKeys.push_back(pReleaseKeys); return *this; }
+    Win32KeyedMutexAcquireReleaseInfoKHRBuilder& addReleaseKeys(detail::span<const uint64_t> pReleaseKeyss) { this->m_pReleaseKeys.insert( m_pReleaseKeys.end(), pReleaseKeyss.begin(), pReleaseKeyss.end()); return *this; }
     Win32KeyedMutexAcquireReleaseInfoKHR build() {
         Win32KeyedMutexAcquireReleaseInfoKHR out{m_data};
         out.acquireCount = (uint32_t)m_pAcquireSyncs.size();
@@ -15968,7 +16104,9 @@ class D3D12FenceSubmitInfoKHRBuilder {
     D3D12FenceSubmitInfoKHRBuilder() noexcept{}
     D3D12FenceSubmitInfoKHRBuilder(D3D12FenceSubmitInfoKHR data) noexcept : m_data(data) {}
     D3D12FenceSubmitInfoKHRBuilder& addWaitSemaphoreValues(uint64_t pWaitSemaphoreValues) { this->m_pWaitSemaphoreValues.push_back(pWaitSemaphoreValues); return *this; }
+    D3D12FenceSubmitInfoKHRBuilder& addWaitSemaphoreValues(detail::span<const uint64_t> pWaitSemaphoreValuess) { this->m_pWaitSemaphoreValues.insert( m_pWaitSemaphoreValues.end(), pWaitSemaphoreValuess.begin(), pWaitSemaphoreValuess.end()); return *this; }
     D3D12FenceSubmitInfoKHRBuilder& addSignalSemaphoreValues(uint64_t pSignalSemaphoreValues) { this->m_pSignalSemaphoreValues.push_back(pSignalSemaphoreValues); return *this; }
+    D3D12FenceSubmitInfoKHRBuilder& addSignalSemaphoreValues(detail::span<const uint64_t> pSignalSemaphoreValuess) { this->m_pSignalSemaphoreValues.insert( m_pSignalSemaphoreValues.end(), pSignalSemaphoreValuess.begin(), pSignalSemaphoreValuess.end()); return *this; }
     D3D12FenceSubmitInfoKHR build() {
         D3D12FenceSubmitInfoKHR out{m_data};
         out.waitSemaphoreValuesCount = (uint32_t)m_pWaitSemaphoreValues.size();
@@ -16131,8 +16269,11 @@ class RenderPassMultiviewCreateInfoBuilder {
     RenderPassMultiviewCreateInfoBuilder() noexcept{}
     RenderPassMultiviewCreateInfoBuilder(RenderPassMultiviewCreateInfo data) noexcept : m_data(data) {}
     RenderPassMultiviewCreateInfoBuilder& addViewMasks(uint32_t pViewMasks) { this->m_pViewMasks.push_back(pViewMasks); return *this; }
+    RenderPassMultiviewCreateInfoBuilder& addViewMasks(detail::span<const uint32_t> pViewMaskss) { this->m_pViewMasks.insert( m_pViewMasks.end(), pViewMaskss.begin(), pViewMaskss.end()); return *this; }
     RenderPassMultiviewCreateInfoBuilder& addViewOffsets(int32_t pViewOffsets) { this->m_pViewOffsets.push_back(pViewOffsets); return *this; }
+    RenderPassMultiviewCreateInfoBuilder& addViewOffsets(detail::span<const int32_t> pViewOffsetss) { this->m_pViewOffsets.insert( m_pViewOffsets.end(), pViewOffsetss.begin(), pViewOffsetss.end()); return *this; }
     RenderPassMultiviewCreateInfoBuilder& addCorrelationMasks(uint32_t pCorrelationMasks) { this->m_pCorrelationMasks.push_back(pCorrelationMasks); return *this; }
+    RenderPassMultiviewCreateInfoBuilder& addCorrelationMasks(detail::span<const uint32_t> pCorrelationMaskss) { this->m_pCorrelationMasks.insert( m_pCorrelationMasks.end(), pCorrelationMaskss.begin(), pCorrelationMaskss.end()); return *this; }
     RenderPassMultiviewCreateInfo build() {
         RenderPassMultiviewCreateInfo out{m_data};
         out.subpassCount = (uint32_t)m_pViewMasks.size();
@@ -16220,6 +16361,7 @@ class BindBufferMemoryDeviceGroupInfoBuilder {
     BindBufferMemoryDeviceGroupInfoBuilder() noexcept{}
     BindBufferMemoryDeviceGroupInfoBuilder(BindBufferMemoryDeviceGroupInfo data) noexcept : m_data(data) {}
     BindBufferMemoryDeviceGroupInfoBuilder& addDeviceIndices(uint32_t pDeviceIndices) { this->m_pDeviceIndices.push_back(pDeviceIndices); return *this; }
+    BindBufferMemoryDeviceGroupInfoBuilder& addDeviceIndices(detail::span<const uint32_t> pDeviceIndicess) { this->m_pDeviceIndices.insert( m_pDeviceIndices.end(), pDeviceIndicess.begin(), pDeviceIndicess.end()); return *this; }
     BindBufferMemoryDeviceGroupInfo build() {
         BindBufferMemoryDeviceGroupInfo out{m_data};
         out.deviceIndexCount = (uint32_t)m_pDeviceIndices.size();
@@ -16248,7 +16390,9 @@ class BindImageMemoryDeviceGroupInfoBuilder {
     BindImageMemoryDeviceGroupInfoBuilder() noexcept{}
     BindImageMemoryDeviceGroupInfoBuilder(BindImageMemoryDeviceGroupInfo data) noexcept : m_data(data) {}
     BindImageMemoryDeviceGroupInfoBuilder& addDeviceIndices(uint32_t pDeviceIndices) { this->m_pDeviceIndices.push_back(pDeviceIndices); return *this; }
+    BindImageMemoryDeviceGroupInfoBuilder& addDeviceIndices(detail::span<const uint32_t> pDeviceIndicess) { this->m_pDeviceIndices.insert( m_pDeviceIndices.end(), pDeviceIndicess.begin(), pDeviceIndicess.end()); return *this; }
     BindImageMemoryDeviceGroupInfoBuilder& addSplitInstanceBindRegions(Rect2D pSplitInstanceBindRegions) { this->m_pSplitInstanceBindRegions.push_back(pSplitInstanceBindRegions); return *this; }
+    BindImageMemoryDeviceGroupInfoBuilder& addSplitInstanceBindRegions(detail::span<const Rect2D> pSplitInstanceBindRegionss) { this->m_pSplitInstanceBindRegions.insert( m_pSplitInstanceBindRegions.end(), pSplitInstanceBindRegionss.begin(), pSplitInstanceBindRegionss.end()); return *this; }
     BindImageMemoryDeviceGroupInfo build() {
         BindImageMemoryDeviceGroupInfo out{m_data};
         out.deviceIndexCount = (uint32_t)m_pDeviceIndices.size();
@@ -16266,6 +16410,7 @@ class DeviceGroupRenderPassBeginInfoBuilder {
     DeviceGroupRenderPassBeginInfoBuilder(DeviceGroupRenderPassBeginInfo data) noexcept : m_data(data) {}
     DeviceGroupRenderPassBeginInfoBuilder& setDeviceMask(uint32_t deviceMask) { this->m_data.deviceMask = deviceMask; return *this; }
     DeviceGroupRenderPassBeginInfoBuilder& addDeviceRenderAreas(Rect2D pDeviceRenderAreas) { this->m_pDeviceRenderAreas.push_back(pDeviceRenderAreas); return *this; }
+    DeviceGroupRenderPassBeginInfoBuilder& addDeviceRenderAreas(detail::span<const Rect2D> pDeviceRenderAreass) { this->m_pDeviceRenderAreas.insert( m_pDeviceRenderAreas.end(), pDeviceRenderAreass.begin(), pDeviceRenderAreass.end()); return *this; }
     DeviceGroupRenderPassBeginInfo build() {
         DeviceGroupRenderPassBeginInfo out{m_data};
         out.deviceRenderAreaCount = (uint32_t)m_pDeviceRenderAreas.size();
@@ -16293,8 +16438,11 @@ class DeviceGroupSubmitInfoBuilder {
     DeviceGroupSubmitInfoBuilder() noexcept{}
     DeviceGroupSubmitInfoBuilder(DeviceGroupSubmitInfo data) noexcept : m_data(data) {}
     DeviceGroupSubmitInfoBuilder& addWaitSemaphoreDeviceIndices(uint32_t pWaitSemaphoreDeviceIndices) { this->m_pWaitSemaphoreDeviceIndices.push_back(pWaitSemaphoreDeviceIndices); return *this; }
+    DeviceGroupSubmitInfoBuilder& addWaitSemaphoreDeviceIndices(detail::span<const uint32_t> pWaitSemaphoreDeviceIndicess) { this->m_pWaitSemaphoreDeviceIndices.insert( m_pWaitSemaphoreDeviceIndices.end(), pWaitSemaphoreDeviceIndicess.begin(), pWaitSemaphoreDeviceIndicess.end()); return *this; }
     DeviceGroupSubmitInfoBuilder& addCommandBufferDeviceMasks(uint32_t pCommandBufferDeviceMasks) { this->m_pCommandBufferDeviceMasks.push_back(pCommandBufferDeviceMasks); return *this; }
+    DeviceGroupSubmitInfoBuilder& addCommandBufferDeviceMasks(detail::span<const uint32_t> pCommandBufferDeviceMaskss) { this->m_pCommandBufferDeviceMasks.insert( m_pCommandBufferDeviceMasks.end(), pCommandBufferDeviceMaskss.begin(), pCommandBufferDeviceMaskss.end()); return *this; }
     DeviceGroupSubmitInfoBuilder& addSignalSemaphoreDeviceIndices(uint32_t pSignalSemaphoreDeviceIndices) { this->m_pSignalSemaphoreDeviceIndices.push_back(pSignalSemaphoreDeviceIndices); return *this; }
+    DeviceGroupSubmitInfoBuilder& addSignalSemaphoreDeviceIndices(detail::span<const uint32_t> pSignalSemaphoreDeviceIndicess) { this->m_pSignalSemaphoreDeviceIndices.insert( m_pSignalSemaphoreDeviceIndices.end(), pSignalSemaphoreDeviceIndicess.begin(), pSignalSemaphoreDeviceIndicess.end()); return *this; }
     DeviceGroupSubmitInfo build() {
         DeviceGroupSubmitInfo out{m_data};
         out.waitSemaphoreCount = (uint32_t)m_pWaitSemaphoreDeviceIndices.size();
@@ -16363,6 +16511,7 @@ class DeviceGroupPresentInfoKHRBuilder {
     DeviceGroupPresentInfoKHRBuilder() noexcept{}
     DeviceGroupPresentInfoKHRBuilder(DeviceGroupPresentInfoKHR data) noexcept : m_data(data) {}
     DeviceGroupPresentInfoKHRBuilder& addDeviceMasks(uint32_t pDeviceMasks) { this->m_pDeviceMasks.push_back(pDeviceMasks); return *this; }
+    DeviceGroupPresentInfoKHRBuilder& addDeviceMasks(detail::span<const uint32_t> pDeviceMaskss) { this->m_pDeviceMasks.insert( m_pDeviceMasks.end(), pDeviceMaskss.begin(), pDeviceMaskss.end()); return *this; }
     DeviceGroupPresentInfoKHRBuilder& setMode(DeviceGroupPresentModeFlagBitsKHR mode) { this->m_data.mode = mode; return *this; }
     DeviceGroupPresentInfoKHR build() {
         DeviceGroupPresentInfoKHR out{m_data};
@@ -16378,6 +16527,7 @@ class DeviceGroupDeviceCreateInfoBuilder {
     DeviceGroupDeviceCreateInfoBuilder() noexcept{}
     DeviceGroupDeviceCreateInfoBuilder(DeviceGroupDeviceCreateInfo data) noexcept : m_data(data) {}
     DeviceGroupDeviceCreateInfoBuilder& addPhysicalDevices(PhysicalDevice pPhysicalDevices) { this->m_pPhysicalDevices.push_back(pPhysicalDevices); return *this; }
+    DeviceGroupDeviceCreateInfoBuilder& addPhysicalDevices(detail::span<const PhysicalDevice> pPhysicalDevicess) { this->m_pPhysicalDevices.insert( m_pPhysicalDevices.end(), pPhysicalDevicess.begin(), pPhysicalDevicess.end()); return *this; }
     DeviceGroupDeviceCreateInfo build() {
         DeviceGroupDeviceCreateInfo out{m_data};
         out.physicalDeviceCount = (uint32_t)m_pPhysicalDevices.size();
@@ -16404,6 +16554,7 @@ class DescriptorUpdateTemplateCreateInfoBuilder {
     DescriptorUpdateTemplateCreateInfoBuilder(DescriptorUpdateTemplateCreateInfo data) noexcept : m_data(data) {}
     DescriptorUpdateTemplateCreateInfoBuilder& setFlags(DescriptorUpdateTemplateCreateFlags flags) { this->m_data.flags = flags; return *this; }
     DescriptorUpdateTemplateCreateInfoBuilder& addDescriptorUpdateEntries(DescriptorUpdateTemplateEntry pDescriptorUpdateEntries) { this->m_pDescriptorUpdateEntries.push_back(pDescriptorUpdateEntries); return *this; }
+    DescriptorUpdateTemplateCreateInfoBuilder& addDescriptorUpdateEntries(detail::span<const DescriptorUpdateTemplateEntry> pDescriptorUpdateEntriess) { this->m_pDescriptorUpdateEntries.insert( m_pDescriptorUpdateEntries.end(), pDescriptorUpdateEntriess.begin(), pDescriptorUpdateEntriess.end()); return *this; }
     DescriptorUpdateTemplateCreateInfoBuilder& setTemplateType(DescriptorUpdateTemplateType templateType) { this->m_data.templateType = templateType; return *this; }
     DescriptorUpdateTemplateCreateInfoBuilder& setDescriptorSetLayout(DescriptorSetLayout descriptorSetLayout) { this->m_data.descriptorSetLayout = descriptorSetLayout; return *this; }
     DescriptorUpdateTemplateCreateInfoBuilder& setPipelineBindPoint(PipelineBindPoint pipelineBindPoint) { this->m_data.pipelineBindPoint = pipelineBindPoint; return *this; }
@@ -16452,6 +16603,7 @@ class PresentTimesInfoGOOGLEBuilder {
     PresentTimesInfoGOOGLEBuilder() noexcept{}
     PresentTimesInfoGOOGLEBuilder(PresentTimesInfoGOOGLE data) noexcept : m_data(data) {}
     PresentTimesInfoGOOGLEBuilder& addTimes(PresentTimeGOOGLE pTimes) { this->m_pTimes.push_back(pTimes); return *this; }
+    PresentTimesInfoGOOGLEBuilder& addTimes(detail::span<const PresentTimeGOOGLE> pTimess) { this->m_pTimes.insert( m_pTimes.end(), pTimess.begin(), pTimess.end()); return *this; }
     PresentTimesInfoGOOGLE build() {
         PresentTimesInfoGOOGLE out{m_data};
         out.swapchainCount = (uint32_t)m_pTimes.size();
@@ -16509,6 +16661,7 @@ class PipelineViewportWScalingStateCreateInfoNVBuilder {
     PipelineViewportWScalingStateCreateInfoNVBuilder(PipelineViewportWScalingStateCreateInfoNV data) noexcept : m_data(data) {}
     PipelineViewportWScalingStateCreateInfoNVBuilder& setViewportWScalingEnable(Bool32 viewportWScalingEnable) { this->m_data.viewportWScalingEnable = viewportWScalingEnable; return *this; }
     PipelineViewportWScalingStateCreateInfoNVBuilder& addViewportWScalings(ViewportWScalingNV pViewportWScalings) { this->m_pViewportWScalings.push_back(pViewportWScalings); return *this; }
+    PipelineViewportWScalingStateCreateInfoNVBuilder& addViewportWScalings(detail::span<const ViewportWScalingNV> pViewportWScalingss) { this->m_pViewportWScalings.insert( m_pViewportWScalings.end(), pViewportWScalingss.begin(), pViewportWScalingss.end()); return *this; }
     PipelineViewportWScalingStateCreateInfoNV build() {
         PipelineViewportWScalingStateCreateInfoNV out{m_data};
         out.viewportCount = (uint32_t)m_pViewportWScalings.size();
@@ -16524,6 +16677,7 @@ class PipelineViewportSwizzleStateCreateInfoNVBuilder {
     PipelineViewportSwizzleStateCreateInfoNVBuilder(PipelineViewportSwizzleStateCreateInfoNV data) noexcept : m_data(data) {}
     PipelineViewportSwizzleStateCreateInfoNVBuilder& setFlags(PipelineViewportSwizzleStateCreateFlagsNV flags) { this->m_data.flags = flags; return *this; }
     PipelineViewportSwizzleStateCreateInfoNVBuilder& addViewportSwizzles(ViewportSwizzleNV pViewportSwizzles) { this->m_pViewportSwizzles.push_back(pViewportSwizzles); return *this; }
+    PipelineViewportSwizzleStateCreateInfoNVBuilder& addViewportSwizzles(detail::span<const ViewportSwizzleNV> pViewportSwizzless) { this->m_pViewportSwizzles.insert( m_pViewportSwizzles.end(), pViewportSwizzless.begin(), pViewportSwizzless.end()); return *this; }
     PipelineViewportSwizzleStateCreateInfoNV build() {
         PipelineViewportSwizzleStateCreateInfoNV out{m_data};
         out.viewportCount = (uint32_t)m_pViewportSwizzles.size();
@@ -16540,6 +16694,7 @@ class PipelineDiscardRectangleStateCreateInfoEXTBuilder {
     PipelineDiscardRectangleStateCreateInfoEXTBuilder& setFlags(PipelineDiscardRectangleStateCreateFlagsEXT flags) { this->m_data.flags = flags; return *this; }
     PipelineDiscardRectangleStateCreateInfoEXTBuilder& setDiscardRectangleMode(DiscardRectangleModeEXT discardRectangleMode) { this->m_data.discardRectangleMode = discardRectangleMode; return *this; }
     PipelineDiscardRectangleStateCreateInfoEXTBuilder& addDiscardRectangles(Rect2D pDiscardRectangles) { this->m_pDiscardRectangles.push_back(pDiscardRectangles); return *this; }
+    PipelineDiscardRectangleStateCreateInfoEXTBuilder& addDiscardRectangles(detail::span<const Rect2D> pDiscardRectangless) { this->m_pDiscardRectangles.insert( m_pDiscardRectangles.end(), pDiscardRectangless.begin(), pDiscardRectangless.end()); return *this; }
     PipelineDiscardRectangleStateCreateInfoEXT build() {
         PipelineDiscardRectangleStateCreateInfoEXT out{m_data};
         out.discardRectangleCount = (uint32_t)m_pDiscardRectangles.size();
@@ -16554,6 +16709,7 @@ class RenderPassInputAttachmentAspectCreateInfoBuilder {
     RenderPassInputAttachmentAspectCreateInfoBuilder() noexcept{}
     RenderPassInputAttachmentAspectCreateInfoBuilder(RenderPassInputAttachmentAspectCreateInfo data) noexcept : m_data(data) {}
     RenderPassInputAttachmentAspectCreateInfoBuilder& addAspectReferences(InputAttachmentAspectReference pAspectReferences) { this->m_pAspectReferences.push_back(pAspectReferences); return *this; }
+    RenderPassInputAttachmentAspectCreateInfoBuilder& addAspectReferences(detail::span<const InputAttachmentAspectReference> pAspectReferencess) { this->m_pAspectReferences.insert( m_pAspectReferences.end(), pAspectReferencess.begin(), pAspectReferencess.end()); return *this; }
     RenderPassInputAttachmentAspectCreateInfo build() {
         RenderPassInputAttachmentAspectCreateInfo out{m_data};
         out.aspectReferenceCount = (uint32_t)m_pAspectReferences.size();
@@ -16808,6 +16964,7 @@ class SampleLocationsInfoEXTBuilder {
     SampleLocationsInfoEXTBuilder& setSampleLocationsPerPixel(SampleCountFlagBits sampleLocationsPerPixel) { this->m_data.sampleLocationsPerPixel = sampleLocationsPerPixel; return *this; }
     SampleLocationsInfoEXTBuilder& setSampleLocationGridSize(Extent2D sampleLocationGridSize) { this->m_data.sampleLocationGridSize = sampleLocationGridSize; return *this; }
     SampleLocationsInfoEXTBuilder& addSampleLocations(SampleLocationEXT pSampleLocations) { this->m_pSampleLocations.push_back(pSampleLocations); return *this; }
+    SampleLocationsInfoEXTBuilder& addSampleLocations(detail::span<const SampleLocationEXT> pSampleLocationss) { this->m_pSampleLocations.insert( m_pSampleLocations.end(), pSampleLocationss.begin(), pSampleLocationss.end()); return *this; }
     SampleLocationsInfoEXT build() {
         SampleLocationsInfoEXT out{m_data};
         out.sampleLocationsCount = (uint32_t)m_pSampleLocations.size();
@@ -16823,7 +16980,9 @@ class RenderPassSampleLocationsBeginInfoEXTBuilder {
     RenderPassSampleLocationsBeginInfoEXTBuilder() noexcept{}
     RenderPassSampleLocationsBeginInfoEXTBuilder(RenderPassSampleLocationsBeginInfoEXT data) noexcept : m_data(data) {}
     RenderPassSampleLocationsBeginInfoEXTBuilder& addAttachmentInitialSampleLocations(AttachmentSampleLocationsEXT pAttachmentInitialSampleLocations) { this->m_pAttachmentInitialSampleLocations.push_back(pAttachmentInitialSampleLocations); return *this; }
+    RenderPassSampleLocationsBeginInfoEXTBuilder& addAttachmentInitialSampleLocations(detail::span<const AttachmentSampleLocationsEXT> pAttachmentInitialSampleLocationss) { this->m_pAttachmentInitialSampleLocations.insert( m_pAttachmentInitialSampleLocations.end(), pAttachmentInitialSampleLocationss.begin(), pAttachmentInitialSampleLocationss.end()); return *this; }
     RenderPassSampleLocationsBeginInfoEXTBuilder& addPostSubpassSampleLocations(SubpassSampleLocationsEXT pPostSubpassSampleLocations) { this->m_pPostSubpassSampleLocations.push_back(pPostSubpassSampleLocations); return *this; }
+    RenderPassSampleLocationsBeginInfoEXTBuilder& addPostSubpassSampleLocations(detail::span<const SubpassSampleLocationsEXT> pPostSubpassSampleLocationss) { this->m_pPostSubpassSampleLocations.insert( m_pPostSubpassSampleLocations.end(), pPostSubpassSampleLocationss.begin(), pPostSubpassSampleLocationss.end()); return *this; }
     RenderPassSampleLocationsBeginInfoEXT build() {
         RenderPassSampleLocationsBeginInfoEXT out{m_data};
         out.attachmentInitialSampleLocationsCount = (uint32_t)m_pAttachmentInitialSampleLocations.size();
@@ -16899,6 +17058,7 @@ class WriteDescriptorSetInlineUniformBlockEXTBuilder {
     WriteDescriptorSetInlineUniformBlockEXTBuilder() noexcept{}
     WriteDescriptorSetInlineUniformBlockEXTBuilder(WriteDescriptorSetInlineUniformBlockEXT data) noexcept : m_data(data) {}
     WriteDescriptorSetInlineUniformBlockEXTBuilder& addData(std::byte pData) { this->m_pData.push_back(pData); return *this; }
+    WriteDescriptorSetInlineUniformBlockEXTBuilder& addData(detail::span<const std::byte> pDatas) { this->m_pData.insert( m_pData.end(), pDatas.begin(), pDatas.end()); return *this; }
     WriteDescriptorSetInlineUniformBlockEXT build() {
         WriteDescriptorSetInlineUniformBlockEXT out{m_data};
         out.dataSize = (uint32_t)m_pData.size();
@@ -16927,6 +17087,7 @@ class PipelineCoverageModulationStateCreateInfoNVBuilder {
     PipelineCoverageModulationStateCreateInfoNVBuilder& setCoverageModulationMode(CoverageModulationModeNV coverageModulationMode) { this->m_data.coverageModulationMode = coverageModulationMode; return *this; }
     PipelineCoverageModulationStateCreateInfoNVBuilder& setCoverageModulationTableEnable(Bool32 coverageModulationTableEnable) { this->m_data.coverageModulationTableEnable = coverageModulationTableEnable; return *this; }
     PipelineCoverageModulationStateCreateInfoNVBuilder& addCoverageModulationTable(float pCoverageModulationTable) { this->m_pCoverageModulationTable.push_back(pCoverageModulationTable); return *this; }
+    PipelineCoverageModulationStateCreateInfoNVBuilder& addCoverageModulationTable(detail::span<const float> pCoverageModulationTables) { this->m_pCoverageModulationTable.insert( m_pCoverageModulationTable.end(), pCoverageModulationTables.begin(), pCoverageModulationTables.end()); return *this; }
     PipelineCoverageModulationStateCreateInfoNV build() {
         PipelineCoverageModulationStateCreateInfoNV out{m_data};
         out.coverageModulationTableCount = (uint32_t)m_pCoverageModulationTable.size();
@@ -16941,6 +17102,7 @@ class ImageFormatListCreateInfoBuilder {
     ImageFormatListCreateInfoBuilder() noexcept{}
     ImageFormatListCreateInfoBuilder(ImageFormatListCreateInfo data) noexcept : m_data(data) {}
     ImageFormatListCreateInfoBuilder& addViewFormats(Format pViewFormats) { this->m_pViewFormats.push_back(pViewFormats); return *this; }
+    ImageFormatListCreateInfoBuilder& addViewFormats(detail::span<const Format> pViewFormatss) { this->m_pViewFormats.insert( m_pViewFormats.end(), pViewFormatss.begin(), pViewFormatss.end()); return *this; }
     ImageFormatListCreateInfo build() {
         ImageFormatListCreateInfo out{m_data};
         out.viewFormatCount = (uint32_t)m_pViewFormats.size();
@@ -16956,6 +17118,7 @@ class ValidationCacheCreateInfoEXTBuilder {
     ValidationCacheCreateInfoEXTBuilder(ValidationCacheCreateInfoEXT data) noexcept : m_data(data) {}
     ValidationCacheCreateInfoEXTBuilder& setFlags(ValidationCacheCreateFlagsEXT flags) { this->m_data.flags = flags; return *this; }
     ValidationCacheCreateInfoEXTBuilder& addInitialData(std::byte pInitialData) { this->m_pInitialData.push_back(pInitialData); return *this; }
+    ValidationCacheCreateInfoEXTBuilder& addInitialData(detail::span<const std::byte> pInitialDatas) { this->m_pInitialData.insert( m_pInitialData.end(), pInitialDatas.begin(), pInitialDatas.end()); return *this; }
     ValidationCacheCreateInfoEXT build() {
         ValidationCacheCreateInfoEXT out{m_data};
         out.initialDataSize = (uint32_t)m_pInitialData.size();
@@ -17044,6 +17207,7 @@ class DebugUtilsObjectTagInfoEXTBuilder {
     DebugUtilsObjectTagInfoEXTBuilder& setObjectHandle(uint64_t objectHandle) { this->m_data.objectHandle = objectHandle; return *this; }
     DebugUtilsObjectTagInfoEXTBuilder& setTagName(uint64_t tagName) { this->m_data.tagName = tagName; return *this; }
     DebugUtilsObjectTagInfoEXTBuilder& addTag(std::byte pTag) { this->m_pTag.push_back(pTag); return *this; }
+    DebugUtilsObjectTagInfoEXTBuilder& addTag(detail::span<const std::byte> pTags) { this->m_pTag.insert( m_pTag.end(), pTags.begin(), pTags.end()); return *this; }
     DebugUtilsObjectTagInfoEXT build() {
         DebugUtilsObjectTagInfoEXT out{m_data};
         out.tagSize = (uint32_t)m_pTag.size();
@@ -17094,8 +17258,11 @@ class DebugUtilsMessengerCallbackDataEXTBuilder {
     DebugUtilsMessengerCallbackDataEXTBuilder& setMessageIdNumber(int32_t messageIdNumber) { this->m_data.messageIdNumber = messageIdNumber; return *this; }
     DebugUtilsMessengerCallbackDataEXTBuilder& addMessage(std::string pMessage) { this->m_pMessage = pMessage; return *this; }
     DebugUtilsMessengerCallbackDataEXTBuilder& addQueueLabels(DebugUtilsLabelEXT pQueueLabels) { this->m_pQueueLabels.push_back(pQueueLabels); return *this; }
+    DebugUtilsMessengerCallbackDataEXTBuilder& addQueueLabels(detail::span<const DebugUtilsLabelEXT> pQueueLabelss) { this->m_pQueueLabels.insert( m_pQueueLabels.end(), pQueueLabelss.begin(), pQueueLabelss.end()); return *this; }
     DebugUtilsMessengerCallbackDataEXTBuilder& addCmdBufLabels(DebugUtilsLabelEXT pCmdBufLabels) { this->m_pCmdBufLabels.push_back(pCmdBufLabels); return *this; }
+    DebugUtilsMessengerCallbackDataEXTBuilder& addCmdBufLabels(detail::span<const DebugUtilsLabelEXT> pCmdBufLabelss) { this->m_pCmdBufLabels.insert( m_pCmdBufLabels.end(), pCmdBufLabelss.begin(), pCmdBufLabelss.end()); return *this; }
     DebugUtilsMessengerCallbackDataEXTBuilder& addObjects(DebugUtilsObjectNameInfoEXT pObjects) { this->m_pObjects.push_back(pObjects); return *this; }
+    DebugUtilsMessengerCallbackDataEXTBuilder& addObjects(detail::span<const DebugUtilsObjectNameInfoEXT> pObjectss) { this->m_pObjects.insert( m_pObjects.end(), pObjectss.begin(), pObjectss.end()); return *this; }
     DebugUtilsMessengerCallbackDataEXT build() {
         DebugUtilsMessengerCallbackDataEXT out{m_data};
         out.pMessageIdName = m_pMessageIdName.data();
@@ -17204,6 +17371,7 @@ class DescriptorSetLayoutBindingFlagsCreateInfoBuilder {
     DescriptorSetLayoutBindingFlagsCreateInfoBuilder() noexcept{}
     DescriptorSetLayoutBindingFlagsCreateInfoBuilder(DescriptorSetLayoutBindingFlagsCreateInfo data) noexcept : m_data(data) {}
     DescriptorSetLayoutBindingFlagsCreateInfoBuilder& addBindingFlags(DescriptorBindingFlags pBindingFlags) { this->m_pBindingFlags.push_back(pBindingFlags); return *this; }
+    DescriptorSetLayoutBindingFlagsCreateInfoBuilder& addBindingFlags(detail::span<const DescriptorBindingFlags> pBindingFlagss) { this->m_pBindingFlags.insert( m_pBindingFlags.end(), pBindingFlagss.begin(), pBindingFlagss.end()); return *this; }
     DescriptorSetLayoutBindingFlagsCreateInfo build() {
         DescriptorSetLayoutBindingFlagsCreateInfo out{m_data};
         out.bindingCount = (uint32_t)m_pBindingFlags.size();
@@ -17218,6 +17386,7 @@ class DescriptorSetVariableDescriptorCountAllocateInfoBuilder {
     DescriptorSetVariableDescriptorCountAllocateInfoBuilder() noexcept{}
     DescriptorSetVariableDescriptorCountAllocateInfoBuilder(DescriptorSetVariableDescriptorCountAllocateInfo data) noexcept : m_data(data) {}
     DescriptorSetVariableDescriptorCountAllocateInfoBuilder& addDescriptorCounts(uint32_t pDescriptorCounts) { this->m_pDescriptorCounts.push_back(pDescriptorCounts); return *this; }
+    DescriptorSetVariableDescriptorCountAllocateInfoBuilder& addDescriptorCounts(detail::span<const uint32_t> pDescriptorCountss) { this->m_pDescriptorCounts.insert( m_pDescriptorCounts.end(), pDescriptorCountss.begin(), pDescriptorCountss.end()); return *this; }
     DescriptorSetVariableDescriptorCountAllocateInfo build() {
         DescriptorSetVariableDescriptorCountAllocateInfo out{m_data};
         out.descriptorSetCount = (uint32_t)m_pDescriptorCounts.size();
@@ -17271,10 +17440,14 @@ class SubpassDescription2Builder {
     SubpassDescription2Builder& setPipelineBindPoint(PipelineBindPoint pipelineBindPoint) { this->m_data.pipelineBindPoint = pipelineBindPoint; return *this; }
     SubpassDescription2Builder& setViewMask(uint32_t viewMask) { this->m_data.viewMask = viewMask; return *this; }
     SubpassDescription2Builder& addInputAttachments(AttachmentReference2 pInputAttachments) { this->m_pInputAttachments.push_back(pInputAttachments); return *this; }
+    SubpassDescription2Builder& addInputAttachments(detail::span<const AttachmentReference2> pInputAttachmentss) { this->m_pInputAttachments.insert( m_pInputAttachments.end(), pInputAttachmentss.begin(), pInputAttachmentss.end()); return *this; }
     SubpassDescription2Builder& addColorAttachments(AttachmentReference2 pColorAttachments) { this->m_pColorAttachments.push_back(pColorAttachments); return *this; }
+    SubpassDescription2Builder& addColorAttachments(detail::span<const AttachmentReference2> pColorAttachmentss) { this->m_pColorAttachments.insert( m_pColorAttachments.end(), pColorAttachmentss.begin(), pColorAttachmentss.end()); return *this; }
     SubpassDescription2Builder& addResolveAttachments(AttachmentReference2 pResolveAttachments) { this->m_pResolveAttachments.push_back(pResolveAttachments); return *this; }
+    SubpassDescription2Builder& addResolveAttachments(detail::span<const AttachmentReference2> pResolveAttachmentss) { this->m_pResolveAttachments.insert( m_pResolveAttachments.end(), pResolveAttachmentss.begin(), pResolveAttachmentss.end()); return *this; }
     SubpassDescription2Builder& setDepthStencilAttachment(AttachmentReference2 pDepthStencilAttachment) { this->m_pDepthStencilAttachment = pDepthStencilAttachment; return *this; }
     SubpassDescription2Builder& addPreserveAttachments(uint32_t pPreserveAttachments) { this->m_pPreserveAttachments.push_back(pPreserveAttachments); return *this; }
+    SubpassDescription2Builder& addPreserveAttachments(detail::span<const uint32_t> pPreserveAttachmentss) { this->m_pPreserveAttachments.insert( m_pPreserveAttachments.end(), pPreserveAttachmentss.begin(), pPreserveAttachmentss.end()); return *this; }
     SubpassDescription2 build() {
         SubpassDescription2 out{m_data};
         out.inputAttachmentCount = (uint32_t)m_pInputAttachments.size();
@@ -17317,9 +17490,13 @@ class RenderPassCreateInfo2Builder {
     RenderPassCreateInfo2Builder(RenderPassCreateInfo2 data) noexcept : m_data(data) {}
     RenderPassCreateInfo2Builder& setFlags(RenderPassCreateFlags flags) { this->m_data.flags = flags; return *this; }
     RenderPassCreateInfo2Builder& addAttachments(AttachmentDescription2 pAttachments) { this->m_pAttachments.push_back(pAttachments); return *this; }
+    RenderPassCreateInfo2Builder& addAttachments(detail::span<const AttachmentDescription2> pAttachmentss) { this->m_pAttachments.insert( m_pAttachments.end(), pAttachmentss.begin(), pAttachmentss.end()); return *this; }
     RenderPassCreateInfo2Builder& addSubpasses(SubpassDescription2 pSubpasses) { this->m_pSubpasses.push_back(pSubpasses); return *this; }
+    RenderPassCreateInfo2Builder& addSubpasses(detail::span<const SubpassDescription2> pSubpassess) { this->m_pSubpasses.insert( m_pSubpasses.end(), pSubpassess.begin(), pSubpassess.end()); return *this; }
     RenderPassCreateInfo2Builder& addDependencies(SubpassDependency2 pDependencies) { this->m_pDependencies.push_back(pDependencies); return *this; }
+    RenderPassCreateInfo2Builder& addDependencies(detail::span<const SubpassDependency2> pDependenciess) { this->m_pDependencies.insert( m_pDependencies.end(), pDependenciess.begin(), pDependenciess.end()); return *this; }
     RenderPassCreateInfo2Builder& addCorrelatedViewMasks(uint32_t pCorrelatedViewMasks) { this->m_pCorrelatedViewMasks.push_back(pCorrelatedViewMasks); return *this; }
+    RenderPassCreateInfo2Builder& addCorrelatedViewMasks(detail::span<const uint32_t> pCorrelatedViewMaskss) { this->m_pCorrelatedViewMasks.insert( m_pCorrelatedViewMasks.end(), pCorrelatedViewMaskss.begin(), pCorrelatedViewMaskss.end()); return *this; }
     RenderPassCreateInfo2 build() {
         RenderPassCreateInfo2 out{m_data};
         out.attachmentCount = (uint32_t)m_pAttachments.size();
@@ -17385,7 +17562,9 @@ class TimelineSemaphoreSubmitInfoBuilder {
     TimelineSemaphoreSubmitInfoBuilder() noexcept{}
     TimelineSemaphoreSubmitInfoBuilder(TimelineSemaphoreSubmitInfo data) noexcept : m_data(data) {}
     TimelineSemaphoreSubmitInfoBuilder& addWaitSemaphoreValues(uint64_t pWaitSemaphoreValues) { this->m_pWaitSemaphoreValues.push_back(pWaitSemaphoreValues); return *this; }
+    TimelineSemaphoreSubmitInfoBuilder& addWaitSemaphoreValues(detail::span<const uint64_t> pWaitSemaphoreValuess) { this->m_pWaitSemaphoreValues.insert( m_pWaitSemaphoreValues.end(), pWaitSemaphoreValuess.begin(), pWaitSemaphoreValuess.end()); return *this; }
     TimelineSemaphoreSubmitInfoBuilder& addSignalSemaphoreValues(uint64_t pSignalSemaphoreValues) { this->m_pSignalSemaphoreValues.push_back(pSignalSemaphoreValues); return *this; }
+    TimelineSemaphoreSubmitInfoBuilder& addSignalSemaphoreValues(detail::span<const uint64_t> pSignalSemaphoreValuess) { this->m_pSignalSemaphoreValues.insert( m_pSignalSemaphoreValues.end(), pSignalSemaphoreValuess.begin(), pSignalSemaphoreValuess.end()); return *this; }
     TimelineSemaphoreSubmitInfo build() {
         TimelineSemaphoreSubmitInfo out{m_data};
         out.waitSemaphoreValueCount = (uint32_t)m_pWaitSemaphoreValues.size();
@@ -17404,7 +17583,9 @@ class SemaphoreWaitInfoBuilder {
     SemaphoreWaitInfoBuilder(SemaphoreWaitInfo data) noexcept : m_data(data) {}
     SemaphoreWaitInfoBuilder& setFlags(SemaphoreWaitFlags flags) { this->m_data.flags = flags; return *this; }
     SemaphoreWaitInfoBuilder& addSemaphores(Semaphore pSemaphores) { this->m_pSemaphores.push_back(pSemaphores); return *this; }
+    SemaphoreWaitInfoBuilder& addSemaphores(detail::span<const Semaphore> pSemaphoress) { this->m_pSemaphores.insert( m_pSemaphores.end(), pSemaphoress.begin(), pSemaphoress.end()); return *this; }
     SemaphoreWaitInfoBuilder& addValues(uint64_t pValues) { this->m_pValues.push_back(pValues); return *this; }
+    SemaphoreWaitInfoBuilder& addValues(detail::span<const uint64_t> pValuess) { this->m_pValues.insert( m_pValues.end(), pValuess.begin(), pValuess.end()); return *this; }
     SemaphoreWaitInfo build() {
         SemaphoreWaitInfo out{m_data};
         out.semaphoreCount = (uint32_t)m_pSemaphores.size();
@@ -17432,6 +17613,7 @@ class PipelineVertexInputDivisorStateCreateInfoEXTBuilder {
     PipelineVertexInputDivisorStateCreateInfoEXTBuilder() noexcept{}
     PipelineVertexInputDivisorStateCreateInfoEXTBuilder(PipelineVertexInputDivisorStateCreateInfoEXT data) noexcept : m_data(data) {}
     PipelineVertexInputDivisorStateCreateInfoEXTBuilder& addVertexBindingDivisors(VertexInputBindingDivisorDescriptionEXT pVertexBindingDivisors) { this->m_pVertexBindingDivisors.push_back(pVertexBindingDivisors); return *this; }
+    PipelineVertexInputDivisorStateCreateInfoEXTBuilder& addVertexBindingDivisors(detail::span<const VertexInputBindingDivisorDescriptionEXT> pVertexBindingDivisorss) { this->m_pVertexBindingDivisors.insert( m_pVertexBindingDivisors.end(), pVertexBindingDivisorss.begin(), pVertexBindingDivisorss.end()); return *this; }
     PipelineVertexInputDivisorStateCreateInfoEXT build() {
         PipelineVertexInputDivisorStateCreateInfoEXT out{m_data};
         out.vertexBindingDivisorCount = (uint32_t)m_pVertexBindingDivisors.size();
@@ -17674,6 +17856,7 @@ class PipelineViewportExclusiveScissorStateCreateInfoNVBuilder {
     PipelineViewportExclusiveScissorStateCreateInfoNVBuilder() noexcept{}
     PipelineViewportExclusiveScissorStateCreateInfoNVBuilder(PipelineViewportExclusiveScissorStateCreateInfoNV data) noexcept : m_data(data) {}
     PipelineViewportExclusiveScissorStateCreateInfoNVBuilder& addExclusiveScissors(Rect2D pExclusiveScissors) { this->m_pExclusiveScissors.push_back(pExclusiveScissors); return *this; }
+    PipelineViewportExclusiveScissorStateCreateInfoNVBuilder& addExclusiveScissors(detail::span<const Rect2D> pExclusiveScissorss) { this->m_pExclusiveScissors.insert( m_pExclusiveScissors.end(), pExclusiveScissorss.begin(), pExclusiveScissorss.end()); return *this; }
     PipelineViewportExclusiveScissorStateCreateInfoNV build() {
         PipelineViewportExclusiveScissorStateCreateInfoNV out{m_data};
         out.exclusiveScissorCount = (uint32_t)m_pExclusiveScissors.size();
@@ -17743,6 +17926,7 @@ class ShadingRatePaletteNVBuilder {
     ShadingRatePaletteNVBuilder() noexcept{}
     ShadingRatePaletteNVBuilder(ShadingRatePaletteNV data) noexcept : m_data(data) {}
     ShadingRatePaletteNVBuilder& addShadingRatePaletteEntries(ShadingRatePaletteEntryNV pShadingRatePaletteEntries) { this->m_pShadingRatePaletteEntries.push_back(pShadingRatePaletteEntries); return *this; }
+    ShadingRatePaletteNVBuilder& addShadingRatePaletteEntries(detail::span<const ShadingRatePaletteEntryNV> pShadingRatePaletteEntriess) { this->m_pShadingRatePaletteEntries.insert( m_pShadingRatePaletteEntries.end(), pShadingRatePaletteEntriess.begin(), pShadingRatePaletteEntriess.end()); return *this; }
     ShadingRatePaletteNV build() {
         ShadingRatePaletteNV out{m_data};
         out.shadingRatePaletteEntryCount = (uint32_t)m_pShadingRatePaletteEntries.size();
@@ -17758,6 +17942,7 @@ class PipelineViewportShadingRateImageStateCreateInfoNVBuilder {
     PipelineViewportShadingRateImageStateCreateInfoNVBuilder(PipelineViewportShadingRateImageStateCreateInfoNV data) noexcept : m_data(data) {}
     PipelineViewportShadingRateImageStateCreateInfoNVBuilder& setShadingRateImageEnable(Bool32 shadingRateImageEnable) { this->m_data.shadingRateImageEnable = shadingRateImageEnable; return *this; }
     PipelineViewportShadingRateImageStateCreateInfoNVBuilder& addShadingRatePalettes(ShadingRatePaletteNV pShadingRatePalettes) { this->m_pShadingRatePalettes.push_back(pShadingRatePalettes); return *this; }
+    PipelineViewportShadingRateImageStateCreateInfoNVBuilder& addShadingRatePalettes(detail::span<const ShadingRatePaletteNV> pShadingRatePalettess) { this->m_pShadingRatePalettes.insert( m_pShadingRatePalettes.end(), pShadingRatePalettess.begin(), pShadingRatePalettess.end()); return *this; }
     PipelineViewportShadingRateImageStateCreateInfoNV build() {
         PipelineViewportShadingRateImageStateCreateInfoNV out{m_data};
         out.viewportCount = (uint32_t)m_pShadingRatePalettes.size();
@@ -17785,6 +17970,7 @@ class CoarseSampleOrderCustomNVBuilder {
     CoarseSampleOrderCustomNVBuilder& setShadingRate(ShadingRatePaletteEntryNV shadingRate) { this->m_data.shadingRate = shadingRate; return *this; }
     CoarseSampleOrderCustomNVBuilder& setSampleCount(uint32_t sampleCount) { this->m_data.sampleCount = sampleCount; return *this; }
     CoarseSampleOrderCustomNVBuilder& addSampleLocations(CoarseSampleLocationNV pSampleLocations) { this->m_pSampleLocations.push_back(pSampleLocations); return *this; }
+    CoarseSampleOrderCustomNVBuilder& addSampleLocations(detail::span<const CoarseSampleLocationNV> pSampleLocationss) { this->m_pSampleLocations.insert( m_pSampleLocations.end(), pSampleLocationss.begin(), pSampleLocationss.end()); return *this; }
     CoarseSampleOrderCustomNV build() {
         CoarseSampleOrderCustomNV out{m_data};
         out.sampleLocationCount = (uint32_t)m_pSampleLocations.size();
@@ -17800,6 +17986,7 @@ class PipelineViewportCoarseSampleOrderStateCreateInfoNVBuilder {
     PipelineViewportCoarseSampleOrderStateCreateInfoNVBuilder(PipelineViewportCoarseSampleOrderStateCreateInfoNV data) noexcept : m_data(data) {}
     PipelineViewportCoarseSampleOrderStateCreateInfoNVBuilder& setSampleOrderType(CoarseSampleOrderTypeNV sampleOrderType) { this->m_data.sampleOrderType = sampleOrderType; return *this; }
     PipelineViewportCoarseSampleOrderStateCreateInfoNVBuilder& addCustomSampleOrders(CoarseSampleOrderCustomNV pCustomSampleOrders) { this->m_pCustomSampleOrders.push_back(pCustomSampleOrders); return *this; }
+    PipelineViewportCoarseSampleOrderStateCreateInfoNVBuilder& addCustomSampleOrders(detail::span<const CoarseSampleOrderCustomNV> pCustomSampleOrderss) { this->m_pCustomSampleOrders.insert( m_pCustomSampleOrders.end(), pCustomSampleOrderss.begin(), pCustomSampleOrderss.end()); return *this; }
     PipelineViewportCoarseSampleOrderStateCreateInfoNV build() {
         PipelineViewportCoarseSampleOrderStateCreateInfoNV out{m_data};
         out.customSampleOrderCount = (uint32_t)m_pCustomSampleOrders.size();
@@ -17858,7 +18045,9 @@ class RayTracingPipelineCreateInfoNVBuilder {
     RayTracingPipelineCreateInfoNVBuilder(RayTracingPipelineCreateInfoNV data) noexcept : m_data(data) {}
     RayTracingPipelineCreateInfoNVBuilder& setFlags(PipelineCreateFlags flags) { this->m_data.flags = flags; return *this; }
     RayTracingPipelineCreateInfoNVBuilder& addStages(PipelineShaderStageCreateInfo pStages) { this->m_pStages.push_back(pStages); return *this; }
+    RayTracingPipelineCreateInfoNVBuilder& addStages(detail::span<const PipelineShaderStageCreateInfo> pStagess) { this->m_pStages.insert( m_pStages.end(), pStagess.begin(), pStagess.end()); return *this; }
     RayTracingPipelineCreateInfoNVBuilder& addGroups(RayTracingShaderGroupCreateInfoNV pGroups) { this->m_pGroups.push_back(pGroups); return *this; }
+    RayTracingPipelineCreateInfoNVBuilder& addGroups(detail::span<const RayTracingShaderGroupCreateInfoNV> pGroupss) { this->m_pGroups.insert( m_pGroups.end(), pGroupss.begin(), pGroupss.end()); return *this; }
     RayTracingPipelineCreateInfoNVBuilder& setMaxRecursionDepth(uint32_t maxRecursionDepth) { this->m_data.maxRecursionDepth = maxRecursionDepth; return *this; }
     RayTracingPipelineCreateInfoNVBuilder& setLayout(PipelineLayout layout) { this->m_data.layout = layout; return *this; }
     RayTracingPipelineCreateInfoNVBuilder& setBasePipelineHandle(Pipeline basePipelineHandle) { this->m_data.basePipelineHandle = basePipelineHandle; return *this; }
@@ -17891,6 +18080,7 @@ class PipelineLibraryCreateInfoKHRBuilder {
     PipelineLibraryCreateInfoKHRBuilder() noexcept{}
     PipelineLibraryCreateInfoKHRBuilder(PipelineLibraryCreateInfoKHR data) noexcept : m_data(data) {}
     PipelineLibraryCreateInfoKHRBuilder& addLibraries(Pipeline pLibraries) { this->m_pLibraries.push_back(pLibraries); return *this; }
+    PipelineLibraryCreateInfoKHRBuilder& addLibraries(detail::span<const Pipeline> pLibrariess) { this->m_pLibraries.insert( m_pLibraries.end(), pLibrariess.begin(), pLibrariess.end()); return *this; }
     PipelineLibraryCreateInfoKHR build() {
         PipelineLibraryCreateInfoKHR out{m_data};
         out.libraryCount = (uint32_t)m_pLibraries.size();
@@ -17910,7 +18100,9 @@ class RayTracingPipelineCreateInfoKHRBuilder {
     RayTracingPipelineCreateInfoKHRBuilder(RayTracingPipelineCreateInfoKHR data) noexcept : m_data(data) {}
     RayTracingPipelineCreateInfoKHRBuilder& setFlags(PipelineCreateFlags flags) { this->m_data.flags = flags; return *this; }
     RayTracingPipelineCreateInfoKHRBuilder& addStages(PipelineShaderStageCreateInfo pStages) { this->m_pStages.push_back(pStages); return *this; }
+    RayTracingPipelineCreateInfoKHRBuilder& addStages(detail::span<const PipelineShaderStageCreateInfo> pStagess) { this->m_pStages.insert( m_pStages.end(), pStagess.begin(), pStagess.end()); return *this; }
     RayTracingPipelineCreateInfoKHRBuilder& addGroups(RayTracingShaderGroupCreateInfoKHR pGroups) { this->m_pGroups.push_back(pGroups); return *this; }
+    RayTracingPipelineCreateInfoKHRBuilder& addGroups(detail::span<const RayTracingShaderGroupCreateInfoKHR> pGroupss) { this->m_pGroups.insert( m_pGroups.end(), pGroupss.begin(), pGroupss.end()); return *this; }
     RayTracingPipelineCreateInfoKHRBuilder& setMaxPipelineRayRecursionDepth(uint32_t maxPipelineRayRecursionDepth) { this->m_data.maxPipelineRayRecursionDepth = maxPipelineRayRecursionDepth; return *this; }
     RayTracingPipelineCreateInfoKHRBuilder& setLibraryInfo(PipelineLibraryCreateInfoKHR pLibraryInfo) { this->m_pLibraryInfo = pLibraryInfo; return *this; }
     RayTracingPipelineCreateInfoKHRBuilder& setLibraryInterface(RayTracingPipelineInterfaceCreateInfoKHR pLibraryInterface) { this->m_pLibraryInterface = pLibraryInterface; return *this; }
@@ -17988,6 +18180,7 @@ class AccelerationStructureInfoNVBuilder {
     AccelerationStructureInfoNVBuilder& setFlags(BuildAccelerationStructureFlagsNV flags) { this->m_data.flags = flags; return *this; }
     AccelerationStructureInfoNVBuilder& setInstanceCount(uint32_t instanceCount) { this->m_data.instanceCount = instanceCount; return *this; }
     AccelerationStructureInfoNVBuilder& addGeometries(GeometryNV pGeometries) { this->m_pGeometries.push_back(pGeometries); return *this; }
+    AccelerationStructureInfoNVBuilder& addGeometries(detail::span<const GeometryNV> pGeometriess) { this->m_pGeometries.insert( m_pGeometries.end(), pGeometriess.begin(), pGeometriess.end()); return *this; }
     AccelerationStructureInfoNV build() {
         AccelerationStructureInfoNV out{m_data};
         out.geometryCount = (uint32_t)m_pGeometries.size();
@@ -18017,6 +18210,7 @@ class BindAccelerationStructureMemoryInfoNVBuilder {
     BindAccelerationStructureMemoryInfoNVBuilder& setMemory(DeviceMemory memory) { this->m_data.memory = memory; return *this; }
     BindAccelerationStructureMemoryInfoNVBuilder& setMemoryOffset(DeviceSize memoryOffset) { this->m_data.memoryOffset = memoryOffset; return *this; }
     BindAccelerationStructureMemoryInfoNVBuilder& addDeviceIndices(uint32_t pDeviceIndices) { this->m_pDeviceIndices.push_back(pDeviceIndices); return *this; }
+    BindAccelerationStructureMemoryInfoNVBuilder& addDeviceIndices(detail::span<const uint32_t> pDeviceIndicess) { this->m_pDeviceIndices.insert( m_pDeviceIndices.end(), pDeviceIndicess.begin(), pDeviceIndicess.end()); return *this; }
     BindAccelerationStructureMemoryInfoNV build() {
         BindAccelerationStructureMemoryInfoNV out{m_data};
         out.deviceIndexCount = (uint32_t)m_pDeviceIndices.size();
@@ -18031,6 +18225,7 @@ class WriteDescriptorSetAccelerationStructureKHRBuilder {
     WriteDescriptorSetAccelerationStructureKHRBuilder() noexcept{}
     WriteDescriptorSetAccelerationStructureKHRBuilder(WriteDescriptorSetAccelerationStructureKHR data) noexcept : m_data(data) {}
     WriteDescriptorSetAccelerationStructureKHRBuilder& addAccelerationStructures(AccelerationStructureKHR pAccelerationStructures) { this->m_pAccelerationStructures.push_back(pAccelerationStructures); return *this; }
+    WriteDescriptorSetAccelerationStructureKHRBuilder& addAccelerationStructures(detail::span<const AccelerationStructureKHR> pAccelerationStructuress) { this->m_pAccelerationStructures.insert( m_pAccelerationStructures.end(), pAccelerationStructuress.begin(), pAccelerationStructuress.end()); return *this; }
     WriteDescriptorSetAccelerationStructureKHR build() {
         WriteDescriptorSetAccelerationStructureKHR out{m_data};
         out.accelerationStructureCount = (uint32_t)m_pAccelerationStructures.size();
@@ -18045,6 +18240,7 @@ class WriteDescriptorSetAccelerationStructureNVBuilder {
     WriteDescriptorSetAccelerationStructureNVBuilder() noexcept{}
     WriteDescriptorSetAccelerationStructureNVBuilder(WriteDescriptorSetAccelerationStructureNV data) noexcept : m_data(data) {}
     WriteDescriptorSetAccelerationStructureNVBuilder& addAccelerationStructures(AccelerationStructureNV pAccelerationStructures) { this->m_pAccelerationStructures.push_back(pAccelerationStructures); return *this; }
+    WriteDescriptorSetAccelerationStructureNVBuilder& addAccelerationStructures(detail::span<const AccelerationStructureNV> pAccelerationStructuress) { this->m_pAccelerationStructures.insert( m_pAccelerationStructures.end(), pAccelerationStructuress.begin(), pAccelerationStructuress.end()); return *this; }
     WriteDescriptorSetAccelerationStructureNV build() {
         WriteDescriptorSetAccelerationStructureNV out{m_data};
         out.accelerationStructureCount = (uint32_t)m_pAccelerationStructures.size();
@@ -18114,6 +18310,7 @@ class PhysicalDeviceImageDrmFormatModifierInfoEXTBuilder {
     PhysicalDeviceImageDrmFormatModifierInfoEXTBuilder& setDrmFormatModifier(uint64_t drmFormatModifier) { this->m_data.drmFormatModifier = drmFormatModifier; return *this; }
     PhysicalDeviceImageDrmFormatModifierInfoEXTBuilder& setSharingMode(SharingMode sharingMode) { this->m_data.sharingMode = sharingMode; return *this; }
     PhysicalDeviceImageDrmFormatModifierInfoEXTBuilder& addQueueFamilyIndices(uint32_t pQueueFamilyIndices) { this->m_pQueueFamilyIndices.push_back(pQueueFamilyIndices); return *this; }
+    PhysicalDeviceImageDrmFormatModifierInfoEXTBuilder& addQueueFamilyIndices(detail::span<const uint32_t> pQueueFamilyIndicess) { this->m_pQueueFamilyIndices.insert( m_pQueueFamilyIndices.end(), pQueueFamilyIndicess.begin(), pQueueFamilyIndicess.end()); return *this; }
     PhysicalDeviceImageDrmFormatModifierInfoEXT build() {
         PhysicalDeviceImageDrmFormatModifierInfoEXT out{m_data};
         out.queueFamilyIndexCount = (uint32_t)m_pQueueFamilyIndices.size();
@@ -18128,6 +18325,7 @@ class ImageDrmFormatModifierListCreateInfoEXTBuilder {
     ImageDrmFormatModifierListCreateInfoEXTBuilder() noexcept{}
     ImageDrmFormatModifierListCreateInfoEXTBuilder(ImageDrmFormatModifierListCreateInfoEXT data) noexcept : m_data(data) {}
     ImageDrmFormatModifierListCreateInfoEXTBuilder& addDrmFormatModifiers(uint64_t pDrmFormatModifiers) { this->m_pDrmFormatModifiers.push_back(pDrmFormatModifiers); return *this; }
+    ImageDrmFormatModifierListCreateInfoEXTBuilder& addDrmFormatModifiers(detail::span<const uint64_t> pDrmFormatModifierss) { this->m_pDrmFormatModifiers.insert( m_pDrmFormatModifiers.end(), pDrmFormatModifierss.begin(), pDrmFormatModifierss.end()); return *this; }
     ImageDrmFormatModifierListCreateInfoEXT build() {
         ImageDrmFormatModifierListCreateInfoEXT out{m_data};
         out.drmFormatModifierCount = (uint32_t)m_pDrmFormatModifiers.size();
@@ -18143,6 +18341,7 @@ class ImageDrmFormatModifierExplicitCreateInfoEXTBuilder {
     ImageDrmFormatModifierExplicitCreateInfoEXTBuilder(ImageDrmFormatModifierExplicitCreateInfoEXT data) noexcept : m_data(data) {}
     ImageDrmFormatModifierExplicitCreateInfoEXTBuilder& setDrmFormatModifier(uint64_t drmFormatModifier) { this->m_data.drmFormatModifier = drmFormatModifier; return *this; }
     ImageDrmFormatModifierExplicitCreateInfoEXTBuilder& addPlaneLayouts(SubresourceLayout pPlaneLayouts) { this->m_pPlaneLayouts.push_back(pPlaneLayouts); return *this; }
+    ImageDrmFormatModifierExplicitCreateInfoEXTBuilder& addPlaneLayouts(detail::span<const SubresourceLayout> pPlaneLayoutss) { this->m_pPlaneLayouts.insert( m_pPlaneLayouts.end(), pPlaneLayoutss.begin(), pPlaneLayoutss.end()); return *this; }
     ImageDrmFormatModifierExplicitCreateInfoEXT build() {
         ImageDrmFormatModifierExplicitCreateInfoEXT out{m_data};
         out.drmFormatModifierPlaneCount = (uint32_t)m_pPlaneLayouts.size();
@@ -18378,6 +18577,7 @@ class FramebufferAttachmentImageInfoBuilder {
     FramebufferAttachmentImageInfoBuilder& setHeight(uint32_t height) { this->m_data.height = height; return *this; }
     FramebufferAttachmentImageInfoBuilder& setLayerCount(uint32_t layerCount) { this->m_data.layerCount = layerCount; return *this; }
     FramebufferAttachmentImageInfoBuilder& addViewFormats(Format pViewFormats) { this->m_pViewFormats.push_back(pViewFormats); return *this; }
+    FramebufferAttachmentImageInfoBuilder& addViewFormats(detail::span<const Format> pViewFormatss) { this->m_pViewFormats.insert( m_pViewFormats.end(), pViewFormatss.begin(), pViewFormatss.end()); return *this; }
     FramebufferAttachmentImageInfo build() {
         FramebufferAttachmentImageInfo out{m_data};
         out.viewFormatCount = (uint32_t)m_pViewFormats.size();
@@ -18392,6 +18592,7 @@ class FramebufferAttachmentsCreateInfoBuilder {
     FramebufferAttachmentsCreateInfoBuilder() noexcept{}
     FramebufferAttachmentsCreateInfoBuilder(FramebufferAttachmentsCreateInfo data) noexcept : m_data(data) {}
     FramebufferAttachmentsCreateInfoBuilder& addAttachmentImageInfos(FramebufferAttachmentImageInfo pAttachmentImageInfos) { this->m_pAttachmentImageInfos.push_back(pAttachmentImageInfos); return *this; }
+    FramebufferAttachmentsCreateInfoBuilder& addAttachmentImageInfos(detail::span<const FramebufferAttachmentImageInfo> pAttachmentImageInfoss) { this->m_pAttachmentImageInfos.insert( m_pAttachmentImageInfos.end(), pAttachmentImageInfoss.begin(), pAttachmentImageInfoss.end()); return *this; }
     FramebufferAttachmentsCreateInfo build() {
         FramebufferAttachmentsCreateInfo out{m_data};
         out.attachmentImageInfoCount = (uint32_t)m_pAttachmentImageInfos.size();
@@ -18406,6 +18607,7 @@ class RenderPassAttachmentBeginInfoBuilder {
     RenderPassAttachmentBeginInfoBuilder() noexcept{}
     RenderPassAttachmentBeginInfoBuilder(RenderPassAttachmentBeginInfo data) noexcept : m_data(data) {}
     RenderPassAttachmentBeginInfoBuilder& addAttachments(ImageView pAttachments) { this->m_pAttachments.push_back(pAttachments); return *this; }
+    RenderPassAttachmentBeginInfoBuilder& addAttachments(detail::span<const ImageView> pAttachmentss) { this->m_pAttachments.insert( m_pAttachments.end(), pAttachmentss.begin(), pAttachmentss.end()); return *this; }
     RenderPassAttachmentBeginInfo build() {
         RenderPassAttachmentBeginInfo out{m_data};
         out.attachmentCount = (uint32_t)m_pAttachments.size();
@@ -18500,6 +18702,7 @@ class PipelineCreationFeedbackCreateInfoEXTBuilder {
     PipelineCreationFeedbackCreateInfoEXTBuilder(PipelineCreationFeedbackCreateInfoEXT data) noexcept : m_data(data) {}
     PipelineCreationFeedbackCreateInfoEXTBuilder& setPipelineCreationFeedback(PipelineCreationFeedbackEXT pPipelineCreationFeedback) { this->m_pPipelineCreationFeedback = pPipelineCreationFeedback; return *this; }
     PipelineCreationFeedbackCreateInfoEXTBuilder& addPipelineStageCreationFeedbacks(PipelineCreationFeedbackEXT pPipelineStageCreationFeedbacks) { this->m_pPipelineStageCreationFeedbacks.push_back(pPipelineStageCreationFeedbacks); return *this; }
+    PipelineCreationFeedbackCreateInfoEXTBuilder& addPipelineStageCreationFeedbacks(detail::span<PipelineCreationFeedbackEXT> pPipelineStageCreationFeedbackss) { this->m_pPipelineStageCreationFeedbacks.insert( m_pPipelineStageCreationFeedbacks.end(), pPipelineStageCreationFeedbackss.begin(), pPipelineStageCreationFeedbackss.end()); return *this; }
     PipelineCreationFeedbackCreateInfoEXT build() {
         PipelineCreationFeedbackCreateInfoEXT out{m_data};
         out.pPipelineCreationFeedback = &m_pPipelineCreationFeedback;
@@ -18563,6 +18766,7 @@ class QueryPoolPerformanceCreateInfoKHRBuilder {
     QueryPoolPerformanceCreateInfoKHRBuilder(QueryPoolPerformanceCreateInfoKHR data) noexcept : m_data(data) {}
     QueryPoolPerformanceCreateInfoKHRBuilder& setQueueFamilyIndex(uint32_t queueFamilyIndex) { this->m_data.queueFamilyIndex = queueFamilyIndex; return *this; }
     QueryPoolPerformanceCreateInfoKHRBuilder& addCounterIndices(uint32_t pCounterIndices) { this->m_pCounterIndices.push_back(pCounterIndices); return *this; }
+    QueryPoolPerformanceCreateInfoKHRBuilder& addCounterIndices(detail::span<const uint32_t> pCounterIndicess) { this->m_pCounterIndices.insert( m_pCounterIndices.end(), pCounterIndicess.begin(), pCounterIndicess.end()); return *this; }
     QueryPoolPerformanceCreateInfoKHR build() {
         QueryPoolPerformanceCreateInfoKHR out{m_data};
         out.counterIndexCount = (uint32_t)m_pCounterIndices.size();
@@ -19146,6 +19350,7 @@ class AccelerationStructureBuildGeometryInfoKHRBuilder {
     AccelerationStructureBuildGeometryInfoKHRBuilder& setSrcAccelerationStructure(AccelerationStructureKHR srcAccelerationStructure) { this->m_data.srcAccelerationStructure = srcAccelerationStructure; return *this; }
     AccelerationStructureBuildGeometryInfoKHRBuilder& setDstAccelerationStructure(AccelerationStructureKHR dstAccelerationStructure) { this->m_data.dstAccelerationStructure = dstAccelerationStructure; return *this; }
     AccelerationStructureBuildGeometryInfoKHRBuilder& addGeometries(AccelerationStructureGeometryKHR pGeometries) { this->m_pGeometries.push_back(pGeometries); return *this; }
+    AccelerationStructureBuildGeometryInfoKHRBuilder& addGeometries(detail::span<const AccelerationStructureGeometryKHR> pGeometriess) { this->m_pGeometries.insert( m_pGeometries.end(), pGeometriess.begin(), pGeometriess.end()); return *this; }
     AccelerationStructureBuildGeometryInfoKHRBuilder& addPpGeometries(std::vector<AccelerationStructureGeometryKHR> ppGeometries) {this->m_ppGeometries.push_back(ppGeometries); return *this; }
     AccelerationStructureBuildGeometryInfoKHRBuilder& setScratchData(DeviceOrHostAddressKHR scratchData) { this->m_data.scratchData = scratchData; return *this; }
     AccelerationStructureBuildGeometryInfoKHR build() {
@@ -19204,6 +19409,7 @@ class AccelerationStructureVersionInfoKHRBuilder {
     AccelerationStructureVersionInfoKHRBuilder() noexcept{}
     AccelerationStructureVersionInfoKHRBuilder(AccelerationStructureVersionInfoKHR data) noexcept : m_data(data) {}
     AccelerationStructureVersionInfoKHRBuilder& addVersionData(uint8_t pVersionData) { this->m_pVersionData.push_back(pVersionData); return *this; }
+    AccelerationStructureVersionInfoKHRBuilder& addVersionData(detail::span<const uint8_t> pVersionDatas) { this->m_pVersionData.insert( m_pVersionData.end(), pVersionDatas.begin(), pVersionDatas.end()); return *this; }
     AccelerationStructureVersionInfoKHR build() {
         AccelerationStructureVersionInfoKHR out{m_data};
         out.pVersionData = m_pVersionData.data();
@@ -19472,6 +19678,7 @@ class CopyBufferInfo2KHRBuilder {
     CopyBufferInfo2KHRBuilder& setSrcBuffer(Buffer srcBuffer) { this->m_data.srcBuffer = srcBuffer; return *this; }
     CopyBufferInfo2KHRBuilder& setDstBuffer(Buffer dstBuffer) { this->m_data.dstBuffer = dstBuffer; return *this; }
     CopyBufferInfo2KHRBuilder& addRegions(BufferCopy2KHR pRegions) { this->m_pRegions.push_back(pRegions); return *this; }
+    CopyBufferInfo2KHRBuilder& addRegions(detail::span<const BufferCopy2KHR> pRegionss) { this->m_pRegions.insert( m_pRegions.end(), pRegionss.begin(), pRegionss.end()); return *this; }
     CopyBufferInfo2KHR build() {
         CopyBufferInfo2KHR out{m_data};
         out.regionCount = (uint32_t)m_pRegions.size();
@@ -19490,6 +19697,7 @@ class CopyImageInfo2KHRBuilder {
     CopyImageInfo2KHRBuilder& setDstImage(Image dstImage) { this->m_data.dstImage = dstImage; return *this; }
     CopyImageInfo2KHRBuilder& setDstImageLayout(ImageLayout dstImageLayout) { this->m_data.dstImageLayout = dstImageLayout; return *this; }
     CopyImageInfo2KHRBuilder& addRegions(ImageCopy2KHR pRegions) { this->m_pRegions.push_back(pRegions); return *this; }
+    CopyImageInfo2KHRBuilder& addRegions(detail::span<const ImageCopy2KHR> pRegionss) { this->m_pRegions.insert( m_pRegions.end(), pRegionss.begin(), pRegionss.end()); return *this; }
     CopyImageInfo2KHR build() {
         CopyImageInfo2KHR out{m_data};
         out.regionCount = (uint32_t)m_pRegions.size();
@@ -19508,6 +19716,7 @@ class BlitImageInfo2KHRBuilder {
     BlitImageInfo2KHRBuilder& setDstImage(Image dstImage) { this->m_data.dstImage = dstImage; return *this; }
     BlitImageInfo2KHRBuilder& setDstImageLayout(ImageLayout dstImageLayout) { this->m_data.dstImageLayout = dstImageLayout; return *this; }
     BlitImageInfo2KHRBuilder& addRegions(ImageBlit2KHR pRegions) { this->m_pRegions.push_back(pRegions); return *this; }
+    BlitImageInfo2KHRBuilder& addRegions(detail::span<const ImageBlit2KHR> pRegionss) { this->m_pRegions.insert( m_pRegions.end(), pRegionss.begin(), pRegionss.end()); return *this; }
     BlitImageInfo2KHRBuilder& setFilter(Filter filter) { this->m_data.filter = filter; return *this; }
     BlitImageInfo2KHR build() {
         BlitImageInfo2KHR out{m_data};
@@ -19526,6 +19735,7 @@ class CopyBufferToImageInfo2KHRBuilder {
     CopyBufferToImageInfo2KHRBuilder& setDstImage(Image dstImage) { this->m_data.dstImage = dstImage; return *this; }
     CopyBufferToImageInfo2KHRBuilder& setDstImageLayout(ImageLayout dstImageLayout) { this->m_data.dstImageLayout = dstImageLayout; return *this; }
     CopyBufferToImageInfo2KHRBuilder& addRegions(BufferImageCopy2KHR pRegions) { this->m_pRegions.push_back(pRegions); return *this; }
+    CopyBufferToImageInfo2KHRBuilder& addRegions(detail::span<const BufferImageCopy2KHR> pRegionss) { this->m_pRegions.insert( m_pRegions.end(), pRegionss.begin(), pRegionss.end()); return *this; }
     CopyBufferToImageInfo2KHR build() {
         CopyBufferToImageInfo2KHR out{m_data};
         out.regionCount = (uint32_t)m_pRegions.size();
@@ -19543,6 +19753,7 @@ class CopyImageToBufferInfo2KHRBuilder {
     CopyImageToBufferInfo2KHRBuilder& setSrcImageLayout(ImageLayout srcImageLayout) { this->m_data.srcImageLayout = srcImageLayout; return *this; }
     CopyImageToBufferInfo2KHRBuilder& setDstBuffer(Buffer dstBuffer) { this->m_data.dstBuffer = dstBuffer; return *this; }
     CopyImageToBufferInfo2KHRBuilder& addRegions(BufferImageCopy2KHR pRegions) { this->m_pRegions.push_back(pRegions); return *this; }
+    CopyImageToBufferInfo2KHRBuilder& addRegions(detail::span<const BufferImageCopy2KHR> pRegionss) { this->m_pRegions.insert( m_pRegions.end(), pRegionss.begin(), pRegionss.end()); return *this; }
     CopyImageToBufferInfo2KHR build() {
         CopyImageToBufferInfo2KHR out{m_data};
         out.regionCount = (uint32_t)m_pRegions.size();
@@ -19561,6 +19772,7 @@ class ResolveImageInfo2KHRBuilder {
     ResolveImageInfo2KHRBuilder& setDstImage(Image dstImage) { this->m_data.dstImage = dstImage; return *this; }
     ResolveImageInfo2KHRBuilder& setDstImageLayout(ImageLayout dstImageLayout) { this->m_data.dstImageLayout = dstImageLayout; return *this; }
     ResolveImageInfo2KHRBuilder& addRegions(ImageResolve2KHR pRegions) { this->m_pRegions.push_back(pRegions); return *this; }
+    ResolveImageInfo2KHRBuilder& addRegions(detail::span<const ImageResolve2KHR> pRegionss) { this->m_pRegions.insert( m_pRegions.end(), pRegionss.begin(), pRegionss.end()); return *this; }
     ResolveImageInfo2KHR build() {
         ResolveImageInfo2KHR out{m_data};
         out.regionCount = (uint32_t)m_pRegions.size();
@@ -19679,8 +19891,5144 @@ class AccelerationStructureBuildSizesInfoKHRBuilder {
         AccelerationStructureBuildSizesInfoKHR out{m_data};
         return out; }
 };
+class ApplicationInfoMaker {
+    void* pNext = nullptr;
+    const char * pApplicationName = nullptr;
+    uint32_t applicationVersion{};
+    const char * pEngineName = nullptr;
+    uint32_t engineVersion{};
+    uint32_t apiVersion{};
+    ApplicationInfo build() noexcept {
+        ApplicationInfo out{};
+        out.pNext = pNext;
+        out.pApplicationName = pApplicationName;
+        out.applicationVersion = applicationVersion;
+        out.pEngineName = pEngineName;
+        out.engineVersion = engineVersion;
+        out.apiVersion = apiVersion;
+        return out; }
+};
+class AllocationCallbacksMaker {
+    PFN_AllocationFunction pfnAllocation{};
+    PFN_ReallocationFunction pfnReallocation{};
+    PFN_FreeFunction pfnFree{};
+    PFN_InternalAllocationNotification pfnInternalAllocation{};
+    PFN_InternalFreeNotification pfnInternalFree{};
+    AllocationCallbacks build() noexcept {
+        AllocationCallbacks out{};
+        out.pfnAllocation = pfnAllocation;
+        out.pfnReallocation = pfnReallocation;
+        out.pfnFree = pfnFree;
+        out.pfnInternalAllocation = pfnInternalAllocation;
+        out.pfnInternalFree = pfnInternalFree;
+        return out; }
+};
+class DeviceQueueCreateInfoMaker {
+    void* pNext = nullptr;
+    DeviceQueueCreateFlags flags{};
+    uint32_t queueFamilyIndex{};
+    detail::span<float> pQueuePriorities;
+    DeviceQueueCreateInfo build() noexcept {
+        DeviceQueueCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.queueFamilyIndex = queueFamilyIndex;
+        out.queueCount = (uint32_t)pQueuePriorities.size();
+        out.pQueuePriorities = pQueuePriorities.data();
+        return out; }
+};
+class DeviceCreateInfoMaker {
+    void* pNext = nullptr;
+    DeviceCreateFlags flags{};
+    detail::span<DeviceQueueCreateInfo> pQueueCreateInfos;
+    detail::span<const char *> ppEnabledExtensionNames;
+    detail::optional<PhysicalDeviceFeatures> pEnabledFeatures;
+    DeviceCreateInfo build() noexcept {
+        DeviceCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.queueCreateInfoCount = (uint32_t)pQueueCreateInfos.size();
+        out.pQueueCreateInfos = pQueueCreateInfos.data();
+        out.enabledExtensionCount = (uint32_t)ppEnabledExtensionNames.size();
+        out.ppEnabledExtensionNames = ppEnabledExtensionNames.data();
+        out.pEnabledFeatures = pEnabledFeatures.ptr_or_nullptr();
+        return out; }
+};
+class InstanceCreateInfoMaker {
+    void* pNext = nullptr;
+    InstanceCreateFlags flags{};
+    detail::optional<ApplicationInfo> pApplicationInfo;
+    detail::span<const char *> ppEnabledLayerNames;
+    detail::span<const char *> ppEnabledExtensionNames;
+    InstanceCreateInfo build() noexcept {
+        InstanceCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.pApplicationInfo = pApplicationInfo.ptr_or_nullptr();
+        out.enabledLayerCount = (uint32_t)ppEnabledLayerNames.size();
+        out.ppEnabledLayerNames = ppEnabledLayerNames.data();
+        out.enabledExtensionCount = (uint32_t)ppEnabledExtensionNames.size();
+        out.ppEnabledExtensionNames = ppEnabledExtensionNames.data();
+        return out; }
+};
+class MemoryAllocateInfoMaker {
+    void* pNext = nullptr;
+    DeviceSize allocationSize{};
+    uint32_t memoryTypeIndex{};
+    MemoryAllocateInfo build() noexcept {
+        MemoryAllocateInfo out{};
+        out.pNext = pNext;
+        out.allocationSize = allocationSize;
+        out.memoryTypeIndex = memoryTypeIndex;
+        return out; }
+};
+class MappedMemoryRangeMaker {
+    void* pNext = nullptr;
+    DeviceMemory memory{};
+    DeviceSize offset{};
+    DeviceSize size{};
+    MappedMemoryRange build() noexcept {
+        MappedMemoryRange out{};
+        out.pNext = pNext;
+        out.memory = memory;
+        out.offset = offset;
+        out.size = size;
+        return out; }
+};
+class WriteDescriptorSetMaker {
+    void* pNext = nullptr;
+    DescriptorSet dstSet{};
+    uint32_t dstBinding{};
+    uint32_t dstArrayElement{};
+    DescriptorType descriptorType{};
+    detail::span<DescriptorImageInfo> pImageInfo;
+    detail::span<DescriptorBufferInfo> pBufferInfo;
+    detail::span<BufferView> pTexelBufferView;
+    WriteDescriptorSet build() noexcept {
+        WriteDescriptorSet out{};
+        out.pNext = pNext;
+        out.dstSet = dstSet;
+        out.dstBinding = dstBinding;
+        out.dstArrayElement = dstArrayElement;
+        out.descriptorCount = (uint32_t)pImageInfo.size();
+        out.descriptorType = descriptorType;
+        out.pImageInfo = pImageInfo.data();
+        out.pBufferInfo = pBufferInfo.data();
+        out.pTexelBufferView = pTexelBufferView.data();
+        return out; }
+};
+class CopyDescriptorSetMaker {
+    void* pNext = nullptr;
+    DescriptorSet srcSet{};
+    uint32_t srcBinding{};
+    uint32_t srcArrayElement{};
+    DescriptorSet dstSet{};
+    uint32_t dstBinding{};
+    uint32_t dstArrayElement{};
+    uint32_t descriptorCount{};
+    CopyDescriptorSet build() noexcept {
+        CopyDescriptorSet out{};
+        out.pNext = pNext;
+        out.srcSet = srcSet;
+        out.srcBinding = srcBinding;
+        out.srcArrayElement = srcArrayElement;
+        out.dstSet = dstSet;
+        out.dstBinding = dstBinding;
+        out.dstArrayElement = dstArrayElement;
+        out.descriptorCount = descriptorCount;
+        return out; }
+};
+class BufferCreateInfoMaker {
+    void* pNext = nullptr;
+    BufferCreateFlags flags{};
+    DeviceSize size{};
+    BufferUsageFlags usage{};
+    SharingMode sharingMode{};
+    detail::span<uint32_t> pQueueFamilyIndices;
+    BufferCreateInfo build() noexcept {
+        BufferCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.size = size;
+        out.usage = usage;
+        out.sharingMode = sharingMode;
+        out.queueFamilyIndexCount = (uint32_t)pQueueFamilyIndices.size();
+        out.pQueueFamilyIndices = pQueueFamilyIndices.data();
+        return out; }
+};
+class BufferViewCreateInfoMaker {
+    void* pNext = nullptr;
+    BufferViewCreateFlags flags{};
+    Buffer buffer{};
+    Format format{};
+    DeviceSize offset{};
+    DeviceSize range{};
+    BufferViewCreateInfo build() noexcept {
+        BufferViewCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.buffer = buffer;
+        out.format = format;
+        out.offset = offset;
+        out.range = range;
+        return out; }
+};
+class MemoryBarrierMaker {
+    void* pNext = nullptr;
+    AccessFlags srcAccessMask{};
+    AccessFlags dstAccessMask{};
+    MemoryBarrier build() noexcept {
+        MemoryBarrier out{};
+        out.pNext = pNext;
+        out.srcAccessMask = srcAccessMask;
+        out.dstAccessMask = dstAccessMask;
+        return out; }
+};
+class BufferMemoryBarrierMaker {
+    void* pNext = nullptr;
+    AccessFlags srcAccessMask{};
+    AccessFlags dstAccessMask{};
+    uint32_t srcQueueFamilyIndex{};
+    uint32_t dstQueueFamilyIndex{};
+    Buffer buffer{};
+    DeviceSize offset{};
+    DeviceSize size{};
+    BufferMemoryBarrier build() noexcept {
+        BufferMemoryBarrier out{};
+        out.pNext = pNext;
+        out.srcAccessMask = srcAccessMask;
+        out.dstAccessMask = dstAccessMask;
+        out.srcQueueFamilyIndex = srcQueueFamilyIndex;
+        out.dstQueueFamilyIndex = dstQueueFamilyIndex;
+        out.buffer = buffer;
+        out.offset = offset;
+        out.size = size;
+        return out; }
+};
+class ImageMemoryBarrierMaker {
+    void* pNext = nullptr;
+    AccessFlags srcAccessMask{};
+    AccessFlags dstAccessMask{};
+    ImageLayout oldLayout{};
+    ImageLayout newLayout{};
+    uint32_t srcQueueFamilyIndex{};
+    uint32_t dstQueueFamilyIndex{};
+    Image image{};
+    ImageSubresourceRange subresourceRange{};
+    ImageMemoryBarrier build() noexcept {
+        ImageMemoryBarrier out{};
+        out.pNext = pNext;
+        out.srcAccessMask = srcAccessMask;
+        out.dstAccessMask = dstAccessMask;
+        out.oldLayout = oldLayout;
+        out.newLayout = newLayout;
+        out.srcQueueFamilyIndex = srcQueueFamilyIndex;
+        out.dstQueueFamilyIndex = dstQueueFamilyIndex;
+        out.image = image;
+        out.subresourceRange = subresourceRange;
+        return out; }
+};
+class ImageCreateInfoMaker {
+    void* pNext = nullptr;
+    ImageCreateFlags flags{};
+    ImageType imageType{};
+    Format format{};
+    Extent3D extent{};
+    uint32_t mipLevels{};
+    uint32_t arrayLayers{};
+    SampleCountFlagBits samples{};
+    ImageTiling tiling{};
+    ImageUsageFlags usage{};
+    SharingMode sharingMode{};
+    detail::span<uint32_t> pQueueFamilyIndices;
+    ImageLayout initialLayout{};
+    ImageCreateInfo build() noexcept {
+        ImageCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.imageType = imageType;
+        out.format = format;
+        out.extent = extent;
+        out.mipLevels = mipLevels;
+        out.arrayLayers = arrayLayers;
+        out.samples = samples;
+        out.tiling = tiling;
+        out.usage = usage;
+        out.sharingMode = sharingMode;
+        out.queueFamilyIndexCount = (uint32_t)pQueueFamilyIndices.size();
+        out.pQueueFamilyIndices = pQueueFamilyIndices.data();
+        out.initialLayout = initialLayout;
+        return out; }
+};
+class ImageViewCreateInfoMaker {
+    void* pNext = nullptr;
+    ImageViewCreateFlags flags{};
+    Image image{};
+    ImageViewType viewType{};
+    Format format{};
+    ComponentMapping components{};
+    ImageSubresourceRange subresourceRange{};
+    ImageViewCreateInfo build() noexcept {
+        ImageViewCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.image = image;
+        out.viewType = viewType;
+        out.format = format;
+        out.components = components;
+        out.subresourceRange = subresourceRange;
+        return out; }
+};
+class SparseBufferMemoryBindInfoMaker {
+    Buffer buffer{};
+    detail::span<SparseMemoryBind> pBinds;
+    SparseBufferMemoryBindInfo build() noexcept {
+        SparseBufferMemoryBindInfo out{};
+        out.buffer = buffer;
+        out.bindCount = (uint32_t)pBinds.size();
+        out.pBinds = pBinds.data();
+        return out; }
+};
+class SparseImageOpaqueMemoryBindInfoMaker {
+    Image image{};
+    detail::span<SparseMemoryBind> pBinds;
+    SparseImageOpaqueMemoryBindInfo build() noexcept {
+        SparseImageOpaqueMemoryBindInfo out{};
+        out.image = image;
+        out.bindCount = (uint32_t)pBinds.size();
+        out.pBinds = pBinds.data();
+        return out; }
+};
+class SparseImageMemoryBindInfoMaker {
+    Image image{};
+    detail::span<SparseImageMemoryBind> pBinds;
+    SparseImageMemoryBindInfo build() noexcept {
+        SparseImageMemoryBindInfo out{};
+        out.image = image;
+        out.bindCount = (uint32_t)pBinds.size();
+        out.pBinds = pBinds.data();
+        return out; }
+};
+class BindSparseInfoMaker {
+    void* pNext = nullptr;
+    detail::span<Semaphore> pWaitSemaphores;
+    detail::span<SparseBufferMemoryBindInfo> pBufferBinds;
+    detail::span<SparseImageOpaqueMemoryBindInfo> pImageOpaqueBinds;
+    detail::span<SparseImageMemoryBindInfo> pImageBinds;
+    detail::span<Semaphore> pSignalSemaphores;
+    BindSparseInfo build() noexcept {
+        BindSparseInfo out{};
+        out.pNext = pNext;
+        out.waitSemaphoreCount = (uint32_t)pWaitSemaphores.size();
+        out.pWaitSemaphores = pWaitSemaphores.data();
+        out.bufferBindCount = (uint32_t)pBufferBinds.size();
+        out.pBufferBinds = pBufferBinds.data();
+        out.imageOpaqueBindCount = (uint32_t)pImageOpaqueBinds.size();
+        out.pImageOpaqueBinds = pImageOpaqueBinds.data();
+        out.imageBindCount = (uint32_t)pImageBinds.size();
+        out.pImageBinds = pImageBinds.data();
+        out.signalSemaphoreCount = (uint32_t)pSignalSemaphores.size();
+        out.pSignalSemaphores = pSignalSemaphores.data();
+        return out; }
+};
+class ImageBlitMaker {
+    ImageSubresourceLayers srcSubresource{};
+    ImageSubresourceLayers dstSubresource{};
+    ImageBlit build() noexcept {
+        ImageBlit out{};
+        out.srcSubresource = srcSubresource;
+        out.dstSubresource = dstSubresource;
+        return out; }
+};
+class ShaderModuleCreateInfoMaker {
+    void* pNext = nullptr;
+    ShaderModuleCreateFlags flags{};
+    detail::span<uint32_t> pCode;
+    ShaderModuleCreateInfo build() noexcept {
+        ShaderModuleCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.codeSize = (uint32_t)pCode.size();
+        out.pCode = pCode.data();
+        return out; }
+};
+class DescriptorSetLayoutBindingMaker {
+    uint32_t binding{};
+    DescriptorType descriptorType{};
+    ShaderStageFlags stageFlags{};
+    detail::span<Sampler> pImmutableSamplers;
+    DescriptorSetLayoutBinding build() noexcept {
+        DescriptorSetLayoutBinding out{};
+        out.binding = binding;
+        out.descriptorType = descriptorType;
+        out.descriptorCount = (uint32_t)pImmutableSamplers.size();
+        out.stageFlags = stageFlags;
+        out.pImmutableSamplers = pImmutableSamplers.data();
+        return out; }
+};
+class DescriptorSetLayoutCreateInfoMaker {
+    void* pNext = nullptr;
+    DescriptorSetLayoutCreateFlags flags{};
+    detail::span<DescriptorSetLayoutBinding> pBindings;
+    DescriptorSetLayoutCreateInfo build() noexcept {
+        DescriptorSetLayoutCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.bindingCount = (uint32_t)pBindings.size();
+        out.pBindings = pBindings.data();
+        return out; }
+};
+class DescriptorPoolCreateInfoMaker {
+    void* pNext = nullptr;
+    DescriptorPoolCreateFlags flags{};
+    uint32_t maxSets{};
+    detail::span<DescriptorPoolSize> pPoolSizes;
+    DescriptorPoolCreateInfo build() noexcept {
+        DescriptorPoolCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.maxSets = maxSets;
+        out.poolSizeCount = (uint32_t)pPoolSizes.size();
+        out.pPoolSizes = pPoolSizes.data();
+        return out; }
+};
+class DescriptorSetAllocateInfoMaker {
+    void* pNext = nullptr;
+    DescriptorPool descriptorPool{};
+    detail::span<DescriptorSetLayout> pSetLayouts;
+    DescriptorSetAllocateInfo build() noexcept {
+        DescriptorSetAllocateInfo out{};
+        out.pNext = pNext;
+        out.descriptorPool = descriptorPool;
+        out.descriptorSetCount = (uint32_t)pSetLayouts.size();
+        out.pSetLayouts = pSetLayouts.data();
+        return out; }
+};
+class SpecializationInfoMaker {
+    detail::span<SpecializationMapEntry> pMapEntries;
+    detail::span<std::byte> pData;
+    SpecializationInfo build() noexcept {
+        SpecializationInfo out{};
+        out.mapEntryCount = (uint32_t)pMapEntries.size();
+        out.pMapEntries = pMapEntries.data();
+        out.dataSize = (uint32_t)pData.size();
+        out.pData = pData.data();
+        return out; }
+};
+class PipelineShaderStageCreateInfoMaker {
+    void* pNext = nullptr;
+    PipelineShaderStageCreateFlags flags{};
+    ShaderStageFlagBits stage{};
+    ShaderModule module{};
+    const char * pName = nullptr;
+    detail::optional<SpecializationInfo> pSpecializationInfo;
+    PipelineShaderStageCreateInfo build() noexcept {
+        PipelineShaderStageCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.stage = stage;
+        out.module = module;
+        out.pName = pName;
+        out.pSpecializationInfo = pSpecializationInfo.ptr_or_nullptr();
+        return out; }
+};
+class ComputePipelineCreateInfoMaker {
+    void* pNext = nullptr;
+    PipelineCreateFlags flags{};
+    PipelineShaderStageCreateInfo stage{};
+    PipelineLayout layout{};
+    Pipeline basePipelineHandle{};
+    int32_t basePipelineIndex{};
+    ComputePipelineCreateInfo build() noexcept {
+        ComputePipelineCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.stage = stage;
+        out.layout = layout;
+        out.basePipelineHandle = basePipelineHandle;
+        out.basePipelineIndex = basePipelineIndex;
+        return out; }
+};
+class PipelineVertexInputStateCreateInfoMaker {
+    void* pNext = nullptr;
+    PipelineVertexInputStateCreateFlags flags{};
+    detail::span<VertexInputBindingDescription> pVertexBindingDescriptions;
+    detail::span<VertexInputAttributeDescription> pVertexAttributeDescriptions;
+    PipelineVertexInputStateCreateInfo build() noexcept {
+        PipelineVertexInputStateCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.vertexBindingDescriptionCount = (uint32_t)pVertexBindingDescriptions.size();
+        out.pVertexBindingDescriptions = pVertexBindingDescriptions.data();
+        out.vertexAttributeDescriptionCount = (uint32_t)pVertexAttributeDescriptions.size();
+        out.pVertexAttributeDescriptions = pVertexAttributeDescriptions.data();
+        return out; }
+};
+class PipelineInputAssemblyStateCreateInfoMaker {
+    void* pNext = nullptr;
+    PipelineInputAssemblyStateCreateFlags flags{};
+    PrimitiveTopology topology{};
+    Bool32 primitiveRestartEnable{};
+    PipelineInputAssemblyStateCreateInfo build() noexcept {
+        PipelineInputAssemblyStateCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.topology = topology;
+        out.primitiveRestartEnable = primitiveRestartEnable;
+        return out; }
+};
+class PipelineTessellationStateCreateInfoMaker {
+    void* pNext = nullptr;
+    PipelineTessellationStateCreateFlags flags{};
+    uint32_t patchControlPoints{};
+    PipelineTessellationStateCreateInfo build() noexcept {
+        PipelineTessellationStateCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.patchControlPoints = patchControlPoints;
+        return out; }
+};
+class PipelineViewportStateCreateInfoMaker {
+    void* pNext = nullptr;
+    PipelineViewportStateCreateFlags flags{};
+    detail::span<Viewport> pViewports;
+    detail::span<Rect2D> pScissors;
+    PipelineViewportStateCreateInfo build() noexcept {
+        PipelineViewportStateCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.viewportCount = (uint32_t)pViewports.size();
+        out.pViewports = pViewports.data();
+        out.scissorCount = (uint32_t)pScissors.size();
+        out.pScissors = pScissors.data();
+        return out; }
+};
+class PipelineRasterizationStateCreateInfoMaker {
+    void* pNext = nullptr;
+    PipelineRasterizationStateCreateFlags flags{};
+    Bool32 depthClampEnable{};
+    Bool32 rasterizerDiscardEnable{};
+    PolygonMode polygonMode{};
+    CullModeFlags cullMode{};
+    FrontFace frontFace{};
+    Bool32 depthBiasEnable{};
+    float depthBiasConstantFactor{};
+    float depthBiasClamp{};
+    float depthBiasSlopeFactor{};
+    float lineWidth{};
+    PipelineRasterizationStateCreateInfo build() noexcept {
+        PipelineRasterizationStateCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.depthClampEnable = depthClampEnable;
+        out.rasterizerDiscardEnable = rasterizerDiscardEnable;
+        out.polygonMode = polygonMode;
+        out.cullMode = cullMode;
+        out.frontFace = frontFace;
+        out.depthBiasEnable = depthBiasEnable;
+        out.depthBiasConstantFactor = depthBiasConstantFactor;
+        out.depthBiasClamp = depthBiasClamp;
+        out.depthBiasSlopeFactor = depthBiasSlopeFactor;
+        out.lineWidth = lineWidth;
+        return out; }
+};
+class PipelineMultisampleStateCreateInfoMaker {
+    void* pNext = nullptr;
+    PipelineMultisampleStateCreateFlags flags{};
+    Bool32 sampleShadingEnable{};
+    float minSampleShading{};
+    detail::span<SampleMask> pSampleMask;
+    Bool32 alphaToCoverageEnable{};
+    Bool32 alphaToOneEnable{};
+    PipelineMultisampleStateCreateInfo build() noexcept {
+        PipelineMultisampleStateCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.sampleShadingEnable = sampleShadingEnable;
+        out.minSampleShading = minSampleShading;
+        out.pSampleMask = pSampleMask.data();
+        out.alphaToCoverageEnable = alphaToCoverageEnable;
+        out.alphaToOneEnable = alphaToOneEnable;
+        return out; }
+};
+class PipelineColorBlendStateCreateInfoMaker {
+    void* pNext = nullptr;
+    PipelineColorBlendStateCreateFlags flags{};
+    Bool32 logicOpEnable{};
+    LogicOp logicOp{};
+    detail::span<PipelineColorBlendAttachmentState> pAttachments;
+    PipelineColorBlendStateCreateInfo build() noexcept {
+        PipelineColorBlendStateCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.logicOpEnable = logicOpEnable;
+        out.logicOp = logicOp;
+        out.attachmentCount = (uint32_t)pAttachments.size();
+        out.pAttachments = pAttachments.data();
+        return out; }
+};
+class PipelineDynamicStateCreateInfoMaker {
+    void* pNext = nullptr;
+    PipelineDynamicStateCreateFlags flags{};
+    detail::span<DynamicState> pDynamicStates;
+    PipelineDynamicStateCreateInfo build() noexcept {
+        PipelineDynamicStateCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.dynamicStateCount = (uint32_t)pDynamicStates.size();
+        out.pDynamicStates = pDynamicStates.data();
+        return out; }
+};
+class PipelineDepthStencilStateCreateInfoMaker {
+    void* pNext = nullptr;
+    PipelineDepthStencilStateCreateFlags flags{};
+    Bool32 depthTestEnable{};
+    Bool32 depthWriteEnable{};
+    CompareOp depthCompareOp{};
+    Bool32 depthBoundsTestEnable{};
+    Bool32 stencilTestEnable{};
+    StencilOpState front{};
+    StencilOpState back{};
+    float minDepthBounds{};
+    float maxDepthBounds{};
+    PipelineDepthStencilStateCreateInfo build() noexcept {
+        PipelineDepthStencilStateCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.depthTestEnable = depthTestEnable;
+        out.depthWriteEnable = depthWriteEnable;
+        out.depthCompareOp = depthCompareOp;
+        out.depthBoundsTestEnable = depthBoundsTestEnable;
+        out.stencilTestEnable = stencilTestEnable;
+        out.front = front;
+        out.back = back;
+        out.minDepthBounds = minDepthBounds;
+        out.maxDepthBounds = maxDepthBounds;
+        return out; }
+};
+class GraphicsPipelineCreateInfoMaker {
+    void* pNext = nullptr;
+    PipelineCreateFlags flags{};
+    detail::span<PipelineShaderStageCreateInfo> pStages;
+    detail::optional<PipelineVertexInputStateCreateInfo> pVertexInputState;
+    detail::optional<PipelineInputAssemblyStateCreateInfo> pInputAssemblyState;
+    detail::optional<PipelineTessellationStateCreateInfo> pTessellationState;
+    detail::optional<PipelineViewportStateCreateInfo> pViewportState;
+    PipelineRasterizationStateCreateInfo pRasterizationState;
+    detail::optional<PipelineMultisampleStateCreateInfo> pMultisampleState;
+    detail::optional<PipelineDepthStencilStateCreateInfo> pDepthStencilState;
+    detail::optional<PipelineColorBlendStateCreateInfo> pColorBlendState;
+    detail::optional<PipelineDynamicStateCreateInfo> pDynamicState;
+    PipelineLayout layout{};
+    RenderPass renderPass{};
+    uint32_t subpass{};
+    Pipeline basePipelineHandle{};
+    int32_t basePipelineIndex{};
+    GraphicsPipelineCreateInfo build() noexcept {
+        GraphicsPipelineCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.stageCount = (uint32_t)pStages.size();
+        out.pStages = pStages.data();
+        out.pVertexInputState = pVertexInputState.ptr_or_nullptr();
+        out.pInputAssemblyState = pInputAssemblyState.ptr_or_nullptr();
+        out.pTessellationState = pTessellationState.ptr_or_nullptr();
+        out.pViewportState = pViewportState.ptr_or_nullptr();
+        out.pRasterizationState = &pRasterizationState;
+        out.pMultisampleState = pMultisampleState.ptr_or_nullptr();
+        out.pDepthStencilState = pDepthStencilState.ptr_or_nullptr();
+        out.pColorBlendState = pColorBlendState.ptr_or_nullptr();
+        out.pDynamicState = pDynamicState.ptr_or_nullptr();
+        out.layout = layout;
+        out.renderPass = renderPass;
+        out.subpass = subpass;
+        out.basePipelineHandle = basePipelineHandle;
+        out.basePipelineIndex = basePipelineIndex;
+        return out; }
+};
+class PipelineCacheCreateInfoMaker {
+    void* pNext = nullptr;
+    PipelineCacheCreateFlags flags{};
+    detail::span<std::byte> pInitialData;
+    PipelineCacheCreateInfo build() noexcept {
+        PipelineCacheCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.initialDataSize = (uint32_t)pInitialData.size();
+        out.pInitialData = pInitialData.data();
+        return out; }
+};
+class PipelineLayoutCreateInfoMaker {
+    void* pNext = nullptr;
+    PipelineLayoutCreateFlags flags{};
+    detail::span<DescriptorSetLayout> pSetLayouts;
+    detail::span<PushConstantRange> pPushConstantRanges;
+    PipelineLayoutCreateInfo build() noexcept {
+        PipelineLayoutCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.setLayoutCount = (uint32_t)pSetLayouts.size();
+        out.pSetLayouts = pSetLayouts.data();
+        out.pushConstantRangeCount = (uint32_t)pPushConstantRanges.size();
+        out.pPushConstantRanges = pPushConstantRanges.data();
+        return out; }
+};
+class SamplerCreateInfoMaker {
+    void* pNext = nullptr;
+    SamplerCreateFlags flags{};
+    Filter magFilter{};
+    Filter minFilter{};
+    SamplerMipmapMode mipmapMode{};
+    SamplerAddressMode addressModeU{};
+    SamplerAddressMode addressModeV{};
+    SamplerAddressMode addressModeW{};
+    float mipLodBias{};
+    Bool32 anisotropyEnable{};
+    float maxAnisotropy{};
+    Bool32 compareEnable{};
+    CompareOp compareOp{};
+    float minLod{};
+    float maxLod{};
+    BorderColor borderColor{};
+    Bool32 unnormalizedCoordinates{};
+    SamplerCreateInfo build() noexcept {
+        SamplerCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.magFilter = magFilter;
+        out.minFilter = minFilter;
+        out.mipmapMode = mipmapMode;
+        out.addressModeU = addressModeU;
+        out.addressModeV = addressModeV;
+        out.addressModeW = addressModeW;
+        out.mipLodBias = mipLodBias;
+        out.anisotropyEnable = anisotropyEnable;
+        out.maxAnisotropy = maxAnisotropy;
+        out.compareEnable = compareEnable;
+        out.compareOp = compareOp;
+        out.minLod = minLod;
+        out.maxLod = maxLod;
+        out.borderColor = borderColor;
+        out.unnormalizedCoordinates = unnormalizedCoordinates;
+        return out; }
+};
+class CommandPoolCreateInfoMaker {
+    void* pNext = nullptr;
+    CommandPoolCreateFlags flags{};
+    uint32_t queueFamilyIndex{};
+    CommandPoolCreateInfo build() noexcept {
+        CommandPoolCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.queueFamilyIndex = queueFamilyIndex;
+        return out; }
+};
+class CommandBufferAllocateInfoMaker {
+    void* pNext = nullptr;
+    CommandPool commandPool{};
+    CommandBufferLevel level{};
+    uint32_t commandBufferCount{};
+    CommandBufferAllocateInfo build() noexcept {
+        CommandBufferAllocateInfo out{};
+        out.pNext = pNext;
+        out.commandPool = commandPool;
+        out.level = level;
+        out.commandBufferCount = commandBufferCount;
+        return out; }
+};
+class CommandBufferInheritanceInfoMaker {
+    void* pNext = nullptr;
+    RenderPass renderPass{};
+    uint32_t subpass{};
+    Framebuffer framebuffer{};
+    Bool32 occlusionQueryEnable{};
+    QueryControlFlags queryFlags{};
+    QueryPipelineStatisticFlags pipelineStatistics{};
+    CommandBufferInheritanceInfo build() noexcept {
+        CommandBufferInheritanceInfo out{};
+        out.pNext = pNext;
+        out.renderPass = renderPass;
+        out.subpass = subpass;
+        out.framebuffer = framebuffer;
+        out.occlusionQueryEnable = occlusionQueryEnable;
+        out.queryFlags = queryFlags;
+        out.pipelineStatistics = pipelineStatistics;
+        return out; }
+};
+class CommandBufferBeginInfoMaker {
+    void* pNext = nullptr;
+    CommandBufferUsageFlags flags{};
+    detail::optional<CommandBufferInheritanceInfo> pInheritanceInfo;
+    CommandBufferBeginInfo build() noexcept {
+        CommandBufferBeginInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.pInheritanceInfo = pInheritanceInfo.ptr_or_nullptr();
+        return out; }
+};
+class ClearColorValueMaker {
+    ClearColorValue build() noexcept {
+        ClearColorValue out{};
+        return out; }
+};
+class RenderPassBeginInfoMaker {
+    void* pNext = nullptr;
+    RenderPass renderPass{};
+    Framebuffer framebuffer{};
+    Rect2D renderArea{};
+    detail::span<ClearValue> pClearValues;
+    RenderPassBeginInfo build() noexcept {
+        RenderPassBeginInfo out{};
+        out.pNext = pNext;
+        out.renderPass = renderPass;
+        out.framebuffer = framebuffer;
+        out.renderArea = renderArea;
+        out.clearValueCount = (uint32_t)pClearValues.size();
+        out.pClearValues = pClearValues.data();
+        return out; }
+};
+class SubpassDescriptionMaker {
+    SubpassDescriptionFlags flags{};
+    PipelineBindPoint pipelineBindPoint{};
+    detail::span<AttachmentReference> pInputAttachments;
+    detail::span<AttachmentReference> pColorAttachments;
+    detail::span<AttachmentReference> pResolveAttachments;
+    detail::optional<AttachmentReference> pDepthStencilAttachment;
+    detail::span<uint32_t> pPreserveAttachments;
+    SubpassDescription build() noexcept {
+        SubpassDescription out{};
+        out.flags = flags;
+        out.pipelineBindPoint = pipelineBindPoint;
+        out.inputAttachmentCount = (uint32_t)pInputAttachments.size();
+        out.pInputAttachments = pInputAttachments.data();
+        out.colorAttachmentCount = (uint32_t)pColorAttachments.size();
+        out.pColorAttachments = pColorAttachments.data();
+        out.pResolveAttachments = pResolveAttachments.data();
+        out.pDepthStencilAttachment = pDepthStencilAttachment.ptr_or_nullptr();
+        out.preserveAttachmentCount = (uint32_t)pPreserveAttachments.size();
+        out.pPreserveAttachments = pPreserveAttachments.data();
+        return out; }
+};
+class RenderPassCreateInfoMaker {
+    void* pNext = nullptr;
+    RenderPassCreateFlags flags{};
+    detail::span<AttachmentDescription> pAttachments;
+    detail::span<SubpassDescription> pSubpasses;
+    detail::span<SubpassDependency> pDependencies;
+    RenderPassCreateInfo build() noexcept {
+        RenderPassCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.attachmentCount = (uint32_t)pAttachments.size();
+        out.pAttachments = pAttachments.data();
+        out.subpassCount = (uint32_t)pSubpasses.size();
+        out.pSubpasses = pSubpasses.data();
+        out.dependencyCount = (uint32_t)pDependencies.size();
+        out.pDependencies = pDependencies.data();
+        return out; }
+};
+class EventCreateInfoMaker {
+    void* pNext = nullptr;
+    EventCreateFlags flags{};
+    EventCreateInfo build() noexcept {
+        EventCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        return out; }
+};
+class FenceCreateInfoMaker {
+    void* pNext = nullptr;
+    FenceCreateFlags flags{};
+    FenceCreateInfo build() noexcept {
+        FenceCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        return out; }
+};
+class SemaphoreCreateInfoMaker {
+    void* pNext = nullptr;
+    SemaphoreCreateFlags flags{};
+    SemaphoreCreateInfo build() noexcept {
+        SemaphoreCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        return out; }
+};
+class QueryPoolCreateInfoMaker {
+    void* pNext = nullptr;
+    QueryPoolCreateFlags flags{};
+    QueryType queryType{};
+    uint32_t queryCount{};
+    QueryPipelineStatisticFlags pipelineStatistics{};
+    QueryPoolCreateInfo build() noexcept {
+        QueryPoolCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.queryType = queryType;
+        out.queryCount = queryCount;
+        out.pipelineStatistics = pipelineStatistics;
+        return out; }
+};
+class FramebufferCreateInfoMaker {
+    void* pNext = nullptr;
+    FramebufferCreateFlags flags{};
+    RenderPass renderPass{};
+    detail::span<ImageView> pAttachments;
+    uint32_t width{};
+    uint32_t height{};
+    uint32_t layers{};
+    FramebufferCreateInfo build() noexcept {
+        FramebufferCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.renderPass = renderPass;
+        out.attachmentCount = (uint32_t)pAttachments.size();
+        out.pAttachments = pAttachments.data();
+        out.width = width;
+        out.height = height;
+        out.layers = layers;
+        return out; }
+};
+class SubmitInfoMaker {
+    void* pNext = nullptr;
+    detail::span<Semaphore> pWaitSemaphores;
+    detail::span<PipelineStageFlags> pWaitDstStageMask;
+    detail::span<CommandBuffer> pCommandBuffers;
+    detail::span<Semaphore> pSignalSemaphores;
+    SubmitInfo build() noexcept {
+        SubmitInfo out{};
+        out.pNext = pNext;
+        out.waitSemaphoreCount = (uint32_t)pWaitSemaphores.size();
+        out.pWaitSemaphores = pWaitSemaphores.data();
+        out.pWaitDstStageMask = pWaitDstStageMask.data();
+        out.commandBufferCount = (uint32_t)pCommandBuffers.size();
+        out.pCommandBuffers = pCommandBuffers.data();
+        out.signalSemaphoreCount = (uint32_t)pSignalSemaphores.size();
+        out.pSignalSemaphores = pSignalSemaphores.data();
+        return out; }
+};
+class DisplayModeCreateInfoKHRMaker {
+    void* pNext = nullptr;
+    DisplayModeCreateFlagsKHR flags{};
+    DisplayModeParametersKHR parameters{};
+    DisplayModeCreateInfoKHR build() noexcept {
+        DisplayModeCreateInfoKHR out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.parameters = parameters;
+        return out; }
+};
+class DisplaySurfaceCreateInfoKHRMaker {
+    void* pNext = nullptr;
+    DisplaySurfaceCreateFlagsKHR flags{};
+    DisplayModeKHR displayMode{};
+    uint32_t planeIndex{};
+    uint32_t planeStackIndex{};
+    SurfaceTransformFlagBitsKHR transform{};
+    float globalAlpha{};
+    DisplayPlaneAlphaFlagBitsKHR alphaMode{};
+    Extent2D imageExtent{};
+    DisplaySurfaceCreateInfoKHR build() noexcept {
+        DisplaySurfaceCreateInfoKHR out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.displayMode = displayMode;
+        out.planeIndex = planeIndex;
+        out.planeStackIndex = planeStackIndex;
+        out.transform = transform;
+        out.globalAlpha = globalAlpha;
+        out.alphaMode = alphaMode;
+        out.imageExtent = imageExtent;
+        return out; }
+};
+class DisplayPresentInfoKHRMaker {
+    void* pNext = nullptr;
+    Rect2D srcRect{};
+    Rect2D dstRect{};
+    Bool32 persistent{};
+    DisplayPresentInfoKHR build() noexcept {
+        DisplayPresentInfoKHR out{};
+        out.pNext = pNext;
+        out.srcRect = srcRect;
+        out.dstRect = dstRect;
+        out.persistent = persistent;
+        return out; }
+};
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
+class AndroidSurfaceCreateInfoKHRMaker {
+    void* pNext = nullptr;
+    AndroidSurfaceCreateFlagsKHR flags{};
+    ANativeWindow window;
+    AndroidSurfaceCreateInfoKHR build() noexcept {
+        AndroidSurfaceCreateInfoKHR out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.window = &window;
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
+#if defined(VK_USE_PLATFORM_VI_NN)
+class ViSurfaceCreateInfoNNMaker {
+    void* pNext = nullptr;
+    ViSurfaceCreateFlagsNN flags{};
+    ViSurfaceCreateInfoNN build() noexcept {
+        ViSurfaceCreateInfoNN out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_VI_NN)
+#if defined(VK_USE_PLATFORM_WAYLAND_KHR)
+class WaylandSurfaceCreateInfoKHRMaker {
+    void* pNext = nullptr;
+    WaylandSurfaceCreateFlagsKHR flags{};
+    wl_display display;
+    wl_surface surface;
+    WaylandSurfaceCreateInfoKHR build() noexcept {
+        WaylandSurfaceCreateInfoKHR out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.display = &display;
+        out.surface = &surface;
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_WAYLAND_KHR)
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+class Win32SurfaceCreateInfoKHRMaker {
+    void* pNext = nullptr;
+    Win32SurfaceCreateFlagsKHR flags{};
+    HINSTANCE hinstance{};
+    HWND hwnd{};
+    Win32SurfaceCreateInfoKHR build() noexcept {
+        Win32SurfaceCreateInfoKHR out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.hinstance = hinstance;
+        out.hwnd = hwnd;
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+#if defined(VK_USE_PLATFORM_XLIB_KHR)
+class XlibSurfaceCreateInfoKHRMaker {
+    void* pNext = nullptr;
+    XlibSurfaceCreateFlagsKHR flags{};
+    Display dpy;
+    Window window{};
+    XlibSurfaceCreateInfoKHR build() noexcept {
+        XlibSurfaceCreateInfoKHR out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.dpy = &dpy;
+        out.window = window;
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_XLIB_KHR)
+#if defined(VK_USE_PLATFORM_XCB_KHR)
+class XcbSurfaceCreateInfoKHRMaker {
+    void* pNext = nullptr;
+    XcbSurfaceCreateFlagsKHR flags{};
+    xcb_connection_t connection;
+    xcb_window_t window{};
+    XcbSurfaceCreateInfoKHR build() noexcept {
+        XcbSurfaceCreateInfoKHR out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.connection = &connection;
+        out.window = window;
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_XCB_KHR)
+#if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
+class DirectFBSurfaceCreateInfoEXTMaker {
+    void* pNext = nullptr;
+    DirectFBSurfaceCreateFlagsEXT flags{};
+    IDirectFB dfb;
+    IDirectFBSurface surface;
+    DirectFBSurfaceCreateInfoEXT build() noexcept {
+        DirectFBSurfaceCreateInfoEXT out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.dfb = &dfb;
+        out.surface = &surface;
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_DIRECTFB_EXT)
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+class ImagePipeSurfaceCreateInfoFUCHSIAMaker {
+    void* pNext = nullptr;
+    ImagePipeSurfaceCreateFlagsFUCHSIA flags{};
+    zx_handle_t imagePipeHandle{};
+    ImagePipeSurfaceCreateInfoFUCHSIA build() noexcept {
+        ImagePipeSurfaceCreateInfoFUCHSIA out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.imagePipeHandle = imagePipeHandle;
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
+#if defined(VK_USE_PLATFORM_GGP)
+class StreamDescriptorSurfaceCreateInfoGGPMaker {
+    void* pNext = nullptr;
+    StreamDescriptorSurfaceCreateFlagsGGP flags{};
+    GgpStreamDescriptor streamDescriptor{};
+    StreamDescriptorSurfaceCreateInfoGGP build() noexcept {
+        StreamDescriptorSurfaceCreateInfoGGP out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.streamDescriptor = streamDescriptor;
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_GGP)
+class SwapchainCreateInfoKHRMaker {
+    void* pNext = nullptr;
+    SwapchainCreateFlagsKHR flags{};
+    SurfaceKHR surface{};
+    uint32_t minImageCount{};
+    Format imageFormat{};
+    ColorSpaceKHR imageColorSpace{};
+    Extent2D imageExtent{};
+    uint32_t imageArrayLayers{};
+    ImageUsageFlags imageUsage{};
+    SharingMode imageSharingMode{};
+    detail::span<uint32_t> pQueueFamilyIndices;
+    SurfaceTransformFlagBitsKHR preTransform{};
+    CompositeAlphaFlagBitsKHR compositeAlpha{};
+    PresentModeKHR presentMode{};
+    Bool32 clipped{};
+    SwapchainKHR oldSwapchain{};
+    SwapchainCreateInfoKHR build() noexcept {
+        SwapchainCreateInfoKHR out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.surface = surface;
+        out.minImageCount = minImageCount;
+        out.imageFormat = imageFormat;
+        out.imageColorSpace = imageColorSpace;
+        out.imageExtent = imageExtent;
+        out.imageArrayLayers = imageArrayLayers;
+        out.imageUsage = imageUsage;
+        out.imageSharingMode = imageSharingMode;
+        out.queueFamilyIndexCount = (uint32_t)pQueueFamilyIndices.size();
+        out.pQueueFamilyIndices = pQueueFamilyIndices.data();
+        out.preTransform = preTransform;
+        out.compositeAlpha = compositeAlpha;
+        out.presentMode = presentMode;
+        out.clipped = clipped;
+        out.oldSwapchain = oldSwapchain;
+        return out; }
+};
+class PresentInfoKHRMaker {
+    void* pNext = nullptr;
+    detail::span<Semaphore> pWaitSemaphores;
+    detail::span<SwapchainKHR> pSwapchains;
+    detail::span<uint32_t> pImageIndices;
+    detail::span<Result> pResults;
+    PresentInfoKHR build() noexcept {
+        PresentInfoKHR out{};
+        out.pNext = pNext;
+        out.waitSemaphoreCount = (uint32_t)pWaitSemaphores.size();
+        out.pWaitSemaphores = pWaitSemaphores.data();
+        out.swapchainCount = (uint32_t)pSwapchains.size();
+        out.pSwapchains = pSwapchains.data();
+        out.pImageIndices = pImageIndices.data();
+        out.pResults = pResults.data();
+        return out; }
+};
+class DebugReportCallbackCreateInfoEXTMaker {
+    void* pNext = nullptr;
+    DebugReportFlagsEXT flags{};
+    PFN_DebugReportCallbackEXT pfnCallback{};
+    DebugReportCallbackCreateInfoEXT build() noexcept {
+        DebugReportCallbackCreateInfoEXT out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.pfnCallback = pfnCallback;
+        return out; }
+};
+class ValidationFlagsEXTMaker {
+    void* pNext = nullptr;
+    detail::span<ValidationCheckEXT> pDisabledValidationChecks;
+    ValidationFlagsEXT build() noexcept {
+        ValidationFlagsEXT out{};
+        out.pNext = pNext;
+        out.disabledValidationCheckCount = (uint32_t)pDisabledValidationChecks.size();
+        out.pDisabledValidationChecks = pDisabledValidationChecks.data();
+        return out; }
+};
+class ValidationFeaturesEXTMaker {
+    void* pNext = nullptr;
+    detail::span<ValidationFeatureEnableEXT> pEnabledValidationFeatures;
+    detail::span<ValidationFeatureDisableEXT> pDisabledValidationFeatures;
+    ValidationFeaturesEXT build() noexcept {
+        ValidationFeaturesEXT out{};
+        out.pNext = pNext;
+        out.enabledValidationFeatureCount = (uint32_t)pEnabledValidationFeatures.size();
+        out.pEnabledValidationFeatures = pEnabledValidationFeatures.data();
+        out.disabledValidationFeatureCount = (uint32_t)pDisabledValidationFeatures.size();
+        out.pDisabledValidationFeatures = pDisabledValidationFeatures.data();
+        return out; }
+};
+class PipelineRasterizationStateRasterizationOrderAMDMaker {
+    void* pNext = nullptr;
+    RasterizationOrderAMD rasterizationOrder{};
+    PipelineRasterizationStateRasterizationOrderAMD build() noexcept {
+        PipelineRasterizationStateRasterizationOrderAMD out{};
+        out.pNext = pNext;
+        out.rasterizationOrder = rasterizationOrder;
+        return out; }
+};
+class DebugMarkerObjectNameInfoEXTMaker {
+    void* pNext = nullptr;
+    DebugReportObjectTypeEXT objectType{};
+    uint64_t object{};
+    const char * pObjectName = nullptr;
+    DebugMarkerObjectNameInfoEXT build() noexcept {
+        DebugMarkerObjectNameInfoEXT out{};
+        out.pNext = pNext;
+        out.objectType = objectType;
+        out.object = object;
+        out.pObjectName = pObjectName;
+        return out; }
+};
+class DebugMarkerObjectTagInfoEXTMaker {
+    void* pNext = nullptr;
+    DebugReportObjectTypeEXT objectType{};
+    uint64_t object{};
+    uint64_t tagName{};
+    detail::span<std::byte> pTag;
+    DebugMarkerObjectTagInfoEXT build() noexcept {
+        DebugMarkerObjectTagInfoEXT out{};
+        out.pNext = pNext;
+        out.objectType = objectType;
+        out.object = object;
+        out.tagName = tagName;
+        out.tagSize = (uint32_t)pTag.size();
+        out.pTag = pTag.data();
+        return out; }
+};
+class DebugMarkerMarkerInfoEXTMaker {
+    void* pNext = nullptr;
+    const char * pMarkerName = nullptr;
+    DebugMarkerMarkerInfoEXT build() noexcept {
+        DebugMarkerMarkerInfoEXT out{};
+        out.pNext = pNext;
+        out.pMarkerName = pMarkerName;
+        return out; }
+};
+class DedicatedAllocationImageCreateInfoNVMaker {
+    void* pNext = nullptr;
+    Bool32 dedicatedAllocation{};
+    DedicatedAllocationImageCreateInfoNV build() noexcept {
+        DedicatedAllocationImageCreateInfoNV out{};
+        out.pNext = pNext;
+        out.dedicatedAllocation = dedicatedAllocation;
+        return out; }
+};
+class DedicatedAllocationBufferCreateInfoNVMaker {
+    void* pNext = nullptr;
+    Bool32 dedicatedAllocation{};
+    DedicatedAllocationBufferCreateInfoNV build() noexcept {
+        DedicatedAllocationBufferCreateInfoNV out{};
+        out.pNext = pNext;
+        out.dedicatedAllocation = dedicatedAllocation;
+        return out; }
+};
+class DedicatedAllocationMemoryAllocateInfoNVMaker {
+    void* pNext = nullptr;
+    Image image{};
+    Buffer buffer{};
+    DedicatedAllocationMemoryAllocateInfoNV build() noexcept {
+        DedicatedAllocationMemoryAllocateInfoNV out{};
+        out.pNext = pNext;
+        out.image = image;
+        out.buffer = buffer;
+        return out; }
+};
+class ExternalMemoryImageCreateInfoNVMaker {
+    void* pNext = nullptr;
+    ExternalMemoryHandleTypeFlagsNV handleTypes{};
+    ExternalMemoryImageCreateInfoNV build() noexcept {
+        ExternalMemoryImageCreateInfoNV out{};
+        out.pNext = pNext;
+        out.handleTypes = handleTypes;
+        return out; }
+};
+class ExportMemoryAllocateInfoNVMaker {
+    void* pNext = nullptr;
+    ExternalMemoryHandleTypeFlagsNV handleTypes{};
+    ExportMemoryAllocateInfoNV build() noexcept {
+        ExportMemoryAllocateInfoNV out{};
+        out.pNext = pNext;
+        out.handleTypes = handleTypes;
+        return out; }
+};
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+class ImportMemoryWin32HandleInfoNVMaker {
+    void* pNext = nullptr;
+    ExternalMemoryHandleTypeFlagsNV handleType{};
+    HANDLE handle{};
+    ImportMemoryWin32HandleInfoNV build() noexcept {
+        ImportMemoryWin32HandleInfoNV out{};
+        out.pNext = pNext;
+        out.handleType = handleType;
+        out.handle = handle;
+        return out; }
+};
+class ExportMemoryWin32HandleInfoNVMaker {
+    void* pNext = nullptr;
+    detail::optional<SECURITY_ATTRIBUTES> pAttributes;
+    DWORD dwAccess{};
+    ExportMemoryWin32HandleInfoNV build() noexcept {
+        ExportMemoryWin32HandleInfoNV out{};
+        out.pNext = pNext;
+        out.pAttributes = pAttributes.ptr_or_nullptr();
+        out.dwAccess = dwAccess;
+        return out; }
+};
+class Win32KeyedMutexAcquireReleaseInfoNVMaker {
+    void* pNext = nullptr;
+    detail::span<DeviceMemory> pAcquireSyncs;
+    detail::span<uint64_t> pAcquireKeys;
+    detail::span<uint32_t> pAcquireTimeoutMilliseconds;
+    detail::span<DeviceMemory> pReleaseSyncs;
+    detail::span<uint64_t> pReleaseKeys;
+    Win32KeyedMutexAcquireReleaseInfoNV build() noexcept {
+        Win32KeyedMutexAcquireReleaseInfoNV out{};
+        out.pNext = pNext;
+        out.acquireCount = (uint32_t)pAcquireSyncs.size();
+        out.pAcquireSyncs = pAcquireSyncs.data();
+        out.pAcquireKeys = pAcquireKeys.data();
+        out.pAcquireTimeoutMilliseconds = pAcquireTimeoutMilliseconds.data();
+        out.releaseCount = (uint32_t)pReleaseSyncs.size();
+        out.pReleaseSyncs = pReleaseSyncs.data();
+        out.pReleaseKeys = pReleaseKeys.data();
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+class PhysicalDeviceDeviceGeneratedCommandsFeaturesNVMaker {
+    void* pNext = nullptr;
+    Bool32 deviceGeneratedCommands{};
+    PhysicalDeviceDeviceGeneratedCommandsFeaturesNV build() noexcept {
+        PhysicalDeviceDeviceGeneratedCommandsFeaturesNV out{};
+        out.pNext = pNext;
+        out.deviceGeneratedCommands = deviceGeneratedCommands;
+        return out; }
+};
+class DevicePrivateDataCreateInfoEXTMaker {
+    void* pNext = nullptr;
+    uint32_t privateDataSlotRequestCount{};
+    DevicePrivateDataCreateInfoEXT build() noexcept {
+        DevicePrivateDataCreateInfoEXT out{};
+        out.pNext = pNext;
+        out.privateDataSlotRequestCount = privateDataSlotRequestCount;
+        return out; }
+};
+class PrivateDataSlotCreateInfoEXTMaker {
+    void* pNext = nullptr;
+    PrivateDataSlotCreateFlagsEXT flags{};
+    PrivateDataSlotCreateInfoEXT build() noexcept {
+        PrivateDataSlotCreateInfoEXT out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        return out; }
+};
+class PhysicalDevicePrivateDataFeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 privateData{};
+    PhysicalDevicePrivateDataFeaturesEXT build() noexcept {
+        PhysicalDevicePrivateDataFeaturesEXT out{};
+        out.pNext = pNext;
+        out.privateData = privateData;
+        return out; }
+};
+class GraphicsShaderGroupCreateInfoNVMaker {
+    void* pNext = nullptr;
+    detail::span<PipelineShaderStageCreateInfo> pStages;
+    detail::optional<PipelineVertexInputStateCreateInfo> pVertexInputState;
+    detail::optional<PipelineTessellationStateCreateInfo> pTessellationState;
+    GraphicsShaderGroupCreateInfoNV build() noexcept {
+        GraphicsShaderGroupCreateInfoNV out{};
+        out.pNext = pNext;
+        out.stageCount = (uint32_t)pStages.size();
+        out.pStages = pStages.data();
+        out.pVertexInputState = pVertexInputState.ptr_or_nullptr();
+        out.pTessellationState = pTessellationState.ptr_or_nullptr();
+        return out; }
+};
+class GraphicsPipelineShaderGroupsCreateInfoNVMaker {
+    void* pNext = nullptr;
+    detail::span<GraphicsShaderGroupCreateInfoNV> pGroups;
+    detail::span<Pipeline> pPipelines;
+    GraphicsPipelineShaderGroupsCreateInfoNV build() noexcept {
+        GraphicsPipelineShaderGroupsCreateInfoNV out{};
+        out.pNext = pNext;
+        out.groupCount = (uint32_t)pGroups.size();
+        out.pGroups = pGroups.data();
+        out.pipelineCount = (uint32_t)pPipelines.size();
+        out.pPipelines = pPipelines.data();
+        return out; }
+};
+class IndirectCommandsLayoutTokenNVMaker {
+    void* pNext = nullptr;
+    IndirectCommandsTokenTypeNV tokenType{};
+    uint32_t stream{};
+    uint32_t offset{};
+    uint32_t vertexBindingUnit{};
+    Bool32 vertexDynamicStride{};
+    PipelineLayout pushconstantPipelineLayout{};
+    ShaderStageFlags pushconstantShaderStageFlags{};
+    uint32_t pushconstantOffset{};
+    uint32_t pushconstantSize{};
+    IndirectStateFlagsNV indirectStateFlags{};
+    detail::span<IndexType> pIndexTypes;
+    detail::span<uint32_t> pIndexTypeValues;
+    IndirectCommandsLayoutTokenNV build() noexcept {
+        IndirectCommandsLayoutTokenNV out{};
+        out.pNext = pNext;
+        out.tokenType = tokenType;
+        out.stream = stream;
+        out.offset = offset;
+        out.vertexBindingUnit = vertexBindingUnit;
+        out.vertexDynamicStride = vertexDynamicStride;
+        out.pushconstantPipelineLayout = pushconstantPipelineLayout;
+        out.pushconstantShaderStageFlags = pushconstantShaderStageFlags;
+        out.pushconstantOffset = pushconstantOffset;
+        out.pushconstantSize = pushconstantSize;
+        out.indirectStateFlags = indirectStateFlags;
+        out.indexTypeCount = (uint32_t)pIndexTypes.size();
+        out.pIndexTypes = pIndexTypes.data();
+        out.pIndexTypeValues = pIndexTypeValues.data();
+        return out; }
+};
+class IndirectCommandsLayoutCreateInfoNVMaker {
+    void* pNext = nullptr;
+    IndirectCommandsLayoutUsageFlagsNV flags{};
+    PipelineBindPoint pipelineBindPoint{};
+    detail::span<IndirectCommandsLayoutTokenNV> pTokens;
+    detail::span<uint32_t> pStreamStrides;
+    IndirectCommandsLayoutCreateInfoNV build() noexcept {
+        IndirectCommandsLayoutCreateInfoNV out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.pipelineBindPoint = pipelineBindPoint;
+        out.tokenCount = (uint32_t)pTokens.size();
+        out.pTokens = pTokens.data();
+        out.streamCount = (uint32_t)pStreamStrides.size();
+        out.pStreamStrides = pStreamStrides.data();
+        return out; }
+};
+class GeneratedCommandsInfoNVMaker {
+    void* pNext = nullptr;
+    PipelineBindPoint pipelineBindPoint{};
+    Pipeline pipeline{};
+    IndirectCommandsLayoutNV indirectCommandsLayout{};
+    detail::span<IndirectCommandsStreamNV> pStreams;
+    uint32_t sequencesCount{};
+    Buffer preprocessBuffer{};
+    DeviceSize preprocessOffset{};
+    DeviceSize preprocessSize{};
+    Buffer sequencesCountBuffer{};
+    DeviceSize sequencesCountOffset{};
+    Buffer sequencesIndexBuffer{};
+    DeviceSize sequencesIndexOffset{};
+    GeneratedCommandsInfoNV build() noexcept {
+        GeneratedCommandsInfoNV out{};
+        out.pNext = pNext;
+        out.pipelineBindPoint = pipelineBindPoint;
+        out.pipeline = pipeline;
+        out.indirectCommandsLayout = indirectCommandsLayout;
+        out.streamCount = (uint32_t)pStreams.size();
+        out.pStreams = pStreams.data();
+        out.sequencesCount = sequencesCount;
+        out.preprocessBuffer = preprocessBuffer;
+        out.preprocessOffset = preprocessOffset;
+        out.preprocessSize = preprocessSize;
+        out.sequencesCountBuffer = sequencesCountBuffer;
+        out.sequencesCountOffset = sequencesCountOffset;
+        out.sequencesIndexBuffer = sequencesIndexBuffer;
+        out.sequencesIndexOffset = sequencesIndexOffset;
+        return out; }
+};
+class GeneratedCommandsMemoryRequirementsInfoNVMaker {
+    void* pNext = nullptr;
+    PipelineBindPoint pipelineBindPoint{};
+    Pipeline pipeline{};
+    IndirectCommandsLayoutNV indirectCommandsLayout{};
+    uint32_t maxSequencesCount{};
+    GeneratedCommandsMemoryRequirementsInfoNV build() noexcept {
+        GeneratedCommandsMemoryRequirementsInfoNV out{};
+        out.pNext = pNext;
+        out.pipelineBindPoint = pipelineBindPoint;
+        out.pipeline = pipeline;
+        out.indirectCommandsLayout = indirectCommandsLayout;
+        out.maxSequencesCount = maxSequencesCount;
+        return out; }
+};
+class PhysicalDeviceFeatures2Maker {
+    void* pNext = nullptr;
+    PhysicalDeviceFeatures features{};
+    PhysicalDeviceFeatures2 build() noexcept {
+        PhysicalDeviceFeatures2 out{};
+        out.pNext = pNext;
+        out.features = features;
+        return out; }
+};
+class PhysicalDeviceImageFormatInfo2Maker {
+    void* pNext = nullptr;
+    Format format{};
+    ImageType type{};
+    ImageTiling tiling{};
+    ImageUsageFlags usage{};
+    ImageCreateFlags flags{};
+    PhysicalDeviceImageFormatInfo2 build() noexcept {
+        PhysicalDeviceImageFormatInfo2 out{};
+        out.pNext = pNext;
+        out.format = format;
+        out.type = type;
+        out.tiling = tiling;
+        out.usage = usage;
+        out.flags = flags;
+        return out; }
+};
+class PhysicalDeviceSparseImageFormatInfo2Maker {
+    void* pNext = nullptr;
+    Format format{};
+    ImageType type{};
+    SampleCountFlagBits samples{};
+    ImageUsageFlags usage{};
+    ImageTiling tiling{};
+    PhysicalDeviceSparseImageFormatInfo2 build() noexcept {
+        PhysicalDeviceSparseImageFormatInfo2 out{};
+        out.pNext = pNext;
+        out.format = format;
+        out.type = type;
+        out.samples = samples;
+        out.usage = usage;
+        out.tiling = tiling;
+        return out; }
+};
+class PresentRegionKHRMaker {
+    detail::span<RectLayerKHR> pRectangles;
+    PresentRegionKHR build() noexcept {
+        PresentRegionKHR out{};
+        out.rectangleCount = (uint32_t)pRectangles.size();
+        out.pRectangles = pRectangles.data();
+        return out; }
+};
+class PresentRegionsKHRMaker {
+    void* pNext = nullptr;
+    detail::span<PresentRegionKHR> pRegions;
+    PresentRegionsKHR build() noexcept {
+        PresentRegionsKHR out{};
+        out.pNext = pNext;
+        out.swapchainCount = (uint32_t)pRegions.size();
+        out.pRegions = pRegions.data();
+        return out; }
+};
+class PhysicalDeviceVariablePointersFeaturesMaker {
+    void* pNext = nullptr;
+    Bool32 variablePointersStorageBuffer{};
+    Bool32 variablePointers{};
+    PhysicalDeviceVariablePointersFeatures build() noexcept {
+        PhysicalDeviceVariablePointersFeatures out{};
+        out.pNext = pNext;
+        out.variablePointersStorageBuffer = variablePointersStorageBuffer;
+        out.variablePointers = variablePointers;
+        return out; }
+};
+class PhysicalDeviceExternalImageFormatInfoMaker {
+    void* pNext = nullptr;
+    ExternalMemoryHandleTypeFlagBits handleType{};
+    PhysicalDeviceExternalImageFormatInfo build() noexcept {
+        PhysicalDeviceExternalImageFormatInfo out{};
+        out.pNext = pNext;
+        out.handleType = handleType;
+        return out; }
+};
+class PhysicalDeviceExternalBufferInfoMaker {
+    void* pNext = nullptr;
+    BufferCreateFlags flags{};
+    BufferUsageFlags usage{};
+    ExternalMemoryHandleTypeFlagBits handleType{};
+    PhysicalDeviceExternalBufferInfo build() noexcept {
+        PhysicalDeviceExternalBufferInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.usage = usage;
+        out.handleType = handleType;
+        return out; }
+};
+class ExternalMemoryImageCreateInfoMaker {
+    void* pNext = nullptr;
+    ExternalMemoryHandleTypeFlags handleTypes{};
+    ExternalMemoryImageCreateInfo build() noexcept {
+        ExternalMemoryImageCreateInfo out{};
+        out.pNext = pNext;
+        out.handleTypes = handleTypes;
+        return out; }
+};
+class ExternalMemoryBufferCreateInfoMaker {
+    void* pNext = nullptr;
+    ExternalMemoryHandleTypeFlags handleTypes{};
+    ExternalMemoryBufferCreateInfo build() noexcept {
+        ExternalMemoryBufferCreateInfo out{};
+        out.pNext = pNext;
+        out.handleTypes = handleTypes;
+        return out; }
+};
+class ExportMemoryAllocateInfoMaker {
+    void* pNext = nullptr;
+    ExternalMemoryHandleTypeFlags handleTypes{};
+    ExportMemoryAllocateInfo build() noexcept {
+        ExportMemoryAllocateInfo out{};
+        out.pNext = pNext;
+        out.handleTypes = handleTypes;
+        return out; }
+};
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+class ImportMemoryWin32HandleInfoKHRMaker {
+    void* pNext = nullptr;
+    ExternalMemoryHandleTypeFlagBits handleType{};
+    HANDLE handle{};
+    LPCWSTR name{};
+    ImportMemoryWin32HandleInfoKHR build() noexcept {
+        ImportMemoryWin32HandleInfoKHR out{};
+        out.pNext = pNext;
+        out.handleType = handleType;
+        out.handle = handle;
+        out.name = name;
+        return out; }
+};
+class ExportMemoryWin32HandleInfoKHRMaker {
+    void* pNext = nullptr;
+    detail::optional<SECURITY_ATTRIBUTES> pAttributes;
+    DWORD dwAccess{};
+    LPCWSTR name{};
+    ExportMemoryWin32HandleInfoKHR build() noexcept {
+        ExportMemoryWin32HandleInfoKHR out{};
+        out.pNext = pNext;
+        out.pAttributes = pAttributes.ptr_or_nullptr();
+        out.dwAccess = dwAccess;
+        out.name = name;
+        return out; }
+};
+class MemoryGetWin32HandleInfoKHRMaker {
+    void* pNext = nullptr;
+    DeviceMemory memory{};
+    ExternalMemoryHandleTypeFlagBits handleType{};
+    MemoryGetWin32HandleInfoKHR build() noexcept {
+        MemoryGetWin32HandleInfoKHR out{};
+        out.pNext = pNext;
+        out.memory = memory;
+        out.handleType = handleType;
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+class ImportMemoryFdInfoKHRMaker {
+    void* pNext = nullptr;
+    ExternalMemoryHandleTypeFlagBits handleType{};
+    int fd{};
+    ImportMemoryFdInfoKHR build() noexcept {
+        ImportMemoryFdInfoKHR out{};
+        out.pNext = pNext;
+        out.handleType = handleType;
+        out.fd = fd;
+        return out; }
+};
+class MemoryGetFdInfoKHRMaker {
+    void* pNext = nullptr;
+    DeviceMemory memory{};
+    ExternalMemoryHandleTypeFlagBits handleType{};
+    MemoryGetFdInfoKHR build() noexcept {
+        MemoryGetFdInfoKHR out{};
+        out.pNext = pNext;
+        out.memory = memory;
+        out.handleType = handleType;
+        return out; }
+};
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+class Win32KeyedMutexAcquireReleaseInfoKHRMaker {
+    void* pNext = nullptr;
+    detail::span<DeviceMemory> pAcquireSyncs;
+    detail::span<uint64_t> pAcquireKeys;
+    detail::span<uint32_t> pAcquireTimeouts;
+    detail::span<DeviceMemory> pReleaseSyncs;
+    detail::span<uint64_t> pReleaseKeys;
+    Win32KeyedMutexAcquireReleaseInfoKHR build() noexcept {
+        Win32KeyedMutexAcquireReleaseInfoKHR out{};
+        out.pNext = pNext;
+        out.acquireCount = (uint32_t)pAcquireSyncs.size();
+        out.pAcquireSyncs = pAcquireSyncs.data();
+        out.pAcquireKeys = pAcquireKeys.data();
+        out.pAcquireTimeouts = pAcquireTimeouts.data();
+        out.releaseCount = (uint32_t)pReleaseSyncs.size();
+        out.pReleaseSyncs = pReleaseSyncs.data();
+        out.pReleaseKeys = pReleaseKeys.data();
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+class PhysicalDeviceExternalSemaphoreInfoMaker {
+    void* pNext = nullptr;
+    ExternalSemaphoreHandleTypeFlagBits handleType{};
+    PhysicalDeviceExternalSemaphoreInfo build() noexcept {
+        PhysicalDeviceExternalSemaphoreInfo out{};
+        out.pNext = pNext;
+        out.handleType = handleType;
+        return out; }
+};
+class ExportSemaphoreCreateInfoMaker {
+    void* pNext = nullptr;
+    ExternalSemaphoreHandleTypeFlags handleTypes{};
+    ExportSemaphoreCreateInfo build() noexcept {
+        ExportSemaphoreCreateInfo out{};
+        out.pNext = pNext;
+        out.handleTypes = handleTypes;
+        return out; }
+};
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+class ImportSemaphoreWin32HandleInfoKHRMaker {
+    void* pNext = nullptr;
+    Semaphore semaphore{};
+    SemaphoreImportFlags flags{};
+    ExternalSemaphoreHandleTypeFlagBits handleType{};
+    HANDLE handle{};
+    LPCWSTR name{};
+    ImportSemaphoreWin32HandleInfoKHR build() noexcept {
+        ImportSemaphoreWin32HandleInfoKHR out{};
+        out.pNext = pNext;
+        out.semaphore = semaphore;
+        out.flags = flags;
+        out.handleType = handleType;
+        out.handle = handle;
+        out.name = name;
+        return out; }
+};
+class ExportSemaphoreWin32HandleInfoKHRMaker {
+    void* pNext = nullptr;
+    detail::optional<SECURITY_ATTRIBUTES> pAttributes;
+    DWORD dwAccess{};
+    LPCWSTR name{};
+    ExportSemaphoreWin32HandleInfoKHR build() noexcept {
+        ExportSemaphoreWin32HandleInfoKHR out{};
+        out.pNext = pNext;
+        out.pAttributes = pAttributes.ptr_or_nullptr();
+        out.dwAccess = dwAccess;
+        out.name = name;
+        return out; }
+};
+class D3D12FenceSubmitInfoKHRMaker {
+    void* pNext = nullptr;
+    detail::span<uint64_t> pWaitSemaphoreValues;
+    detail::span<uint64_t> pSignalSemaphoreValues;
+    D3D12FenceSubmitInfoKHR build() noexcept {
+        D3D12FenceSubmitInfoKHR out{};
+        out.pNext = pNext;
+        out.waitSemaphoreValuesCount = (uint32_t)pWaitSemaphoreValues.size();
+        out.pWaitSemaphoreValues = pWaitSemaphoreValues.data();
+        out.signalSemaphoreValuesCount = (uint32_t)pSignalSemaphoreValues.size();
+        out.pSignalSemaphoreValues = pSignalSemaphoreValues.data();
+        return out; }
+};
+class SemaphoreGetWin32HandleInfoKHRMaker {
+    void* pNext = nullptr;
+    Semaphore semaphore{};
+    ExternalSemaphoreHandleTypeFlagBits handleType{};
+    SemaphoreGetWin32HandleInfoKHR build() noexcept {
+        SemaphoreGetWin32HandleInfoKHR out{};
+        out.pNext = pNext;
+        out.semaphore = semaphore;
+        out.handleType = handleType;
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+class ImportSemaphoreFdInfoKHRMaker {
+    void* pNext = nullptr;
+    Semaphore semaphore{};
+    SemaphoreImportFlags flags{};
+    ExternalSemaphoreHandleTypeFlagBits handleType{};
+    int fd{};
+    ImportSemaphoreFdInfoKHR build() noexcept {
+        ImportSemaphoreFdInfoKHR out{};
+        out.pNext = pNext;
+        out.semaphore = semaphore;
+        out.flags = flags;
+        out.handleType = handleType;
+        out.fd = fd;
+        return out; }
+};
+class SemaphoreGetFdInfoKHRMaker {
+    void* pNext = nullptr;
+    Semaphore semaphore{};
+    ExternalSemaphoreHandleTypeFlagBits handleType{};
+    SemaphoreGetFdInfoKHR build() noexcept {
+        SemaphoreGetFdInfoKHR out{};
+        out.pNext = pNext;
+        out.semaphore = semaphore;
+        out.handleType = handleType;
+        return out; }
+};
+class PhysicalDeviceExternalFenceInfoMaker {
+    void* pNext = nullptr;
+    ExternalFenceHandleTypeFlagBits handleType{};
+    PhysicalDeviceExternalFenceInfo build() noexcept {
+        PhysicalDeviceExternalFenceInfo out{};
+        out.pNext = pNext;
+        out.handleType = handleType;
+        return out; }
+};
+class ExportFenceCreateInfoMaker {
+    void* pNext = nullptr;
+    ExternalFenceHandleTypeFlags handleTypes{};
+    ExportFenceCreateInfo build() noexcept {
+        ExportFenceCreateInfo out{};
+        out.pNext = pNext;
+        out.handleTypes = handleTypes;
+        return out; }
+};
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+class ImportFenceWin32HandleInfoKHRMaker {
+    void* pNext = nullptr;
+    Fence fence{};
+    FenceImportFlags flags{};
+    ExternalFenceHandleTypeFlagBits handleType{};
+    HANDLE handle{};
+    LPCWSTR name{};
+    ImportFenceWin32HandleInfoKHR build() noexcept {
+        ImportFenceWin32HandleInfoKHR out{};
+        out.pNext = pNext;
+        out.fence = fence;
+        out.flags = flags;
+        out.handleType = handleType;
+        out.handle = handle;
+        out.name = name;
+        return out; }
+};
+class ExportFenceWin32HandleInfoKHRMaker {
+    void* pNext = nullptr;
+    detail::optional<SECURITY_ATTRIBUTES> pAttributes;
+    DWORD dwAccess{};
+    LPCWSTR name{};
+    ExportFenceWin32HandleInfoKHR build() noexcept {
+        ExportFenceWin32HandleInfoKHR out{};
+        out.pNext = pNext;
+        out.pAttributes = pAttributes.ptr_or_nullptr();
+        out.dwAccess = dwAccess;
+        out.name = name;
+        return out; }
+};
+class FenceGetWin32HandleInfoKHRMaker {
+    void* pNext = nullptr;
+    Fence fence{};
+    ExternalFenceHandleTypeFlagBits handleType{};
+    FenceGetWin32HandleInfoKHR build() noexcept {
+        FenceGetWin32HandleInfoKHR out{};
+        out.pNext = pNext;
+        out.fence = fence;
+        out.handleType = handleType;
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+class ImportFenceFdInfoKHRMaker {
+    void* pNext = nullptr;
+    Fence fence{};
+    FenceImportFlags flags{};
+    ExternalFenceHandleTypeFlagBits handleType{};
+    int fd{};
+    ImportFenceFdInfoKHR build() noexcept {
+        ImportFenceFdInfoKHR out{};
+        out.pNext = pNext;
+        out.fence = fence;
+        out.flags = flags;
+        out.handleType = handleType;
+        out.fd = fd;
+        return out; }
+};
+class FenceGetFdInfoKHRMaker {
+    void* pNext = nullptr;
+    Fence fence{};
+    ExternalFenceHandleTypeFlagBits handleType{};
+    FenceGetFdInfoKHR build() noexcept {
+        FenceGetFdInfoKHR out{};
+        out.pNext = pNext;
+        out.fence = fence;
+        out.handleType = handleType;
+        return out; }
+};
+class PhysicalDeviceMultiviewFeaturesMaker {
+    void* pNext = nullptr;
+    Bool32 multiview{};
+    Bool32 multiviewGeometryShader{};
+    Bool32 multiviewTessellationShader{};
+    PhysicalDeviceMultiviewFeatures build() noexcept {
+        PhysicalDeviceMultiviewFeatures out{};
+        out.pNext = pNext;
+        out.multiview = multiview;
+        out.multiviewGeometryShader = multiviewGeometryShader;
+        out.multiviewTessellationShader = multiviewTessellationShader;
+        return out; }
+};
+class RenderPassMultiviewCreateInfoMaker {
+    void* pNext = nullptr;
+    detail::span<uint32_t> pViewMasks;
+    detail::span<int32_t> pViewOffsets;
+    detail::span<uint32_t> pCorrelationMasks;
+    RenderPassMultiviewCreateInfo build() noexcept {
+        RenderPassMultiviewCreateInfo out{};
+        out.pNext = pNext;
+        out.subpassCount = (uint32_t)pViewMasks.size();
+        out.pViewMasks = pViewMasks.data();
+        out.dependencyCount = (uint32_t)pViewOffsets.size();
+        out.pViewOffsets = pViewOffsets.data();
+        out.correlationMaskCount = (uint32_t)pCorrelationMasks.size();
+        out.pCorrelationMasks = pCorrelationMasks.data();
+        return out; }
+};
+class DisplayPowerInfoEXTMaker {
+    void* pNext = nullptr;
+    DisplayPowerStateEXT powerState{};
+    DisplayPowerInfoEXT build() noexcept {
+        DisplayPowerInfoEXT out{};
+        out.pNext = pNext;
+        out.powerState = powerState;
+        return out; }
+};
+class DeviceEventInfoEXTMaker {
+    void* pNext = nullptr;
+    DeviceEventTypeEXT deviceEvent{};
+    DeviceEventInfoEXT build() noexcept {
+        DeviceEventInfoEXT out{};
+        out.pNext = pNext;
+        out.deviceEvent = deviceEvent;
+        return out; }
+};
+class DisplayEventInfoEXTMaker {
+    void* pNext = nullptr;
+    DisplayEventTypeEXT displayEvent{};
+    DisplayEventInfoEXT build() noexcept {
+        DisplayEventInfoEXT out{};
+        out.pNext = pNext;
+        out.displayEvent = displayEvent;
+        return out; }
+};
+class SwapchainCounterCreateInfoEXTMaker {
+    void* pNext = nullptr;
+    SurfaceCounterFlagsEXT surfaceCounters{};
+    SwapchainCounterCreateInfoEXT build() noexcept {
+        SwapchainCounterCreateInfoEXT out{};
+        out.pNext = pNext;
+        out.surfaceCounters = surfaceCounters;
+        return out; }
+};
+class MemoryAllocateFlagsInfoMaker {
+    void* pNext = nullptr;
+    MemoryAllocateFlags flags{};
+    uint32_t deviceMask{};
+    MemoryAllocateFlagsInfo build() noexcept {
+        MemoryAllocateFlagsInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.deviceMask = deviceMask;
+        return out; }
+};
+class BindBufferMemoryInfoMaker {
+    void* pNext = nullptr;
+    Buffer buffer{};
+    DeviceMemory memory{};
+    DeviceSize memoryOffset{};
+    BindBufferMemoryInfo build() noexcept {
+        BindBufferMemoryInfo out{};
+        out.pNext = pNext;
+        out.buffer = buffer;
+        out.memory = memory;
+        out.memoryOffset = memoryOffset;
+        return out; }
+};
+class BindBufferMemoryDeviceGroupInfoMaker {
+    void* pNext = nullptr;
+    detail::span<uint32_t> pDeviceIndices;
+    BindBufferMemoryDeviceGroupInfo build() noexcept {
+        BindBufferMemoryDeviceGroupInfo out{};
+        out.pNext = pNext;
+        out.deviceIndexCount = (uint32_t)pDeviceIndices.size();
+        out.pDeviceIndices = pDeviceIndices.data();
+        return out; }
+};
+class BindImageMemoryInfoMaker {
+    void* pNext = nullptr;
+    Image image{};
+    DeviceMemory memory{};
+    DeviceSize memoryOffset{};
+    BindImageMemoryInfo build() noexcept {
+        BindImageMemoryInfo out{};
+        out.pNext = pNext;
+        out.image = image;
+        out.memory = memory;
+        out.memoryOffset = memoryOffset;
+        return out; }
+};
+class BindImageMemoryDeviceGroupInfoMaker {
+    void* pNext = nullptr;
+    detail::span<uint32_t> pDeviceIndices;
+    detail::span<Rect2D> pSplitInstanceBindRegions;
+    BindImageMemoryDeviceGroupInfo build() noexcept {
+        BindImageMemoryDeviceGroupInfo out{};
+        out.pNext = pNext;
+        out.deviceIndexCount = (uint32_t)pDeviceIndices.size();
+        out.pDeviceIndices = pDeviceIndices.data();
+        out.splitInstanceBindRegionCount = (uint32_t)pSplitInstanceBindRegions.size();
+        out.pSplitInstanceBindRegions = pSplitInstanceBindRegions.data();
+        return out; }
+};
+class DeviceGroupRenderPassBeginInfoMaker {
+    void* pNext = nullptr;
+    uint32_t deviceMask{};
+    detail::span<Rect2D> pDeviceRenderAreas;
+    DeviceGroupRenderPassBeginInfo build() noexcept {
+        DeviceGroupRenderPassBeginInfo out{};
+        out.pNext = pNext;
+        out.deviceMask = deviceMask;
+        out.deviceRenderAreaCount = (uint32_t)pDeviceRenderAreas.size();
+        out.pDeviceRenderAreas = pDeviceRenderAreas.data();
+        return out; }
+};
+class DeviceGroupCommandBufferBeginInfoMaker {
+    void* pNext = nullptr;
+    uint32_t deviceMask{};
+    DeviceGroupCommandBufferBeginInfo build() noexcept {
+        DeviceGroupCommandBufferBeginInfo out{};
+        out.pNext = pNext;
+        out.deviceMask = deviceMask;
+        return out; }
+};
+class DeviceGroupSubmitInfoMaker {
+    void* pNext = nullptr;
+    detail::span<uint32_t> pWaitSemaphoreDeviceIndices;
+    detail::span<uint32_t> pCommandBufferDeviceMasks;
+    detail::span<uint32_t> pSignalSemaphoreDeviceIndices;
+    DeviceGroupSubmitInfo build() noexcept {
+        DeviceGroupSubmitInfo out{};
+        out.pNext = pNext;
+        out.waitSemaphoreCount = (uint32_t)pWaitSemaphoreDeviceIndices.size();
+        out.pWaitSemaphoreDeviceIndices = pWaitSemaphoreDeviceIndices.data();
+        out.commandBufferCount = (uint32_t)pCommandBufferDeviceMasks.size();
+        out.pCommandBufferDeviceMasks = pCommandBufferDeviceMasks.data();
+        out.signalSemaphoreCount = (uint32_t)pSignalSemaphoreDeviceIndices.size();
+        out.pSignalSemaphoreDeviceIndices = pSignalSemaphoreDeviceIndices.data();
+        return out; }
+};
+class DeviceGroupBindSparseInfoMaker {
+    void* pNext = nullptr;
+    uint32_t resourceDeviceIndex{};
+    uint32_t memoryDeviceIndex{};
+    DeviceGroupBindSparseInfo build() noexcept {
+        DeviceGroupBindSparseInfo out{};
+        out.pNext = pNext;
+        out.resourceDeviceIndex = resourceDeviceIndex;
+        out.memoryDeviceIndex = memoryDeviceIndex;
+        return out; }
+};
+class ImageSwapchainCreateInfoKHRMaker {
+    void* pNext = nullptr;
+    SwapchainKHR swapchain{};
+    ImageSwapchainCreateInfoKHR build() noexcept {
+        ImageSwapchainCreateInfoKHR out{};
+        out.pNext = pNext;
+        out.swapchain = swapchain;
+        return out; }
+};
+class BindImageMemorySwapchainInfoKHRMaker {
+    void* pNext = nullptr;
+    SwapchainKHR swapchain{};
+    uint32_t imageIndex{};
+    BindImageMemorySwapchainInfoKHR build() noexcept {
+        BindImageMemorySwapchainInfoKHR out{};
+        out.pNext = pNext;
+        out.swapchain = swapchain;
+        out.imageIndex = imageIndex;
+        return out; }
+};
+class AcquireNextImageInfoKHRMaker {
+    void* pNext = nullptr;
+    SwapchainKHR swapchain{};
+    uint64_t timeout{};
+    Semaphore semaphore{};
+    Fence fence{};
+    uint32_t deviceMask{};
+    AcquireNextImageInfoKHR build() noexcept {
+        AcquireNextImageInfoKHR out{};
+        out.pNext = pNext;
+        out.swapchain = swapchain;
+        out.timeout = timeout;
+        out.semaphore = semaphore;
+        out.fence = fence;
+        out.deviceMask = deviceMask;
+        return out; }
+};
+class DeviceGroupPresentInfoKHRMaker {
+    void* pNext = nullptr;
+    detail::span<uint32_t> pDeviceMasks;
+    DeviceGroupPresentModeFlagBitsKHR mode{};
+    DeviceGroupPresentInfoKHR build() noexcept {
+        DeviceGroupPresentInfoKHR out{};
+        out.pNext = pNext;
+        out.swapchainCount = (uint32_t)pDeviceMasks.size();
+        out.pDeviceMasks = pDeviceMasks.data();
+        out.mode = mode;
+        return out; }
+};
+class DeviceGroupDeviceCreateInfoMaker {
+    void* pNext = nullptr;
+    detail::span<PhysicalDevice> pPhysicalDevices;
+    DeviceGroupDeviceCreateInfo build() noexcept {
+        DeviceGroupDeviceCreateInfo out{};
+        out.pNext = pNext;
+        out.physicalDeviceCount = (uint32_t)pPhysicalDevices.size();
+        out.pPhysicalDevices = pPhysicalDevices.data();
+        return out; }
+};
+class DeviceGroupSwapchainCreateInfoKHRMaker {
+    void* pNext = nullptr;
+    DeviceGroupPresentModeFlagsKHR modes{};
+    DeviceGroupSwapchainCreateInfoKHR build() noexcept {
+        DeviceGroupSwapchainCreateInfoKHR out{};
+        out.pNext = pNext;
+        out.modes = modes;
+        return out; }
+};
+class DescriptorUpdateTemplateCreateInfoMaker {
+    void* pNext = nullptr;
+    DescriptorUpdateTemplateCreateFlags flags{};
+    detail::span<DescriptorUpdateTemplateEntry> pDescriptorUpdateEntries;
+    DescriptorUpdateTemplateType templateType{};
+    DescriptorSetLayout descriptorSetLayout{};
+    PipelineBindPoint pipelineBindPoint{};
+    PipelineLayout pipelineLayout{};
+    uint32_t set{};
+    DescriptorUpdateTemplateCreateInfo build() noexcept {
+        DescriptorUpdateTemplateCreateInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.descriptorUpdateEntryCount = (uint32_t)pDescriptorUpdateEntries.size();
+        out.pDescriptorUpdateEntries = pDescriptorUpdateEntries.data();
+        out.templateType = templateType;
+        out.descriptorSetLayout = descriptorSetLayout;
+        out.pipelineBindPoint = pipelineBindPoint;
+        out.pipelineLayout = pipelineLayout;
+        out.set = set;
+        return out; }
+};
+class HdrMetadataEXTMaker {
+    void* pNext = nullptr;
+    XYColorEXT displayPrimaryRed{};
+    XYColorEXT displayPrimaryGreen{};
+    XYColorEXT displayPrimaryBlue{};
+    XYColorEXT whitePoint{};
+    float maxLuminance{};
+    float minLuminance{};
+    float maxContentLightLevel{};
+    float maxFrameAverageLightLevel{};
+    HdrMetadataEXT build() noexcept {
+        HdrMetadataEXT out{};
+        out.pNext = pNext;
+        out.displayPrimaryRed = displayPrimaryRed;
+        out.displayPrimaryGreen = displayPrimaryGreen;
+        out.displayPrimaryBlue = displayPrimaryBlue;
+        out.whitePoint = whitePoint;
+        out.maxLuminance = maxLuminance;
+        out.minLuminance = minLuminance;
+        out.maxContentLightLevel = maxContentLightLevel;
+        out.maxFrameAverageLightLevel = maxFrameAverageLightLevel;
+        return out; }
+};
+class SwapchainDisplayNativeHdrCreateInfoAMDMaker {
+    void* pNext = nullptr;
+    Bool32 localDimmingEnable{};
+    SwapchainDisplayNativeHdrCreateInfoAMD build() noexcept {
+        SwapchainDisplayNativeHdrCreateInfoAMD out{};
+        out.pNext = pNext;
+        out.localDimmingEnable = localDimmingEnable;
+        return out; }
+};
+class PresentTimesInfoGOOGLEMaker {
+    void* pNext = nullptr;
+    detail::span<PresentTimeGOOGLE> pTimes;
+    PresentTimesInfoGOOGLE build() noexcept {
+        PresentTimesInfoGOOGLE out{};
+        out.pNext = pNext;
+        out.swapchainCount = (uint32_t)pTimes.size();
+        out.pTimes = pTimes.data();
+        return out; }
+};
+#if defined(VK_USE_PLATFORM_IOS_MVK)
+class IOSSurfaceCreateInfoMVKMaker {
+    void* pNext = nullptr;
+    IOSSurfaceCreateFlagsMVK flags{};
+    IOSSurfaceCreateInfoMVK build() noexcept {
+        IOSSurfaceCreateInfoMVK out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_IOS_MVK)
+#if defined(VK_USE_PLATFORM_MACOS_MVK)
+class MacOSSurfaceCreateInfoMVKMaker {
+    void* pNext = nullptr;
+    MacOSSurfaceCreateFlagsMVK flags{};
+    MacOSSurfaceCreateInfoMVK build() noexcept {
+        MacOSSurfaceCreateInfoMVK out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_MACOS_MVK)
+#if defined(VK_USE_PLATFORM_METAL_EXT)
+class MetalSurfaceCreateInfoEXTMaker {
+    void* pNext = nullptr;
+    MetalSurfaceCreateFlagsEXT flags{};
+    CAMetalLayer pLayer;
+    MetalSurfaceCreateInfoEXT build() noexcept {
+        MetalSurfaceCreateInfoEXT out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.pLayer = &pLayer;
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_METAL_EXT)
+class PipelineViewportWScalingStateCreateInfoNVMaker {
+    void* pNext = nullptr;
+    Bool32 viewportWScalingEnable{};
+    detail::span<ViewportWScalingNV> pViewportWScalings;
+    PipelineViewportWScalingStateCreateInfoNV build() noexcept {
+        PipelineViewportWScalingStateCreateInfoNV out{};
+        out.pNext = pNext;
+        out.viewportWScalingEnable = viewportWScalingEnable;
+        out.viewportCount = (uint32_t)pViewportWScalings.size();
+        out.pViewportWScalings = pViewportWScalings.data();
+        return out; }
+};
+class PipelineViewportSwizzleStateCreateInfoNVMaker {
+    void* pNext = nullptr;
+    PipelineViewportSwizzleStateCreateFlagsNV flags{};
+    detail::span<ViewportSwizzleNV> pViewportSwizzles;
+    PipelineViewportSwizzleStateCreateInfoNV build() noexcept {
+        PipelineViewportSwizzleStateCreateInfoNV out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.viewportCount = (uint32_t)pViewportSwizzles.size();
+        out.pViewportSwizzles = pViewportSwizzles.data();
+        return out; }
+};
+class PipelineDiscardRectangleStateCreateInfoEXTMaker {
+    void* pNext = nullptr;
+    PipelineDiscardRectangleStateCreateFlagsEXT flags{};
+    DiscardRectangleModeEXT discardRectangleMode{};
+    detail::span<Rect2D> pDiscardRectangles;
+    PipelineDiscardRectangleStateCreateInfoEXT build() noexcept {
+        PipelineDiscardRectangleStateCreateInfoEXT out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.discardRectangleMode = discardRectangleMode;
+        out.discardRectangleCount = (uint32_t)pDiscardRectangles.size();
+        out.pDiscardRectangles = pDiscardRectangles.data();
+        return out; }
+};
+class RenderPassInputAttachmentAspectCreateInfoMaker {
+    void* pNext = nullptr;
+    detail::span<InputAttachmentAspectReference> pAspectReferences;
+    RenderPassInputAttachmentAspectCreateInfo build() noexcept {
+        RenderPassInputAttachmentAspectCreateInfo out{};
+        out.pNext = pNext;
+        out.aspectReferenceCount = (uint32_t)pAspectReferences.size();
+        out.pAspectReferences = pAspectReferences.data();
+        return out; }
+};
+class PhysicalDeviceSurfaceInfo2KHRMaker {
+    void* pNext = nullptr;
+    SurfaceKHR surface{};
+    PhysicalDeviceSurfaceInfo2KHR build() noexcept {
+        PhysicalDeviceSurfaceInfo2KHR out{};
+        out.pNext = pNext;
+        out.surface = surface;
+        return out; }
+};
+class DisplayPlaneInfo2KHRMaker {
+    void* pNext = nullptr;
+    DisplayModeKHR mode{};
+    uint32_t planeIndex{};
+    DisplayPlaneInfo2KHR build() noexcept {
+        DisplayPlaneInfo2KHR out{};
+        out.pNext = pNext;
+        out.mode = mode;
+        out.planeIndex = planeIndex;
+        return out; }
+};
+class PhysicalDevice16BitStorageFeaturesMaker {
+    void* pNext = nullptr;
+    Bool32 storageBuffer16BitAccess{};
+    Bool32 uniformAndStorageBuffer16BitAccess{};
+    Bool32 storagePushConstant16{};
+    Bool32 storageInputOutput16{};
+    PhysicalDevice16BitStorageFeatures build() noexcept {
+        PhysicalDevice16BitStorageFeatures out{};
+        out.pNext = pNext;
+        out.storageBuffer16BitAccess = storageBuffer16BitAccess;
+        out.uniformAndStorageBuffer16BitAccess = uniformAndStorageBuffer16BitAccess;
+        out.storagePushConstant16 = storagePushConstant16;
+        out.storageInputOutput16 = storageInputOutput16;
+        return out; }
+};
+class PhysicalDeviceShaderSubgroupExtendedTypesFeaturesMaker {
+    void* pNext = nullptr;
+    Bool32 shaderSubgroupExtendedTypes{};
+    PhysicalDeviceShaderSubgroupExtendedTypesFeatures build() noexcept {
+        PhysicalDeviceShaderSubgroupExtendedTypesFeatures out{};
+        out.pNext = pNext;
+        out.shaderSubgroupExtendedTypes = shaderSubgroupExtendedTypes;
+        return out; }
+};
+class BufferMemoryRequirementsInfo2Maker {
+    void* pNext = nullptr;
+    Buffer buffer{};
+    BufferMemoryRequirementsInfo2 build() noexcept {
+        BufferMemoryRequirementsInfo2 out{};
+        out.pNext = pNext;
+        out.buffer = buffer;
+        return out; }
+};
+class ImageMemoryRequirementsInfo2Maker {
+    void* pNext = nullptr;
+    Image image{};
+    ImageMemoryRequirementsInfo2 build() noexcept {
+        ImageMemoryRequirementsInfo2 out{};
+        out.pNext = pNext;
+        out.image = image;
+        return out; }
+};
+class ImageSparseMemoryRequirementsInfo2Maker {
+    void* pNext = nullptr;
+    Image image{};
+    ImageSparseMemoryRequirementsInfo2 build() noexcept {
+        ImageSparseMemoryRequirementsInfo2 out{};
+        out.pNext = pNext;
+        out.image = image;
+        return out; }
+};
+class MemoryDedicatedAllocateInfoMaker {
+    void* pNext = nullptr;
+    Image image{};
+    Buffer buffer{};
+    MemoryDedicatedAllocateInfo build() noexcept {
+        MemoryDedicatedAllocateInfo out{};
+        out.pNext = pNext;
+        out.image = image;
+        out.buffer = buffer;
+        return out; }
+};
+class ImageViewUsageCreateInfoMaker {
+    void* pNext = nullptr;
+    ImageUsageFlags usage{};
+    ImageViewUsageCreateInfo build() noexcept {
+        ImageViewUsageCreateInfo out{};
+        out.pNext = pNext;
+        out.usage = usage;
+        return out; }
+};
+class PipelineTessellationDomainOriginStateCreateInfoMaker {
+    void* pNext = nullptr;
+    TessellationDomainOrigin domainOrigin{};
+    PipelineTessellationDomainOriginStateCreateInfo build() noexcept {
+        PipelineTessellationDomainOriginStateCreateInfo out{};
+        out.pNext = pNext;
+        out.domainOrigin = domainOrigin;
+        return out; }
+};
+class SamplerYcbcrConversionInfoMaker {
+    void* pNext = nullptr;
+    SamplerYcbcrConversion conversion{};
+    SamplerYcbcrConversionInfo build() noexcept {
+        SamplerYcbcrConversionInfo out{};
+        out.pNext = pNext;
+        out.conversion = conversion;
+        return out; }
+};
+class SamplerYcbcrConversionCreateInfoMaker {
+    void* pNext = nullptr;
+    Format format{};
+    SamplerYcbcrModelConversion ycbcrModel{};
+    SamplerYcbcrRange ycbcrRange{};
+    ComponentMapping components{};
+    ChromaLocation xChromaOffset{};
+    ChromaLocation yChromaOffset{};
+    Filter chromaFilter{};
+    Bool32 forceExplicitReconstruction{};
+    SamplerYcbcrConversionCreateInfo build() noexcept {
+        SamplerYcbcrConversionCreateInfo out{};
+        out.pNext = pNext;
+        out.format = format;
+        out.ycbcrModel = ycbcrModel;
+        out.ycbcrRange = ycbcrRange;
+        out.components = components;
+        out.xChromaOffset = xChromaOffset;
+        out.yChromaOffset = yChromaOffset;
+        out.chromaFilter = chromaFilter;
+        out.forceExplicitReconstruction = forceExplicitReconstruction;
+        return out; }
+};
+class BindImagePlaneMemoryInfoMaker {
+    void* pNext = nullptr;
+    ImageAspectFlagBits planeAspect{};
+    BindImagePlaneMemoryInfo build() noexcept {
+        BindImagePlaneMemoryInfo out{};
+        out.pNext = pNext;
+        out.planeAspect = planeAspect;
+        return out; }
+};
+class ImagePlaneMemoryRequirementsInfoMaker {
+    void* pNext = nullptr;
+    ImageAspectFlagBits planeAspect{};
+    ImagePlaneMemoryRequirementsInfo build() noexcept {
+        ImagePlaneMemoryRequirementsInfo out{};
+        out.pNext = pNext;
+        out.planeAspect = planeAspect;
+        return out; }
+};
+class PhysicalDeviceSamplerYcbcrConversionFeaturesMaker {
+    void* pNext = nullptr;
+    Bool32 samplerYcbcrConversion{};
+    PhysicalDeviceSamplerYcbcrConversionFeatures build() noexcept {
+        PhysicalDeviceSamplerYcbcrConversionFeatures out{};
+        out.pNext = pNext;
+        out.samplerYcbcrConversion = samplerYcbcrConversion;
+        return out; }
+};
+class ConditionalRenderingBeginInfoEXTMaker {
+    void* pNext = nullptr;
+    Buffer buffer{};
+    DeviceSize offset{};
+    ConditionalRenderingFlagsEXT flags{};
+    ConditionalRenderingBeginInfoEXT build() noexcept {
+        ConditionalRenderingBeginInfoEXT out{};
+        out.pNext = pNext;
+        out.buffer = buffer;
+        out.offset = offset;
+        out.flags = flags;
+        return out; }
+};
+class ProtectedSubmitInfoMaker {
+    void* pNext = nullptr;
+    Bool32 protectedSubmit{};
+    ProtectedSubmitInfo build() noexcept {
+        ProtectedSubmitInfo out{};
+        out.pNext = pNext;
+        out.protectedSubmit = protectedSubmit;
+        return out; }
+};
+class PhysicalDeviceProtectedMemoryFeaturesMaker {
+    void* pNext = nullptr;
+    Bool32 protectedMemory{};
+    PhysicalDeviceProtectedMemoryFeatures build() noexcept {
+        PhysicalDeviceProtectedMemoryFeatures out{};
+        out.pNext = pNext;
+        out.protectedMemory = protectedMemory;
+        return out; }
+};
+class DeviceQueueInfo2Maker {
+    void* pNext = nullptr;
+    DeviceQueueCreateFlags flags{};
+    uint32_t queueFamilyIndex{};
+    uint32_t queueIndex{};
+    DeviceQueueInfo2 build() noexcept {
+        DeviceQueueInfo2 out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.queueFamilyIndex = queueFamilyIndex;
+        out.queueIndex = queueIndex;
+        return out; }
+};
+class PipelineCoverageToColorStateCreateInfoNVMaker {
+    void* pNext = nullptr;
+    PipelineCoverageToColorStateCreateFlagsNV flags{};
+    Bool32 coverageToColorEnable{};
+    uint32_t coverageToColorLocation{};
+    PipelineCoverageToColorStateCreateInfoNV build() noexcept {
+        PipelineCoverageToColorStateCreateInfoNV out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.coverageToColorEnable = coverageToColorEnable;
+        out.coverageToColorLocation = coverageToColorLocation;
+        return out; }
+};
+class SampleLocationsInfoEXTMaker {
+    void* pNext = nullptr;
+    SampleCountFlagBits sampleLocationsPerPixel{};
+    Extent2D sampleLocationGridSize{};
+    detail::span<SampleLocationEXT> pSampleLocations;
+    SampleLocationsInfoEXT build() noexcept {
+        SampleLocationsInfoEXT out{};
+        out.pNext = pNext;
+        out.sampleLocationsPerPixel = sampleLocationsPerPixel;
+        out.sampleLocationGridSize = sampleLocationGridSize;
+        out.sampleLocationsCount = (uint32_t)pSampleLocations.size();
+        out.pSampleLocations = pSampleLocations.data();
+        return out; }
+};
+class RenderPassSampleLocationsBeginInfoEXTMaker {
+    void* pNext = nullptr;
+    detail::span<AttachmentSampleLocationsEXT> pAttachmentInitialSampleLocations;
+    detail::span<SubpassSampleLocationsEXT> pPostSubpassSampleLocations;
+    RenderPassSampleLocationsBeginInfoEXT build() noexcept {
+        RenderPassSampleLocationsBeginInfoEXT out{};
+        out.pNext = pNext;
+        out.attachmentInitialSampleLocationsCount = (uint32_t)pAttachmentInitialSampleLocations.size();
+        out.pAttachmentInitialSampleLocations = pAttachmentInitialSampleLocations.data();
+        out.postSubpassSampleLocationsCount = (uint32_t)pPostSubpassSampleLocations.size();
+        out.pPostSubpassSampleLocations = pPostSubpassSampleLocations.data();
+        return out; }
+};
+class PipelineSampleLocationsStateCreateInfoEXTMaker {
+    void* pNext = nullptr;
+    Bool32 sampleLocationsEnable{};
+    SampleLocationsInfoEXT sampleLocationsInfo{};
+    PipelineSampleLocationsStateCreateInfoEXT build() noexcept {
+        PipelineSampleLocationsStateCreateInfoEXT out{};
+        out.pNext = pNext;
+        out.sampleLocationsEnable = sampleLocationsEnable;
+        out.sampleLocationsInfo = sampleLocationsInfo;
+        return out; }
+};
+class SamplerReductionModeCreateInfoMaker {
+    void* pNext = nullptr;
+    SamplerReductionMode reductionMode{};
+    SamplerReductionModeCreateInfo build() noexcept {
+        SamplerReductionModeCreateInfo out{};
+        out.pNext = pNext;
+        out.reductionMode = reductionMode;
+        return out; }
+};
+class PhysicalDeviceBlendOperationAdvancedFeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 advancedBlendCoherentOperations{};
+    PhysicalDeviceBlendOperationAdvancedFeaturesEXT build() noexcept {
+        PhysicalDeviceBlendOperationAdvancedFeaturesEXT out{};
+        out.pNext = pNext;
+        out.advancedBlendCoherentOperations = advancedBlendCoherentOperations;
+        return out; }
+};
+class PipelineColorBlendAdvancedStateCreateInfoEXTMaker {
+    void* pNext = nullptr;
+    Bool32 srcPremultiplied{};
+    Bool32 dstPremultiplied{};
+    BlendOverlapEXT blendOverlap{};
+    PipelineColorBlendAdvancedStateCreateInfoEXT build() noexcept {
+        PipelineColorBlendAdvancedStateCreateInfoEXT out{};
+        out.pNext = pNext;
+        out.srcPremultiplied = srcPremultiplied;
+        out.dstPremultiplied = dstPremultiplied;
+        out.blendOverlap = blendOverlap;
+        return out; }
+};
+class PhysicalDeviceInlineUniformBlockFeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 inlineUniformBlock{};
+    Bool32 descriptorBindingInlineUniformBlockUpdateAfterBind{};
+    PhysicalDeviceInlineUniformBlockFeaturesEXT build() noexcept {
+        PhysicalDeviceInlineUniformBlockFeaturesEXT out{};
+        out.pNext = pNext;
+        out.inlineUniformBlock = inlineUniformBlock;
+        out.descriptorBindingInlineUniformBlockUpdateAfterBind = descriptorBindingInlineUniformBlockUpdateAfterBind;
+        return out; }
+};
+class WriteDescriptorSetInlineUniformBlockEXTMaker {
+    void* pNext = nullptr;
+    detail::span<std::byte> pData;
+    WriteDescriptorSetInlineUniformBlockEXT build() noexcept {
+        WriteDescriptorSetInlineUniformBlockEXT out{};
+        out.pNext = pNext;
+        out.dataSize = (uint32_t)pData.size();
+        out.pData = pData.data();
+        return out; }
+};
+class DescriptorPoolInlineUniformBlockCreateInfoEXTMaker {
+    void* pNext = nullptr;
+    uint32_t maxInlineUniformBlockBindings{};
+    DescriptorPoolInlineUniformBlockCreateInfoEXT build() noexcept {
+        DescriptorPoolInlineUniformBlockCreateInfoEXT out{};
+        out.pNext = pNext;
+        out.maxInlineUniformBlockBindings = maxInlineUniformBlockBindings;
+        return out; }
+};
+class PipelineCoverageModulationStateCreateInfoNVMaker {
+    void* pNext = nullptr;
+    PipelineCoverageModulationStateCreateFlagsNV flags{};
+    CoverageModulationModeNV coverageModulationMode{};
+    Bool32 coverageModulationTableEnable{};
+    detail::span<float> pCoverageModulationTable;
+    PipelineCoverageModulationStateCreateInfoNV build() noexcept {
+        PipelineCoverageModulationStateCreateInfoNV out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.coverageModulationMode = coverageModulationMode;
+        out.coverageModulationTableEnable = coverageModulationTableEnable;
+        out.coverageModulationTableCount = (uint32_t)pCoverageModulationTable.size();
+        out.pCoverageModulationTable = pCoverageModulationTable.data();
+        return out; }
+};
+class ImageFormatListCreateInfoMaker {
+    void* pNext = nullptr;
+    detail::span<Format> pViewFormats;
+    ImageFormatListCreateInfo build() noexcept {
+        ImageFormatListCreateInfo out{};
+        out.pNext = pNext;
+        out.viewFormatCount = (uint32_t)pViewFormats.size();
+        out.pViewFormats = pViewFormats.data();
+        return out; }
+};
+class ValidationCacheCreateInfoEXTMaker {
+    void* pNext = nullptr;
+    ValidationCacheCreateFlagsEXT flags{};
+    detail::span<std::byte> pInitialData;
+    ValidationCacheCreateInfoEXT build() noexcept {
+        ValidationCacheCreateInfoEXT out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.initialDataSize = (uint32_t)pInitialData.size();
+        out.pInitialData = pInitialData.data();
+        return out; }
+};
+class ShaderModuleValidationCacheCreateInfoEXTMaker {
+    void* pNext = nullptr;
+    ValidationCacheEXT validationCache{};
+    ShaderModuleValidationCacheCreateInfoEXT build() noexcept {
+        ShaderModuleValidationCacheCreateInfoEXT out{};
+        out.pNext = pNext;
+        out.validationCache = validationCache;
+        return out; }
+};
+class PhysicalDeviceShaderDrawParametersFeaturesMaker {
+    void* pNext = nullptr;
+    Bool32 shaderDrawParameters{};
+    PhysicalDeviceShaderDrawParametersFeatures build() noexcept {
+        PhysicalDeviceShaderDrawParametersFeatures out{};
+        out.pNext = pNext;
+        out.shaderDrawParameters = shaderDrawParameters;
+        return out; }
+};
+class PhysicalDeviceShaderFloat16Int8FeaturesMaker {
+    void* pNext = nullptr;
+    Bool32 shaderFloat16{};
+    Bool32 shaderInt8{};
+    PhysicalDeviceShaderFloat16Int8Features build() noexcept {
+        PhysicalDeviceShaderFloat16Int8Features out{};
+        out.pNext = pNext;
+        out.shaderFloat16 = shaderFloat16;
+        out.shaderInt8 = shaderInt8;
+        return out; }
+};
+class PhysicalDeviceHostQueryResetFeaturesMaker {
+    void* pNext = nullptr;
+    Bool32 hostQueryReset{};
+    PhysicalDeviceHostQueryResetFeatures build() noexcept {
+        PhysicalDeviceHostQueryResetFeatures out{};
+        out.pNext = pNext;
+        out.hostQueryReset = hostQueryReset;
+        return out; }
+};
+class DeviceQueueGlobalPriorityCreateInfoEXTMaker {
+    void* pNext = nullptr;
+    QueueGlobalPriorityEXT globalPriority{};
+    DeviceQueueGlobalPriorityCreateInfoEXT build() noexcept {
+        DeviceQueueGlobalPriorityCreateInfoEXT out{};
+        out.pNext = pNext;
+        out.globalPriority = globalPriority;
+        return out; }
+};
+class DebugUtilsObjectNameInfoEXTMaker {
+    void* pNext = nullptr;
+    ObjectType objectType{};
+    uint64_t objectHandle{};
+    const char * pObjectName = nullptr;
+    DebugUtilsObjectNameInfoEXT build() noexcept {
+        DebugUtilsObjectNameInfoEXT out{};
+        out.pNext = pNext;
+        out.objectType = objectType;
+        out.objectHandle = objectHandle;
+        out.pObjectName = pObjectName;
+        return out; }
+};
+class DebugUtilsObjectTagInfoEXTMaker {
+    void* pNext = nullptr;
+    ObjectType objectType{};
+    uint64_t objectHandle{};
+    uint64_t tagName{};
+    detail::span<std::byte> pTag;
+    DebugUtilsObjectTagInfoEXT build() noexcept {
+        DebugUtilsObjectTagInfoEXT out{};
+        out.pNext = pNext;
+        out.objectType = objectType;
+        out.objectHandle = objectHandle;
+        out.tagName = tagName;
+        out.tagSize = (uint32_t)pTag.size();
+        out.pTag = pTag.data();
+        return out; }
+};
+class DebugUtilsLabelEXTMaker {
+    void* pNext = nullptr;
+    const char * pLabelName = nullptr;
+    DebugUtilsLabelEXT build() noexcept {
+        DebugUtilsLabelEXT out{};
+        out.pNext = pNext;
+        out.pLabelName = pLabelName;
+        return out; }
+};
+class DebugUtilsMessengerCreateInfoEXTMaker {
+    void* pNext = nullptr;
+    DebugUtilsMessengerCreateFlagsEXT flags{};
+    DebugUtilsMessageSeverityFlagsEXT messageSeverity{};
+    DebugUtilsMessageTypeFlagsEXT messageType{};
+    PFN_DebugUtilsMessengerCallbackEXT pfnUserCallback{};
+    DebugUtilsMessengerCreateInfoEXT build() noexcept {
+        DebugUtilsMessengerCreateInfoEXT out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.messageSeverity = messageSeverity;
+        out.messageType = messageType;
+        out.pfnUserCallback = pfnUserCallback;
+        return out; }
+};
+class DebugUtilsMessengerCallbackDataEXTMaker {
+    void* pNext = nullptr;
+    DebugUtilsMessengerCallbackDataFlagsEXT flags{};
+    const char * pMessageIdName = nullptr;
+    int32_t messageIdNumber{};
+    const char * pMessage = nullptr;
+    detail::span<DebugUtilsLabelEXT> pQueueLabels;
+    detail::span<DebugUtilsLabelEXT> pCmdBufLabels;
+    detail::span<DebugUtilsObjectNameInfoEXT> pObjects;
+    DebugUtilsMessengerCallbackDataEXT build() noexcept {
+        DebugUtilsMessengerCallbackDataEXT out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.pMessageIdName = pMessageIdName;
+        out.messageIdNumber = messageIdNumber;
+        out.pMessage = pMessage;
+        out.queueLabelCount = (uint32_t)pQueueLabels.size();
+        out.pQueueLabels = pQueueLabels.data();
+        out.cmdBufLabelCount = (uint32_t)pCmdBufLabels.size();
+        out.pCmdBufLabels = pCmdBufLabels.data();
+        out.objectCount = (uint32_t)pObjects.size();
+        out.pObjects = pObjects.data();
+        return out; }
+};
+class PhysicalDeviceDeviceMemoryReportFeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 deviceMemoryReport{};
+    PhysicalDeviceDeviceMemoryReportFeaturesEXT build() noexcept {
+        PhysicalDeviceDeviceMemoryReportFeaturesEXT out{};
+        out.pNext = pNext;
+        out.deviceMemoryReport = deviceMemoryReport;
+        return out; }
+};
+class DeviceDeviceMemoryReportCreateInfoEXTMaker {
+    void* pNext = nullptr;
+    DeviceMemoryReportFlagsEXT flags{};
+    PFN_DeviceMemoryReportCallbackEXT pfnUserCallback{};
+    DeviceDeviceMemoryReportCreateInfoEXT build() noexcept {
+        DeviceDeviceMemoryReportCreateInfoEXT out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.pfnUserCallback = pfnUserCallback;
+        return out; }
+};
+class ImportMemoryHostPointerInfoEXTMaker {
+    void* pNext = nullptr;
+    ExternalMemoryHandleTypeFlagBits handleType{};
+    ImportMemoryHostPointerInfoEXT build() noexcept {
+        ImportMemoryHostPointerInfoEXT out{};
+        out.pNext = pNext;
+        out.handleType = handleType;
+        return out; }
+};
+class CalibratedTimestampInfoEXTMaker {
+    void* pNext = nullptr;
+    TimeDomainEXT timeDomain{};
+    CalibratedTimestampInfoEXT build() noexcept {
+        CalibratedTimestampInfoEXT out{};
+        out.pNext = pNext;
+        out.timeDomain = timeDomain;
+        return out; }
+};
+class PipelineRasterizationConservativeStateCreateInfoEXTMaker {
+    void* pNext = nullptr;
+    PipelineRasterizationConservativeStateCreateFlagsEXT flags{};
+    ConservativeRasterizationModeEXT conservativeRasterizationMode{};
+    float extraPrimitiveOverestimationSize{};
+    PipelineRasterizationConservativeStateCreateInfoEXT build() noexcept {
+        PipelineRasterizationConservativeStateCreateInfoEXT out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.conservativeRasterizationMode = conservativeRasterizationMode;
+        out.extraPrimitiveOverestimationSize = extraPrimitiveOverestimationSize;
+        return out; }
+};
+class PhysicalDeviceDescriptorIndexingFeaturesMaker {
+    void* pNext = nullptr;
+    Bool32 shaderInputAttachmentArrayDynamicIndexing{};
+    Bool32 shaderUniformTexelBufferArrayDynamicIndexing{};
+    Bool32 shaderStorageTexelBufferArrayDynamicIndexing{};
+    Bool32 shaderUniformBufferArrayNonUniformIndexing{};
+    Bool32 shaderSampledImageArrayNonUniformIndexing{};
+    Bool32 shaderStorageBufferArrayNonUniformIndexing{};
+    Bool32 shaderStorageImageArrayNonUniformIndexing{};
+    Bool32 shaderInputAttachmentArrayNonUniformIndexing{};
+    Bool32 shaderUniformTexelBufferArrayNonUniformIndexing{};
+    Bool32 shaderStorageTexelBufferArrayNonUniformIndexing{};
+    Bool32 descriptorBindingUniformBufferUpdateAfterBind{};
+    Bool32 descriptorBindingSampledImageUpdateAfterBind{};
+    Bool32 descriptorBindingStorageImageUpdateAfterBind{};
+    Bool32 descriptorBindingStorageBufferUpdateAfterBind{};
+    Bool32 descriptorBindingUniformTexelBufferUpdateAfterBind{};
+    Bool32 descriptorBindingStorageTexelBufferUpdateAfterBind{};
+    Bool32 descriptorBindingUpdateUnusedWhilePending{};
+    Bool32 descriptorBindingPartiallyBound{};
+    Bool32 descriptorBindingVariableDescriptorCount{};
+    Bool32 runtimeDescriptorArray{};
+    PhysicalDeviceDescriptorIndexingFeatures build() noexcept {
+        PhysicalDeviceDescriptorIndexingFeatures out{};
+        out.pNext = pNext;
+        out.shaderInputAttachmentArrayDynamicIndexing = shaderInputAttachmentArrayDynamicIndexing;
+        out.shaderUniformTexelBufferArrayDynamicIndexing = shaderUniformTexelBufferArrayDynamicIndexing;
+        out.shaderStorageTexelBufferArrayDynamicIndexing = shaderStorageTexelBufferArrayDynamicIndexing;
+        out.shaderUniformBufferArrayNonUniformIndexing = shaderUniformBufferArrayNonUniformIndexing;
+        out.shaderSampledImageArrayNonUniformIndexing = shaderSampledImageArrayNonUniformIndexing;
+        out.shaderStorageBufferArrayNonUniformIndexing = shaderStorageBufferArrayNonUniformIndexing;
+        out.shaderStorageImageArrayNonUniformIndexing = shaderStorageImageArrayNonUniformIndexing;
+        out.shaderInputAttachmentArrayNonUniformIndexing = shaderInputAttachmentArrayNonUniformIndexing;
+        out.shaderUniformTexelBufferArrayNonUniformIndexing = shaderUniformTexelBufferArrayNonUniformIndexing;
+        out.shaderStorageTexelBufferArrayNonUniformIndexing = shaderStorageTexelBufferArrayNonUniformIndexing;
+        out.descriptorBindingUniformBufferUpdateAfterBind = descriptorBindingUniformBufferUpdateAfterBind;
+        out.descriptorBindingSampledImageUpdateAfterBind = descriptorBindingSampledImageUpdateAfterBind;
+        out.descriptorBindingStorageImageUpdateAfterBind = descriptorBindingStorageImageUpdateAfterBind;
+        out.descriptorBindingStorageBufferUpdateAfterBind = descriptorBindingStorageBufferUpdateAfterBind;
+        out.descriptorBindingUniformTexelBufferUpdateAfterBind = descriptorBindingUniformTexelBufferUpdateAfterBind;
+        out.descriptorBindingStorageTexelBufferUpdateAfterBind = descriptorBindingStorageTexelBufferUpdateAfterBind;
+        out.descriptorBindingUpdateUnusedWhilePending = descriptorBindingUpdateUnusedWhilePending;
+        out.descriptorBindingPartiallyBound = descriptorBindingPartiallyBound;
+        out.descriptorBindingVariableDescriptorCount = descriptorBindingVariableDescriptorCount;
+        out.runtimeDescriptorArray = runtimeDescriptorArray;
+        return out; }
+};
+class DescriptorSetLayoutBindingFlagsCreateInfoMaker {
+    void* pNext = nullptr;
+    detail::span<DescriptorBindingFlags> pBindingFlags;
+    DescriptorSetLayoutBindingFlagsCreateInfo build() noexcept {
+        DescriptorSetLayoutBindingFlagsCreateInfo out{};
+        out.pNext = pNext;
+        out.bindingCount = (uint32_t)pBindingFlags.size();
+        out.pBindingFlags = pBindingFlags.data();
+        return out; }
+};
+class DescriptorSetVariableDescriptorCountAllocateInfoMaker {
+    void* pNext = nullptr;
+    detail::span<uint32_t> pDescriptorCounts;
+    DescriptorSetVariableDescriptorCountAllocateInfo build() noexcept {
+        DescriptorSetVariableDescriptorCountAllocateInfo out{};
+        out.pNext = pNext;
+        out.descriptorSetCount = (uint32_t)pDescriptorCounts.size();
+        out.pDescriptorCounts = pDescriptorCounts.data();
+        return out; }
+};
+class AttachmentDescription2Maker {
+    void* pNext = nullptr;
+    AttachmentDescriptionFlags flags{};
+    Format format{};
+    SampleCountFlagBits samples{};
+    AttachmentLoadOp loadOp{};
+    AttachmentStoreOp storeOp{};
+    AttachmentLoadOp stencilLoadOp{};
+    AttachmentStoreOp stencilStoreOp{};
+    ImageLayout initialLayout{};
+    ImageLayout finalLayout{};
+    AttachmentDescription2 build() noexcept {
+        AttachmentDescription2 out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.format = format;
+        out.samples = samples;
+        out.loadOp = loadOp;
+        out.storeOp = storeOp;
+        out.stencilLoadOp = stencilLoadOp;
+        out.stencilStoreOp = stencilStoreOp;
+        out.initialLayout = initialLayout;
+        out.finalLayout = finalLayout;
+        return out; }
+};
+class AttachmentReference2Maker {
+    void* pNext = nullptr;
+    uint32_t attachment{};
+    ImageLayout layout{};
+    ImageAspectFlags aspectMask{};
+    AttachmentReference2 build() noexcept {
+        AttachmentReference2 out{};
+        out.pNext = pNext;
+        out.attachment = attachment;
+        out.layout = layout;
+        out.aspectMask = aspectMask;
+        return out; }
+};
+class SubpassDescription2Maker {
+    void* pNext = nullptr;
+    SubpassDescriptionFlags flags{};
+    PipelineBindPoint pipelineBindPoint{};
+    uint32_t viewMask{};
+    detail::span<AttachmentReference2> pInputAttachments;
+    detail::span<AttachmentReference2> pColorAttachments;
+    detail::span<AttachmentReference2> pResolveAttachments;
+    detail::optional<AttachmentReference2> pDepthStencilAttachment;
+    detail::span<uint32_t> pPreserveAttachments;
+    SubpassDescription2 build() noexcept {
+        SubpassDescription2 out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.pipelineBindPoint = pipelineBindPoint;
+        out.viewMask = viewMask;
+        out.inputAttachmentCount = (uint32_t)pInputAttachments.size();
+        out.pInputAttachments = pInputAttachments.data();
+        out.colorAttachmentCount = (uint32_t)pColorAttachments.size();
+        out.pColorAttachments = pColorAttachments.data();
+        out.pResolveAttachments = pResolveAttachments.data();
+        out.pDepthStencilAttachment = pDepthStencilAttachment.ptr_or_nullptr();
+        out.preserveAttachmentCount = (uint32_t)pPreserveAttachments.size();
+        out.pPreserveAttachments = pPreserveAttachments.data();
+        return out; }
+};
+class SubpassDependency2Maker {
+    void* pNext = nullptr;
+    uint32_t srcSubpass{};
+    uint32_t dstSubpass{};
+    PipelineStageFlags srcStageMask{};
+    PipelineStageFlags dstStageMask{};
+    AccessFlags srcAccessMask{};
+    AccessFlags dstAccessMask{};
+    DependencyFlags dependencyFlags{};
+    int32_t viewOffset{};
+    SubpassDependency2 build() noexcept {
+        SubpassDependency2 out{};
+        out.pNext = pNext;
+        out.srcSubpass = srcSubpass;
+        out.dstSubpass = dstSubpass;
+        out.srcStageMask = srcStageMask;
+        out.dstStageMask = dstStageMask;
+        out.srcAccessMask = srcAccessMask;
+        out.dstAccessMask = dstAccessMask;
+        out.dependencyFlags = dependencyFlags;
+        out.viewOffset = viewOffset;
+        return out; }
+};
+class RenderPassCreateInfo2Maker {
+    void* pNext = nullptr;
+    RenderPassCreateFlags flags{};
+    detail::span<AttachmentDescription2> pAttachments;
+    detail::span<SubpassDescription2> pSubpasses;
+    detail::span<SubpassDependency2> pDependencies;
+    detail::span<uint32_t> pCorrelatedViewMasks;
+    RenderPassCreateInfo2 build() noexcept {
+        RenderPassCreateInfo2 out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.attachmentCount = (uint32_t)pAttachments.size();
+        out.pAttachments = pAttachments.data();
+        out.subpassCount = (uint32_t)pSubpasses.size();
+        out.pSubpasses = pSubpasses.data();
+        out.dependencyCount = (uint32_t)pDependencies.size();
+        out.pDependencies = pDependencies.data();
+        out.correlatedViewMaskCount = (uint32_t)pCorrelatedViewMasks.size();
+        out.pCorrelatedViewMasks = pCorrelatedViewMasks.data();
+        return out; }
+};
+class SubpassBeginInfoMaker {
+    void* pNext = nullptr;
+    SubpassContents contents{};
+    SubpassBeginInfo build() noexcept {
+        SubpassBeginInfo out{};
+        out.pNext = pNext;
+        out.contents = contents;
+        return out; }
+};
+class SubpassEndInfoMaker {
+    void* pNext = nullptr;
+    SubpassEndInfo build() noexcept {
+        SubpassEndInfo out{};
+        out.pNext = pNext;
+        return out; }
+};
+class PhysicalDeviceTimelineSemaphoreFeaturesMaker {
+    void* pNext = nullptr;
+    Bool32 timelineSemaphore{};
+    PhysicalDeviceTimelineSemaphoreFeatures build() noexcept {
+        PhysicalDeviceTimelineSemaphoreFeatures out{};
+        out.pNext = pNext;
+        out.timelineSemaphore = timelineSemaphore;
+        return out; }
+};
+class SemaphoreTypeCreateInfoMaker {
+    void* pNext = nullptr;
+    SemaphoreType semaphoreType{};
+    uint64_t initialValue{};
+    SemaphoreTypeCreateInfo build() noexcept {
+        SemaphoreTypeCreateInfo out{};
+        out.pNext = pNext;
+        out.semaphoreType = semaphoreType;
+        out.initialValue = initialValue;
+        return out; }
+};
+class TimelineSemaphoreSubmitInfoMaker {
+    void* pNext = nullptr;
+    detail::span<uint64_t> pWaitSemaphoreValues;
+    detail::span<uint64_t> pSignalSemaphoreValues;
+    TimelineSemaphoreSubmitInfo build() noexcept {
+        TimelineSemaphoreSubmitInfo out{};
+        out.pNext = pNext;
+        out.waitSemaphoreValueCount = (uint32_t)pWaitSemaphoreValues.size();
+        out.pWaitSemaphoreValues = pWaitSemaphoreValues.data();
+        out.signalSemaphoreValueCount = (uint32_t)pSignalSemaphoreValues.size();
+        out.pSignalSemaphoreValues = pSignalSemaphoreValues.data();
+        return out; }
+};
+class SemaphoreWaitInfoMaker {
+    void* pNext = nullptr;
+    SemaphoreWaitFlags flags{};
+    detail::span<Semaphore> pSemaphores;
+    detail::span<uint64_t> pValues;
+    SemaphoreWaitInfo build() noexcept {
+        SemaphoreWaitInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.semaphoreCount = (uint32_t)pSemaphores.size();
+        out.pSemaphores = pSemaphores.data();
+        out.pValues = pValues.data();
+        return out; }
+};
+class SemaphoreSignalInfoMaker {
+    void* pNext = nullptr;
+    Semaphore semaphore{};
+    uint64_t value{};
+    SemaphoreSignalInfo build() noexcept {
+        SemaphoreSignalInfo out{};
+        out.pNext = pNext;
+        out.semaphore = semaphore;
+        out.value = value;
+        return out; }
+};
+class PipelineVertexInputDivisorStateCreateInfoEXTMaker {
+    void* pNext = nullptr;
+    detail::span<VertexInputBindingDivisorDescriptionEXT> pVertexBindingDivisors;
+    PipelineVertexInputDivisorStateCreateInfoEXT build() noexcept {
+        PipelineVertexInputDivisorStateCreateInfoEXT out{};
+        out.pNext = pNext;
+        out.vertexBindingDivisorCount = (uint32_t)pVertexBindingDivisors.size();
+        out.pVertexBindingDivisors = pVertexBindingDivisors.data();
+        return out; }
+};
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
+class ImportAndroidHardwareBufferInfoANDROIDMaker {
+    void* pNext = nullptr;
+    AHardwareBuffer buffer;
+    ImportAndroidHardwareBufferInfoANDROID build() noexcept {
+        ImportAndroidHardwareBufferInfoANDROID out{};
+        out.pNext = pNext;
+        out.buffer = &buffer;
+        return out; }
+};
+class MemoryGetAndroidHardwareBufferInfoANDROIDMaker {
+    void* pNext = nullptr;
+    DeviceMemory memory{};
+    MemoryGetAndroidHardwareBufferInfoANDROID build() noexcept {
+        MemoryGetAndroidHardwareBufferInfoANDROID out{};
+        out.pNext = pNext;
+        out.memory = memory;
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
+class CommandBufferInheritanceConditionalRenderingInfoEXTMaker {
+    void* pNext = nullptr;
+    Bool32 conditionalRenderingEnable{};
+    CommandBufferInheritanceConditionalRenderingInfoEXT build() noexcept {
+        CommandBufferInheritanceConditionalRenderingInfoEXT out{};
+        out.pNext = pNext;
+        out.conditionalRenderingEnable = conditionalRenderingEnable;
+        return out; }
+};
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
+class ExternalFormatANDROIDMaker {
+    void* pNext = nullptr;
+    uint64_t externalFormat{};
+    ExternalFormatANDROID build() noexcept {
+        ExternalFormatANDROID out{};
+        out.pNext = pNext;
+        out.externalFormat = externalFormat;
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
+class PhysicalDevice8BitStorageFeaturesMaker {
+    void* pNext = nullptr;
+    Bool32 storageBuffer8BitAccess{};
+    Bool32 uniformAndStorageBuffer8BitAccess{};
+    Bool32 storagePushConstant8{};
+    PhysicalDevice8BitStorageFeatures build() noexcept {
+        PhysicalDevice8BitStorageFeatures out{};
+        out.pNext = pNext;
+        out.storageBuffer8BitAccess = storageBuffer8BitAccess;
+        out.uniformAndStorageBuffer8BitAccess = uniformAndStorageBuffer8BitAccess;
+        out.storagePushConstant8 = storagePushConstant8;
+        return out; }
+};
+class PhysicalDeviceConditionalRenderingFeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 conditionalRendering{};
+    Bool32 inheritedConditionalRendering{};
+    PhysicalDeviceConditionalRenderingFeaturesEXT build() noexcept {
+        PhysicalDeviceConditionalRenderingFeaturesEXT out{};
+        out.pNext = pNext;
+        out.conditionalRendering = conditionalRendering;
+        out.inheritedConditionalRendering = inheritedConditionalRendering;
+        return out; }
+};
+class PhysicalDeviceVulkanMemoryModelFeaturesMaker {
+    void* pNext = nullptr;
+    Bool32 vulkanMemoryModel{};
+    Bool32 vulkanMemoryModelDeviceScope{};
+    Bool32 vulkanMemoryModelAvailabilityVisibilityChains{};
+    PhysicalDeviceVulkanMemoryModelFeatures build() noexcept {
+        PhysicalDeviceVulkanMemoryModelFeatures out{};
+        out.pNext = pNext;
+        out.vulkanMemoryModel = vulkanMemoryModel;
+        out.vulkanMemoryModelDeviceScope = vulkanMemoryModelDeviceScope;
+        out.vulkanMemoryModelAvailabilityVisibilityChains = vulkanMemoryModelAvailabilityVisibilityChains;
+        return out; }
+};
+class PhysicalDeviceShaderAtomicInt64FeaturesMaker {
+    void* pNext = nullptr;
+    Bool32 shaderBufferInt64Atomics{};
+    Bool32 shaderSharedInt64Atomics{};
+    PhysicalDeviceShaderAtomicInt64Features build() noexcept {
+        PhysicalDeviceShaderAtomicInt64Features out{};
+        out.pNext = pNext;
+        out.shaderBufferInt64Atomics = shaderBufferInt64Atomics;
+        out.shaderSharedInt64Atomics = shaderSharedInt64Atomics;
+        return out; }
+};
+class PhysicalDeviceShaderAtomicFloatFeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 shaderBufferFloat32Atomics{};
+    Bool32 shaderBufferFloat32AtomicAdd{};
+    Bool32 shaderBufferFloat64Atomics{};
+    Bool32 shaderBufferFloat64AtomicAdd{};
+    Bool32 shaderSharedFloat32Atomics{};
+    Bool32 shaderSharedFloat32AtomicAdd{};
+    Bool32 shaderSharedFloat64Atomics{};
+    Bool32 shaderSharedFloat64AtomicAdd{};
+    Bool32 shaderImageFloat32Atomics{};
+    Bool32 shaderImageFloat32AtomicAdd{};
+    Bool32 sparseImageFloat32Atomics{};
+    Bool32 sparseImageFloat32AtomicAdd{};
+    PhysicalDeviceShaderAtomicFloatFeaturesEXT build() noexcept {
+        PhysicalDeviceShaderAtomicFloatFeaturesEXT out{};
+        out.pNext = pNext;
+        out.shaderBufferFloat32Atomics = shaderBufferFloat32Atomics;
+        out.shaderBufferFloat32AtomicAdd = shaderBufferFloat32AtomicAdd;
+        out.shaderBufferFloat64Atomics = shaderBufferFloat64Atomics;
+        out.shaderBufferFloat64AtomicAdd = shaderBufferFloat64AtomicAdd;
+        out.shaderSharedFloat32Atomics = shaderSharedFloat32Atomics;
+        out.shaderSharedFloat32AtomicAdd = shaderSharedFloat32AtomicAdd;
+        out.shaderSharedFloat64Atomics = shaderSharedFloat64Atomics;
+        out.shaderSharedFloat64AtomicAdd = shaderSharedFloat64AtomicAdd;
+        out.shaderImageFloat32Atomics = shaderImageFloat32Atomics;
+        out.shaderImageFloat32AtomicAdd = shaderImageFloat32AtomicAdd;
+        out.sparseImageFloat32Atomics = sparseImageFloat32Atomics;
+        out.sparseImageFloat32AtomicAdd = sparseImageFloat32AtomicAdd;
+        return out; }
+};
+class PhysicalDeviceVertexAttributeDivisorFeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 vertexAttributeInstanceRateDivisor{};
+    Bool32 vertexAttributeInstanceRateZeroDivisor{};
+    PhysicalDeviceVertexAttributeDivisorFeaturesEXT build() noexcept {
+        PhysicalDeviceVertexAttributeDivisorFeaturesEXT out{};
+        out.pNext = pNext;
+        out.vertexAttributeInstanceRateDivisor = vertexAttributeInstanceRateDivisor;
+        out.vertexAttributeInstanceRateZeroDivisor = vertexAttributeInstanceRateZeroDivisor;
+        return out; }
+};
+class SubpassDescriptionDepthStencilResolveMaker {
+    void* pNext = nullptr;
+    ResolveModeFlagBits depthResolveMode{};
+    ResolveModeFlagBits stencilResolveMode{};
+    detail::optional<AttachmentReference2> pDepthStencilResolveAttachment;
+    SubpassDescriptionDepthStencilResolve build() noexcept {
+        SubpassDescriptionDepthStencilResolve out{};
+        out.pNext = pNext;
+        out.depthResolveMode = depthResolveMode;
+        out.stencilResolveMode = stencilResolveMode;
+        out.pDepthStencilResolveAttachment = pDepthStencilResolveAttachment.ptr_or_nullptr();
+        return out; }
+};
+class ImageViewASTCDecodeModeEXTMaker {
+    void* pNext = nullptr;
+    Format decodeMode{};
+    ImageViewASTCDecodeModeEXT build() noexcept {
+        ImageViewASTCDecodeModeEXT out{};
+        out.pNext = pNext;
+        out.decodeMode = decodeMode;
+        return out; }
+};
+class PhysicalDeviceASTCDecodeFeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 decodeModeSharedExponent{};
+    PhysicalDeviceASTCDecodeFeaturesEXT build() noexcept {
+        PhysicalDeviceASTCDecodeFeaturesEXT out{};
+        out.pNext = pNext;
+        out.decodeModeSharedExponent = decodeModeSharedExponent;
+        return out; }
+};
+class PhysicalDeviceTransformFeedbackFeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 transformFeedback{};
+    Bool32 geometryStreams{};
+    PhysicalDeviceTransformFeedbackFeaturesEXT build() noexcept {
+        PhysicalDeviceTransformFeedbackFeaturesEXT out{};
+        out.pNext = pNext;
+        out.transformFeedback = transformFeedback;
+        out.geometryStreams = geometryStreams;
+        return out; }
+};
+class PipelineRasterizationStateStreamCreateInfoEXTMaker {
+    void* pNext = nullptr;
+    PipelineRasterizationStateStreamCreateFlagsEXT flags{};
+    uint32_t rasterizationStream{};
+    PipelineRasterizationStateStreamCreateInfoEXT build() noexcept {
+        PipelineRasterizationStateStreamCreateInfoEXT out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.rasterizationStream = rasterizationStream;
+        return out; }
+};
+class PhysicalDeviceRepresentativeFragmentTestFeaturesNVMaker {
+    void* pNext = nullptr;
+    Bool32 representativeFragmentTest{};
+    PhysicalDeviceRepresentativeFragmentTestFeaturesNV build() noexcept {
+        PhysicalDeviceRepresentativeFragmentTestFeaturesNV out{};
+        out.pNext = pNext;
+        out.representativeFragmentTest = representativeFragmentTest;
+        return out; }
+};
+class PipelineRepresentativeFragmentTestStateCreateInfoNVMaker {
+    void* pNext = nullptr;
+    Bool32 representativeFragmentTestEnable{};
+    PipelineRepresentativeFragmentTestStateCreateInfoNV build() noexcept {
+        PipelineRepresentativeFragmentTestStateCreateInfoNV out{};
+        out.pNext = pNext;
+        out.representativeFragmentTestEnable = representativeFragmentTestEnable;
+        return out; }
+};
+class PhysicalDeviceExclusiveScissorFeaturesNVMaker {
+    void* pNext = nullptr;
+    Bool32 exclusiveScissor{};
+    PhysicalDeviceExclusiveScissorFeaturesNV build() noexcept {
+        PhysicalDeviceExclusiveScissorFeaturesNV out{};
+        out.pNext = pNext;
+        out.exclusiveScissor = exclusiveScissor;
+        return out; }
+};
+class PipelineViewportExclusiveScissorStateCreateInfoNVMaker {
+    void* pNext = nullptr;
+    detail::span<Rect2D> pExclusiveScissors;
+    PipelineViewportExclusiveScissorStateCreateInfoNV build() noexcept {
+        PipelineViewportExclusiveScissorStateCreateInfoNV out{};
+        out.pNext = pNext;
+        out.exclusiveScissorCount = (uint32_t)pExclusiveScissors.size();
+        out.pExclusiveScissors = pExclusiveScissors.data();
+        return out; }
+};
+class PhysicalDeviceCornerSampledImageFeaturesNVMaker {
+    void* pNext = nullptr;
+    Bool32 cornerSampledImage{};
+    PhysicalDeviceCornerSampledImageFeaturesNV build() noexcept {
+        PhysicalDeviceCornerSampledImageFeaturesNV out{};
+        out.pNext = pNext;
+        out.cornerSampledImage = cornerSampledImage;
+        return out; }
+};
+class PhysicalDeviceComputeShaderDerivativesFeaturesNVMaker {
+    void* pNext = nullptr;
+    Bool32 computeDerivativeGroupQuads{};
+    Bool32 computeDerivativeGroupLinear{};
+    PhysicalDeviceComputeShaderDerivativesFeaturesNV build() noexcept {
+        PhysicalDeviceComputeShaderDerivativesFeaturesNV out{};
+        out.pNext = pNext;
+        out.computeDerivativeGroupQuads = computeDerivativeGroupQuads;
+        out.computeDerivativeGroupLinear = computeDerivativeGroupLinear;
+        return out; }
+};
+class PhysicalDeviceFragmentShaderBarycentricFeaturesNVMaker {
+    void* pNext = nullptr;
+    Bool32 fragmentShaderBarycentric{};
+    PhysicalDeviceFragmentShaderBarycentricFeaturesNV build() noexcept {
+        PhysicalDeviceFragmentShaderBarycentricFeaturesNV out{};
+        out.pNext = pNext;
+        out.fragmentShaderBarycentric = fragmentShaderBarycentric;
+        return out; }
+};
+class PhysicalDeviceShaderImageFootprintFeaturesNVMaker {
+    void* pNext = nullptr;
+    Bool32 imageFootprint{};
+    PhysicalDeviceShaderImageFootprintFeaturesNV build() noexcept {
+        PhysicalDeviceShaderImageFootprintFeaturesNV out{};
+        out.pNext = pNext;
+        out.imageFootprint = imageFootprint;
+        return out; }
+};
+class PhysicalDeviceDedicatedAllocationImageAliasingFeaturesNVMaker {
+    void* pNext = nullptr;
+    Bool32 dedicatedAllocationImageAliasing{};
+    PhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV build() noexcept {
+        PhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV out{};
+        out.pNext = pNext;
+        out.dedicatedAllocationImageAliasing = dedicatedAllocationImageAliasing;
+        return out; }
+};
+class ShadingRatePaletteNVMaker {
+    detail::span<ShadingRatePaletteEntryNV> pShadingRatePaletteEntries;
+    ShadingRatePaletteNV build() noexcept {
+        ShadingRatePaletteNV out{};
+        out.shadingRatePaletteEntryCount = (uint32_t)pShadingRatePaletteEntries.size();
+        out.pShadingRatePaletteEntries = pShadingRatePaletteEntries.data();
+        return out; }
+};
+class PipelineViewportShadingRateImageStateCreateInfoNVMaker {
+    void* pNext = nullptr;
+    Bool32 shadingRateImageEnable{};
+    detail::span<ShadingRatePaletteNV> pShadingRatePalettes;
+    PipelineViewportShadingRateImageStateCreateInfoNV build() noexcept {
+        PipelineViewportShadingRateImageStateCreateInfoNV out{};
+        out.pNext = pNext;
+        out.shadingRateImageEnable = shadingRateImageEnable;
+        out.viewportCount = (uint32_t)pShadingRatePalettes.size();
+        out.pShadingRatePalettes = pShadingRatePalettes.data();
+        return out; }
+};
+class PhysicalDeviceShadingRateImageFeaturesNVMaker {
+    void* pNext = nullptr;
+    Bool32 shadingRateImage{};
+    Bool32 shadingRateCoarseSampleOrder{};
+    PhysicalDeviceShadingRateImageFeaturesNV build() noexcept {
+        PhysicalDeviceShadingRateImageFeaturesNV out{};
+        out.pNext = pNext;
+        out.shadingRateImage = shadingRateImage;
+        out.shadingRateCoarseSampleOrder = shadingRateCoarseSampleOrder;
+        return out; }
+};
+class CoarseSampleOrderCustomNVMaker {
+    ShadingRatePaletteEntryNV shadingRate{};
+    uint32_t sampleCount{};
+    detail::span<CoarseSampleLocationNV> pSampleLocations;
+    CoarseSampleOrderCustomNV build() noexcept {
+        CoarseSampleOrderCustomNV out{};
+        out.shadingRate = shadingRate;
+        out.sampleCount = sampleCount;
+        out.sampleLocationCount = (uint32_t)pSampleLocations.size();
+        out.pSampleLocations = pSampleLocations.data();
+        return out; }
+};
+class PipelineViewportCoarseSampleOrderStateCreateInfoNVMaker {
+    void* pNext = nullptr;
+    CoarseSampleOrderTypeNV sampleOrderType{};
+    detail::span<CoarseSampleOrderCustomNV> pCustomSampleOrders;
+    PipelineViewportCoarseSampleOrderStateCreateInfoNV build() noexcept {
+        PipelineViewportCoarseSampleOrderStateCreateInfoNV out{};
+        out.pNext = pNext;
+        out.sampleOrderType = sampleOrderType;
+        out.customSampleOrderCount = (uint32_t)pCustomSampleOrders.size();
+        out.pCustomSampleOrders = pCustomSampleOrders.data();
+        return out; }
+};
+class PhysicalDeviceMeshShaderFeaturesNVMaker {
+    void* pNext = nullptr;
+    Bool32 taskShader{};
+    Bool32 meshShader{};
+    PhysicalDeviceMeshShaderFeaturesNV build() noexcept {
+        PhysicalDeviceMeshShaderFeaturesNV out{};
+        out.pNext = pNext;
+        out.taskShader = taskShader;
+        out.meshShader = meshShader;
+        return out; }
+};
+class RayTracingShaderGroupCreateInfoNVMaker {
+    void* pNext = nullptr;
+    RayTracingShaderGroupTypeKHR type{};
+    uint32_t generalShader{};
+    uint32_t closestHitShader{};
+    uint32_t anyHitShader{};
+    uint32_t intersectionShader{};
+    RayTracingShaderGroupCreateInfoNV build() noexcept {
+        RayTracingShaderGroupCreateInfoNV out{};
+        out.pNext = pNext;
+        out.type = type;
+        out.generalShader = generalShader;
+        out.closestHitShader = closestHitShader;
+        out.anyHitShader = anyHitShader;
+        out.intersectionShader = intersectionShader;
+        return out; }
+};
+class RayTracingShaderGroupCreateInfoKHRMaker {
+    void* pNext = nullptr;
+    RayTracingShaderGroupTypeKHR type{};
+    uint32_t generalShader{};
+    uint32_t closestHitShader{};
+    uint32_t anyHitShader{};
+    uint32_t intersectionShader{};
+    RayTracingShaderGroupCreateInfoKHR build() noexcept {
+        RayTracingShaderGroupCreateInfoKHR out{};
+        out.pNext = pNext;
+        out.type = type;
+        out.generalShader = generalShader;
+        out.closestHitShader = closestHitShader;
+        out.anyHitShader = anyHitShader;
+        out.intersectionShader = intersectionShader;
+        return out; }
+};
+class RayTracingPipelineCreateInfoNVMaker {
+    void* pNext = nullptr;
+    PipelineCreateFlags flags{};
+    detail::span<PipelineShaderStageCreateInfo> pStages;
+    detail::span<RayTracingShaderGroupCreateInfoNV> pGroups;
+    uint32_t maxRecursionDepth{};
+    PipelineLayout layout{};
+    Pipeline basePipelineHandle{};
+    int32_t basePipelineIndex{};
+    RayTracingPipelineCreateInfoNV build() noexcept {
+        RayTracingPipelineCreateInfoNV out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.stageCount = (uint32_t)pStages.size();
+        out.pStages = pStages.data();
+        out.groupCount = (uint32_t)pGroups.size();
+        out.pGroups = pGroups.data();
+        out.maxRecursionDepth = maxRecursionDepth;
+        out.layout = layout;
+        out.basePipelineHandle = basePipelineHandle;
+        out.basePipelineIndex = basePipelineIndex;
+        return out; }
+};
+class RayTracingPipelineInterfaceCreateInfoKHRMaker {
+    void* pNext = nullptr;
+    uint32_t maxPipelineRayPayloadSize{};
+    uint32_t maxPipelineRayHitAttributeSize{};
+    RayTracingPipelineInterfaceCreateInfoKHR build() noexcept {
+        RayTracingPipelineInterfaceCreateInfoKHR out{};
+        out.pNext = pNext;
+        out.maxPipelineRayPayloadSize = maxPipelineRayPayloadSize;
+        out.maxPipelineRayHitAttributeSize = maxPipelineRayHitAttributeSize;
+        return out; }
+};
+class PipelineLibraryCreateInfoKHRMaker {
+    void* pNext = nullptr;
+    detail::span<Pipeline> pLibraries;
+    PipelineLibraryCreateInfoKHR build() noexcept {
+        PipelineLibraryCreateInfoKHR out{};
+        out.pNext = pNext;
+        out.libraryCount = (uint32_t)pLibraries.size();
+        out.pLibraries = pLibraries.data();
+        return out; }
+};
+class RayTracingPipelineCreateInfoKHRMaker {
+    void* pNext = nullptr;
+    PipelineCreateFlags flags{};
+    detail::span<PipelineShaderStageCreateInfo> pStages;
+    detail::span<RayTracingShaderGroupCreateInfoKHR> pGroups;
+    uint32_t maxPipelineRayRecursionDepth{};
+    detail::optional<PipelineLibraryCreateInfoKHR> pLibraryInfo;
+    detail::optional<RayTracingPipelineInterfaceCreateInfoKHR> pLibraryInterface;
+    detail::optional<PipelineDynamicStateCreateInfo> pDynamicState;
+    PipelineLayout layout{};
+    Pipeline basePipelineHandle{};
+    int32_t basePipelineIndex{};
+    RayTracingPipelineCreateInfoKHR build() noexcept {
+        RayTracingPipelineCreateInfoKHR out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.stageCount = (uint32_t)pStages.size();
+        out.pStages = pStages.data();
+        out.groupCount = (uint32_t)pGroups.size();
+        out.pGroups = pGroups.data();
+        out.maxPipelineRayRecursionDepth = maxPipelineRayRecursionDepth;
+        out.pLibraryInfo = pLibraryInfo.ptr_or_nullptr();
+        out.pLibraryInterface = pLibraryInterface.ptr_or_nullptr();
+        out.pDynamicState = pDynamicState.ptr_or_nullptr();
+        out.layout = layout;
+        out.basePipelineHandle = basePipelineHandle;
+        out.basePipelineIndex = basePipelineIndex;
+        return out; }
+};
+class GeometryTrianglesNVMaker {
+    void* pNext = nullptr;
+    Buffer vertexData{};
+    DeviceSize vertexOffset{};
+    uint32_t vertexCount{};
+    DeviceSize vertexStride{};
+    Format vertexFormat{};
+    Buffer indexData{};
+    DeviceSize indexOffset{};
+    uint32_t indexCount{};
+    IndexType indexType{};
+    Buffer transformData{};
+    DeviceSize transformOffset{};
+    GeometryTrianglesNV build() noexcept {
+        GeometryTrianglesNV out{};
+        out.pNext = pNext;
+        out.vertexData = vertexData;
+        out.vertexOffset = vertexOffset;
+        out.vertexCount = vertexCount;
+        out.vertexStride = vertexStride;
+        out.vertexFormat = vertexFormat;
+        out.indexData = indexData;
+        out.indexOffset = indexOffset;
+        out.indexCount = indexCount;
+        out.indexType = indexType;
+        out.transformData = transformData;
+        out.transformOffset = transformOffset;
+        return out; }
+};
+class GeometryAABBNVMaker {
+    void* pNext = nullptr;
+    Buffer aabbData{};
+    uint32_t numAABBs{};
+    uint32_t stride{};
+    DeviceSize offset{};
+    GeometryAABBNV build() noexcept {
+        GeometryAABBNV out{};
+        out.pNext = pNext;
+        out.aabbData = aabbData;
+        out.numAABBs = numAABBs;
+        out.stride = stride;
+        out.offset = offset;
+        return out; }
+};
+class GeometryNVMaker {
+    void* pNext = nullptr;
+    GeometryTypeKHR geometryType{};
+    GeometryDataNV geometry{};
+    GeometryFlagsKHR flags{};
+    GeometryNV build() noexcept {
+        GeometryNV out{};
+        out.pNext = pNext;
+        out.geometryType = geometryType;
+        out.geometry = geometry;
+        out.flags = flags;
+        return out; }
+};
+class AccelerationStructureInfoNVMaker {
+    void* pNext = nullptr;
+    AccelerationStructureTypeNV type{};
+    BuildAccelerationStructureFlagsNV flags{};
+    uint32_t instanceCount{};
+    detail::span<GeometryNV> pGeometries;
+    AccelerationStructureInfoNV build() noexcept {
+        AccelerationStructureInfoNV out{};
+        out.pNext = pNext;
+        out.type = type;
+        out.flags = flags;
+        out.instanceCount = instanceCount;
+        out.geometryCount = (uint32_t)pGeometries.size();
+        out.pGeometries = pGeometries.data();
+        return out; }
+};
+class AccelerationStructureCreateInfoNVMaker {
+    void* pNext = nullptr;
+    DeviceSize compactedSize{};
+    AccelerationStructureInfoNV info{};
+    AccelerationStructureCreateInfoNV build() noexcept {
+        AccelerationStructureCreateInfoNV out{};
+        out.pNext = pNext;
+        out.compactedSize = compactedSize;
+        out.info = info;
+        return out; }
+};
+class BindAccelerationStructureMemoryInfoNVMaker {
+    void* pNext = nullptr;
+    AccelerationStructureNV accelerationStructure{};
+    DeviceMemory memory{};
+    DeviceSize memoryOffset{};
+    detail::span<uint32_t> pDeviceIndices;
+    BindAccelerationStructureMemoryInfoNV build() noexcept {
+        BindAccelerationStructureMemoryInfoNV out{};
+        out.pNext = pNext;
+        out.accelerationStructure = accelerationStructure;
+        out.memory = memory;
+        out.memoryOffset = memoryOffset;
+        out.deviceIndexCount = (uint32_t)pDeviceIndices.size();
+        out.pDeviceIndices = pDeviceIndices.data();
+        return out; }
+};
+class WriteDescriptorSetAccelerationStructureKHRMaker {
+    void* pNext = nullptr;
+    detail::span<AccelerationStructureKHR> pAccelerationStructures;
+    WriteDescriptorSetAccelerationStructureKHR build() noexcept {
+        WriteDescriptorSetAccelerationStructureKHR out{};
+        out.pNext = pNext;
+        out.accelerationStructureCount = (uint32_t)pAccelerationStructures.size();
+        out.pAccelerationStructures = pAccelerationStructures.data();
+        return out; }
+};
+class WriteDescriptorSetAccelerationStructureNVMaker {
+    void* pNext = nullptr;
+    detail::span<AccelerationStructureNV> pAccelerationStructures;
+    WriteDescriptorSetAccelerationStructureNV build() noexcept {
+        WriteDescriptorSetAccelerationStructureNV out{};
+        out.pNext = pNext;
+        out.accelerationStructureCount = (uint32_t)pAccelerationStructures.size();
+        out.pAccelerationStructures = pAccelerationStructures.data();
+        return out; }
+};
+class AccelerationStructureMemoryRequirementsInfoNVMaker {
+    void* pNext = nullptr;
+    AccelerationStructureMemoryRequirementsTypeNV type{};
+    AccelerationStructureNV accelerationStructure{};
+    AccelerationStructureMemoryRequirementsInfoNV build() noexcept {
+        AccelerationStructureMemoryRequirementsInfoNV out{};
+        out.pNext = pNext;
+        out.type = type;
+        out.accelerationStructure = accelerationStructure;
+        return out; }
+};
+class PhysicalDeviceAccelerationStructureFeaturesKHRMaker {
+    void* pNext = nullptr;
+    Bool32 accelerationStructure{};
+    Bool32 accelerationStructureCaptureReplay{};
+    Bool32 accelerationStructureIndirectBuild{};
+    Bool32 accelerationStructureHostCommands{};
+    Bool32 descriptorBindingAccelerationStructureUpdateAfterBind{};
+    PhysicalDeviceAccelerationStructureFeaturesKHR build() noexcept {
+        PhysicalDeviceAccelerationStructureFeaturesKHR out{};
+        out.pNext = pNext;
+        out.accelerationStructure = accelerationStructure;
+        out.accelerationStructureCaptureReplay = accelerationStructureCaptureReplay;
+        out.accelerationStructureIndirectBuild = accelerationStructureIndirectBuild;
+        out.accelerationStructureHostCommands = accelerationStructureHostCommands;
+        out.descriptorBindingAccelerationStructureUpdateAfterBind = descriptorBindingAccelerationStructureUpdateAfterBind;
+        return out; }
+};
+class PhysicalDeviceRayTracingPipelineFeaturesKHRMaker {
+    void* pNext = nullptr;
+    Bool32 rayTracingPipeline{};
+    Bool32 rayTracingPipelineShaderGroupHandleCaptureReplay{};
+    Bool32 rayTracingPipelineShaderGroupHandleCaptureReplayMixed{};
+    Bool32 rayTracingPipelineTraceRaysIndirect{};
+    Bool32 rayTraversalPrimitiveCulling{};
+    PhysicalDeviceRayTracingPipelineFeaturesKHR build() noexcept {
+        PhysicalDeviceRayTracingPipelineFeaturesKHR out{};
+        out.pNext = pNext;
+        out.rayTracingPipeline = rayTracingPipeline;
+        out.rayTracingPipelineShaderGroupHandleCaptureReplay = rayTracingPipelineShaderGroupHandleCaptureReplay;
+        out.rayTracingPipelineShaderGroupHandleCaptureReplayMixed = rayTracingPipelineShaderGroupHandleCaptureReplayMixed;
+        out.rayTracingPipelineTraceRaysIndirect = rayTracingPipelineTraceRaysIndirect;
+        out.rayTraversalPrimitiveCulling = rayTraversalPrimitiveCulling;
+        return out; }
+};
+class PhysicalDeviceRayQueryFeaturesKHRMaker {
+    void* pNext = nullptr;
+    Bool32 rayQuery{};
+    PhysicalDeviceRayQueryFeaturesKHR build() noexcept {
+        PhysicalDeviceRayQueryFeaturesKHR out{};
+        out.pNext = pNext;
+        out.rayQuery = rayQuery;
+        return out; }
+};
+class PhysicalDeviceImageDrmFormatModifierInfoEXTMaker {
+    void* pNext = nullptr;
+    uint64_t drmFormatModifier{};
+    SharingMode sharingMode{};
+    detail::span<uint32_t> pQueueFamilyIndices;
+    PhysicalDeviceImageDrmFormatModifierInfoEXT build() noexcept {
+        PhysicalDeviceImageDrmFormatModifierInfoEXT out{};
+        out.pNext = pNext;
+        out.drmFormatModifier = drmFormatModifier;
+        out.sharingMode = sharingMode;
+        out.queueFamilyIndexCount = (uint32_t)pQueueFamilyIndices.size();
+        out.pQueueFamilyIndices = pQueueFamilyIndices.data();
+        return out; }
+};
+class ImageDrmFormatModifierListCreateInfoEXTMaker {
+    void* pNext = nullptr;
+    detail::span<uint64_t> pDrmFormatModifiers;
+    ImageDrmFormatModifierListCreateInfoEXT build() noexcept {
+        ImageDrmFormatModifierListCreateInfoEXT out{};
+        out.pNext = pNext;
+        out.drmFormatModifierCount = (uint32_t)pDrmFormatModifiers.size();
+        out.pDrmFormatModifiers = pDrmFormatModifiers.data();
+        return out; }
+};
+class ImageDrmFormatModifierExplicitCreateInfoEXTMaker {
+    void* pNext = nullptr;
+    uint64_t drmFormatModifier{};
+    detail::span<SubresourceLayout> pPlaneLayouts;
+    ImageDrmFormatModifierExplicitCreateInfoEXT build() noexcept {
+        ImageDrmFormatModifierExplicitCreateInfoEXT out{};
+        out.pNext = pNext;
+        out.drmFormatModifier = drmFormatModifier;
+        out.drmFormatModifierPlaneCount = (uint32_t)pPlaneLayouts.size();
+        out.pPlaneLayouts = pPlaneLayouts.data();
+        return out; }
+};
+class ImageStencilUsageCreateInfoMaker {
+    void* pNext = nullptr;
+    ImageUsageFlags stencilUsage{};
+    ImageStencilUsageCreateInfo build() noexcept {
+        ImageStencilUsageCreateInfo out{};
+        out.pNext = pNext;
+        out.stencilUsage = stencilUsage;
+        return out; }
+};
+class DeviceMemoryOverallocationCreateInfoAMDMaker {
+    void* pNext = nullptr;
+    MemoryOverallocationBehaviorAMD overallocationBehavior{};
+    DeviceMemoryOverallocationCreateInfoAMD build() noexcept {
+        DeviceMemoryOverallocationCreateInfoAMD out{};
+        out.pNext = pNext;
+        out.overallocationBehavior = overallocationBehavior;
+        return out; }
+};
+class PhysicalDeviceFragmentDensityMapFeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 fragmentDensityMap{};
+    Bool32 fragmentDensityMapDynamic{};
+    Bool32 fragmentDensityMapNonSubsampledImages{};
+    PhysicalDeviceFragmentDensityMapFeaturesEXT build() noexcept {
+        PhysicalDeviceFragmentDensityMapFeaturesEXT out{};
+        out.pNext = pNext;
+        out.fragmentDensityMap = fragmentDensityMap;
+        out.fragmentDensityMapDynamic = fragmentDensityMapDynamic;
+        out.fragmentDensityMapNonSubsampledImages = fragmentDensityMapNonSubsampledImages;
+        return out; }
+};
+class PhysicalDeviceFragmentDensityMap2FeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 fragmentDensityMapDeferred{};
+    PhysicalDeviceFragmentDensityMap2FeaturesEXT build() noexcept {
+        PhysicalDeviceFragmentDensityMap2FeaturesEXT out{};
+        out.pNext = pNext;
+        out.fragmentDensityMapDeferred = fragmentDensityMapDeferred;
+        return out; }
+};
+class RenderPassFragmentDensityMapCreateInfoEXTMaker {
+    void* pNext = nullptr;
+    AttachmentReference fragmentDensityMapAttachment{};
+    RenderPassFragmentDensityMapCreateInfoEXT build() noexcept {
+        RenderPassFragmentDensityMapCreateInfoEXT out{};
+        out.pNext = pNext;
+        out.fragmentDensityMapAttachment = fragmentDensityMapAttachment;
+        return out; }
+};
+class PhysicalDeviceScalarBlockLayoutFeaturesMaker {
+    void* pNext = nullptr;
+    Bool32 scalarBlockLayout{};
+    PhysicalDeviceScalarBlockLayoutFeatures build() noexcept {
+        PhysicalDeviceScalarBlockLayoutFeatures out{};
+        out.pNext = pNext;
+        out.scalarBlockLayout = scalarBlockLayout;
+        return out; }
+};
+class SurfaceProtectedCapabilitiesKHRMaker {
+    void* pNext = nullptr;
+    Bool32 supportsProtected{};
+    SurfaceProtectedCapabilitiesKHR build() noexcept {
+        SurfaceProtectedCapabilitiesKHR out{};
+        out.pNext = pNext;
+        out.supportsProtected = supportsProtected;
+        return out; }
+};
+class PhysicalDeviceUniformBufferStandardLayoutFeaturesMaker {
+    void* pNext = nullptr;
+    Bool32 uniformBufferStandardLayout{};
+    PhysicalDeviceUniformBufferStandardLayoutFeatures build() noexcept {
+        PhysicalDeviceUniformBufferStandardLayoutFeatures out{};
+        out.pNext = pNext;
+        out.uniformBufferStandardLayout = uniformBufferStandardLayout;
+        return out; }
+};
+class PhysicalDeviceDepthClipEnableFeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 depthClipEnable{};
+    PhysicalDeviceDepthClipEnableFeaturesEXT build() noexcept {
+        PhysicalDeviceDepthClipEnableFeaturesEXT out{};
+        out.pNext = pNext;
+        out.depthClipEnable = depthClipEnable;
+        return out; }
+};
+class PipelineRasterizationDepthClipStateCreateInfoEXTMaker {
+    void* pNext = nullptr;
+    PipelineRasterizationDepthClipStateCreateFlagsEXT flags{};
+    Bool32 depthClipEnable{};
+    PipelineRasterizationDepthClipStateCreateInfoEXT build() noexcept {
+        PipelineRasterizationDepthClipStateCreateInfoEXT out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.depthClipEnable = depthClipEnable;
+        return out; }
+};
+class PhysicalDeviceMemoryPriorityFeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 memoryPriority{};
+    PhysicalDeviceMemoryPriorityFeaturesEXT build() noexcept {
+        PhysicalDeviceMemoryPriorityFeaturesEXT out{};
+        out.pNext = pNext;
+        out.memoryPriority = memoryPriority;
+        return out; }
+};
+class MemoryPriorityAllocateInfoEXTMaker {
+    void* pNext = nullptr;
+    float priority{};
+    MemoryPriorityAllocateInfoEXT build() noexcept {
+        MemoryPriorityAllocateInfoEXT out{};
+        out.pNext = pNext;
+        out.priority = priority;
+        return out; }
+};
+class PhysicalDeviceBufferDeviceAddressFeaturesMaker {
+    void* pNext = nullptr;
+    Bool32 bufferDeviceAddress{};
+    Bool32 bufferDeviceAddressCaptureReplay{};
+    Bool32 bufferDeviceAddressMultiDevice{};
+    PhysicalDeviceBufferDeviceAddressFeatures build() noexcept {
+        PhysicalDeviceBufferDeviceAddressFeatures out{};
+        out.pNext = pNext;
+        out.bufferDeviceAddress = bufferDeviceAddress;
+        out.bufferDeviceAddressCaptureReplay = bufferDeviceAddressCaptureReplay;
+        out.bufferDeviceAddressMultiDevice = bufferDeviceAddressMultiDevice;
+        return out; }
+};
+class PhysicalDeviceBufferDeviceAddressFeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 bufferDeviceAddress{};
+    Bool32 bufferDeviceAddressCaptureReplay{};
+    Bool32 bufferDeviceAddressMultiDevice{};
+    PhysicalDeviceBufferDeviceAddressFeaturesEXT build() noexcept {
+        PhysicalDeviceBufferDeviceAddressFeaturesEXT out{};
+        out.pNext = pNext;
+        out.bufferDeviceAddress = bufferDeviceAddress;
+        out.bufferDeviceAddressCaptureReplay = bufferDeviceAddressCaptureReplay;
+        out.bufferDeviceAddressMultiDevice = bufferDeviceAddressMultiDevice;
+        return out; }
+};
+class BufferDeviceAddressInfoMaker {
+    void* pNext = nullptr;
+    Buffer buffer{};
+    BufferDeviceAddressInfo build() noexcept {
+        BufferDeviceAddressInfo out{};
+        out.pNext = pNext;
+        out.buffer = buffer;
+        return out; }
+};
+class BufferOpaqueCaptureAddressCreateInfoMaker {
+    void* pNext = nullptr;
+    uint64_t opaqueCaptureAddress{};
+    BufferOpaqueCaptureAddressCreateInfo build() noexcept {
+        BufferOpaqueCaptureAddressCreateInfo out{};
+        out.pNext = pNext;
+        out.opaqueCaptureAddress = opaqueCaptureAddress;
+        return out; }
+};
+class BufferDeviceAddressCreateInfoEXTMaker {
+    void* pNext = nullptr;
+    DeviceAddress deviceAddress{};
+    BufferDeviceAddressCreateInfoEXT build() noexcept {
+        BufferDeviceAddressCreateInfoEXT out{};
+        out.pNext = pNext;
+        out.deviceAddress = deviceAddress;
+        return out; }
+};
+class PhysicalDeviceImageViewImageFormatInfoEXTMaker {
+    void* pNext = nullptr;
+    ImageViewType imageViewType{};
+    PhysicalDeviceImageViewImageFormatInfoEXT build() noexcept {
+        PhysicalDeviceImageViewImageFormatInfoEXT out{};
+        out.pNext = pNext;
+        out.imageViewType = imageViewType;
+        return out; }
+};
+class PhysicalDeviceImagelessFramebufferFeaturesMaker {
+    void* pNext = nullptr;
+    Bool32 imagelessFramebuffer{};
+    PhysicalDeviceImagelessFramebufferFeatures build() noexcept {
+        PhysicalDeviceImagelessFramebufferFeatures out{};
+        out.pNext = pNext;
+        out.imagelessFramebuffer = imagelessFramebuffer;
+        return out; }
+};
+class FramebufferAttachmentImageInfoMaker {
+    void* pNext = nullptr;
+    ImageCreateFlags flags{};
+    ImageUsageFlags usage{};
+    uint32_t width{};
+    uint32_t height{};
+    uint32_t layerCount{};
+    detail::span<Format> pViewFormats;
+    FramebufferAttachmentImageInfo build() noexcept {
+        FramebufferAttachmentImageInfo out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.usage = usage;
+        out.width = width;
+        out.height = height;
+        out.layerCount = layerCount;
+        out.viewFormatCount = (uint32_t)pViewFormats.size();
+        out.pViewFormats = pViewFormats.data();
+        return out; }
+};
+class FramebufferAttachmentsCreateInfoMaker {
+    void* pNext = nullptr;
+    detail::span<FramebufferAttachmentImageInfo> pAttachmentImageInfos;
+    FramebufferAttachmentsCreateInfo build() noexcept {
+        FramebufferAttachmentsCreateInfo out{};
+        out.pNext = pNext;
+        out.attachmentImageInfoCount = (uint32_t)pAttachmentImageInfos.size();
+        out.pAttachmentImageInfos = pAttachmentImageInfos.data();
+        return out; }
+};
+class RenderPassAttachmentBeginInfoMaker {
+    void* pNext = nullptr;
+    detail::span<ImageView> pAttachments;
+    RenderPassAttachmentBeginInfo build() noexcept {
+        RenderPassAttachmentBeginInfo out{};
+        out.pNext = pNext;
+        out.attachmentCount = (uint32_t)pAttachments.size();
+        out.pAttachments = pAttachments.data();
+        return out; }
+};
+class PhysicalDeviceTextureCompressionASTCHDRFeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 textureCompressionASTC_HDR{};
+    PhysicalDeviceTextureCompressionASTCHDRFeaturesEXT build() noexcept {
+        PhysicalDeviceTextureCompressionASTCHDRFeaturesEXT out{};
+        out.pNext = pNext;
+        out.textureCompressionASTC_HDR = textureCompressionASTC_HDR;
+        return out; }
+};
+class PhysicalDeviceCooperativeMatrixFeaturesNVMaker {
+    void* pNext = nullptr;
+    Bool32 cooperativeMatrix{};
+    Bool32 cooperativeMatrixRobustBufferAccess{};
+    PhysicalDeviceCooperativeMatrixFeaturesNV build() noexcept {
+        PhysicalDeviceCooperativeMatrixFeaturesNV out{};
+        out.pNext = pNext;
+        out.cooperativeMatrix = cooperativeMatrix;
+        out.cooperativeMatrixRobustBufferAccess = cooperativeMatrixRobustBufferAccess;
+        return out; }
+};
+class CooperativeMatrixPropertiesNVMaker {
+    void* pNext = nullptr;
+    uint32_t MSize{};
+    uint32_t NSize{};
+    uint32_t KSize{};
+    ComponentTypeNV AType{};
+    ComponentTypeNV BType{};
+    ComponentTypeNV CType{};
+    ComponentTypeNV DType{};
+    ScopeNV scope{};
+    CooperativeMatrixPropertiesNV build() noexcept {
+        CooperativeMatrixPropertiesNV out{};
+        out.pNext = pNext;
+        out.MSize = MSize;
+        out.NSize = NSize;
+        out.KSize = KSize;
+        out.AType = AType;
+        out.BType = BType;
+        out.CType = CType;
+        out.DType = DType;
+        out.scope = scope;
+        return out; }
+};
+class PhysicalDeviceYcbcrImageArraysFeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 ycbcrImageArrays{};
+    PhysicalDeviceYcbcrImageArraysFeaturesEXT build() noexcept {
+        PhysicalDeviceYcbcrImageArraysFeaturesEXT out{};
+        out.pNext = pNext;
+        out.ycbcrImageArrays = ycbcrImageArrays;
+        return out; }
+};
+class ImageViewHandleInfoNVXMaker {
+    void* pNext = nullptr;
+    ImageView imageView{};
+    DescriptorType descriptorType{};
+    Sampler sampler{};
+    ImageViewHandleInfoNVX build() noexcept {
+        ImageViewHandleInfoNVX out{};
+        out.pNext = pNext;
+        out.imageView = imageView;
+        out.descriptorType = descriptorType;
+        out.sampler = sampler;
+        return out; }
+};
+#if defined(VK_USE_PLATFORM_GGP)
+class PresentFrameTokenGGPMaker {
+    void* pNext = nullptr;
+    GgpFrameToken frameToken{};
+    PresentFrameTokenGGP build() noexcept {
+        PresentFrameTokenGGP out{};
+        out.pNext = pNext;
+        out.frameToken = frameToken;
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_GGP)
+class PipelineCreationFeedbackCreateInfoEXTMaker {
+    void* pNext = nullptr;
+    PipelineCreationFeedbackEXT pPipelineCreationFeedback;
+    detail::span<PipelineCreationFeedbackEXT> pPipelineStageCreationFeedbacks;
+    PipelineCreationFeedbackCreateInfoEXT build() noexcept {
+        PipelineCreationFeedbackCreateInfoEXT out{};
+        out.pNext = pNext;
+        out.pPipelineCreationFeedback = &pPipelineCreationFeedback;
+        out.pipelineStageCreationFeedbackCount = (uint32_t)pPipelineStageCreationFeedbacks.size();
+        out.pPipelineStageCreationFeedbacks = pPipelineStageCreationFeedbacks.data();
+        return out; }
+};
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+class SurfaceFullScreenExclusiveInfoEXTMaker {
+    void* pNext = nullptr;
+    FullScreenExclusiveEXT fullScreenExclusive{};
+    SurfaceFullScreenExclusiveInfoEXT build() noexcept {
+        SurfaceFullScreenExclusiveInfoEXT out{};
+        out.pNext = pNext;
+        out.fullScreenExclusive = fullScreenExclusive;
+        return out; }
+};
+class SurfaceFullScreenExclusiveWin32InfoEXTMaker {
+    void* pNext = nullptr;
+    HMONITOR hmonitor{};
+    SurfaceFullScreenExclusiveWin32InfoEXT build() noexcept {
+        SurfaceFullScreenExclusiveWin32InfoEXT out{};
+        out.pNext = pNext;
+        out.hmonitor = hmonitor;
+        return out; }
+};
+class SurfaceCapabilitiesFullScreenExclusiveEXTMaker {
+    void* pNext = nullptr;
+    Bool32 fullScreenExclusiveSupported{};
+    SurfaceCapabilitiesFullScreenExclusiveEXT build() noexcept {
+        SurfaceCapabilitiesFullScreenExclusiveEXT out{};
+        out.pNext = pNext;
+        out.fullScreenExclusiveSupported = fullScreenExclusiveSupported;
+        return out; }
+};
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+class PhysicalDevicePerformanceQueryFeaturesKHRMaker {
+    void* pNext = nullptr;
+    Bool32 performanceCounterQueryPools{};
+    Bool32 performanceCounterMultipleQueryPools{};
+    PhysicalDevicePerformanceQueryFeaturesKHR build() noexcept {
+        PhysicalDevicePerformanceQueryFeaturesKHR out{};
+        out.pNext = pNext;
+        out.performanceCounterQueryPools = performanceCounterQueryPools;
+        out.performanceCounterMultipleQueryPools = performanceCounterMultipleQueryPools;
+        return out; }
+};
+class QueryPoolPerformanceCreateInfoKHRMaker {
+    void* pNext = nullptr;
+    uint32_t queueFamilyIndex{};
+    detail::span<uint32_t> pCounterIndices;
+    QueryPoolPerformanceCreateInfoKHR build() noexcept {
+        QueryPoolPerformanceCreateInfoKHR out{};
+        out.pNext = pNext;
+        out.queueFamilyIndex = queueFamilyIndex;
+        out.counterIndexCount = (uint32_t)pCounterIndices.size();
+        out.pCounterIndices = pCounterIndices.data();
+        return out; }
+};
+class AcquireProfilingLockInfoKHRMaker {
+    void* pNext = nullptr;
+    AcquireProfilingLockFlagsKHR flags{};
+    uint64_t timeout{};
+    AcquireProfilingLockInfoKHR build() noexcept {
+        AcquireProfilingLockInfoKHR out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.timeout = timeout;
+        return out; }
+};
+class PerformanceQuerySubmitInfoKHRMaker {
+    void* pNext = nullptr;
+    uint32_t counterPassIndex{};
+    PerformanceQuerySubmitInfoKHR build() noexcept {
+        PerformanceQuerySubmitInfoKHR out{};
+        out.pNext = pNext;
+        out.counterPassIndex = counterPassIndex;
+        return out; }
+};
+class HeadlessSurfaceCreateInfoEXTMaker {
+    void* pNext = nullptr;
+    HeadlessSurfaceCreateFlagsEXT flags{};
+    HeadlessSurfaceCreateInfoEXT build() noexcept {
+        HeadlessSurfaceCreateInfoEXT out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        return out; }
+};
+class PhysicalDeviceCoverageReductionModeFeaturesNVMaker {
+    void* pNext = nullptr;
+    Bool32 coverageReductionMode{};
+    PhysicalDeviceCoverageReductionModeFeaturesNV build() noexcept {
+        PhysicalDeviceCoverageReductionModeFeaturesNV out{};
+        out.pNext = pNext;
+        out.coverageReductionMode = coverageReductionMode;
+        return out; }
+};
+class PipelineCoverageReductionStateCreateInfoNVMaker {
+    void* pNext = nullptr;
+    PipelineCoverageReductionStateCreateFlagsNV flags{};
+    CoverageReductionModeNV coverageReductionMode{};
+    PipelineCoverageReductionStateCreateInfoNV build() noexcept {
+        PipelineCoverageReductionStateCreateInfoNV out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        out.coverageReductionMode = coverageReductionMode;
+        return out; }
+};
+class PhysicalDeviceShaderIntegerFunctions2FeaturesINTELMaker {
+    void* pNext = nullptr;
+    Bool32 shaderIntegerFunctions2{};
+    PhysicalDeviceShaderIntegerFunctions2FeaturesINTEL build() noexcept {
+        PhysicalDeviceShaderIntegerFunctions2FeaturesINTEL out{};
+        out.pNext = pNext;
+        out.shaderIntegerFunctions2 = shaderIntegerFunctions2;
+        return out; }
+};
+class PerformanceValueDataINTELMaker {
+    uint32_t value32{};
+    uint64_t value64{};
+    float valueFloat{};
+    Bool32 valueBool{};
+    const char * valueString = nullptr;
+    PerformanceValueDataINTEL build() noexcept {
+        PerformanceValueDataINTEL out{};
+        out.value32 = value32;
+        out.value64 = value64;
+        out.valueFloat = valueFloat;
+        out.valueBool = valueBool;
+        out.valueString = valueString;
+        return out; }
+};
+class InitializePerformanceApiInfoINTELMaker {
+    void* pNext = nullptr;
+    InitializePerformanceApiInfoINTEL build() noexcept {
+        InitializePerformanceApiInfoINTEL out{};
+        out.pNext = pNext;
+        return out; }
+};
+class QueryPoolPerformanceQueryCreateInfoINTELMaker {
+    void* pNext = nullptr;
+    QueryPoolSamplingModeINTEL performanceCountersSampling{};
+    QueryPoolPerformanceQueryCreateInfoINTEL build() noexcept {
+        QueryPoolPerformanceQueryCreateInfoINTEL out{};
+        out.pNext = pNext;
+        out.performanceCountersSampling = performanceCountersSampling;
+        return out; }
+};
+class PerformanceMarkerInfoINTELMaker {
+    void* pNext = nullptr;
+    uint64_t marker{};
+    PerformanceMarkerInfoINTEL build() noexcept {
+        PerformanceMarkerInfoINTEL out{};
+        out.pNext = pNext;
+        out.marker = marker;
+        return out; }
+};
+class PerformanceStreamMarkerInfoINTELMaker {
+    void* pNext = nullptr;
+    uint32_t marker{};
+    PerformanceStreamMarkerInfoINTEL build() noexcept {
+        PerformanceStreamMarkerInfoINTEL out{};
+        out.pNext = pNext;
+        out.marker = marker;
+        return out; }
+};
+class PerformanceOverrideInfoINTELMaker {
+    void* pNext = nullptr;
+    PerformanceOverrideTypeINTEL type{};
+    Bool32 enable{};
+    uint64_t parameter{};
+    PerformanceOverrideInfoINTEL build() noexcept {
+        PerformanceOverrideInfoINTEL out{};
+        out.pNext = pNext;
+        out.type = type;
+        out.enable = enable;
+        out.parameter = parameter;
+        return out; }
+};
+class PerformanceConfigurationAcquireInfoINTELMaker {
+    void* pNext = nullptr;
+    PerformanceConfigurationTypeINTEL type{};
+    PerformanceConfigurationAcquireInfoINTEL build() noexcept {
+        PerformanceConfigurationAcquireInfoINTEL out{};
+        out.pNext = pNext;
+        out.type = type;
+        return out; }
+};
+class PhysicalDeviceShaderClockFeaturesKHRMaker {
+    void* pNext = nullptr;
+    Bool32 shaderSubgroupClock{};
+    Bool32 shaderDeviceClock{};
+    PhysicalDeviceShaderClockFeaturesKHR build() noexcept {
+        PhysicalDeviceShaderClockFeaturesKHR out{};
+        out.pNext = pNext;
+        out.shaderSubgroupClock = shaderSubgroupClock;
+        out.shaderDeviceClock = shaderDeviceClock;
+        return out; }
+};
+class PhysicalDeviceIndexTypeUint8FeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 indexTypeUint8{};
+    PhysicalDeviceIndexTypeUint8FeaturesEXT build() noexcept {
+        PhysicalDeviceIndexTypeUint8FeaturesEXT out{};
+        out.pNext = pNext;
+        out.indexTypeUint8 = indexTypeUint8;
+        return out; }
+};
+class PhysicalDeviceShaderSMBuiltinsFeaturesNVMaker {
+    void* pNext = nullptr;
+    Bool32 shaderSMBuiltins{};
+    PhysicalDeviceShaderSMBuiltinsFeaturesNV build() noexcept {
+        PhysicalDeviceShaderSMBuiltinsFeaturesNV out{};
+        out.pNext = pNext;
+        out.shaderSMBuiltins = shaderSMBuiltins;
+        return out; }
+};
+class PhysicalDeviceFragmentShaderInterlockFeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 fragmentShaderSampleInterlock{};
+    Bool32 fragmentShaderPixelInterlock{};
+    Bool32 fragmentShaderShadingRateInterlock{};
+    PhysicalDeviceFragmentShaderInterlockFeaturesEXT build() noexcept {
+        PhysicalDeviceFragmentShaderInterlockFeaturesEXT out{};
+        out.pNext = pNext;
+        out.fragmentShaderSampleInterlock = fragmentShaderSampleInterlock;
+        out.fragmentShaderPixelInterlock = fragmentShaderPixelInterlock;
+        out.fragmentShaderShadingRateInterlock = fragmentShaderShadingRateInterlock;
+        return out; }
+};
+class PhysicalDeviceSeparateDepthStencilLayoutsFeaturesMaker {
+    void* pNext = nullptr;
+    Bool32 separateDepthStencilLayouts{};
+    PhysicalDeviceSeparateDepthStencilLayoutsFeatures build() noexcept {
+        PhysicalDeviceSeparateDepthStencilLayoutsFeatures out{};
+        out.pNext = pNext;
+        out.separateDepthStencilLayouts = separateDepthStencilLayouts;
+        return out; }
+};
+class AttachmentReferenceStencilLayoutMaker {
+    void* pNext = nullptr;
+    ImageLayout stencilLayout{};
+    AttachmentReferenceStencilLayout build() noexcept {
+        AttachmentReferenceStencilLayout out{};
+        out.pNext = pNext;
+        out.stencilLayout = stencilLayout;
+        return out; }
+};
+class AttachmentDescriptionStencilLayoutMaker {
+    void* pNext = nullptr;
+    ImageLayout stencilInitialLayout{};
+    ImageLayout stencilFinalLayout{};
+    AttachmentDescriptionStencilLayout build() noexcept {
+        AttachmentDescriptionStencilLayout out{};
+        out.pNext = pNext;
+        out.stencilInitialLayout = stencilInitialLayout;
+        out.stencilFinalLayout = stencilFinalLayout;
+        return out; }
+};
+class PhysicalDevicePipelineExecutablePropertiesFeaturesKHRMaker {
+    void* pNext = nullptr;
+    Bool32 pipelineExecutableInfo{};
+    PhysicalDevicePipelineExecutablePropertiesFeaturesKHR build() noexcept {
+        PhysicalDevicePipelineExecutablePropertiesFeaturesKHR out{};
+        out.pNext = pNext;
+        out.pipelineExecutableInfo = pipelineExecutableInfo;
+        return out; }
+};
+class PipelineInfoKHRMaker {
+    void* pNext = nullptr;
+    Pipeline pipeline{};
+    PipelineInfoKHR build() noexcept {
+        PipelineInfoKHR out{};
+        out.pNext = pNext;
+        out.pipeline = pipeline;
+        return out; }
+};
+class PipelineExecutableInfoKHRMaker {
+    void* pNext = nullptr;
+    Pipeline pipeline{};
+    uint32_t executableIndex{};
+    PipelineExecutableInfoKHR build() noexcept {
+        PipelineExecutableInfoKHR out{};
+        out.pNext = pNext;
+        out.pipeline = pipeline;
+        out.executableIndex = executableIndex;
+        return out; }
+};
+class PhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 shaderDemoteToHelperInvocation{};
+    PhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXT build() noexcept {
+        PhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXT out{};
+        out.pNext = pNext;
+        out.shaderDemoteToHelperInvocation = shaderDemoteToHelperInvocation;
+        return out; }
+};
+class PhysicalDeviceTexelBufferAlignmentFeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 texelBufferAlignment{};
+    PhysicalDeviceTexelBufferAlignmentFeaturesEXT build() noexcept {
+        PhysicalDeviceTexelBufferAlignmentFeaturesEXT out{};
+        out.pNext = pNext;
+        out.texelBufferAlignment = texelBufferAlignment;
+        return out; }
+};
+class PhysicalDeviceSubgroupSizeControlFeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 subgroupSizeControl{};
+    Bool32 computeFullSubgroups{};
+    PhysicalDeviceSubgroupSizeControlFeaturesEXT build() noexcept {
+        PhysicalDeviceSubgroupSizeControlFeaturesEXT out{};
+        out.pNext = pNext;
+        out.subgroupSizeControl = subgroupSizeControl;
+        out.computeFullSubgroups = computeFullSubgroups;
+        return out; }
+};
+class MemoryOpaqueCaptureAddressAllocateInfoMaker {
+    void* pNext = nullptr;
+    uint64_t opaqueCaptureAddress{};
+    MemoryOpaqueCaptureAddressAllocateInfo build() noexcept {
+        MemoryOpaqueCaptureAddressAllocateInfo out{};
+        out.pNext = pNext;
+        out.opaqueCaptureAddress = opaqueCaptureAddress;
+        return out; }
+};
+class DeviceMemoryOpaqueCaptureAddressInfoMaker {
+    void* pNext = nullptr;
+    DeviceMemory memory{};
+    DeviceMemoryOpaqueCaptureAddressInfo build() noexcept {
+        DeviceMemoryOpaqueCaptureAddressInfo out{};
+        out.pNext = pNext;
+        out.memory = memory;
+        return out; }
+};
+class PhysicalDeviceLineRasterizationFeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 rectangularLines{};
+    Bool32 bresenhamLines{};
+    Bool32 smoothLines{};
+    Bool32 stippledRectangularLines{};
+    Bool32 stippledBresenhamLines{};
+    Bool32 stippledSmoothLines{};
+    PhysicalDeviceLineRasterizationFeaturesEXT build() noexcept {
+        PhysicalDeviceLineRasterizationFeaturesEXT out{};
+        out.pNext = pNext;
+        out.rectangularLines = rectangularLines;
+        out.bresenhamLines = bresenhamLines;
+        out.smoothLines = smoothLines;
+        out.stippledRectangularLines = stippledRectangularLines;
+        out.stippledBresenhamLines = stippledBresenhamLines;
+        out.stippledSmoothLines = stippledSmoothLines;
+        return out; }
+};
+class PipelineRasterizationLineStateCreateInfoEXTMaker {
+    void* pNext = nullptr;
+    LineRasterizationModeEXT lineRasterizationMode{};
+    Bool32 stippledLineEnable{};
+    uint32_t lineStippleFactor{};
+    uint16_t lineStipplePattern{};
+    PipelineRasterizationLineStateCreateInfoEXT build() noexcept {
+        PipelineRasterizationLineStateCreateInfoEXT out{};
+        out.pNext = pNext;
+        out.lineRasterizationMode = lineRasterizationMode;
+        out.stippledLineEnable = stippledLineEnable;
+        out.lineStippleFactor = lineStippleFactor;
+        out.lineStipplePattern = lineStipplePattern;
+        return out; }
+};
+class PhysicalDevicePipelineCreationCacheControlFeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 pipelineCreationCacheControl{};
+    PhysicalDevicePipelineCreationCacheControlFeaturesEXT build() noexcept {
+        PhysicalDevicePipelineCreationCacheControlFeaturesEXT out{};
+        out.pNext = pNext;
+        out.pipelineCreationCacheControl = pipelineCreationCacheControl;
+        return out; }
+};
+class PhysicalDeviceVulkan11FeaturesMaker {
+    void* pNext = nullptr;
+    Bool32 storageBuffer16BitAccess{};
+    Bool32 uniformAndStorageBuffer16BitAccess{};
+    Bool32 storagePushConstant16{};
+    Bool32 storageInputOutput16{};
+    Bool32 multiview{};
+    Bool32 multiviewGeometryShader{};
+    Bool32 multiviewTessellationShader{};
+    Bool32 variablePointersStorageBuffer{};
+    Bool32 variablePointers{};
+    Bool32 protectedMemory{};
+    Bool32 samplerYcbcrConversion{};
+    Bool32 shaderDrawParameters{};
+    PhysicalDeviceVulkan11Features build() noexcept {
+        PhysicalDeviceVulkan11Features out{};
+        out.pNext = pNext;
+        out.storageBuffer16BitAccess = storageBuffer16BitAccess;
+        out.uniformAndStorageBuffer16BitAccess = uniformAndStorageBuffer16BitAccess;
+        out.storagePushConstant16 = storagePushConstant16;
+        out.storageInputOutput16 = storageInputOutput16;
+        out.multiview = multiview;
+        out.multiviewGeometryShader = multiviewGeometryShader;
+        out.multiviewTessellationShader = multiviewTessellationShader;
+        out.variablePointersStorageBuffer = variablePointersStorageBuffer;
+        out.variablePointers = variablePointers;
+        out.protectedMemory = protectedMemory;
+        out.samplerYcbcrConversion = samplerYcbcrConversion;
+        out.shaderDrawParameters = shaderDrawParameters;
+        return out; }
+};
+class PhysicalDeviceVulkan12FeaturesMaker {
+    void* pNext = nullptr;
+    Bool32 samplerMirrorClampToEdge{};
+    Bool32 drawIndirectCount{};
+    Bool32 storageBuffer8BitAccess{};
+    Bool32 uniformAndStorageBuffer8BitAccess{};
+    Bool32 storagePushConstant8{};
+    Bool32 shaderBufferInt64Atomics{};
+    Bool32 shaderSharedInt64Atomics{};
+    Bool32 shaderFloat16{};
+    Bool32 shaderInt8{};
+    Bool32 descriptorIndexing{};
+    Bool32 shaderInputAttachmentArrayDynamicIndexing{};
+    Bool32 shaderUniformTexelBufferArrayDynamicIndexing{};
+    Bool32 shaderStorageTexelBufferArrayDynamicIndexing{};
+    Bool32 shaderUniformBufferArrayNonUniformIndexing{};
+    Bool32 shaderSampledImageArrayNonUniformIndexing{};
+    Bool32 shaderStorageBufferArrayNonUniformIndexing{};
+    Bool32 shaderStorageImageArrayNonUniformIndexing{};
+    Bool32 shaderInputAttachmentArrayNonUniformIndexing{};
+    Bool32 shaderUniformTexelBufferArrayNonUniformIndexing{};
+    Bool32 shaderStorageTexelBufferArrayNonUniformIndexing{};
+    Bool32 descriptorBindingUniformBufferUpdateAfterBind{};
+    Bool32 descriptorBindingSampledImageUpdateAfterBind{};
+    Bool32 descriptorBindingStorageImageUpdateAfterBind{};
+    Bool32 descriptorBindingStorageBufferUpdateAfterBind{};
+    Bool32 descriptorBindingUniformTexelBufferUpdateAfterBind{};
+    Bool32 descriptorBindingStorageTexelBufferUpdateAfterBind{};
+    Bool32 descriptorBindingUpdateUnusedWhilePending{};
+    Bool32 descriptorBindingPartiallyBound{};
+    Bool32 descriptorBindingVariableDescriptorCount{};
+    Bool32 runtimeDescriptorArray{};
+    Bool32 samplerFilterMinmax{};
+    Bool32 scalarBlockLayout{};
+    Bool32 imagelessFramebuffer{};
+    Bool32 uniformBufferStandardLayout{};
+    Bool32 shaderSubgroupExtendedTypes{};
+    Bool32 separateDepthStencilLayouts{};
+    Bool32 hostQueryReset{};
+    Bool32 timelineSemaphore{};
+    Bool32 bufferDeviceAddress{};
+    Bool32 bufferDeviceAddressCaptureReplay{};
+    Bool32 bufferDeviceAddressMultiDevice{};
+    Bool32 vulkanMemoryModel{};
+    Bool32 vulkanMemoryModelDeviceScope{};
+    Bool32 vulkanMemoryModelAvailabilityVisibilityChains{};
+    Bool32 shaderOutputViewportIndex{};
+    Bool32 shaderOutputLayer{};
+    Bool32 subgroupBroadcastDynamicId{};
+    PhysicalDeviceVulkan12Features build() noexcept {
+        PhysicalDeviceVulkan12Features out{};
+        out.pNext = pNext;
+        out.samplerMirrorClampToEdge = samplerMirrorClampToEdge;
+        out.drawIndirectCount = drawIndirectCount;
+        out.storageBuffer8BitAccess = storageBuffer8BitAccess;
+        out.uniformAndStorageBuffer8BitAccess = uniformAndStorageBuffer8BitAccess;
+        out.storagePushConstant8 = storagePushConstant8;
+        out.shaderBufferInt64Atomics = shaderBufferInt64Atomics;
+        out.shaderSharedInt64Atomics = shaderSharedInt64Atomics;
+        out.shaderFloat16 = shaderFloat16;
+        out.shaderInt8 = shaderInt8;
+        out.descriptorIndexing = descriptorIndexing;
+        out.shaderInputAttachmentArrayDynamicIndexing = shaderInputAttachmentArrayDynamicIndexing;
+        out.shaderUniformTexelBufferArrayDynamicIndexing = shaderUniformTexelBufferArrayDynamicIndexing;
+        out.shaderStorageTexelBufferArrayDynamicIndexing = shaderStorageTexelBufferArrayDynamicIndexing;
+        out.shaderUniformBufferArrayNonUniformIndexing = shaderUniformBufferArrayNonUniformIndexing;
+        out.shaderSampledImageArrayNonUniformIndexing = shaderSampledImageArrayNonUniformIndexing;
+        out.shaderStorageBufferArrayNonUniformIndexing = shaderStorageBufferArrayNonUniformIndexing;
+        out.shaderStorageImageArrayNonUniformIndexing = shaderStorageImageArrayNonUniformIndexing;
+        out.shaderInputAttachmentArrayNonUniformIndexing = shaderInputAttachmentArrayNonUniformIndexing;
+        out.shaderUniformTexelBufferArrayNonUniformIndexing = shaderUniformTexelBufferArrayNonUniformIndexing;
+        out.shaderStorageTexelBufferArrayNonUniformIndexing = shaderStorageTexelBufferArrayNonUniformIndexing;
+        out.descriptorBindingUniformBufferUpdateAfterBind = descriptorBindingUniformBufferUpdateAfterBind;
+        out.descriptorBindingSampledImageUpdateAfterBind = descriptorBindingSampledImageUpdateAfterBind;
+        out.descriptorBindingStorageImageUpdateAfterBind = descriptorBindingStorageImageUpdateAfterBind;
+        out.descriptorBindingStorageBufferUpdateAfterBind = descriptorBindingStorageBufferUpdateAfterBind;
+        out.descriptorBindingUniformTexelBufferUpdateAfterBind = descriptorBindingUniformTexelBufferUpdateAfterBind;
+        out.descriptorBindingStorageTexelBufferUpdateAfterBind = descriptorBindingStorageTexelBufferUpdateAfterBind;
+        out.descriptorBindingUpdateUnusedWhilePending = descriptorBindingUpdateUnusedWhilePending;
+        out.descriptorBindingPartiallyBound = descriptorBindingPartiallyBound;
+        out.descriptorBindingVariableDescriptorCount = descriptorBindingVariableDescriptorCount;
+        out.runtimeDescriptorArray = runtimeDescriptorArray;
+        out.samplerFilterMinmax = samplerFilterMinmax;
+        out.scalarBlockLayout = scalarBlockLayout;
+        out.imagelessFramebuffer = imagelessFramebuffer;
+        out.uniformBufferStandardLayout = uniformBufferStandardLayout;
+        out.shaderSubgroupExtendedTypes = shaderSubgroupExtendedTypes;
+        out.separateDepthStencilLayouts = separateDepthStencilLayouts;
+        out.hostQueryReset = hostQueryReset;
+        out.timelineSemaphore = timelineSemaphore;
+        out.bufferDeviceAddress = bufferDeviceAddress;
+        out.bufferDeviceAddressCaptureReplay = bufferDeviceAddressCaptureReplay;
+        out.bufferDeviceAddressMultiDevice = bufferDeviceAddressMultiDevice;
+        out.vulkanMemoryModel = vulkanMemoryModel;
+        out.vulkanMemoryModelDeviceScope = vulkanMemoryModelDeviceScope;
+        out.vulkanMemoryModelAvailabilityVisibilityChains = vulkanMemoryModelAvailabilityVisibilityChains;
+        out.shaderOutputViewportIndex = shaderOutputViewportIndex;
+        out.shaderOutputLayer = shaderOutputLayer;
+        out.subgroupBroadcastDynamicId = subgroupBroadcastDynamicId;
+        return out; }
+};
+class PipelineCompilerControlCreateInfoAMDMaker {
+    void* pNext = nullptr;
+    PipelineCompilerControlFlagsAMD compilerControlFlags{};
+    PipelineCompilerControlCreateInfoAMD build() noexcept {
+        PipelineCompilerControlCreateInfoAMD out{};
+        out.pNext = pNext;
+        out.compilerControlFlags = compilerControlFlags;
+        return out; }
+};
+class PhysicalDeviceCoherentMemoryFeaturesAMDMaker {
+    void* pNext = nullptr;
+    Bool32 deviceCoherentMemory{};
+    PhysicalDeviceCoherentMemoryFeaturesAMD build() noexcept {
+        PhysicalDeviceCoherentMemoryFeaturesAMD out{};
+        out.pNext = pNext;
+        out.deviceCoherentMemory = deviceCoherentMemory;
+        return out; }
+};
+class SamplerCustomBorderColorCreateInfoEXTMaker {
+    void* pNext = nullptr;
+    ClearColorValue customBorderColor{};
+    Format format{};
+    SamplerCustomBorderColorCreateInfoEXT build() noexcept {
+        SamplerCustomBorderColorCreateInfoEXT out{};
+        out.pNext = pNext;
+        out.customBorderColor = customBorderColor;
+        out.format = format;
+        return out; }
+};
+class PhysicalDeviceCustomBorderColorFeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 customBorderColors{};
+    Bool32 customBorderColorWithoutFormat{};
+    PhysicalDeviceCustomBorderColorFeaturesEXT build() noexcept {
+        PhysicalDeviceCustomBorderColorFeaturesEXT out{};
+        out.pNext = pNext;
+        out.customBorderColors = customBorderColors;
+        out.customBorderColorWithoutFormat = customBorderColorWithoutFormat;
+        return out; }
+};
+class DeviceOrHostAddressKHRMaker {
+    DeviceAddress deviceAddress{};
+    DeviceOrHostAddressKHR build() noexcept {
+        DeviceOrHostAddressKHR out{};
+        out.deviceAddress = deviceAddress;
+        return out; }
+};
+class DeviceOrHostAddressConstKHRMaker {
+    DeviceAddress deviceAddress{};
+    DeviceOrHostAddressConstKHR build() noexcept {
+        DeviceOrHostAddressConstKHR out{};
+        out.deviceAddress = deviceAddress;
+        return out; }
+};
+class AccelerationStructureGeometryTrianglesDataKHRMaker {
+    void* pNext = nullptr;
+    Format vertexFormat{};
+    DeviceOrHostAddressConstKHR vertexData{};
+    DeviceSize vertexStride{};
+    uint32_t maxVertex{};
+    IndexType indexType{};
+    DeviceOrHostAddressConstKHR indexData{};
+    DeviceOrHostAddressConstKHR transformData{};
+    AccelerationStructureGeometryTrianglesDataKHR build() noexcept {
+        AccelerationStructureGeometryTrianglesDataKHR out{};
+        out.pNext = pNext;
+        out.vertexFormat = vertexFormat;
+        out.vertexData = vertexData;
+        out.vertexStride = vertexStride;
+        out.maxVertex = maxVertex;
+        out.indexType = indexType;
+        out.indexData = indexData;
+        out.transformData = transformData;
+        return out; }
+};
+class AccelerationStructureGeometryAabbsDataKHRMaker {
+    void* pNext = nullptr;
+    DeviceOrHostAddressConstKHR data{};
+    DeviceSize stride{};
+    AccelerationStructureGeometryAabbsDataKHR build() noexcept {
+        AccelerationStructureGeometryAabbsDataKHR out{};
+        out.pNext = pNext;
+        out.data = data;
+        out.stride = stride;
+        return out; }
+};
+class AccelerationStructureGeometryInstancesDataKHRMaker {
+    void* pNext = nullptr;
+    Bool32 arrayOfPointers{};
+    DeviceOrHostAddressConstKHR data{};
+    AccelerationStructureGeometryInstancesDataKHR build() noexcept {
+        AccelerationStructureGeometryInstancesDataKHR out{};
+        out.pNext = pNext;
+        out.arrayOfPointers = arrayOfPointers;
+        out.data = data;
+        return out; }
+};
+class AccelerationStructureGeometryKHRMaker {
+    void* pNext = nullptr;
+    GeometryTypeKHR geometryType{};
+    AccelerationStructureGeometryDataKHR geometry{};
+    GeometryFlagsKHR flags{};
+    AccelerationStructureGeometryKHR build() noexcept {
+        AccelerationStructureGeometryKHR out{};
+        out.pNext = pNext;
+        out.geometryType = geometryType;
+        out.geometry = geometry;
+        out.flags = flags;
+        return out; }
+};
+class AccelerationStructureBuildGeometryInfoKHRMaker {
+    void* pNext = nullptr;
+    AccelerationStructureTypeKHR type{};
+    BuildAccelerationStructureFlagsKHR flags{};
+    BuildAccelerationStructureModeKHR mode{};
+    AccelerationStructureKHR srcAccelerationStructure{};
+    AccelerationStructureKHR dstAccelerationStructure{};
+    detail::span<AccelerationStructureGeometryKHR> pGeometries;
+    detail::span<AccelerationStructureGeometryKHR*> ppGeometries;
+    DeviceOrHostAddressKHR scratchData{};
+    AccelerationStructureBuildGeometryInfoKHR build() noexcept {
+        AccelerationStructureBuildGeometryInfoKHR out{};
+        out.pNext = pNext;
+        out.type = type;
+        out.flags = flags;
+        out.mode = mode;
+        out.srcAccelerationStructure = srcAccelerationStructure;
+        out.dstAccelerationStructure = dstAccelerationStructure;
+        out.geometryCount = (uint32_t)pGeometries.size();
+        out.pGeometries = pGeometries.data();
+        out.ppGeometries = ppGeometries.data();
+        out.scratchData = scratchData;
+        return out; }
+};
+class AccelerationStructureCreateInfoKHRMaker {
+    void* pNext = nullptr;
+    AccelerationStructureCreateFlagsKHR createFlags{};
+    Buffer buffer{};
+    DeviceSize offset{};
+    DeviceSize size{};
+    AccelerationStructureTypeKHR type{};
+    DeviceAddress deviceAddress{};
+    AccelerationStructureCreateInfoKHR build() noexcept {
+        AccelerationStructureCreateInfoKHR out{};
+        out.pNext = pNext;
+        out.createFlags = createFlags;
+        out.buffer = buffer;
+        out.offset = offset;
+        out.size = size;
+        out.type = type;
+        out.deviceAddress = deviceAddress;
+        return out; }
+};
+class TransformMatrixKHRMaker {
+    TransformMatrixKHR build() noexcept {
+        TransformMatrixKHR out{};
+        return out; }
+};
+class AccelerationStructureDeviceAddressInfoKHRMaker {
+    void* pNext = nullptr;
+    AccelerationStructureKHR accelerationStructure{};
+    AccelerationStructureDeviceAddressInfoKHR build() noexcept {
+        AccelerationStructureDeviceAddressInfoKHR out{};
+        out.pNext = pNext;
+        out.accelerationStructure = accelerationStructure;
+        return out; }
+};
+class AccelerationStructureVersionInfoKHRMaker {
+    void* pNext = nullptr;
+    detail::span<uint8_t> pVersionData;
+    AccelerationStructureVersionInfoKHR build() noexcept {
+        AccelerationStructureVersionInfoKHR out{};
+        out.pNext = pNext;
+        out.pVersionData = pVersionData.data();
+        return out; }
+};
+class CopyAccelerationStructureInfoKHRMaker {
+    void* pNext = nullptr;
+    AccelerationStructureKHR src{};
+    AccelerationStructureKHR dst{};
+    CopyAccelerationStructureModeKHR mode{};
+    CopyAccelerationStructureInfoKHR build() noexcept {
+        CopyAccelerationStructureInfoKHR out{};
+        out.pNext = pNext;
+        out.src = src;
+        out.dst = dst;
+        out.mode = mode;
+        return out; }
+};
+class CopyAccelerationStructureToMemoryInfoKHRMaker {
+    void* pNext = nullptr;
+    AccelerationStructureKHR src{};
+    DeviceOrHostAddressKHR dst{};
+    CopyAccelerationStructureModeKHR mode{};
+    CopyAccelerationStructureToMemoryInfoKHR build() noexcept {
+        CopyAccelerationStructureToMemoryInfoKHR out{};
+        out.pNext = pNext;
+        out.src = src;
+        out.dst = dst;
+        out.mode = mode;
+        return out; }
+};
+class CopyMemoryToAccelerationStructureInfoKHRMaker {
+    void* pNext = nullptr;
+    DeviceOrHostAddressConstKHR src{};
+    AccelerationStructureKHR dst{};
+    CopyAccelerationStructureModeKHR mode{};
+    CopyMemoryToAccelerationStructureInfoKHR build() noexcept {
+        CopyMemoryToAccelerationStructureInfoKHR out{};
+        out.pNext = pNext;
+        out.src = src;
+        out.dst = dst;
+        out.mode = mode;
+        return out; }
+};
+class PhysicalDeviceExtendedDynamicStateFeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 extendedDynamicState{};
+    PhysicalDeviceExtendedDynamicStateFeaturesEXT build() noexcept {
+        PhysicalDeviceExtendedDynamicStateFeaturesEXT out{};
+        out.pNext = pNext;
+        out.extendedDynamicState = extendedDynamicState;
+        return out; }
+};
+class RenderPassTransformBeginInfoQCOMMaker {
+    void* pNext = nullptr;
+    SurfaceTransformFlagBitsKHR transform{};
+    RenderPassTransformBeginInfoQCOM build() noexcept {
+        RenderPassTransformBeginInfoQCOM out{};
+        out.pNext = pNext;
+        out.transform = transform;
+        return out; }
+};
+class CopyCommandTransformInfoQCOMMaker {
+    void* pNext = nullptr;
+    SurfaceTransformFlagBitsKHR transform{};
+    CopyCommandTransformInfoQCOM build() noexcept {
+        CopyCommandTransformInfoQCOM out{};
+        out.pNext = pNext;
+        out.transform = transform;
+        return out; }
+};
+class CommandBufferInheritanceRenderPassTransformInfoQCOMMaker {
+    void* pNext = nullptr;
+    SurfaceTransformFlagBitsKHR transform{};
+    Rect2D renderArea{};
+    CommandBufferInheritanceRenderPassTransformInfoQCOM build() noexcept {
+        CommandBufferInheritanceRenderPassTransformInfoQCOM out{};
+        out.pNext = pNext;
+        out.transform = transform;
+        out.renderArea = renderArea;
+        return out; }
+};
+class PhysicalDeviceDiagnosticsConfigFeaturesNVMaker {
+    void* pNext = nullptr;
+    Bool32 diagnosticsConfig{};
+    PhysicalDeviceDiagnosticsConfigFeaturesNV build() noexcept {
+        PhysicalDeviceDiagnosticsConfigFeaturesNV out{};
+        out.pNext = pNext;
+        out.diagnosticsConfig = diagnosticsConfig;
+        return out; }
+};
+class DeviceDiagnosticsConfigCreateInfoNVMaker {
+    void* pNext = nullptr;
+    DeviceDiagnosticsConfigFlagsNV flags{};
+    DeviceDiagnosticsConfigCreateInfoNV build() noexcept {
+        DeviceDiagnosticsConfigCreateInfoNV out{};
+        out.pNext = pNext;
+        out.flags = flags;
+        return out; }
+};
+class PhysicalDeviceRobustness2FeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 robustBufferAccess2{};
+    Bool32 robustImageAccess2{};
+    Bool32 nullDescriptor{};
+    PhysicalDeviceRobustness2FeaturesEXT build() noexcept {
+        PhysicalDeviceRobustness2FeaturesEXT out{};
+        out.pNext = pNext;
+        out.robustBufferAccess2 = robustBufferAccess2;
+        out.robustImageAccess2 = robustImageAccess2;
+        out.nullDescriptor = nullDescriptor;
+        return out; }
+};
+class PhysicalDeviceImageRobustnessFeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 robustImageAccess{};
+    PhysicalDeviceImageRobustnessFeaturesEXT build() noexcept {
+        PhysicalDeviceImageRobustnessFeaturesEXT out{};
+        out.pNext = pNext;
+        out.robustImageAccess = robustImageAccess;
+        return out; }
+};
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+class PhysicalDevicePortabilitySubsetFeaturesKHRMaker {
+    void* pNext = nullptr;
+    Bool32 constantAlphaColorBlendFactors{};
+    Bool32 events{};
+    Bool32 imageViewFormatReinterpretation{};
+    Bool32 imageViewFormatSwizzle{};
+    Bool32 imageView2DOn3DImage{};
+    Bool32 multisampleArrayImage{};
+    Bool32 mutableComparisonSamplers{};
+    Bool32 pointPolygons{};
+    Bool32 samplerMipLodBias{};
+    Bool32 separateStencilMaskRef{};
+    Bool32 shaderSampleRateInterpolationFunctions{};
+    Bool32 tessellationIsolines{};
+    Bool32 tessellationPointMode{};
+    Bool32 triangleFans{};
+    Bool32 vertexAttributeAccessBeyondStride{};
+    PhysicalDevicePortabilitySubsetFeaturesKHR build() noexcept {
+        PhysicalDevicePortabilitySubsetFeaturesKHR out{};
+        out.pNext = pNext;
+        out.constantAlphaColorBlendFactors = constantAlphaColorBlendFactors;
+        out.events = events;
+        out.imageViewFormatReinterpretation = imageViewFormatReinterpretation;
+        out.imageViewFormatSwizzle = imageViewFormatSwizzle;
+        out.imageView2DOn3DImage = imageView2DOn3DImage;
+        out.multisampleArrayImage = multisampleArrayImage;
+        out.mutableComparisonSamplers = mutableComparisonSamplers;
+        out.pointPolygons = pointPolygons;
+        out.samplerMipLodBias = samplerMipLodBias;
+        out.separateStencilMaskRef = separateStencilMaskRef;
+        out.shaderSampleRateInterpolationFunctions = shaderSampleRateInterpolationFunctions;
+        out.tessellationIsolines = tessellationIsolines;
+        out.tessellationPointMode = tessellationPointMode;
+        out.triangleFans = triangleFans;
+        out.vertexAttributeAccessBeyondStride = vertexAttributeAccessBeyondStride;
+        return out; }
+};
+class PhysicalDevicePortabilitySubsetPropertiesKHRMaker {
+    void* pNext = nullptr;
+    uint32_t minVertexInputBindingStrideAlignment{};
+    PhysicalDevicePortabilitySubsetPropertiesKHR build() noexcept {
+        PhysicalDevicePortabilitySubsetPropertiesKHR out{};
+        out.pNext = pNext;
+        out.minVertexInputBindingStrideAlignment = minVertexInputBindingStrideAlignment;
+        return out; }
+};
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
+class PhysicalDevice4444FormatsFeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 formatA4R4G4B4{};
+    Bool32 formatA4B4G4R4{};
+    PhysicalDevice4444FormatsFeaturesEXT build() noexcept {
+        PhysicalDevice4444FormatsFeaturesEXT out{};
+        out.pNext = pNext;
+        out.formatA4R4G4B4 = formatA4R4G4B4;
+        out.formatA4B4G4R4 = formatA4B4G4R4;
+        return out; }
+};
+class BufferCopy2KHRMaker {
+    void* pNext = nullptr;
+    DeviceSize srcOffset{};
+    DeviceSize dstOffset{};
+    DeviceSize size{};
+    BufferCopy2KHR build() noexcept {
+        BufferCopy2KHR out{};
+        out.pNext = pNext;
+        out.srcOffset = srcOffset;
+        out.dstOffset = dstOffset;
+        out.size = size;
+        return out; }
+};
+class ImageCopy2KHRMaker {
+    void* pNext = nullptr;
+    ImageSubresourceLayers srcSubresource{};
+    Offset3D srcOffset{};
+    ImageSubresourceLayers dstSubresource{};
+    Offset3D dstOffset{};
+    Extent3D extent{};
+    ImageCopy2KHR build() noexcept {
+        ImageCopy2KHR out{};
+        out.pNext = pNext;
+        out.srcSubresource = srcSubresource;
+        out.srcOffset = srcOffset;
+        out.dstSubresource = dstSubresource;
+        out.dstOffset = dstOffset;
+        out.extent = extent;
+        return out; }
+};
+class ImageBlit2KHRMaker {
+    void* pNext = nullptr;
+    ImageSubresourceLayers srcSubresource{};
+    ImageSubresourceLayers dstSubresource{};
+    ImageBlit2KHR build() noexcept {
+        ImageBlit2KHR out{};
+        out.pNext = pNext;
+        out.srcSubresource = srcSubresource;
+        out.dstSubresource = dstSubresource;
+        return out; }
+};
+class BufferImageCopy2KHRMaker {
+    void* pNext = nullptr;
+    DeviceSize bufferOffset{};
+    uint32_t bufferRowLength{};
+    uint32_t bufferImageHeight{};
+    ImageSubresourceLayers imageSubresource{};
+    Offset3D imageOffset{};
+    Extent3D imageExtent{};
+    BufferImageCopy2KHR build() noexcept {
+        BufferImageCopy2KHR out{};
+        out.pNext = pNext;
+        out.bufferOffset = bufferOffset;
+        out.bufferRowLength = bufferRowLength;
+        out.bufferImageHeight = bufferImageHeight;
+        out.imageSubresource = imageSubresource;
+        out.imageOffset = imageOffset;
+        out.imageExtent = imageExtent;
+        return out; }
+};
+class ImageResolve2KHRMaker {
+    void* pNext = nullptr;
+    ImageSubresourceLayers srcSubresource{};
+    Offset3D srcOffset{};
+    ImageSubresourceLayers dstSubresource{};
+    Offset3D dstOffset{};
+    Extent3D extent{};
+    ImageResolve2KHR build() noexcept {
+        ImageResolve2KHR out{};
+        out.pNext = pNext;
+        out.srcSubresource = srcSubresource;
+        out.srcOffset = srcOffset;
+        out.dstSubresource = dstSubresource;
+        out.dstOffset = dstOffset;
+        out.extent = extent;
+        return out; }
+};
+class CopyBufferInfo2KHRMaker {
+    void* pNext = nullptr;
+    Buffer srcBuffer{};
+    Buffer dstBuffer{};
+    detail::span<BufferCopy2KHR> pRegions;
+    CopyBufferInfo2KHR build() noexcept {
+        CopyBufferInfo2KHR out{};
+        out.pNext = pNext;
+        out.srcBuffer = srcBuffer;
+        out.dstBuffer = dstBuffer;
+        out.regionCount = (uint32_t)pRegions.size();
+        out.pRegions = pRegions.data();
+        return out; }
+};
+class CopyImageInfo2KHRMaker {
+    void* pNext = nullptr;
+    Image srcImage{};
+    ImageLayout srcImageLayout{};
+    Image dstImage{};
+    ImageLayout dstImageLayout{};
+    detail::span<ImageCopy2KHR> pRegions;
+    CopyImageInfo2KHR build() noexcept {
+        CopyImageInfo2KHR out{};
+        out.pNext = pNext;
+        out.srcImage = srcImage;
+        out.srcImageLayout = srcImageLayout;
+        out.dstImage = dstImage;
+        out.dstImageLayout = dstImageLayout;
+        out.regionCount = (uint32_t)pRegions.size();
+        out.pRegions = pRegions.data();
+        return out; }
+};
+class BlitImageInfo2KHRMaker {
+    void* pNext = nullptr;
+    Image srcImage{};
+    ImageLayout srcImageLayout{};
+    Image dstImage{};
+    ImageLayout dstImageLayout{};
+    detail::span<ImageBlit2KHR> pRegions;
+    Filter filter{};
+    BlitImageInfo2KHR build() noexcept {
+        BlitImageInfo2KHR out{};
+        out.pNext = pNext;
+        out.srcImage = srcImage;
+        out.srcImageLayout = srcImageLayout;
+        out.dstImage = dstImage;
+        out.dstImageLayout = dstImageLayout;
+        out.regionCount = (uint32_t)pRegions.size();
+        out.pRegions = pRegions.data();
+        out.filter = filter;
+        return out; }
+};
+class CopyBufferToImageInfo2KHRMaker {
+    void* pNext = nullptr;
+    Buffer srcBuffer{};
+    Image dstImage{};
+    ImageLayout dstImageLayout{};
+    detail::span<BufferImageCopy2KHR> pRegions;
+    CopyBufferToImageInfo2KHR build() noexcept {
+        CopyBufferToImageInfo2KHR out{};
+        out.pNext = pNext;
+        out.srcBuffer = srcBuffer;
+        out.dstImage = dstImage;
+        out.dstImageLayout = dstImageLayout;
+        out.regionCount = (uint32_t)pRegions.size();
+        out.pRegions = pRegions.data();
+        return out; }
+};
+class CopyImageToBufferInfo2KHRMaker {
+    void* pNext = nullptr;
+    Image srcImage{};
+    ImageLayout srcImageLayout{};
+    Buffer dstBuffer{};
+    detail::span<BufferImageCopy2KHR> pRegions;
+    CopyImageToBufferInfo2KHR build() noexcept {
+        CopyImageToBufferInfo2KHR out{};
+        out.pNext = pNext;
+        out.srcImage = srcImage;
+        out.srcImageLayout = srcImageLayout;
+        out.dstBuffer = dstBuffer;
+        out.regionCount = (uint32_t)pRegions.size();
+        out.pRegions = pRegions.data();
+        return out; }
+};
+class ResolveImageInfo2KHRMaker {
+    void* pNext = nullptr;
+    Image srcImage{};
+    ImageLayout srcImageLayout{};
+    Image dstImage{};
+    ImageLayout dstImageLayout{};
+    detail::span<ImageResolve2KHR> pRegions;
+    ResolveImageInfo2KHR build() noexcept {
+        ResolveImageInfo2KHR out{};
+        out.pNext = pNext;
+        out.srcImage = srcImage;
+        out.srcImageLayout = srcImageLayout;
+        out.dstImage = dstImage;
+        out.dstImageLayout = dstImageLayout;
+        out.regionCount = (uint32_t)pRegions.size();
+        out.pRegions = pRegions.data();
+        return out; }
+};
+class PhysicalDeviceShaderImageAtomicInt64FeaturesEXTMaker {
+    void* pNext = nullptr;
+    Bool32 shaderImageInt64Atomics{};
+    Bool32 sparseImageInt64Atomics{};
+    PhysicalDeviceShaderImageAtomicInt64FeaturesEXT build() noexcept {
+        PhysicalDeviceShaderImageAtomicInt64FeaturesEXT out{};
+        out.pNext = pNext;
+        out.shaderImageInt64Atomics = shaderImageInt64Atomics;
+        out.sparseImageInt64Atomics = sparseImageInt64Atomics;
+        return out; }
+};
+class FragmentShadingRateAttachmentInfoKHRMaker {
+    void* pNext = nullptr;
+    AttachmentReference2 pFragmentShadingRateAttachment;
+    Extent2D shadingRateAttachmentTexelSize{};
+    FragmentShadingRateAttachmentInfoKHR build() noexcept {
+        FragmentShadingRateAttachmentInfoKHR out{};
+        out.pNext = pNext;
+        out.pFragmentShadingRateAttachment = &pFragmentShadingRateAttachment;
+        out.shadingRateAttachmentTexelSize = shadingRateAttachmentTexelSize;
+        return out; }
+};
+class PipelineFragmentShadingRateStateCreateInfoKHRMaker {
+    void* pNext = nullptr;
+    Extent2D fragmentSize{};
+    PipelineFragmentShadingRateStateCreateInfoKHR build() noexcept {
+        PipelineFragmentShadingRateStateCreateInfoKHR out{};
+        out.pNext = pNext;
+        out.fragmentSize = fragmentSize;
+        return out; }
+};
+class PhysicalDeviceFragmentShadingRateFeaturesKHRMaker {
+    void* pNext = nullptr;
+    Bool32 pipelineFragmentShadingRate{};
+    Bool32 primitiveFragmentShadingRate{};
+    Bool32 attachmentFragmentShadingRate{};
+    PhysicalDeviceFragmentShadingRateFeaturesKHR build() noexcept {
+        PhysicalDeviceFragmentShadingRateFeaturesKHR out{};
+        out.pNext = pNext;
+        out.pipelineFragmentShadingRate = pipelineFragmentShadingRate;
+        out.primitiveFragmentShadingRate = primitiveFragmentShadingRate;
+        out.attachmentFragmentShadingRate = attachmentFragmentShadingRate;
+        return out; }
+};
+class PhysicalDeviceShaderTerminateInvocationFeaturesKHRMaker {
+    void* pNext = nullptr;
+    Bool32 shaderTerminateInvocation{};
+    PhysicalDeviceShaderTerminateInvocationFeaturesKHR build() noexcept {
+        PhysicalDeviceShaderTerminateInvocationFeaturesKHR out{};
+        out.pNext = pNext;
+        out.shaderTerminateInvocation = shaderTerminateInvocation;
+        return out; }
+};
+class PhysicalDeviceFragmentShadingRateEnumsFeaturesNVMaker {
+    void* pNext = nullptr;
+    Bool32 fragmentShadingRateEnums{};
+    Bool32 supersampleFragmentShadingRates{};
+    Bool32 noInvocationFragmentShadingRates{};
+    PhysicalDeviceFragmentShadingRateEnumsFeaturesNV build() noexcept {
+        PhysicalDeviceFragmentShadingRateEnumsFeaturesNV out{};
+        out.pNext = pNext;
+        out.fragmentShadingRateEnums = fragmentShadingRateEnums;
+        out.supersampleFragmentShadingRates = supersampleFragmentShadingRates;
+        out.noInvocationFragmentShadingRates = noInvocationFragmentShadingRates;
+        return out; }
+};
+class PhysicalDeviceFragmentShadingRateEnumsPropertiesNVMaker {
+    void* pNext = nullptr;
+    SampleCountFlagBits maxFragmentShadingRateInvocationCount{};
+    PhysicalDeviceFragmentShadingRateEnumsPropertiesNV build() noexcept {
+        PhysicalDeviceFragmentShadingRateEnumsPropertiesNV out{};
+        out.pNext = pNext;
+        out.maxFragmentShadingRateInvocationCount = maxFragmentShadingRateInvocationCount;
+        return out; }
+};
+class PipelineFragmentShadingRateEnumStateCreateInfoNVMaker {
+    void* pNext = nullptr;
+    FragmentShadingRateTypeNV shadingRateType{};
+    FragmentShadingRateNV shadingRate{};
+    PipelineFragmentShadingRateEnumStateCreateInfoNV build() noexcept {
+        PipelineFragmentShadingRateEnumStateCreateInfoNV out{};
+        out.pNext = pNext;
+        out.shadingRateType = shadingRateType;
+        out.shadingRate = shadingRate;
+        return out; }
+};
+class AccelerationStructureBuildSizesInfoKHRMaker {
+    void* pNext = nullptr;
+    DeviceSize accelerationStructureSize{};
+    DeviceSize updateScratchSize{};
+    DeviceSize buildScratchSize{};
+    AccelerationStructureBuildSizesInfoKHR build() noexcept {
+        AccelerationStructureBuildSizesInfoKHR out{};
+        out.pNext = pNext;
+        out.accelerationStructureSize = accelerationStructureSize;
+        out.updateScratchSize = updateScratchSize;
+        out.buildScratchSize = buildScratchSize;
+        return out; }
+};
+#ifdef _MSC_VER
 #pragma warning( push )
 #pragma warning( disable : 4065 )
+#endif //_MSC_VER
 inline const char * to_string(AttachmentLoadOp val) {
     switch(val) {
         case(AttachmentLoadOp::Load): return "Load";
@@ -23529,6 +28877,8 @@ inline std::string to_string(PipelineRasterizationDepthClipStateCreateFlagsEXT f
     if (flag.flags == 0) return "None";
     return "Unknown";
 }
+#ifdef _MSC_VER
 #pragma warning( pop )
+#endif //_MSC_VER
 } // namespace vk
 // clang-format on

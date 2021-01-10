@@ -237,17 +237,14 @@ struct fixed_vector
     ~fixed_vector() noexcept { delete[] _data; }
     fixed_vector(fixed_vector const& value) noexcept
     {
-        _count = value._count;
-        _data = new (std::nothrow) T[value.count];
-        for (size_t i = 0; i < value.count; i++)
-            _data[i] = value[i];
+        common_copy_impl(value);
     }
     fixed_vector& operator=(fixed_vector const& value) noexcept
     {
-        _count = value._count;
-        _data = new (std::nothrow) T[value.count];
-        for (size_t i = 0; i < value.count; i++)
-            _data[i] = value[i];
+        if (this != &value) {
+            common_copy_impl(value);
+        }
+        return *this;
     }
     fixed_vector(fixed_vector&& other) noexcept
       : _count(std::exchange(other._count, 0))
@@ -282,44 +279,51 @@ struct fixed_vector
   private:
     size_t _count = 0;
     T* _data = nullptr;
+
+    void common_copy_impl(fixed_vector const& value) {
+        _count = value._count;
+        _data = new (std::nothrow) T[value.count];
+        for (size_t i = 0; i < value.count; i++)
+            _data[i] = value[i];
+    }
 };
 
-template<typename T, size_t internal_buffer_count>
-struct static_vector
+template<typename T, uint32_t internal_buffer_count>
+struct sbo_vector
 {
-    explicit static_vector() noexcept 
+    explicit sbo_vector() noexcept 
     {
     }
-    ~static_vector() noexcept { delete[] _data; }
-    static_vector(static_vector const& value) noexcept
+    ~sbo_vector() noexcept { delete[] _data; }
+    sbo_vector(sbo_vector const& value) noexcept
     {
         if (value.count < internal_buffer_count){
-            for (size_t i = 0; i < value.count; i++)
+            for (uint32_t i = 0; i < value.count; i++)
                 _static_data[i] = value[i];
         } else {
             _count = value._count;
             _data = new (std::nothrow) T[value.count];
-            for (size_t i = 0; i < value.count; i++)
+            for (uint32_t i = 0; i < value.count; i++)
                 _data[i] = value[i];
         }
     }
-    static_vector& operator=(static_vector const& value) noexcept
+    sbo_vector& operator=(sbo_vector const& value) noexcept
     {
         if (value.count < internal_buffer_count){
-            for (size_t i = 0; i < value.count; i++)
+            for (uint32_t i = 0; i < value.count; i++)
                 _static_data[i] = value[i];
         } else {
             _count = value._count;
             _data = new (std::nothrow) T[value.count];
-            for (size_t i = 0; i < value.count; i++)
+            for (uint32_t i = 0; i < value.count; i++)
                 _data[i] = value[i];
         }
     }
-    static_vector(static_vector&& other) noexcept
+    sbo_vector(sbo_vector&& other) noexcept
       : _count(std::exchange(other._count, 0))
       , _data(std::exchange(other._data, nullptr))
     {}
-    static_vector& operator=(static_vector&& other) noexcept
+    sbo_vector& operator=(sbo_vector&& other) noexcept
     {
         if (this != &other) {
             delete _data;
@@ -329,23 +333,25 @@ struct static_vector
         return *this;
     }
 
-    [[nodiscard]] size_t size() noexcept { return _count; }
-    [[nodiscard]] size_t size() const noexcept { return _count; }
+    [[nodiscard]] uint32_t size() noexcept { return _count; }
+    [[nodiscard]] uint32_t size() const noexcept { return _count; }
     [[nodiscard]] bool empty() noexcept { return _count == 0; }
     [[nodiscard]] bool empty() const noexcept { return _count == 0; }
     [[nodiscard]] T* data() noexcept { return _data; }
     [[nodiscard]] const T* data() const noexcept { return _data; }
 
     void resize() { 
-
+        _count = 0;
     }
-    [[nodiscard]] void push_back(T const& value) noexcept {
-
+    void push_back(T const& value) noexcept {
+        _data[_count++] = value;
     }
-    [[nodiscard]] void push_back(T&& value) noexcept {}
+    void push_back(T&& value) noexcept {
+        _data[_count++] = std::move(value);
+    }
 
-    [[nodiscard]] T& operator[](size_t count) & noexcept { return _data[count]; }
-    [[nodiscard]] T const& operator[](size_t count) const& noexcept { return _data[count]; }
+    [[nodiscard]] T& operator[](uint32_t count) & noexcept { return _data[count]; }
+    [[nodiscard]] T const& operator[](uint32_t count) const& noexcept { return _data[count]; }
 
     [[nodiscard]] const T* begin() const noexcept { return _data + 0; }
     [[nodiscard]] T* begin() noexcept { return _data + 0; }
@@ -353,17 +359,10 @@ struct static_vector
     [[nodiscard]] T* end() noexcept { return _data + _count; }
 
   private:
-    size_t _count = 0;
-    size_t _capacity = internal_buffer_count * 2;
+    uint32_t _count = 0;
+    uint32_t _capacity = internal_buffer_count * 2;
     T* _data = nullptr;
     T _static_data[internal_buffer_count];
-
-    void switch_to_heap_storage() {
-        _data = new (std::nothrow) T[count * 2];
-        for (size_t i = 0; i < count; i++)
-            _data[i] = _static_data[i]; 
-        count *= 2;
-    }
 };
 } // namespace detail
 
