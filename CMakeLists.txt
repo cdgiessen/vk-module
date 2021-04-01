@@ -60,7 +60,6 @@ if (VK_MODULE_GENERATE_SOURCE)
 add_custom_target(generate_source copy-xml copy-vk-platform-cpp-17 copy-vk-platform-cpp-20)
 endif()
 
-add_subdirectory(cpp17)
 add_subdirectory(cpp20)
 
 if (VK_MODULE_SAMPLES)

@@ -70,6 +70,12 @@ class ApiConstant:
         elif self.value is not None:
             file.write(f'constexpr auto {self.name[3:]} = {self.value};\n')
 
+    def print_basic(self, file):
+        if self.alias is not None:
+            file.write(f'constexpr auto {self.name} = {self.alias};\n')
+        elif self.value is not None:
+            file.write(f'constexpr auto {self.name} = {self.value};\n')
+        
 class BaseType:
     def __init__(self, node):
         self.name = node.find('name').text
@@ -140,6 +146,15 @@ class Enum:
                 file.write(f'    {out_name} = {str(value)},\n')
             file.write('};\n')
             
+    def print_basic(self, file):
+        if self.alias is not None:
+            file.write(f'using {self.name} = {self.alias};\n')
+        else:
+            file.write(f"enum class {self.name} : {self.underlying_type} {{\n")
+            for name, value in self.values.items():
+                file.write(f'    {name} = {str(value)},\n')
+            file.write('};\n')
+
     def print_string(self, file):
         if self.alias is not None:
             return
@@ -167,6 +182,7 @@ def RepresentsIntOrHex(s):
 
 class Bitmask:
     def __init__(self, node):
+        self.node = node
         self.name = node.get('name')
         self.flags_name = self.name.replace('Bits', 's')
         self.underlying_type = 'uint32_t'  # for ABI
@@ -209,6 +225,21 @@ class Bitmask:
                 if out_name[0].isnumeric():
                     out_name = f'e{out_name}'
                 file.write(f"    {out_name} = {bitpos},\n")
+            file.write('};\n')
+
+    def print_basic(self, file):
+        if self.alias is not None:
+            file.write(f'using {self.name} = {self.alias};\n')
+        else:
+            file.write(f'enum class {self.name}: {self.underlying_type} {{\n')
+            for elem in self.node:
+                value = elem.get('value')
+                name = elem.get('name')
+                if elem.get('bitpos') is not None:
+                    value = str(1 << int(elem.get('bitpos')))
+                if elem.get("alias") is not None:
+                    value = elem.get("alias")
+                file.write(f"    {name} = {value},\n")
             file.write('};\n')
             
     def print_string(self, file):
@@ -259,6 +290,9 @@ class EmptyBitmask:
     def print_base(self, file):
         file.write(f'enum class {self.name[2:]}: {self.underlying_type} {{ }};\n')
 
+    def print_basic(self, file):
+        file.write(f'enum class {self.name}: {self.underlying_type} {{ }};\n')
+
     def print_string(self, file):
         file.write(f'inline const char * to_string({self.name[2:]} val) {{\n')
         file.write('    switch(val) {\n')
@@ -296,6 +330,12 @@ class Flags:
             file.write(f'DECLARE_ENUM_FLAG_OPERATORS({self.name[2:]}, {self.flags_name[2:]}, {self.underlying_type})\n')
         else:
             file.write(f'using {self.name[2:]} = {self.alias[2:]};\n')
+
+    def print_basic(self, file):
+        if self.alias is None:
+            file.write(f'DECLARE_ENUM_FLAG_OPERATORS({self.name}, {self.flags_name}, {self.underlying_type})\n')
+        else:
+            file.write(f'using {self.name} = {self.alias};\n')
 
     def print_c_interop(self, file):
         if self.alias is None:
@@ -353,7 +393,7 @@ class {self.name[2:]} {{
 class Variable:
     def __init__(self, node, handles, default_values):
         self.name = node.find('name').text
-        self.sType_values = node.get('values')
+        self.sType_value = node.get('values')
 
         # attributes
         self.optional = node.get('optional')
@@ -431,8 +471,8 @@ class Variable:
                 self.bitfield = t[1:]
         if self.base_type in default_values:
             self.default_value = default_values[self.base_type]
-        if self.name == 'sType' and self.sType_values is not None:
-            out_name = MorphVkEnumName(self.sType_values, 3)
+        if self.name == 'sType' and self.sType_value is not None:
+            out_name = MorphVkEnumName(self.sType_value, 3)
             if out_name[0].isnumeric():
                 out_name = f'e{out_name}'
             self.default_value = f'StructureType::{out_name}'
@@ -556,6 +596,9 @@ class Variable:
         type_decl += f' {self.name}'
         return type_decl
 
+    def get_raw_xml(self):
+        return self.raw_xml_text
+
 def get_struct_len_attrib_names(variables):
     names = set()
     for var in variables:
@@ -665,7 +708,7 @@ class Structure:
         for function in functions:
             pass
 
-    def print_base(self, file, cpp20mode = True):
+    def print_base(self, file):
         if self.alias is not None:
             file.write(f'using {self.name[2:]} = {self.alias[2:]};\n')
         else:
@@ -716,6 +759,20 @@ class Structure:
                     file.write(f'    {self.name[2:]}& set{member.name[1:]}(detail::span<{member.get_span_type()}> {member.name[1:]}) {{ ')
                     file.write(f'this->{member.length_ref} = {member.name[1:]}.size(); this->{member.name} = {member.name[1:]}.data();  return *this; }}\n')
                 
+            file.write('};\n')
+
+    def print_basic(self, file):
+        if self.alias is not None:
+            file.write(f'using {self.name} = {self.alias};\n')
+        else:
+            should_init = self.category == 'struct'
+            file.write(f'{self.category} {self.name} {{\n')
+            for member in self.members:
+                file.write(f'    {member.get_raw_xml()}')
+                if member.name == 'sType' and member.sType_value is not None:
+                    file.write(f' = VkStructureType::{member.sType_value};\n')
+                else:
+                    file.write(' {};\n')
             file.write('};\n')
 
     def print_static_asserts(self, file):
@@ -969,7 +1026,7 @@ class Function:
 
         file.write(f'}}\n')
 
-    def print_function(self, file, dispatch_handle = None, dispatch_handle_name = None, pfn_source=None, cpp20mode=False):
+    def print_function(self, file, dispatch_handle = None, dispatch_handle_name = None, pfn_source=None):
         if self.alias is not None:
             file.write(f'const auto {self.name[2:]} = {self.alias[2:]};\n')
             return
@@ -1009,7 +1066,7 @@ class Function:
         file.write(f' }}\n')
 
     def print_forwarding_function(self, file, dispatch_handle = None, dispatch_handle_name = None, replace_list=None, \
-            pfn_source=None, make_void_return_this=None, cpp20mode=False):
+            pfn_source=None, make_void_return_this=None):
         if self.alias is not None:
             file.write(f'const auto {self.name[2:]} = {self.alias[2:]};\n')
             return
@@ -1018,6 +1075,7 @@ class Function:
 class FuncPointer:
     def __init__(self, node):
         self.name = node.find('name').text
+        self.raw_text = ' '.join(node.itertext())
         self.text = ''
         for t in node.itertext():
             t.replace('VkBool32', 'Bool32')
@@ -1025,6 +1083,9 @@ class FuncPointer:
 
     def print_base(self, file):
         file.write(self.text + '\n')
+
+    def print_basic(self, file):
+        file.write(self.raw_text + '\n')
 
 class ExtEnum:
     def __init__(self, name, value):
@@ -1138,7 +1199,7 @@ class DispatchTable:
         self.dispatch_handle = f'Vk{self.dispatch_type.title()}' if self.dispatch_type != 'global' else None
         self.gpa_val = f'{self.dispatch_type}' if self.dispatch_type != 'global' else 'nullptr'
 
-    def print_definition(self, file, cpp20mode):                
+    def print_definition(self, file):                
         file.write(f'struct {self.name}Functions {{\n')
         #function pointers
         if self.dispatch_type != 'global':
@@ -1147,7 +1208,7 @@ class DispatchTable:
 
         #functions
         PrintConsecutivePlatforms(file, self.functions.values(), "print_function", dispatch_handle=self.dispatch_handle\
-            ,dispatch_handle_name=self.dispatch_type, cpp20mode=cpp20mode)
+            ,dispatch_handle_name=self.dispatch_type)
              
         #constructor
         file.write(f'{self.name}Functions() noexcept {{}}\n')   
@@ -1185,7 +1246,7 @@ class DispatchableHandleDispatchTable:
         self.type_name = self.name[2:]
         self.var_name = self.name[2:].lower()
 
-    def print_definition(self, file, cpp20mode):
+    def print_definition(self, file):
         command_buffer_return_type = f'{self.type_name}Functions const&' if self.type_name == 'CommandBuffer' else None
         file.write(f'''    struct {self.type_name}Functions {{
     {self.functions_type} const* {self.functions_name};
@@ -1194,7 +1255,7 @@ class DispatchableHandleDispatchTable:
     {self.type_name}Functions({self.functions_type} const& {self.functions_name}, {self.type_name} const {self.var_name}) noexcept:
     {self.functions_name}{{&{self.functions_name}}}, {self.var_name}{{{self.var_name}}} {{}}''')
         PrintConsecutivePlatforms(file, self.functions, "print_forwarding_function", dispatch_handle=self.name, dispatch_handle_name=self.var_name, replace_list=self.replace_list, \
-                pfn_source=self.functions_name, make_void_return_this=command_buffer_return_type, cpp20mode=cpp20mode)
+                pfn_source=self.functions_name, make_void_return_this=command_buffer_return_type)
         file.write('};\n')
             
 class BindingGenerator:
@@ -1352,8 +1413,8 @@ class BindingGenerator:
         self.dispatchable_handle_tables.append(DispatchableHandleDispatchTable('VkCommandBuffer', 'device',['Cmd', 'CommandBuffer'], self.functions))
   
 
-def print_bindings(bindings, cpp20mode, cpp20str):
-    with open(f'cpp{cpp20str}/vk_module.h', 'w') as vkm:
+def print_bindings(bindings):
+    with open(f'cpp20/vk_module.h', 'w') as vkm:
         vkm.write(vk_module_file_header)
         
         #basic definitions
@@ -1374,7 +1435,7 @@ def print_bindings(bindings, cpp20mode, cpp20str):
         vkm.write('struct DebugUtilsMessengerCallbackDataEXT;\n')
         vkm.write('struct DeviceMemoryReportCallbackDataEXT;\n')
         PrintConsecutivePlatforms(vkm, bindings.func_pointers, 'print_base')
-        PrintConsecutivePlatforms(vkm, bindings.structures, 'print_base', cpp20mode)
+        PrintConsecutivePlatforms(vkm, bindings.structures, 'print_base')
         vkm.write('namespace detail {\n')
         PrintConsecutivePlatforms(vkm, bindings.functions, 'print_pfn_func_decl')
         vkm.write('} //namespace detail\n')
@@ -1382,8 +1443,8 @@ def print_bindings(bindings, cpp20mode, cpp20str):
         #dispatch function objects
         vkm.write(vulkan_library_text + '\n')
 
-        [ dispatch_table.print_definition(vkm, cpp20mode) for dispatch_table in bindings.dispatch_tables ]
-        [ table.print_definition(vkm, cpp20mode) for table in bindings.dispatchable_handle_tables ]
+        [ dispatch_table.print_definition(vkm) for dispatch_table in bindings.dispatch_tables ]
+        [ table.print_definition(vkm) for table in bindings.dispatchable_handle_tables ]
         #PrintConsecutivePlatforms(vkm, bindings.structures, 'print_maker')
         #PrintConsecutivePlatforms(vkm, bindings.structures, 'print_builder')
 
@@ -1401,8 +1462,8 @@ def print_bindings(bindings, cpp20mode, cpp20str):
 
         vkm.write('} // namespace vk\n// clang-format on\n')
 
-def print_c_interop(bindings, cpp20mode, cpp20str):
-    with open(f'cpp{cpp20str}/vk_module_interop.h', 'w') as c_interop:
+def print_c_interop(bindings):
+    with open(f'cpp20/vk_module_interop.h', 'w') as c_interop:
         c_interop.write('#pragma once\n// clang-format off\n')
         c_interop.write('#include <vulkan/vulkan.h>\n')
         c_interop.write('#include "vk_module.h"\n')
@@ -1413,6 +1474,24 @@ def print_c_interop(bindings, cpp20mode, cpp20str):
         #PrintConsecutivePlatforms(c_interop, bindings.structures, 'print_c_interop')
         c_interop.write('} // namespace vk\n// clang-format on\n')
 
+def print_basic_bindings(bindings):
+    with open(f'vulkan/vulkan.h', 'w') as basic_bindings:
+        basic_bindings.write('#pragma once\n// clang-format off\n')
+        PrintConsecutivePlatforms(basic_bindings, api_constants.values(), 'print_basic')
+        PrintConsecutivePlatforms(basic_bindings, bindings.base_types, 'print_base')
+        PrintConsecutivePlatforms(basic_bindings, bindings.enum_dict.values(), 'print_basic')
+        PrintConsecutivePlatforms(basic_bindings, bindings.bitmask_dict.values(), 'print_basic')
+        basic_bindings.write(bitmask_flags_macro + '\n')
+        PrintConsecutivePlatforms(basic_bindings, bindings.flags_dict.values(), 'print_basic')
+        [ handle.print_vk_handle(basic_bindings) for handle in bindings.handles.values() ]
+        basic_bindings.write('struct VkDebugUtilsMessengerCallbackDataEXT;\n')
+        basic_bindings.write('struct VkDeviceMemoryReportCallbackDataEXT;\n')
+        PrintConsecutivePlatforms(basic_bindings, bindings.func_pointers, 'print_basic')
+        PrintConsecutivePlatforms(basic_bindings, bindings.structures, 'print_basic')
+        
+        basic_bindings.write('\n// clang-format on\n')
+
+
 def main():
     tree = xml.etree.ElementTree.parse('registry/vk.xml')
     root = tree.getroot()
@@ -1421,11 +1500,10 @@ def main():
         vendor_abbreviations.append(tag.get('name'))
 
     bindings = BindingGenerator(root)
-    print_bindings(bindings, False, '17')
-    print_bindings(bindings, True, '20')
+    print_bindings(bindings)
+    print_c_interop(bindings)
 
-    print_c_interop(bindings, False, '17')
-    print_c_interop(bindings, True, '20')
+    print_basic_bindings(bindings)
 
     with open('tests/static_asserts.h', 'w') as static_asserts:
         static_asserts.write('#pragma once\n')
