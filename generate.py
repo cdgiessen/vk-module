@@ -1478,7 +1478,7 @@ def print_basic_bindings(bindings):
     with open(f'vulkan/vulkan.h', 'w') as basic_bindings:
         basic_bindings.write('#pragma once\n// clang-format off\n')
         PrintConsecutivePlatforms(basic_bindings, api_constants.values(), 'print_basic')
-        PrintConsecutivePlatforms(basic_bindings, bindings.base_types, 'print_base')
+        PrintConsecutivePlatforms(basic_bindings, bindings.base_types, 'print_vk_base')
         PrintConsecutivePlatforms(basic_bindings, bindings.enum_dict.values(), 'print_basic')
         PrintConsecutivePlatforms(basic_bindings, bindings.bitmask_dict.values(), 'print_basic')
         basic_bindings.write(bitmask_flags_macro + '\n')

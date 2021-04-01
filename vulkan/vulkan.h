@@ -26,11 +26,11 @@ constexpr auto VK_MAX_DRIVER_INFO_SIZE = 256;
 constexpr auto VK_MAX_DRIVER_INFO_SIZE_KHR = VK_MAX_DRIVER_INFO_SIZE;
 constexpr auto VK_SHADER_UNUSED_KHR = (~0U);
 constexpr auto VK_SHADER_UNUSED_NV = VK_SHADER_UNUSED_KHR;
-using SampleMask = uint32_t;
-using Bool32 = uint32_t;
-using Flags = uint32_t;
-using DeviceSize = uint64_t;
-using DeviceAddress = uint64_t;
+using VkSampleMask = uint32_t;
+using VkBool32 = uint32_t;
+using VkFlags = uint32_t;
+using VkDeviceSize = uint64_t;
+using VkDeviceAddress = uint64_t;
 enum class VkAttachmentLoadOp : uint32_t {
     VK_ATTACHMENT_LOAD_OP_LOAD = 0,
     VK_ATTACHMENT_LOAD_OP_CLEAR = 1,
@@ -2396,7 +2396,7 @@ typedef VkBool32 (VKAPI_PTR * PFN_vkDebugUtilsMessengerCallbackEXT )(
 typedef void (VKAPI_PTR * PFN_vkDeviceMemoryReportCallbackEXT )(
     const  VkDeviceMemoryReportCallbackDataEXT *  pCallbackData,
      void *                                       pUserData);
-struct   {
+struct VkBaseOutStructure {
     VkStructureType   sType {};
     struct  VkBaseOutStructure *  pNext {};
 };
