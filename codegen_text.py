@@ -6,14 +6,12 @@ vk_module_file_header = '''
 #include <cstddef>
 #include <array>
 #include <new>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <type_traits>
 #include <utility>
 #include "vk_platform.h"
-
-//maybe temporary
-#include <vector>
 
 // Compatability with compilers that don't support __has_feature
 #ifndef __has_feature
@@ -31,6 +29,10 @@ vk_module_file_header = '''
 #undef __has_feature
 #endif
 
+#if !defined(VULKAN_CUSTOM_ASSERT)
+#include <cassert>
+#define VULKAN_CUSTOM_ASSERT assert
+#endif
 
 namespace vk {
 constexpr uint32_t make_vk_version(uint32_t major, uint32_t minor, uint32_t patch) {
@@ -50,173 +52,7 @@ constexpr uint32_t make_vk_version(uint32_t major, uint32_t minor, uint32_t patc
 #endif
 '''
 
-bitmask_flags_macro = '''
-#define DECLARE_ENUM_FLAG_OPERATORS(FLAG_TYPE, FLAG_BITS, BASE_TYPE)                       \\
-                                                                                           \\
-struct FLAG_TYPE {                                                                         \\
-    BASE_TYPE flags = static_cast<BASE_TYPE>(0);                                           \\
-                                                                                           \\
-    constexpr FLAG_TYPE() noexcept = default;                                              \\
-    constexpr explicit FLAG_TYPE(BASE_TYPE in) noexcept: flags(in){ }                      \\
-    constexpr FLAG_TYPE(FLAG_BITS in) noexcept: flags(static_cast<BASE_TYPE>(in)){ }       \\
-    constexpr bool operator==(FLAG_TYPE const& right) const { return flags == right.flags;}\\
-    constexpr bool operator!=(FLAG_TYPE const& right) const { return flags != right.flags;}\\
-    constexpr explicit operator BASE_TYPE() const { return flags;}                         \\
-    constexpr explicit operator bool() const noexcept {                                    \\
-      return flags != 0;                                                                   \\
-    }                                                                                      \\
-};                                                                                         \\
-constexpr FLAG_TYPE operator|(FLAG_TYPE a, FLAG_TYPE b) noexcept {                         \\
-    return static_cast<FLAG_TYPE>(a.flags | b.flags);                                      \\
-}                                                                                          \\
-constexpr FLAG_TYPE operator&(FLAG_TYPE a, FLAG_TYPE b) noexcept {                         \\
-    return static_cast<FLAG_TYPE>(a.flags & b.flags);                                      \\
-}                                                                                          \\
-constexpr FLAG_TYPE operator^(FLAG_TYPE a, FLAG_TYPE b) noexcept {                         \\
-    return static_cast<FLAG_TYPE>(a.flags ^ b.flags);                                      \\
-}                                                                                          \\
-constexpr FLAG_TYPE operator~(FLAG_TYPE a) noexcept {                                      \\
-    return static_cast<FLAG_TYPE>(~a.flags);                                               \\
-}                                                                                          \\
-constexpr FLAG_TYPE& operator|=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {                      \\
-    a.flags = (a.flags | b.flags);                                                         \\
-    return a;                                                                              \\
-}                                                                                          \\
-constexpr FLAG_TYPE& operator&=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {                      \\
-    a.flags = (a.flags & b.flags);                                                         \\
-    return a;                                                                              \\
-}                                                                                          \\
-constexpr FLAG_TYPE operator^=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {                       \\
-    a.flags = (a.flags ^ b.flags);                                                         \\
-    return a;                                                                              \\
-}                                                                                          \\
-constexpr FLAG_TYPE operator|(FLAG_BITS a, FLAG_BITS b) noexcept {                         \\
-    return static_cast<FLAG_TYPE>(static_cast<BASE_TYPE>(a) | static_cast<BASE_TYPE>(b));  \\
-}                                                                                          \\
-constexpr FLAG_TYPE operator&(FLAG_BITS a, FLAG_BITS b) noexcept {                         \\
-    return static_cast<FLAG_TYPE>(static_cast<BASE_TYPE>(a) & static_cast<BASE_TYPE>(b));  \\
-}                                                                                          \\
-constexpr FLAG_TYPE operator~(FLAG_BITS key) noexcept {                                    \\
-    return static_cast<FLAG_TYPE>(~static_cast<BASE_TYPE>(key));                           \\
-}                                                                                          \\
-constexpr FLAG_TYPE operator^(FLAG_BITS a, FLAG_BITS b) noexcept {                         \\
-    return static_cast<FLAG_TYPE>(static_cast<BASE_TYPE>(a) ^ static_cast<BASE_TYPE>(b));  \\
-}                                                                                          \\
-'''
-vulkan_library_text = '''
-} // namespace vk 
-#if !defined(VULKAN_CUSTOM_ASSERT)
-#include <cassert>
-#define VULKAN_CUSTOM_ASSERT assert
-#endif
-
-#if defined(_WIN32)
-    typedef struct HINSTANCE__ * HINSTANCE;
-    #if defined( _WIN64 )
-    typedef int64_t( __stdcall * FARPROC )();
-    #else
-    typedef int( __stdcall * FARPROC )();
-    #endif
-    extern "C" __declspec( dllimport ) HINSTANCE __stdcall LoadLibraryA( char const * lpLibFileName );
-    extern "C" __declspec( dllimport ) int __stdcall FreeLibrary( HINSTANCE hLibModule );
-    extern "C" __declspec( dllimport ) FARPROC __stdcall GetProcAddress( HINSTANCE hModule, const char * lpProcName );
-#elif defined(__linux__) || defined(__APPLE__)
-    #include <dlfcn.h>
-#endif
-using PFN_vkVoidFunction = void (VKAPI_PTR *)(void);
-using PFN_vkGetInstanceProcAddr = PFN_vkVoidFunction (VKAPI_PTR *)(VkInstance instance, const char* pName);
-namespace vk {
-class DynamicLibrary {
-    public:
-    // Used to enable RAII vk::DynamicLibrary behavior
-    struct LoadAtConstruction {};
-
-    explicit DynamicLibrary() noexcept {}
-    explicit DynamicLibrary([[maybe_unused]] LoadAtConstruction load) noexcept {
-        init();
-    }
-    explicit DynamicLibrary(PFN_vkGetInstanceProcAddr pfn_vkGetInstanceProcAddr) noexcept : 
-        get_instance_proc_addr(pfn_vkGetInstanceProcAddr) { }
-    ~DynamicLibrary() noexcept {
-        close();
-    }
-    DynamicLibrary(DynamicLibrary const& other) = delete;
-    DynamicLibrary& operator=(DynamicLibrary const& other) = delete;
-    DynamicLibrary(DynamicLibrary && other) noexcept: library(other.library), get_instance_proc_addr(other.get_instance_proc_addr) {
-        other.get_instance_proc_addr = 0;
-        other.library = 0;
-    }
-    DynamicLibrary& operator=(DynamicLibrary && other) noexcept {
-        if (this != &other)
-        {
-            close();
-            library = other.library; 
-            get_instance_proc_addr = other.get_instance_proc_addr;
-            other.get_instance_proc_addr = 0;
-            other.library = 0;
-        }
-        return *this;
-    }
-
-    vk::Result init(PFN_vkGetInstanceProcAddr pfn_vkGetInstanceProcAddr = nullptr) noexcept {
-        if (pfn_vkGetInstanceProcAddr != nullptr) {
-            get_instance_proc_addr = pfn_vkGetInstanceProcAddr;
-            return vk::Result::Success;
-        }
-#if defined(__linux__)
-        library = dlopen("libvulkan.so", RTLD_NOW | RTLD_LOCAL);
-        if (!library) library = dlopen("libvulkan.so.1", RTLD_NOW | RTLD_LOCAL);
-#elif defined(__APPLE__)
-        library = dlopen("libvulkan.dylib", RTLD_NOW | RTLD_LOCAL);
-#elif defined(_WIN32)
-        library = ::LoadLibraryA("vulkan-1.dll");
-#endif
-        if (library == 0) return vk::Result::ErrorInitializationFailed;
-        Load(get_instance_proc_addr, "vkGetInstanceProcAddr");
-        if (get_instance_proc_addr == nullptr) return vk::Result::ErrorInitializationFailed;
-        return vk::Result::Success;
-    }
-    void close() noexcept {
-        if (library != nullptr) {
-#if defined(__linux__) || defined(__APPLE__)
-            dlclose(library);
-#elif defined(_WIN32)
-            ::FreeLibrary(library);
-#endif
-        library = 0;
-        }
-    }
-
-    // Check if vulkan is loaded and ready for use
-    [[nodiscard]] bool is_init() const noexcept { return get_instance_proc_addr != 0; }
-
-    // Get `vkGetInstanceProcAddr` if it was loaded, 0 if not
-    [[nodiscard]] PFN_vkGetInstanceProcAddr get() const noexcept {
-        VULKAN_CUSTOM_ASSERT(get_instance_proc_addr != nullptr && "Must call init() before use");
-        return get_instance_proc_addr;
-    }
-
-private:
-    
-    template <typename T>
-    void Load(T &func_dest, const char *func_name) {
-#if defined(__linux__) || defined(__APPLE__)
-        func_dest = reinterpret_cast<T>(dlsym(library, func_name));
-#elif defined(_WIN32)
-        func_dest = reinterpret_cast<T>(::GetProcAddress(library, func_name));
-#endif
-    }
-
-#if defined(__linux__) || defined(__APPLE__)
-    void *library = nullptr;
-#elif defined(_WIN32)
-    ::HINSTANCE library = nullptr;
-#endif
-
-    PFN_vkGetInstanceProcAddr get_instance_proc_addr = nullptr;
-    
-};
-
+custom_data_structures = '''
 namespace detail {
 /* Array data structure where the length is determined at construction time.
  * Cannot resize, add, or delete elements from.
@@ -286,83 +122,6 @@ struct fixed_vector
         for (size_t i = 0; i < value.count; i++)
             _data[i] = value[i];
     }
-};
-
-template<typename T, uint32_t internal_buffer_count>
-struct sbo_vector
-{
-    explicit sbo_vector() noexcept 
-    {
-    }
-    ~sbo_vector() noexcept { delete[] _data; }
-    sbo_vector(sbo_vector const& value) noexcept
-    {
-        if (value.count < internal_buffer_count){
-            for (uint32_t i = 0; i < value.count; i++)
-                _static_data[i] = value[i];
-        } else {
-            _count = value._count;
-            _data = new (std::nothrow) T[value.count];
-            for (uint32_t i = 0; i < value.count; i++)
-                _data[i] = value[i];
-        }
-    }
-    sbo_vector& operator=(sbo_vector const& value) noexcept
-    {
-        if (value.count < internal_buffer_count){
-            for (uint32_t i = 0; i < value.count; i++)
-                _static_data[i] = value[i];
-        } else {
-            _count = value._count;
-            _data = new (std::nothrow) T[value.count];
-            for (uint32_t i = 0; i < value.count; i++)
-                _data[i] = value[i];
-        }
-    }
-    sbo_vector(sbo_vector&& other) noexcept
-      : _count(std::exchange(other._count, 0))
-      , _data(std::exchange(other._data, nullptr))
-    {}
-    sbo_vector& operator=(sbo_vector&& other) noexcept
-    {
-        if (this != &other) {
-            delete _data;
-            _count = std::exchange(other._count, 0);
-            _data = std::exchange(other._data, nullptr);
-        }
-        return *this;
-    }
-
-    [[nodiscard]] uint32_t size() noexcept { return _count; }
-    [[nodiscard]] uint32_t size() const noexcept { return _count; }
-    [[nodiscard]] bool empty() noexcept { return _count == 0; }
-    [[nodiscard]] bool empty() const noexcept { return _count == 0; }
-    [[nodiscard]] T* data() noexcept { return _data; }
-    [[nodiscard]] const T* data() const noexcept { return _data; }
-
-    void resize() { 
-        _count = 0;
-    }
-    void push_back(T const& value) noexcept {
-        _data[_count++] = value;
-    }
-    void push_back(T&& value) noexcept {
-        _data[_count++] = std::move(value);
-    }
-
-    [[nodiscard]] T& operator[](uint32_t count) & noexcept { return _data[count]; }
-    [[nodiscard]] T const& operator[](uint32_t count) const& noexcept { return _data[count]; }
-
-    [[nodiscard]] const T* begin() const noexcept { return _data + 0; }
-    [[nodiscard]] T* begin() noexcept { return _data + 0; }
-    [[nodiscard]] const T* end() const noexcept { return _data + _count; }
-    [[nodiscard]] T* end() noexcept { return _data + _count; }
-
-  private:
-    uint32_t _count = 0;
-    uint32_t _capacity = internal_buffer_count * 2;
-    T* _data = nullptr;
-    T _static_data[internal_buffer_count];
 };
 } // namespace detail
 
@@ -467,7 +226,6 @@ public:
 
     [[nodiscard]] T* data() noexcept { return _data; }
     [[nodiscard]] const T* data() const noexcept { return _data; }
-    [[nodiscard]] bool empty() noexcept { return _count == 0; }
     [[nodiscard]] bool empty() const noexcept { return _count == 0; }
 
     [[nodiscard]] T const& operator[](uint32_t count) & noexcept { return _data[count]; }
@@ -481,26 +239,6 @@ private:
     T* _data;
     uint32_t _count;
 };
-
-template<typename T>
-struct optional {
-    T _value;
-    bool _has_value = false;
-
-    constexpr optional() noexcept = default;
-    constexpr explicit optional(T value) noexcept :_value(value), _has_value(true) {}
-
-    constexpr optional& operator=(T value) noexcept { _value = value; _has_value = true; return *this; };
-
-    constexpr void reset() noexcept { _has_value = false; }
-
-    constexpr T* ptr_or_nullptr() noexcept { return _has_value ? &_value : nullptr; }
-    constexpr T const* ptr_or_nullptr() const noexcept { return _has_value ? &_value : nullptr; }
-
-    constexpr bool has_value() const noexcept { return _has_value; }
-
-};
-
 } // namespace detail
 
 // Unique Handle wrapper for RAII handle types
@@ -565,8 +303,168 @@ public:
 };
 
 // Add special case for VkInstance
+'''
 
+bitmask_flags_macro = '''
+#define DECLARE_ENUM_FLAG_OPERATORS(FLAG_TYPE, FLAG_BITS, BASE_TYPE)                       \\
+                                                                                           \\
+struct FLAG_TYPE {                                                                         \\
+    BASE_TYPE flags = static_cast<BASE_TYPE>(0);                                           \\
+                                                                                           \\
+    constexpr FLAG_TYPE() noexcept = default;                                              \\
+    constexpr explicit FLAG_TYPE(BASE_TYPE in) noexcept: flags(in){ }                      \\
+    constexpr FLAG_TYPE(FLAG_BITS in) noexcept: flags(static_cast<BASE_TYPE>(in)){ }       \\
+    constexpr bool operator==(FLAG_TYPE const& right) const { return flags == right.flags;}\\
+    constexpr bool operator!=(FLAG_TYPE const& right) const { return flags != right.flags;}\\
+    constexpr explicit operator BASE_TYPE() const { return flags;}                         \\
+    constexpr explicit operator bool() const noexcept {                                    \\
+      return flags != 0;                                                                   \\
+    }                                                                                      \\
+};                                                                                         \\
+constexpr FLAG_TYPE operator|(FLAG_TYPE a, FLAG_TYPE b) noexcept {                         \\
+    return static_cast<FLAG_TYPE>(a.flags | b.flags);                                      \\
+}                                                                                          \\
+constexpr FLAG_TYPE operator&(FLAG_TYPE a, FLAG_TYPE b) noexcept {                         \\
+    return static_cast<FLAG_TYPE>(a.flags & b.flags);                                      \\
+}                                                                                          \\
+constexpr FLAG_TYPE operator^(FLAG_TYPE a, FLAG_TYPE b) noexcept {                         \\
+    return static_cast<FLAG_TYPE>(a.flags ^ b.flags);                                      \\
+}                                                                                          \\
+constexpr FLAG_TYPE operator~(FLAG_TYPE a) noexcept {                                      \\
+    return static_cast<FLAG_TYPE>(~a.flags);                                               \\
+}                                                                                          \\
+constexpr FLAG_TYPE& operator|=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {                      \\
+    a.flags = (a.flags | b.flags);                                                         \\
+    return a;                                                                              \\
+}                                                                                          \\
+constexpr FLAG_TYPE& operator&=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {                      \\
+    a.flags = (a.flags & b.flags);                                                         \\
+    return a;                                                                              \\
+}                                                                                          \\
+constexpr FLAG_TYPE operator^=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {                       \\
+    a.flags = (a.flags ^ b.flags);                                                         \\
+    return a;                                                                              \\
+}                                                                                          \\
+constexpr FLAG_TYPE operator|(FLAG_BITS a, FLAG_BITS b) noexcept {                         \\
+    return static_cast<FLAG_TYPE>(static_cast<BASE_TYPE>(a) | static_cast<BASE_TYPE>(b));  \\
+}                                                                                          \\
+constexpr FLAG_TYPE operator&(FLAG_BITS a, FLAG_BITS b) noexcept {                         \\
+    return static_cast<FLAG_TYPE>(static_cast<BASE_TYPE>(a) & static_cast<BASE_TYPE>(b));  \\
+}                                                                                          \\
+constexpr FLAG_TYPE operator~(FLAG_BITS key) noexcept {                                    \\
+    return static_cast<FLAG_TYPE>(~static_cast<BASE_TYPE>(key));                           \\
+}                                                                                          \\
+constexpr FLAG_TYPE operator^(FLAG_BITS a, FLAG_BITS b) noexcept {                         \\
+    return static_cast<FLAG_TYPE>(static_cast<BASE_TYPE>(a) ^ static_cast<BASE_TYPE>(b));  \\
+}                                                                                          \\
+'''
+vulkan_library_text = '''
+} // namespace vk
+#if defined(_WIN32)
+    typedef struct HINSTANCE__ * HINSTANCE;
+    #if defined( _WIN64 )
+    typedef int64_t( __stdcall * FARPROC )();
+    #else
+    typedef int( __stdcall * FARPROC )();
+    #endif
+    extern "C" __declspec( dllimport ) HINSTANCE __stdcall LoadLibraryA( char const * lpLibFileName );
+    extern "C" __declspec( dllimport ) int __stdcall FreeLibrary( HINSTANCE hLibModule );
+    extern "C" __declspec( dllimport ) FARPROC __stdcall GetProcAddress( HINSTANCE hModule, const char * lpProcName );
+#elif defined(__linux__) || defined(__APPLE__)
+    #include <dlfcn.h>
+#endif
+using PFN_vkVoidFunction = void (VKAPI_PTR *)(void);
+using PFN_vkGetInstanceProcAddr = PFN_vkVoidFunction (VKAPI_PTR *)(VkInstance instance, const char* pName);
+namespace vk {
+class DynamicLibrary {
+    public:
+    // Used to enable RAII vk::DynamicLibrary behavior
+    struct LoadAtConstruction {};
 
+    explicit DynamicLibrary() noexcept {}
+    explicit DynamicLibrary([[maybe_unused]] LoadAtConstruction load) noexcept {
+        init();
+    }
+    explicit DynamicLibrary(PFN_vkGetInstanceProcAddr pfn_vkGetInstanceProcAddr) noexcept : 
+        get_instance_proc_addr(pfn_vkGetInstanceProcAddr) { }
+    ~DynamicLibrary() noexcept {
+        close();
+    }
+    DynamicLibrary(DynamicLibrary const& other) = delete;
+    DynamicLibrary& operator=(DynamicLibrary const& other) = delete;
+    DynamicLibrary(DynamicLibrary && other) noexcept: library(other.library), get_instance_proc_addr(other.get_instance_proc_addr) {
+        other.get_instance_proc_addr = 0;
+        other.library = 0;
+    }
+    DynamicLibrary& operator=(DynamicLibrary && other) noexcept {
+        if (this != &other)
+        {
+            close();
+            library = other.library; 
+            get_instance_proc_addr = other.get_instance_proc_addr;
+            other.get_instance_proc_addr = 0;
+            other.library = 0;
+        }
+        return *this;
+    }
 
+    Result init(PFN_vkGetInstanceProcAddr pfn_vkGetInstanceProcAddr = nullptr) noexcept {
+        if (pfn_vkGetInstanceProcAddr != nullptr) {
+            get_instance_proc_addr = pfn_vkGetInstanceProcAddr;
+            return Result::Success;
+        }
+#if defined(__linux__)
+        library = dlopen("libvulkan.so", RTLD_NOW | RTLD_LOCAL);
+        if (!library) library = dlopen("libvulkan.so.1", RTLD_NOW | RTLD_LOCAL);
+#elif defined(__APPLE__)
+        library = dlopen("libvulkan.dylib", RTLD_NOW | RTLD_LOCAL);
+#elif defined(_WIN32)
+        library = ::LoadLibraryA("vulkan-1.dll");
+#endif
+        if (library == 0) return Result::ErrorInitializationFailed;
+        Load(get_instance_proc_addr, "vkGetInstanceProcAddr");
+        if (get_instance_proc_addr == nullptr) return Result::ErrorInitializationFailed;
+        return Result::Success;
+    }
+    void close() noexcept {
+        if (library != nullptr) {
+#if defined(__linux__) || defined(__APPLE__)
+            dlclose(library);
+#elif defined(_WIN32)
+            ::FreeLibrary(library);
+#endif
+        library = 0;
+        }
+    }
+
+    // Check if vulkan is loaded and ready for use
+    [[nodiscard]] bool is_init() const noexcept { return get_instance_proc_addr != 0; }
+
+    // Get `vkGetInstanceProcAddr` if it was loaded, 0 if not
+    [[nodiscard]] PFN_vkGetInstanceProcAddr get() const noexcept {
+        VULKAN_CUSTOM_ASSERT(get_instance_proc_addr != nullptr && "Must call init() before use");
+        return get_instance_proc_addr;
+    }
+
+private:
+    
+    template <typename T>
+    void Load(T &func_dest, const char *func_name) {
+#if defined(__linux__) || defined(__APPLE__)
+        func_dest = reinterpret_cast<T>(dlsym(library, func_name));
+#elif defined(_WIN32)
+        func_dest = reinterpret_cast<T>(::GetProcAddress(library, func_name));
+#endif
+    }
+
+#if defined(__linux__) || defined(__APPLE__)
+    void *library = nullptr;
+#elif defined(_WIN32)
+    ::HINSTANCE library = nullptr;
+#endif
+
+    PFN_vkGetInstanceProcAddr get_instance_proc_addr = nullptr;
+    
+};
 
 '''

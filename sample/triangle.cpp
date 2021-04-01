@@ -112,21 +112,24 @@ void create_renderer_context(RendererContext& context)
 
     vk::GlobalFunctions global_functions = vk::GlobalFunctions(context.library);
 
-    vk::InstanceCreateInfoBuilder inst_builder{};
     uint32_t glfw_extension_count = 0;
     const char** glfw_extensions = glfwGetRequiredInstanceExtensions(&glfw_extension_count);
-    for (uint32_t i = 0; i < glfw_extension_count; i++) {
-        inst_builder.addEnabledExtensionNames(glfw_extensions[i]);
-    }
+    vk::InstanceCreateInfo inst_info{};
+    inst_info.setEnabledExtensionCount(glfw_extension_count);
+    inst_info.setPpEnabledExtensionNames(glfw_extensions);
 
     auto [layers, layers_ret] = global_functions.EnumerateInstanceLayerProperties();
     check_res(layers_ret, "Couldn't get layers\n");
+    const char* layer_names[] = { "VK_LAYER_KHRONOS_validation" };
     for (auto& layer : layers) {
-        if (std::string(layer.layerName) == std::string("VK_LAYER_KHRONOS_validation"))
-            inst_builder.addEnabledLayerNames("VK_LAYER_KHRONOS_validation");
+        if (std::string(layer.layerName) == std::string("VK_LAYER_KHRONOS_validation")) {
+            // inst_builder.addEnabledLayerNames("VK_LAYER_KHRONOS_validation");
+            inst_info.ppEnabledLayerNames = layer_names;
+            break;
+        }
     }
 
-    auto [instance, instance_ret] = global_functions.CreateInstance(inst_builder.build());
+    auto [instance, instance_ret] = global_functions.CreateInstance(inst_info);
 
     check_res(instance_ret, "Failed to init Vulkan Instance");
 
@@ -150,12 +153,13 @@ void create_renderer_context(RendererContext& context)
 
 void create_device_context(RendererContext& render_context, DeviceContext& device_context)
 {
+    const char* extensions[] = { "VK_KHR_swapchain" };
     auto device_ret = render_context.functions.CreateDevice(
       render_context.physical_device,
-      vk::DeviceCreateInfoBuilder{}
-        .addEnabledExtensionNames("VK_KHR_swapchain")
-        .addQueueCreateInfos(vk::DeviceQueueCreateInfoBuilder{}.setQueueFamilyIndex(0).addQueuePriorities(1.f).build())
-        .build());
+      vk::DeviceCreateInfo{}
+        .setEnabledExtensionCount(1)
+        .setPpEnabledExtensionNames(extensions)
+        .setQueueCreateInfos({ vk::DeviceQueueCreateInfo{}.setQueueFamilyIndex(0).setQueuePriorities({ 1.f }) }));
     check_res(device_ret, "Failed to create a vulkan device");
 
     device_context.device = device_ret.value();
@@ -190,21 +194,20 @@ void setup_swapchain(DeviceContext& device)
     device.swapchain_img_format = surf_formats[0].format;
 
     device.image_count = 3;
-    auto [swapchain, swap_ret] =
-      device.functions.CreateSwapchainKHR(vk::SwapchainCreateInfoKHRBuilder{}
-                                            .setSurface(device.surface)
-                                            .setMinImageCount(3)
-                                            .setImageFormat(device.swapchain_img_format)
-                                            .setImageColorSpace(surf_formats[0].colorSpace)
-                                            .setImageExtent({ width, height })
-                                            .setImageArrayLayers(1)
-                                            .setImageUsage(vk::ImageUsageFlagBits::ColorAttachment)
-                                            .setImageSharingMode(vk::SharingMode::Exclusive)
-                                            .addQueueFamilyIndices(0)
-                                            .setPreTransform(vk::SurfaceTransformFlagBitsKHR::IdentityBitKHR)
-                                            .setCompositeAlpha(vk::CompositeAlphaFlagBitsKHR::OpaqueBitKHR)
-                                            .setPresentMode(vk::PresentModeKHR::FifoKHR)
-                                            .build());
+    auto [swapchain, swap_ret] = device.functions.CreateSwapchainKHR(vk::SwapchainCreateInfoKHR{
+      .surface = device.surface,
+      .minImageCount = 3,
+      .imageFormat = device.swapchain_img_format,
+      .imageColorSpace = surf_formats[0].colorSpace,
+      .imageExtent = { width, height },
+      .imageArrayLayers = 1,
+      .imageUsage = vk::ImageUsageFlagBits::ColorAttachment,
+      .imageSharingMode = vk::SharingMode::Exclusive,
+      .pQueueFamilyIndices = nullptr,
+      .preTransform = vk::SurfaceTransformFlagBitsKHR::IdentityBitKHR,
+      .compositeAlpha = vk::CompositeAlphaFlagBitsKHR::OpaqueBitKHR,
+      .presentMode = vk::PresentModeKHR::FifoKHR,
+    });
     check_res(swap_ret, "Unable to create Swapchain");
 
     device.swapchain = swapchain;
@@ -214,13 +217,11 @@ void setup_swapchain(DeviceContext& device)
 
     for (auto& image : swap_images_ret.value()) {
         device.swapchain_images.push_back(image);
-        auto [view, ret] = device.functions.CreateImageView(
-          vk::ImageViewCreateInfoBuilder{}
-            .setImage(image)
-            .setViewType(vk::ImageViewType::e2D)
-            .setFormat(device.swapchain_img_format)
-            .setSubresourceRange({ .aspectMask = vk::ImageAspectFlagBits::Color, .levelCount = 1, .layerCount = 1 })
-            .build());
+        auto [view, ret] = device.functions.CreateImageView(vk::ImageViewCreateInfo{
+          .image = image,
+          .viewType = vk::ImageViewType::e2D,
+          .format = device.swapchain_img_format,
+          .subresourceRange = { .aspectMask = vk::ImageAspectFlagBits::Color, .levelCount = 1, .layerCount = 1 } });
         check_res(ret, "Failed to create swapchain image view");
 
         device.swapchain_image_views.push_back(view);
@@ -230,29 +231,29 @@ void setup_swapchain(DeviceContext& device)
 void setup_renderpass(DeviceContext& device)
 {
     auto rp_ret = device.functions.CreateRenderPass(
-      vk::RenderPassCreateInfoBuilder{}
-        .addAttachments({
-          .format = device.swapchain_img_format,
-          .samples = vk::SampleCountFlagBits::e1,
-          .loadOp = vk::AttachmentLoadOp::Clear,
-          .storeOp = vk::AttachmentStoreOp::Store,
-          .stencilLoadOp = vk::AttachmentLoadOp::DontCare,
-          .stencilStoreOp = vk::AttachmentStoreOp::DontCare,
-          .initialLayout = vk::ImageLayout::Undefined,
-          .finalLayout = vk::ImageLayout::PresentSrcKHR,
-        })
-        .addSubpasses(vk::SubpassDescriptionBuilder{}
-                        .setPipelineBindPoint(vk::PipelineBindPoint::Graphics)
-                        .addColorAttachments({ .attachment = 0, .layout = vk::ImageLayout::ColorAttachmentOptimal })
-                        .build())
-        .addDependencies({
-          .srcSubpass = vk::SUBPASS_EXTERNAL,
-          .dstSubpass = 0,
-          .srcStageMask = vk::PipelineStageFlagBits::ColorAttachmentOutput,
-          .dstStageMask = vk::PipelineStageFlagBits::ColorAttachmentOutput,
-          .dstAccessMask = vk::AccessFlagBits::ColorAttachmentRead | vk::AccessFlagBits::ColorAttachmentWrite,
-        })
-        .build());
+      vk::RenderPassCreateInfo{}
+        .setAttachments({ vk::AttachmentDescription{}
+                            .setFormat(device.swapchain_img_format)
+                            .setSamples(vk::SampleCountFlagBits::e1)
+                            .setLoadOp(vk::AttachmentLoadOp::Clear)
+                            .setStoreOp(vk::AttachmentStoreOp::Store)
+                            .setStencilLoadOp(vk::AttachmentLoadOp::DontCare)
+                            .setStencilStoreOp(vk::AttachmentStoreOp::DontCare)
+                            .setInitialLayout(vk::ImageLayout::Undefined)
+                            .setFinalLayout(vk::ImageLayout::PresentSrcKHR) })
+
+        .setSubpasses({ vk::SubpassDescription{}
+                          .setPipelineBindPoint(vk::PipelineBindPoint::Graphics)
+                          .setColorAttachments(
+                            { vk::AttachmentReference{}.setAttachment(0).setLayout(vk::ImageLayout::ColorAttachmentOptimal) }) })
+
+        .setDependencies(
+          { vk::SubpassDependency{}
+              .setSrcSubpass(vk::SUBPASS_EXTERNAL)
+              .setDstSubpass(0)
+              .setSrcStageMask(vk::PipelineStageFlagBits::ColorAttachmentOutput)
+              .setDstStageMask(vk::PipelineStageFlagBits::ColorAttachmentOutput)
+              .setDstAccessMask(vk::AccessFlagBits::ColorAttachmentRead | vk::AccessFlagBits::ColorAttachmentWrite) }));
 
     check_res(rp_ret, "Failed to create renderpass");
     device.render_pass = rp_ret.value();
@@ -260,13 +261,12 @@ void setup_renderpass(DeviceContext& device)
 void create_framebuffers(DeviceContext& device)
 {
     for (auto& view : device.swapchain_image_views) {
-        auto ret = device.functions.CreateFramebuffer(vk::FramebufferCreateInfoBuilder{}
+        auto ret = device.functions.CreateFramebuffer(vk::FramebufferCreateInfo{}
                                                         .setRenderPass(device.render_pass)
-                                                        .addAttachments(view)
+                                                        .setAttachments({ view })
                                                         .setWidth(width)
                                                         .setHeight(height)
-                                                        .setLayers(1)
-                                                        .build());
+                                                        .setLayers(1));
         check_res(ret, "Failed to create framebuffer");
         device.framebuffers.push_back(ret.value());
     }
@@ -302,37 +302,37 @@ void create_pipeline(DeviceContext& device)
     check_res(pipeline_layout_ret, "Failed to create pipeline layout");
     device.pipeline_layout = pipeline_layout_ret.value();
 
+    float blend_constant[4] = { 0.f, 0.f, 0.f, 0.f };
+
     auto [pipelines, pipeline_ret] = device.functions.CreateGraphicsPipelines(
       nullptr,
-      { vk::GraphicsPipelineCreateInfoBuilder{}
-          .addStages({ { .stage = vk::ShaderStageFlagBits::Vertex, .module = vert, .pName = "main" },
-                       { .stage = vk::ShaderStageFlagBits::Fragment, .module = frag, .pName = "main" } })
-          .setVertexInputState({})
-          .setInputAssemblyState({ .topology = vk::PrimitiveTopology::TriangleList })
-          .setViewportState(vk::PipelineViewportStateCreateInfoBuilder{}
-                              .addViewports({ 0.f, 0.f, static_cast<float>(width), static_cast<float>(height), 0.f, 1.f })
-                              .addScissors({ .offset = { 0, 0 }, .extent = { width, height } })
-                              .build())
-          .setRasterizationState({ .polygonMode = vk::PolygonMode::Fill,
-                                   .cullMode = vk::CullModeFlagBits::Back,
-                                   .frontFace = vk::FrontFace::Clockwise,
-                                   .lineWidth = 1.f })
-          .setMultisampleState({ .rasterizationSamples = vk::SampleCountFlagBits::e1, .sampleShadingEnable = false })
-          .setColorBlendState(vk::PipelineColorBlendStateCreateInfoBuilder{}
+      { vk::GraphicsPipelineCreateInfo{}
+          .setStages(
+            { vk::PipelineShaderStageCreateInfo{}.setStage(vk::ShaderStageFlagBits::Vertex).setModule(vert).setPName("main"),
+              vk::PipelineShaderStageCreateInfo{}.setStage(vk::ShaderStageFlagBits::Fragment).setModule(frag).setPName("main") })
+          .setVertexInputState(vk::PipelineVertexInputStateCreateInfo{})
+          .setInputAssemblyState(vk::PipelineInputAssemblyStateCreateInfo{}.setTopology(vk::PrimitiveTopology::TriangleList))
+          .setViewportState(vk::PipelineViewportStateCreateInfo{}
+                              .setViewports({ { 0.f, 0.f, static_cast<float>(width), static_cast<float>(height), 0.f, 1.f } })
+                              .setScissors({ { .offset = { 0, 0 }, .extent = { width, height } } }))
+          .setRasterizationState(vk::PipelineRasterizationStateCreateInfo{}
+                                   .setPolygonMode(vk::PolygonMode::Fill)
+                                   .setCullMode(vk::CullModeFlagBits::Back)
+                                   .setFrontFace(vk::FrontFace::Clockwise)
+                                   .setLineWidth(1.f))
+          .setMultisampleState(vk::PipelineMultisampleStateCreateInfo{}
+                                 .setRasterizationSamples(vk::SampleCountFlagBits::e1)
+                                 .setSampleShadingEnable(false))
+          .setColorBlendState(vk::PipelineColorBlendStateCreateInfo{}
                                 .setLogicOpEnable(false)
-                                .setBlendConstants({ 0.f, 0.f, 0.f, 0.f })
-                                .addAttachments({ .blendEnable = false,
-                                                  .colorWriteMask = vk::ColorComponentFlagBits::R | vk::ColorComponentFlagBits::G |
-                                                                    vk::ColorComponentFlagBits::B | vk::ColorComponentFlagBits::A })
-                                .build())
-          .setDynamicState(vk::PipelineDynamicStateCreateInfoBuilder{}
-                             .addDynamicStates(vk::DynamicState::Viewport)
-                             .addDynamicStates(vk::DynamicState::Scissor)
-                             .build())
+                                .setAttachments({ vk::PipelineColorBlendAttachmentState{}.setBlendEnable(false).setColorWriteMask(
+                                  vk::ColorComponentFlagBits::R | vk::ColorComponentFlagBits::G | vk::ColorComponentFlagBits::B |
+                                  vk::ColorComponentFlagBits::A) })
+                                .setBlendConstants(blend_constant))
+          .setDynamicState(
+            vk::PipelineDynamicStateCreateInfo{}.setDynamicStates({ vk::DynamicState::Viewport, vk::DynamicState::Scissor }))
           .setLayout(pipeline_layout_ret.value())
-          .setRenderPass(device.render_pass)
-          .build() },
-      nullptr);
+          .setRenderPass(device.render_pass) });
 
     check_res(pipeline_ret, "Failed to create graphipcs pipeline");
     device.pipeline = pipelines[0];
@@ -359,12 +359,10 @@ void create_command_buffers(DeviceContext& device)
         vk::Viewport viewport = { 0.f, 0.f, static_cast<float>(width), static_cast<float>(height), 0.f, 1.f };
         vk::Rect2D scissor = { .offset = { 0, 0 }, .extent = { width, height } };
         funcs
-          .BeginRenderPass(vk::RenderPassBeginInfoBuilder{}
-                             .setRenderPass(device.render_pass)
-                             .setFramebuffer(device.framebuffers[i])
-                             .setRenderArea(scissor)
-                             .addClearValues({ .color = { { 0.f, 0.f, 0.f, 1.f } } })
-                             .build(),
+          .BeginRenderPass(vk::RenderPassBeginInfo{ .renderPass = device.render_pass,
+                                                    .framebuffer = device.framebuffers[i],
+                                                    .renderArea = scissor }
+                             .setClearValues({ vk::ClearValue{ .color = { { 0.f, 0.f, 0.f, 1.f } } } }),
                            vk::SubpassContents::Inline)
           .BindPipeline(vk::PipelineBindPoint::Graphics, device.pipeline)
           .SetViewport(0, viewport)
@@ -379,7 +377,6 @@ void create_command_buffers(DeviceContext& device)
 
 void setup_sync_objects(DeviceContext& device)
 {
-
     device.fences.resize(device.image_count);
     device.available_semaphores.resize(device.image_count);
     device.finished_semaphores.resize(device.image_count);
@@ -430,19 +427,18 @@ void draw_frame(DeviceContext& device)
         std::cerr << "failed to acquire swapchain image. Error " << vk::to_string(image_index_ret.raw_result()) << "\n";
     }
 
-    vk::SubmitInfoBuilder submit_info{};
-    submit_info.addWaitSemaphores(device.available_semaphores[device.current_frame])
-      .addWaitDstStageMask(vk::PipelineStageFlagBits::ColorAttachmentOutput)
-      .addCommandBuffers(device.cmd_buffers[image_index_ret.value()])
-      .addSignalSemaphores(device.finished_semaphores[device.current_frame]);
-    auto submit_ret = device.queue_functions.Submit(submit_info.build(), device.fences[device.current_frame]);
+    auto submit_ret = device.queue_functions.Submit(vk::SubmitInfo{}
+                                                      .setWaitSemaphores({ device.available_semaphores[device.current_frame] })
+                                                      .setWaitDstStageMask({ vk::PipelineStageFlagBits::ColorAttachmentOutput })
+                                                      .setCommandBuffers({ device.cmd_buffers[image_index_ret.value()] })
+                                                      .setSignalSemaphores({ device.finished_semaphores[device.current_frame] }),
+                                                    device.fences[device.current_frame]);
     check_res(submit_ret, "Failed to submit command buffer");
 
-    auto present_ret = device.queue_functions.PresentKHR(vk::PresentInfoKHRBuilder{}
-                                                           .addWaitSemaphores(device.finished_semaphores[device.current_frame])
-                                                           .addSwapchains(device.swapchain)
-                                                           .addImageIndices(image_index_ret.value())
-                                                           .build());
+    auto present_ret = device.queue_functions.PresentKHR(vk::PresentInfoKHR{}
+                                                           .setWaitSemaphores({ device.finished_semaphores[device.current_frame] })
+                                                           .setSwapchains({ device.swapchain })
+                                                           .setImageIndices({ image_index_ret.value() }));
     if (present_ret == vk::Result::ErrorOutOfDateKHR || present_ret == vk::Result::SuboptimalKHR) {
         return recreate_swapchain(device);
     }
