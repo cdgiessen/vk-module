@@ -888,6 +888,17 @@ class Function:
             file.write(f'{param.get_parameter_decl(use_references=False)}')
         file.write(");\n")
 
+    def print_basic_pfn_func_decl(self, file):
+        if self.alias is not None:
+            file.write(f'using PFN_{self.name} = PFN_{self.alias};\n')
+            return
+        file.write(f'using PFN_{self.name} = {self.return_type} (*) (')
+        for param in self.parameters:
+            if param != self.parameters[0]:
+                file.write(', ')                
+            file.write(f'{param.get_raw_xml()}')
+        file.write(");\n")
+
     def get_return_type(self, replace_list=None, full_return_type=None):
         print_function_name = self.name[2:]
         if replace_list is not None:
@@ -1475,7 +1486,7 @@ def print_c_interop(bindings):
         c_interop.write('} // namespace vk\n// clang-format on\n')
 
 def print_basic_bindings(bindings):
-    with open(f'vulkan/vulkan.h', 'w') as basic_bindings:
+    with open(f'include/vulkan/vulkan.h', 'w') as basic_bindings:
         basic_bindings.write('#pragma once\n// clang-format off\n')
         PrintConsecutivePlatforms(basic_bindings, api_constants.values(), 'print_basic')
         PrintConsecutivePlatforms(basic_bindings, bindings.base_types, 'print_vk_base')
@@ -1488,6 +1499,7 @@ def print_basic_bindings(bindings):
         basic_bindings.write('struct VkDeviceMemoryReportCallbackDataEXT;\n')
         PrintConsecutivePlatforms(basic_bindings, bindings.func_pointers, 'print_basic')
         PrintConsecutivePlatforms(basic_bindings, bindings.structures, 'print_basic')
+        PrintConsecutivePlatforms(basic_bindings, bindings.functions, 'print_basic_pfn_func_decl')
         
         basic_bindings.write('\n// clang-format on\n')
 
