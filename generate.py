@@ -880,6 +880,18 @@ class Function:
         file.write(f'    pfn_{self.name[2:]} = ')
         file.write(f'reinterpret_cast<detail::{self.pfn_type}>({gpa_name}({gpa_val},\"{self.name}\"));\n')
 
+    def print_extern_decl(self, file):
+        file.write(f'extern PFN_{self.name} {self.name};\n')
+
+    def print_function_def(self, file):
+        file.write(f'PFN_{self.name} {self.name};\n')
+
+    def print_init_global_functions(self, file, dispatch_name):
+        file.write(f'    pfn_{self.name} = reinterpret_cast<PFN_{self.name}>(vkGet{dispatch_name}ProcAddr({dispatch_name}, \"{self.name}\"));\n')
+        
+    def print_init_dispatch_table(self, file, dispatch_name):
+        file.write(f'    table.{self.name} = reinterpret_cast<PFN_{self.name}>(vkGet{dispatch_name}ProcAddr({dispatch_name}, \"{self.name}\"));\n')
+        
     def print_pfn_func_decl(self, file):
         if self.alias is not None:
             file.write(f'using {self.pfn_type} = PFN_{TrimVkFromType(self.alias)};\n')
@@ -1244,13 +1256,25 @@ class DispatchTable:
         file.write('}\n')
         file.write('};\n')
 
-    def print_basic(self, file):
+    def print_extern_decl(self, file):
+        PrintConsecutivePlatforms(file, self.functions.values(), 'print_extern_decl')
+
+    def print_function_def(self, file):
+        PrintConsecutivePlatforms(file, self.functions.values(), 'print_function_def')
+        
+    def print_init_global_functions(self, file):
+        file.write(f'void vkInitialize{self.name}Functions (Vk{self.name} {self.name}) {{\n')
+        PrintConsecutivePlatforms(file, self.functions.values(), 'print_init_global_functions', self.name)
+        file.write('};\n')
+        
+    def print_dispatch_table(self, file):
         file.write(f'struct Vk{self.name}DispatchTable {{\n')
         PrintConsecutivePlatforms(file, self.functions.values(), 'print_basic_pfn_variable_decl')
         file.write('};\n')
-        file.write(f'void vkInitialize{self.name}DispatchTable (PFN_vkGet{self.name}ProcAddr vkGet{self.name}ProcAddr, Vk{self.name} {self.name}, Vk{self.name}DispatchTable & table) {{\n')
-        for function in self.functions.values():
-            file.write(f'    table.{function.name} = reinterpret_cast<PFN_{function.name}>(vkGet{self.name}ProcAddr({self.name}, \"{function.name}\"));\n')
+
+    def print_init_dispatch_table(self, file):
+        file.write(f'void vkInitialize{self.name}DispatchTable (Vk{self.name} {self.name}, Vk{self.name}DispatchTable & table) {{\n')
+        PrintConsecutivePlatforms(file, self.functions.values(), 'print_init_dispatch_table', self.name)
         file.write('};\n')
 
 
@@ -1514,11 +1538,32 @@ def print_basic_bindings(bindings):
         PrintConsecutivePlatforms(vulkan_core, bindings.func_pointers, 'print_basic')
         PrintConsecutivePlatforms(vulkan_core, bindings.structures, 'print_basic')
         PrintConsecutivePlatforms(vulkan_core, bindings.functions, 'print_basic_pfn_func_decl')
+        [ table.print_extern_decl(vulkan_core) for table in bindings.dispatch_tables ] 
         for dispatch_table in bindings.dispatch_tables:
-            if dispatch_table.name in ['Instance', 'Device']:
-                dispatch_table.print_basic(vulkan_core)
+            if dispatch_table.name in ['Device']:
+                dispatch_table.print_dispatch_table(vulkan_core)
         vulkan_core.write(vulkan_simple_cpp_forward_declaration)
+
+        vulkan_core.write('#if defined(VULKAN_CPP_IMPLEMENTATION)\n')
+        vulkan_core.write('#include "vulkan.cpp"\n')
+        vulkan_core.write('#endif //defined(VULKAN_CPP_IMPLEMENTATION)\n')
+
         vulkan_core.write('\n// clang-format on\n')
+
+    with open(f'include/vulkan/vulkan.cpp', 'w') as vulkan_impl:
+        vulkan_impl.write('#include "vulkan.h"\n// clang-format off\n')
+        vulkan_impl.write(vulkan_simple_cpp_definition)
+        for dispatch_table in bindings.dispatch_tables:
+            if dispatch_table.name == 'Global':
+                dispatch_table.print_function_def(vulkan_impl)
+            elif dispatch_table.name == 'Instance':
+                dispatch_table.print_function_def(vulkan_impl)
+                dispatch_table.print_init_global_functions(vulkan_impl)
+            elif dispatch_table.name == 'Device':
+                dispatch_table.print_init_global_functions(vulkan_impl)
+                dispatch_table.print_init_dispatch_table(vulkan_impl)
+        vulkan_impl.write('\n// clang-format on\n')
+
 
 
 def main():

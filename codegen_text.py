@@ -469,17 +469,78 @@ private:
 
 '''
 
-
 vulkan_simple_cpp_forward_declaration = '''
+// This function finds the Vulkan-Loader (vulkan-1.dll, libvulkan.so, libvulkan.dylib, etc) on a system, loads it,
+// and loads the follwing functions: 
+//  * vkGetInstanceProcAddr
+//  * vkCreateInstance
+//  * vkEnumerateInstanceExtensionProperties
+//  * vkEnumerateInstanceLayerProperties
+//  * vkEnumerateInstanceVersion
+// 
+// Note:
+// This function must be called before all other vulkan calls! 
+//
+// Return Codes:
+// VK_SUCCESS -- Successful initialization & loading of functions
+// VK_ERROR_INITIALIZATION_FAILED -- failure [unable to find Vulkan-Loader]
+// 
+// Optional Parameter:
+// PFN_vkGetInstanceProcAddr pfn_vkGetInstanceProcAddr = VK_NULL_HANDLE
+VkResult vkInitializeLoaderLibrary(PFN_vkGetInstanceProcAddr pfn_vkGetInstanceProcAddr = VK_NULL_HANDLE);
 
-#if defined(VULKAN_DEFINE_LIBRARY_LOADER)
+// Close the Vulkan-Loader and assigns VK_NULL_HANDLE to vkGetInstanceProcAddr
+// 
+// Note:
+// After this function is called, no further vulkan calls can be made, except for `vkInitializeLoaderLibrary()`
+void vkCloseLoaderLibrary();
+
+// Initialize the instance and physical device functions into the global function pointers
+// (all functions which take a VkInstance or VkPhysicalDevice as the first parameter)
+//
+// Note: This must only be called after the application has created a valid VkInstance with vkCreateInstance
+// 
+// Parameter:
+// VkInstance instance
+// The VkInstance handle which the application has created. Must not be VK_NULL_HANDLE
+void vkInitializeInstanceFunctions(VkInstance instance);
+
+// Loads device functions into the global function pointers
+//
+// Notes: 
+//  * This function must not be used for any application which creates multiple VkDevices. 
+//    Instead, the application should use a VkDeviceDispatchTable per device created.
+//  * This must only be called after the application has created a valid VkDevice with vkCreateDevice
+// 
+// Parameter:
+// VkDevice device
+// The VkDevice handle which the application has created. Must not be VK_NULL_HANDLE
+void vkInitializeGlobalDeviceFunctions(VkDevice device);
+
+// Loads device functions into the provided VkDeviceDispatchTable
+//
+// Notes: 
+//  * 
+//  * This must only be called after the application has created a valid VkDevice with vkCreateDevice
+// 
+// Parameters:
+//  * VkDevice device
+// The VkDevice handle which the application has created. Must not be VK_NULL_HANDLE
+//  * VkDeviceDispatchTable& table
+// The table in which holds all loaded device function pointers.
+void vkInitializeGlobalDeviceFunctions(VkDevice device, VkDeviceDispatchTable& table);
+
+
+'''
+
+vulkan_simple_cpp_definition = '''
 
 #if defined(_WIN32)
-    typedef struct HINSTANCE__ * HINSTANCE;
+    using HINSTANCE = struct HINSTANCE__ * HINSTANCE;
     #if defined( _WIN64 )
-    typedef int64_t( __stdcall * FARPROC )();
+    using FARPROC = int64_t( __stdcall * )();
     #else
-    typedef int( __stdcall * FARPROC )();
+    using FARPROC = typedef int( __stdcall * )();
     #endif
     extern "C" __declspec( dllimport ) HINSTANCE __stdcall LoadLibraryA( char const * lpLibFileName );
     extern "C" __declspec( dllimport ) int __stdcall FreeLibrary( HINSTANCE hLibModule );
@@ -488,54 +549,61 @@ vulkan_simple_cpp_forward_declaration = '''
     #include <dlfcn.h>
 #endif
 
-struct VulkanLibrary {
 #if defined(__linux__) || defined(__APPLE__)
-    void *library = nullptr;
+void *library = nullptr;
 #elif defined(_WIN32)
-    ::HINSTANCE library = nullptr;
+::HINSTANCE library = nullptr;
 #endif
 
-    PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr = nullptr;
-
-    template <typename T>
-    void LoadFunction(T& func_dest, const char *func_name) {
+void* LibraryLoadFunction(const char* name) {
 #if defined(__linux__) || defined(__APPLE__)
-        func_dest = reinterpret_cast<T>(dlsym(library, func_name));
+    return dlsym(library, name);
 #elif defined(_WIN32)
-        func_dest = reinterpret_cast<T>(::GetProcAddress(library, func_name));
+    return ::GetProcAddress(library, name);
 #endif
-    }
-
-    [[nodiscard]] bool is_init() const noexcept { return vkGetInstanceProcAddr != 0; }
-
+}
+void LoadGetInstanceProcAddr(){
+    vkGetInstanceProcAddr = reinterpret_cast<PFN_vkGetInstanceProcAddr>(LibraryLoadFunction("vkGetInstanceProcAddr"));
+}
+void LoadGlobalFunctions() {
+    if (vkGetInstanceProcAddr == VK_NULL_HANDLE) return;
+    vkCreateInstance = reinterpret_cast<PFN_vkCreateInstance>(vkGetInstanceProcAddr(VK_NULL_HANDLE, "vkCreateInstance"));
+    vkEnumerateInstanceExtensionProperties = reinterpret_cast<PFN_vkEnumerateInstanceExtensionProperties>(vkGetInstanceProcAddr(VK_NULL_HANDLE, "vkEnumerateInstanceExtensionProperties"));
+    vkEnumerateInstanceLayerProperties = reinterpret_cast<PFN_vkEnumerateInstanceLayerProperties>(vkGetInstanceProcAddr(VK_NULL_HANDLE, "vkEnumerateInstanceLayerProperties"));
+    vkEnumerateInstanceVersion = reinterpret_cast<PFN_vkEnumerateInstanceVersion>(vkGetInstanceProcAddr(VK_NULL_HANDLE, "vkEnumerateInstanceVersion"));
 }
 
-inline VkResult VulkanLibraryInitialize(VulkanLibrary& library){
+VkResult vkInitializeLoaderLibrary(PFN_vkGetInstanceProcAddr pfn_vkGetInstanceProcAddr){
+    if(pfn_vkGetInstanceProcAddr != VK_NULL_HANDLE){
+        vkGetInstanceProcAddr = pfn_vkGetInstanceProcAddr;
+        LoadGlobalFunctions();
+        return VkResult::Success;
+    }
+
 #if defined(__linux__)
-    library.library = dlopen("libvulkan.so", RTLD_NOW | RTLD_LOCAL);
-    if (!library.library) library.library = dlopen("libvulkan.so.1", RTLD_NOW | RTLD_LOCAL);
+    library = dlopen("libvulkan.so", RTLD_NOW | RTLD_LOCAL);
+    if (!library) library = dlopen("libvulkan.so.1", RTLD_NOW | RTLD_LOCAL);
 #elif defined(__APPLE__)
-    library.library = dlopen("libvulkan.dylib", RTLD_NOW | RTLD_LOCAL);
+    library = dlopen("libvulkan.dylib", RTLD_NOW | RTLD_LOCAL);
 #elif defined(_WIN32)
-    library.library = ::LoadLibraryA("vulkan-1.dll");
+    library = ::LoadLibraryA("vulkan-1.dll");
 #endif
-    if (library.library == 0) return VkResult::VK_ERROR_INITIALIZATION_FAILED;
-    library.LoadFunction(library.vkGetInstanceProcAddr, "vkGetInstanceProcAddr");
-    if (library.vkGetInstanceProcAddr == nullptr) return VkResult::VK_ERROR_INITIALIZATION_FAILED;
+    if (library == 0) return VkResult::VK_ERROR_INITIALIZATION_FAILED;
+    LoadGetInstanceProcAddr();
+    LoadGlobalFunctions();
+    if (vkGetInstanceProcAddr == nullptr) return VkResult::VK_ERROR_INITIALIZATION_FAILED;
     return VkResult::VK_SUCCESS;
 }
 
-inline void VulkanLibraryClose(VulkanLibrary& library){
-    if (library.library != nullptr) {
+void vkCloseLoaderLibrary(){
+    if (library != nullptr) {
 #if defined(__linux__) || defined(__APPLE__)
-        dlclose(library.library);
+        dlclose(library);
 #elif defined(_WIN32)
-        ::FreeLibrary(library.library);
+        ::FreeLibrary(library);
 #endif
-        library.library = 0;
-        library.vkGetInstanceProcAddr = VK_NULL_HANDLE;
+        library = 0;
+        vkGetInstanceProcAddr = VK_NULL_HANDLE;
     }
 }
-#endif
-
 '''
