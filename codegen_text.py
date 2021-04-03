@@ -468,3 +468,74 @@ private:
 };
 
 '''
+
+
+vulkan_simple_cpp_forward_declaration = '''
+
+#if defined(VULKAN_DEFINE_LIBRARY_LOADER)
+
+#if defined(_WIN32)
+    typedef struct HINSTANCE__ * HINSTANCE;
+    #if defined( _WIN64 )
+    typedef int64_t( __stdcall * FARPROC )();
+    #else
+    typedef int( __stdcall * FARPROC )();
+    #endif
+    extern "C" __declspec( dllimport ) HINSTANCE __stdcall LoadLibraryA( char const * lpLibFileName );
+    extern "C" __declspec( dllimport ) int __stdcall FreeLibrary( HINSTANCE hLibModule );
+    extern "C" __declspec( dllimport ) FARPROC __stdcall GetProcAddress( HINSTANCE hModule, const char * lpProcName );
+#elif defined(__linux__) || defined(__APPLE__)
+    #include <dlfcn.h>
+#endif
+
+struct VulkanLibrary {
+#if defined(__linux__) || defined(__APPLE__)
+    void *library = nullptr;
+#elif defined(_WIN32)
+    ::HINSTANCE library = nullptr;
+#endif
+
+    PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr = nullptr;
+
+    template <typename T>
+    void LoadFunction(T& func_dest, const char *func_name) {
+#if defined(__linux__) || defined(__APPLE__)
+        func_dest = reinterpret_cast<T>(dlsym(library, func_name));
+#elif defined(_WIN32)
+        func_dest = reinterpret_cast<T>(::GetProcAddress(library, func_name));
+#endif
+    }
+
+    [[nodiscard]] bool is_init() const noexcept { return vkGetInstanceProcAddr != 0; }
+
+}
+
+inline VkResult VulkanLibraryInitialize(VulkanLibrary& library){
+#if defined(__linux__)
+    library.library = dlopen("libvulkan.so", RTLD_NOW | RTLD_LOCAL);
+    if (!library.library) library.library = dlopen("libvulkan.so.1", RTLD_NOW | RTLD_LOCAL);
+#elif defined(__APPLE__)
+    library.library = dlopen("libvulkan.dylib", RTLD_NOW | RTLD_LOCAL);
+#elif defined(_WIN32)
+    library.library = ::LoadLibraryA("vulkan-1.dll");
+#endif
+    if (library.library == 0) return VkResult::VK_ERROR_INITIALIZATION_FAILED;
+    library.LoadFunction(library.vkGetInstanceProcAddr, "vkGetInstanceProcAddr");
+    if (library.vkGetInstanceProcAddr == nullptr) return VkResult::VK_ERROR_INITIALIZATION_FAILED;
+    return VkResult::VK_SUCCESS;
+}
+
+inline void VulkanLibraryClose(VulkanLibrary& library){
+    if (library.library != nullptr) {
+#if defined(__linux__) || defined(__APPLE__)
+        dlclose(library.library);
+#elif defined(_WIN32)
+        ::FreeLibrary(library.library);
+#endif
+        library.library = 0;
+        library.vkGetInstanceProcAddr = VK_NULL_HANDLE;
+    }
+}
+#endif
+
+'''

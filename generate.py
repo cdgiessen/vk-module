@@ -872,6 +872,9 @@ class Function:
     
     def print_pfn_variable_decl(self, file):
         file.write(f'    detail::{self.pfn_type} {self.pfn_name} = nullptr;\n')
+    
+    def print_basic_pfn_variable_decl(self, file):
+        file.write(f'    PFN_{self.name} {self.name} = nullptr;\n')
 
     def print_get_pfn_statement(self, file, gpa_name, gpa_val):
         file.write(f'    pfn_{self.name[2:]} = ')
@@ -1241,6 +1244,17 @@ class DispatchTable:
         file.write('}\n')
         file.write('};\n')
 
+    def print_basic(self, file):
+        file.write(f'struct Vk{self.name}DispatchTable {{\n')
+        PrintConsecutivePlatforms(file, self.functions.values(), 'print_basic_pfn_variable_decl')
+        file.write('};\n')
+        file.write(f'void vkInitialize{self.name}DispatchTable (PFN_vkGet{self.name}ProcAddr vkGet{self.name}ProcAddr, Vk{self.name} {self.name}, Vk{self.name}DispatchTable & table) {{\n')
+        for function in self.functions.values():
+            file.write(f'    table.{function.name} = reinterpret_cast<PFN_{function.name}>(vkGet{self.name}ProcAddr({self.name}, \"{function.name}\"));\n')
+        file.write('};\n')
+
+
+
 class DispatchableHandleDispatchTable:
     def __init__(self, name, dispatch_type, replace_list, functions):
         self.name = name
@@ -1486,22 +1500,25 @@ def print_c_interop(bindings):
         c_interop.write('} // namespace vk\n// clang-format on\n')
 
 def print_basic_bindings(bindings):
-    with open(f'include/vulkan/vulkan.h', 'w') as basic_bindings:
-        basic_bindings.write('#pragma once\n// clang-format off\n')
-        PrintConsecutivePlatforms(basic_bindings, api_constants.values(), 'print_basic')
-        PrintConsecutivePlatforms(basic_bindings, bindings.base_types, 'print_vk_base')
-        PrintConsecutivePlatforms(basic_bindings, bindings.enum_dict.values(), 'print_basic')
-        PrintConsecutivePlatforms(basic_bindings, bindings.bitmask_dict.values(), 'print_basic')
-        basic_bindings.write(bitmask_flags_macro + '\n')
-        PrintConsecutivePlatforms(basic_bindings, bindings.flags_dict.values(), 'print_basic')
-        [ handle.print_vk_handle(basic_bindings) for handle in bindings.handles.values() ]
-        basic_bindings.write('struct VkDebugUtilsMessengerCallbackDataEXT;\n')
-        basic_bindings.write('struct VkDeviceMemoryReportCallbackDataEXT;\n')
-        PrintConsecutivePlatforms(basic_bindings, bindings.func_pointers, 'print_basic')
-        PrintConsecutivePlatforms(basic_bindings, bindings.structures, 'print_basic')
-        PrintConsecutivePlatforms(basic_bindings, bindings.functions, 'print_basic_pfn_func_decl')
-        
-        basic_bindings.write('\n// clang-format on\n')
+    with open(f'include/vulkan/vulkan.h', 'w') as vulkan_core:
+        vulkan_core.write('#pragma once\n// clang-format off\n')
+        PrintConsecutivePlatforms(vulkan_core, api_constants.values(), 'print_basic')
+        PrintConsecutivePlatforms(vulkan_core, bindings.base_types, 'print_vk_base')
+        PrintConsecutivePlatforms(vulkan_core, bindings.enum_dict.values(), 'print_basic')
+        PrintConsecutivePlatforms(vulkan_core, bindings.bitmask_dict.values(), 'print_basic')
+        vulkan_core.write(bitmask_flags_macro + '\n')
+        PrintConsecutivePlatforms(vulkan_core, bindings.flags_dict.values(), 'print_basic')
+        [ handle.print_vk_handle(vulkan_core) for handle in bindings.handles.values() ]
+        vulkan_core.write('struct VkDebugUtilsMessengerCallbackDataEXT;\n')
+        vulkan_core.write('struct VkDeviceMemoryReportCallbackDataEXT;\n')
+        PrintConsecutivePlatforms(vulkan_core, bindings.func_pointers, 'print_basic')
+        PrintConsecutivePlatforms(vulkan_core, bindings.structures, 'print_basic')
+        PrintConsecutivePlatforms(vulkan_core, bindings.functions, 'print_basic_pfn_func_decl')
+        for dispatch_table in bindings.dispatch_tables:
+            if dispatch_table.name in ['Instance', 'Device']:
+                dispatch_table.print_basic(vulkan_core)
+        vulkan_core.write(vulkan_simple_cpp_forward_declaration)
+        vulkan_core.write('\n// clang-format on\n')
 
 
 def main():
