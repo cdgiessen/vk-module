@@ -101,17 +101,19 @@ class MacroDefine:
     def __init__(self, node):
         self.should_print = True
         self.name = node.find("name")
-        self.text = ''
-        for t in node.itertext():
-            if t in ['VK_API_VERSION', 'VK_API_VERSION_1_0', 'VK_API_VERSION_1_1', \
-                'VK_API_VERSION_1_2', 'VK_HEADER_VERSION', 'VK_HEADER_VERSION_COMPLETE']:
-                self.should_print = False
-            self.text += t
-        self.text += '\n'
+        self.text = ''.join(node.itertext())
 
     def print_base(self, file):
-        if self.should_print:
-            file.write(self.text)
+        text = ''
+        should_print = True
+        for t in self.text.itertext():
+            if t in ['VK_API_VERSION', 'VK_API_VERSION_1_0', 'VK_API_VERSION_1_1', \
+                'VK_API_VERSION_1_2', 'VK_HEADER_VERSION', 'VK_HEADER_VERSION_COMPLETE']:
+                should_print = False
+            text += t
+        text += '\n'
+        if should_print:
+            file.write(text)
     
     def get_text(self):
         return self.text
@@ -1544,7 +1546,7 @@ def print_basic_bindings(bindings):
     with open(f'include/vulkan/vulkan.h', 'w') as vulkan_core:
         vulkan_core.write('#pragma once\n// clang-format off\n')
         for macro in bindings.macro_defines:
-            vulkan_core.write(f'{macro.get_text()}\n')
+            vulkan_core.write(f'{macro.get_text()}\n\n')
         PrintConsecutivePlatforms(vulkan_core, api_constants.values(), 'print_basic')
         PrintConsecutivePlatforms(vulkan_core, bindings.base_types, 'print_vk_base')
         PrintConsecutivePlatforms(vulkan_core, bindings.enum_dict.values(), 'print_basic')
