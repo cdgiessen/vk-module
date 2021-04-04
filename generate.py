@@ -58,6 +58,11 @@ def TrimVkFromPFN(in_string):
 def TrimVkFromAll(in_string):
     return TrimVkFromType(TrimVkFromPFN(in_string))
 
+class PlatformRequires:
+    def __init__(self, node):
+        self.name = node.get('name')
+        self.requires = node.get('requires')
+
 class ApiConstant:
     def __init__(self, node):
         self.name = node.get('name')
@@ -768,11 +773,16 @@ class Structure:
             should_init = self.category == 'struct'
             file.write(f'{self.category} {self.name} {{\n')
             for member in self.members:
-                file.write(f'    {member.get_raw_xml()}')
+                if self.name == "VkAccelerationStructureInstanceKHR":
+                    file.write(f'    {member.get_raw_xml().replace("VkGeometryInstanceFlagsKHR", "uint32_t")}')
+                else:
+                    file.write(f'    {member.get_raw_xml()}')
                 if member.name == 'sType' and member.sType_value is not None:
                     file.write(f' = VkStructureType::{member.sType_value};\n')
+                elif should_init:
+                    file.write('{};\n')
                 else:
-                    file.write(' {};\n')
+                    file.write(';\n')
             file.write('};\n')
 
     def print_static_asserts(self, file):
@@ -1312,6 +1322,7 @@ class BindingGenerator:
 
         self.platforms = {}
         self.default_values = {}
+        self.requires = []
         self.macro_defines = []
         self.base_types = []
         self.func_pointers = []
@@ -1343,7 +1354,9 @@ class BindingGenerator:
 
         for xml_type in root.find('types'):
             category = xml_type.get('category')
-            if category == 'define':
+            if category is None and xml_type.get('requires') is not None:
+                self.requires.append(PlatformRequires(xml_type))
+            elif category == 'define':
                 self.macro_defines.append(MacroDefine(xml_type))
             elif category == 'basetype':
                 base_type = BaseType(xml_type)
