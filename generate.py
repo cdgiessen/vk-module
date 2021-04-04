@@ -1,3 +1,16 @@
+# Copyright 2021 Charles Giessen (cdgiessen@gmail.com)
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
+# (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge,
+# publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do
+# so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+# FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import xml.etree.ElementTree
 import re
@@ -1482,9 +1495,9 @@ class BindingGenerator:
   
 
 def print_bindings(bindings):
-    with open(f'cpp20/vk_module.h', 'w') as vkm:
+    with open(f'module/vk_module.h', 'w') as vkm:
+        vkm.write(license_header)
         vkm.write(vk_module_file_header)
-        
         #basic definitions
         PrintConsecutivePlatforms(vkm, api_constants.values(), 'print_base')
         PrintConsecutivePlatforms(vkm, bindings.base_types, 'print_base')
@@ -1531,7 +1544,8 @@ def print_bindings(bindings):
         vkm.write('} // namespace vk\n// clang-format on\n')
 
 def print_c_interop(bindings):
-    with open(f'cpp20/vk_module_interop.h', 'w') as c_interop:
+    with open(f'module/vk_module_interop.h', 'w') as c_interop:
+        c_interop.write(license_header)
         c_interop.write('#pragma once\n// clang-format off\n')
         c_interop.write('#include <vulkan/vulkan.h>\n')
         c_interop.write('#include "vk_module.h"\n')
@@ -1544,6 +1558,7 @@ def print_c_interop(bindings):
 
 def print_basic_bindings(bindings):
     with open(f'include/vulkan/vulkan.h', 'w') as vulkan_core:
+        vulkan_core.write(license_header)
         vulkan_core.write('#pragma once\n// clang-format off\n')
         for macro in bindings.macro_defines:
             vulkan_core.write(f'{macro.get_text()}\n\n')
@@ -1572,6 +1587,7 @@ def print_basic_bindings(bindings):
         vulkan_core.write('\n// clang-format on\n')
 
     with open(f'include/vulkan/vulkan.cpp', 'w') as vulkan_impl:
+        vulkan_impl.write(license_header)
         vulkan_impl.write('#include "vulkan.h"\n// clang-format off\n')
         vulkan_impl.write(vulkan_simple_cpp_definition)
         for dispatch_table in bindings.dispatch_tables:
@@ -1601,6 +1617,7 @@ def main():
     print_basic_bindings(bindings)
 
     with open('tests/static_asserts.h', 'w') as static_asserts:
+        static_asserts.write(license_header)
         static_asserts.write('#pragma once\n')
         static_asserts.write('// clang-format off\n')
         static_asserts.write('#include "vk_module.h"\n')
