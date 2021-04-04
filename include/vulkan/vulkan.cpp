@@ -183,6 +183,10 @@ PFN_vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV vkGetPhysi
 PFN_vkGetPhysicalDeviceSurfacePresentModes2EXT vkGetPhysicalDeviceSurfacePresentModes2EXT;
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 PFN_vkCreateHeadlessSurfaceEXT vkCreateHeadlessSurfaceEXT;
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+PFN_vkAcquireWinrtDisplayNV vkAcquireWinrtDisplayNV;
+PFN_vkGetWinrtDisplayNV vkGetWinrtDisplayNV;
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 #if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
 PFN_vkCreateDirectFBSurfaceEXT vkCreateDirectFBSurfaceEXT;
 PFN_vkGetPhysicalDeviceDirectFBPresentationSupportEXT vkGetPhysicalDeviceDirectFBPresentationSupportEXT;
@@ -293,6 +297,10 @@ void vkInitializeInstanceFunctions (VkInstance Instance) {
     pfn_vkGetPhysicalDeviceSurfacePresentModes2EXT = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfacePresentModes2EXT>(vkGetInstanceProcAddr(Instance, "vkGetPhysicalDeviceSurfacePresentModes2EXT"));
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
     pfn_vkCreateHeadlessSurfaceEXT = reinterpret_cast<PFN_vkCreateHeadlessSurfaceEXT>(vkGetInstanceProcAddr(Instance, "vkCreateHeadlessSurfaceEXT"));
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    pfn_vkAcquireWinrtDisplayNV = reinterpret_cast<PFN_vkAcquireWinrtDisplayNV>(vkGetInstanceProcAddr(Instance, "vkAcquireWinrtDisplayNV"));
+    pfn_vkGetWinrtDisplayNV = reinterpret_cast<PFN_vkGetWinrtDisplayNV>(vkGetInstanceProcAddr(Instance, "vkGetWinrtDisplayNV"));
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 #if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
     pfn_vkCreateDirectFBSurfaceEXT = reinterpret_cast<PFN_vkCreateDirectFBSurfaceEXT>(vkGetInstanceProcAddr(Instance, "vkCreateDirectFBSurfaceEXT"));
     pfn_vkGetPhysicalDeviceDirectFBPresentationSupportEXT = reinterpret_cast<PFN_vkGetPhysicalDeviceDirectFBPresentationSupportEXT>(vkGetInstanceProcAddr(Instance, "vkGetPhysicalDeviceDirectFBPresentationSupportEXT"));

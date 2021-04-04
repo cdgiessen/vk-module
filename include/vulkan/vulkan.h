@@ -1,5 +1,47 @@
 #pragma once
 // clang-format off
+#define VK_MAKE_VERSION(major, minor, patch) \
+    ((((uint32_t)(major)) << 22) | (((uint32_t)(minor)) << 12) | ((uint32_t)(patch)))
+
+#define VK_VERSION_MAJOR(version) ((uint32_t)(version) >> 22)
+
+#define VK_VERSION_MINOR(version) (((uint32_t)(version) >> 12) & 0x3ff)
+
+#define VK_VERSION_PATCH(version) ((uint32_t)(version) & 0xfff)
+
+// DEPRECATED: This define has been removed. Specific version defines (e.g. VK_API_VERSION_1_0), or the VK_MAKE_VERSION macro, should be used instead.
+//#define VK_API_VERSION VK_MAKE_VERSION(1, 0, 0) // Patch version should always be set to 0
+
+// Vulkan 1.0 version number
+#define VK_API_VERSION_1_0 VK_MAKE_VERSION(1, 0, 0)// Patch version should always be set to 0
+
+// Vulkan 1.1 version number
+#define VK_API_VERSION_1_1 VK_MAKE_VERSION(1, 1, 0)// Patch version should always be set to 0
+
+// Vulkan 1.2 version number
+#define VK_API_VERSION_1_2 VK_MAKE_VERSION(1, 2, 0)// Patch version should always be set to 0
+
+// Version of this file
+#define VK_HEADER_VERSION 169
+
+// Complete version of this file
+#define VK_HEADER_VERSION_COMPLETE VK_MAKE_VERSION(1, 2, VK_HEADER_VERSION)
+
+
+#define VK_DEFINE_HANDLE(object) typedef struct object##_T* object;
+
+
+#if !defined(VK_DEFINE_NON_DISPATCHABLE_HANDLE)
+#if defined(__LP64__) || defined(_WIN64) || (defined(__x86_64__) && !defined(__ILP32__) ) || defined(_M_X64) || defined(__ia64) || defined (_M_IA64) || defined(__aarch64__) || defined(__powerpc64__)
+        #define VK_DEFINE_NON_DISPATCHABLE_HANDLE(object) typedef struct object##_T *object;
+#else
+        #define VK_DEFINE_NON_DISPATCHABLE_HANDLE(object) typedef uint64_t object;
+#endif
+#endif
+
+
+#define VK_NULL_HANDLE 0
+
 constexpr auto VK_MAX_PHYSICAL_DEVICE_NAME_SIZE = 256;
 constexpr auto VK_UUID_SIZE = 16;
 constexpr auto VK_LUID_SIZE = 8;
@@ -166,6 +208,7 @@ enum class VkDescriptorType : uint32_t {
     VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK_EXT = 1000138000,
     VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR = 1000150000,
     VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV = 1000165000,
+    VK_DESCRIPTOR_TYPE_MUTABLE_VALVE = 1000351000,
 };
 enum class VkDynamicState : uint32_t {
     VK_DYNAMIC_STATE_VIEWPORT = 0,
@@ -949,6 +992,7 @@ enum class VkStructureType : uint32_t {
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_CREATION_CACHE_CONTROL_FEATURES_EXT = 1000297000,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DIAGNOSTICS_CONFIG_FEATURES_NV = 1000300000,
     VK_STRUCTURE_TYPE_DEVICE_DIAGNOSTICS_CONFIG_CREATE_INFO_NV = 1000300001,
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ZERO_INITIALIZE_WORKGROUP_MEMORY_FEATURES_KHR = 1000325000,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_ENUMS_PROPERTIES_NV = 1000326000,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_ENUMS_FEATURES_NV = 1000326001,
     VK_STRUCTURE_TYPE_PIPELINE_FRAGMENT_SHADING_RATE_ENUM_STATE_CREATE_INFO_NV = 1000326002,
@@ -956,6 +1000,7 @@ enum class VkStructureType : uint32_t {
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_2_PROPERTIES_EXT = 1000332001,
     VK_STRUCTURE_TYPE_COPY_COMMAND_TRANSFORM_INFO_QCOM = 1000333000,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_ROBUSTNESS_FEATURES_EXT = 1000335000,
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_WORKGROUP_MEMORY_EXPLICIT_LAYOUT_FEATURES_KHR = 1000336000,
     VK_STRUCTURE_TYPE_COPY_BUFFER_INFO_2_KHR = 1000337000,
     VK_STRUCTURE_TYPE_COPY_IMAGE_INFO_2_KHR = 1000337001,
     VK_STRUCTURE_TYPE_COPY_BUFFER_TO_IMAGE_INFO_2_KHR = 1000337002,
@@ -969,6 +1014,8 @@ enum class VkStructureType : uint32_t {
     VK_STRUCTURE_TYPE_IMAGE_RESOLVE_2_KHR = 1000337010,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_4444_FORMATS_FEATURES_EXT = 1000340000,
     VK_STRUCTURE_TYPE_DIRECTFB_SURFACE_CREATE_INFO_EXT = 1000346000,
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MUTABLE_DESCRIPTOR_TYPE_FEATURES_VALVE = 1000351000,
+    VK_STRUCTURE_TYPE_MUTABLE_DESCRIPTOR_TYPE_CREATE_INFO_VALVE = 1000351002,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_PROPERTIES = 1000094000,
     VK_STRUCTURE_TYPE_BIND_BUFFER_MEMORY_INFO = 1000157000,
     VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_INFO = 1000157001,
@@ -1543,6 +1590,7 @@ enum class VkVendorId : uint32_t {
     VK_VENDOR_ID_KAZAN = 0x10003,
     VK_VENDOR_ID_CODEPLAY = 0x10004,
     VK_VENDOR_ID_MESA = 0x10005,
+    VK_VENDOR_ID_POCL = 0x10006,
 };
 enum class VkDriverId : uint32_t {
     VK_DRIVER_ID_AMD_PROPRIETARY = 1,
@@ -3766,9 +3814,9 @@ struct VkGeneratedCommandsInfoNV {
     VkDeviceSize                         preprocessOffset{};
     VkDeviceSize                         preprocessSize{};
     VkBuffer             sequencesCountBuffer{};
-    VkDeviceSize         sequencesCountOffset{};
+    VkDeviceSize                         sequencesCountOffset{};
     VkBuffer             sequencesIndexBuffer{};
-    VkDeviceSize         sequencesIndexOffset{};
+    VkDeviceSize                         sequencesIndexOffset{};
 };
 struct VkGeneratedCommandsMemoryRequirementsInfoNV {
     VkStructureType   sType = VkStructureType::VK_STRUCTURE_TYPE_GENERATED_COMMANDS_MEMORY_REQUIREMENTS_INFO_NV;
@@ -4949,10 +4997,10 @@ struct VkDeviceMemoryReportCallbackDataEXT {
     VkDeviceMemoryReportFlagsEXT       flags{};
     VkDeviceMemoryReportEventTypeEXT   type{};
     uint64_t                           memoryObjectId{};
-    VkDeviceSize       size{};
-    VkObjectType       objectType{};
-    uint64_t           objectHandle{};
-    uint32_t           heapIndex{};
+    VkDeviceSize                       size{};
+    VkObjectType                       objectType{};
+    uint64_t                           objectHandle{};
+    uint32_t                           heapIndex{};
 };
 struct VkImportMemoryHostPointerInfoEXT {
     VkStructureType   sType = VkStructureType::VK_STRUCTURE_TYPE_IMPORT_MEMORY_HOST_POINTER_INFO_EXT;
@@ -5140,7 +5188,7 @@ struct VkSubpassDependency2 {
     VkAccessFlags       srcAccessMask{};
     VkAccessFlags       dstAccessMask{};
     VkDependencyFlags   dependencyFlags{};
-    int32_t             viewOffset{};
+    int32_t                             viewOffset{};
 };
 using VkSubpassDependency2KHR = VkSubpassDependency2;
 struct VkRenderPassCreateInfo2 {
@@ -6218,7 +6266,7 @@ struct VkPipelineExecutableInternalRepresentationKHR {
     char                 name [ VK_MAX_DESCRIPTION_SIZE ]{};
     char                 description [ VK_MAX_DESCRIPTION_SIZE ]{};
     VkBool32             isText{};
-    size_t                 dataSize{};
+    size_t               dataSize{};
     void *  pData{};
 };
 struct VkPhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXT {
@@ -6290,8 +6338,8 @@ struct VkPipelineRasterizationLineStateCreateInfoEXT {
     const  void *                                                       pNext{};
     VkLineRasterizationModeEXT                                         lineRasterizationMode{};
     VkBool32                                                           stippledLineEnable{};
-    uint32_t                                           lineStippleFactor{};
-    uint16_t                                           lineStipplePattern{};
+    uint32_t                                                           lineStippleFactor{};
+    uint16_t                                                           lineStipplePattern{};
 };
 struct VkPhysicalDevicePipelineCreationCacheControlFeaturesEXT {
     VkStructureType   sType = VkStructureType::VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_CREATION_CACHE_CONTROL_FEATURES_EXT;
@@ -6486,14 +6534,14 @@ union VkDeviceOrHostAddressConstKHR {
 };
 struct VkAccelerationStructureGeometryTrianglesDataKHR {
     VkStructureType   sType = VkStructureType::VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR;
-    const  void *                                    pNext{};
+    const  void *                    pNext{};
     VkFormat                                        vertexFormat{};
     VkDeviceOrHostAddressConstKHR                   vertexData{};
     VkDeviceSize                                    vertexStride{};
     uint32_t                                        maxVertex{};
     VkIndexType                                     indexType{};
-    VkDeviceOrHostAddressConstKHR   indexData{};
-    VkDeviceOrHostAddressConstKHR   transformData{};
+    VkDeviceOrHostAddressConstKHR                   indexData{};
+    VkDeviceOrHostAddressConstKHR                   transformData{};
 };
 struct VkAccelerationStructureGeometryAabbsDataKHR {
     VkStructureType   sType = VkStructureType::VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_AABBS_DATA_KHR;
@@ -6524,9 +6572,9 @@ struct VkAccelerationStructureBuildGeometryInfoKHR {
     const  void *                                                         pNext{};
     VkAccelerationStructureTypeKHR                                       type{};
     VkBuildAccelerationStructureFlagsKHR                 flags{};
-    VkBuildAccelerationStructureModeKHR                                  mode{};
-    VkAccelerationStructureKHR                           srcAccelerationStructure{};
-    VkAccelerationStructureKHR                           dstAccelerationStructure{};
+    VkBuildAccelerationStructureModeKHR            mode{};
+    VkAccelerationStructureKHR                     srcAccelerationStructure{};
+    VkAccelerationStructureKHR                     dstAccelerationStructure{};
     uint32_t                                             geometryCount{};
     const  VkAccelerationStructureGeometryKHR *     pGeometries{};
     const  VkAccelerationStructureGeometryKHR * const*    ppGeometries{};
@@ -6535,8 +6583,8 @@ struct VkAccelerationStructureBuildGeometryInfoKHR {
 struct VkAccelerationStructureBuildRangeInfoKHR {
     uint32_t                                                  primitiveCount{};
     uint32_t                                                  primitiveOffset{};
-    uint32_t                                  firstVertex{};
-    uint32_t                                  transformOffset{};
+    uint32_t                                                  firstVertex{};
+    uint32_t                                                  transformOffset{};
 };
 struct VkAccelerationStructureCreateInfoKHR {
     VkStructureType   sType = VkStructureType::VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR;
@@ -6632,6 +6680,11 @@ struct VkDeviceDiagnosticsConfigCreateInfoNV {
     const  void *                                          pNext{};
     VkDeviceDiagnosticsConfigFlagsNV      flags{};
 };
+struct VkPhysicalDeviceZeroInitializeWorkgroupMemoryFeaturesKHR {
+    VkStructureType   sType = VkStructureType::VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ZERO_INITIALIZE_WORKGROUP_MEMORY_FEATURES_KHR;
+    void *           pNext{};
+    VkBool32         shaderZeroInitializeWorkgroupMemory{};
+};
 struct VkPhysicalDeviceRobustness2FeaturesEXT {
     VkStructureType   sType = VkStructureType::VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT;
     void *         pNext{};
@@ -6649,6 +6702,14 @@ struct VkPhysicalDeviceImageRobustnessFeaturesEXT {
     VkStructureType   sType = VkStructureType::VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_ROBUSTNESS_FEATURES_EXT;
     void *         pNext{};
     VkBool32                             robustImageAccess{};
+};
+struct VkPhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR {
+    VkStructureType   sType = VkStructureType::VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_WORKGROUP_MEMORY_EXPLICIT_LAYOUT_FEATURES_KHR;
+    void *         pNext{};
+    VkBool32                             workgroupMemoryExplicitLayout{};
+    VkBool32                             workgroupMemoryExplicitLayoutScalarBlockLayout{};
+    VkBool32                             workgroupMemoryExplicitLayout8BitAccess{};
+    VkBool32                             workgroupMemoryExplicitLayout16BitAccess{};
 };
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct VkPhysicalDevicePortabilitySubsetFeaturesKHR {
@@ -6864,6 +6925,21 @@ struct VkAccelerationStructureBuildSizesInfoKHR {
     VkDeviceSize                         accelerationStructureSize{};
     VkDeviceSize                         updateScratchSize{};
     VkDeviceSize                         buildScratchSize{};
+};
+struct VkPhysicalDeviceMutableDescriptorTypeFeaturesVALVE {
+    VkStructureType   sType = VkStructureType::VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MUTABLE_DESCRIPTOR_TYPE_FEATURES_VALVE;
+    void *                      pNext{};
+    VkBool32                                          mutableDescriptorType{};
+};
+struct VkMutableDescriptorTypeListVALVE {
+    uint32_t                                            descriptorTypeCount{};
+    const  VkDescriptorType *  pDescriptorTypes{};
+};
+struct VkMutableDescriptorTypeCreateInfoVALVE {
+    VkStructureType   sType = VkStructureType::VK_STRUCTURE_TYPE_MUTABLE_DESCRIPTOR_TYPE_CREATE_INFO_VALVE;
+    const  void *                                                                       pNext{};
+    uint32_t                                                           mutableDescriptorTypeListCount{};
+    const  VkMutableDescriptorTypeListVALVE *  pMutableDescriptorTypeLists{};
 };
 using PFN_vkCreateInstance = VkResult (*) (const  VkInstanceCreateInfo *  pCreateInfo, const  VkAllocationCallbacks *  pAllocator, VkInstance *  pInstance);
 using PFN_vkDestroyInstance = void (*) (VkInstance   instance, const  VkAllocationCallbacks *  pAllocator);
@@ -7120,6 +7196,10 @@ using PFN_vkReleaseDisplayEXT = VkResult (*) (VkPhysicalDevice   physicalDevice,
 using PFN_vkAcquireXlibDisplayEXT = VkResult (*) (VkPhysicalDevice   physicalDevice, Display *  dpy, VkDisplayKHR   display);
 using PFN_vkGetRandROutputDisplayEXT = VkResult (*) (VkPhysicalDevice   physicalDevice, Display *  dpy, RROutput   rrOutput, VkDisplayKHR *  pDisplay);
 #endif // defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT)
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+using PFN_vkAcquireWinrtDisplayNV = VkResult (*) (VkPhysicalDevice   physicalDevice, VkDisplayKHR   display);
+using PFN_vkGetWinrtDisplayNV = VkResult (*) (VkPhysicalDevice   physicalDevice, uint32_t   deviceRelativeId, VkDisplayKHR *  pDisplay);
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 using PFN_vkDisplayPowerControlEXT = VkResult (*) (VkDevice   device, VkDisplayKHR   display, const  VkDisplayPowerInfoEXT *  pDisplayPowerInfo);
 using PFN_vkRegisterDeviceEventEXT = VkResult (*) (VkDevice   device, const  VkDeviceEventInfoEXT *  pDeviceEventInfo, const  VkAllocationCallbacks *  pAllocator, VkFence *  pFence);
 using PFN_vkRegisterDisplayEventEXT = VkResult (*) (VkDevice   device, VkDisplayKHR   display, const  VkDisplayEventInfoEXT *  pDisplayEventInfo, const  VkAllocationCallbacks *  pAllocator, VkFence *  pFence);
@@ -7456,6 +7536,10 @@ extern PFN_vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV vkG
 extern PFN_vkGetPhysicalDeviceSurfacePresentModes2EXT vkGetPhysicalDeviceSurfacePresentModes2EXT;
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 extern PFN_vkCreateHeadlessSurfaceEXT vkCreateHeadlessSurfaceEXT;
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+extern PFN_vkAcquireWinrtDisplayNV vkAcquireWinrtDisplayNV;
+extern PFN_vkGetWinrtDisplayNV vkGetWinrtDisplayNV;
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 #if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
 extern PFN_vkCreateDirectFBSurfaceEXT vkCreateDirectFBSurfaceEXT;
 extern PFN_vkGetPhysicalDeviceDirectFBPresentationSupportEXT vkGetPhysicalDeviceDirectFBPresentationSupportEXT;

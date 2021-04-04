@@ -68,18 +68,19 @@ class ApiConstant:
         self.name = node.get('name')
         self.value = node.get('value')
         self.alias = node.get('alias')
+        self.type = node.get('type') if node.get('type') is not None else 'auto'
 
     def print_base(self, file):
         if self.alias is not None:
-            file.write(f'constexpr auto {self.name[3:]} = {self.alias[3:]};\n')
+            file.write(f'constexpr {self.type} {self.name[3:]} = {self.alias[3:]};\n')
         elif self.value is not None:
-            file.write(f'constexpr auto {self.name[3:]} = {self.value};\n')
+            file.write(f'constexpr {self.type} {self.name[3:]} = {self.value};\n')
 
     def print_basic(self, file):
         if self.alias is not None:
-            file.write(f'constexpr auto {self.name} = {self.alias};\n')
+            file.write(f'constexpr {self.type} {self.name} = {self.alias};\n')
         elif self.value is not None:
-            file.write(f'constexpr auto {self.name} = {self.value};\n')
+            file.write(f'constexpr {self.type} {self.name} = {self.value};\n')
         
 class BaseType:
     def __init__(self, node):
@@ -111,6 +112,9 @@ class MacroDefine:
     def print_base(self, file):
         if self.should_print:
             file.write(self.text)
+    
+    def get_text(self):
+        return self.text
 
 class Enum:
     def __init__(self, node):
@@ -190,7 +194,7 @@ class Bitmask:
         self.node = node
         self.name = node.get('name')
         self.flags_name = self.name.replace('Bits', 's')
-        self.underlying_type = 'uint32_t'  # for ABI
+        self.underlying_type = 'uint64_t' if node.get('bitwidth') is not None else 'uint32_t'
         self.values = {}
         self.bitmask_name_len = len(re.findall('[A-Z]+[^A-Z]*', self.name)) - 2
         if self.name[-4:] != "Bits": #ie an extension bitmask
@@ -1539,6 +1543,8 @@ def print_c_interop(bindings):
 def print_basic_bindings(bindings):
     with open(f'include/vulkan/vulkan.h', 'w') as vulkan_core:
         vulkan_core.write('#pragma once\n// clang-format off\n')
+        for macro in bindings.macro_defines:
+            vulkan_core.write(f'{macro.get_text()}\n')
         PrintConsecutivePlatforms(vulkan_core, api_constants.values(), 'print_basic')
         PrintConsecutivePlatforms(vulkan_core, bindings.base_types, 'print_vk_base')
         PrintConsecutivePlatforms(vulkan_core, bindings.enum_dict.values(), 'print_basic')

@@ -1375,12 +1375,16 @@ static_assert( sizeof(vk::PhysicalDeviceDiagnosticsConfigFeaturesNV) == sizeof(V
 static_assert( std::is_standard_layout<vk::PhysicalDeviceDiagnosticsConfigFeaturesNV>::value, "Must be a standard layout type" );
 static_assert( sizeof(vk::DeviceDiagnosticsConfigCreateInfoNV) == sizeof(VkDeviceDiagnosticsConfigCreateInfoNV), "Must maintain size between types" );
 static_assert( std::is_standard_layout<vk::DeviceDiagnosticsConfigCreateInfoNV>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::PhysicalDeviceZeroInitializeWorkgroupMemoryFeaturesKHR) == sizeof(VkPhysicalDeviceZeroInitializeWorkgroupMemoryFeaturesKHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::PhysicalDeviceZeroInitializeWorkgroupMemoryFeaturesKHR>::value, "Must be a standard layout type" );
 static_assert( sizeof(vk::PhysicalDeviceRobustness2FeaturesEXT) == sizeof(VkPhysicalDeviceRobustness2FeaturesEXT), "Must maintain size between types" );
 static_assert( std::is_standard_layout<vk::PhysicalDeviceRobustness2FeaturesEXT>::value, "Must be a standard layout type" );
 static_assert( sizeof(vk::PhysicalDeviceRobustness2PropertiesEXT) == sizeof(VkPhysicalDeviceRobustness2PropertiesEXT), "Must maintain size between types" );
 static_assert( std::is_standard_layout<vk::PhysicalDeviceRobustness2PropertiesEXT>::value, "Must be a standard layout type" );
 static_assert( sizeof(vk::PhysicalDeviceImageRobustnessFeaturesEXT) == sizeof(VkPhysicalDeviceImageRobustnessFeaturesEXT), "Must maintain size between types" );
 static_assert( std::is_standard_layout<vk::PhysicalDeviceImageRobustnessFeaturesEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::PhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR) == sizeof(VkPhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::PhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR>::value, "Must be a standard layout type" );
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 static_assert( sizeof(vk::PhysicalDevicePortabilitySubsetFeaturesKHR) == sizeof(VkPhysicalDevicePortabilitySubsetFeaturesKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<vk::PhysicalDevicePortabilitySubsetFeaturesKHR>::value, "Must be a standard layout type" );
@@ -1433,6 +1437,12 @@ static_assert( sizeof(vk::PipelineFragmentShadingRateEnumStateCreateInfoNV) == s
 static_assert( std::is_standard_layout<vk::PipelineFragmentShadingRateEnumStateCreateInfoNV>::value, "Must be a standard layout type" );
 static_assert( sizeof(vk::AccelerationStructureBuildSizesInfoKHR) == sizeof(VkAccelerationStructureBuildSizesInfoKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<vk::AccelerationStructureBuildSizesInfoKHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::PhysicalDeviceMutableDescriptorTypeFeaturesVALVE) == sizeof(VkPhysicalDeviceMutableDescriptorTypeFeaturesVALVE), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::PhysicalDeviceMutableDescriptorTypeFeaturesVALVE>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::MutableDescriptorTypeListVALVE) == sizeof(VkMutableDescriptorTypeListVALVE), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::MutableDescriptorTypeListVALVE>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::MutableDescriptorTypeCreateInfoVALVE) == sizeof(VkMutableDescriptorTypeCreateInfoVALVE), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::MutableDescriptorTypeCreateInfoVALVE>::value, "Must be a standard layout type" );
 static_assert( sizeof(vk::Instance) == sizeof(VkInstance),"Must maintain size between handles");
 static_assert( sizeof(vk::PhysicalDevice) == sizeof(VkPhysicalDevice),"Must maintain size between handles");
 static_assert( sizeof(vk::Device) == sizeof(VkDevice),"Must maintain size between handles");

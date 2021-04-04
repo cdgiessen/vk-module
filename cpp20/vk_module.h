@@ -215,6 +215,7 @@ enum class DescriptorType : uint32_t {
     InlineUniformBlockEXT = 1000138000,
     AccelerationStructureKHR = 1000150000,
     AccelerationStructureNV = 1000165000,
+    MutableVALVE = 1000351000,
 };
 enum class DynamicState : uint32_t {
     Viewport = 0,
@@ -998,6 +999,7 @@ enum class StructureType : uint32_t {
     PhysicalDevicePipelineCreationCacheControlFeaturesEXT = 1000297000,
     PhysicalDeviceDiagnosticsConfigFeaturesNV = 1000300000,
     DeviceDiagnosticsConfigCreateInfoNV = 1000300001,
+    PhysicalDeviceZeroInitializeWorkgroupMemoryFeaturesKHR = 1000325000,
     PhysicalDeviceFragmentShadingRateEnumsPropertiesNV = 1000326000,
     PhysicalDeviceFragmentShadingRateEnumsFeaturesNV = 1000326001,
     PipelineFragmentShadingRateEnumStateCreateInfoNV = 1000326002,
@@ -1005,6 +1007,7 @@ enum class StructureType : uint32_t {
     PhysicalDeviceFragmentDensityMap2PropertiesEXT = 1000332001,
     CopyCommandTransformInfoQCOM = 1000333000,
     PhysicalDeviceImageRobustnessFeaturesEXT = 1000335000,
+    PhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR = 1000336000,
     CopyBufferInfo2KHR = 1000337000,
     CopyImageInfo2KHR = 1000337001,
     CopyBufferToImageInfo2KHR = 1000337002,
@@ -1018,6 +1021,8 @@ enum class StructureType : uint32_t {
     ImageResolve2KHR = 1000337010,
     PhysicalDevice4444FormatsFeaturesEXT = 1000340000,
     DirectfbSurfaceCreateInfoEXT = 1000346000,
+    PhysicalDeviceMutableDescriptorTypeFeaturesVALVE = 1000351000,
+    MutableDescriptorTypeCreateInfoVALVE = 1000351002,
     PhysicalDeviceSubgroupProperties = 1000094000,
     BindBufferMemoryInfo = 1000157000,
     BindImageMemoryInfo = 1000157001,
@@ -1592,6 +1597,7 @@ enum class VendorId : uint32_t {
     Kazan = 0x10003,
     Codeplay = 0x10004,
     MESA = 0x10005,
+    Pocl = 0x10006,
 };
 enum class DriverId : uint32_t {
     AmdProprietary = 1,
@@ -1951,6 +1957,7 @@ enum class StencilFaceFlagBits: uint32_t {
 };
 enum class DescriptorPoolCreateFlagBits: uint32_t {
     FreeDescriptorSet = 1,
+    HostOnlyBitVALVE = 4,
     UpdateAfterBind = 2,
 };
 enum class DependencyFlagBits: uint32_t {
@@ -2025,6 +2032,7 @@ enum class PrivateDataSlotCreateFlagBitsEXT: uint32_t {
 };
 enum class DescriptorSetLayoutCreateFlagBits: uint32_t {
     PushDescriptorBitKHR = 1,
+    HostOnlyPoolBitVALVE = 4,
     UpdateAfterBindPool = 2,
 };
 enum class ExternalMemoryHandleTypeFlagBits: uint32_t {
@@ -10151,6 +10159,12 @@ struct DeviceDiagnosticsConfigCreateInfoNV {
     DeviceDiagnosticsConfigFlagsNV flags{};
     DeviceDiagnosticsConfigCreateInfoNV& setFlags(DeviceDiagnosticsConfigFlagsNV flags) { this->flags = flags; return *this; }
 };
+struct PhysicalDeviceZeroInitializeWorkgroupMemoryFeaturesKHR {
+    StructureType sType{StructureType::PhysicalDeviceZeroInitializeWorkgroupMemoryFeaturesKHR};
+    void* pNext = nullptr;
+    Bool32 shaderZeroInitializeWorkgroupMemory{0};
+    PhysicalDeviceZeroInitializeWorkgroupMemoryFeaturesKHR& setShaderZeroInitializeWorkgroupMemory(Bool32 shaderZeroInitializeWorkgroupMemory) { this->shaderZeroInitializeWorkgroupMemory = shaderZeroInitializeWorkgroupMemory; return *this; }
+};
 struct PhysicalDeviceRobustness2FeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceRobustness2FeaturesEXT};
     void* pNext = nullptr;
@@ -10174,6 +10188,18 @@ struct PhysicalDeviceImageRobustnessFeaturesEXT {
     void* pNext = nullptr;
     Bool32 robustImageAccess{0};
     PhysicalDeviceImageRobustnessFeaturesEXT& setRobustImageAccess(Bool32 robustImageAccess) { this->robustImageAccess = robustImageAccess; return *this; }
+};
+struct PhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR {
+    StructureType sType{StructureType::PhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR};
+    void* pNext = nullptr;
+    Bool32 workgroupMemoryExplicitLayout{0};
+    Bool32 workgroupMemoryExplicitLayoutScalarBlockLayout{0};
+    Bool32 workgroupMemoryExplicitLayout8BitAccess{0};
+    Bool32 workgroupMemoryExplicitLayout16BitAccess{0};
+    PhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR& setWorkgroupMemoryExplicitLayout(Bool32 workgroupMemoryExplicitLayout) { this->workgroupMemoryExplicitLayout = workgroupMemoryExplicitLayout; return *this; }
+    PhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR& setWorkgroupMemoryExplicitLayoutScalarBlockLayout(Bool32 workgroupMemoryExplicitLayoutScalarBlockLayout) { this->workgroupMemoryExplicitLayoutScalarBlockLayout = workgroupMemoryExplicitLayoutScalarBlockLayout; return *this; }
+    PhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR& setWorkgroupMemoryExplicitLayout8BitAccess(Bool32 workgroupMemoryExplicitLayout8BitAccess) { this->workgroupMemoryExplicitLayout8BitAccess = workgroupMemoryExplicitLayout8BitAccess; return *this; }
+    PhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR& setWorkgroupMemoryExplicitLayout16BitAccess(Bool32 workgroupMemoryExplicitLayout16BitAccess) { this->workgroupMemoryExplicitLayout16BitAccess = workgroupMemoryExplicitLayout16BitAccess; return *this; }
 };
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct PhysicalDevicePortabilitySubsetFeaturesKHR {
@@ -10510,6 +10536,28 @@ struct AccelerationStructureBuildSizesInfoKHR {
     AccelerationStructureBuildSizesInfoKHR& setUpdateScratchSize(DeviceSize updateScratchSize) { this->updateScratchSize = updateScratchSize; return *this; }
     AccelerationStructureBuildSizesInfoKHR& setBuildScratchSize(DeviceSize buildScratchSize) { this->buildScratchSize = buildScratchSize; return *this; }
 };
+struct PhysicalDeviceMutableDescriptorTypeFeaturesVALVE {
+    StructureType sType{StructureType::PhysicalDeviceMutableDescriptorTypeFeaturesVALVE};
+    void* pNext = nullptr;
+    Bool32 mutableDescriptorType{0};
+    PhysicalDeviceMutableDescriptorTypeFeaturesVALVE& setMutableDescriptorType(Bool32 mutableDescriptorType) { this->mutableDescriptorType = mutableDescriptorType; return *this; }
+};
+struct MutableDescriptorTypeListVALVE {
+    uint32_t descriptorTypeCount{0};
+    const DescriptorType* pDescriptorTypes = nullptr;
+    MutableDescriptorTypeListVALVE& setDescriptorTypeCount(uint32_t descriptorTypeCount) { this->descriptorTypeCount = descriptorTypeCount; return *this; }
+    MutableDescriptorTypeListVALVE& setPDescriptorTypes(const DescriptorType* pDescriptorTypes) { this->pDescriptorTypes = pDescriptorTypes; return *this; }
+    MutableDescriptorTypeListVALVE& setDescriptorTypes(detail::span<const DescriptorType> DescriptorTypes) { this->descriptorTypeCount = DescriptorTypes.size(); this->pDescriptorTypes = DescriptorTypes.data();  return *this; }
+};
+struct MutableDescriptorTypeCreateInfoVALVE {
+    StructureType sType{StructureType::MutableDescriptorTypeCreateInfoVALVE};
+    const void* pNext = nullptr;
+    uint32_t mutableDescriptorTypeListCount{0};
+    const MutableDescriptorTypeListVALVE* pMutableDescriptorTypeLists = nullptr;
+    MutableDescriptorTypeCreateInfoVALVE& setMutableDescriptorTypeListCount(uint32_t mutableDescriptorTypeListCount) { this->mutableDescriptorTypeListCount = mutableDescriptorTypeListCount; return *this; }
+    MutableDescriptorTypeCreateInfoVALVE& setPMutableDescriptorTypeLists(const MutableDescriptorTypeListVALVE* pMutableDescriptorTypeLists) { this->pMutableDescriptorTypeLists = pMutableDescriptorTypeLists; return *this; }
+    MutableDescriptorTypeCreateInfoVALVE& setMutableDescriptorTypeLists(detail::span<const MutableDescriptorTypeListVALVE> MutableDescriptorTypeLists) { this->mutableDescriptorTypeListCount = MutableDescriptorTypeLists.size(); this->pMutableDescriptorTypeLists = MutableDescriptorTypeLists.data();  return *this; }
+};
 namespace detail {
 using PFN_CreateInstance = Result (*) (const InstanceCreateInfo* pCreateInfo, const AllocationCallbacks* pAllocator, Instance* pInstance);
 using PFN_DestroyInstance = void (*) (Instance instance, const AllocationCallbacks* pAllocator);
@@ -10766,6 +10814,10 @@ using PFN_ReleaseDisplayEXT = Result (*) (PhysicalDevice physicalDevice, Display
 using PFN_AcquireXlibDisplayEXT = Result (*) (PhysicalDevice physicalDevice, Display* dpy, DisplayKHR display);
 using PFN_GetRandROutputDisplayEXT = Result (*) (PhysicalDevice physicalDevice, Display* dpy, RROutput rrOutput, DisplayKHR* pDisplay);
 #endif // defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT)
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+using PFN_AcquireWinrtDisplayNV = Result (*) (PhysicalDevice physicalDevice, DisplayKHR display);
+using PFN_GetWinrtDisplayNV = Result (*) (PhysicalDevice physicalDevice, uint32_t deviceRelativeId, DisplayKHR* pDisplay);
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 using PFN_DisplayPowerControlEXT = Result (*) (Device device, DisplayKHR display, const DisplayPowerInfoEXT* pDisplayPowerInfo);
 using PFN_RegisterDeviceEventEXT = Result (*) (Device device, const DeviceEventInfoEXT* pDeviceEventInfo, const AllocationCallbacks* pAllocator, Fence* pFence);
 using PFN_RegisterDisplayEventEXT = Result (*) (Device device, DisplayKHR display, const DisplayEventInfoEXT* pDisplayEventInfo, const AllocationCallbacks* pAllocator, Fence* pFence);
@@ -11274,6 +11326,10 @@ struct InstanceFunctions {
     detail::PFN_GetPhysicalDeviceSurfacePresentModes2EXT pfn_GetPhysicalDeviceSurfacePresentModes2EXT = nullptr;
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
     detail::PFN_CreateHeadlessSurfaceEXT pfn_CreateHeadlessSurfaceEXT = nullptr;
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    detail::PFN_AcquireWinrtDisplayNV pfn_AcquireWinrtDisplayNV = nullptr;
+    detail::PFN_GetWinrtDisplayNV pfn_GetWinrtDisplayNV = nullptr;
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 #if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
     detail::PFN_CreateDirectFBSurfaceEXT pfn_CreateDirectFBSurfaceEXT = nullptr;
     detail::PFN_GetPhysicalDeviceDirectFBPresentationSupportEXT pfn_GetPhysicalDeviceDirectFBPresentationSupportEXT = nullptr;
@@ -12198,6 +12254,23 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
         &pSurface);
     return expected<SurfaceKHR>(pSurface, result);
 }
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+[[nodiscard]] Result AcquireWinrtDisplayNV(PhysicalDevice physicalDevice, 
+    DisplayKHR display) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    return pfn_AcquireWinrtDisplayNV(physicalDevice,
+        display);
+}
+[[nodiscard]] expected<DisplayKHR> GetWinrtDisplayNV(PhysicalDevice physicalDevice, 
+    uint32_t deviceRelativeId) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    DisplayKHR pDisplay;
+        Result result = pfn_GetWinrtDisplayNV(physicalDevice,
+        deviceRelativeId,
+        &pDisplay);
+    return expected<DisplayKHR>(pDisplay, result);
+}
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 #if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
 [[nodiscard]] expected<SurfaceKHR> CreateDirectFBSurfaceEXT(const DirectFBSurfaceCreateInfoEXT&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
@@ -12328,6 +12401,10 @@ explicit InstanceFunctions(GlobalFunctions const& global_functions, Instance ins
     pfn_GetPhysicalDeviceSurfacePresentModes2EXT = reinterpret_cast<detail::PFN_GetPhysicalDeviceSurfacePresentModes2EXT>(get_instance_proc_addr(instance,"vkGetPhysicalDeviceSurfacePresentModes2EXT"));
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
     pfn_CreateHeadlessSurfaceEXT = reinterpret_cast<detail::PFN_CreateHeadlessSurfaceEXT>(get_instance_proc_addr(instance,"vkCreateHeadlessSurfaceEXT"));
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    pfn_AcquireWinrtDisplayNV = reinterpret_cast<detail::PFN_AcquireWinrtDisplayNV>(get_instance_proc_addr(instance,"vkAcquireWinrtDisplayNV"));
+    pfn_GetWinrtDisplayNV = reinterpret_cast<detail::PFN_GetWinrtDisplayNV>(get_instance_proc_addr(instance,"vkGetWinrtDisplayNV"));
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 #if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
     pfn_CreateDirectFBSurfaceEXT = reinterpret_cast<detail::PFN_CreateDirectFBSurfaceEXT>(get_instance_proc_addr(instance,"vkCreateDirectFBSurfaceEXT"));
     pfn_GetPhysicalDeviceDirectFBPresentationSupportEXT = reinterpret_cast<detail::PFN_GetPhysicalDeviceDirectFBPresentationSupportEXT>(get_instance_proc_addr(instance,"vkGetPhysicalDeviceDirectFBPresentationSupportEXT"));
@@ -14734,13 +14811,13 @@ void CmdBuildAccelerationStructuresIndirectKHR(CommandBuffer commandBuffer,
 }
 [[nodiscard]] AccelerationStructureBuildSizesInfoKHR GetAccelerationStructureBuildSizesKHR(AccelerationStructureBuildTypeKHR buildType, 
     const AccelerationStructureBuildGeometryInfoKHR&  pBuildInfo, 
-    detail::span<const uint32_t> MaxPrimitiveCounts) const {
+    const uint32_t* pMaxPrimitiveCounts = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     AccelerationStructureBuildSizesInfoKHR pSizeInfo;
     pfn_GetAccelerationStructureBuildSizesKHR(device,
         buildType,
         &pBuildInfo,
-        MaxPrimitiveCounts.data(),
+        pMaxPrimitiveCounts,
         &pSizeInfo);
     return pSizeInfo;
 }
@@ -15972,6 +16049,12 @@ explicit DeviceFunctions(InstanceFunctions const& instance_functions, Device dev
 [[nodiscard]] expected<DisplayKHR> GetRandROutputDisplayEXT(Display&  dpy, RROutput rrOutput) const {
     return instance_functions->GetRandROutputDisplayEXT(physicaldevice, dpy, rrOutput); }
 #endif // defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT)
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+[[nodiscard]] Result AcquireWinrtDisplayNV(DisplayKHR display) const {
+    return instance_functions->AcquireWinrtDisplayNV(physicaldevice, display); }
+[[nodiscard]] expected<DisplayKHR> GetWinrtDisplayNV(uint32_t deviceRelativeId) const {
+    return instance_functions->GetWinrtDisplayNV(physicaldevice, deviceRelativeId); }
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] expected<SurfaceCapabilities2EXT> GetSurfaceCapabilities2EXT(SurfaceKHR surface) const {
     return instance_functions->GetPhysicalDeviceSurfaceCapabilities2EXT(physicaldevice, surface); }
 [[nodiscard]] expected<detail::fixed_vector<Rect2D>> GetPresentRectanglesKHR(SurfaceKHR surface) const {
@@ -16566,6 +16649,7 @@ inline const char * to_string(DescriptorType val) {
         case(DescriptorType::InlineUniformBlockEXT): return "InlineUniformBlockEXT";
         case(DescriptorType::AccelerationStructureKHR): return "AccelerationStructureKHR";
         case(DescriptorType::AccelerationStructureNV): return "AccelerationStructureNV";
+        case(DescriptorType::MutableVALVE): return "MutableVALVE";
         default: return "UNKNOWN";
     }
 }
@@ -17406,6 +17490,7 @@ inline const char * to_string(StructureType val) {
         case(StructureType::PhysicalDevicePipelineCreationCacheControlFeaturesEXT): return "PhysicalDevicePipelineCreationCacheControlFeaturesEXT";
         case(StructureType::PhysicalDeviceDiagnosticsConfigFeaturesNV): return "PhysicalDeviceDiagnosticsConfigFeaturesNV";
         case(StructureType::DeviceDiagnosticsConfigCreateInfoNV): return "DeviceDiagnosticsConfigCreateInfoNV";
+        case(StructureType::PhysicalDeviceZeroInitializeWorkgroupMemoryFeaturesKHR): return "PhysicalDeviceZeroInitializeWorkgroupMemoryFeaturesKHR";
         case(StructureType::PhysicalDeviceFragmentShadingRateEnumsPropertiesNV): return "PhysicalDeviceFragmentShadingRateEnumsPropertiesNV";
         case(StructureType::PhysicalDeviceFragmentShadingRateEnumsFeaturesNV): return "PhysicalDeviceFragmentShadingRateEnumsFeaturesNV";
         case(StructureType::PipelineFragmentShadingRateEnumStateCreateInfoNV): return "PipelineFragmentShadingRateEnumStateCreateInfoNV";
@@ -17413,6 +17498,7 @@ inline const char * to_string(StructureType val) {
         case(StructureType::PhysicalDeviceFragmentDensityMap2PropertiesEXT): return "PhysicalDeviceFragmentDensityMap2PropertiesEXT";
         case(StructureType::CopyCommandTransformInfoQCOM): return "CopyCommandTransformInfoQCOM";
         case(StructureType::PhysicalDeviceImageRobustnessFeaturesEXT): return "PhysicalDeviceImageRobustnessFeaturesEXT";
+        case(StructureType::PhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR): return "PhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR";
         case(StructureType::CopyBufferInfo2KHR): return "CopyBufferInfo2KHR";
         case(StructureType::CopyImageInfo2KHR): return "CopyImageInfo2KHR";
         case(StructureType::CopyBufferToImageInfo2KHR): return "CopyBufferToImageInfo2KHR";
@@ -17426,6 +17512,8 @@ inline const char * to_string(StructureType val) {
         case(StructureType::ImageResolve2KHR): return "ImageResolve2KHR";
         case(StructureType::PhysicalDevice4444FormatsFeaturesEXT): return "PhysicalDevice4444FormatsFeaturesEXT";
         case(StructureType::DirectfbSurfaceCreateInfoEXT): return "DirectfbSurfaceCreateInfoEXT";
+        case(StructureType::PhysicalDeviceMutableDescriptorTypeFeaturesVALVE): return "PhysicalDeviceMutableDescriptorTypeFeaturesVALVE";
+        case(StructureType::MutableDescriptorTypeCreateInfoVALVE): return "MutableDescriptorTypeCreateInfoVALVE";
         case(StructureType::PhysicalDeviceSubgroupProperties): return "PhysicalDeviceSubgroupProperties";
         case(StructureType::BindBufferMemoryInfo): return "BindBufferMemoryInfo";
         case(StructureType::BindImageMemoryInfo): return "BindImageMemoryInfo";
@@ -18179,6 +18267,7 @@ inline const char * to_string(VendorId val) {
         case(VendorId::Kazan): return "Kazan";
         case(VendorId::Codeplay): return "Codeplay";
         case(VendorId::MESA): return "MESA";
+        case(VendorId::Pocl): return "Pocl";
         default: return "UNKNOWN";
     }
 }
@@ -19061,6 +19150,7 @@ inline std::string to_string(StencilFaceFlags flag){
 inline const char * to_string(DescriptorPoolCreateFlagBits val) {
     switch(val) {
         case(DescriptorPoolCreateFlagBits::FreeDescriptorSet): return "FreeDescriptorSet";
+        case(DescriptorPoolCreateFlagBits::HostOnlyBitVALVE): return "HostOnlyBitVALVE";
         case(DescriptorPoolCreateFlagBits::UpdateAfterBind): return "UpdateAfterBind";
         default: return "UNKNOWN";
     }
@@ -19069,6 +19159,7 @@ inline std::string to_string(DescriptorPoolCreateFlags flag){
     if (flag.flags == 0) return "None";
     std::string out;
     if (flag & DescriptorPoolCreateFlagBits::FreeDescriptorSet) out += "FreeDescriptorSet | ";
+    if (flag & DescriptorPoolCreateFlagBits::HostOnlyBitVALVE) out += "HostOnlyBitVALVE | ";
     if (flag & DescriptorPoolCreateFlagBits::UpdateAfterBind) out += "UpdateAfterBind | ";
     return out.substr(0, out.size() - 3);
 }
@@ -19287,6 +19378,7 @@ inline std::string to_string(PrivateDataSlotCreateFlagsEXT flag){
 inline const char * to_string(DescriptorSetLayoutCreateFlagBits val) {
     switch(val) {
         case(DescriptorSetLayoutCreateFlagBits::PushDescriptorBitKHR): return "PushDescriptorBitKHR";
+        case(DescriptorSetLayoutCreateFlagBits::HostOnlyPoolBitVALVE): return "HostOnlyPoolBitVALVE";
         case(DescriptorSetLayoutCreateFlagBits::UpdateAfterBindPool): return "UpdateAfterBindPool";
         default: return "UNKNOWN";
     }
@@ -19295,6 +19387,7 @@ inline std::string to_string(DescriptorSetLayoutCreateFlags flag){
     if (flag.flags == 0) return "None";
     std::string out;
     if (flag & DescriptorSetLayoutCreateFlagBits::PushDescriptorBitKHR) out += "PushDescriptorBitKHR | ";
+    if (flag & DescriptorSetLayoutCreateFlagBits::HostOnlyPoolBitVALVE) out += "HostOnlyPoolBitVALVE | ";
     if (flag & DescriptorSetLayoutCreateFlagBits::UpdateAfterBindPool) out += "UpdateAfterBindPool | ";
     return out.substr(0, out.size() - 3);
 }
