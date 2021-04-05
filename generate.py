@@ -1590,6 +1590,14 @@ def print_basic_bindings(bindings):
         vulkan_impl.write(license_header)
         vulkan_impl.write('#include "vulkan.h"\n// clang-format off\n')
         vulkan_impl.write(vulkan_simple_cpp_definition)
+        vulkan_impl.write('''#ifdef __GNUC__
+#if defined(VK_SIMPLE_USE_DEFAULT_VISIBILITY)
+#	pragma GCC visibility push(default)
+#else
+#	pragma GCC visibility push(hidden)
+#endif
+#endif
+''')
         for dispatch_table in bindings.dispatch_tables:
             if dispatch_table.name == 'Global':
                 dispatch_table.print_function_def(vulkan_impl)
@@ -1599,6 +1607,11 @@ def print_basic_bindings(bindings):
             elif dispatch_table.name == 'Device':
                 dispatch_table.print_init_global_functions(vulkan_impl)
                 dispatch_table.print_init_dispatch_table(vulkan_impl)
+        vulkan_impl.write('''
+#ifdef __GNUC__
+#	pragma GCC visibility pop
+#endif
+''')
         vulkan_impl.write('\n// clang-format on\n')
 
 
@@ -1616,7 +1629,7 @@ def main():
 
     print_basic_bindings(bindings)
 
-    with open('tests/static_asserts.h', 'w') as static_asserts:
+    with open('test/fancy-api/static_asserts.h', 'w') as static_asserts:
         static_asserts.write(license_header)
         static_asserts.write('#pragma once\n')
         static_asserts.write('// clang-format off\n')

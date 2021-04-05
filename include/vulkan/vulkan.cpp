@@ -88,6 +88,13 @@ void vkCloseLoaderLibrary(){
         vkGetInstanceProcAddr = VK_NULL_HANDLE;
     }
 }
+#ifdef __GNUC__
+#if defined(VK_SIMPLE_USE_DEFAULT_VISIBILITY)
+#	pragma GCC visibility push(default)
+#else
+#	pragma GCC visibility push(hidden)
+#endif
+#endif
 PFN_vkCreateInstance vkCreateInstance;
 PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr;
 PFN_vkEnumerateInstanceExtensionProperties vkEnumerateInstanceExtensionProperties;
@@ -975,5 +982,9 @@ void vkInitializeDeviceDispatchTable (VkDevice Device, VkDeviceDispatchTable & t
     table.vkCmdCopyImageToBuffer2KHR = reinterpret_cast<PFN_vkCmdCopyImageToBuffer2KHR>(vkGetDeviceProcAddr(Device, "vkCmdCopyImageToBuffer2KHR"));
     table.vkCmdResolveImage2KHR = reinterpret_cast<PFN_vkCmdResolveImage2KHR>(vkGetDeviceProcAddr(Device, "vkCmdResolveImage2KHR"));
 };
+
+#ifdef __GNUC__
+#	pragma GCC visibility pop
+#endif
 
 // clang-format on

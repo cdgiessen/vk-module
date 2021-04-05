@@ -126,6 +126,6 @@ if (VK_MODULE_SAMPLES)
 endif(VK_MODULE_SAMPLES)
 
 if (VK_MODULE_TESTS)
-    add_subdirectory(tests)
+    add_subdirectory(test)
 endif (VK_MODULE_TESTS)
 
