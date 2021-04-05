@@ -12,37 +12,15 @@
 # FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-option(GLFW_BUILD_TESTS "" OFF)
-option(GLFW_BUILD_DOCS "" OFF)
-option(GLFW_INSTALL "" OFF)
-option(GLFW_BUILD_EXAMPLES "" OFF)
-
 include(FetchContent)
 FetchContent_Declare(
-    glfw_repo
-    GIT_REPOSITORY https://github.com/glfw/glfw
-    GIT_TAG        3.3.2
+    catch2
+    GIT_REPOSITORY https://github.com/catchorg/Catch2
+    GIT_TAG        v2.13.1
 )
-FetchContent_MakeAvailable(glfw_repo)
+FetchContent_MakeAvailable(catch2)
 
 find_package(Vulkan REQUIRED)
 
-add_executable(basic_sample_usage basic.cpp)
-target_link_libraries(basic_sample_usage vk-module-cpp)
-
-add_executable(vk-module-triangle-header triangle.cpp)
-target_link_libraries(vk-module-triangle-header
-    PRIVATE
-    Vulkan::Headers
-    glfw
-    vk-module-cpp
-    vk-module-compiler-options )
-
-add_custom_target(copy-shader-files ALL
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/sample/shaders ${CMAKE_CURRENT_BINARY_DIR}
-    DEPENDS vk-module-triangle-header)
-
-if (SET_COMPILE_TIME_TRACE)
-target_compile_options(basic_sample_usage PUBLIC -ftime-trace)
-target_compile_options(vk-module-triangle-header PUBLIC -ftime-trace)
-endif(SET_COMPILE_TIME_TRACE)
+add_subdirectory(simple-api)
+add_subdirectory(fancy-api)
