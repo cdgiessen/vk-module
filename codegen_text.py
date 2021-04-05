@@ -364,16 +364,13 @@ constexpr FLAG_TYPE operator~(FLAG_TYPE a) noexcept {                           
     return static_cast<FLAG_TYPE>(~a.flags);                                               \\
 }                                                                                          \\
 constexpr FLAG_TYPE& operator|=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {                      \\
-    a.flags = (a.flags | b.flags);                                                         \\
-    return a;                                                                              \\
+    return a.flags = (a.flags | b.flags), a;                                                                              \\
 }                                                                                          \\
 constexpr FLAG_TYPE& operator&=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {                      \\
-    a.flags = (a.flags & b.flags);                                                         \\
-    return a;                                                                              \\
+    return a.flags = (a.flags & b.flags), a;                                                                              \\
 }                                                                                          \\
 constexpr FLAG_TYPE operator^=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {                       \\
-    a.flags = (a.flags ^ b.flags);                                                         \\
-    return a;                                                                              \\
+    return  a.flags = (a.flags ^ b.flags), a;                                                                              \\
 }                                                                                          \\
 constexpr FLAG_TYPE operator|(FLAG_BITS a, FLAG_BITS b) noexcept {                         \\
     return static_cast<FLAG_TYPE>(static_cast<BASE_TYPE>(a) | static_cast<BASE_TYPE>(b));  \\
@@ -607,7 +604,7 @@ VkResult vkInitializeLoaderLibrary(PFN_vkGetInstanceProcAddr pfn_vkGetInstancePr
     if(pfn_vkGetInstanceProcAddr != VK_NULL_HANDLE){
         vkGetInstanceProcAddr = pfn_vkGetInstanceProcAddr;
         LoadGlobalFunctions();
-        return VkResult::Success;
+        return VkResult::VK_SUCCESS;
     }
 
 #if defined(__linux__)

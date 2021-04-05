@@ -175,7 +175,7 @@ void create_device_context(RendererContext& render_context, DeviceContext& devic
       vk::DeviceCreateInfo{}
         .setEnabledExtensionCount(1)
         .setPpEnabledExtensionNames(extensions)
-        .setQueueCreateInfos({ vk::DeviceQueueCreateInfo{}.setQueueFamilyIndex(0).setQueuePriorities({ 1.f }) }));
+        .setPQueueCreateInfos({ vk::DeviceQueueCreateInfo{}.setQueueFamilyIndex(0).setPQueuePriorities({ 1.f }) }));
     check_res(device_ret, "Failed to create a vulkan device");
 
     device_context.device = device_ret.value();
@@ -248,22 +248,22 @@ void setup_renderpass(DeviceContext& device)
 {
     auto rp_ret = device.functions.CreateRenderPass(
       vk::RenderPassCreateInfo{}
-        .setAttachments({ vk::AttachmentDescription{}
-                            .setFormat(device.swapchain_img_format)
-                            .setSamples(vk::SampleCountFlagBits::e1)
-                            .setLoadOp(vk::AttachmentLoadOp::Clear)
-                            .setStoreOp(vk::AttachmentStoreOp::Store)
-                            .setStencilLoadOp(vk::AttachmentLoadOp::DontCare)
-                            .setStencilStoreOp(vk::AttachmentStoreOp::DontCare)
-                            .setInitialLayout(vk::ImageLayout::Undefined)
-                            .setFinalLayout(vk::ImageLayout::PresentSrcKHR) })
+        .setPAttachments({ vk::AttachmentDescription{}
+                             .setFormat(device.swapchain_img_format)
+                             .setSamples(vk::SampleCountFlagBits::e1)
+                             .setLoadOp(vk::AttachmentLoadOp::Clear)
+                             .setStoreOp(vk::AttachmentStoreOp::Store)
+                             .setStencilLoadOp(vk::AttachmentLoadOp::DontCare)
+                             .setStencilStoreOp(vk::AttachmentStoreOp::DontCare)
+                             .setInitialLayout(vk::ImageLayout::Undefined)
+                             .setFinalLayout(vk::ImageLayout::PresentSrcKHR) })
 
-        .setSubpasses({ vk::SubpassDescription{}
-                          .setPipelineBindPoint(vk::PipelineBindPoint::Graphics)
-                          .setColorAttachments(
-                            { vk::AttachmentReference{}.setAttachment(0).setLayout(vk::ImageLayout::ColorAttachmentOptimal) }) })
+        .setPSubpasses({ vk::SubpassDescription{}
+                           .setPipelineBindPoint(vk::PipelineBindPoint::Graphics)
+                           .setPColorAttachments(
+                             { vk::AttachmentReference{}.setAttachment(0).setLayout(vk::ImageLayout::ColorAttachmentOptimal) }) })
 
-        .setDependencies(
+        .setPDependencies(
           { vk::SubpassDependency{}
               .setSrcSubpass(vk::SUBPASS_EXTERNAL)
               .setDstSubpass(0)
@@ -279,7 +279,7 @@ void create_framebuffers(DeviceContext& device)
     for (auto& view : device.swapchain_image_views) {
         auto ret = device.functions.CreateFramebuffer(vk::FramebufferCreateInfo{}
                                                         .setRenderPass(device.render_pass)
-                                                        .setAttachments({ view })
+                                                        .setPAttachments({ view })
                                                         .setWidth(width)
                                                         .setHeight(height)
                                                         .setLayers(1));
@@ -323,30 +323,30 @@ void create_pipeline(DeviceContext& device)
     auto [pipelines, pipeline_ret] = device.functions.CreateGraphicsPipelines(
       nullptr,
       { vk::GraphicsPipelineCreateInfo{}
-          .setStages(
+          .setPStages(
             { vk::PipelineShaderStageCreateInfo{}.setStage(vk::ShaderStageFlagBits::Vertex).setModule(vert).setPName("main"),
               vk::PipelineShaderStageCreateInfo{}.setStage(vk::ShaderStageFlagBits::Fragment).setModule(frag).setPName("main") })
-          .setVertexInputState(vk::PipelineVertexInputStateCreateInfo{})
-          .setInputAssemblyState(vk::PipelineInputAssemblyStateCreateInfo{}.setTopology(vk::PrimitiveTopology::TriangleList))
-          .setViewportState(vk::PipelineViewportStateCreateInfo{}
-                              .setViewports({ { 0.f, 0.f, static_cast<float>(width), static_cast<float>(height), 0.f, 1.f } })
-                              .setScissors({ { .offset = { 0, 0 }, .extent = { width, height } } }))
-          .setRasterizationState(vk::PipelineRasterizationStateCreateInfo{}
-                                   .setPolygonMode(vk::PolygonMode::Fill)
-                                   .setCullMode(vk::CullModeFlagBits::Back)
-                                   .setFrontFace(vk::FrontFace::Clockwise)
-                                   .setLineWidth(1.f))
-          .setMultisampleState(vk::PipelineMultisampleStateCreateInfo{}
-                                 .setRasterizationSamples(vk::SampleCountFlagBits::e1)
-                                 .setSampleShadingEnable(false))
-          .setColorBlendState(vk::PipelineColorBlendStateCreateInfo{}
-                                .setLogicOpEnable(false)
-                                .setAttachments({ vk::PipelineColorBlendAttachmentState{}.setBlendEnable(false).setColorWriteMask(
-                                  vk::ColorComponentFlagBits::R | vk::ColorComponentFlagBits::G | vk::ColorComponentFlagBits::B |
-                                  vk::ColorComponentFlagBits::A) })
-                                .setBlendConstants(blend_constant))
-          .setDynamicState(
-            vk::PipelineDynamicStateCreateInfo{}.setDynamicStates({ vk::DynamicState::Viewport, vk::DynamicState::Scissor }))
+          .setPVertexInputState(vk::PipelineVertexInputStateCreateInfo{})
+          .setPInputAssemblyState(vk::PipelineInputAssemblyStateCreateInfo{}.setTopology(vk::PrimitiveTopology::TriangleList))
+          .setPViewportState(vk::PipelineViewportStateCreateInfo{}
+                               .setPViewports({ { 0.f, 0.f, static_cast<float>(width), static_cast<float>(height), 0.f, 1.f } })
+                               .setPScissors({ { .offset = { 0, 0 }, .extent = { width, height } } }))
+          .setPRasterizationState(vk::PipelineRasterizationStateCreateInfo{}
+                                    .setPolygonMode(vk::PolygonMode::Fill)
+                                    .setCullMode(vk::CullModeFlagBits::Back)
+                                    .setFrontFace(vk::FrontFace::Clockwise)
+                                    .setLineWidth(1.f))
+          .setPMultisampleState(vk::PipelineMultisampleStateCreateInfo{}
+                                  .setRasterizationSamples(vk::SampleCountFlagBits::e1)
+                                  .setSampleShadingEnable(false))
+          .setPColorBlendState(vk::PipelineColorBlendStateCreateInfo{}
+                                 .setLogicOpEnable(false)
+                                 .setPAttachments({ vk::PipelineColorBlendAttachmentState{}.setBlendEnable(false).setColorWriteMask(
+                                   vk::ColorComponentFlagBits::R | vk::ColorComponentFlagBits::G | vk::ColorComponentFlagBits::B |
+                                   vk::ColorComponentFlagBits::A) })
+                                 .setBlendConstants(blend_constant))
+          .setPDynamicState(
+            vk::PipelineDynamicStateCreateInfo{}.setPDynamicStates({ vk::DynamicState::Viewport, vk::DynamicState::Scissor }))
           .setLayout(pipeline_layout_ret.value())
           .setRenderPass(device.render_pass) });
 
@@ -378,7 +378,7 @@ void create_command_buffers(DeviceContext& device)
           .BeginRenderPass(vk::RenderPassBeginInfo{ .renderPass = device.render_pass,
                                                     .framebuffer = device.framebuffers[i],
                                                     .renderArea = scissor }
-                             .setClearValues({ vk::ClearValue{ .color = { { 0.f, 0.f, 0.f, 1.f } } } }),
+                             .setPClearValues({ vk::ClearValue{ .color = { { 0.f, 0.f, 0.f, 1.f } } } }),
                            vk::SubpassContents::Inline)
           .BindPipeline(vk::PipelineBindPoint::Graphics, device.pipeline)
           .SetViewport(0, viewport)
@@ -444,17 +444,17 @@ void draw_frame(DeviceContext& device)
     }
 
     auto submit_ret = device.queue_functions.Submit(vk::SubmitInfo{}
-                                                      .setWaitSemaphores({ device.available_semaphores[device.current_frame] })
-                                                      .setWaitDstStageMask({ vk::PipelineStageFlagBits::ColorAttachmentOutput })
-                                                      .setCommandBuffers({ device.cmd_buffers[image_index_ret.value()] })
-                                                      .setSignalSemaphores({ device.finished_semaphores[device.current_frame] }),
+                                                      .setPWaitSemaphores({ device.available_semaphores[device.current_frame] })
+                                                      .setPWaitDstStageMask({ vk::PipelineStageFlagBits::ColorAttachmentOutput })
+                                                      .setPCommandBuffers({ device.cmd_buffers[image_index_ret.value()] })
+                                                      .setPSignalSemaphores({ device.finished_semaphores[device.current_frame] }),
                                                     device.fences[device.current_frame]);
     check_res(submit_ret, "Failed to submit command buffer");
 
     auto present_ret = device.queue_functions.PresentKHR(vk::PresentInfoKHR{}
-                                                           .setWaitSemaphores({ device.finished_semaphores[device.current_frame] })
-                                                           .setSwapchains({ device.swapchain })
-                                                           .setImageIndices({ image_index_ret.value() }));
+                                                           .setPWaitSemaphores({ device.finished_semaphores[device.current_frame] })
+                                                           .setPSwapchains({ device.swapchain })
+                                                           .setPImageIndices({ image_index_ret.value() }));
     if (present_ret == vk::Result::ErrorOutOfDateKHR || present_ret == vk::Result::SuboptimalKHR) {
         return recreate_swapchain(device);
     }

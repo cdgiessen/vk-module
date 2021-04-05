@@ -13,8 +13,10 @@
  * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#pragma once
 // clang-format off
+#pragma once
+#include <stdint.h>
+#include "vk_platform.h"
 #define VK_MAKE_VERSION(major, minor, patch) \
     ((((uint32_t)(major)) << 22) | (((uint32_t)(minor)) << 12) | ((uint32_t)(patch)))
 
@@ -1651,12 +1653,14 @@ enum class VkPipelineExecutableStatisticFormatKHR : uint32_t {
     VK_PIPELINE_EXECUTABLE_STATISTIC_FORMAT_FLOAT64_KHR = 3,
 };
 enum class VkPipelineCacheCreateFlagBits: uint32_t {
+    VK_PIPELINE_CACHE_CREATE_EXTERNALLY_SYNCHRONIZED_BIT_EXT = 1,
 };
 enum class VkQueueFlagBits: uint32_t {
     VK_QUEUE_GRAPHICS_BIT = 1,
     VK_QUEUE_COMPUTE_BIT = 2,
     VK_QUEUE_TRANSFER_BIT = 4,
     VK_QUEUE_SPARSE_BINDING_BIT = 8,
+    VK_QUEUE_PROTECTED_BIT = 16,
 };
 enum class VkCullModeFlagBits: uint32_t {
     VK_CULL_MODE_NONE = 0,
@@ -1665,8 +1669,10 @@ enum class VkCullModeFlagBits: uint32_t {
     VK_CULL_MODE_FRONT_AND_BACK = 0x00000003,
 };
 enum class VkRenderPassCreateFlagBits: uint32_t {
+    VK_RENDER_PASS_CREATE_TRANSFORM_BIT_QCOM = 2,
 };
 enum class VkDeviceQueueCreateFlagBits: uint32_t {
+    VK_DEVICE_QUEUE_CREATE_PROTECTED_BIT = 1,
 };
 enum class VkMemoryPropertyFlagBits: uint32_t {
     VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT = 1,
@@ -1674,9 +1680,13 @@ enum class VkMemoryPropertyFlagBits: uint32_t {
     VK_MEMORY_PROPERTY_HOST_COHERENT_BIT = 4,
     VK_MEMORY_PROPERTY_HOST_CACHED_BIT = 8,
     VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT = 16,
+    VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD = 64,
+    VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD = 128,
+    VK_MEMORY_PROPERTY_PROTECTED_BIT = 32,
 };
 enum class VkMemoryHeapFlagBits: uint32_t {
     VK_MEMORY_HEAP_DEVICE_LOCAL_BIT = 1,
+    VK_MEMORY_HEAP_MULTI_INSTANCE_BIT = 2,
 };
 enum class VkAccessFlagBits: uint32_t {
     VK_ACCESS_INDIRECT_COMMAND_READ_BIT = 1,
@@ -1696,6 +1706,17 @@ enum class VkAccessFlagBits: uint32_t {
     VK_ACCESS_HOST_WRITE_BIT = 16384,
     VK_ACCESS_MEMORY_READ_BIT = 32768,
     VK_ACCESS_MEMORY_WRITE_BIT = 65536,
+    VK_ACCESS_TRANSFORM_FEEDBACK_WRITE_BIT_EXT = 33554432,
+    VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_READ_BIT_EXT = 67108864,
+    VK_ACCESS_TRANSFORM_FEEDBACK_COUNTER_WRITE_BIT_EXT = 134217728,
+    VK_ACCESS_CONDITIONAL_RENDERING_READ_BIT_EXT = 1048576,
+    VK_ACCESS_COLOR_ATTACHMENT_READ_NONCOHERENT_BIT_EXT = 524288,
+    VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR = 2097152,
+    VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR = 4194304,
+    VK_ACCESS_SHADING_RATE_IMAGE_READ_BIT_NV = 8388608,
+    VK_ACCESS_FRAGMENT_DENSITY_MAP_READ_BIT_EXT = 16777216,
+    VK_ACCESS_COMMAND_PREPROCESS_READ_BIT_NV = 131072,
+    VK_ACCESS_COMMAND_PREPROCESS_WRITE_BIT_NV = 262144,
 };
 enum class VkBufferUsageFlagBits: uint32_t {
     VK_BUFFER_USAGE_TRANSFER_SRC_BIT = 1,
@@ -1707,11 +1728,20 @@ enum class VkBufferUsageFlagBits: uint32_t {
     VK_BUFFER_USAGE_INDEX_BUFFER_BIT = 64,
     VK_BUFFER_USAGE_VERTEX_BUFFER_BIT = 128,
     VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT = 256,
+    VK_BUFFER_USAGE_TRANSFORM_FEEDBACK_BUFFER_BIT_EXT = 2048,
+    VK_BUFFER_USAGE_TRANSFORM_FEEDBACK_COUNTER_BUFFER_BIT_EXT = 4096,
+    VK_BUFFER_USAGE_CONDITIONAL_RENDERING_BIT_EXT = 512,
+    VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR = 524288,
+    VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR = 1048576,
+    VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR = 1024,
+    VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT = 131072,
 };
 enum class VkBufferCreateFlagBits: uint32_t {
     VK_BUFFER_CREATE_SPARSE_BINDING_BIT = 1,
     VK_BUFFER_CREATE_SPARSE_RESIDENCY_BIT = 2,
     VK_BUFFER_CREATE_SPARSE_ALIASED_BIT = 4,
+    VK_BUFFER_CREATE_PROTECTED_BIT = 8,
+    VK_BUFFER_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT = 16,
 };
 enum class VkShaderStageFlagBits: uint32_t {
     VK_SHADER_STAGE_VERTEX_BIT = 1,
@@ -1722,6 +1752,14 @@ enum class VkShaderStageFlagBits: uint32_t {
     VK_SHADER_STAGE_COMPUTE_BIT = 32,
     VK_SHADER_STAGE_ALL_GRAPHICS = 0x0000001F,
     VK_SHADER_STAGE_ALL = 0x7FFFFFFF,
+    VK_SHADER_STAGE_RAYGEN_BIT_KHR = 256,
+    VK_SHADER_STAGE_ANY_HIT_BIT_KHR = 512,
+    VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR = 1024,
+    VK_SHADER_STAGE_MISS_BIT_KHR = 2048,
+    VK_SHADER_STAGE_INTERSECTION_BIT_KHR = 4096,
+    VK_SHADER_STAGE_CALLABLE_BIT_KHR = 8192,
+    VK_SHADER_STAGE_TASK_BIT_NV = 64,
+    VK_SHADER_STAGE_MESH_BIT_NV = 128,
 };
 enum class VkImageUsageFlagBits: uint32_t {
     VK_IMAGE_USAGE_TRANSFER_SRC_BIT = 1,
@@ -1732,6 +1770,8 @@ enum class VkImageUsageFlagBits: uint32_t {
     VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT = 32,
     VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT = 64,
     VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT = 128,
+    VK_IMAGE_USAGE_SHADING_RATE_IMAGE_BIT_NV = 256,
+    VK_IMAGE_USAGE_FRAGMENT_DENSITY_MAP_BIT_EXT = 512,
 };
 enum class VkImageCreateFlagBits: uint32_t {
     VK_IMAGE_CREATE_SPARSE_BINDING_BIT = 1,
@@ -1739,17 +1779,49 @@ enum class VkImageCreateFlagBits: uint32_t {
     VK_IMAGE_CREATE_SPARSE_ALIASED_BIT = 4,
     VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT = 8,
     VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT = 16,
+    VK_IMAGE_CREATE_CORNER_SAMPLED_BIT_NV = 8192,
+    VK_IMAGE_CREATE_SAMPLE_LOCATIONS_COMPATIBLE_DEPTH_BIT_EXT = 4096,
+    VK_IMAGE_CREATE_SUBSAMPLED_BIT_EXT = 16384,
+    VK_IMAGE_CREATE_ALIAS_BIT = 1024,
+    VK_IMAGE_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT = 64,
+    VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT = 32,
+    VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT = 128,
+    VK_IMAGE_CREATE_EXTENDED_USAGE_BIT = 256,
+    VK_IMAGE_CREATE_PROTECTED_BIT = 2048,
+    VK_IMAGE_CREATE_DISJOINT_BIT = 512,
 };
 enum class VkImageViewCreateFlagBits: uint32_t {
+    VK_IMAGE_VIEW_CREATE_FRAGMENT_DENSITY_MAP_DYNAMIC_BIT_EXT = 1,
+    VK_IMAGE_VIEW_CREATE_FRAGMENT_DENSITY_MAP_DEFERRED_BIT_EXT = 2,
 };
 enum class VkSamplerCreateFlagBits: uint32_t {
+    VK_SAMPLER_CREATE_SUBSAMPLED_BIT_EXT = 1,
+    VK_SAMPLER_CREATE_SUBSAMPLED_COARSE_RECONSTRUCTION_BIT_EXT = 2,
 };
 enum class VkPipelineCreateFlagBits: uint32_t {
     VK_PIPELINE_CREATE_DISABLE_OPTIMIZATION_BIT = 1,
     VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT = 2,
     VK_PIPELINE_CREATE_DERIVATIVE_BIT = 4,
+    VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_ANY_HIT_SHADERS_BIT_KHR = 16384,
+    VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS_BIT_KHR = 32768,
+    VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_MISS_SHADERS_BIT_KHR = 65536,
+    VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_INTERSECTION_SHADERS_BIT_KHR = 131072,
+    VK_PIPELINE_CREATE_RAY_TRACING_SKIP_TRIANGLES_BIT_KHR = 4096,
+    VK_PIPELINE_CREATE_RAY_TRACING_SKIP_AABBS_BIT_KHR = 8192,
+    VK_PIPELINE_CREATE_RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY_BIT_KHR = 524288,
+    VK_PIPELINE_CREATE_DEFER_COMPILE_BIT_NV = 32,
+    VK_PIPELINE_CREATE_CAPTURE_STATISTICS_BIT_KHR = 64,
+    VK_PIPELINE_CREATE_CAPTURE_INTERNAL_REPRESENTATIONS_BIT_KHR = 128,
+    VK_PIPELINE_CREATE_INDIRECT_BINDABLE_BIT_NV = 262144,
+    VK_PIPELINE_CREATE_LIBRARY_BIT_KHR = 2048,
+    VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT_EXT = 256,
+    VK_PIPELINE_CREATE_EARLY_RETURN_ON_FAILURE_BIT_EXT = 512,
+    VK_PIPELINE_CREATE_VIEW_INDEX_FROM_DEVICE_INDEX_BIT = 8,
+    VK_PIPELINE_CREATE_DISPATCH_BASE_BIT = 16,
 };
 enum class VkPipelineShaderStageCreateFlagBits: uint32_t {
+    VK_PIPELINE_SHADER_STAGE_CREATE_ALLOW_VARYING_SUBGROUP_SIZE_BIT_EXT = 1,
+    VK_PIPELINE_SHADER_STAGE_CREATE_REQUIRE_FULL_SUBGROUPS_BIT_EXT = 2,
 };
 enum class VkColorComponentFlagBits: uint32_t {
     VK_COLOR_COMPONENT_R_BIT = 1,
@@ -1774,6 +1846,20 @@ enum class VkFormatFeatureFlagBits: uint32_t {
     VK_FORMAT_FEATURE_BLIT_SRC_BIT = 1024,
     VK_FORMAT_FEATURE_BLIT_DST_BIT = 2048,
     VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT = 4096,
+    VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG = 8192,
+    VK_FORMAT_FEATURE_ACCELERATION_STRUCTURE_VERTEX_BUFFER_BIT_KHR = 536870912,
+    VK_FORMAT_FEATURE_FRAGMENT_DENSITY_MAP_BIT_EXT = 16777216,
+    VK_FORMAT_FEATURE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR = 1073741824,
+    VK_FORMAT_FEATURE_TRANSFER_SRC_BIT = 16384,
+    VK_FORMAT_FEATURE_TRANSFER_DST_BIT = 32768,
+    VK_FORMAT_FEATURE_MIDPOINT_CHROMA_SAMPLES_BIT = 131072,
+    VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT = 262144,
+    VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER_BIT = 524288,
+    VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_BIT = 1048576,
+    VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE_BIT = 2097152,
+    VK_FORMAT_FEATURE_DISJOINT_BIT = 4194304,
+    VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT = 8388608,
+    VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT = 65536,
 };
 enum class VkQueryControlFlagBits: uint32_t {
     VK_QUERY_CONTROL_PRECISE_BIT = 1,
@@ -1807,6 +1893,13 @@ enum class VkImageAspectFlagBits: uint32_t {
     VK_IMAGE_ASPECT_DEPTH_BIT = 2,
     VK_IMAGE_ASPECT_STENCIL_BIT = 4,
     VK_IMAGE_ASPECT_METADATA_BIT = 8,
+    VK_IMAGE_ASPECT_MEMORY_PLANE_0_BIT_EXT = 128,
+    VK_IMAGE_ASPECT_MEMORY_PLANE_1_BIT_EXT = 256,
+    VK_IMAGE_ASPECT_MEMORY_PLANE_2_BIT_EXT = 512,
+    VK_IMAGE_ASPECT_MEMORY_PLANE_3_BIT_EXT = 1024,
+    VK_IMAGE_ASPECT_PLANE_0_BIT = 16,
+    VK_IMAGE_ASPECT_PLANE_1_BIT = 32,
+    VK_IMAGE_ASPECT_PLANE_2_BIT = 64,
 };
 enum class VkSparseImageFormatFlagBits: uint32_t {
     VK_SPARSE_IMAGE_FORMAT_SINGLE_MIPTAIL_BIT = 1,
@@ -1834,10 +1927,20 @@ enum class VkPipelineStageFlagBits: uint32_t {
     VK_PIPELINE_STAGE_HOST_BIT = 16384,
     VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT = 32768,
     VK_PIPELINE_STAGE_ALL_COMMANDS_BIT = 65536,
+    VK_PIPELINE_STAGE_TRANSFORM_FEEDBACK_BIT_EXT = 16777216,
+    VK_PIPELINE_STAGE_CONDITIONAL_RENDERING_BIT_EXT = 262144,
+    VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR = 33554432,
+    VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR = 2097152,
+    VK_PIPELINE_STAGE_SHADING_RATE_IMAGE_BIT_NV = 4194304,
+    VK_PIPELINE_STAGE_TASK_SHADER_BIT_NV = 524288,
+    VK_PIPELINE_STAGE_MESH_SHADER_BIT_NV = 1048576,
+    VK_PIPELINE_STAGE_FRAGMENT_DENSITY_PROCESS_BIT_EXT = 8388608,
+    VK_PIPELINE_STAGE_COMMAND_PREPROCESS_BIT_NV = 131072,
 };
 enum class VkCommandPoolCreateFlagBits: uint32_t {
     VK_COMMAND_POOL_CREATE_TRANSIENT_BIT = 1,
     VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT = 2,
+    VK_COMMAND_POOL_CREATE_PROTECTED_BIT = 4,
 };
 enum class VkCommandPoolResetFlagBits: uint32_t {
     VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT = 1,
@@ -1861,13 +1964,16 @@ enum class VkStencilFaceFlagBits: uint32_t {
     VK_STENCIL_FACE_FRONT_BIT = 1,
     VK_STENCIL_FACE_BACK_BIT = 2,
     VK_STENCIL_FACE_FRONT_AND_BACK = 0x00000003,
-    VK_STENCIL_FRONT_AND_BACK = VK_STENCIL_FACE_FRONT_AND_BACK,
 };
 enum class VkDescriptorPoolCreateFlagBits: uint32_t {
     VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT = 1,
+    VK_DESCRIPTOR_POOL_CREATE_HOST_ONLY_BIT_VALVE = 4,
+    VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT = 2,
 };
 enum class VkDependencyFlagBits: uint32_t {
     VK_DEPENDENCY_BY_REGION_BIT = 1,
+    VK_DEPENDENCY_DEVICE_GROUP_BIT = 4,
+    VK_DEPENDENCY_VIEW_LOCAL_BIT = 2,
 };
 enum class VkSemaphoreWaitFlagBits: uint32_t {
     VK_SEMAPHORE_WAIT_ANY_BIT = 1,
@@ -1922,6 +2028,7 @@ enum class VkSubgroupFeatureFlagBits: uint32_t {
     VK_SUBGROUP_FEATURE_SHUFFLE_RELATIVE_BIT = 32,
     VK_SUBGROUP_FEATURE_CLUSTERED_BIT = 64,
     VK_SUBGROUP_FEATURE_QUAD_BIT = 128,
+    VK_SUBGROUP_FEATURE_PARTITIONED_BIT_NV = 256,
 };
 enum class VkIndirectCommandsLayoutUsageFlagBitsNV: uint32_t {
     VK_INDIRECT_COMMANDS_LAYOUT_USAGE_EXPLICIT_PREPROCESS_BIT_NV = 1,
@@ -1934,6 +2041,9 @@ enum class VkIndirectStateFlagBitsNV: uint32_t {
 enum class VkPrivateDataSlotCreateFlagBitsEXT: uint32_t {
 };
 enum class VkDescriptorSetLayoutCreateFlagBits: uint32_t {
+    VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR = 1,
+    VK_DESCRIPTOR_SET_LAYOUT_CREATE_HOST_ONLY_POOL_BIT_VALVE = 4,
+    VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT = 2,
 };
 enum class VkExternalMemoryHandleTypeFlagBits: uint32_t {
     VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT = 1,
@@ -1943,6 +2053,10 @@ enum class VkExternalMemoryHandleTypeFlagBits: uint32_t {
     VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_KMT_BIT = 16,
     VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_HEAP_BIT = 32,
     VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_RESOURCE_BIT = 64,
+    VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT = 512,
+    VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID = 1024,
+    VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_ALLOCATION_BIT_EXT = 128,
+    VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_MAPPED_FOREIGN_MEMORY_BIT_EXT = 256,
 };
 enum class VkExternalMemoryFeatureFlagBits: uint32_t {
     VK_EXTERNAL_MEMORY_FEATURE_DEDICATED_ONLY_BIT = 1,
@@ -1989,6 +2103,8 @@ enum class VkPeerMemoryFeatureFlagBits: uint32_t {
 };
 enum class VkMemoryAllocateFlagBits: uint32_t {
     VK_MEMORY_ALLOCATE_DEVICE_MASK_BIT = 1,
+    VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT = 2,
+    VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT = 4,
 };
 enum class VkDeviceGroupPresentModeFlagBitsKHR: uint32_t {
     VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_BIT_KHR = 1,
@@ -1997,8 +2113,15 @@ enum class VkDeviceGroupPresentModeFlagBitsKHR: uint32_t {
     VK_DEVICE_GROUP_PRESENT_MODE_LOCAL_MULTI_DEVICE_BIT_KHR = 8,
 };
 enum class VkSwapchainCreateFlagBitsKHR: uint32_t {
+    VK_SWAPCHAIN_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT_KHR = 1,
+    VK_SWAPCHAIN_CREATE_PROTECTED_BIT_KHR = 2,
+    VK_SWAPCHAIN_CREATE_MUTABLE_FORMAT_BIT_KHR = 4,
 };
 enum class VkSubpassDescriptionFlagBits: uint32_t {
+    VK_SUBPASS_DESCRIPTION_PER_VIEW_ATTRIBUTES_BIT_NVX = 1,
+    VK_SUBPASS_DESCRIPTION_PER_VIEW_POSITION_X_ONLY_BIT_NVX = 2,
+    VK_SUBPASS_DESCRIPTION_FRAGMENT_REGION_BIT_QCOM = 4,
+    VK_SUBPASS_DESCRIPTION_SHADER_RESOLVE_BIT_QCOM = 8,
 };
 enum class VkDebugUtilsMessageSeverityFlagBitsEXT: uint32_t {
     VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT = 1,
@@ -2048,6 +2171,7 @@ enum class VkAccelerationStructureCreateFlagBitsKHR: uint32_t {
     VK_ACCELERATION_STRUCTURE_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_KHR = 1,
 };
 enum class VkFramebufferCreateFlagBits: uint32_t {
+    VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT = 1,
 };
 enum class VkDeviceDiagnosticsConfigFlagBitsNV: uint32_t {
     VK_DEVICE_DIAGNOSTICS_CONFIG_ENABLE_SHADER_DEBUG_INFO_BIT_NV = 1,
@@ -2079,6 +2203,8 @@ enum class VkToolPurposeFlagBitsEXT: uint32_t {
     VK_TOOL_PURPOSE_TRACING_BIT_EXT = 4,
     VK_TOOL_PURPOSE_ADDITIONAL_FEATURES_BIT_EXT = 8,
     VK_TOOL_PURPOSE_MODIFYING_FEATURES_BIT_EXT = 16,
+    VK_TOOL_PURPOSE_DEBUG_REPORTING_BIT_EXT = 32,
+    VK_TOOL_PURPOSE_DEBUG_MARKERS_BIT_EXT = 64,
 };
 enum class VkQueryPoolCreateFlagBits: uint32_t { };
 enum class VkPipelineLayoutCreateFlagBits: uint32_t { };
@@ -2180,16 +2306,13 @@ constexpr FLAG_TYPE operator~(FLAG_TYPE a) noexcept {                           
     return static_cast<FLAG_TYPE>(~a.flags);                                               \
 }                                                                                          \
 constexpr FLAG_TYPE& operator|=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {                      \
-    a.flags = (a.flags | b.flags);                                                         \
-    return a;                                                                              \
+    return a.flags = (a.flags | b.flags), a;                                                                              \
 }                                                                                          \
 constexpr FLAG_TYPE& operator&=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {                      \
-    a.flags = (a.flags & b.flags);                                                         \
-    return a;                                                                              \
+    return a.flags = (a.flags & b.flags), a;                                                                              \
 }                                                                                          \
 constexpr FLAG_TYPE operator^=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {                       \
-    a.flags = (a.flags ^ b.flags);                                                         \
-    return a;                                                                              \
+    return  a.flags = (a.flags ^ b.flags), a;                                                                              \
 }                                                                                          \
 constexpr FLAG_TYPE operator|(FLAG_BITS a, FLAG_BITS b) noexcept {                         \
     return static_cast<FLAG_TYPE>(static_cast<BASE_TYPE>(a) | static_cast<BASE_TYPE>(b));  \
@@ -6626,10 +6749,10 @@ struct VkTransformMatrixKHR {
 using VkTransformMatrixNV = VkTransformMatrixKHR;
 struct VkAccelerationStructureInstanceKHR {
     VkTransformMatrixKHR                                      transform{};
-    uint32_t                                                  instanceCustomIndex :24{};
-    uint32_t                                                  mask :8{};
-    uint32_t                                                  instanceShaderBindingTableRecordOffset :24{};
-    uint32_t                flags :8{};
+    uint32_t                                                  instanceCustomIndex :24;
+    uint32_t                                                  mask :8;
+    uint32_t                                                  instanceShaderBindingTableRecordOffset :24;
+    uint32_t                flags :8;
     uint64_t                                                  accelerationStructureReference{};
 };
 using VkAccelerationStructureInstanceNV = VkAccelerationStructureInstanceKHR;
@@ -7449,7 +7572,6 @@ extern PFN_vkEnumerateInstanceVersion vkEnumerateInstanceVersion;
 extern PFN_vkDestroyInstance vkDestroyInstance;
 extern PFN_vkEnumeratePhysicalDevices vkEnumeratePhysicalDevices;
 extern PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr;
-extern PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr;
 extern PFN_vkGetPhysicalDeviceProperties vkGetPhysicalDeviceProperties;
 extern PFN_vkGetPhysicalDeviceQueueFamilyProperties vkGetPhysicalDeviceQueueFamilyProperties;
 extern PFN_vkGetPhysicalDeviceMemoryProperties vkGetPhysicalDeviceMemoryProperties;

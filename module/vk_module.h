@@ -2311,16 +2311,13 @@ constexpr FLAG_TYPE operator~(FLAG_TYPE a) noexcept {                           
     return static_cast<FLAG_TYPE>(~a.flags);                                               \
 }                                                                                          \
 constexpr FLAG_TYPE& operator|=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {                      \
-    a.flags = (a.flags | b.flags);                                                         \
-    return a;                                                                              \
+    return a.flags = (a.flags | b.flags), a;                                                                              \
 }                                                                                          \
 constexpr FLAG_TYPE& operator&=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {                      \
-    a.flags = (a.flags & b.flags);                                                         \
-    return a;                                                                              \
+    return a.flags = (a.flags & b.flags), a;                                                                              \
 }                                                                                          \
 constexpr FLAG_TYPE operator^=(FLAG_TYPE& a, FLAG_TYPE b) noexcept {                       \
-    a.flags = (a.flags ^ b.flags);                                                         \
-    return a;                                                                              \
+    return  a.flags = (a.flags ^ b.flags), a;                                                                              \
 }                                                                                          \
 constexpr FLAG_TYPE operator|(FLAG_BITS a, FLAG_BITS b) noexcept {                         \
     return static_cast<FLAG_TYPE>(static_cast<BASE_TYPE>(a) | static_cast<BASE_TYPE>(b));  \
@@ -3300,8 +3297,8 @@ struct Offset2D {
     constexpr bool operator==(Offset2D const& value) const {
         return x == value.x && y == value.y ;}
     constexpr bool operator!=(Offset2D const& value) const {return !(*this == value);}
-    Offset2D& setX(int32_t x) { this->x = x; return *this; }
-    Offset2D& setY(int32_t y) { this->y = y; return *this; }
+    Offset2D& setX(int32_t x) {this->x = x; return *this; }
+    Offset2D& setY(int32_t y) {this->y = y; return *this; }
 };
 struct Offset3D {
     int32_t x{0};
@@ -3310,9 +3307,9 @@ struct Offset3D {
     constexpr bool operator==(Offset3D const& value) const {
         return x == value.x && y == value.y && z == value.z ;}
     constexpr bool operator!=(Offset3D const& value) const {return !(*this == value);}
-    Offset3D& setX(int32_t x) { this->x = x; return *this; }
-    Offset3D& setY(int32_t y) { this->y = y; return *this; }
-    Offset3D& setZ(int32_t z) { this->z = z; return *this; }
+    Offset3D& setX(int32_t x) {this->x = x; return *this; }
+    Offset3D& setY(int32_t y) {this->y = y; return *this; }
+    Offset3D& setZ(int32_t z) {this->z = z; return *this; }
 };
 struct Extent2D {
     uint32_t width{0};
@@ -3320,8 +3317,8 @@ struct Extent2D {
     constexpr bool operator==(Extent2D const& value) const {
         return width == value.width && height == value.height ;}
     constexpr bool operator!=(Extent2D const& value) const {return !(*this == value);}
-    Extent2D& setWidth(uint32_t width) { this->width = width; return *this; }
-    Extent2D& setHeight(uint32_t height) { this->height = height; return *this; }
+    Extent2D& setWidth(uint32_t width) {this->width = width; return *this; }
+    Extent2D& setHeight(uint32_t height) {this->height = height; return *this; }
 };
 struct Extent3D {
     uint32_t width{0};
@@ -3330,9 +3327,9 @@ struct Extent3D {
     constexpr bool operator==(Extent3D const& value) const {
         return width == value.width && height == value.height && depth == value.depth ;}
     constexpr bool operator!=(Extent3D const& value) const {return !(*this == value);}
-    Extent3D& setWidth(uint32_t width) { this->width = width; return *this; }
-    Extent3D& setHeight(uint32_t height) { this->height = height; return *this; }
-    Extent3D& setDepth(uint32_t depth) { this->depth = depth; return *this; }
+    Extent3D& setWidth(uint32_t width) {this->width = width; return *this; }
+    Extent3D& setHeight(uint32_t height) {this->height = height; return *this; }
+    Extent3D& setDepth(uint32_t depth) {this->depth = depth; return *this; }
 };
 struct Viewport {
     float x{0.f};
@@ -3344,12 +3341,12 @@ struct Viewport {
     constexpr bool operator==(Viewport const& value) const {
         return x == value.x && y == value.y && width == value.width && height == value.height && minDepth == value.minDepth && maxDepth == value.maxDepth ;}
     constexpr bool operator!=(Viewport const& value) const {return !(*this == value);}
-    Viewport& setX(float x) { this->x = x; return *this; }
-    Viewport& setY(float y) { this->y = y; return *this; }
-    Viewport& setWidth(float width) { this->width = width; return *this; }
-    Viewport& setHeight(float height) { this->height = height; return *this; }
-    Viewport& setMinDepth(float minDepth) { this->minDepth = minDepth; return *this; }
-    Viewport& setMaxDepth(float maxDepth) { this->maxDepth = maxDepth; return *this; }
+    Viewport& setX(float x) {this->x = x; return *this; }
+    Viewport& setY(float y) {this->y = y; return *this; }
+    Viewport& setWidth(float width) {this->width = width; return *this; }
+    Viewport& setHeight(float height) {this->height = height; return *this; }
+    Viewport& setMinDepth(float minDepth) {this->minDepth = minDepth; return *this; }
+    Viewport& setMaxDepth(float maxDepth) {this->maxDepth = maxDepth; return *this; }
 };
 struct Rect2D {
     Offset2D offset{};
@@ -3357,8 +3354,8 @@ struct Rect2D {
     constexpr bool operator==(Rect2D const& value) const {
         return offset == value.offset && extent == value.extent ;}
     constexpr bool operator!=(Rect2D const& value) const {return !(*this == value);}
-    Rect2D& setOffset(Offset2D offset) { this->offset = offset; return *this; }
-    Rect2D& setExtent(Extent2D extent) { this->extent = extent; return *this; }
+    Rect2D& setOffset(Offset2D offset) {this->offset = offset; return *this; }
+    Rect2D& setExtent(Extent2D extent) {this->extent = extent; return *this; }
 };
 struct ClearRect {
     Rect2D rect{};
@@ -3367,9 +3364,9 @@ struct ClearRect {
     constexpr bool operator==(ClearRect const& value) const {
         return rect == value.rect && baseArrayLayer == value.baseArrayLayer && layerCount == value.layerCount ;}
     constexpr bool operator!=(ClearRect const& value) const {return !(*this == value);}
-    ClearRect& setRect(Rect2D rect) { this->rect = rect; return *this; }
-    ClearRect& setBaseArrayLayer(uint32_t baseArrayLayer) { this->baseArrayLayer = baseArrayLayer; return *this; }
-    ClearRect& setLayerCount(uint32_t layerCount) { this->layerCount = layerCount; return *this; }
+    ClearRect& setRect(Rect2D rect) {this->rect = rect; return *this; }
+    ClearRect& setBaseArrayLayer(uint32_t baseArrayLayer) {this->baseArrayLayer = baseArrayLayer; return *this; }
+    ClearRect& setLayerCount(uint32_t layerCount) {this->layerCount = layerCount; return *this; }
 };
 struct ComponentMapping {
     ComponentSwizzle r{static_cast<ComponentSwizzle>(0)};
@@ -3379,10 +3376,10 @@ struct ComponentMapping {
     constexpr bool operator==(ComponentMapping const& value) const {
         return r == value.r && g == value.g && b == value.b && a == value.a ;}
     constexpr bool operator!=(ComponentMapping const& value) const {return !(*this == value);}
-    ComponentMapping& setR(ComponentSwizzle r) { this->r = r; return *this; }
-    ComponentMapping& setG(ComponentSwizzle g) { this->g = g; return *this; }
-    ComponentMapping& setB(ComponentSwizzle b) { this->b = b; return *this; }
-    ComponentMapping& setA(ComponentSwizzle a) { this->a = a; return *this; }
+    ComponentMapping& setR(ComponentSwizzle r) {this->r = r; return *this; }
+    ComponentMapping& setG(ComponentSwizzle g) {this->g = g; return *this; }
+    ComponentMapping& setB(ComponentSwizzle b) {this->b = b; return *this; }
+    ComponentMapping& setA(ComponentSwizzle a) {this->a = a; return *this; }
 };
 struct PhysicalDeviceSparseProperties {
     Bool32 residencyStandard2DBlockShape{0};
@@ -3395,11 +3392,11 @@ struct PhysicalDeviceSparseProperties {
         && residencyStandard3DBlockShape == value.residencyStandard3DBlockShape && residencyAlignedMipSize == value.residencyAlignedMipSize 
         && residencyNonResidentStrict == value.residencyNonResidentStrict ;}
     constexpr bool operator!=(PhysicalDeviceSparseProperties const& value) const {return !(*this == value);}
-    PhysicalDeviceSparseProperties& setResidencyStandard2DBlockShape(Bool32 residencyStandard2DBlockShape) { this->residencyStandard2DBlockShape = residencyStandard2DBlockShape; return *this; }
-    PhysicalDeviceSparseProperties& setResidencyStandard2DMultisampleBlockShape(Bool32 residencyStandard2DMultisampleBlockShape) { this->residencyStandard2DMultisampleBlockShape = residencyStandard2DMultisampleBlockShape; return *this; }
-    PhysicalDeviceSparseProperties& setResidencyStandard3DBlockShape(Bool32 residencyStandard3DBlockShape) { this->residencyStandard3DBlockShape = residencyStandard3DBlockShape; return *this; }
-    PhysicalDeviceSparseProperties& setResidencyAlignedMipSize(Bool32 residencyAlignedMipSize) { this->residencyAlignedMipSize = residencyAlignedMipSize; return *this; }
-    PhysicalDeviceSparseProperties& setResidencyNonResidentStrict(Bool32 residencyNonResidentStrict) { this->residencyNonResidentStrict = residencyNonResidentStrict; return *this; }
+    PhysicalDeviceSparseProperties& setResidencyStandard2DBlockShape(Bool32 residencyStandard2DBlockShape) {this->residencyStandard2DBlockShape = residencyStandard2DBlockShape; return *this; }
+    PhysicalDeviceSparseProperties& setResidencyStandard2DMultisampleBlockShape(Bool32 residencyStandard2DMultisampleBlockShape) {this->residencyStandard2DMultisampleBlockShape = residencyStandard2DMultisampleBlockShape; return *this; }
+    PhysicalDeviceSparseProperties& setResidencyStandard3DBlockShape(Bool32 residencyStandard3DBlockShape) {this->residencyStandard3DBlockShape = residencyStandard3DBlockShape; return *this; }
+    PhysicalDeviceSparseProperties& setResidencyAlignedMipSize(Bool32 residencyAlignedMipSize) {this->residencyAlignedMipSize = residencyAlignedMipSize; return *this; }
+    PhysicalDeviceSparseProperties& setResidencyNonResidentStrict(Bool32 residencyNonResidentStrict) {this->residencyNonResidentStrict = residencyNonResidentStrict; return *this; }
 };
 struct PhysicalDeviceLimits {
     uint32_t maxImageDimension1D{0};
@@ -3566,112 +3563,112 @@ struct PhysicalDeviceLimits {
         && optimalBufferCopyRowPitchAlignment == value.optimalBufferCopyRowPitchAlignment && nonCoherentAtomSize == value.nonCoherentAtomSize 
         ;}
     constexpr bool operator!=(PhysicalDeviceLimits const& value) const {return !(*this == value);}
-    PhysicalDeviceLimits& setMaxImageDimension1D(uint32_t maxImageDimension1D) { this->maxImageDimension1D = maxImageDimension1D; return *this; }
-    PhysicalDeviceLimits& setMaxImageDimension2D(uint32_t maxImageDimension2D) { this->maxImageDimension2D = maxImageDimension2D; return *this; }
-    PhysicalDeviceLimits& setMaxImageDimension3D(uint32_t maxImageDimension3D) { this->maxImageDimension3D = maxImageDimension3D; return *this; }
-    PhysicalDeviceLimits& setMaxImageDimensionCube(uint32_t maxImageDimensionCube) { this->maxImageDimensionCube = maxImageDimensionCube; return *this; }
-    PhysicalDeviceLimits& setMaxImageArrayLayers(uint32_t maxImageArrayLayers) { this->maxImageArrayLayers = maxImageArrayLayers; return *this; }
-    PhysicalDeviceLimits& setMaxTexelBufferElements(uint32_t maxTexelBufferElements) { this->maxTexelBufferElements = maxTexelBufferElements; return *this; }
-    PhysicalDeviceLimits& setMaxUniformBufferRange(uint32_t maxUniformBufferRange) { this->maxUniformBufferRange = maxUniformBufferRange; return *this; }
-    PhysicalDeviceLimits& setMaxStorageBufferRange(uint32_t maxStorageBufferRange) { this->maxStorageBufferRange = maxStorageBufferRange; return *this; }
-    PhysicalDeviceLimits& setMaxPushConstantsSize(uint32_t maxPushConstantsSize) { this->maxPushConstantsSize = maxPushConstantsSize; return *this; }
-    PhysicalDeviceLimits& setMaxMemoryAllocationCount(uint32_t maxMemoryAllocationCount) { this->maxMemoryAllocationCount = maxMemoryAllocationCount; return *this; }
-    PhysicalDeviceLimits& setMaxSamplerAllocationCount(uint32_t maxSamplerAllocationCount) { this->maxSamplerAllocationCount = maxSamplerAllocationCount; return *this; }
-    PhysicalDeviceLimits& setBufferImageGranularity(DeviceSize bufferImageGranularity) { this->bufferImageGranularity = bufferImageGranularity; return *this; }
-    PhysicalDeviceLimits& setSparseAddressSpaceSize(DeviceSize sparseAddressSpaceSize) { this->sparseAddressSpaceSize = sparseAddressSpaceSize; return *this; }
-    PhysicalDeviceLimits& setMaxBoundDescriptorSets(uint32_t maxBoundDescriptorSets) { this->maxBoundDescriptorSets = maxBoundDescriptorSets; return *this; }
-    PhysicalDeviceLimits& setMaxPerStageDescriptorSamplers(uint32_t maxPerStageDescriptorSamplers) { this->maxPerStageDescriptorSamplers = maxPerStageDescriptorSamplers; return *this; }
-    PhysicalDeviceLimits& setMaxPerStageDescriptorUniformBuffers(uint32_t maxPerStageDescriptorUniformBuffers) { this->maxPerStageDescriptorUniformBuffers = maxPerStageDescriptorUniformBuffers; return *this; }
-    PhysicalDeviceLimits& setMaxPerStageDescriptorStorageBuffers(uint32_t maxPerStageDescriptorStorageBuffers) { this->maxPerStageDescriptorStorageBuffers = maxPerStageDescriptorStorageBuffers; return *this; }
-    PhysicalDeviceLimits& setMaxPerStageDescriptorSampledImages(uint32_t maxPerStageDescriptorSampledImages) { this->maxPerStageDescriptorSampledImages = maxPerStageDescriptorSampledImages; return *this; }
-    PhysicalDeviceLimits& setMaxPerStageDescriptorStorageImages(uint32_t maxPerStageDescriptorStorageImages) { this->maxPerStageDescriptorStorageImages = maxPerStageDescriptorStorageImages; return *this; }
-    PhysicalDeviceLimits& setMaxPerStageDescriptorInputAttachments(uint32_t maxPerStageDescriptorInputAttachments) { this->maxPerStageDescriptorInputAttachments = maxPerStageDescriptorInputAttachments; return *this; }
-    PhysicalDeviceLimits& setMaxPerStageResources(uint32_t maxPerStageResources) { this->maxPerStageResources = maxPerStageResources; return *this; }
-    PhysicalDeviceLimits& setMaxDescriptorSetSamplers(uint32_t maxDescriptorSetSamplers) { this->maxDescriptorSetSamplers = maxDescriptorSetSamplers; return *this; }
-    PhysicalDeviceLimits& setMaxDescriptorSetUniformBuffers(uint32_t maxDescriptorSetUniformBuffers) { this->maxDescriptorSetUniformBuffers = maxDescriptorSetUniformBuffers; return *this; }
-    PhysicalDeviceLimits& setMaxDescriptorSetUniformBuffersDynamic(uint32_t maxDescriptorSetUniformBuffersDynamic) { this->maxDescriptorSetUniformBuffersDynamic = maxDescriptorSetUniformBuffersDynamic; return *this; }
-    PhysicalDeviceLimits& setMaxDescriptorSetStorageBuffers(uint32_t maxDescriptorSetStorageBuffers) { this->maxDescriptorSetStorageBuffers = maxDescriptorSetStorageBuffers; return *this; }
-    PhysicalDeviceLimits& setMaxDescriptorSetStorageBuffersDynamic(uint32_t maxDescriptorSetStorageBuffersDynamic) { this->maxDescriptorSetStorageBuffersDynamic = maxDescriptorSetStorageBuffersDynamic; return *this; }
-    PhysicalDeviceLimits& setMaxDescriptorSetSampledImages(uint32_t maxDescriptorSetSampledImages) { this->maxDescriptorSetSampledImages = maxDescriptorSetSampledImages; return *this; }
-    PhysicalDeviceLimits& setMaxDescriptorSetStorageImages(uint32_t maxDescriptorSetStorageImages) { this->maxDescriptorSetStorageImages = maxDescriptorSetStorageImages; return *this; }
-    PhysicalDeviceLimits& setMaxDescriptorSetInputAttachments(uint32_t maxDescriptorSetInputAttachments) { this->maxDescriptorSetInputAttachments = maxDescriptorSetInputAttachments; return *this; }
-    PhysicalDeviceLimits& setMaxVertexInputAttributes(uint32_t maxVertexInputAttributes) { this->maxVertexInputAttributes = maxVertexInputAttributes; return *this; }
-    PhysicalDeviceLimits& setMaxVertexInputBindings(uint32_t maxVertexInputBindings) { this->maxVertexInputBindings = maxVertexInputBindings; return *this; }
-    PhysicalDeviceLimits& setMaxVertexInputAttributeOffset(uint32_t maxVertexInputAttributeOffset) { this->maxVertexInputAttributeOffset = maxVertexInputAttributeOffset; return *this; }
-    PhysicalDeviceLimits& setMaxVertexInputBindingStride(uint32_t maxVertexInputBindingStride) { this->maxVertexInputBindingStride = maxVertexInputBindingStride; return *this; }
-    PhysicalDeviceLimits& setMaxVertexOutputComponents(uint32_t maxVertexOutputComponents) { this->maxVertexOutputComponents = maxVertexOutputComponents; return *this; }
-    PhysicalDeviceLimits& setMaxTessellationGenerationLevel(uint32_t maxTessellationGenerationLevel) { this->maxTessellationGenerationLevel = maxTessellationGenerationLevel; return *this; }
-    PhysicalDeviceLimits& setMaxTessellationPatchSize(uint32_t maxTessellationPatchSize) { this->maxTessellationPatchSize = maxTessellationPatchSize; return *this; }
-    PhysicalDeviceLimits& setMaxTessellationControlPerVertexInputComponents(uint32_t maxTessellationControlPerVertexInputComponents) { this->maxTessellationControlPerVertexInputComponents = maxTessellationControlPerVertexInputComponents; return *this; }
-    PhysicalDeviceLimits& setMaxTessellationControlPerVertexOutputComponents(uint32_t maxTessellationControlPerVertexOutputComponents) { this->maxTessellationControlPerVertexOutputComponents = maxTessellationControlPerVertexOutputComponents; return *this; }
-    PhysicalDeviceLimits& setMaxTessellationControlPerPatchOutputComponents(uint32_t maxTessellationControlPerPatchOutputComponents) { this->maxTessellationControlPerPatchOutputComponents = maxTessellationControlPerPatchOutputComponents; return *this; }
-    PhysicalDeviceLimits& setMaxTessellationControlTotalOutputComponents(uint32_t maxTessellationControlTotalOutputComponents) { this->maxTessellationControlTotalOutputComponents = maxTessellationControlTotalOutputComponents; return *this; }
-    PhysicalDeviceLimits& setMaxTessellationEvaluationInputComponents(uint32_t maxTessellationEvaluationInputComponents) { this->maxTessellationEvaluationInputComponents = maxTessellationEvaluationInputComponents; return *this; }
-    PhysicalDeviceLimits& setMaxTessellationEvaluationOutputComponents(uint32_t maxTessellationEvaluationOutputComponents) { this->maxTessellationEvaluationOutputComponents = maxTessellationEvaluationOutputComponents; return *this; }
-    PhysicalDeviceLimits& setMaxGeometryShaderInvocations(uint32_t maxGeometryShaderInvocations) { this->maxGeometryShaderInvocations = maxGeometryShaderInvocations; return *this; }
-    PhysicalDeviceLimits& setMaxGeometryInputComponents(uint32_t maxGeometryInputComponents) { this->maxGeometryInputComponents = maxGeometryInputComponents; return *this; }
-    PhysicalDeviceLimits& setMaxGeometryOutputComponents(uint32_t maxGeometryOutputComponents) { this->maxGeometryOutputComponents = maxGeometryOutputComponents; return *this; }
-    PhysicalDeviceLimits& setMaxGeometryOutputVertices(uint32_t maxGeometryOutputVertices) { this->maxGeometryOutputVertices = maxGeometryOutputVertices; return *this; }
-    PhysicalDeviceLimits& setMaxGeometryTotalOutputComponents(uint32_t maxGeometryTotalOutputComponents) { this->maxGeometryTotalOutputComponents = maxGeometryTotalOutputComponents; return *this; }
-    PhysicalDeviceLimits& setMaxFragmentInputComponents(uint32_t maxFragmentInputComponents) { this->maxFragmentInputComponents = maxFragmentInputComponents; return *this; }
-    PhysicalDeviceLimits& setMaxFragmentOutputAttachments(uint32_t maxFragmentOutputAttachments) { this->maxFragmentOutputAttachments = maxFragmentOutputAttachments; return *this; }
-    PhysicalDeviceLimits& setMaxFragmentDualSrcAttachments(uint32_t maxFragmentDualSrcAttachments) { this->maxFragmentDualSrcAttachments = maxFragmentDualSrcAttachments; return *this; }
-    PhysicalDeviceLimits& setMaxFragmentCombinedOutputResources(uint32_t maxFragmentCombinedOutputResources) { this->maxFragmentCombinedOutputResources = maxFragmentCombinedOutputResources; return *this; }
-    PhysicalDeviceLimits& setMaxComputeSharedMemorySize(uint32_t maxComputeSharedMemorySize) { this->maxComputeSharedMemorySize = maxComputeSharedMemorySize; return *this; }
-    PhysicalDeviceLimits& setMaxComputeWorkGroupCount(uint32_t maxComputeWorkGroupCount[3]) { for(uint32_t i = 0; i < 3; i++) this->maxComputeWorkGroupCount[i] = maxComputeWorkGroupCount[i]; return *this; }
-    PhysicalDeviceLimits& setMaxComputeWorkGroupInvocations(uint32_t maxComputeWorkGroupInvocations) { this->maxComputeWorkGroupInvocations = maxComputeWorkGroupInvocations; return *this; }
-    PhysicalDeviceLimits& setMaxComputeWorkGroupSize(uint32_t maxComputeWorkGroupSize[3]) { for(uint32_t i = 0; i < 3; i++) this->maxComputeWorkGroupSize[i] = maxComputeWorkGroupSize[i]; return *this; }
-    PhysicalDeviceLimits& setSubPixelPrecisionBits(uint32_t subPixelPrecisionBits) { this->subPixelPrecisionBits = subPixelPrecisionBits; return *this; }
-    PhysicalDeviceLimits& setSubTexelPrecisionBits(uint32_t subTexelPrecisionBits) { this->subTexelPrecisionBits = subTexelPrecisionBits; return *this; }
-    PhysicalDeviceLimits& setMipmapPrecisionBits(uint32_t mipmapPrecisionBits) { this->mipmapPrecisionBits = mipmapPrecisionBits; return *this; }
-    PhysicalDeviceLimits& setMaxDrawIndexedIndexValue(uint32_t maxDrawIndexedIndexValue) { this->maxDrawIndexedIndexValue = maxDrawIndexedIndexValue; return *this; }
-    PhysicalDeviceLimits& setMaxDrawIndirectCount(uint32_t maxDrawIndirectCount) { this->maxDrawIndirectCount = maxDrawIndirectCount; return *this; }
-    PhysicalDeviceLimits& setMaxSamplerLodBias(float maxSamplerLodBias) { this->maxSamplerLodBias = maxSamplerLodBias; return *this; }
-    PhysicalDeviceLimits& setMaxSamplerAnisotropy(float maxSamplerAnisotropy) { this->maxSamplerAnisotropy = maxSamplerAnisotropy; return *this; }
-    PhysicalDeviceLimits& setMaxViewports(uint32_t maxViewports) { this->maxViewports = maxViewports; return *this; }
-    PhysicalDeviceLimits& setMaxViewportDimensions(uint32_t maxViewportDimensions[2]) { for(uint32_t i = 0; i < 2; i++) this->maxViewportDimensions[i] = maxViewportDimensions[i]; return *this; }
-    PhysicalDeviceLimits& setViewportBoundsRange(float viewportBoundsRange[2]) { for(uint32_t i = 0; i < 2; i++) this->viewportBoundsRange[i] = viewportBoundsRange[i]; return *this; }
-    PhysicalDeviceLimits& setViewportSubPixelBits(uint32_t viewportSubPixelBits) { this->viewportSubPixelBits = viewportSubPixelBits; return *this; }
-    PhysicalDeviceLimits& setMinMemoryMapAlignment(size_t minMemoryMapAlignment) { this->minMemoryMapAlignment = minMemoryMapAlignment; return *this; }
-    PhysicalDeviceLimits& setMinTexelBufferOffsetAlignment(DeviceSize minTexelBufferOffsetAlignment) { this->minTexelBufferOffsetAlignment = minTexelBufferOffsetAlignment; return *this; }
-    PhysicalDeviceLimits& setMinUniformBufferOffsetAlignment(DeviceSize minUniformBufferOffsetAlignment) { this->minUniformBufferOffsetAlignment = minUniformBufferOffsetAlignment; return *this; }
-    PhysicalDeviceLimits& setMinStorageBufferOffsetAlignment(DeviceSize minStorageBufferOffsetAlignment) { this->minStorageBufferOffsetAlignment = minStorageBufferOffsetAlignment; return *this; }
-    PhysicalDeviceLimits& setMinTexelOffset(int32_t minTexelOffset) { this->minTexelOffset = minTexelOffset; return *this; }
-    PhysicalDeviceLimits& setMaxTexelOffset(uint32_t maxTexelOffset) { this->maxTexelOffset = maxTexelOffset; return *this; }
-    PhysicalDeviceLimits& setMinTexelGatherOffset(int32_t minTexelGatherOffset) { this->minTexelGatherOffset = minTexelGatherOffset; return *this; }
-    PhysicalDeviceLimits& setMaxTexelGatherOffset(uint32_t maxTexelGatherOffset) { this->maxTexelGatherOffset = maxTexelGatherOffset; return *this; }
-    PhysicalDeviceLimits& setMinInterpolationOffset(float minInterpolationOffset) { this->minInterpolationOffset = minInterpolationOffset; return *this; }
-    PhysicalDeviceLimits& setMaxInterpolationOffset(float maxInterpolationOffset) { this->maxInterpolationOffset = maxInterpolationOffset; return *this; }
-    PhysicalDeviceLimits& setSubPixelInterpolationOffsetBits(uint32_t subPixelInterpolationOffsetBits) { this->subPixelInterpolationOffsetBits = subPixelInterpolationOffsetBits; return *this; }
-    PhysicalDeviceLimits& setMaxFramebufferWidth(uint32_t maxFramebufferWidth) { this->maxFramebufferWidth = maxFramebufferWidth; return *this; }
-    PhysicalDeviceLimits& setMaxFramebufferHeight(uint32_t maxFramebufferHeight) { this->maxFramebufferHeight = maxFramebufferHeight; return *this; }
-    PhysicalDeviceLimits& setMaxFramebufferLayers(uint32_t maxFramebufferLayers) { this->maxFramebufferLayers = maxFramebufferLayers; return *this; }
-    PhysicalDeviceLimits& setFramebufferColorSampleCounts(SampleCountFlags framebufferColorSampleCounts) { this->framebufferColorSampleCounts = framebufferColorSampleCounts; return *this; }
-    PhysicalDeviceLimits& setFramebufferDepthSampleCounts(SampleCountFlags framebufferDepthSampleCounts) { this->framebufferDepthSampleCounts = framebufferDepthSampleCounts; return *this; }
-    PhysicalDeviceLimits& setFramebufferStencilSampleCounts(SampleCountFlags framebufferStencilSampleCounts) { this->framebufferStencilSampleCounts = framebufferStencilSampleCounts; return *this; }
-    PhysicalDeviceLimits& setFramebufferNoAttachmentsSampleCounts(SampleCountFlags framebufferNoAttachmentsSampleCounts) { this->framebufferNoAttachmentsSampleCounts = framebufferNoAttachmentsSampleCounts; return *this; }
-    PhysicalDeviceLimits& setMaxColorAttachments(uint32_t maxColorAttachments) { this->maxColorAttachments = maxColorAttachments; return *this; }
-    PhysicalDeviceLimits& setSampledImageColorSampleCounts(SampleCountFlags sampledImageColorSampleCounts) { this->sampledImageColorSampleCounts = sampledImageColorSampleCounts; return *this; }
-    PhysicalDeviceLimits& setSampledImageIntegerSampleCounts(SampleCountFlags sampledImageIntegerSampleCounts) { this->sampledImageIntegerSampleCounts = sampledImageIntegerSampleCounts; return *this; }
-    PhysicalDeviceLimits& setSampledImageDepthSampleCounts(SampleCountFlags sampledImageDepthSampleCounts) { this->sampledImageDepthSampleCounts = sampledImageDepthSampleCounts; return *this; }
-    PhysicalDeviceLimits& setSampledImageStencilSampleCounts(SampleCountFlags sampledImageStencilSampleCounts) { this->sampledImageStencilSampleCounts = sampledImageStencilSampleCounts; return *this; }
-    PhysicalDeviceLimits& setStorageImageSampleCounts(SampleCountFlags storageImageSampleCounts) { this->storageImageSampleCounts = storageImageSampleCounts; return *this; }
-    PhysicalDeviceLimits& setMaxSampleMaskWords(uint32_t maxSampleMaskWords) { this->maxSampleMaskWords = maxSampleMaskWords; return *this; }
-    PhysicalDeviceLimits& setTimestampComputeAndGraphics(Bool32 timestampComputeAndGraphics) { this->timestampComputeAndGraphics = timestampComputeAndGraphics; return *this; }
-    PhysicalDeviceLimits& setTimestampPeriod(float timestampPeriod) { this->timestampPeriod = timestampPeriod; return *this; }
-    PhysicalDeviceLimits& setMaxClipDistances(uint32_t maxClipDistances) { this->maxClipDistances = maxClipDistances; return *this; }
-    PhysicalDeviceLimits& setMaxCullDistances(uint32_t maxCullDistances) { this->maxCullDistances = maxCullDistances; return *this; }
-    PhysicalDeviceLimits& setMaxCombinedClipAndCullDistances(uint32_t maxCombinedClipAndCullDistances) { this->maxCombinedClipAndCullDistances = maxCombinedClipAndCullDistances; return *this; }
-    PhysicalDeviceLimits& setDiscreteQueuePriorities(uint32_t discreteQueuePriorities) { this->discreteQueuePriorities = discreteQueuePriorities; return *this; }
-    PhysicalDeviceLimits& setPointSizeRange(float pointSizeRange[2]) { for(uint32_t i = 0; i < 2; i++) this->pointSizeRange[i] = pointSizeRange[i]; return *this; }
-    PhysicalDeviceLimits& setLineWidthRange(float lineWidthRange[2]) { for(uint32_t i = 0; i < 2; i++) this->lineWidthRange[i] = lineWidthRange[i]; return *this; }
-    PhysicalDeviceLimits& setPointSizeGranularity(float pointSizeGranularity) { this->pointSizeGranularity = pointSizeGranularity; return *this; }
-    PhysicalDeviceLimits& setLineWidthGranularity(float lineWidthGranularity) { this->lineWidthGranularity = lineWidthGranularity; return *this; }
-    PhysicalDeviceLimits& setStrictLines(Bool32 strictLines) { this->strictLines = strictLines; return *this; }
-    PhysicalDeviceLimits& setStandardSampleLocations(Bool32 standardSampleLocations) { this->standardSampleLocations = standardSampleLocations; return *this; }
-    PhysicalDeviceLimits& setOptimalBufferCopyOffsetAlignment(DeviceSize optimalBufferCopyOffsetAlignment) { this->optimalBufferCopyOffsetAlignment = optimalBufferCopyOffsetAlignment; return *this; }
-    PhysicalDeviceLimits& setOptimalBufferCopyRowPitchAlignment(DeviceSize optimalBufferCopyRowPitchAlignment) { this->optimalBufferCopyRowPitchAlignment = optimalBufferCopyRowPitchAlignment; return *this; }
-    PhysicalDeviceLimits& setNonCoherentAtomSize(DeviceSize nonCoherentAtomSize) { this->nonCoherentAtomSize = nonCoherentAtomSize; return *this; }
+    PhysicalDeviceLimits& setMaxImageDimension1D(uint32_t maxImageDimension1D) {this->maxImageDimension1D = maxImageDimension1D; return *this; }
+    PhysicalDeviceLimits& setMaxImageDimension2D(uint32_t maxImageDimension2D) {this->maxImageDimension2D = maxImageDimension2D; return *this; }
+    PhysicalDeviceLimits& setMaxImageDimension3D(uint32_t maxImageDimension3D) {this->maxImageDimension3D = maxImageDimension3D; return *this; }
+    PhysicalDeviceLimits& setMaxImageDimensionCube(uint32_t maxImageDimensionCube) {this->maxImageDimensionCube = maxImageDimensionCube; return *this; }
+    PhysicalDeviceLimits& setMaxImageArrayLayers(uint32_t maxImageArrayLayers) {this->maxImageArrayLayers = maxImageArrayLayers; return *this; }
+    PhysicalDeviceLimits& setMaxTexelBufferElements(uint32_t maxTexelBufferElements) {this->maxTexelBufferElements = maxTexelBufferElements; return *this; }
+    PhysicalDeviceLimits& setMaxUniformBufferRange(uint32_t maxUniformBufferRange) {this->maxUniformBufferRange = maxUniformBufferRange; return *this; }
+    PhysicalDeviceLimits& setMaxStorageBufferRange(uint32_t maxStorageBufferRange) {this->maxStorageBufferRange = maxStorageBufferRange; return *this; }
+    PhysicalDeviceLimits& setMaxPushConstantsSize(uint32_t maxPushConstantsSize) {this->maxPushConstantsSize = maxPushConstantsSize; return *this; }
+    PhysicalDeviceLimits& setMaxMemoryAllocationCount(uint32_t maxMemoryAllocationCount) {this->maxMemoryAllocationCount = maxMemoryAllocationCount; return *this; }
+    PhysicalDeviceLimits& setMaxSamplerAllocationCount(uint32_t maxSamplerAllocationCount) {this->maxSamplerAllocationCount = maxSamplerAllocationCount; return *this; }
+    PhysicalDeviceLimits& setBufferImageGranularity(DeviceSize bufferImageGranularity) {this->bufferImageGranularity = bufferImageGranularity; return *this; }
+    PhysicalDeviceLimits& setSparseAddressSpaceSize(DeviceSize sparseAddressSpaceSize) {this->sparseAddressSpaceSize = sparseAddressSpaceSize; return *this; }
+    PhysicalDeviceLimits& setMaxBoundDescriptorSets(uint32_t maxBoundDescriptorSets) {this->maxBoundDescriptorSets = maxBoundDescriptorSets; return *this; }
+    PhysicalDeviceLimits& setMaxPerStageDescriptorSamplers(uint32_t maxPerStageDescriptorSamplers) {this->maxPerStageDescriptorSamplers = maxPerStageDescriptorSamplers; return *this; }
+    PhysicalDeviceLimits& setMaxPerStageDescriptorUniformBuffers(uint32_t maxPerStageDescriptorUniformBuffers) {this->maxPerStageDescriptorUniformBuffers = maxPerStageDescriptorUniformBuffers; return *this; }
+    PhysicalDeviceLimits& setMaxPerStageDescriptorStorageBuffers(uint32_t maxPerStageDescriptorStorageBuffers) {this->maxPerStageDescriptorStorageBuffers = maxPerStageDescriptorStorageBuffers; return *this; }
+    PhysicalDeviceLimits& setMaxPerStageDescriptorSampledImages(uint32_t maxPerStageDescriptorSampledImages) {this->maxPerStageDescriptorSampledImages = maxPerStageDescriptorSampledImages; return *this; }
+    PhysicalDeviceLimits& setMaxPerStageDescriptorStorageImages(uint32_t maxPerStageDescriptorStorageImages) {this->maxPerStageDescriptorStorageImages = maxPerStageDescriptorStorageImages; return *this; }
+    PhysicalDeviceLimits& setMaxPerStageDescriptorInputAttachments(uint32_t maxPerStageDescriptorInputAttachments) {this->maxPerStageDescriptorInputAttachments = maxPerStageDescriptorInputAttachments; return *this; }
+    PhysicalDeviceLimits& setMaxPerStageResources(uint32_t maxPerStageResources) {this->maxPerStageResources = maxPerStageResources; return *this; }
+    PhysicalDeviceLimits& setMaxDescriptorSetSamplers(uint32_t maxDescriptorSetSamplers) {this->maxDescriptorSetSamplers = maxDescriptorSetSamplers; return *this; }
+    PhysicalDeviceLimits& setMaxDescriptorSetUniformBuffers(uint32_t maxDescriptorSetUniformBuffers) {this->maxDescriptorSetUniformBuffers = maxDescriptorSetUniformBuffers; return *this; }
+    PhysicalDeviceLimits& setMaxDescriptorSetUniformBuffersDynamic(uint32_t maxDescriptorSetUniformBuffersDynamic) {this->maxDescriptorSetUniformBuffersDynamic = maxDescriptorSetUniformBuffersDynamic; return *this; }
+    PhysicalDeviceLimits& setMaxDescriptorSetStorageBuffers(uint32_t maxDescriptorSetStorageBuffers) {this->maxDescriptorSetStorageBuffers = maxDescriptorSetStorageBuffers; return *this; }
+    PhysicalDeviceLimits& setMaxDescriptorSetStorageBuffersDynamic(uint32_t maxDescriptorSetStorageBuffersDynamic) {this->maxDescriptorSetStorageBuffersDynamic = maxDescriptorSetStorageBuffersDynamic; return *this; }
+    PhysicalDeviceLimits& setMaxDescriptorSetSampledImages(uint32_t maxDescriptorSetSampledImages) {this->maxDescriptorSetSampledImages = maxDescriptorSetSampledImages; return *this; }
+    PhysicalDeviceLimits& setMaxDescriptorSetStorageImages(uint32_t maxDescriptorSetStorageImages) {this->maxDescriptorSetStorageImages = maxDescriptorSetStorageImages; return *this; }
+    PhysicalDeviceLimits& setMaxDescriptorSetInputAttachments(uint32_t maxDescriptorSetInputAttachments) {this->maxDescriptorSetInputAttachments = maxDescriptorSetInputAttachments; return *this; }
+    PhysicalDeviceLimits& setMaxVertexInputAttributes(uint32_t maxVertexInputAttributes) {this->maxVertexInputAttributes = maxVertexInputAttributes; return *this; }
+    PhysicalDeviceLimits& setMaxVertexInputBindings(uint32_t maxVertexInputBindings) {this->maxVertexInputBindings = maxVertexInputBindings; return *this; }
+    PhysicalDeviceLimits& setMaxVertexInputAttributeOffset(uint32_t maxVertexInputAttributeOffset) {this->maxVertexInputAttributeOffset = maxVertexInputAttributeOffset; return *this; }
+    PhysicalDeviceLimits& setMaxVertexInputBindingStride(uint32_t maxVertexInputBindingStride) {this->maxVertexInputBindingStride = maxVertexInputBindingStride; return *this; }
+    PhysicalDeviceLimits& setMaxVertexOutputComponents(uint32_t maxVertexOutputComponents) {this->maxVertexOutputComponents = maxVertexOutputComponents; return *this; }
+    PhysicalDeviceLimits& setMaxTessellationGenerationLevel(uint32_t maxTessellationGenerationLevel) {this->maxTessellationGenerationLevel = maxTessellationGenerationLevel; return *this; }
+    PhysicalDeviceLimits& setMaxTessellationPatchSize(uint32_t maxTessellationPatchSize) {this->maxTessellationPatchSize = maxTessellationPatchSize; return *this; }
+    PhysicalDeviceLimits& setMaxTessellationControlPerVertexInputComponents(uint32_t maxTessellationControlPerVertexInputComponents) {this->maxTessellationControlPerVertexInputComponents = maxTessellationControlPerVertexInputComponents; return *this; }
+    PhysicalDeviceLimits& setMaxTessellationControlPerVertexOutputComponents(uint32_t maxTessellationControlPerVertexOutputComponents) {this->maxTessellationControlPerVertexOutputComponents = maxTessellationControlPerVertexOutputComponents; return *this; }
+    PhysicalDeviceLimits& setMaxTessellationControlPerPatchOutputComponents(uint32_t maxTessellationControlPerPatchOutputComponents) {this->maxTessellationControlPerPatchOutputComponents = maxTessellationControlPerPatchOutputComponents; return *this; }
+    PhysicalDeviceLimits& setMaxTessellationControlTotalOutputComponents(uint32_t maxTessellationControlTotalOutputComponents) {this->maxTessellationControlTotalOutputComponents = maxTessellationControlTotalOutputComponents; return *this; }
+    PhysicalDeviceLimits& setMaxTessellationEvaluationInputComponents(uint32_t maxTessellationEvaluationInputComponents) {this->maxTessellationEvaluationInputComponents = maxTessellationEvaluationInputComponents; return *this; }
+    PhysicalDeviceLimits& setMaxTessellationEvaluationOutputComponents(uint32_t maxTessellationEvaluationOutputComponents) {this->maxTessellationEvaluationOutputComponents = maxTessellationEvaluationOutputComponents; return *this; }
+    PhysicalDeviceLimits& setMaxGeometryShaderInvocations(uint32_t maxGeometryShaderInvocations) {this->maxGeometryShaderInvocations = maxGeometryShaderInvocations; return *this; }
+    PhysicalDeviceLimits& setMaxGeometryInputComponents(uint32_t maxGeometryInputComponents) {this->maxGeometryInputComponents = maxGeometryInputComponents; return *this; }
+    PhysicalDeviceLimits& setMaxGeometryOutputComponents(uint32_t maxGeometryOutputComponents) {this->maxGeometryOutputComponents = maxGeometryOutputComponents; return *this; }
+    PhysicalDeviceLimits& setMaxGeometryOutputVertices(uint32_t maxGeometryOutputVertices) {this->maxGeometryOutputVertices = maxGeometryOutputVertices; return *this; }
+    PhysicalDeviceLimits& setMaxGeometryTotalOutputComponents(uint32_t maxGeometryTotalOutputComponents) {this->maxGeometryTotalOutputComponents = maxGeometryTotalOutputComponents; return *this; }
+    PhysicalDeviceLimits& setMaxFragmentInputComponents(uint32_t maxFragmentInputComponents) {this->maxFragmentInputComponents = maxFragmentInputComponents; return *this; }
+    PhysicalDeviceLimits& setMaxFragmentOutputAttachments(uint32_t maxFragmentOutputAttachments) {this->maxFragmentOutputAttachments = maxFragmentOutputAttachments; return *this; }
+    PhysicalDeviceLimits& setMaxFragmentDualSrcAttachments(uint32_t maxFragmentDualSrcAttachments) {this->maxFragmentDualSrcAttachments = maxFragmentDualSrcAttachments; return *this; }
+    PhysicalDeviceLimits& setMaxFragmentCombinedOutputResources(uint32_t maxFragmentCombinedOutputResources) {this->maxFragmentCombinedOutputResources = maxFragmentCombinedOutputResources; return *this; }
+    PhysicalDeviceLimits& setMaxComputeSharedMemorySize(uint32_t maxComputeSharedMemorySize) {this->maxComputeSharedMemorySize = maxComputeSharedMemorySize; return *this; }
+    PhysicalDeviceLimits& setMaxComputeWorkGroupCount(uint32_t maxComputeWorkGroupCount[3]) {for(uint32_t i = 0; i < 3; i++) this->maxComputeWorkGroupCount[i] = maxComputeWorkGroupCount[i]; return *this; }
+    PhysicalDeviceLimits& setMaxComputeWorkGroupInvocations(uint32_t maxComputeWorkGroupInvocations) {this->maxComputeWorkGroupInvocations = maxComputeWorkGroupInvocations; return *this; }
+    PhysicalDeviceLimits& setMaxComputeWorkGroupSize(uint32_t maxComputeWorkGroupSize[3]) {for(uint32_t i = 0; i < 3; i++) this->maxComputeWorkGroupSize[i] = maxComputeWorkGroupSize[i]; return *this; }
+    PhysicalDeviceLimits& setSubPixelPrecisionBits(uint32_t subPixelPrecisionBits) {this->subPixelPrecisionBits = subPixelPrecisionBits; return *this; }
+    PhysicalDeviceLimits& setSubTexelPrecisionBits(uint32_t subTexelPrecisionBits) {this->subTexelPrecisionBits = subTexelPrecisionBits; return *this; }
+    PhysicalDeviceLimits& setMipmapPrecisionBits(uint32_t mipmapPrecisionBits) {this->mipmapPrecisionBits = mipmapPrecisionBits; return *this; }
+    PhysicalDeviceLimits& setMaxDrawIndexedIndexValue(uint32_t maxDrawIndexedIndexValue) {this->maxDrawIndexedIndexValue = maxDrawIndexedIndexValue; return *this; }
+    PhysicalDeviceLimits& setMaxDrawIndirectCount(uint32_t maxDrawIndirectCount) {this->maxDrawIndirectCount = maxDrawIndirectCount; return *this; }
+    PhysicalDeviceLimits& setMaxSamplerLodBias(float maxSamplerLodBias) {this->maxSamplerLodBias = maxSamplerLodBias; return *this; }
+    PhysicalDeviceLimits& setMaxSamplerAnisotropy(float maxSamplerAnisotropy) {this->maxSamplerAnisotropy = maxSamplerAnisotropy; return *this; }
+    PhysicalDeviceLimits& setMaxViewports(uint32_t maxViewports) {this->maxViewports = maxViewports; return *this; }
+    PhysicalDeviceLimits& setMaxViewportDimensions(uint32_t maxViewportDimensions[2]) {for(uint32_t i = 0; i < 2; i++) this->maxViewportDimensions[i] = maxViewportDimensions[i]; return *this; }
+    PhysicalDeviceLimits& setViewportBoundsRange(float viewportBoundsRange[2]) {for(uint32_t i = 0; i < 2; i++) this->viewportBoundsRange[i] = viewportBoundsRange[i]; return *this; }
+    PhysicalDeviceLimits& setViewportSubPixelBits(uint32_t viewportSubPixelBits) {this->viewportSubPixelBits = viewportSubPixelBits; return *this; }
+    PhysicalDeviceLimits& setMinMemoryMapAlignment(size_t minMemoryMapAlignment) {this->minMemoryMapAlignment = minMemoryMapAlignment; return *this; }
+    PhysicalDeviceLimits& setMinTexelBufferOffsetAlignment(DeviceSize minTexelBufferOffsetAlignment) {this->minTexelBufferOffsetAlignment = minTexelBufferOffsetAlignment; return *this; }
+    PhysicalDeviceLimits& setMinUniformBufferOffsetAlignment(DeviceSize minUniformBufferOffsetAlignment) {this->minUniformBufferOffsetAlignment = minUniformBufferOffsetAlignment; return *this; }
+    PhysicalDeviceLimits& setMinStorageBufferOffsetAlignment(DeviceSize minStorageBufferOffsetAlignment) {this->minStorageBufferOffsetAlignment = minStorageBufferOffsetAlignment; return *this; }
+    PhysicalDeviceLimits& setMinTexelOffset(int32_t minTexelOffset) {this->minTexelOffset = minTexelOffset; return *this; }
+    PhysicalDeviceLimits& setMaxTexelOffset(uint32_t maxTexelOffset) {this->maxTexelOffset = maxTexelOffset; return *this; }
+    PhysicalDeviceLimits& setMinTexelGatherOffset(int32_t minTexelGatherOffset) {this->minTexelGatherOffset = minTexelGatherOffset; return *this; }
+    PhysicalDeviceLimits& setMaxTexelGatherOffset(uint32_t maxTexelGatherOffset) {this->maxTexelGatherOffset = maxTexelGatherOffset; return *this; }
+    PhysicalDeviceLimits& setMinInterpolationOffset(float minInterpolationOffset) {this->minInterpolationOffset = minInterpolationOffset; return *this; }
+    PhysicalDeviceLimits& setMaxInterpolationOffset(float maxInterpolationOffset) {this->maxInterpolationOffset = maxInterpolationOffset; return *this; }
+    PhysicalDeviceLimits& setSubPixelInterpolationOffsetBits(uint32_t subPixelInterpolationOffsetBits) {this->subPixelInterpolationOffsetBits = subPixelInterpolationOffsetBits; return *this; }
+    PhysicalDeviceLimits& setMaxFramebufferWidth(uint32_t maxFramebufferWidth) {this->maxFramebufferWidth = maxFramebufferWidth; return *this; }
+    PhysicalDeviceLimits& setMaxFramebufferHeight(uint32_t maxFramebufferHeight) {this->maxFramebufferHeight = maxFramebufferHeight; return *this; }
+    PhysicalDeviceLimits& setMaxFramebufferLayers(uint32_t maxFramebufferLayers) {this->maxFramebufferLayers = maxFramebufferLayers; return *this; }
+    PhysicalDeviceLimits& setFramebufferColorSampleCounts(SampleCountFlags framebufferColorSampleCounts) {this->framebufferColorSampleCounts = framebufferColorSampleCounts; return *this; }
+    PhysicalDeviceLimits& setFramebufferDepthSampleCounts(SampleCountFlags framebufferDepthSampleCounts) {this->framebufferDepthSampleCounts = framebufferDepthSampleCounts; return *this; }
+    PhysicalDeviceLimits& setFramebufferStencilSampleCounts(SampleCountFlags framebufferStencilSampleCounts) {this->framebufferStencilSampleCounts = framebufferStencilSampleCounts; return *this; }
+    PhysicalDeviceLimits& setFramebufferNoAttachmentsSampleCounts(SampleCountFlags framebufferNoAttachmentsSampleCounts) {this->framebufferNoAttachmentsSampleCounts = framebufferNoAttachmentsSampleCounts; return *this; }
+    PhysicalDeviceLimits& setMaxColorAttachments(uint32_t maxColorAttachments) {this->maxColorAttachments = maxColorAttachments; return *this; }
+    PhysicalDeviceLimits& setSampledImageColorSampleCounts(SampleCountFlags sampledImageColorSampleCounts) {this->sampledImageColorSampleCounts = sampledImageColorSampleCounts; return *this; }
+    PhysicalDeviceLimits& setSampledImageIntegerSampleCounts(SampleCountFlags sampledImageIntegerSampleCounts) {this->sampledImageIntegerSampleCounts = sampledImageIntegerSampleCounts; return *this; }
+    PhysicalDeviceLimits& setSampledImageDepthSampleCounts(SampleCountFlags sampledImageDepthSampleCounts) {this->sampledImageDepthSampleCounts = sampledImageDepthSampleCounts; return *this; }
+    PhysicalDeviceLimits& setSampledImageStencilSampleCounts(SampleCountFlags sampledImageStencilSampleCounts) {this->sampledImageStencilSampleCounts = sampledImageStencilSampleCounts; return *this; }
+    PhysicalDeviceLimits& setStorageImageSampleCounts(SampleCountFlags storageImageSampleCounts) {this->storageImageSampleCounts = storageImageSampleCounts; return *this; }
+    PhysicalDeviceLimits& setMaxSampleMaskWords(uint32_t maxSampleMaskWords) {this->maxSampleMaskWords = maxSampleMaskWords; return *this; }
+    PhysicalDeviceLimits& setTimestampComputeAndGraphics(Bool32 timestampComputeAndGraphics) {this->timestampComputeAndGraphics = timestampComputeAndGraphics; return *this; }
+    PhysicalDeviceLimits& setTimestampPeriod(float timestampPeriod) {this->timestampPeriod = timestampPeriod; return *this; }
+    PhysicalDeviceLimits& setMaxClipDistances(uint32_t maxClipDistances) {this->maxClipDistances = maxClipDistances; return *this; }
+    PhysicalDeviceLimits& setMaxCullDistances(uint32_t maxCullDistances) {this->maxCullDistances = maxCullDistances; return *this; }
+    PhysicalDeviceLimits& setMaxCombinedClipAndCullDistances(uint32_t maxCombinedClipAndCullDistances) {this->maxCombinedClipAndCullDistances = maxCombinedClipAndCullDistances; return *this; }
+    PhysicalDeviceLimits& setDiscreteQueuePriorities(uint32_t discreteQueuePriorities) {this->discreteQueuePriorities = discreteQueuePriorities; return *this; }
+    PhysicalDeviceLimits& setPointSizeRange(float pointSizeRange[2]) {for(uint32_t i = 0; i < 2; i++) this->pointSizeRange[i] = pointSizeRange[i]; return *this; }
+    PhysicalDeviceLimits& setLineWidthRange(float lineWidthRange[2]) {for(uint32_t i = 0; i < 2; i++) this->lineWidthRange[i] = lineWidthRange[i]; return *this; }
+    PhysicalDeviceLimits& setPointSizeGranularity(float pointSizeGranularity) {this->pointSizeGranularity = pointSizeGranularity; return *this; }
+    PhysicalDeviceLimits& setLineWidthGranularity(float lineWidthGranularity) {this->lineWidthGranularity = lineWidthGranularity; return *this; }
+    PhysicalDeviceLimits& setStrictLines(Bool32 strictLines) {this->strictLines = strictLines; return *this; }
+    PhysicalDeviceLimits& setStandardSampleLocations(Bool32 standardSampleLocations) {this->standardSampleLocations = standardSampleLocations; return *this; }
+    PhysicalDeviceLimits& setOptimalBufferCopyOffsetAlignment(DeviceSize optimalBufferCopyOffsetAlignment) {this->optimalBufferCopyOffsetAlignment = optimalBufferCopyOffsetAlignment; return *this; }
+    PhysicalDeviceLimits& setOptimalBufferCopyRowPitchAlignment(DeviceSize optimalBufferCopyRowPitchAlignment) {this->optimalBufferCopyRowPitchAlignment = optimalBufferCopyRowPitchAlignment; return *this; }
+    PhysicalDeviceLimits& setNonCoherentAtomSize(DeviceSize nonCoherentAtomSize) {this->nonCoherentAtomSize = nonCoherentAtomSize; return *this; }
 };
 struct PhysicalDeviceProperties {
     uint32_t apiVersion{0};
@@ -3692,15 +3689,15 @@ struct PhysicalDeviceProperties {
         return is_equal && apiVersion == value.apiVersion && driverVersion == value.driverVersion && vendorID == value.vendorID && deviceID == value.deviceID && deviceType == value.deviceType 
         && limits == value.limits && sparseProperties == value.sparseProperties ;}
     constexpr bool operator!=(PhysicalDeviceProperties const& value) const {return !(*this == value);}
-    PhysicalDeviceProperties& setApiVersion(uint32_t apiVersion) { this->apiVersion = apiVersion; return *this; }
-    PhysicalDeviceProperties& setDriverVersion(uint32_t driverVersion) { this->driverVersion = driverVersion; return *this; }
-    PhysicalDeviceProperties& setVendorID(uint32_t vendorID) { this->vendorID = vendorID; return *this; }
-    PhysicalDeviceProperties& setDeviceID(uint32_t deviceID) { this->deviceID = deviceID; return *this; }
-    PhysicalDeviceProperties& setDeviceType(PhysicalDeviceType deviceType) { this->deviceType = deviceType; return *this; }
-    PhysicalDeviceProperties& setDeviceName(char deviceName[MAX_PHYSICAL_DEVICE_NAME_SIZE]) { for(uint32_t i = 0; i < MAX_PHYSICAL_DEVICE_NAME_SIZE; i++) this->deviceName[i] = deviceName[i]; return *this; }
-    PhysicalDeviceProperties& setPipelineCacheUUID(uint8_t pipelineCacheUUID[UUID_SIZE]) { for(uint32_t i = 0; i < UUID_SIZE; i++) this->pipelineCacheUUID[i] = pipelineCacheUUID[i]; return *this; }
-    PhysicalDeviceProperties& setLimits(PhysicalDeviceLimits limits) { this->limits = limits; return *this; }
-    PhysicalDeviceProperties& setSparseProperties(PhysicalDeviceSparseProperties sparseProperties) { this->sparseProperties = sparseProperties; return *this; }
+    PhysicalDeviceProperties& setApiVersion(uint32_t apiVersion) {this->apiVersion = apiVersion; return *this; }
+    PhysicalDeviceProperties& setDriverVersion(uint32_t driverVersion) {this->driverVersion = driverVersion; return *this; }
+    PhysicalDeviceProperties& setVendorID(uint32_t vendorID) {this->vendorID = vendorID; return *this; }
+    PhysicalDeviceProperties& setDeviceID(uint32_t deviceID) {this->deviceID = deviceID; return *this; }
+    PhysicalDeviceProperties& setDeviceType(PhysicalDeviceType deviceType) {this->deviceType = deviceType; return *this; }
+    PhysicalDeviceProperties& setDeviceName(char deviceName[MAX_PHYSICAL_DEVICE_NAME_SIZE]) {for(uint32_t i = 0; i < MAX_PHYSICAL_DEVICE_NAME_SIZE; i++) this->deviceName[i] = deviceName[i]; return *this; }
+    PhysicalDeviceProperties& setPipelineCacheUUID(uint8_t pipelineCacheUUID[UUID_SIZE]) {for(uint32_t i = 0; i < UUID_SIZE; i++) this->pipelineCacheUUID[i] = pipelineCacheUUID[i]; return *this; }
+    PhysicalDeviceProperties& setLimits(PhysicalDeviceLimits limits) {this->limits = limits; return *this; }
+    PhysicalDeviceProperties& setSparseProperties(PhysicalDeviceSparseProperties sparseProperties) {this->sparseProperties = sparseProperties; return *this; }
 };
 struct ExtensionProperties {
     char extensionName[MAX_EXTENSION_NAME_SIZE];
@@ -3711,8 +3708,8 @@ struct ExtensionProperties {
             is_equal &= extensionName[i] == value.extensionName[i];
         return is_equal && specVersion == value.specVersion ;}
     constexpr bool operator!=(ExtensionProperties const& value) const {return !(*this == value);}
-    ExtensionProperties& setExtensionName(char extensionName[MAX_EXTENSION_NAME_SIZE]) { for(uint32_t i = 0; i < MAX_EXTENSION_NAME_SIZE; i++) this->extensionName[i] = extensionName[i]; return *this; }
-    ExtensionProperties& setSpecVersion(uint32_t specVersion) { this->specVersion = specVersion; return *this; }
+    ExtensionProperties& setExtensionName(char extensionName[MAX_EXTENSION_NAME_SIZE]) {for(uint32_t i = 0; i < MAX_EXTENSION_NAME_SIZE; i++) this->extensionName[i] = extensionName[i]; return *this; }
+    ExtensionProperties& setSpecVersion(uint32_t specVersion) {this->specVersion = specVersion; return *this; }
 };
 struct LayerProperties {
     char layerName[MAX_EXTENSION_NAME_SIZE];
@@ -3727,10 +3724,10 @@ struct LayerProperties {
             is_equal &= description[i] == value.description[i];
         return is_equal && specVersion == value.specVersion && implementationVersion == value.implementationVersion ;}
     constexpr bool operator!=(LayerProperties const& value) const {return !(*this == value);}
-    LayerProperties& setLayerName(char layerName[MAX_EXTENSION_NAME_SIZE]) { for(uint32_t i = 0; i < MAX_EXTENSION_NAME_SIZE; i++) this->layerName[i] = layerName[i]; return *this; }
-    LayerProperties& setSpecVersion(uint32_t specVersion) { this->specVersion = specVersion; return *this; }
-    LayerProperties& setImplementationVersion(uint32_t implementationVersion) { this->implementationVersion = implementationVersion; return *this; }
-    LayerProperties& setDescription(char description[MAX_DESCRIPTION_SIZE]) { for(uint32_t i = 0; i < MAX_DESCRIPTION_SIZE; i++) this->description[i] = description[i]; return *this; }
+    LayerProperties& setLayerName(char layerName[MAX_EXTENSION_NAME_SIZE]) {for(uint32_t i = 0; i < MAX_EXTENSION_NAME_SIZE; i++) this->layerName[i] = layerName[i]; return *this; }
+    LayerProperties& setSpecVersion(uint32_t specVersion) {this->specVersion = specVersion; return *this; }
+    LayerProperties& setImplementationVersion(uint32_t implementationVersion) {this->implementationVersion = implementationVersion; return *this; }
+    LayerProperties& setDescription(char description[MAX_DESCRIPTION_SIZE]) {for(uint32_t i = 0; i < MAX_DESCRIPTION_SIZE; i++) this->description[i] = description[i]; return *this; }
 };
 struct ApplicationInfo {
     StructureType sType{StructureType::ApplicationInfo};
@@ -3740,11 +3737,11 @@ struct ApplicationInfo {
     const char* pEngineName = nullptr;
     uint32_t engineVersion{0};
     uint32_t apiVersion{0};
-    ApplicationInfo& setPApplicationName(const char* pApplicationName) { this->pApplicationName = pApplicationName; return *this; }
-    ApplicationInfo& setApplicationVersion(uint32_t applicationVersion) { this->applicationVersion = applicationVersion; return *this; }
-    ApplicationInfo& setPEngineName(const char* pEngineName) { this->pEngineName = pEngineName; return *this; }
-    ApplicationInfo& setEngineVersion(uint32_t engineVersion) { this->engineVersion = engineVersion; return *this; }
-    ApplicationInfo& setApiVersion(uint32_t apiVersion) { this->apiVersion = apiVersion; return *this; }
+    ApplicationInfo& setPApplicationName(const char* pApplicationName) {this->pApplicationName = pApplicationName; return *this; }
+    ApplicationInfo& setApplicationVersion(uint32_t applicationVersion) {this->applicationVersion = applicationVersion; return *this; }
+    ApplicationInfo& setPEngineName(const char* pEngineName) {this->pEngineName = pEngineName; return *this; }
+    ApplicationInfo& setEngineVersion(uint32_t engineVersion) {this->engineVersion = engineVersion; return *this; }
+    ApplicationInfo& setApiVersion(uint32_t apiVersion) {this->apiVersion = apiVersion; return *this; }
 };
 struct AllocationCallbacks {
     void* pUserData = nullptr;
@@ -3753,11 +3750,12 @@ struct AllocationCallbacks {
     PFN_FreeFunction pfnFree{};
     PFN_InternalAllocationNotification pfnInternalAllocation{};
     PFN_InternalFreeNotification pfnInternalFree{};
-    AllocationCallbacks& setPfnAllocation(PFN_AllocationFunction pfnAllocation) { this->pfnAllocation = pfnAllocation; return *this; }
-    AllocationCallbacks& setPfnReallocation(PFN_ReallocationFunction pfnReallocation) { this->pfnReallocation = pfnReallocation; return *this; }
-    AllocationCallbacks& setPfnFree(PFN_FreeFunction pfnFree) { this->pfnFree = pfnFree; return *this; }
-    AllocationCallbacks& setPfnInternalAllocation(PFN_InternalAllocationNotification pfnInternalAllocation) { this->pfnInternalAllocation = pfnInternalAllocation; return *this; }
-    AllocationCallbacks& setPfnInternalFree(PFN_InternalFreeNotification pfnInternalFree) { this->pfnInternalFree = pfnInternalFree; return *this; }
+    AllocationCallbacks& setPUserData(void* pUserData) {this->pUserData = pUserData; return *this; }
+    AllocationCallbacks& setPfnAllocation(PFN_AllocationFunction pfnAllocation) {this->pfnAllocation = pfnAllocation; return *this; }
+    AllocationCallbacks& setPfnReallocation(PFN_ReallocationFunction pfnReallocation) {this->pfnReallocation = pfnReallocation; return *this; }
+    AllocationCallbacks& setPfnFree(PFN_FreeFunction pfnFree) {this->pfnFree = pfnFree; return *this; }
+    AllocationCallbacks& setPfnInternalAllocation(PFN_InternalAllocationNotification pfnInternalAllocation) {this->pfnInternalAllocation = pfnInternalAllocation; return *this; }
+    AllocationCallbacks& setPfnInternalFree(PFN_InternalFreeNotification pfnInternalFree) {this->pfnInternalFree = pfnInternalFree; return *this; }
 };
 struct DeviceQueueCreateInfo {
     StructureType sType{StructureType::DeviceQueueCreateInfo};
@@ -3766,11 +3764,11 @@ struct DeviceQueueCreateInfo {
     uint32_t queueFamilyIndex{0};
     uint32_t queueCount{0};
     const float* pQueuePriorities = nullptr;
-    DeviceQueueCreateInfo& setFlags(DeviceQueueCreateFlags flags) { this->flags = flags; return *this; }
-    DeviceQueueCreateInfo& setQueueFamilyIndex(uint32_t queueFamilyIndex) { this->queueFamilyIndex = queueFamilyIndex; return *this; }
-    DeviceQueueCreateInfo& setQueueCount(uint32_t queueCount) { this->queueCount = queueCount; return *this; }
-    DeviceQueueCreateInfo& setPQueuePriorities(const float* pQueuePriorities) { this->pQueuePriorities = pQueuePriorities; return *this; }
-    DeviceQueueCreateInfo& setQueuePriorities(detail::span<const float> QueuePriorities) { this->queueCount = QueuePriorities.size(); this->pQueuePriorities = QueuePriorities.data();  return *this; }
+    DeviceQueueCreateInfo& setFlags(DeviceQueueCreateFlags flags) {this->flags = flags; return *this; }
+    DeviceQueueCreateInfo& setQueueFamilyIndex(uint32_t queueFamilyIndex) {this->queueFamilyIndex = queueFamilyIndex; return *this; }
+    DeviceQueueCreateInfo& setQueueCount(uint32_t queueCount) {this->queueCount = queueCount; return *this; }
+    DeviceQueueCreateInfo& setPQueuePriorities(const float* pQueuePriorities) {this->pQueuePriorities = pQueuePriorities; return *this; }
+    DeviceQueueCreateInfo& setPQueuePriorities(detail::span<const float> pQueuePriorities) {this->queueCount = pQueuePriorities.size(); this->pQueuePriorities = pQueuePriorities.data();  return *this; }
 };
 struct PhysicalDeviceFeatures {
     Bool32 robustBufferAccess{0};
@@ -3850,61 +3848,61 @@ struct PhysicalDeviceFeatures {
         && sparseResidency16Samples == value.sparseResidency16Samples && sparseResidencyAliased == value.sparseResidencyAliased && variableMultisampleRate == value.variableMultisampleRate 
         && inheritedQueries == value.inheritedQueries ;}
     constexpr bool operator!=(PhysicalDeviceFeatures const& value) const {return !(*this == value);}
-    PhysicalDeviceFeatures& setRobustBufferAccess(Bool32 robustBufferAccess) { this->robustBufferAccess = robustBufferAccess; return *this; }
-    PhysicalDeviceFeatures& setFullDrawIndexUint32(Bool32 fullDrawIndexUint32) { this->fullDrawIndexUint32 = fullDrawIndexUint32; return *this; }
-    PhysicalDeviceFeatures& setImageCubeArray(Bool32 imageCubeArray) { this->imageCubeArray = imageCubeArray; return *this; }
-    PhysicalDeviceFeatures& setIndependentBlend(Bool32 independentBlend) { this->independentBlend = independentBlend; return *this; }
-    PhysicalDeviceFeatures& setGeometryShader(Bool32 geometryShader) { this->geometryShader = geometryShader; return *this; }
-    PhysicalDeviceFeatures& setTessellationShader(Bool32 tessellationShader) { this->tessellationShader = tessellationShader; return *this; }
-    PhysicalDeviceFeatures& setSampleRateShading(Bool32 sampleRateShading) { this->sampleRateShading = sampleRateShading; return *this; }
-    PhysicalDeviceFeatures& setDualSrcBlend(Bool32 dualSrcBlend) { this->dualSrcBlend = dualSrcBlend; return *this; }
-    PhysicalDeviceFeatures& setLogicOp(Bool32 logicOp) { this->logicOp = logicOp; return *this; }
-    PhysicalDeviceFeatures& setMultiDrawIndirect(Bool32 multiDrawIndirect) { this->multiDrawIndirect = multiDrawIndirect; return *this; }
-    PhysicalDeviceFeatures& setDrawIndirectFirstInstance(Bool32 drawIndirectFirstInstance) { this->drawIndirectFirstInstance = drawIndirectFirstInstance; return *this; }
-    PhysicalDeviceFeatures& setDepthClamp(Bool32 depthClamp) { this->depthClamp = depthClamp; return *this; }
-    PhysicalDeviceFeatures& setDepthBiasClamp(Bool32 depthBiasClamp) { this->depthBiasClamp = depthBiasClamp; return *this; }
-    PhysicalDeviceFeatures& setFillModeNonSolid(Bool32 fillModeNonSolid) { this->fillModeNonSolid = fillModeNonSolid; return *this; }
-    PhysicalDeviceFeatures& setDepthBounds(Bool32 depthBounds) { this->depthBounds = depthBounds; return *this; }
-    PhysicalDeviceFeatures& setWideLines(Bool32 wideLines) { this->wideLines = wideLines; return *this; }
-    PhysicalDeviceFeatures& setLargePoints(Bool32 largePoints) { this->largePoints = largePoints; return *this; }
-    PhysicalDeviceFeatures& setAlphaToOne(Bool32 alphaToOne) { this->alphaToOne = alphaToOne; return *this; }
-    PhysicalDeviceFeatures& setMultiViewport(Bool32 multiViewport) { this->multiViewport = multiViewport; return *this; }
-    PhysicalDeviceFeatures& setSamplerAnisotropy(Bool32 samplerAnisotropy) { this->samplerAnisotropy = samplerAnisotropy; return *this; }
-    PhysicalDeviceFeatures& setTextureCompressionETC2(Bool32 textureCompressionETC2) { this->textureCompressionETC2 = textureCompressionETC2; return *this; }
-    PhysicalDeviceFeatures& setTextureCompressionASTC_LDR(Bool32 textureCompressionASTC_LDR) { this->textureCompressionASTC_LDR = textureCompressionASTC_LDR; return *this; }
-    PhysicalDeviceFeatures& setTextureCompressionBC(Bool32 textureCompressionBC) { this->textureCompressionBC = textureCompressionBC; return *this; }
-    PhysicalDeviceFeatures& setOcclusionQueryPrecise(Bool32 occlusionQueryPrecise) { this->occlusionQueryPrecise = occlusionQueryPrecise; return *this; }
-    PhysicalDeviceFeatures& setPipelineStatisticsQuery(Bool32 pipelineStatisticsQuery) { this->pipelineStatisticsQuery = pipelineStatisticsQuery; return *this; }
-    PhysicalDeviceFeatures& setVertexPipelineStoresAndAtomics(Bool32 vertexPipelineStoresAndAtomics) { this->vertexPipelineStoresAndAtomics = vertexPipelineStoresAndAtomics; return *this; }
-    PhysicalDeviceFeatures& setFragmentStoresAndAtomics(Bool32 fragmentStoresAndAtomics) { this->fragmentStoresAndAtomics = fragmentStoresAndAtomics; return *this; }
-    PhysicalDeviceFeatures& setShaderTessellationAndGeometryPointSize(Bool32 shaderTessellationAndGeometryPointSize) { this->shaderTessellationAndGeometryPointSize = shaderTessellationAndGeometryPointSize; return *this; }
-    PhysicalDeviceFeatures& setShaderImageGatherExtended(Bool32 shaderImageGatherExtended) { this->shaderImageGatherExtended = shaderImageGatherExtended; return *this; }
-    PhysicalDeviceFeatures& setShaderStorageImageExtendedFormats(Bool32 shaderStorageImageExtendedFormats) { this->shaderStorageImageExtendedFormats = shaderStorageImageExtendedFormats; return *this; }
-    PhysicalDeviceFeatures& setShaderStorageImageMultisample(Bool32 shaderStorageImageMultisample) { this->shaderStorageImageMultisample = shaderStorageImageMultisample; return *this; }
-    PhysicalDeviceFeatures& setShaderStorageImageReadWithoutFormat(Bool32 shaderStorageImageReadWithoutFormat) { this->shaderStorageImageReadWithoutFormat = shaderStorageImageReadWithoutFormat; return *this; }
-    PhysicalDeviceFeatures& setShaderStorageImageWriteWithoutFormat(Bool32 shaderStorageImageWriteWithoutFormat) { this->shaderStorageImageWriteWithoutFormat = shaderStorageImageWriteWithoutFormat; return *this; }
-    PhysicalDeviceFeatures& setShaderUniformBufferArrayDynamicIndexing(Bool32 shaderUniformBufferArrayDynamicIndexing) { this->shaderUniformBufferArrayDynamicIndexing = shaderUniformBufferArrayDynamicIndexing; return *this; }
-    PhysicalDeviceFeatures& setShaderSampledImageArrayDynamicIndexing(Bool32 shaderSampledImageArrayDynamicIndexing) { this->shaderSampledImageArrayDynamicIndexing = shaderSampledImageArrayDynamicIndexing; return *this; }
-    PhysicalDeviceFeatures& setShaderStorageBufferArrayDynamicIndexing(Bool32 shaderStorageBufferArrayDynamicIndexing) { this->shaderStorageBufferArrayDynamicIndexing = shaderStorageBufferArrayDynamicIndexing; return *this; }
-    PhysicalDeviceFeatures& setShaderStorageImageArrayDynamicIndexing(Bool32 shaderStorageImageArrayDynamicIndexing) { this->shaderStorageImageArrayDynamicIndexing = shaderStorageImageArrayDynamicIndexing; return *this; }
-    PhysicalDeviceFeatures& setShaderClipDistance(Bool32 shaderClipDistance) { this->shaderClipDistance = shaderClipDistance; return *this; }
-    PhysicalDeviceFeatures& setShaderCullDistance(Bool32 shaderCullDistance) { this->shaderCullDistance = shaderCullDistance; return *this; }
-    PhysicalDeviceFeatures& setShaderFloat64(Bool32 shaderFloat64) { this->shaderFloat64 = shaderFloat64; return *this; }
-    PhysicalDeviceFeatures& setShaderInt64(Bool32 shaderInt64) { this->shaderInt64 = shaderInt64; return *this; }
-    PhysicalDeviceFeatures& setShaderInt16(Bool32 shaderInt16) { this->shaderInt16 = shaderInt16; return *this; }
-    PhysicalDeviceFeatures& setShaderResourceResidency(Bool32 shaderResourceResidency) { this->shaderResourceResidency = shaderResourceResidency; return *this; }
-    PhysicalDeviceFeatures& setShaderResourceMinLod(Bool32 shaderResourceMinLod) { this->shaderResourceMinLod = shaderResourceMinLod; return *this; }
-    PhysicalDeviceFeatures& setSparseBinding(Bool32 sparseBinding) { this->sparseBinding = sparseBinding; return *this; }
-    PhysicalDeviceFeatures& setSparseResidencyBuffer(Bool32 sparseResidencyBuffer) { this->sparseResidencyBuffer = sparseResidencyBuffer; return *this; }
-    PhysicalDeviceFeatures& setSparseResidencyImage2D(Bool32 sparseResidencyImage2D) { this->sparseResidencyImage2D = sparseResidencyImage2D; return *this; }
-    PhysicalDeviceFeatures& setSparseResidencyImage3D(Bool32 sparseResidencyImage3D) { this->sparseResidencyImage3D = sparseResidencyImage3D; return *this; }
-    PhysicalDeviceFeatures& setSparseResidency2Samples(Bool32 sparseResidency2Samples) { this->sparseResidency2Samples = sparseResidency2Samples; return *this; }
-    PhysicalDeviceFeatures& setSparseResidency4Samples(Bool32 sparseResidency4Samples) { this->sparseResidency4Samples = sparseResidency4Samples; return *this; }
-    PhysicalDeviceFeatures& setSparseResidency8Samples(Bool32 sparseResidency8Samples) { this->sparseResidency8Samples = sparseResidency8Samples; return *this; }
-    PhysicalDeviceFeatures& setSparseResidency16Samples(Bool32 sparseResidency16Samples) { this->sparseResidency16Samples = sparseResidency16Samples; return *this; }
-    PhysicalDeviceFeatures& setSparseResidencyAliased(Bool32 sparseResidencyAliased) { this->sparseResidencyAliased = sparseResidencyAliased; return *this; }
-    PhysicalDeviceFeatures& setVariableMultisampleRate(Bool32 variableMultisampleRate) { this->variableMultisampleRate = variableMultisampleRate; return *this; }
-    PhysicalDeviceFeatures& setInheritedQueries(Bool32 inheritedQueries) { this->inheritedQueries = inheritedQueries; return *this; }
+    PhysicalDeviceFeatures& setRobustBufferAccess(Bool32 robustBufferAccess) {this->robustBufferAccess = robustBufferAccess; return *this; }
+    PhysicalDeviceFeatures& setFullDrawIndexUint32(Bool32 fullDrawIndexUint32) {this->fullDrawIndexUint32 = fullDrawIndexUint32; return *this; }
+    PhysicalDeviceFeatures& setImageCubeArray(Bool32 imageCubeArray) {this->imageCubeArray = imageCubeArray; return *this; }
+    PhysicalDeviceFeatures& setIndependentBlend(Bool32 independentBlend) {this->independentBlend = independentBlend; return *this; }
+    PhysicalDeviceFeatures& setGeometryShader(Bool32 geometryShader) {this->geometryShader = geometryShader; return *this; }
+    PhysicalDeviceFeatures& setTessellationShader(Bool32 tessellationShader) {this->tessellationShader = tessellationShader; return *this; }
+    PhysicalDeviceFeatures& setSampleRateShading(Bool32 sampleRateShading) {this->sampleRateShading = sampleRateShading; return *this; }
+    PhysicalDeviceFeatures& setDualSrcBlend(Bool32 dualSrcBlend) {this->dualSrcBlend = dualSrcBlend; return *this; }
+    PhysicalDeviceFeatures& setLogicOp(Bool32 logicOp) {this->logicOp = logicOp; return *this; }
+    PhysicalDeviceFeatures& setMultiDrawIndirect(Bool32 multiDrawIndirect) {this->multiDrawIndirect = multiDrawIndirect; return *this; }
+    PhysicalDeviceFeatures& setDrawIndirectFirstInstance(Bool32 drawIndirectFirstInstance) {this->drawIndirectFirstInstance = drawIndirectFirstInstance; return *this; }
+    PhysicalDeviceFeatures& setDepthClamp(Bool32 depthClamp) {this->depthClamp = depthClamp; return *this; }
+    PhysicalDeviceFeatures& setDepthBiasClamp(Bool32 depthBiasClamp) {this->depthBiasClamp = depthBiasClamp; return *this; }
+    PhysicalDeviceFeatures& setFillModeNonSolid(Bool32 fillModeNonSolid) {this->fillModeNonSolid = fillModeNonSolid; return *this; }
+    PhysicalDeviceFeatures& setDepthBounds(Bool32 depthBounds) {this->depthBounds = depthBounds; return *this; }
+    PhysicalDeviceFeatures& setWideLines(Bool32 wideLines) {this->wideLines = wideLines; return *this; }
+    PhysicalDeviceFeatures& setLargePoints(Bool32 largePoints) {this->largePoints = largePoints; return *this; }
+    PhysicalDeviceFeatures& setAlphaToOne(Bool32 alphaToOne) {this->alphaToOne = alphaToOne; return *this; }
+    PhysicalDeviceFeatures& setMultiViewport(Bool32 multiViewport) {this->multiViewport = multiViewport; return *this; }
+    PhysicalDeviceFeatures& setSamplerAnisotropy(Bool32 samplerAnisotropy) {this->samplerAnisotropy = samplerAnisotropy; return *this; }
+    PhysicalDeviceFeatures& setTextureCompressionETC2(Bool32 textureCompressionETC2) {this->textureCompressionETC2 = textureCompressionETC2; return *this; }
+    PhysicalDeviceFeatures& setTextureCompressionASTC_LDR(Bool32 textureCompressionASTC_LDR) {this->textureCompressionASTC_LDR = textureCompressionASTC_LDR; return *this; }
+    PhysicalDeviceFeatures& setTextureCompressionBC(Bool32 textureCompressionBC) {this->textureCompressionBC = textureCompressionBC; return *this; }
+    PhysicalDeviceFeatures& setOcclusionQueryPrecise(Bool32 occlusionQueryPrecise) {this->occlusionQueryPrecise = occlusionQueryPrecise; return *this; }
+    PhysicalDeviceFeatures& setPipelineStatisticsQuery(Bool32 pipelineStatisticsQuery) {this->pipelineStatisticsQuery = pipelineStatisticsQuery; return *this; }
+    PhysicalDeviceFeatures& setVertexPipelineStoresAndAtomics(Bool32 vertexPipelineStoresAndAtomics) {this->vertexPipelineStoresAndAtomics = vertexPipelineStoresAndAtomics; return *this; }
+    PhysicalDeviceFeatures& setFragmentStoresAndAtomics(Bool32 fragmentStoresAndAtomics) {this->fragmentStoresAndAtomics = fragmentStoresAndAtomics; return *this; }
+    PhysicalDeviceFeatures& setShaderTessellationAndGeometryPointSize(Bool32 shaderTessellationAndGeometryPointSize) {this->shaderTessellationAndGeometryPointSize = shaderTessellationAndGeometryPointSize; return *this; }
+    PhysicalDeviceFeatures& setShaderImageGatherExtended(Bool32 shaderImageGatherExtended) {this->shaderImageGatherExtended = shaderImageGatherExtended; return *this; }
+    PhysicalDeviceFeatures& setShaderStorageImageExtendedFormats(Bool32 shaderStorageImageExtendedFormats) {this->shaderStorageImageExtendedFormats = shaderStorageImageExtendedFormats; return *this; }
+    PhysicalDeviceFeatures& setShaderStorageImageMultisample(Bool32 shaderStorageImageMultisample) {this->shaderStorageImageMultisample = shaderStorageImageMultisample; return *this; }
+    PhysicalDeviceFeatures& setShaderStorageImageReadWithoutFormat(Bool32 shaderStorageImageReadWithoutFormat) {this->shaderStorageImageReadWithoutFormat = shaderStorageImageReadWithoutFormat; return *this; }
+    PhysicalDeviceFeatures& setShaderStorageImageWriteWithoutFormat(Bool32 shaderStorageImageWriteWithoutFormat) {this->shaderStorageImageWriteWithoutFormat = shaderStorageImageWriteWithoutFormat; return *this; }
+    PhysicalDeviceFeatures& setShaderUniformBufferArrayDynamicIndexing(Bool32 shaderUniformBufferArrayDynamicIndexing) {this->shaderUniformBufferArrayDynamicIndexing = shaderUniformBufferArrayDynamicIndexing; return *this; }
+    PhysicalDeviceFeatures& setShaderSampledImageArrayDynamicIndexing(Bool32 shaderSampledImageArrayDynamicIndexing) {this->shaderSampledImageArrayDynamicIndexing = shaderSampledImageArrayDynamicIndexing; return *this; }
+    PhysicalDeviceFeatures& setShaderStorageBufferArrayDynamicIndexing(Bool32 shaderStorageBufferArrayDynamicIndexing) {this->shaderStorageBufferArrayDynamicIndexing = shaderStorageBufferArrayDynamicIndexing; return *this; }
+    PhysicalDeviceFeatures& setShaderStorageImageArrayDynamicIndexing(Bool32 shaderStorageImageArrayDynamicIndexing) {this->shaderStorageImageArrayDynamicIndexing = shaderStorageImageArrayDynamicIndexing; return *this; }
+    PhysicalDeviceFeatures& setShaderClipDistance(Bool32 shaderClipDistance) {this->shaderClipDistance = shaderClipDistance; return *this; }
+    PhysicalDeviceFeatures& setShaderCullDistance(Bool32 shaderCullDistance) {this->shaderCullDistance = shaderCullDistance; return *this; }
+    PhysicalDeviceFeatures& setShaderFloat64(Bool32 shaderFloat64) {this->shaderFloat64 = shaderFloat64; return *this; }
+    PhysicalDeviceFeatures& setShaderInt64(Bool32 shaderInt64) {this->shaderInt64 = shaderInt64; return *this; }
+    PhysicalDeviceFeatures& setShaderInt16(Bool32 shaderInt16) {this->shaderInt16 = shaderInt16; return *this; }
+    PhysicalDeviceFeatures& setShaderResourceResidency(Bool32 shaderResourceResidency) {this->shaderResourceResidency = shaderResourceResidency; return *this; }
+    PhysicalDeviceFeatures& setShaderResourceMinLod(Bool32 shaderResourceMinLod) {this->shaderResourceMinLod = shaderResourceMinLod; return *this; }
+    PhysicalDeviceFeatures& setSparseBinding(Bool32 sparseBinding) {this->sparseBinding = sparseBinding; return *this; }
+    PhysicalDeviceFeatures& setSparseResidencyBuffer(Bool32 sparseResidencyBuffer) {this->sparseResidencyBuffer = sparseResidencyBuffer; return *this; }
+    PhysicalDeviceFeatures& setSparseResidencyImage2D(Bool32 sparseResidencyImage2D) {this->sparseResidencyImage2D = sparseResidencyImage2D; return *this; }
+    PhysicalDeviceFeatures& setSparseResidencyImage3D(Bool32 sparseResidencyImage3D) {this->sparseResidencyImage3D = sparseResidencyImage3D; return *this; }
+    PhysicalDeviceFeatures& setSparseResidency2Samples(Bool32 sparseResidency2Samples) {this->sparseResidency2Samples = sparseResidency2Samples; return *this; }
+    PhysicalDeviceFeatures& setSparseResidency4Samples(Bool32 sparseResidency4Samples) {this->sparseResidency4Samples = sparseResidency4Samples; return *this; }
+    PhysicalDeviceFeatures& setSparseResidency8Samples(Bool32 sparseResidency8Samples) {this->sparseResidency8Samples = sparseResidency8Samples; return *this; }
+    PhysicalDeviceFeatures& setSparseResidency16Samples(Bool32 sparseResidency16Samples) {this->sparseResidency16Samples = sparseResidency16Samples; return *this; }
+    PhysicalDeviceFeatures& setSparseResidencyAliased(Bool32 sparseResidencyAliased) {this->sparseResidencyAliased = sparseResidencyAliased; return *this; }
+    PhysicalDeviceFeatures& setVariableMultisampleRate(Bool32 variableMultisampleRate) {this->variableMultisampleRate = variableMultisampleRate; return *this; }
+    PhysicalDeviceFeatures& setInheritedQueries(Bool32 inheritedQueries) {this->inheritedQueries = inheritedQueries; return *this; }
 };
 struct DeviceCreateInfo {
     StructureType sType{StructureType::DeviceCreateInfo};
@@ -3917,15 +3915,15 @@ struct DeviceCreateInfo {
     uint32_t enabledExtensionCount{0};
     const char* const* ppEnabledExtensionNames = nullptr;
     const PhysicalDeviceFeatures* pEnabledFeatures = nullptr;
-    DeviceCreateInfo& setFlags(DeviceCreateFlags flags) { this->flags = flags; return *this; }
-    DeviceCreateInfo& setQueueCreateInfoCount(uint32_t queueCreateInfoCount) { this->queueCreateInfoCount = queueCreateInfoCount; return *this; }
-    DeviceCreateInfo& setPQueueCreateInfos(const DeviceQueueCreateInfo* pQueueCreateInfos) { this->pQueueCreateInfos = pQueueCreateInfos; return *this; }
-    DeviceCreateInfo& setQueueCreateInfos(detail::span<const DeviceQueueCreateInfo> QueueCreateInfos) { this->queueCreateInfoCount = QueueCreateInfos.size(); this->pQueueCreateInfos = QueueCreateInfos.data();  return *this; }
-    DeviceCreateInfo& setEnabledExtensionCount(uint32_t enabledExtensionCount) { this->enabledExtensionCount = enabledExtensionCount; return *this; }
+    DeviceCreateInfo& setFlags(DeviceCreateFlags flags) {this->flags = flags; return *this; }
+    DeviceCreateInfo& setQueueCreateInfoCount(uint32_t queueCreateInfoCount) {this->queueCreateInfoCount = queueCreateInfoCount; return *this; }
+    DeviceCreateInfo& setPQueueCreateInfos(const DeviceQueueCreateInfo* pQueueCreateInfos) {this->pQueueCreateInfos = pQueueCreateInfos; return *this; }
+    DeviceCreateInfo& setPQueueCreateInfos(detail::span<const DeviceQueueCreateInfo> pQueueCreateInfos) {this->queueCreateInfoCount = pQueueCreateInfos.size(); this->pQueueCreateInfos = pQueueCreateInfos.data();  return *this; }
+    DeviceCreateInfo& setEnabledExtensionCount(uint32_t enabledExtensionCount) {this->enabledExtensionCount = enabledExtensionCount; return *this; }
     DeviceCreateInfo& setPpEnabledExtensionNames(const char* const* ppEnabledExtensionNames) {this->ppEnabledExtensionNames = ppEnabledExtensionNames; return *this; }
     DeviceCreateInfo& setpEnabledExtensionNames(detail::span<const char*> pEnabledExtensionNames) { this->enabledExtensionCount = pEnabledExtensionNames.size(); this->ppEnabledExtensionNames = pEnabledExtensionNames.data();  return *this; }
-    DeviceCreateInfo& setPEnabledFeatures(const PhysicalDeviceFeatures* pEnabledFeatures) { this->pEnabledFeatures = pEnabledFeatures; return *this; }
-    DeviceCreateInfo& setEnabledFeatures(PhysicalDeviceFeatures const& EnabledFeatures) { this->pEnabledFeatures = &EnabledFeatures; return *this; }
+    DeviceCreateInfo& setPEnabledFeatures(const PhysicalDeviceFeatures* pEnabledFeatures) {this->pEnabledFeatures = pEnabledFeatures; return *this; }
+    DeviceCreateInfo& setPEnabledFeatures(PhysicalDeviceFeatures const& pEnabledFeatures) {this->pEnabledFeatures = &pEnabledFeatures; return *this; }
 };
 struct InstanceCreateInfo {
     StructureType sType{StructureType::InstanceCreateInfo};
@@ -3936,13 +3934,13 @@ struct InstanceCreateInfo {
     const char* const* ppEnabledLayerNames = nullptr;
     uint32_t enabledExtensionCount{0};
     const char* const* ppEnabledExtensionNames = nullptr;
-    InstanceCreateInfo& setFlags(InstanceCreateFlags flags) { this->flags = flags; return *this; }
-    InstanceCreateInfo& setPApplicationInfo(const ApplicationInfo* pApplicationInfo) { this->pApplicationInfo = pApplicationInfo; return *this; }
-    InstanceCreateInfo& setApplicationInfo(ApplicationInfo const& ApplicationInfo) { this->pApplicationInfo = &ApplicationInfo; return *this; }
-    InstanceCreateInfo& setEnabledLayerCount(uint32_t enabledLayerCount) { this->enabledLayerCount = enabledLayerCount; return *this; }
+    InstanceCreateInfo& setFlags(InstanceCreateFlags flags) {this->flags = flags; return *this; }
+    InstanceCreateInfo& setPApplicationInfo(const ApplicationInfo* pApplicationInfo) {this->pApplicationInfo = pApplicationInfo; return *this; }
+    InstanceCreateInfo& setPApplicationInfo(ApplicationInfo const& pApplicationInfo) {this->pApplicationInfo = &pApplicationInfo; return *this; }
+    InstanceCreateInfo& setEnabledLayerCount(uint32_t enabledLayerCount) {this->enabledLayerCount = enabledLayerCount; return *this; }
     InstanceCreateInfo& setPpEnabledLayerNames(const char* const* ppEnabledLayerNames) {this->ppEnabledLayerNames = ppEnabledLayerNames; return *this; }
     InstanceCreateInfo& setpEnabledLayerNames(detail::span<const char*> pEnabledLayerNames) { this->enabledLayerCount = pEnabledLayerNames.size(); this->ppEnabledLayerNames = pEnabledLayerNames.data();  return *this; }
-    InstanceCreateInfo& setEnabledExtensionCount(uint32_t enabledExtensionCount) { this->enabledExtensionCount = enabledExtensionCount; return *this; }
+    InstanceCreateInfo& setEnabledExtensionCount(uint32_t enabledExtensionCount) {this->enabledExtensionCount = enabledExtensionCount; return *this; }
     InstanceCreateInfo& setPpEnabledExtensionNames(const char* const* ppEnabledExtensionNames) {this->ppEnabledExtensionNames = ppEnabledExtensionNames; return *this; }
     InstanceCreateInfo& setpEnabledExtensionNames(detail::span<const char*> pEnabledExtensionNames) { this->enabledExtensionCount = pEnabledExtensionNames.size(); this->ppEnabledExtensionNames = pEnabledExtensionNames.data();  return *this; }
 };
@@ -3955,10 +3953,10 @@ struct QueueFamilyProperties {
         return queueFlags == value.queueFlags && queueCount == value.queueCount && timestampValidBits == value.timestampValidBits && minImageTransferGranularity == value.minImageTransferGranularity 
         ;}
     constexpr bool operator!=(QueueFamilyProperties const& value) const {return !(*this == value);}
-    QueueFamilyProperties& setQueueFlags(QueueFlags queueFlags) { this->queueFlags = queueFlags; return *this; }
-    QueueFamilyProperties& setQueueCount(uint32_t queueCount) { this->queueCount = queueCount; return *this; }
-    QueueFamilyProperties& setTimestampValidBits(uint32_t timestampValidBits) { this->timestampValidBits = timestampValidBits; return *this; }
-    QueueFamilyProperties& setMinImageTransferGranularity(Extent3D minImageTransferGranularity) { this->minImageTransferGranularity = minImageTransferGranularity; return *this; }
+    QueueFamilyProperties& setQueueFlags(QueueFlags queueFlags) {this->queueFlags = queueFlags; return *this; }
+    QueueFamilyProperties& setQueueCount(uint32_t queueCount) {this->queueCount = queueCount; return *this; }
+    QueueFamilyProperties& setTimestampValidBits(uint32_t timestampValidBits) {this->timestampValidBits = timestampValidBits; return *this; }
+    QueueFamilyProperties& setMinImageTransferGranularity(Extent3D minImageTransferGranularity) {this->minImageTransferGranularity = minImageTransferGranularity; return *this; }
 };
 struct MemoryHeap {
     DeviceSize size{0};
@@ -3966,8 +3964,8 @@ struct MemoryHeap {
     constexpr bool operator==(MemoryHeap const& value) const {
         return size == value.size && flags == value.flags ;}
     constexpr bool operator!=(MemoryHeap const& value) const {return !(*this == value);}
-    MemoryHeap& setSize(DeviceSize size) { this->size = size; return *this; }
-    MemoryHeap& setFlags(MemoryHeapFlags flags) { this->flags = flags; return *this; }
+    MemoryHeap& setSize(DeviceSize size) {this->size = size; return *this; }
+    MemoryHeap& setFlags(MemoryHeapFlags flags) {this->flags = flags; return *this; }
 };
 struct MemoryType {
     MemoryPropertyFlags propertyFlags{};
@@ -3975,8 +3973,8 @@ struct MemoryType {
     constexpr bool operator==(MemoryType const& value) const {
         return propertyFlags == value.propertyFlags && heapIndex == value.heapIndex ;}
     constexpr bool operator!=(MemoryType const& value) const {return !(*this == value);}
-    MemoryType& setPropertyFlags(MemoryPropertyFlags propertyFlags) { this->propertyFlags = propertyFlags; return *this; }
-    MemoryType& setHeapIndex(uint32_t heapIndex) { this->heapIndex = heapIndex; return *this; }
+    MemoryType& setPropertyFlags(MemoryPropertyFlags propertyFlags) {this->propertyFlags = propertyFlags; return *this; }
+    MemoryType& setHeapIndex(uint32_t heapIndex) {this->heapIndex = heapIndex; return *this; }
 };
 struct PhysicalDeviceMemoryProperties {
     uint32_t memoryTypeCount{0};
@@ -3991,18 +3989,18 @@ struct PhysicalDeviceMemoryProperties {
             is_equal &= memoryHeaps[i] == value.memoryHeaps[i];
         return is_equal && memoryTypeCount == value.memoryTypeCount && memoryHeapCount == value.memoryHeapCount ;}
     constexpr bool operator!=(PhysicalDeviceMemoryProperties const& value) const {return !(*this == value);}
-    PhysicalDeviceMemoryProperties& setMemoryTypeCount(uint32_t memoryTypeCount) { this->memoryTypeCount = memoryTypeCount; return *this; }
-    PhysicalDeviceMemoryProperties& setMemoryTypes(MemoryType memoryTypes[MAX_MEMORY_TYPES]) { for(uint32_t i = 0; i < MAX_MEMORY_TYPES; i++) this->memoryTypes[i] = memoryTypes[i]; return *this; }
-    PhysicalDeviceMemoryProperties& setMemoryHeapCount(uint32_t memoryHeapCount) { this->memoryHeapCount = memoryHeapCount; return *this; }
-    PhysicalDeviceMemoryProperties& setMemoryHeaps(MemoryHeap memoryHeaps[MAX_MEMORY_HEAPS]) { for(uint32_t i = 0; i < MAX_MEMORY_HEAPS; i++) this->memoryHeaps[i] = memoryHeaps[i]; return *this; }
+    PhysicalDeviceMemoryProperties& setMemoryTypeCount(uint32_t memoryTypeCount) {this->memoryTypeCount = memoryTypeCount; return *this; }
+    PhysicalDeviceMemoryProperties& setMemoryTypes(MemoryType memoryTypes[MAX_MEMORY_TYPES]) {for(uint32_t i = 0; i < MAX_MEMORY_TYPES; i++) this->memoryTypes[i] = memoryTypes[i]; return *this; }
+    PhysicalDeviceMemoryProperties& setMemoryHeapCount(uint32_t memoryHeapCount) {this->memoryHeapCount = memoryHeapCount; return *this; }
+    PhysicalDeviceMemoryProperties& setMemoryHeaps(MemoryHeap memoryHeaps[MAX_MEMORY_HEAPS]) {for(uint32_t i = 0; i < MAX_MEMORY_HEAPS; i++) this->memoryHeaps[i] = memoryHeaps[i]; return *this; }
 };
 struct MemoryAllocateInfo {
     StructureType sType{StructureType::MemoryAllocateInfo};
     const void* pNext = nullptr;
     DeviceSize allocationSize{0};
     uint32_t memoryTypeIndex{0};
-    MemoryAllocateInfo& setAllocationSize(DeviceSize allocationSize) { this->allocationSize = allocationSize; return *this; }
-    MemoryAllocateInfo& setMemoryTypeIndex(uint32_t memoryTypeIndex) { this->memoryTypeIndex = memoryTypeIndex; return *this; }
+    MemoryAllocateInfo& setAllocationSize(DeviceSize allocationSize) {this->allocationSize = allocationSize; return *this; }
+    MemoryAllocateInfo& setMemoryTypeIndex(uint32_t memoryTypeIndex) {this->memoryTypeIndex = memoryTypeIndex; return *this; }
 };
 struct MemoryRequirements {
     DeviceSize size{0};
@@ -4011,9 +4009,9 @@ struct MemoryRequirements {
     constexpr bool operator==(MemoryRequirements const& value) const {
         return size == value.size && alignment == value.alignment && memoryTypeBits == value.memoryTypeBits ;}
     constexpr bool operator!=(MemoryRequirements const& value) const {return !(*this == value);}
-    MemoryRequirements& setSize(DeviceSize size) { this->size = size; return *this; }
-    MemoryRequirements& setAlignment(DeviceSize alignment) { this->alignment = alignment; return *this; }
-    MemoryRequirements& setMemoryTypeBits(uint32_t memoryTypeBits) { this->memoryTypeBits = memoryTypeBits; return *this; }
+    MemoryRequirements& setSize(DeviceSize size) {this->size = size; return *this; }
+    MemoryRequirements& setAlignment(DeviceSize alignment) {this->alignment = alignment; return *this; }
+    MemoryRequirements& setMemoryTypeBits(uint32_t memoryTypeBits) {this->memoryTypeBits = memoryTypeBits; return *this; }
 };
 struct SparseImageFormatProperties {
     ImageAspectFlags aspectMask{};
@@ -4022,9 +4020,9 @@ struct SparseImageFormatProperties {
     constexpr bool operator==(SparseImageFormatProperties const& value) const {
         return aspectMask == value.aspectMask && imageGranularity == value.imageGranularity && flags == value.flags ;}
     constexpr bool operator!=(SparseImageFormatProperties const& value) const {return !(*this == value);}
-    SparseImageFormatProperties& setAspectMask(ImageAspectFlags aspectMask) { this->aspectMask = aspectMask; return *this; }
-    SparseImageFormatProperties& setImageGranularity(Extent3D imageGranularity) { this->imageGranularity = imageGranularity; return *this; }
-    SparseImageFormatProperties& setFlags(SparseImageFormatFlags flags) { this->flags = flags; return *this; }
+    SparseImageFormatProperties& setAspectMask(ImageAspectFlags aspectMask) {this->aspectMask = aspectMask; return *this; }
+    SparseImageFormatProperties& setImageGranularity(Extent3D imageGranularity) {this->imageGranularity = imageGranularity; return *this; }
+    SparseImageFormatProperties& setFlags(SparseImageFormatFlags flags) {this->flags = flags; return *this; }
 };
 struct SparseImageMemoryRequirements {
     SparseImageFormatProperties formatProperties{};
@@ -4036,11 +4034,11 @@ struct SparseImageMemoryRequirements {
         return formatProperties == value.formatProperties && imageMipTailFirstLod == value.imageMipTailFirstLod && imageMipTailSize == value.imageMipTailSize 
         && imageMipTailOffset == value.imageMipTailOffset && imageMipTailStride == value.imageMipTailStride ;}
     constexpr bool operator!=(SparseImageMemoryRequirements const& value) const {return !(*this == value);}
-    SparseImageMemoryRequirements& setFormatProperties(SparseImageFormatProperties formatProperties) { this->formatProperties = formatProperties; return *this; }
-    SparseImageMemoryRequirements& setImageMipTailFirstLod(uint32_t imageMipTailFirstLod) { this->imageMipTailFirstLod = imageMipTailFirstLod; return *this; }
-    SparseImageMemoryRequirements& setImageMipTailSize(DeviceSize imageMipTailSize) { this->imageMipTailSize = imageMipTailSize; return *this; }
-    SparseImageMemoryRequirements& setImageMipTailOffset(DeviceSize imageMipTailOffset) { this->imageMipTailOffset = imageMipTailOffset; return *this; }
-    SparseImageMemoryRequirements& setImageMipTailStride(DeviceSize imageMipTailStride) { this->imageMipTailStride = imageMipTailStride; return *this; }
+    SparseImageMemoryRequirements& setFormatProperties(SparseImageFormatProperties formatProperties) {this->formatProperties = formatProperties; return *this; }
+    SparseImageMemoryRequirements& setImageMipTailFirstLod(uint32_t imageMipTailFirstLod) {this->imageMipTailFirstLod = imageMipTailFirstLod; return *this; }
+    SparseImageMemoryRequirements& setImageMipTailSize(DeviceSize imageMipTailSize) {this->imageMipTailSize = imageMipTailSize; return *this; }
+    SparseImageMemoryRequirements& setImageMipTailOffset(DeviceSize imageMipTailOffset) {this->imageMipTailOffset = imageMipTailOffset; return *this; }
+    SparseImageMemoryRequirements& setImageMipTailStride(DeviceSize imageMipTailStride) {this->imageMipTailStride = imageMipTailStride; return *this; }
 };
 struct MappedMemoryRange {
     StructureType sType{StructureType::MappedMemoryRange};
@@ -4048,9 +4046,9 @@ struct MappedMemoryRange {
     DeviceMemory memory{};
     DeviceSize offset{0};
     DeviceSize size{0};
-    MappedMemoryRange& setMemory(DeviceMemory memory) { this->memory = memory; return *this; }
-    MappedMemoryRange& setOffset(DeviceSize offset) { this->offset = offset; return *this; }
-    MappedMemoryRange& setSize(DeviceSize size) { this->size = size; return *this; }
+    MappedMemoryRange& setMemory(DeviceMemory memory) {this->memory = memory; return *this; }
+    MappedMemoryRange& setOffset(DeviceSize offset) {this->offset = offset; return *this; }
+    MappedMemoryRange& setSize(DeviceSize size) {this->size = size; return *this; }
 };
 struct FormatProperties {
     FormatFeatureFlags linearTilingFeatures{};
@@ -4060,9 +4058,9 @@ struct FormatProperties {
         return linearTilingFeatures == value.linearTilingFeatures && optimalTilingFeatures == value.optimalTilingFeatures && bufferFeatures == value.bufferFeatures 
         ;}
     constexpr bool operator!=(FormatProperties const& value) const {return !(*this == value);}
-    FormatProperties& setLinearTilingFeatures(FormatFeatureFlags linearTilingFeatures) { this->linearTilingFeatures = linearTilingFeatures; return *this; }
-    FormatProperties& setOptimalTilingFeatures(FormatFeatureFlags optimalTilingFeatures) { this->optimalTilingFeatures = optimalTilingFeatures; return *this; }
-    FormatProperties& setBufferFeatures(FormatFeatureFlags bufferFeatures) { this->bufferFeatures = bufferFeatures; return *this; }
+    FormatProperties& setLinearTilingFeatures(FormatFeatureFlags linearTilingFeatures) {this->linearTilingFeatures = linearTilingFeatures; return *this; }
+    FormatProperties& setOptimalTilingFeatures(FormatFeatureFlags optimalTilingFeatures) {this->optimalTilingFeatures = optimalTilingFeatures; return *this; }
+    FormatProperties& setBufferFeatures(FormatFeatureFlags bufferFeatures) {this->bufferFeatures = bufferFeatures; return *this; }
 };
 struct ImageFormatProperties {
     Extent3D maxExtent{};
@@ -4074,27 +4072,27 @@ struct ImageFormatProperties {
         return maxExtent == value.maxExtent && maxMipLevels == value.maxMipLevels && maxArrayLayers == value.maxArrayLayers && sampleCounts == value.sampleCounts 
         && maxResourceSize == value.maxResourceSize ;}
     constexpr bool operator!=(ImageFormatProperties const& value) const {return !(*this == value);}
-    ImageFormatProperties& setMaxExtent(Extent3D maxExtent) { this->maxExtent = maxExtent; return *this; }
-    ImageFormatProperties& setMaxMipLevels(uint32_t maxMipLevels) { this->maxMipLevels = maxMipLevels; return *this; }
-    ImageFormatProperties& setMaxArrayLayers(uint32_t maxArrayLayers) { this->maxArrayLayers = maxArrayLayers; return *this; }
-    ImageFormatProperties& setSampleCounts(SampleCountFlags sampleCounts) { this->sampleCounts = sampleCounts; return *this; }
-    ImageFormatProperties& setMaxResourceSize(DeviceSize maxResourceSize) { this->maxResourceSize = maxResourceSize; return *this; }
+    ImageFormatProperties& setMaxExtent(Extent3D maxExtent) {this->maxExtent = maxExtent; return *this; }
+    ImageFormatProperties& setMaxMipLevels(uint32_t maxMipLevels) {this->maxMipLevels = maxMipLevels; return *this; }
+    ImageFormatProperties& setMaxArrayLayers(uint32_t maxArrayLayers) {this->maxArrayLayers = maxArrayLayers; return *this; }
+    ImageFormatProperties& setSampleCounts(SampleCountFlags sampleCounts) {this->sampleCounts = sampleCounts; return *this; }
+    ImageFormatProperties& setMaxResourceSize(DeviceSize maxResourceSize) {this->maxResourceSize = maxResourceSize; return *this; }
 };
 struct DescriptorBufferInfo {
     Buffer buffer{};
     DeviceSize offset{0};
     DeviceSize range{0};
-    DescriptorBufferInfo& setBuffer(Buffer buffer) { this->buffer = buffer; return *this; }
-    DescriptorBufferInfo& setOffset(DeviceSize offset) { this->offset = offset; return *this; }
-    DescriptorBufferInfo& setRange(DeviceSize range) { this->range = range; return *this; }
+    DescriptorBufferInfo& setBuffer(Buffer buffer) {this->buffer = buffer; return *this; }
+    DescriptorBufferInfo& setOffset(DeviceSize offset) {this->offset = offset; return *this; }
+    DescriptorBufferInfo& setRange(DeviceSize range) {this->range = range; return *this; }
 };
 struct DescriptorImageInfo {
     Sampler sampler{};
     ImageView imageView{};
     ImageLayout imageLayout{static_cast<ImageLayout>(0)};
-    DescriptorImageInfo& setSampler(Sampler sampler) { this->sampler = sampler; return *this; }
-    DescriptorImageInfo& setImageView(ImageView imageView) { this->imageView = imageView; return *this; }
-    DescriptorImageInfo& setImageLayout(ImageLayout imageLayout) { this->imageLayout = imageLayout; return *this; }
+    DescriptorImageInfo& setSampler(Sampler sampler) {this->sampler = sampler; return *this; }
+    DescriptorImageInfo& setImageView(ImageView imageView) {this->imageView = imageView; return *this; }
+    DescriptorImageInfo& setImageLayout(ImageLayout imageLayout) {this->imageLayout = imageLayout; return *this; }
 };
 struct WriteDescriptorSet {
     StructureType sType{StructureType::WriteDescriptorSet};
@@ -4107,17 +4105,17 @@ struct WriteDescriptorSet {
     const DescriptorImageInfo* pImageInfo = nullptr;
     const DescriptorBufferInfo* pBufferInfo = nullptr;
     const BufferView* pTexelBufferView = nullptr;
-    WriteDescriptorSet& setDstSet(DescriptorSet dstSet) { this->dstSet = dstSet; return *this; }
-    WriteDescriptorSet& setDstBinding(uint32_t dstBinding) { this->dstBinding = dstBinding; return *this; }
-    WriteDescriptorSet& setDstArrayElement(uint32_t dstArrayElement) { this->dstArrayElement = dstArrayElement; return *this; }
-    WriteDescriptorSet& setDescriptorCount(uint32_t descriptorCount) { this->descriptorCount = descriptorCount; return *this; }
-    WriteDescriptorSet& setDescriptorType(DescriptorType descriptorType) { this->descriptorType = descriptorType; return *this; }
-    WriteDescriptorSet& setPImageInfo(const DescriptorImageInfo* pImageInfo) { this->pImageInfo = pImageInfo; return *this; }
-    WriteDescriptorSet& setImageInfo(detail::span<const DescriptorImageInfo> ImageInfo) { this->descriptorCount = ImageInfo.size(); this->pImageInfo = ImageInfo.data();  return *this; }
-    WriteDescriptorSet& setPBufferInfo(const DescriptorBufferInfo* pBufferInfo) { this->pBufferInfo = pBufferInfo; return *this; }
-    WriteDescriptorSet& setBufferInfo(detail::span<const DescriptorBufferInfo> BufferInfo) { this->descriptorCount = BufferInfo.size(); this->pBufferInfo = BufferInfo.data();  return *this; }
-    WriteDescriptorSet& setPTexelBufferView(const BufferView* pTexelBufferView) { this->pTexelBufferView = pTexelBufferView; return *this; }
-    WriteDescriptorSet& setTexelBufferView(detail::span<const BufferView> TexelBufferView) { this->descriptorCount = TexelBufferView.size(); this->pTexelBufferView = TexelBufferView.data();  return *this; }
+    WriteDescriptorSet& setDstSet(DescriptorSet dstSet) {this->dstSet = dstSet; return *this; }
+    WriteDescriptorSet& setDstBinding(uint32_t dstBinding) {this->dstBinding = dstBinding; return *this; }
+    WriteDescriptorSet& setDstArrayElement(uint32_t dstArrayElement) {this->dstArrayElement = dstArrayElement; return *this; }
+    WriteDescriptorSet& setDescriptorCount(uint32_t descriptorCount) {this->descriptorCount = descriptorCount; return *this; }
+    WriteDescriptorSet& setDescriptorType(DescriptorType descriptorType) {this->descriptorType = descriptorType; return *this; }
+    WriteDescriptorSet& setPImageInfo(const DescriptorImageInfo* pImageInfo) {this->pImageInfo = pImageInfo; return *this; }
+    WriteDescriptorSet& setPImageInfo(detail::span<const DescriptorImageInfo> pImageInfo) {this->descriptorCount = pImageInfo.size(); this->pImageInfo = pImageInfo.data();  return *this; }
+    WriteDescriptorSet& setPBufferInfo(const DescriptorBufferInfo* pBufferInfo) {this->pBufferInfo = pBufferInfo; return *this; }
+    WriteDescriptorSet& setPBufferInfo(detail::span<const DescriptorBufferInfo> pBufferInfo) {this->descriptorCount = pBufferInfo.size(); this->pBufferInfo = pBufferInfo.data();  return *this; }
+    WriteDescriptorSet& setPTexelBufferView(const BufferView* pTexelBufferView) {this->pTexelBufferView = pTexelBufferView; return *this; }
+    WriteDescriptorSet& setPTexelBufferView(detail::span<const BufferView> pTexelBufferView) {this->descriptorCount = pTexelBufferView.size(); this->pTexelBufferView = pTexelBufferView.data();  return *this; }
 };
 struct CopyDescriptorSet {
     StructureType sType{StructureType::CopyDescriptorSet};
@@ -4129,13 +4127,13 @@ struct CopyDescriptorSet {
     uint32_t dstBinding{0};
     uint32_t dstArrayElement{0};
     uint32_t descriptorCount{0};
-    CopyDescriptorSet& setSrcSet(DescriptorSet srcSet) { this->srcSet = srcSet; return *this; }
-    CopyDescriptorSet& setSrcBinding(uint32_t srcBinding) { this->srcBinding = srcBinding; return *this; }
-    CopyDescriptorSet& setSrcArrayElement(uint32_t srcArrayElement) { this->srcArrayElement = srcArrayElement; return *this; }
-    CopyDescriptorSet& setDstSet(DescriptorSet dstSet) { this->dstSet = dstSet; return *this; }
-    CopyDescriptorSet& setDstBinding(uint32_t dstBinding) { this->dstBinding = dstBinding; return *this; }
-    CopyDescriptorSet& setDstArrayElement(uint32_t dstArrayElement) { this->dstArrayElement = dstArrayElement; return *this; }
-    CopyDescriptorSet& setDescriptorCount(uint32_t descriptorCount) { this->descriptorCount = descriptorCount; return *this; }
+    CopyDescriptorSet& setSrcSet(DescriptorSet srcSet) {this->srcSet = srcSet; return *this; }
+    CopyDescriptorSet& setSrcBinding(uint32_t srcBinding) {this->srcBinding = srcBinding; return *this; }
+    CopyDescriptorSet& setSrcArrayElement(uint32_t srcArrayElement) {this->srcArrayElement = srcArrayElement; return *this; }
+    CopyDescriptorSet& setDstSet(DescriptorSet dstSet) {this->dstSet = dstSet; return *this; }
+    CopyDescriptorSet& setDstBinding(uint32_t dstBinding) {this->dstBinding = dstBinding; return *this; }
+    CopyDescriptorSet& setDstArrayElement(uint32_t dstArrayElement) {this->dstArrayElement = dstArrayElement; return *this; }
+    CopyDescriptorSet& setDescriptorCount(uint32_t descriptorCount) {this->descriptorCount = descriptorCount; return *this; }
 };
 struct BufferCreateInfo {
     StructureType sType{StructureType::BufferCreateInfo};
@@ -4146,13 +4144,13 @@ struct BufferCreateInfo {
     SharingMode sharingMode{static_cast<SharingMode>(0)};
     uint32_t queueFamilyIndexCount{0};
     const uint32_t* pQueueFamilyIndices = nullptr;
-    BufferCreateInfo& setFlags(BufferCreateFlags flags) { this->flags = flags; return *this; }
-    BufferCreateInfo& setSize(DeviceSize size) { this->size = size; return *this; }
-    BufferCreateInfo& setUsage(BufferUsageFlags usage) { this->usage = usage; return *this; }
-    BufferCreateInfo& setSharingMode(SharingMode sharingMode) { this->sharingMode = sharingMode; return *this; }
-    BufferCreateInfo& setQueueFamilyIndexCount(uint32_t queueFamilyIndexCount) { this->queueFamilyIndexCount = queueFamilyIndexCount; return *this; }
-    BufferCreateInfo& setPQueueFamilyIndices(const uint32_t* pQueueFamilyIndices) { this->pQueueFamilyIndices = pQueueFamilyIndices; return *this; }
-    BufferCreateInfo& setQueueFamilyIndices(detail::span<const uint32_t> QueueFamilyIndices) { this->queueFamilyIndexCount = QueueFamilyIndices.size(); this->pQueueFamilyIndices = QueueFamilyIndices.data();  return *this; }
+    BufferCreateInfo& setFlags(BufferCreateFlags flags) {this->flags = flags; return *this; }
+    BufferCreateInfo& setSize(DeviceSize size) {this->size = size; return *this; }
+    BufferCreateInfo& setUsage(BufferUsageFlags usage) {this->usage = usage; return *this; }
+    BufferCreateInfo& setSharingMode(SharingMode sharingMode) {this->sharingMode = sharingMode; return *this; }
+    BufferCreateInfo& setQueueFamilyIndexCount(uint32_t queueFamilyIndexCount) {this->queueFamilyIndexCount = queueFamilyIndexCount; return *this; }
+    BufferCreateInfo& setPQueueFamilyIndices(const uint32_t* pQueueFamilyIndices) {this->pQueueFamilyIndices = pQueueFamilyIndices; return *this; }
+    BufferCreateInfo& setPQueueFamilyIndices(detail::span<const uint32_t> pQueueFamilyIndices) {this->queueFamilyIndexCount = pQueueFamilyIndices.size(); this->pQueueFamilyIndices = pQueueFamilyIndices.data();  return *this; }
 };
 struct BufferViewCreateInfo {
     StructureType sType{StructureType::BufferViewCreateInfo};
@@ -4162,11 +4160,11 @@ struct BufferViewCreateInfo {
     Format format{static_cast<Format>(0)};
     DeviceSize offset{0};
     DeviceSize range{0};
-    BufferViewCreateInfo& setFlags(BufferViewCreateFlags flags) { this->flags = flags; return *this; }
-    BufferViewCreateInfo& setBuffer(Buffer buffer) { this->buffer = buffer; return *this; }
-    BufferViewCreateInfo& setFormat(Format format) { this->format = format; return *this; }
-    BufferViewCreateInfo& setOffset(DeviceSize offset) { this->offset = offset; return *this; }
-    BufferViewCreateInfo& setRange(DeviceSize range) { this->range = range; return *this; }
+    BufferViewCreateInfo& setFlags(BufferViewCreateFlags flags) {this->flags = flags; return *this; }
+    BufferViewCreateInfo& setBuffer(Buffer buffer) {this->buffer = buffer; return *this; }
+    BufferViewCreateInfo& setFormat(Format format) {this->format = format; return *this; }
+    BufferViewCreateInfo& setOffset(DeviceSize offset) {this->offset = offset; return *this; }
+    BufferViewCreateInfo& setRange(DeviceSize range) {this->range = range; return *this; }
 };
 struct ImageSubresource {
     ImageAspectFlags aspectMask{};
@@ -4175,9 +4173,9 @@ struct ImageSubresource {
     constexpr bool operator==(ImageSubresource const& value) const {
         return aspectMask == value.aspectMask && mipLevel == value.mipLevel && arrayLayer == value.arrayLayer ;}
     constexpr bool operator!=(ImageSubresource const& value) const {return !(*this == value);}
-    ImageSubresource& setAspectMask(ImageAspectFlags aspectMask) { this->aspectMask = aspectMask; return *this; }
-    ImageSubresource& setMipLevel(uint32_t mipLevel) { this->mipLevel = mipLevel; return *this; }
-    ImageSubresource& setArrayLayer(uint32_t arrayLayer) { this->arrayLayer = arrayLayer; return *this; }
+    ImageSubresource& setAspectMask(ImageAspectFlags aspectMask) {this->aspectMask = aspectMask; return *this; }
+    ImageSubresource& setMipLevel(uint32_t mipLevel) {this->mipLevel = mipLevel; return *this; }
+    ImageSubresource& setArrayLayer(uint32_t arrayLayer) {this->arrayLayer = arrayLayer; return *this; }
 };
 struct ImageSubresourceLayers {
     ImageAspectFlags aspectMask{};
@@ -4188,10 +4186,10 @@ struct ImageSubresourceLayers {
         return aspectMask == value.aspectMask && mipLevel == value.mipLevel && baseArrayLayer == value.baseArrayLayer && layerCount == value.layerCount 
         ;}
     constexpr bool operator!=(ImageSubresourceLayers const& value) const {return !(*this == value);}
-    ImageSubresourceLayers& setAspectMask(ImageAspectFlags aspectMask) { this->aspectMask = aspectMask; return *this; }
-    ImageSubresourceLayers& setMipLevel(uint32_t mipLevel) { this->mipLevel = mipLevel; return *this; }
-    ImageSubresourceLayers& setBaseArrayLayer(uint32_t baseArrayLayer) { this->baseArrayLayer = baseArrayLayer; return *this; }
-    ImageSubresourceLayers& setLayerCount(uint32_t layerCount) { this->layerCount = layerCount; return *this; }
+    ImageSubresourceLayers& setAspectMask(ImageAspectFlags aspectMask) {this->aspectMask = aspectMask; return *this; }
+    ImageSubresourceLayers& setMipLevel(uint32_t mipLevel) {this->mipLevel = mipLevel; return *this; }
+    ImageSubresourceLayers& setBaseArrayLayer(uint32_t baseArrayLayer) {this->baseArrayLayer = baseArrayLayer; return *this; }
+    ImageSubresourceLayers& setLayerCount(uint32_t layerCount) {this->layerCount = layerCount; return *this; }
 };
 struct ImageSubresourceRange {
     ImageAspectFlags aspectMask{};
@@ -4203,19 +4201,19 @@ struct ImageSubresourceRange {
         return aspectMask == value.aspectMask && baseMipLevel == value.baseMipLevel && levelCount == value.levelCount && baseArrayLayer == value.baseArrayLayer 
         && layerCount == value.layerCount ;}
     constexpr bool operator!=(ImageSubresourceRange const& value) const {return !(*this == value);}
-    ImageSubresourceRange& setAspectMask(ImageAspectFlags aspectMask) { this->aspectMask = aspectMask; return *this; }
-    ImageSubresourceRange& setBaseMipLevel(uint32_t baseMipLevel) { this->baseMipLevel = baseMipLevel; return *this; }
-    ImageSubresourceRange& setLevelCount(uint32_t levelCount) { this->levelCount = levelCount; return *this; }
-    ImageSubresourceRange& setBaseArrayLayer(uint32_t baseArrayLayer) { this->baseArrayLayer = baseArrayLayer; return *this; }
-    ImageSubresourceRange& setLayerCount(uint32_t layerCount) { this->layerCount = layerCount; return *this; }
+    ImageSubresourceRange& setAspectMask(ImageAspectFlags aspectMask) {this->aspectMask = aspectMask; return *this; }
+    ImageSubresourceRange& setBaseMipLevel(uint32_t baseMipLevel) {this->baseMipLevel = baseMipLevel; return *this; }
+    ImageSubresourceRange& setLevelCount(uint32_t levelCount) {this->levelCount = levelCount; return *this; }
+    ImageSubresourceRange& setBaseArrayLayer(uint32_t baseArrayLayer) {this->baseArrayLayer = baseArrayLayer; return *this; }
+    ImageSubresourceRange& setLayerCount(uint32_t layerCount) {this->layerCount = layerCount; return *this; }
 };
 struct MemoryBarrier {
     StructureType sType{StructureType::MemoryBarrier};
     const void* pNext = nullptr;
     AccessFlags srcAccessMask{};
     AccessFlags dstAccessMask{};
-    MemoryBarrier& setSrcAccessMask(AccessFlags srcAccessMask) { this->srcAccessMask = srcAccessMask; return *this; }
-    MemoryBarrier& setDstAccessMask(AccessFlags dstAccessMask) { this->dstAccessMask = dstAccessMask; return *this; }
+    MemoryBarrier& setSrcAccessMask(AccessFlags srcAccessMask) {this->srcAccessMask = srcAccessMask; return *this; }
+    MemoryBarrier& setDstAccessMask(AccessFlags dstAccessMask) {this->dstAccessMask = dstAccessMask; return *this; }
 };
 struct BufferMemoryBarrier {
     StructureType sType{StructureType::BufferMemoryBarrier};
@@ -4227,13 +4225,13 @@ struct BufferMemoryBarrier {
     Buffer buffer{};
     DeviceSize offset{0};
     DeviceSize size{0};
-    BufferMemoryBarrier& setSrcAccessMask(AccessFlags srcAccessMask) { this->srcAccessMask = srcAccessMask; return *this; }
-    BufferMemoryBarrier& setDstAccessMask(AccessFlags dstAccessMask) { this->dstAccessMask = dstAccessMask; return *this; }
-    BufferMemoryBarrier& setSrcQueueFamilyIndex(uint32_t srcQueueFamilyIndex) { this->srcQueueFamilyIndex = srcQueueFamilyIndex; return *this; }
-    BufferMemoryBarrier& setDstQueueFamilyIndex(uint32_t dstQueueFamilyIndex) { this->dstQueueFamilyIndex = dstQueueFamilyIndex; return *this; }
-    BufferMemoryBarrier& setBuffer(Buffer buffer) { this->buffer = buffer; return *this; }
-    BufferMemoryBarrier& setOffset(DeviceSize offset) { this->offset = offset; return *this; }
-    BufferMemoryBarrier& setSize(DeviceSize size) { this->size = size; return *this; }
+    BufferMemoryBarrier& setSrcAccessMask(AccessFlags srcAccessMask) {this->srcAccessMask = srcAccessMask; return *this; }
+    BufferMemoryBarrier& setDstAccessMask(AccessFlags dstAccessMask) {this->dstAccessMask = dstAccessMask; return *this; }
+    BufferMemoryBarrier& setSrcQueueFamilyIndex(uint32_t srcQueueFamilyIndex) {this->srcQueueFamilyIndex = srcQueueFamilyIndex; return *this; }
+    BufferMemoryBarrier& setDstQueueFamilyIndex(uint32_t dstQueueFamilyIndex) {this->dstQueueFamilyIndex = dstQueueFamilyIndex; return *this; }
+    BufferMemoryBarrier& setBuffer(Buffer buffer) {this->buffer = buffer; return *this; }
+    BufferMemoryBarrier& setOffset(DeviceSize offset) {this->offset = offset; return *this; }
+    BufferMemoryBarrier& setSize(DeviceSize size) {this->size = size; return *this; }
 };
 struct ImageMemoryBarrier {
     StructureType sType{StructureType::ImageMemoryBarrier};
@@ -4246,14 +4244,14 @@ struct ImageMemoryBarrier {
     uint32_t dstQueueFamilyIndex{0};
     Image image{};
     ImageSubresourceRange subresourceRange{};
-    ImageMemoryBarrier& setSrcAccessMask(AccessFlags srcAccessMask) { this->srcAccessMask = srcAccessMask; return *this; }
-    ImageMemoryBarrier& setDstAccessMask(AccessFlags dstAccessMask) { this->dstAccessMask = dstAccessMask; return *this; }
-    ImageMemoryBarrier& setOldLayout(ImageLayout oldLayout) { this->oldLayout = oldLayout; return *this; }
-    ImageMemoryBarrier& setNewLayout(ImageLayout newLayout) { this->newLayout = newLayout; return *this; }
-    ImageMemoryBarrier& setSrcQueueFamilyIndex(uint32_t srcQueueFamilyIndex) { this->srcQueueFamilyIndex = srcQueueFamilyIndex; return *this; }
-    ImageMemoryBarrier& setDstQueueFamilyIndex(uint32_t dstQueueFamilyIndex) { this->dstQueueFamilyIndex = dstQueueFamilyIndex; return *this; }
-    ImageMemoryBarrier& setImage(Image image) { this->image = image; return *this; }
-    ImageMemoryBarrier& setSubresourceRange(ImageSubresourceRange subresourceRange) { this->subresourceRange = subresourceRange; return *this; }
+    ImageMemoryBarrier& setSrcAccessMask(AccessFlags srcAccessMask) {this->srcAccessMask = srcAccessMask; return *this; }
+    ImageMemoryBarrier& setDstAccessMask(AccessFlags dstAccessMask) {this->dstAccessMask = dstAccessMask; return *this; }
+    ImageMemoryBarrier& setOldLayout(ImageLayout oldLayout) {this->oldLayout = oldLayout; return *this; }
+    ImageMemoryBarrier& setNewLayout(ImageLayout newLayout) {this->newLayout = newLayout; return *this; }
+    ImageMemoryBarrier& setSrcQueueFamilyIndex(uint32_t srcQueueFamilyIndex) {this->srcQueueFamilyIndex = srcQueueFamilyIndex; return *this; }
+    ImageMemoryBarrier& setDstQueueFamilyIndex(uint32_t dstQueueFamilyIndex) {this->dstQueueFamilyIndex = dstQueueFamilyIndex; return *this; }
+    ImageMemoryBarrier& setImage(Image image) {this->image = image; return *this; }
+    ImageMemoryBarrier& setSubresourceRange(ImageSubresourceRange subresourceRange) {this->subresourceRange = subresourceRange; return *this; }
 };
 struct ImageCreateInfo {
     StructureType sType{StructureType::ImageCreateInfo};
@@ -4271,20 +4269,20 @@ struct ImageCreateInfo {
     uint32_t queueFamilyIndexCount{0};
     const uint32_t* pQueueFamilyIndices = nullptr;
     ImageLayout initialLayout{static_cast<ImageLayout>(0)};
-    ImageCreateInfo& setFlags(ImageCreateFlags flags) { this->flags = flags; return *this; }
-    ImageCreateInfo& setImageType(ImageType imageType) { this->imageType = imageType; return *this; }
-    ImageCreateInfo& setFormat(Format format) { this->format = format; return *this; }
-    ImageCreateInfo& setExtent(Extent3D extent) { this->extent = extent; return *this; }
-    ImageCreateInfo& setMipLevels(uint32_t mipLevels) { this->mipLevels = mipLevels; return *this; }
-    ImageCreateInfo& setArrayLayers(uint32_t arrayLayers) { this->arrayLayers = arrayLayers; return *this; }
-    ImageCreateInfo& setSamples(SampleCountFlagBits samples) { this->samples = samples; return *this; }
-    ImageCreateInfo& setTiling(ImageTiling tiling) { this->tiling = tiling; return *this; }
-    ImageCreateInfo& setUsage(ImageUsageFlags usage) { this->usage = usage; return *this; }
-    ImageCreateInfo& setSharingMode(SharingMode sharingMode) { this->sharingMode = sharingMode; return *this; }
-    ImageCreateInfo& setQueueFamilyIndexCount(uint32_t queueFamilyIndexCount) { this->queueFamilyIndexCount = queueFamilyIndexCount; return *this; }
-    ImageCreateInfo& setPQueueFamilyIndices(const uint32_t* pQueueFamilyIndices) { this->pQueueFamilyIndices = pQueueFamilyIndices; return *this; }
-    ImageCreateInfo& setQueueFamilyIndices(detail::span<const uint32_t> QueueFamilyIndices) { this->queueFamilyIndexCount = QueueFamilyIndices.size(); this->pQueueFamilyIndices = QueueFamilyIndices.data();  return *this; }
-    ImageCreateInfo& setInitialLayout(ImageLayout initialLayout) { this->initialLayout = initialLayout; return *this; }
+    ImageCreateInfo& setFlags(ImageCreateFlags flags) {this->flags = flags; return *this; }
+    ImageCreateInfo& setImageType(ImageType imageType) {this->imageType = imageType; return *this; }
+    ImageCreateInfo& setFormat(Format format) {this->format = format; return *this; }
+    ImageCreateInfo& setExtent(Extent3D extent) {this->extent = extent; return *this; }
+    ImageCreateInfo& setMipLevels(uint32_t mipLevels) {this->mipLevels = mipLevels; return *this; }
+    ImageCreateInfo& setArrayLayers(uint32_t arrayLayers) {this->arrayLayers = arrayLayers; return *this; }
+    ImageCreateInfo& setSamples(SampleCountFlagBits samples) {this->samples = samples; return *this; }
+    ImageCreateInfo& setTiling(ImageTiling tiling) {this->tiling = tiling; return *this; }
+    ImageCreateInfo& setUsage(ImageUsageFlags usage) {this->usage = usage; return *this; }
+    ImageCreateInfo& setSharingMode(SharingMode sharingMode) {this->sharingMode = sharingMode; return *this; }
+    ImageCreateInfo& setQueueFamilyIndexCount(uint32_t queueFamilyIndexCount) {this->queueFamilyIndexCount = queueFamilyIndexCount; return *this; }
+    ImageCreateInfo& setPQueueFamilyIndices(const uint32_t* pQueueFamilyIndices) {this->pQueueFamilyIndices = pQueueFamilyIndices; return *this; }
+    ImageCreateInfo& setPQueueFamilyIndices(detail::span<const uint32_t> pQueueFamilyIndices) {this->queueFamilyIndexCount = pQueueFamilyIndices.size(); this->pQueueFamilyIndices = pQueueFamilyIndices.data();  return *this; }
+    ImageCreateInfo& setInitialLayout(ImageLayout initialLayout) {this->initialLayout = initialLayout; return *this; }
 };
 struct SubresourceLayout {
     DeviceSize offset{0};
@@ -4296,11 +4294,11 @@ struct SubresourceLayout {
         return offset == value.offset && size == value.size && rowPitch == value.rowPitch && arrayPitch == value.arrayPitch && depthPitch == value.depthPitch 
         ;}
     constexpr bool operator!=(SubresourceLayout const& value) const {return !(*this == value);}
-    SubresourceLayout& setOffset(DeviceSize offset) { this->offset = offset; return *this; }
-    SubresourceLayout& setSize(DeviceSize size) { this->size = size; return *this; }
-    SubresourceLayout& setRowPitch(DeviceSize rowPitch) { this->rowPitch = rowPitch; return *this; }
-    SubresourceLayout& setArrayPitch(DeviceSize arrayPitch) { this->arrayPitch = arrayPitch; return *this; }
-    SubresourceLayout& setDepthPitch(DeviceSize depthPitch) { this->depthPitch = depthPitch; return *this; }
+    SubresourceLayout& setOffset(DeviceSize offset) {this->offset = offset; return *this; }
+    SubresourceLayout& setSize(DeviceSize size) {this->size = size; return *this; }
+    SubresourceLayout& setRowPitch(DeviceSize rowPitch) {this->rowPitch = rowPitch; return *this; }
+    SubresourceLayout& setArrayPitch(DeviceSize arrayPitch) {this->arrayPitch = arrayPitch; return *this; }
+    SubresourceLayout& setDepthPitch(DeviceSize depthPitch) {this->depthPitch = depthPitch; return *this; }
 };
 struct ImageViewCreateInfo {
     StructureType sType{StructureType::ImageViewCreateInfo};
@@ -4311,12 +4309,12 @@ struct ImageViewCreateInfo {
     Format format{static_cast<Format>(0)};
     ComponentMapping components{};
     ImageSubresourceRange subresourceRange{};
-    ImageViewCreateInfo& setFlags(ImageViewCreateFlags flags) { this->flags = flags; return *this; }
-    ImageViewCreateInfo& setImage(Image image) { this->image = image; return *this; }
-    ImageViewCreateInfo& setViewType(ImageViewType viewType) { this->viewType = viewType; return *this; }
-    ImageViewCreateInfo& setFormat(Format format) { this->format = format; return *this; }
-    ImageViewCreateInfo& setComponents(ComponentMapping components) { this->components = components; return *this; }
-    ImageViewCreateInfo& setSubresourceRange(ImageSubresourceRange subresourceRange) { this->subresourceRange = subresourceRange; return *this; }
+    ImageViewCreateInfo& setFlags(ImageViewCreateFlags flags) {this->flags = flags; return *this; }
+    ImageViewCreateInfo& setImage(Image image) {this->image = image; return *this; }
+    ImageViewCreateInfo& setViewType(ImageViewType viewType) {this->viewType = viewType; return *this; }
+    ImageViewCreateInfo& setFormat(Format format) {this->format = format; return *this; }
+    ImageViewCreateInfo& setComponents(ComponentMapping components) {this->components = components; return *this; }
+    ImageViewCreateInfo& setSubresourceRange(ImageSubresourceRange subresourceRange) {this->subresourceRange = subresourceRange; return *this; }
 };
 struct BufferCopy {
     DeviceSize srcOffset{0};
@@ -4325,9 +4323,9 @@ struct BufferCopy {
     constexpr bool operator==(BufferCopy const& value) const {
         return srcOffset == value.srcOffset && dstOffset == value.dstOffset && size == value.size ;}
     constexpr bool operator!=(BufferCopy const& value) const {return !(*this == value);}
-    BufferCopy& setSrcOffset(DeviceSize srcOffset) { this->srcOffset = srcOffset; return *this; }
-    BufferCopy& setDstOffset(DeviceSize dstOffset) { this->dstOffset = dstOffset; return *this; }
-    BufferCopy& setSize(DeviceSize size) { this->size = size; return *this; }
+    BufferCopy& setSrcOffset(DeviceSize srcOffset) {this->srcOffset = srcOffset; return *this; }
+    BufferCopy& setDstOffset(DeviceSize dstOffset) {this->dstOffset = dstOffset; return *this; }
+    BufferCopy& setSize(DeviceSize size) {this->size = size; return *this; }
 };
 struct SparseMemoryBind {
     DeviceSize resourceOffset{0};
@@ -4335,11 +4333,11 @@ struct SparseMemoryBind {
     DeviceMemory memory{};
     DeviceSize memoryOffset{0};
     SparseMemoryBindFlags flags{};
-    SparseMemoryBind& setResourceOffset(DeviceSize resourceOffset) { this->resourceOffset = resourceOffset; return *this; }
-    SparseMemoryBind& setSize(DeviceSize size) { this->size = size; return *this; }
-    SparseMemoryBind& setMemory(DeviceMemory memory) { this->memory = memory; return *this; }
-    SparseMemoryBind& setMemoryOffset(DeviceSize memoryOffset) { this->memoryOffset = memoryOffset; return *this; }
-    SparseMemoryBind& setFlags(SparseMemoryBindFlags flags) { this->flags = flags; return *this; }
+    SparseMemoryBind& setResourceOffset(DeviceSize resourceOffset) {this->resourceOffset = resourceOffset; return *this; }
+    SparseMemoryBind& setSize(DeviceSize size) {this->size = size; return *this; }
+    SparseMemoryBind& setMemory(DeviceMemory memory) {this->memory = memory; return *this; }
+    SparseMemoryBind& setMemoryOffset(DeviceSize memoryOffset) {this->memoryOffset = memoryOffset; return *this; }
+    SparseMemoryBind& setFlags(SparseMemoryBindFlags flags) {this->flags = flags; return *this; }
 };
 struct SparseImageMemoryBind {
     ImageSubresource subresource{};
@@ -4348,39 +4346,39 @@ struct SparseImageMemoryBind {
     DeviceMemory memory{};
     DeviceSize memoryOffset{0};
     SparseMemoryBindFlags flags{};
-    SparseImageMemoryBind& setSubresource(ImageSubresource subresource) { this->subresource = subresource; return *this; }
-    SparseImageMemoryBind& setOffset(Offset3D offset) { this->offset = offset; return *this; }
-    SparseImageMemoryBind& setExtent(Extent3D extent) { this->extent = extent; return *this; }
-    SparseImageMemoryBind& setMemory(DeviceMemory memory) { this->memory = memory; return *this; }
-    SparseImageMemoryBind& setMemoryOffset(DeviceSize memoryOffset) { this->memoryOffset = memoryOffset; return *this; }
-    SparseImageMemoryBind& setFlags(SparseMemoryBindFlags flags) { this->flags = flags; return *this; }
+    SparseImageMemoryBind& setSubresource(ImageSubresource subresource) {this->subresource = subresource; return *this; }
+    SparseImageMemoryBind& setOffset(Offset3D offset) {this->offset = offset; return *this; }
+    SparseImageMemoryBind& setExtent(Extent3D extent) {this->extent = extent; return *this; }
+    SparseImageMemoryBind& setMemory(DeviceMemory memory) {this->memory = memory; return *this; }
+    SparseImageMemoryBind& setMemoryOffset(DeviceSize memoryOffset) {this->memoryOffset = memoryOffset; return *this; }
+    SparseImageMemoryBind& setFlags(SparseMemoryBindFlags flags) {this->flags = flags; return *this; }
 };
 struct SparseBufferMemoryBindInfo {
     Buffer buffer{};
     uint32_t bindCount{0};
     const SparseMemoryBind* pBinds = nullptr;
-    SparseBufferMemoryBindInfo& setBuffer(Buffer buffer) { this->buffer = buffer; return *this; }
-    SparseBufferMemoryBindInfo& setBindCount(uint32_t bindCount) { this->bindCount = bindCount; return *this; }
-    SparseBufferMemoryBindInfo& setPBinds(const SparseMemoryBind* pBinds) { this->pBinds = pBinds; return *this; }
-    SparseBufferMemoryBindInfo& setBinds(detail::span<const SparseMemoryBind> Binds) { this->bindCount = Binds.size(); this->pBinds = Binds.data();  return *this; }
+    SparseBufferMemoryBindInfo& setBuffer(Buffer buffer) {this->buffer = buffer; return *this; }
+    SparseBufferMemoryBindInfo& setBindCount(uint32_t bindCount) {this->bindCount = bindCount; return *this; }
+    SparseBufferMemoryBindInfo& setPBinds(const SparseMemoryBind* pBinds) {this->pBinds = pBinds; return *this; }
+    SparseBufferMemoryBindInfo& setPBinds(detail::span<const SparseMemoryBind> pBinds) {this->bindCount = pBinds.size(); this->pBinds = pBinds.data();  return *this; }
 };
 struct SparseImageOpaqueMemoryBindInfo {
     Image image{};
     uint32_t bindCount{0};
     const SparseMemoryBind* pBinds = nullptr;
-    SparseImageOpaqueMemoryBindInfo& setImage(Image image) { this->image = image; return *this; }
-    SparseImageOpaqueMemoryBindInfo& setBindCount(uint32_t bindCount) { this->bindCount = bindCount; return *this; }
-    SparseImageOpaqueMemoryBindInfo& setPBinds(const SparseMemoryBind* pBinds) { this->pBinds = pBinds; return *this; }
-    SparseImageOpaqueMemoryBindInfo& setBinds(detail::span<const SparseMemoryBind> Binds) { this->bindCount = Binds.size(); this->pBinds = Binds.data();  return *this; }
+    SparseImageOpaqueMemoryBindInfo& setImage(Image image) {this->image = image; return *this; }
+    SparseImageOpaqueMemoryBindInfo& setBindCount(uint32_t bindCount) {this->bindCount = bindCount; return *this; }
+    SparseImageOpaqueMemoryBindInfo& setPBinds(const SparseMemoryBind* pBinds) {this->pBinds = pBinds; return *this; }
+    SparseImageOpaqueMemoryBindInfo& setPBinds(detail::span<const SparseMemoryBind> pBinds) {this->bindCount = pBinds.size(); this->pBinds = pBinds.data();  return *this; }
 };
 struct SparseImageMemoryBindInfo {
     Image image{};
     uint32_t bindCount{0};
     const SparseImageMemoryBind* pBinds = nullptr;
-    SparseImageMemoryBindInfo& setImage(Image image) { this->image = image; return *this; }
-    SparseImageMemoryBindInfo& setBindCount(uint32_t bindCount) { this->bindCount = bindCount; return *this; }
-    SparseImageMemoryBindInfo& setPBinds(const SparseImageMemoryBind* pBinds) { this->pBinds = pBinds; return *this; }
-    SparseImageMemoryBindInfo& setBinds(detail::span<const SparseImageMemoryBind> Binds) { this->bindCount = Binds.size(); this->pBinds = Binds.data();  return *this; }
+    SparseImageMemoryBindInfo& setImage(Image image) {this->image = image; return *this; }
+    SparseImageMemoryBindInfo& setBindCount(uint32_t bindCount) {this->bindCount = bindCount; return *this; }
+    SparseImageMemoryBindInfo& setPBinds(const SparseImageMemoryBind* pBinds) {this->pBinds = pBinds; return *this; }
+    SparseImageMemoryBindInfo& setPBinds(detail::span<const SparseImageMemoryBind> pBinds) {this->bindCount = pBinds.size(); this->pBinds = pBinds.data();  return *this; }
 };
 struct BindSparseInfo {
     StructureType sType{StructureType::BindSparseInfo};
@@ -4395,21 +4393,21 @@ struct BindSparseInfo {
     const SparseImageMemoryBindInfo* pImageBinds = nullptr;
     uint32_t signalSemaphoreCount{0};
     const Semaphore* pSignalSemaphores = nullptr;
-    BindSparseInfo& setWaitSemaphoreCount(uint32_t waitSemaphoreCount) { this->waitSemaphoreCount = waitSemaphoreCount; return *this; }
-    BindSparseInfo& setPWaitSemaphores(const Semaphore* pWaitSemaphores) { this->pWaitSemaphores = pWaitSemaphores; return *this; }
-    BindSparseInfo& setWaitSemaphores(detail::span<const Semaphore> WaitSemaphores) { this->waitSemaphoreCount = WaitSemaphores.size(); this->pWaitSemaphores = WaitSemaphores.data();  return *this; }
-    BindSparseInfo& setBufferBindCount(uint32_t bufferBindCount) { this->bufferBindCount = bufferBindCount; return *this; }
-    BindSparseInfo& setPBufferBinds(const SparseBufferMemoryBindInfo* pBufferBinds) { this->pBufferBinds = pBufferBinds; return *this; }
-    BindSparseInfo& setBufferBinds(detail::span<const SparseBufferMemoryBindInfo> BufferBinds) { this->bufferBindCount = BufferBinds.size(); this->pBufferBinds = BufferBinds.data();  return *this; }
-    BindSparseInfo& setImageOpaqueBindCount(uint32_t imageOpaqueBindCount) { this->imageOpaqueBindCount = imageOpaqueBindCount; return *this; }
-    BindSparseInfo& setPImageOpaqueBinds(const SparseImageOpaqueMemoryBindInfo* pImageOpaqueBinds) { this->pImageOpaqueBinds = pImageOpaqueBinds; return *this; }
-    BindSparseInfo& setImageOpaqueBinds(detail::span<const SparseImageOpaqueMemoryBindInfo> ImageOpaqueBinds) { this->imageOpaqueBindCount = ImageOpaqueBinds.size(); this->pImageOpaqueBinds = ImageOpaqueBinds.data();  return *this; }
-    BindSparseInfo& setImageBindCount(uint32_t imageBindCount) { this->imageBindCount = imageBindCount; return *this; }
-    BindSparseInfo& setPImageBinds(const SparseImageMemoryBindInfo* pImageBinds) { this->pImageBinds = pImageBinds; return *this; }
-    BindSparseInfo& setImageBinds(detail::span<const SparseImageMemoryBindInfo> ImageBinds) { this->imageBindCount = ImageBinds.size(); this->pImageBinds = ImageBinds.data();  return *this; }
-    BindSparseInfo& setSignalSemaphoreCount(uint32_t signalSemaphoreCount) { this->signalSemaphoreCount = signalSemaphoreCount; return *this; }
-    BindSparseInfo& setPSignalSemaphores(const Semaphore* pSignalSemaphores) { this->pSignalSemaphores = pSignalSemaphores; return *this; }
-    BindSparseInfo& setSignalSemaphores(detail::span<const Semaphore> SignalSemaphores) { this->signalSemaphoreCount = SignalSemaphores.size(); this->pSignalSemaphores = SignalSemaphores.data();  return *this; }
+    BindSparseInfo& setWaitSemaphoreCount(uint32_t waitSemaphoreCount) {this->waitSemaphoreCount = waitSemaphoreCount; return *this; }
+    BindSparseInfo& setPWaitSemaphores(const Semaphore* pWaitSemaphores) {this->pWaitSemaphores = pWaitSemaphores; return *this; }
+    BindSparseInfo& setPWaitSemaphores(detail::span<const Semaphore> pWaitSemaphores) {this->waitSemaphoreCount = pWaitSemaphores.size(); this->pWaitSemaphores = pWaitSemaphores.data();  return *this; }
+    BindSparseInfo& setBufferBindCount(uint32_t bufferBindCount) {this->bufferBindCount = bufferBindCount; return *this; }
+    BindSparseInfo& setPBufferBinds(const SparseBufferMemoryBindInfo* pBufferBinds) {this->pBufferBinds = pBufferBinds; return *this; }
+    BindSparseInfo& setPBufferBinds(detail::span<const SparseBufferMemoryBindInfo> pBufferBinds) {this->bufferBindCount = pBufferBinds.size(); this->pBufferBinds = pBufferBinds.data();  return *this; }
+    BindSparseInfo& setImageOpaqueBindCount(uint32_t imageOpaqueBindCount) {this->imageOpaqueBindCount = imageOpaqueBindCount; return *this; }
+    BindSparseInfo& setPImageOpaqueBinds(const SparseImageOpaqueMemoryBindInfo* pImageOpaqueBinds) {this->pImageOpaqueBinds = pImageOpaqueBinds; return *this; }
+    BindSparseInfo& setPImageOpaqueBinds(detail::span<const SparseImageOpaqueMemoryBindInfo> pImageOpaqueBinds) {this->imageOpaqueBindCount = pImageOpaqueBinds.size(); this->pImageOpaqueBinds = pImageOpaqueBinds.data();  return *this; }
+    BindSparseInfo& setImageBindCount(uint32_t imageBindCount) {this->imageBindCount = imageBindCount; return *this; }
+    BindSparseInfo& setPImageBinds(const SparseImageMemoryBindInfo* pImageBinds) {this->pImageBinds = pImageBinds; return *this; }
+    BindSparseInfo& setPImageBinds(detail::span<const SparseImageMemoryBindInfo> pImageBinds) {this->imageBindCount = pImageBinds.size(); this->pImageBinds = pImageBinds.data();  return *this; }
+    BindSparseInfo& setSignalSemaphoreCount(uint32_t signalSemaphoreCount) {this->signalSemaphoreCount = signalSemaphoreCount; return *this; }
+    BindSparseInfo& setPSignalSemaphores(const Semaphore* pSignalSemaphores) {this->pSignalSemaphores = pSignalSemaphores; return *this; }
+    BindSparseInfo& setPSignalSemaphores(detail::span<const Semaphore> pSignalSemaphores) {this->signalSemaphoreCount = pSignalSemaphores.size(); this->pSignalSemaphores = pSignalSemaphores.data();  return *this; }
 };
 struct ImageCopy {
     ImageSubresourceLayers srcSubresource{};
@@ -4421,11 +4419,11 @@ struct ImageCopy {
         return srcSubresource == value.srcSubresource && srcOffset == value.srcOffset && dstSubresource == value.dstSubresource && dstOffset == value.dstOffset 
         && extent == value.extent ;}
     constexpr bool operator!=(ImageCopy const& value) const {return !(*this == value);}
-    ImageCopy& setSrcSubresource(ImageSubresourceLayers srcSubresource) { this->srcSubresource = srcSubresource; return *this; }
-    ImageCopy& setSrcOffset(Offset3D srcOffset) { this->srcOffset = srcOffset; return *this; }
-    ImageCopy& setDstSubresource(ImageSubresourceLayers dstSubresource) { this->dstSubresource = dstSubresource; return *this; }
-    ImageCopy& setDstOffset(Offset3D dstOffset) { this->dstOffset = dstOffset; return *this; }
-    ImageCopy& setExtent(Extent3D extent) { this->extent = extent; return *this; }
+    ImageCopy& setSrcSubresource(ImageSubresourceLayers srcSubresource) {this->srcSubresource = srcSubresource; return *this; }
+    ImageCopy& setSrcOffset(Offset3D srcOffset) {this->srcOffset = srcOffset; return *this; }
+    ImageCopy& setDstSubresource(ImageSubresourceLayers dstSubresource) {this->dstSubresource = dstSubresource; return *this; }
+    ImageCopy& setDstOffset(Offset3D dstOffset) {this->dstOffset = dstOffset; return *this; }
+    ImageCopy& setExtent(Extent3D extent) {this->extent = extent; return *this; }
 };
 struct ImageBlit {
     ImageSubresourceLayers srcSubresource{};
@@ -4440,10 +4438,10 @@ struct ImageBlit {
             is_equal &= dstOffsets[i] == value.dstOffsets[i];
         return is_equal && srcSubresource == value.srcSubresource && dstSubresource == value.dstSubresource ;}
     constexpr bool operator!=(ImageBlit const& value) const {return !(*this == value);}
-    ImageBlit& setSrcSubresource(ImageSubresourceLayers srcSubresource) { this->srcSubresource = srcSubresource; return *this; }
-    ImageBlit& setSrcOffsets(Offset3D srcOffsets[2]) { for(uint32_t i = 0; i < 2; i++) this->srcOffsets[i] = srcOffsets[i]; return *this; }
-    ImageBlit& setDstSubresource(ImageSubresourceLayers dstSubresource) { this->dstSubresource = dstSubresource; return *this; }
-    ImageBlit& setDstOffsets(Offset3D dstOffsets[2]) { for(uint32_t i = 0; i < 2; i++) this->dstOffsets[i] = dstOffsets[i]; return *this; }
+    ImageBlit& setSrcSubresource(ImageSubresourceLayers srcSubresource) {this->srcSubresource = srcSubresource; return *this; }
+    ImageBlit& setSrcOffsets(Offset3D srcOffsets[2]) {for(uint32_t i = 0; i < 2; i++) this->srcOffsets[i] = srcOffsets[i]; return *this; }
+    ImageBlit& setDstSubresource(ImageSubresourceLayers dstSubresource) {this->dstSubresource = dstSubresource; return *this; }
+    ImageBlit& setDstOffsets(Offset3D dstOffsets[2]) {for(uint32_t i = 0; i < 2; i++) this->dstOffsets[i] = dstOffsets[i]; return *this; }
 };
 struct BufferImageCopy {
     DeviceSize bufferOffset{0};
@@ -4456,12 +4454,12 @@ struct BufferImageCopy {
         return bufferOffset == value.bufferOffset && bufferRowLength == value.bufferRowLength && bufferImageHeight == value.bufferImageHeight && imageSubresource == value.imageSubresource 
         && imageOffset == value.imageOffset && imageExtent == value.imageExtent ;}
     constexpr bool operator!=(BufferImageCopy const& value) const {return !(*this == value);}
-    BufferImageCopy& setBufferOffset(DeviceSize bufferOffset) { this->bufferOffset = bufferOffset; return *this; }
-    BufferImageCopy& setBufferRowLength(uint32_t bufferRowLength) { this->bufferRowLength = bufferRowLength; return *this; }
-    BufferImageCopy& setBufferImageHeight(uint32_t bufferImageHeight) { this->bufferImageHeight = bufferImageHeight; return *this; }
-    BufferImageCopy& setImageSubresource(ImageSubresourceLayers imageSubresource) { this->imageSubresource = imageSubresource; return *this; }
-    BufferImageCopy& setImageOffset(Offset3D imageOffset) { this->imageOffset = imageOffset; return *this; }
-    BufferImageCopy& setImageExtent(Extent3D imageExtent) { this->imageExtent = imageExtent; return *this; }
+    BufferImageCopy& setBufferOffset(DeviceSize bufferOffset) {this->bufferOffset = bufferOffset; return *this; }
+    BufferImageCopy& setBufferRowLength(uint32_t bufferRowLength) {this->bufferRowLength = bufferRowLength; return *this; }
+    BufferImageCopy& setBufferImageHeight(uint32_t bufferImageHeight) {this->bufferImageHeight = bufferImageHeight; return *this; }
+    BufferImageCopy& setImageSubresource(ImageSubresourceLayers imageSubresource) {this->imageSubresource = imageSubresource; return *this; }
+    BufferImageCopy& setImageOffset(Offset3D imageOffset) {this->imageOffset = imageOffset; return *this; }
+    BufferImageCopy& setImageExtent(Extent3D imageExtent) {this->imageExtent = imageExtent; return *this; }
 };
 struct ImageResolve {
     ImageSubresourceLayers srcSubresource{};
@@ -4473,11 +4471,11 @@ struct ImageResolve {
         return srcSubresource == value.srcSubresource && srcOffset == value.srcOffset && dstSubresource == value.dstSubresource && dstOffset == value.dstOffset 
         && extent == value.extent ;}
     constexpr bool operator!=(ImageResolve const& value) const {return !(*this == value);}
-    ImageResolve& setSrcSubresource(ImageSubresourceLayers srcSubresource) { this->srcSubresource = srcSubresource; return *this; }
-    ImageResolve& setSrcOffset(Offset3D srcOffset) { this->srcOffset = srcOffset; return *this; }
-    ImageResolve& setDstSubresource(ImageSubresourceLayers dstSubresource) { this->dstSubresource = dstSubresource; return *this; }
-    ImageResolve& setDstOffset(Offset3D dstOffset) { this->dstOffset = dstOffset; return *this; }
-    ImageResolve& setExtent(Extent3D extent) { this->extent = extent; return *this; }
+    ImageResolve& setSrcSubresource(ImageSubresourceLayers srcSubresource) {this->srcSubresource = srcSubresource; return *this; }
+    ImageResolve& setSrcOffset(Offset3D srcOffset) {this->srcOffset = srcOffset; return *this; }
+    ImageResolve& setDstSubresource(ImageSubresourceLayers dstSubresource) {this->dstSubresource = dstSubresource; return *this; }
+    ImageResolve& setDstOffset(Offset3D dstOffset) {this->dstOffset = dstOffset; return *this; }
+    ImageResolve& setExtent(Extent3D extent) {this->extent = extent; return *this; }
 };
 struct ShaderModuleCreateInfo {
     StructureType sType{StructureType::ShaderModuleCreateInfo};
@@ -4485,9 +4483,9 @@ struct ShaderModuleCreateInfo {
     ShaderModuleCreateFlags flags{};
     size_t codeSize{0};
     const uint32_t* pCode = nullptr;
-    ShaderModuleCreateInfo& setFlags(ShaderModuleCreateFlags flags) { this->flags = flags; return *this; }
-    ShaderModuleCreateInfo& setCodeSize(size_t codeSize) { this->codeSize = codeSize; return *this; }
-    ShaderModuleCreateInfo& setPCode(const uint32_t* pCode) { this->pCode = pCode; return *this; }
+    ShaderModuleCreateInfo& setFlags(ShaderModuleCreateFlags flags) {this->flags = flags; return *this; }
+    ShaderModuleCreateInfo& setCodeSize(size_t codeSize) {this->codeSize = codeSize; return *this; }
+    ShaderModuleCreateInfo& setPCode(const uint32_t* pCode) {this->pCode = pCode; return *this; }
 };
 struct DescriptorSetLayoutBinding {
     uint32_t binding{0};
@@ -4495,12 +4493,12 @@ struct DescriptorSetLayoutBinding {
     uint32_t descriptorCount{0};
     ShaderStageFlags stageFlags{};
     const Sampler* pImmutableSamplers = nullptr;
-    DescriptorSetLayoutBinding& setBinding(uint32_t binding) { this->binding = binding; return *this; }
-    DescriptorSetLayoutBinding& setDescriptorType(DescriptorType descriptorType) { this->descriptorType = descriptorType; return *this; }
-    DescriptorSetLayoutBinding& setDescriptorCount(uint32_t descriptorCount) { this->descriptorCount = descriptorCount; return *this; }
-    DescriptorSetLayoutBinding& setStageFlags(ShaderStageFlags stageFlags) { this->stageFlags = stageFlags; return *this; }
-    DescriptorSetLayoutBinding& setPImmutableSamplers(const Sampler* pImmutableSamplers) { this->pImmutableSamplers = pImmutableSamplers; return *this; }
-    DescriptorSetLayoutBinding& setImmutableSamplers(detail::span<const Sampler> ImmutableSamplers) { this->descriptorCount = ImmutableSamplers.size(); this->pImmutableSamplers = ImmutableSamplers.data();  return *this; }
+    DescriptorSetLayoutBinding& setBinding(uint32_t binding) {this->binding = binding; return *this; }
+    DescriptorSetLayoutBinding& setDescriptorType(DescriptorType descriptorType) {this->descriptorType = descriptorType; return *this; }
+    DescriptorSetLayoutBinding& setDescriptorCount(uint32_t descriptorCount) {this->descriptorCount = descriptorCount; return *this; }
+    DescriptorSetLayoutBinding& setStageFlags(ShaderStageFlags stageFlags) {this->stageFlags = stageFlags; return *this; }
+    DescriptorSetLayoutBinding& setPImmutableSamplers(const Sampler* pImmutableSamplers) {this->pImmutableSamplers = pImmutableSamplers; return *this; }
+    DescriptorSetLayoutBinding& setPImmutableSamplers(detail::span<const Sampler> pImmutableSamplers) {this->descriptorCount = pImmutableSamplers.size(); this->pImmutableSamplers = pImmutableSamplers.data();  return *this; }
 };
 struct DescriptorSetLayoutCreateInfo {
     StructureType sType{StructureType::DescriptorSetLayoutCreateInfo};
@@ -4508,10 +4506,10 @@ struct DescriptorSetLayoutCreateInfo {
     DescriptorSetLayoutCreateFlags flags{};
     uint32_t bindingCount{0};
     const DescriptorSetLayoutBinding* pBindings = nullptr;
-    DescriptorSetLayoutCreateInfo& setFlags(DescriptorSetLayoutCreateFlags flags) { this->flags = flags; return *this; }
-    DescriptorSetLayoutCreateInfo& setBindingCount(uint32_t bindingCount) { this->bindingCount = bindingCount; return *this; }
-    DescriptorSetLayoutCreateInfo& setPBindings(const DescriptorSetLayoutBinding* pBindings) { this->pBindings = pBindings; return *this; }
-    DescriptorSetLayoutCreateInfo& setBindings(detail::span<const DescriptorSetLayoutBinding> Bindings) { this->bindingCount = Bindings.size(); this->pBindings = Bindings.data();  return *this; }
+    DescriptorSetLayoutCreateInfo& setFlags(DescriptorSetLayoutCreateFlags flags) {this->flags = flags; return *this; }
+    DescriptorSetLayoutCreateInfo& setBindingCount(uint32_t bindingCount) {this->bindingCount = bindingCount; return *this; }
+    DescriptorSetLayoutCreateInfo& setPBindings(const DescriptorSetLayoutBinding* pBindings) {this->pBindings = pBindings; return *this; }
+    DescriptorSetLayoutCreateInfo& setPBindings(detail::span<const DescriptorSetLayoutBinding> pBindings) {this->bindingCount = pBindings.size(); this->pBindings = pBindings.data();  return *this; }
 };
 struct DescriptorPoolSize {
     DescriptorType type{static_cast<DescriptorType>(0)};
@@ -4519,8 +4517,8 @@ struct DescriptorPoolSize {
     constexpr bool operator==(DescriptorPoolSize const& value) const {
         return type == value.type && descriptorCount == value.descriptorCount ;}
     constexpr bool operator!=(DescriptorPoolSize const& value) const {return !(*this == value);}
-    DescriptorPoolSize& setType(DescriptorType type) { this->type = type; return *this; }
-    DescriptorPoolSize& setDescriptorCount(uint32_t descriptorCount) { this->descriptorCount = descriptorCount; return *this; }
+    DescriptorPoolSize& setType(DescriptorType type) {this->type = type; return *this; }
+    DescriptorPoolSize& setDescriptorCount(uint32_t descriptorCount) {this->descriptorCount = descriptorCount; return *this; }
 };
 struct DescriptorPoolCreateInfo {
     StructureType sType{StructureType::DescriptorPoolCreateInfo};
@@ -4529,11 +4527,11 @@ struct DescriptorPoolCreateInfo {
     uint32_t maxSets{0};
     uint32_t poolSizeCount{0};
     const DescriptorPoolSize* pPoolSizes = nullptr;
-    DescriptorPoolCreateInfo& setFlags(DescriptorPoolCreateFlags flags) { this->flags = flags; return *this; }
-    DescriptorPoolCreateInfo& setMaxSets(uint32_t maxSets) { this->maxSets = maxSets; return *this; }
-    DescriptorPoolCreateInfo& setPoolSizeCount(uint32_t poolSizeCount) { this->poolSizeCount = poolSizeCount; return *this; }
-    DescriptorPoolCreateInfo& setPPoolSizes(const DescriptorPoolSize* pPoolSizes) { this->pPoolSizes = pPoolSizes; return *this; }
-    DescriptorPoolCreateInfo& setPoolSizes(detail::span<const DescriptorPoolSize> PoolSizes) { this->poolSizeCount = PoolSizes.size(); this->pPoolSizes = PoolSizes.data();  return *this; }
+    DescriptorPoolCreateInfo& setFlags(DescriptorPoolCreateFlags flags) {this->flags = flags; return *this; }
+    DescriptorPoolCreateInfo& setMaxSets(uint32_t maxSets) {this->maxSets = maxSets; return *this; }
+    DescriptorPoolCreateInfo& setPoolSizeCount(uint32_t poolSizeCount) {this->poolSizeCount = poolSizeCount; return *this; }
+    DescriptorPoolCreateInfo& setPPoolSizes(const DescriptorPoolSize* pPoolSizes) {this->pPoolSizes = pPoolSizes; return *this; }
+    DescriptorPoolCreateInfo& setPPoolSizes(detail::span<const DescriptorPoolSize> pPoolSizes) {this->poolSizeCount = pPoolSizes.size(); this->pPoolSizes = pPoolSizes.data();  return *this; }
 };
 struct DescriptorSetAllocateInfo {
     StructureType sType{StructureType::DescriptorSetAllocateInfo};
@@ -4541,10 +4539,10 @@ struct DescriptorSetAllocateInfo {
     DescriptorPool descriptorPool{};
     uint32_t descriptorSetCount{0};
     const DescriptorSetLayout* pSetLayouts = nullptr;
-    DescriptorSetAllocateInfo& setDescriptorPool(DescriptorPool descriptorPool) { this->descriptorPool = descriptorPool; return *this; }
-    DescriptorSetAllocateInfo& setDescriptorSetCount(uint32_t descriptorSetCount) { this->descriptorSetCount = descriptorSetCount; return *this; }
-    DescriptorSetAllocateInfo& setPSetLayouts(const DescriptorSetLayout* pSetLayouts) { this->pSetLayouts = pSetLayouts; return *this; }
-    DescriptorSetAllocateInfo& setSetLayouts(detail::span<const DescriptorSetLayout> SetLayouts) { this->descriptorSetCount = SetLayouts.size(); this->pSetLayouts = SetLayouts.data();  return *this; }
+    DescriptorSetAllocateInfo& setDescriptorPool(DescriptorPool descriptorPool) {this->descriptorPool = descriptorPool; return *this; }
+    DescriptorSetAllocateInfo& setDescriptorSetCount(uint32_t descriptorSetCount) {this->descriptorSetCount = descriptorSetCount; return *this; }
+    DescriptorSetAllocateInfo& setPSetLayouts(const DescriptorSetLayout* pSetLayouts) {this->pSetLayouts = pSetLayouts; return *this; }
+    DescriptorSetAllocateInfo& setPSetLayouts(detail::span<const DescriptorSetLayout> pSetLayouts) {this->descriptorSetCount = pSetLayouts.size(); this->pSetLayouts = pSetLayouts.data();  return *this; }
 };
 struct SpecializationMapEntry {
     uint32_t constantID{0};
@@ -4553,21 +4551,21 @@ struct SpecializationMapEntry {
     constexpr bool operator==(SpecializationMapEntry const& value) const {
         return constantID == value.constantID && offset == value.offset && size == value.size ;}
     constexpr bool operator!=(SpecializationMapEntry const& value) const {return !(*this == value);}
-    SpecializationMapEntry& setConstantID(uint32_t constantID) { this->constantID = constantID; return *this; }
-    SpecializationMapEntry& setOffset(uint32_t offset) { this->offset = offset; return *this; }
-    SpecializationMapEntry& setSize(size_t size) { this->size = size; return *this; }
+    SpecializationMapEntry& setConstantID(uint32_t constantID) {this->constantID = constantID; return *this; }
+    SpecializationMapEntry& setOffset(uint32_t offset) {this->offset = offset; return *this; }
+    SpecializationMapEntry& setSize(size_t size) {this->size = size; return *this; }
 };
 struct SpecializationInfo {
     uint32_t mapEntryCount{0};
     const SpecializationMapEntry* pMapEntries = nullptr;
     size_t dataSize{0};
     const void* pData = nullptr;
-    SpecializationInfo& setMapEntryCount(uint32_t mapEntryCount) { this->mapEntryCount = mapEntryCount; return *this; }
-    SpecializationInfo& setPMapEntries(const SpecializationMapEntry* pMapEntries) { this->pMapEntries = pMapEntries; return *this; }
-    SpecializationInfo& setMapEntries(detail::span<const SpecializationMapEntry> MapEntries) { this->mapEntryCount = MapEntries.size(); this->pMapEntries = MapEntries.data();  return *this; }
-    SpecializationInfo& setDataSize(size_t dataSize) { this->dataSize = dataSize; return *this; }
-    SpecializationInfo& setPData(const void* pData) { this->pData = pData; return *this; }
-    SpecializationInfo& setData(detail::span<const std::byte> Data) { this->dataSize = Data.size(); this->pData = Data.data();  return *this; }
+    SpecializationInfo& setMapEntryCount(uint32_t mapEntryCount) {this->mapEntryCount = mapEntryCount; return *this; }
+    SpecializationInfo& setPMapEntries(const SpecializationMapEntry* pMapEntries) {this->pMapEntries = pMapEntries; return *this; }
+    SpecializationInfo& setPMapEntries(detail::span<const SpecializationMapEntry> pMapEntries) {this->mapEntryCount = pMapEntries.size(); this->pMapEntries = pMapEntries.data();  return *this; }
+    SpecializationInfo& setDataSize(size_t dataSize) {this->dataSize = dataSize; return *this; }
+    SpecializationInfo& setPData(const void* pData) {this->pData = pData; return *this; }
+    SpecializationInfo& setPData(detail::span<const std::byte> pData) {this->dataSize = pData.size(); this->pData = pData.data();  return *this; }
 };
 struct PipelineShaderStageCreateInfo {
     StructureType sType{StructureType::PipelineShaderStageCreateInfo};
@@ -4577,12 +4575,12 @@ struct PipelineShaderStageCreateInfo {
     ShaderModule module{};
     const char* pName = nullptr;
     const SpecializationInfo* pSpecializationInfo = nullptr;
-    PipelineShaderStageCreateInfo& setFlags(PipelineShaderStageCreateFlags flags) { this->flags = flags; return *this; }
-    PipelineShaderStageCreateInfo& setStage(ShaderStageFlagBits stage) { this->stage = stage; return *this; }
-    PipelineShaderStageCreateInfo& setModule(ShaderModule module) { this->module = module; return *this; }
-    PipelineShaderStageCreateInfo& setPName(const char* pName) { this->pName = pName; return *this; }
-    PipelineShaderStageCreateInfo& setPSpecializationInfo(const SpecializationInfo* pSpecializationInfo) { this->pSpecializationInfo = pSpecializationInfo; return *this; }
-    PipelineShaderStageCreateInfo& setSpecializationInfo(SpecializationInfo const& SpecializationInfo) { this->pSpecializationInfo = &SpecializationInfo; return *this; }
+    PipelineShaderStageCreateInfo& setFlags(PipelineShaderStageCreateFlags flags) {this->flags = flags; return *this; }
+    PipelineShaderStageCreateInfo& setStage(ShaderStageFlagBits stage) {this->stage = stage; return *this; }
+    PipelineShaderStageCreateInfo& setModule(ShaderModule module) {this->module = module; return *this; }
+    PipelineShaderStageCreateInfo& setPName(const char* pName) {this->pName = pName; return *this; }
+    PipelineShaderStageCreateInfo& setPSpecializationInfo(const SpecializationInfo* pSpecializationInfo) {this->pSpecializationInfo = pSpecializationInfo; return *this; }
+    PipelineShaderStageCreateInfo& setPSpecializationInfo(SpecializationInfo const& pSpecializationInfo) {this->pSpecializationInfo = &pSpecializationInfo; return *this; }
 };
 struct ComputePipelineCreateInfo {
     StructureType sType{StructureType::ComputePipelineCreateInfo};
@@ -4592,11 +4590,11 @@ struct ComputePipelineCreateInfo {
     PipelineLayout layout{};
     Pipeline basePipelineHandle{};
     int32_t basePipelineIndex{0};
-    ComputePipelineCreateInfo& setFlags(PipelineCreateFlags flags) { this->flags = flags; return *this; }
-    ComputePipelineCreateInfo& setStage(PipelineShaderStageCreateInfo stage) { this->stage = stage; return *this; }
-    ComputePipelineCreateInfo& setLayout(PipelineLayout layout) { this->layout = layout; return *this; }
-    ComputePipelineCreateInfo& setBasePipelineHandle(Pipeline basePipelineHandle) { this->basePipelineHandle = basePipelineHandle; return *this; }
-    ComputePipelineCreateInfo& setBasePipelineIndex(int32_t basePipelineIndex) { this->basePipelineIndex = basePipelineIndex; return *this; }
+    ComputePipelineCreateInfo& setFlags(PipelineCreateFlags flags) {this->flags = flags; return *this; }
+    ComputePipelineCreateInfo& setStage(PipelineShaderStageCreateInfo stage) {this->stage = stage; return *this; }
+    ComputePipelineCreateInfo& setLayout(PipelineLayout layout) {this->layout = layout; return *this; }
+    ComputePipelineCreateInfo& setBasePipelineHandle(Pipeline basePipelineHandle) {this->basePipelineHandle = basePipelineHandle; return *this; }
+    ComputePipelineCreateInfo& setBasePipelineIndex(int32_t basePipelineIndex) {this->basePipelineIndex = basePipelineIndex; return *this; }
 };
 struct VertexInputBindingDescription {
     uint32_t binding{0};
@@ -4605,9 +4603,9 @@ struct VertexInputBindingDescription {
     constexpr bool operator==(VertexInputBindingDescription const& value) const {
         return binding == value.binding && stride == value.stride && inputRate == value.inputRate ;}
     constexpr bool operator!=(VertexInputBindingDescription const& value) const {return !(*this == value);}
-    VertexInputBindingDescription& setBinding(uint32_t binding) { this->binding = binding; return *this; }
-    VertexInputBindingDescription& setStride(uint32_t stride) { this->stride = stride; return *this; }
-    VertexInputBindingDescription& setInputRate(VertexInputRate inputRate) { this->inputRate = inputRate; return *this; }
+    VertexInputBindingDescription& setBinding(uint32_t binding) {this->binding = binding; return *this; }
+    VertexInputBindingDescription& setStride(uint32_t stride) {this->stride = stride; return *this; }
+    VertexInputBindingDescription& setInputRate(VertexInputRate inputRate) {this->inputRate = inputRate; return *this; }
 };
 struct VertexInputAttributeDescription {
     uint32_t location{0};
@@ -4617,10 +4615,10 @@ struct VertexInputAttributeDescription {
     constexpr bool operator==(VertexInputAttributeDescription const& value) const {
         return location == value.location && binding == value.binding && format == value.format && offset == value.offset ;}
     constexpr bool operator!=(VertexInputAttributeDescription const& value) const {return !(*this == value);}
-    VertexInputAttributeDescription& setLocation(uint32_t location) { this->location = location; return *this; }
-    VertexInputAttributeDescription& setBinding(uint32_t binding) { this->binding = binding; return *this; }
-    VertexInputAttributeDescription& setFormat(Format format) { this->format = format; return *this; }
-    VertexInputAttributeDescription& setOffset(uint32_t offset) { this->offset = offset; return *this; }
+    VertexInputAttributeDescription& setLocation(uint32_t location) {this->location = location; return *this; }
+    VertexInputAttributeDescription& setBinding(uint32_t binding) {this->binding = binding; return *this; }
+    VertexInputAttributeDescription& setFormat(Format format) {this->format = format; return *this; }
+    VertexInputAttributeDescription& setOffset(uint32_t offset) {this->offset = offset; return *this; }
 };
 struct PipelineVertexInputStateCreateInfo {
     StructureType sType{StructureType::PipelineVertexInputStateCreateInfo};
@@ -4630,13 +4628,13 @@ struct PipelineVertexInputStateCreateInfo {
     const VertexInputBindingDescription* pVertexBindingDescriptions = nullptr;
     uint32_t vertexAttributeDescriptionCount{0};
     const VertexInputAttributeDescription* pVertexAttributeDescriptions = nullptr;
-    PipelineVertexInputStateCreateInfo& setFlags(PipelineVertexInputStateCreateFlags flags) { this->flags = flags; return *this; }
-    PipelineVertexInputStateCreateInfo& setVertexBindingDescriptionCount(uint32_t vertexBindingDescriptionCount) { this->vertexBindingDescriptionCount = vertexBindingDescriptionCount; return *this; }
-    PipelineVertexInputStateCreateInfo& setPVertexBindingDescriptions(const VertexInputBindingDescription* pVertexBindingDescriptions) { this->pVertexBindingDescriptions = pVertexBindingDescriptions; return *this; }
-    PipelineVertexInputStateCreateInfo& setVertexBindingDescriptions(detail::span<const VertexInputBindingDescription> VertexBindingDescriptions) { this->vertexBindingDescriptionCount = VertexBindingDescriptions.size(); this->pVertexBindingDescriptions = VertexBindingDescriptions.data();  return *this; }
-    PipelineVertexInputStateCreateInfo& setVertexAttributeDescriptionCount(uint32_t vertexAttributeDescriptionCount) { this->vertexAttributeDescriptionCount = vertexAttributeDescriptionCount; return *this; }
-    PipelineVertexInputStateCreateInfo& setPVertexAttributeDescriptions(const VertexInputAttributeDescription* pVertexAttributeDescriptions) { this->pVertexAttributeDescriptions = pVertexAttributeDescriptions; return *this; }
-    PipelineVertexInputStateCreateInfo& setVertexAttributeDescriptions(detail::span<const VertexInputAttributeDescription> VertexAttributeDescriptions) { this->vertexAttributeDescriptionCount = VertexAttributeDescriptions.size(); this->pVertexAttributeDescriptions = VertexAttributeDescriptions.data();  return *this; }
+    PipelineVertexInputStateCreateInfo& setFlags(PipelineVertexInputStateCreateFlags flags) {this->flags = flags; return *this; }
+    PipelineVertexInputStateCreateInfo& setVertexBindingDescriptionCount(uint32_t vertexBindingDescriptionCount) {this->vertexBindingDescriptionCount = vertexBindingDescriptionCount; return *this; }
+    PipelineVertexInputStateCreateInfo& setPVertexBindingDescriptions(const VertexInputBindingDescription* pVertexBindingDescriptions) {this->pVertexBindingDescriptions = pVertexBindingDescriptions; return *this; }
+    PipelineVertexInputStateCreateInfo& setPVertexBindingDescriptions(detail::span<const VertexInputBindingDescription> pVertexBindingDescriptions) {this->vertexBindingDescriptionCount = pVertexBindingDescriptions.size(); this->pVertexBindingDescriptions = pVertexBindingDescriptions.data();  return *this; }
+    PipelineVertexInputStateCreateInfo& setVertexAttributeDescriptionCount(uint32_t vertexAttributeDescriptionCount) {this->vertexAttributeDescriptionCount = vertexAttributeDescriptionCount; return *this; }
+    PipelineVertexInputStateCreateInfo& setPVertexAttributeDescriptions(const VertexInputAttributeDescription* pVertexAttributeDescriptions) {this->pVertexAttributeDescriptions = pVertexAttributeDescriptions; return *this; }
+    PipelineVertexInputStateCreateInfo& setPVertexAttributeDescriptions(detail::span<const VertexInputAttributeDescription> pVertexAttributeDescriptions) {this->vertexAttributeDescriptionCount = pVertexAttributeDescriptions.size(); this->pVertexAttributeDescriptions = pVertexAttributeDescriptions.data();  return *this; }
 };
 struct PipelineInputAssemblyStateCreateInfo {
     StructureType sType{StructureType::PipelineInputAssemblyStateCreateInfo};
@@ -4644,17 +4642,17 @@ struct PipelineInputAssemblyStateCreateInfo {
     PipelineInputAssemblyStateCreateFlags flags{};
     PrimitiveTopology topology{static_cast<PrimitiveTopology>(0)};
     Bool32 primitiveRestartEnable{0};
-    PipelineInputAssemblyStateCreateInfo& setFlags(PipelineInputAssemblyStateCreateFlags flags) { this->flags = flags; return *this; }
-    PipelineInputAssemblyStateCreateInfo& setTopology(PrimitiveTopology topology) { this->topology = topology; return *this; }
-    PipelineInputAssemblyStateCreateInfo& setPrimitiveRestartEnable(Bool32 primitiveRestartEnable) { this->primitiveRestartEnable = primitiveRestartEnable; return *this; }
+    PipelineInputAssemblyStateCreateInfo& setFlags(PipelineInputAssemblyStateCreateFlags flags) {this->flags = flags; return *this; }
+    PipelineInputAssemblyStateCreateInfo& setTopology(PrimitiveTopology topology) {this->topology = topology; return *this; }
+    PipelineInputAssemblyStateCreateInfo& setPrimitiveRestartEnable(Bool32 primitiveRestartEnable) {this->primitiveRestartEnable = primitiveRestartEnable; return *this; }
 };
 struct PipelineTessellationStateCreateInfo {
     StructureType sType{StructureType::PipelineTessellationStateCreateInfo};
     const void* pNext = nullptr;
     PipelineTessellationStateCreateFlags flags{};
     uint32_t patchControlPoints{0};
-    PipelineTessellationStateCreateInfo& setFlags(PipelineTessellationStateCreateFlags flags) { this->flags = flags; return *this; }
-    PipelineTessellationStateCreateInfo& setPatchControlPoints(uint32_t patchControlPoints) { this->patchControlPoints = patchControlPoints; return *this; }
+    PipelineTessellationStateCreateInfo& setFlags(PipelineTessellationStateCreateFlags flags) {this->flags = flags; return *this; }
+    PipelineTessellationStateCreateInfo& setPatchControlPoints(uint32_t patchControlPoints) {this->patchControlPoints = patchControlPoints; return *this; }
 };
 struct PipelineViewportStateCreateInfo {
     StructureType sType{StructureType::PipelineViewportStateCreateInfo};
@@ -4664,13 +4662,13 @@ struct PipelineViewportStateCreateInfo {
     const Viewport* pViewports = nullptr;
     uint32_t scissorCount{0};
     const Rect2D* pScissors = nullptr;
-    PipelineViewportStateCreateInfo& setFlags(PipelineViewportStateCreateFlags flags) { this->flags = flags; return *this; }
-    PipelineViewportStateCreateInfo& setViewportCount(uint32_t viewportCount) { this->viewportCount = viewportCount; return *this; }
-    PipelineViewportStateCreateInfo& setPViewports(const Viewport* pViewports) { this->pViewports = pViewports; return *this; }
-    PipelineViewportStateCreateInfo& setViewports(detail::span<const Viewport> Viewports) { this->viewportCount = Viewports.size(); this->pViewports = Viewports.data();  return *this; }
-    PipelineViewportStateCreateInfo& setScissorCount(uint32_t scissorCount) { this->scissorCount = scissorCount; return *this; }
-    PipelineViewportStateCreateInfo& setPScissors(const Rect2D* pScissors) { this->pScissors = pScissors; return *this; }
-    PipelineViewportStateCreateInfo& setScissors(detail::span<const Rect2D> Scissors) { this->scissorCount = Scissors.size(); this->pScissors = Scissors.data();  return *this; }
+    PipelineViewportStateCreateInfo& setFlags(PipelineViewportStateCreateFlags flags) {this->flags = flags; return *this; }
+    PipelineViewportStateCreateInfo& setViewportCount(uint32_t viewportCount) {this->viewportCount = viewportCount; return *this; }
+    PipelineViewportStateCreateInfo& setPViewports(const Viewport* pViewports) {this->pViewports = pViewports; return *this; }
+    PipelineViewportStateCreateInfo& setPViewports(detail::span<const Viewport> pViewports) {this->viewportCount = pViewports.size(); this->pViewports = pViewports.data();  return *this; }
+    PipelineViewportStateCreateInfo& setScissorCount(uint32_t scissorCount) {this->scissorCount = scissorCount; return *this; }
+    PipelineViewportStateCreateInfo& setPScissors(const Rect2D* pScissors) {this->pScissors = pScissors; return *this; }
+    PipelineViewportStateCreateInfo& setPScissors(detail::span<const Rect2D> pScissors) {this->scissorCount = pScissors.size(); this->pScissors = pScissors.data();  return *this; }
 };
 struct PipelineRasterizationStateCreateInfo {
     StructureType sType{StructureType::PipelineRasterizationStateCreateInfo};
@@ -4686,17 +4684,17 @@ struct PipelineRasterizationStateCreateInfo {
     float depthBiasClamp{0.f};
     float depthBiasSlopeFactor{0.f};
     float lineWidth{0.f};
-    PipelineRasterizationStateCreateInfo& setFlags(PipelineRasterizationStateCreateFlags flags) { this->flags = flags; return *this; }
-    PipelineRasterizationStateCreateInfo& setDepthClampEnable(Bool32 depthClampEnable) { this->depthClampEnable = depthClampEnable; return *this; }
-    PipelineRasterizationStateCreateInfo& setRasterizerDiscardEnable(Bool32 rasterizerDiscardEnable) { this->rasterizerDiscardEnable = rasterizerDiscardEnable; return *this; }
-    PipelineRasterizationStateCreateInfo& setPolygonMode(PolygonMode polygonMode) { this->polygonMode = polygonMode; return *this; }
-    PipelineRasterizationStateCreateInfo& setCullMode(CullModeFlags cullMode) { this->cullMode = cullMode; return *this; }
-    PipelineRasterizationStateCreateInfo& setFrontFace(FrontFace frontFace) { this->frontFace = frontFace; return *this; }
-    PipelineRasterizationStateCreateInfo& setDepthBiasEnable(Bool32 depthBiasEnable) { this->depthBiasEnable = depthBiasEnable; return *this; }
-    PipelineRasterizationStateCreateInfo& setDepthBiasConstantFactor(float depthBiasConstantFactor) { this->depthBiasConstantFactor = depthBiasConstantFactor; return *this; }
-    PipelineRasterizationStateCreateInfo& setDepthBiasClamp(float depthBiasClamp) { this->depthBiasClamp = depthBiasClamp; return *this; }
-    PipelineRasterizationStateCreateInfo& setDepthBiasSlopeFactor(float depthBiasSlopeFactor) { this->depthBiasSlopeFactor = depthBiasSlopeFactor; return *this; }
-    PipelineRasterizationStateCreateInfo& setLineWidth(float lineWidth) { this->lineWidth = lineWidth; return *this; }
+    PipelineRasterizationStateCreateInfo& setFlags(PipelineRasterizationStateCreateFlags flags) {this->flags = flags; return *this; }
+    PipelineRasterizationStateCreateInfo& setDepthClampEnable(Bool32 depthClampEnable) {this->depthClampEnable = depthClampEnable; return *this; }
+    PipelineRasterizationStateCreateInfo& setRasterizerDiscardEnable(Bool32 rasterizerDiscardEnable) {this->rasterizerDiscardEnable = rasterizerDiscardEnable; return *this; }
+    PipelineRasterizationStateCreateInfo& setPolygonMode(PolygonMode polygonMode) {this->polygonMode = polygonMode; return *this; }
+    PipelineRasterizationStateCreateInfo& setCullMode(CullModeFlags cullMode) {this->cullMode = cullMode; return *this; }
+    PipelineRasterizationStateCreateInfo& setFrontFace(FrontFace frontFace) {this->frontFace = frontFace; return *this; }
+    PipelineRasterizationStateCreateInfo& setDepthBiasEnable(Bool32 depthBiasEnable) {this->depthBiasEnable = depthBiasEnable; return *this; }
+    PipelineRasterizationStateCreateInfo& setDepthBiasConstantFactor(float depthBiasConstantFactor) {this->depthBiasConstantFactor = depthBiasConstantFactor; return *this; }
+    PipelineRasterizationStateCreateInfo& setDepthBiasClamp(float depthBiasClamp) {this->depthBiasClamp = depthBiasClamp; return *this; }
+    PipelineRasterizationStateCreateInfo& setDepthBiasSlopeFactor(float depthBiasSlopeFactor) {this->depthBiasSlopeFactor = depthBiasSlopeFactor; return *this; }
+    PipelineRasterizationStateCreateInfo& setLineWidth(float lineWidth) {this->lineWidth = lineWidth; return *this; }
 };
 struct PipelineMultisampleStateCreateInfo {
     StructureType sType{StructureType::PipelineMultisampleStateCreateInfo};
@@ -4708,13 +4706,13 @@ struct PipelineMultisampleStateCreateInfo {
     const SampleMask* pSampleMask = nullptr;
     Bool32 alphaToCoverageEnable{0};
     Bool32 alphaToOneEnable{0};
-    PipelineMultisampleStateCreateInfo& setFlags(PipelineMultisampleStateCreateFlags flags) { this->flags = flags; return *this; }
-    PipelineMultisampleStateCreateInfo& setRasterizationSamples(SampleCountFlagBits rasterizationSamples) { this->rasterizationSamples = rasterizationSamples; return *this; }
-    PipelineMultisampleStateCreateInfo& setSampleShadingEnable(Bool32 sampleShadingEnable) { this->sampleShadingEnable = sampleShadingEnable; return *this; }
-    PipelineMultisampleStateCreateInfo& setMinSampleShading(float minSampleShading) { this->minSampleShading = minSampleShading; return *this; }
-    PipelineMultisampleStateCreateInfo& setPSampleMask(const SampleMask* pSampleMask) { this->pSampleMask = pSampleMask; return *this; }
-    PipelineMultisampleStateCreateInfo& setAlphaToCoverageEnable(Bool32 alphaToCoverageEnable) { this->alphaToCoverageEnable = alphaToCoverageEnable; return *this; }
-    PipelineMultisampleStateCreateInfo& setAlphaToOneEnable(Bool32 alphaToOneEnable) { this->alphaToOneEnable = alphaToOneEnable; return *this; }
+    PipelineMultisampleStateCreateInfo& setFlags(PipelineMultisampleStateCreateFlags flags) {this->flags = flags; return *this; }
+    PipelineMultisampleStateCreateInfo& setRasterizationSamples(SampleCountFlagBits rasterizationSamples) {this->rasterizationSamples = rasterizationSamples; return *this; }
+    PipelineMultisampleStateCreateInfo& setSampleShadingEnable(Bool32 sampleShadingEnable) {this->sampleShadingEnable = sampleShadingEnable; return *this; }
+    PipelineMultisampleStateCreateInfo& setMinSampleShading(float minSampleShading) {this->minSampleShading = minSampleShading; return *this; }
+    PipelineMultisampleStateCreateInfo& setPSampleMask(const SampleMask* pSampleMask) {this->pSampleMask = pSampleMask; return *this; }
+    PipelineMultisampleStateCreateInfo& setAlphaToCoverageEnable(Bool32 alphaToCoverageEnable) {this->alphaToCoverageEnable = alphaToCoverageEnable; return *this; }
+    PipelineMultisampleStateCreateInfo& setAlphaToOneEnable(Bool32 alphaToOneEnable) {this->alphaToOneEnable = alphaToOneEnable; return *this; }
 };
 struct PipelineColorBlendAttachmentState {
     Bool32 blendEnable{0};
@@ -4730,14 +4728,14 @@ struct PipelineColorBlendAttachmentState {
         && colorBlendOp == value.colorBlendOp && srcAlphaBlendFactor == value.srcAlphaBlendFactor && dstAlphaBlendFactor == value.dstAlphaBlendFactor 
         && alphaBlendOp == value.alphaBlendOp && colorWriteMask == value.colorWriteMask ;}
     constexpr bool operator!=(PipelineColorBlendAttachmentState const& value) const {return !(*this == value);}
-    PipelineColorBlendAttachmentState& setBlendEnable(Bool32 blendEnable) { this->blendEnable = blendEnable; return *this; }
-    PipelineColorBlendAttachmentState& setSrcColorBlendFactor(BlendFactor srcColorBlendFactor) { this->srcColorBlendFactor = srcColorBlendFactor; return *this; }
-    PipelineColorBlendAttachmentState& setDstColorBlendFactor(BlendFactor dstColorBlendFactor) { this->dstColorBlendFactor = dstColorBlendFactor; return *this; }
-    PipelineColorBlendAttachmentState& setColorBlendOp(BlendOp colorBlendOp) { this->colorBlendOp = colorBlendOp; return *this; }
-    PipelineColorBlendAttachmentState& setSrcAlphaBlendFactor(BlendFactor srcAlphaBlendFactor) { this->srcAlphaBlendFactor = srcAlphaBlendFactor; return *this; }
-    PipelineColorBlendAttachmentState& setDstAlphaBlendFactor(BlendFactor dstAlphaBlendFactor) { this->dstAlphaBlendFactor = dstAlphaBlendFactor; return *this; }
-    PipelineColorBlendAttachmentState& setAlphaBlendOp(BlendOp alphaBlendOp) { this->alphaBlendOp = alphaBlendOp; return *this; }
-    PipelineColorBlendAttachmentState& setColorWriteMask(ColorComponentFlags colorWriteMask) { this->colorWriteMask = colorWriteMask; return *this; }
+    PipelineColorBlendAttachmentState& setBlendEnable(Bool32 blendEnable) {this->blendEnable = blendEnable; return *this; }
+    PipelineColorBlendAttachmentState& setSrcColorBlendFactor(BlendFactor srcColorBlendFactor) {this->srcColorBlendFactor = srcColorBlendFactor; return *this; }
+    PipelineColorBlendAttachmentState& setDstColorBlendFactor(BlendFactor dstColorBlendFactor) {this->dstColorBlendFactor = dstColorBlendFactor; return *this; }
+    PipelineColorBlendAttachmentState& setColorBlendOp(BlendOp colorBlendOp) {this->colorBlendOp = colorBlendOp; return *this; }
+    PipelineColorBlendAttachmentState& setSrcAlphaBlendFactor(BlendFactor srcAlphaBlendFactor) {this->srcAlphaBlendFactor = srcAlphaBlendFactor; return *this; }
+    PipelineColorBlendAttachmentState& setDstAlphaBlendFactor(BlendFactor dstAlphaBlendFactor) {this->dstAlphaBlendFactor = dstAlphaBlendFactor; return *this; }
+    PipelineColorBlendAttachmentState& setAlphaBlendOp(BlendOp alphaBlendOp) {this->alphaBlendOp = alphaBlendOp; return *this; }
+    PipelineColorBlendAttachmentState& setColorWriteMask(ColorComponentFlags colorWriteMask) {this->colorWriteMask = colorWriteMask; return *this; }
 };
 struct PipelineColorBlendStateCreateInfo {
     StructureType sType{StructureType::PipelineColorBlendStateCreateInfo};
@@ -4748,13 +4746,13 @@ struct PipelineColorBlendStateCreateInfo {
     uint32_t attachmentCount{0};
     const PipelineColorBlendAttachmentState* pAttachments = nullptr;
     float blendConstants[4];
-    PipelineColorBlendStateCreateInfo& setFlags(PipelineColorBlendStateCreateFlags flags) { this->flags = flags; return *this; }
-    PipelineColorBlendStateCreateInfo& setLogicOpEnable(Bool32 logicOpEnable) { this->logicOpEnable = logicOpEnable; return *this; }
-    PipelineColorBlendStateCreateInfo& setLogicOp(LogicOp logicOp) { this->logicOp = logicOp; return *this; }
-    PipelineColorBlendStateCreateInfo& setAttachmentCount(uint32_t attachmentCount) { this->attachmentCount = attachmentCount; return *this; }
-    PipelineColorBlendStateCreateInfo& setPAttachments(const PipelineColorBlendAttachmentState* pAttachments) { this->pAttachments = pAttachments; return *this; }
-    PipelineColorBlendStateCreateInfo& setAttachments(detail::span<const PipelineColorBlendAttachmentState> Attachments) { this->attachmentCount = Attachments.size(); this->pAttachments = Attachments.data();  return *this; }
-    PipelineColorBlendStateCreateInfo& setBlendConstants(float blendConstants[4]) { for(uint32_t i = 0; i < 4; i++) this->blendConstants[i] = blendConstants[i]; return *this; }
+    PipelineColorBlendStateCreateInfo& setFlags(PipelineColorBlendStateCreateFlags flags) {this->flags = flags; return *this; }
+    PipelineColorBlendStateCreateInfo& setLogicOpEnable(Bool32 logicOpEnable) {this->logicOpEnable = logicOpEnable; return *this; }
+    PipelineColorBlendStateCreateInfo& setLogicOp(LogicOp logicOp) {this->logicOp = logicOp; return *this; }
+    PipelineColorBlendStateCreateInfo& setAttachmentCount(uint32_t attachmentCount) {this->attachmentCount = attachmentCount; return *this; }
+    PipelineColorBlendStateCreateInfo& setPAttachments(const PipelineColorBlendAttachmentState* pAttachments) {this->pAttachments = pAttachments; return *this; }
+    PipelineColorBlendStateCreateInfo& setPAttachments(detail::span<const PipelineColorBlendAttachmentState> pAttachments) {this->attachmentCount = pAttachments.size(); this->pAttachments = pAttachments.data();  return *this; }
+    PipelineColorBlendStateCreateInfo& setBlendConstants(float blendConstants[4]) {for(uint32_t i = 0; i < 4; i++) this->blendConstants[i] = blendConstants[i]; return *this; }
 };
 struct PipelineDynamicStateCreateInfo {
     StructureType sType{StructureType::PipelineDynamicStateCreateInfo};
@@ -4762,10 +4760,10 @@ struct PipelineDynamicStateCreateInfo {
     PipelineDynamicStateCreateFlags flags{};
     uint32_t dynamicStateCount{0};
     const DynamicState* pDynamicStates = nullptr;
-    PipelineDynamicStateCreateInfo& setFlags(PipelineDynamicStateCreateFlags flags) { this->flags = flags; return *this; }
-    PipelineDynamicStateCreateInfo& setDynamicStateCount(uint32_t dynamicStateCount) { this->dynamicStateCount = dynamicStateCount; return *this; }
-    PipelineDynamicStateCreateInfo& setPDynamicStates(const DynamicState* pDynamicStates) { this->pDynamicStates = pDynamicStates; return *this; }
-    PipelineDynamicStateCreateInfo& setDynamicStates(detail::span<const DynamicState> DynamicStates) { this->dynamicStateCount = DynamicStates.size(); this->pDynamicStates = DynamicStates.data();  return *this; }
+    PipelineDynamicStateCreateInfo& setFlags(PipelineDynamicStateCreateFlags flags) {this->flags = flags; return *this; }
+    PipelineDynamicStateCreateInfo& setDynamicStateCount(uint32_t dynamicStateCount) {this->dynamicStateCount = dynamicStateCount; return *this; }
+    PipelineDynamicStateCreateInfo& setPDynamicStates(const DynamicState* pDynamicStates) {this->pDynamicStates = pDynamicStates; return *this; }
+    PipelineDynamicStateCreateInfo& setPDynamicStates(detail::span<const DynamicState> pDynamicStates) {this->dynamicStateCount = pDynamicStates.size(); this->pDynamicStates = pDynamicStates.data();  return *this; }
 };
 struct StencilOpState {
     StencilOp failOp{static_cast<StencilOp>(0)};
@@ -4779,13 +4777,13 @@ struct StencilOpState {
         return failOp == value.failOp && passOp == value.passOp && depthFailOp == value.depthFailOp && compareOp == value.compareOp && compareMask == value.compareMask 
         && writeMask == value.writeMask && reference == value.reference ;}
     constexpr bool operator!=(StencilOpState const& value) const {return !(*this == value);}
-    StencilOpState& setFailOp(StencilOp failOp) { this->failOp = failOp; return *this; }
-    StencilOpState& setPassOp(StencilOp passOp) { this->passOp = passOp; return *this; }
-    StencilOpState& setDepthFailOp(StencilOp depthFailOp) { this->depthFailOp = depthFailOp; return *this; }
-    StencilOpState& setCompareOp(CompareOp compareOp) { this->compareOp = compareOp; return *this; }
-    StencilOpState& setCompareMask(uint32_t compareMask) { this->compareMask = compareMask; return *this; }
-    StencilOpState& setWriteMask(uint32_t writeMask) { this->writeMask = writeMask; return *this; }
-    StencilOpState& setReference(uint32_t reference) { this->reference = reference; return *this; }
+    StencilOpState& setFailOp(StencilOp failOp) {this->failOp = failOp; return *this; }
+    StencilOpState& setPassOp(StencilOp passOp) {this->passOp = passOp; return *this; }
+    StencilOpState& setDepthFailOp(StencilOp depthFailOp) {this->depthFailOp = depthFailOp; return *this; }
+    StencilOpState& setCompareOp(CompareOp compareOp) {this->compareOp = compareOp; return *this; }
+    StencilOpState& setCompareMask(uint32_t compareMask) {this->compareMask = compareMask; return *this; }
+    StencilOpState& setWriteMask(uint32_t writeMask) {this->writeMask = writeMask; return *this; }
+    StencilOpState& setReference(uint32_t reference) {this->reference = reference; return *this; }
 };
 struct PipelineDepthStencilStateCreateInfo {
     StructureType sType{StructureType::PipelineDepthStencilStateCreateInfo};
@@ -4800,16 +4798,16 @@ struct PipelineDepthStencilStateCreateInfo {
     StencilOpState back{};
     float minDepthBounds{0.f};
     float maxDepthBounds{0.f};
-    PipelineDepthStencilStateCreateInfo& setFlags(PipelineDepthStencilStateCreateFlags flags) { this->flags = flags; return *this; }
-    PipelineDepthStencilStateCreateInfo& setDepthTestEnable(Bool32 depthTestEnable) { this->depthTestEnable = depthTestEnable; return *this; }
-    PipelineDepthStencilStateCreateInfo& setDepthWriteEnable(Bool32 depthWriteEnable) { this->depthWriteEnable = depthWriteEnable; return *this; }
-    PipelineDepthStencilStateCreateInfo& setDepthCompareOp(CompareOp depthCompareOp) { this->depthCompareOp = depthCompareOp; return *this; }
-    PipelineDepthStencilStateCreateInfo& setDepthBoundsTestEnable(Bool32 depthBoundsTestEnable) { this->depthBoundsTestEnable = depthBoundsTestEnable; return *this; }
-    PipelineDepthStencilStateCreateInfo& setStencilTestEnable(Bool32 stencilTestEnable) { this->stencilTestEnable = stencilTestEnable; return *this; }
-    PipelineDepthStencilStateCreateInfo& setFront(StencilOpState front) { this->front = front; return *this; }
-    PipelineDepthStencilStateCreateInfo& setBack(StencilOpState back) { this->back = back; return *this; }
-    PipelineDepthStencilStateCreateInfo& setMinDepthBounds(float minDepthBounds) { this->minDepthBounds = minDepthBounds; return *this; }
-    PipelineDepthStencilStateCreateInfo& setMaxDepthBounds(float maxDepthBounds) { this->maxDepthBounds = maxDepthBounds; return *this; }
+    PipelineDepthStencilStateCreateInfo& setFlags(PipelineDepthStencilStateCreateFlags flags) {this->flags = flags; return *this; }
+    PipelineDepthStencilStateCreateInfo& setDepthTestEnable(Bool32 depthTestEnable) {this->depthTestEnable = depthTestEnable; return *this; }
+    PipelineDepthStencilStateCreateInfo& setDepthWriteEnable(Bool32 depthWriteEnable) {this->depthWriteEnable = depthWriteEnable; return *this; }
+    PipelineDepthStencilStateCreateInfo& setDepthCompareOp(CompareOp depthCompareOp) {this->depthCompareOp = depthCompareOp; return *this; }
+    PipelineDepthStencilStateCreateInfo& setDepthBoundsTestEnable(Bool32 depthBoundsTestEnable) {this->depthBoundsTestEnable = depthBoundsTestEnable; return *this; }
+    PipelineDepthStencilStateCreateInfo& setStencilTestEnable(Bool32 stencilTestEnable) {this->stencilTestEnable = stencilTestEnable; return *this; }
+    PipelineDepthStencilStateCreateInfo& setFront(StencilOpState front) {this->front = front; return *this; }
+    PipelineDepthStencilStateCreateInfo& setBack(StencilOpState back) {this->back = back; return *this; }
+    PipelineDepthStencilStateCreateInfo& setMinDepthBounds(float minDepthBounds) {this->minDepthBounds = minDepthBounds; return *this; }
+    PipelineDepthStencilStateCreateInfo& setMaxDepthBounds(float maxDepthBounds) {this->maxDepthBounds = maxDepthBounds; return *this; }
 };
 struct GraphicsPipelineCreateInfo {
     StructureType sType{StructureType::GraphicsPipelineCreateInfo};
@@ -4831,33 +4829,33 @@ struct GraphicsPipelineCreateInfo {
     uint32_t subpass{0};
     Pipeline basePipelineHandle{};
     int32_t basePipelineIndex{0};
-    GraphicsPipelineCreateInfo& setFlags(PipelineCreateFlags flags) { this->flags = flags; return *this; }
-    GraphicsPipelineCreateInfo& setStageCount(uint32_t stageCount) { this->stageCount = stageCount; return *this; }
-    GraphicsPipelineCreateInfo& setPStages(const PipelineShaderStageCreateInfo* pStages) { this->pStages = pStages; return *this; }
-    GraphicsPipelineCreateInfo& setStages(detail::span<const PipelineShaderStageCreateInfo> Stages) { this->stageCount = Stages.size(); this->pStages = Stages.data();  return *this; }
-    GraphicsPipelineCreateInfo& setPVertexInputState(const PipelineVertexInputStateCreateInfo* pVertexInputState) { this->pVertexInputState = pVertexInputState; return *this; }
-    GraphicsPipelineCreateInfo& setVertexInputState(PipelineVertexInputStateCreateInfo const& VertexInputState) { this->pVertexInputState = &VertexInputState; return *this; }
-    GraphicsPipelineCreateInfo& setPInputAssemblyState(const PipelineInputAssemblyStateCreateInfo* pInputAssemblyState) { this->pInputAssemblyState = pInputAssemblyState; return *this; }
-    GraphicsPipelineCreateInfo& setInputAssemblyState(PipelineInputAssemblyStateCreateInfo const& InputAssemblyState) { this->pInputAssemblyState = &InputAssemblyState; return *this; }
-    GraphicsPipelineCreateInfo& setPTessellationState(const PipelineTessellationStateCreateInfo* pTessellationState) { this->pTessellationState = pTessellationState; return *this; }
-    GraphicsPipelineCreateInfo& setTessellationState(PipelineTessellationStateCreateInfo const& TessellationState) { this->pTessellationState = &TessellationState; return *this; }
-    GraphicsPipelineCreateInfo& setPViewportState(const PipelineViewportStateCreateInfo* pViewportState) { this->pViewportState = pViewportState; return *this; }
-    GraphicsPipelineCreateInfo& setViewportState(PipelineViewportStateCreateInfo const& ViewportState) { this->pViewportState = &ViewportState; return *this; }
-    GraphicsPipelineCreateInfo& setPRasterizationState(const PipelineRasterizationStateCreateInfo* pRasterizationState) { this->pRasterizationState = pRasterizationState; return *this; }
-    GraphicsPipelineCreateInfo& setRasterizationState(PipelineRasterizationStateCreateInfo const& RasterizationState) { this->pRasterizationState = &RasterizationState; return *this; }
-    GraphicsPipelineCreateInfo& setPMultisampleState(const PipelineMultisampleStateCreateInfo* pMultisampleState) { this->pMultisampleState = pMultisampleState; return *this; }
-    GraphicsPipelineCreateInfo& setMultisampleState(PipelineMultisampleStateCreateInfo const& MultisampleState) { this->pMultisampleState = &MultisampleState; return *this; }
-    GraphicsPipelineCreateInfo& setPDepthStencilState(const PipelineDepthStencilStateCreateInfo* pDepthStencilState) { this->pDepthStencilState = pDepthStencilState; return *this; }
-    GraphicsPipelineCreateInfo& setDepthStencilState(PipelineDepthStencilStateCreateInfo const& DepthStencilState) { this->pDepthStencilState = &DepthStencilState; return *this; }
-    GraphicsPipelineCreateInfo& setPColorBlendState(const PipelineColorBlendStateCreateInfo* pColorBlendState) { this->pColorBlendState = pColorBlendState; return *this; }
-    GraphicsPipelineCreateInfo& setColorBlendState(PipelineColorBlendStateCreateInfo const& ColorBlendState) { this->pColorBlendState = &ColorBlendState; return *this; }
-    GraphicsPipelineCreateInfo& setPDynamicState(const PipelineDynamicStateCreateInfo* pDynamicState) { this->pDynamicState = pDynamicState; return *this; }
-    GraphicsPipelineCreateInfo& setDynamicState(PipelineDynamicStateCreateInfo const& DynamicState) { this->pDynamicState = &DynamicState; return *this; }
-    GraphicsPipelineCreateInfo& setLayout(PipelineLayout layout) { this->layout = layout; return *this; }
-    GraphicsPipelineCreateInfo& setRenderPass(RenderPass renderPass) { this->renderPass = renderPass; return *this; }
-    GraphicsPipelineCreateInfo& setSubpass(uint32_t subpass) { this->subpass = subpass; return *this; }
-    GraphicsPipelineCreateInfo& setBasePipelineHandle(Pipeline basePipelineHandle) { this->basePipelineHandle = basePipelineHandle; return *this; }
-    GraphicsPipelineCreateInfo& setBasePipelineIndex(int32_t basePipelineIndex) { this->basePipelineIndex = basePipelineIndex; return *this; }
+    GraphicsPipelineCreateInfo& setFlags(PipelineCreateFlags flags) {this->flags = flags; return *this; }
+    GraphicsPipelineCreateInfo& setStageCount(uint32_t stageCount) {this->stageCount = stageCount; return *this; }
+    GraphicsPipelineCreateInfo& setPStages(const PipelineShaderStageCreateInfo* pStages) {this->pStages = pStages; return *this; }
+    GraphicsPipelineCreateInfo& setPStages(detail::span<const PipelineShaderStageCreateInfo> pStages) {this->stageCount = pStages.size(); this->pStages = pStages.data();  return *this; }
+    GraphicsPipelineCreateInfo& setPVertexInputState(const PipelineVertexInputStateCreateInfo* pVertexInputState) {this->pVertexInputState = pVertexInputState; return *this; }
+    GraphicsPipelineCreateInfo& setPVertexInputState(PipelineVertexInputStateCreateInfo const& pVertexInputState) {this->pVertexInputState = &pVertexInputState; return *this; }
+    GraphicsPipelineCreateInfo& setPInputAssemblyState(const PipelineInputAssemblyStateCreateInfo* pInputAssemblyState) {this->pInputAssemblyState = pInputAssemblyState; return *this; }
+    GraphicsPipelineCreateInfo& setPInputAssemblyState(PipelineInputAssemblyStateCreateInfo const& pInputAssemblyState) {this->pInputAssemblyState = &pInputAssemblyState; return *this; }
+    GraphicsPipelineCreateInfo& setPTessellationState(const PipelineTessellationStateCreateInfo* pTessellationState) {this->pTessellationState = pTessellationState; return *this; }
+    GraphicsPipelineCreateInfo& setPTessellationState(PipelineTessellationStateCreateInfo const& pTessellationState) {this->pTessellationState = &pTessellationState; return *this; }
+    GraphicsPipelineCreateInfo& setPViewportState(const PipelineViewportStateCreateInfo* pViewportState) {this->pViewportState = pViewportState; return *this; }
+    GraphicsPipelineCreateInfo& setPViewportState(PipelineViewportStateCreateInfo const& pViewportState) {this->pViewportState = &pViewportState; return *this; }
+    GraphicsPipelineCreateInfo& setPRasterizationState(const PipelineRasterizationStateCreateInfo* pRasterizationState) {this->pRasterizationState = pRasterizationState; return *this; }
+    GraphicsPipelineCreateInfo& setPRasterizationState(PipelineRasterizationStateCreateInfo const& pRasterizationState) {this->pRasterizationState = &pRasterizationState; return *this; }
+    GraphicsPipelineCreateInfo& setPMultisampleState(const PipelineMultisampleStateCreateInfo* pMultisampleState) {this->pMultisampleState = pMultisampleState; return *this; }
+    GraphicsPipelineCreateInfo& setPMultisampleState(PipelineMultisampleStateCreateInfo const& pMultisampleState) {this->pMultisampleState = &pMultisampleState; return *this; }
+    GraphicsPipelineCreateInfo& setPDepthStencilState(const PipelineDepthStencilStateCreateInfo* pDepthStencilState) {this->pDepthStencilState = pDepthStencilState; return *this; }
+    GraphicsPipelineCreateInfo& setPDepthStencilState(PipelineDepthStencilStateCreateInfo const& pDepthStencilState) {this->pDepthStencilState = &pDepthStencilState; return *this; }
+    GraphicsPipelineCreateInfo& setPColorBlendState(const PipelineColorBlendStateCreateInfo* pColorBlendState) {this->pColorBlendState = pColorBlendState; return *this; }
+    GraphicsPipelineCreateInfo& setPColorBlendState(PipelineColorBlendStateCreateInfo const& pColorBlendState) {this->pColorBlendState = &pColorBlendState; return *this; }
+    GraphicsPipelineCreateInfo& setPDynamicState(const PipelineDynamicStateCreateInfo* pDynamicState) {this->pDynamicState = pDynamicState; return *this; }
+    GraphicsPipelineCreateInfo& setPDynamicState(PipelineDynamicStateCreateInfo const& pDynamicState) {this->pDynamicState = &pDynamicState; return *this; }
+    GraphicsPipelineCreateInfo& setLayout(PipelineLayout layout) {this->layout = layout; return *this; }
+    GraphicsPipelineCreateInfo& setRenderPass(RenderPass renderPass) {this->renderPass = renderPass; return *this; }
+    GraphicsPipelineCreateInfo& setSubpass(uint32_t subpass) {this->subpass = subpass; return *this; }
+    GraphicsPipelineCreateInfo& setBasePipelineHandle(Pipeline basePipelineHandle) {this->basePipelineHandle = basePipelineHandle; return *this; }
+    GraphicsPipelineCreateInfo& setBasePipelineIndex(int32_t basePipelineIndex) {this->basePipelineIndex = basePipelineIndex; return *this; }
 };
 struct PipelineCacheCreateInfo {
     StructureType sType{StructureType::PipelineCacheCreateInfo};
@@ -4865,10 +4863,10 @@ struct PipelineCacheCreateInfo {
     PipelineCacheCreateFlags flags{};
     size_t initialDataSize{0};
     const void* pInitialData = nullptr;
-    PipelineCacheCreateInfo& setFlags(PipelineCacheCreateFlags flags) { this->flags = flags; return *this; }
-    PipelineCacheCreateInfo& setInitialDataSize(size_t initialDataSize) { this->initialDataSize = initialDataSize; return *this; }
-    PipelineCacheCreateInfo& setPInitialData(const void* pInitialData) { this->pInitialData = pInitialData; return *this; }
-    PipelineCacheCreateInfo& setInitialData(detail::span<const std::byte> InitialData) { this->initialDataSize = InitialData.size(); this->pInitialData = InitialData.data();  return *this; }
+    PipelineCacheCreateInfo& setFlags(PipelineCacheCreateFlags flags) {this->flags = flags; return *this; }
+    PipelineCacheCreateInfo& setInitialDataSize(size_t initialDataSize) {this->initialDataSize = initialDataSize; return *this; }
+    PipelineCacheCreateInfo& setPInitialData(const void* pInitialData) {this->pInitialData = pInitialData; return *this; }
+    PipelineCacheCreateInfo& setPInitialData(detail::span<const std::byte> pInitialData) {this->initialDataSize = pInitialData.size(); this->pInitialData = pInitialData.data();  return *this; }
 };
 struct PushConstantRange {
     ShaderStageFlags stageFlags{};
@@ -4877,9 +4875,9 @@ struct PushConstantRange {
     constexpr bool operator==(PushConstantRange const& value) const {
         return stageFlags == value.stageFlags && offset == value.offset && size == value.size ;}
     constexpr bool operator!=(PushConstantRange const& value) const {return !(*this == value);}
-    PushConstantRange& setStageFlags(ShaderStageFlags stageFlags) { this->stageFlags = stageFlags; return *this; }
-    PushConstantRange& setOffset(uint32_t offset) { this->offset = offset; return *this; }
-    PushConstantRange& setSize(uint32_t size) { this->size = size; return *this; }
+    PushConstantRange& setStageFlags(ShaderStageFlags stageFlags) {this->stageFlags = stageFlags; return *this; }
+    PushConstantRange& setOffset(uint32_t offset) {this->offset = offset; return *this; }
+    PushConstantRange& setSize(uint32_t size) {this->size = size; return *this; }
 };
 struct PipelineLayoutCreateInfo {
     StructureType sType{StructureType::PipelineLayoutCreateInfo};
@@ -4889,13 +4887,13 @@ struct PipelineLayoutCreateInfo {
     const DescriptorSetLayout* pSetLayouts = nullptr;
     uint32_t pushConstantRangeCount{0};
     const PushConstantRange* pPushConstantRanges = nullptr;
-    PipelineLayoutCreateInfo& setFlags(PipelineLayoutCreateFlags flags) { this->flags = flags; return *this; }
-    PipelineLayoutCreateInfo& setSetLayoutCount(uint32_t setLayoutCount) { this->setLayoutCount = setLayoutCount; return *this; }
-    PipelineLayoutCreateInfo& setPSetLayouts(const DescriptorSetLayout* pSetLayouts) { this->pSetLayouts = pSetLayouts; return *this; }
-    PipelineLayoutCreateInfo& setSetLayouts(detail::span<const DescriptorSetLayout> SetLayouts) { this->setLayoutCount = SetLayouts.size(); this->pSetLayouts = SetLayouts.data();  return *this; }
-    PipelineLayoutCreateInfo& setPushConstantRangeCount(uint32_t pushConstantRangeCount) { this->pushConstantRangeCount = pushConstantRangeCount; return *this; }
-    PipelineLayoutCreateInfo& setPPushConstantRanges(const PushConstantRange* pPushConstantRanges) { this->pPushConstantRanges = pPushConstantRanges; return *this; }
-    PipelineLayoutCreateInfo& setPushConstantRanges(detail::span<const PushConstantRange> PushConstantRanges) { this->pushConstantRangeCount = PushConstantRanges.size(); this->pPushConstantRanges = PushConstantRanges.data();  return *this; }
+    PipelineLayoutCreateInfo& setFlags(PipelineLayoutCreateFlags flags) {this->flags = flags; return *this; }
+    PipelineLayoutCreateInfo& setSetLayoutCount(uint32_t setLayoutCount) {this->setLayoutCount = setLayoutCount; return *this; }
+    PipelineLayoutCreateInfo& setPSetLayouts(const DescriptorSetLayout* pSetLayouts) {this->pSetLayouts = pSetLayouts; return *this; }
+    PipelineLayoutCreateInfo& setPSetLayouts(detail::span<const DescriptorSetLayout> pSetLayouts) {this->setLayoutCount = pSetLayouts.size(); this->pSetLayouts = pSetLayouts.data();  return *this; }
+    PipelineLayoutCreateInfo& setPushConstantRangeCount(uint32_t pushConstantRangeCount) {this->pushConstantRangeCount = pushConstantRangeCount; return *this; }
+    PipelineLayoutCreateInfo& setPPushConstantRanges(const PushConstantRange* pPushConstantRanges) {this->pPushConstantRanges = pPushConstantRanges; return *this; }
+    PipelineLayoutCreateInfo& setPPushConstantRanges(detail::span<const PushConstantRange> pPushConstantRanges) {this->pushConstantRangeCount = pPushConstantRanges.size(); this->pPushConstantRanges = pPushConstantRanges.data();  return *this; }
 };
 struct SamplerCreateInfo {
     StructureType sType{StructureType::SamplerCreateInfo};
@@ -4916,30 +4914,30 @@ struct SamplerCreateInfo {
     float maxLod{0.f};
     BorderColor borderColor{static_cast<BorderColor>(0)};
     Bool32 unnormalizedCoordinates{0};
-    SamplerCreateInfo& setFlags(SamplerCreateFlags flags) { this->flags = flags; return *this; }
-    SamplerCreateInfo& setMagFilter(Filter magFilter) { this->magFilter = magFilter; return *this; }
-    SamplerCreateInfo& setMinFilter(Filter minFilter) { this->minFilter = minFilter; return *this; }
-    SamplerCreateInfo& setMipmapMode(SamplerMipmapMode mipmapMode) { this->mipmapMode = mipmapMode; return *this; }
-    SamplerCreateInfo& setAddressModeU(SamplerAddressMode addressModeU) { this->addressModeU = addressModeU; return *this; }
-    SamplerCreateInfo& setAddressModeV(SamplerAddressMode addressModeV) { this->addressModeV = addressModeV; return *this; }
-    SamplerCreateInfo& setAddressModeW(SamplerAddressMode addressModeW) { this->addressModeW = addressModeW; return *this; }
-    SamplerCreateInfo& setMipLodBias(float mipLodBias) { this->mipLodBias = mipLodBias; return *this; }
-    SamplerCreateInfo& setAnisotropyEnable(Bool32 anisotropyEnable) { this->anisotropyEnable = anisotropyEnable; return *this; }
-    SamplerCreateInfo& setMaxAnisotropy(float maxAnisotropy) { this->maxAnisotropy = maxAnisotropy; return *this; }
-    SamplerCreateInfo& setCompareEnable(Bool32 compareEnable) { this->compareEnable = compareEnable; return *this; }
-    SamplerCreateInfo& setCompareOp(CompareOp compareOp) { this->compareOp = compareOp; return *this; }
-    SamplerCreateInfo& setMinLod(float minLod) { this->minLod = minLod; return *this; }
-    SamplerCreateInfo& setMaxLod(float maxLod) { this->maxLod = maxLod; return *this; }
-    SamplerCreateInfo& setBorderColor(BorderColor borderColor) { this->borderColor = borderColor; return *this; }
-    SamplerCreateInfo& setUnnormalizedCoordinates(Bool32 unnormalizedCoordinates) { this->unnormalizedCoordinates = unnormalizedCoordinates; return *this; }
+    SamplerCreateInfo& setFlags(SamplerCreateFlags flags) {this->flags = flags; return *this; }
+    SamplerCreateInfo& setMagFilter(Filter magFilter) {this->magFilter = magFilter; return *this; }
+    SamplerCreateInfo& setMinFilter(Filter minFilter) {this->minFilter = minFilter; return *this; }
+    SamplerCreateInfo& setMipmapMode(SamplerMipmapMode mipmapMode) {this->mipmapMode = mipmapMode; return *this; }
+    SamplerCreateInfo& setAddressModeU(SamplerAddressMode addressModeU) {this->addressModeU = addressModeU; return *this; }
+    SamplerCreateInfo& setAddressModeV(SamplerAddressMode addressModeV) {this->addressModeV = addressModeV; return *this; }
+    SamplerCreateInfo& setAddressModeW(SamplerAddressMode addressModeW) {this->addressModeW = addressModeW; return *this; }
+    SamplerCreateInfo& setMipLodBias(float mipLodBias) {this->mipLodBias = mipLodBias; return *this; }
+    SamplerCreateInfo& setAnisotropyEnable(Bool32 anisotropyEnable) {this->anisotropyEnable = anisotropyEnable; return *this; }
+    SamplerCreateInfo& setMaxAnisotropy(float maxAnisotropy) {this->maxAnisotropy = maxAnisotropy; return *this; }
+    SamplerCreateInfo& setCompareEnable(Bool32 compareEnable) {this->compareEnable = compareEnable; return *this; }
+    SamplerCreateInfo& setCompareOp(CompareOp compareOp) {this->compareOp = compareOp; return *this; }
+    SamplerCreateInfo& setMinLod(float minLod) {this->minLod = minLod; return *this; }
+    SamplerCreateInfo& setMaxLod(float maxLod) {this->maxLod = maxLod; return *this; }
+    SamplerCreateInfo& setBorderColor(BorderColor borderColor) {this->borderColor = borderColor; return *this; }
+    SamplerCreateInfo& setUnnormalizedCoordinates(Bool32 unnormalizedCoordinates) {this->unnormalizedCoordinates = unnormalizedCoordinates; return *this; }
 };
 struct CommandPoolCreateInfo {
     StructureType sType{StructureType::CommandPoolCreateInfo};
     const void* pNext = nullptr;
     CommandPoolCreateFlags flags{};
     uint32_t queueFamilyIndex{0};
-    CommandPoolCreateInfo& setFlags(CommandPoolCreateFlags flags) { this->flags = flags; return *this; }
-    CommandPoolCreateInfo& setQueueFamilyIndex(uint32_t queueFamilyIndex) { this->queueFamilyIndex = queueFamilyIndex; return *this; }
+    CommandPoolCreateInfo& setFlags(CommandPoolCreateFlags flags) {this->flags = flags; return *this; }
+    CommandPoolCreateInfo& setQueueFamilyIndex(uint32_t queueFamilyIndex) {this->queueFamilyIndex = queueFamilyIndex; return *this; }
 };
 struct CommandBufferAllocateInfo {
     StructureType sType{StructureType::CommandBufferAllocateInfo};
@@ -4947,9 +4945,9 @@ struct CommandBufferAllocateInfo {
     CommandPool commandPool{};
     CommandBufferLevel level{static_cast<CommandBufferLevel>(0)};
     uint32_t commandBufferCount{0};
-    CommandBufferAllocateInfo& setCommandPool(CommandPool commandPool) { this->commandPool = commandPool; return *this; }
-    CommandBufferAllocateInfo& setLevel(CommandBufferLevel level) { this->level = level; return *this; }
-    CommandBufferAllocateInfo& setCommandBufferCount(uint32_t commandBufferCount) { this->commandBufferCount = commandBufferCount; return *this; }
+    CommandBufferAllocateInfo& setCommandPool(CommandPool commandPool) {this->commandPool = commandPool; return *this; }
+    CommandBufferAllocateInfo& setLevel(CommandBufferLevel level) {this->level = level; return *this; }
+    CommandBufferAllocateInfo& setCommandBufferCount(uint32_t commandBufferCount) {this->commandBufferCount = commandBufferCount; return *this; }
 };
 struct CommandBufferInheritanceInfo {
     StructureType sType{StructureType::CommandBufferInheritanceInfo};
@@ -4960,21 +4958,21 @@ struct CommandBufferInheritanceInfo {
     Bool32 occlusionQueryEnable{0};
     QueryControlFlags queryFlags{};
     QueryPipelineStatisticFlags pipelineStatistics{};
-    CommandBufferInheritanceInfo& setRenderPass(RenderPass renderPass) { this->renderPass = renderPass; return *this; }
-    CommandBufferInheritanceInfo& setSubpass(uint32_t subpass) { this->subpass = subpass; return *this; }
-    CommandBufferInheritanceInfo& setFramebuffer(Framebuffer framebuffer) { this->framebuffer = framebuffer; return *this; }
-    CommandBufferInheritanceInfo& setOcclusionQueryEnable(Bool32 occlusionQueryEnable) { this->occlusionQueryEnable = occlusionQueryEnable; return *this; }
-    CommandBufferInheritanceInfo& setQueryFlags(QueryControlFlags queryFlags) { this->queryFlags = queryFlags; return *this; }
-    CommandBufferInheritanceInfo& setPipelineStatistics(QueryPipelineStatisticFlags pipelineStatistics) { this->pipelineStatistics = pipelineStatistics; return *this; }
+    CommandBufferInheritanceInfo& setRenderPass(RenderPass renderPass) {this->renderPass = renderPass; return *this; }
+    CommandBufferInheritanceInfo& setSubpass(uint32_t subpass) {this->subpass = subpass; return *this; }
+    CommandBufferInheritanceInfo& setFramebuffer(Framebuffer framebuffer) {this->framebuffer = framebuffer; return *this; }
+    CommandBufferInheritanceInfo& setOcclusionQueryEnable(Bool32 occlusionQueryEnable) {this->occlusionQueryEnable = occlusionQueryEnable; return *this; }
+    CommandBufferInheritanceInfo& setQueryFlags(QueryControlFlags queryFlags) {this->queryFlags = queryFlags; return *this; }
+    CommandBufferInheritanceInfo& setPipelineStatistics(QueryPipelineStatisticFlags pipelineStatistics) {this->pipelineStatistics = pipelineStatistics; return *this; }
 };
 struct CommandBufferBeginInfo {
     StructureType sType{StructureType::CommandBufferBeginInfo};
     const void* pNext = nullptr;
     CommandBufferUsageFlags flags{};
     const CommandBufferInheritanceInfo* pInheritanceInfo = nullptr;
-    CommandBufferBeginInfo& setFlags(CommandBufferUsageFlags flags) { this->flags = flags; return *this; }
-    CommandBufferBeginInfo& setPInheritanceInfo(const CommandBufferInheritanceInfo* pInheritanceInfo) { this->pInheritanceInfo = pInheritanceInfo; return *this; }
-    CommandBufferBeginInfo& setInheritanceInfo(CommandBufferInheritanceInfo const& InheritanceInfo) { this->pInheritanceInfo = &InheritanceInfo; return *this; }
+    CommandBufferBeginInfo& setFlags(CommandBufferUsageFlags flags) {this->flags = flags; return *this; }
+    CommandBufferBeginInfo& setPInheritanceInfo(const CommandBufferInheritanceInfo* pInheritanceInfo) {this->pInheritanceInfo = pInheritanceInfo; return *this; }
+    CommandBufferBeginInfo& setPInheritanceInfo(CommandBufferInheritanceInfo const& pInheritanceInfo) {this->pInheritanceInfo = &pInheritanceInfo; return *this; }
 };
 struct ClearDepthStencilValue {
     float depth{0.f};
@@ -4982,8 +4980,8 @@ struct ClearDepthStencilValue {
     constexpr bool operator==(ClearDepthStencilValue const& value) const {
         return depth == value.depth && stencil == value.stencil ;}
     constexpr bool operator!=(ClearDepthStencilValue const& value) const {return !(*this == value);}
-    ClearDepthStencilValue& setDepth(float depth) { this->depth = depth; return *this; }
-    ClearDepthStencilValue& setStencil(uint32_t stencil) { this->stencil = stencil; return *this; }
+    ClearDepthStencilValue& setDepth(float depth) {this->depth = depth; return *this; }
+    ClearDepthStencilValue& setStencil(uint32_t stencil) {this->stencil = stencil; return *this; }
 };
 union ClearColorValue {
     float float32[4];
@@ -4999,9 +4997,9 @@ union ClearColorValue {
             is_equal &= uint32[i] == value.uint32[i];
         return is_equal;}
     constexpr bool operator!=(ClearColorValue const& value) const {return !(*this == value);}
-    ClearColorValue& setFloat32(float float32[4]) { for(uint32_t i = 0; i < 4; i++) this->float32[i] = float32[i]; return *this; }
-    ClearColorValue& setInt32(int32_t int32[4]) { for(uint32_t i = 0; i < 4; i++) this->int32[i] = int32[i]; return *this; }
-    ClearColorValue& setUint32(uint32_t uint32[4]) { for(uint32_t i = 0; i < 4; i++) this->uint32[i] = uint32[i]; return *this; }
+    ClearColorValue& setFloat32(float float32[4]) {for(uint32_t i = 0; i < 4; i++) this->float32[i] = float32[i]; return *this; }
+    ClearColorValue& setInt32(int32_t int32[4]) {for(uint32_t i = 0; i < 4; i++) this->int32[i] = int32[i]; return *this; }
+    ClearColorValue& setUint32(uint32_t uint32[4]) {for(uint32_t i = 0; i < 4; i++) this->uint32[i] = uint32[i]; return *this; }
 };
 union ClearValue {
     ClearColorValue color;
@@ -5009,8 +5007,8 @@ union ClearValue {
     constexpr bool operator==(ClearValue const& value) const {
         return color == value.color && depthStencil == value.depthStencil ;}
     constexpr bool operator!=(ClearValue const& value) const {return !(*this == value);}
-    ClearValue& setColor(ClearColorValue color) { this->color = color; return *this; }
-    ClearValue& setDepthStencil(ClearDepthStencilValue depthStencil) { this->depthStencil = depthStencil; return *this; }
+    ClearValue& setColor(ClearColorValue color) {this->color = color; return *this; }
+    ClearValue& setDepthStencil(ClearDepthStencilValue depthStencil) {this->depthStencil = depthStencil; return *this; }
 };
 struct RenderPassBeginInfo {
     StructureType sType{StructureType::RenderPassBeginInfo};
@@ -5020,12 +5018,12 @@ struct RenderPassBeginInfo {
     Rect2D renderArea{};
     uint32_t clearValueCount{0};
     const ClearValue* pClearValues = nullptr;
-    RenderPassBeginInfo& setRenderPass(RenderPass renderPass) { this->renderPass = renderPass; return *this; }
-    RenderPassBeginInfo& setFramebuffer(Framebuffer framebuffer) { this->framebuffer = framebuffer; return *this; }
-    RenderPassBeginInfo& setRenderArea(Rect2D renderArea) { this->renderArea = renderArea; return *this; }
-    RenderPassBeginInfo& setClearValueCount(uint32_t clearValueCount) { this->clearValueCount = clearValueCount; return *this; }
-    RenderPassBeginInfo& setPClearValues(const ClearValue* pClearValues) { this->pClearValues = pClearValues; return *this; }
-    RenderPassBeginInfo& setClearValues(detail::span<const ClearValue> ClearValues) { this->clearValueCount = ClearValues.size(); this->pClearValues = ClearValues.data();  return *this; }
+    RenderPassBeginInfo& setRenderPass(RenderPass renderPass) {this->renderPass = renderPass; return *this; }
+    RenderPassBeginInfo& setFramebuffer(Framebuffer framebuffer) {this->framebuffer = framebuffer; return *this; }
+    RenderPassBeginInfo& setRenderArea(Rect2D renderArea) {this->renderArea = renderArea; return *this; }
+    RenderPassBeginInfo& setClearValueCount(uint32_t clearValueCount) {this->clearValueCount = clearValueCount; return *this; }
+    RenderPassBeginInfo& setPClearValues(const ClearValue* pClearValues) {this->pClearValues = pClearValues; return *this; }
+    RenderPassBeginInfo& setPClearValues(detail::span<const ClearValue> pClearValues) {this->clearValueCount = pClearValues.size(); this->pClearValues = pClearValues.data();  return *this; }
 };
 struct ClearAttachment {
     ImageAspectFlags aspectMask{};
@@ -5034,9 +5032,9 @@ struct ClearAttachment {
     constexpr bool operator==(ClearAttachment const& value) const {
         return aspectMask == value.aspectMask && colorAttachment == value.colorAttachment && clearValue == value.clearValue ;}
     constexpr bool operator!=(ClearAttachment const& value) const {return !(*this == value);}
-    ClearAttachment& setAspectMask(ImageAspectFlags aspectMask) { this->aspectMask = aspectMask; return *this; }
-    ClearAttachment& setColorAttachment(uint32_t colorAttachment) { this->colorAttachment = colorAttachment; return *this; }
-    ClearAttachment& setClearValue(ClearValue clearValue) { this->clearValue = clearValue; return *this; }
+    ClearAttachment& setAspectMask(ImageAspectFlags aspectMask) {this->aspectMask = aspectMask; return *this; }
+    ClearAttachment& setColorAttachment(uint32_t colorAttachment) {this->colorAttachment = colorAttachment; return *this; }
+    ClearAttachment& setClearValue(ClearValue clearValue) {this->clearValue = clearValue; return *this; }
 };
 struct AttachmentDescription {
     AttachmentDescriptionFlags flags{};
@@ -5052,15 +5050,15 @@ struct AttachmentDescription {
         return flags == value.flags && format == value.format && samples == value.samples && loadOp == value.loadOp && storeOp == value.storeOp && stencilLoadOp == value.stencilLoadOp 
         && stencilStoreOp == value.stencilStoreOp && initialLayout == value.initialLayout && finalLayout == value.finalLayout ;}
     constexpr bool operator!=(AttachmentDescription const& value) const {return !(*this == value);}
-    AttachmentDescription& setFlags(AttachmentDescriptionFlags flags) { this->flags = flags; return *this; }
-    AttachmentDescription& setFormat(Format format) { this->format = format; return *this; }
-    AttachmentDescription& setSamples(SampleCountFlagBits samples) { this->samples = samples; return *this; }
-    AttachmentDescription& setLoadOp(AttachmentLoadOp loadOp) { this->loadOp = loadOp; return *this; }
-    AttachmentDescription& setStoreOp(AttachmentStoreOp storeOp) { this->storeOp = storeOp; return *this; }
-    AttachmentDescription& setStencilLoadOp(AttachmentLoadOp stencilLoadOp) { this->stencilLoadOp = stencilLoadOp; return *this; }
-    AttachmentDescription& setStencilStoreOp(AttachmentStoreOp stencilStoreOp) { this->stencilStoreOp = stencilStoreOp; return *this; }
-    AttachmentDescription& setInitialLayout(ImageLayout initialLayout) { this->initialLayout = initialLayout; return *this; }
-    AttachmentDescription& setFinalLayout(ImageLayout finalLayout) { this->finalLayout = finalLayout; return *this; }
+    AttachmentDescription& setFlags(AttachmentDescriptionFlags flags) {this->flags = flags; return *this; }
+    AttachmentDescription& setFormat(Format format) {this->format = format; return *this; }
+    AttachmentDescription& setSamples(SampleCountFlagBits samples) {this->samples = samples; return *this; }
+    AttachmentDescription& setLoadOp(AttachmentLoadOp loadOp) {this->loadOp = loadOp; return *this; }
+    AttachmentDescription& setStoreOp(AttachmentStoreOp storeOp) {this->storeOp = storeOp; return *this; }
+    AttachmentDescription& setStencilLoadOp(AttachmentLoadOp stencilLoadOp) {this->stencilLoadOp = stencilLoadOp; return *this; }
+    AttachmentDescription& setStencilStoreOp(AttachmentStoreOp stencilStoreOp) {this->stencilStoreOp = stencilStoreOp; return *this; }
+    AttachmentDescription& setInitialLayout(ImageLayout initialLayout) {this->initialLayout = initialLayout; return *this; }
+    AttachmentDescription& setFinalLayout(ImageLayout finalLayout) {this->finalLayout = finalLayout; return *this; }
 };
 struct AttachmentReference {
     uint32_t attachment{0};
@@ -5068,8 +5066,8 @@ struct AttachmentReference {
     constexpr bool operator==(AttachmentReference const& value) const {
         return attachment == value.attachment && layout == value.layout ;}
     constexpr bool operator!=(AttachmentReference const& value) const {return !(*this == value);}
-    AttachmentReference& setAttachment(uint32_t attachment) { this->attachment = attachment; return *this; }
-    AttachmentReference& setLayout(ImageLayout layout) { this->layout = layout; return *this; }
+    AttachmentReference& setAttachment(uint32_t attachment) {this->attachment = attachment; return *this; }
+    AttachmentReference& setLayout(ImageLayout layout) {this->layout = layout; return *this; }
 };
 struct SubpassDescription {
     SubpassDescriptionFlags flags{};
@@ -5082,21 +5080,21 @@ struct SubpassDescription {
     const AttachmentReference* pDepthStencilAttachment = nullptr;
     uint32_t preserveAttachmentCount{0};
     const uint32_t* pPreserveAttachments = nullptr;
-    SubpassDescription& setFlags(SubpassDescriptionFlags flags) { this->flags = flags; return *this; }
-    SubpassDescription& setPipelineBindPoint(PipelineBindPoint pipelineBindPoint) { this->pipelineBindPoint = pipelineBindPoint; return *this; }
-    SubpassDescription& setInputAttachmentCount(uint32_t inputAttachmentCount) { this->inputAttachmentCount = inputAttachmentCount; return *this; }
-    SubpassDescription& setPInputAttachments(const AttachmentReference* pInputAttachments) { this->pInputAttachments = pInputAttachments; return *this; }
-    SubpassDescription& setInputAttachments(detail::span<const AttachmentReference> InputAttachments) { this->inputAttachmentCount = InputAttachments.size(); this->pInputAttachments = InputAttachments.data();  return *this; }
-    SubpassDescription& setColorAttachmentCount(uint32_t colorAttachmentCount) { this->colorAttachmentCount = colorAttachmentCount; return *this; }
-    SubpassDescription& setPColorAttachments(const AttachmentReference* pColorAttachments) { this->pColorAttachments = pColorAttachments; return *this; }
-    SubpassDescription& setColorAttachments(detail::span<const AttachmentReference> ColorAttachments) { this->colorAttachmentCount = ColorAttachments.size(); this->pColorAttachments = ColorAttachments.data();  return *this; }
-    SubpassDescription& setPResolveAttachments(const AttachmentReference* pResolveAttachments) { this->pResolveAttachments = pResolveAttachments; return *this; }
-    SubpassDescription& setResolveAttachments(detail::span<const AttachmentReference> ResolveAttachments) { this->colorAttachmentCount = ResolveAttachments.size(); this->pResolveAttachments = ResolveAttachments.data();  return *this; }
-    SubpassDescription& setPDepthStencilAttachment(const AttachmentReference* pDepthStencilAttachment) { this->pDepthStencilAttachment = pDepthStencilAttachment; return *this; }
-    SubpassDescription& setDepthStencilAttachment(AttachmentReference const& DepthStencilAttachment) { this->pDepthStencilAttachment = &DepthStencilAttachment; return *this; }
-    SubpassDescription& setPreserveAttachmentCount(uint32_t preserveAttachmentCount) { this->preserveAttachmentCount = preserveAttachmentCount; return *this; }
-    SubpassDescription& setPPreserveAttachments(const uint32_t* pPreserveAttachments) { this->pPreserveAttachments = pPreserveAttachments; return *this; }
-    SubpassDescription& setPreserveAttachments(detail::span<const uint32_t> PreserveAttachments) { this->preserveAttachmentCount = PreserveAttachments.size(); this->pPreserveAttachments = PreserveAttachments.data();  return *this; }
+    SubpassDescription& setFlags(SubpassDescriptionFlags flags) {this->flags = flags; return *this; }
+    SubpassDescription& setPipelineBindPoint(PipelineBindPoint pipelineBindPoint) {this->pipelineBindPoint = pipelineBindPoint; return *this; }
+    SubpassDescription& setInputAttachmentCount(uint32_t inputAttachmentCount) {this->inputAttachmentCount = inputAttachmentCount; return *this; }
+    SubpassDescription& setPInputAttachments(const AttachmentReference* pInputAttachments) {this->pInputAttachments = pInputAttachments; return *this; }
+    SubpassDescription& setPInputAttachments(detail::span<const AttachmentReference> pInputAttachments) {this->inputAttachmentCount = pInputAttachments.size(); this->pInputAttachments = pInputAttachments.data();  return *this; }
+    SubpassDescription& setColorAttachmentCount(uint32_t colorAttachmentCount) {this->colorAttachmentCount = colorAttachmentCount; return *this; }
+    SubpassDescription& setPColorAttachments(const AttachmentReference* pColorAttachments) {this->pColorAttachments = pColorAttachments; return *this; }
+    SubpassDescription& setPColorAttachments(detail::span<const AttachmentReference> pColorAttachments) {this->colorAttachmentCount = pColorAttachments.size(); this->pColorAttachments = pColorAttachments.data();  return *this; }
+    SubpassDescription& setPResolveAttachments(const AttachmentReference* pResolveAttachments) {this->pResolveAttachments = pResolveAttachments; return *this; }
+    SubpassDescription& setPResolveAttachments(detail::span<const AttachmentReference> pResolveAttachments) {this->colorAttachmentCount = pResolveAttachments.size(); this->pResolveAttachments = pResolveAttachments.data();  return *this; }
+    SubpassDescription& setPDepthStencilAttachment(const AttachmentReference* pDepthStencilAttachment) {this->pDepthStencilAttachment = pDepthStencilAttachment; return *this; }
+    SubpassDescription& setPDepthStencilAttachment(AttachmentReference const& pDepthStencilAttachment) {this->pDepthStencilAttachment = &pDepthStencilAttachment; return *this; }
+    SubpassDescription& setPreserveAttachmentCount(uint32_t preserveAttachmentCount) {this->preserveAttachmentCount = preserveAttachmentCount; return *this; }
+    SubpassDescription& setPPreserveAttachments(const uint32_t* pPreserveAttachments) {this->pPreserveAttachments = pPreserveAttachments; return *this; }
+    SubpassDescription& setPPreserveAttachments(detail::span<const uint32_t> pPreserveAttachments) {this->preserveAttachmentCount = pPreserveAttachments.size(); this->pPreserveAttachments = pPreserveAttachments.data();  return *this; }
 };
 struct SubpassDependency {
     uint32_t srcSubpass{0};
@@ -5110,13 +5108,13 @@ struct SubpassDependency {
         return srcSubpass == value.srcSubpass && dstSubpass == value.dstSubpass && srcStageMask == value.srcStageMask && dstStageMask == value.dstStageMask 
         && srcAccessMask == value.srcAccessMask && dstAccessMask == value.dstAccessMask && dependencyFlags == value.dependencyFlags ;}
     constexpr bool operator!=(SubpassDependency const& value) const {return !(*this == value);}
-    SubpassDependency& setSrcSubpass(uint32_t srcSubpass) { this->srcSubpass = srcSubpass; return *this; }
-    SubpassDependency& setDstSubpass(uint32_t dstSubpass) { this->dstSubpass = dstSubpass; return *this; }
-    SubpassDependency& setSrcStageMask(PipelineStageFlags srcStageMask) { this->srcStageMask = srcStageMask; return *this; }
-    SubpassDependency& setDstStageMask(PipelineStageFlags dstStageMask) { this->dstStageMask = dstStageMask; return *this; }
-    SubpassDependency& setSrcAccessMask(AccessFlags srcAccessMask) { this->srcAccessMask = srcAccessMask; return *this; }
-    SubpassDependency& setDstAccessMask(AccessFlags dstAccessMask) { this->dstAccessMask = dstAccessMask; return *this; }
-    SubpassDependency& setDependencyFlags(DependencyFlags dependencyFlags) { this->dependencyFlags = dependencyFlags; return *this; }
+    SubpassDependency& setSrcSubpass(uint32_t srcSubpass) {this->srcSubpass = srcSubpass; return *this; }
+    SubpassDependency& setDstSubpass(uint32_t dstSubpass) {this->dstSubpass = dstSubpass; return *this; }
+    SubpassDependency& setSrcStageMask(PipelineStageFlags srcStageMask) {this->srcStageMask = srcStageMask; return *this; }
+    SubpassDependency& setDstStageMask(PipelineStageFlags dstStageMask) {this->dstStageMask = dstStageMask; return *this; }
+    SubpassDependency& setSrcAccessMask(AccessFlags srcAccessMask) {this->srcAccessMask = srcAccessMask; return *this; }
+    SubpassDependency& setDstAccessMask(AccessFlags dstAccessMask) {this->dstAccessMask = dstAccessMask; return *this; }
+    SubpassDependency& setDependencyFlags(DependencyFlags dependencyFlags) {this->dependencyFlags = dependencyFlags; return *this; }
 };
 struct RenderPassCreateInfo {
     StructureType sType{StructureType::RenderPassCreateInfo};
@@ -5128,34 +5126,34 @@ struct RenderPassCreateInfo {
     const SubpassDescription* pSubpasses = nullptr;
     uint32_t dependencyCount{0};
     const SubpassDependency* pDependencies = nullptr;
-    RenderPassCreateInfo& setFlags(RenderPassCreateFlags flags) { this->flags = flags; return *this; }
-    RenderPassCreateInfo& setAttachmentCount(uint32_t attachmentCount) { this->attachmentCount = attachmentCount; return *this; }
-    RenderPassCreateInfo& setPAttachments(const AttachmentDescription* pAttachments) { this->pAttachments = pAttachments; return *this; }
-    RenderPassCreateInfo& setAttachments(detail::span<const AttachmentDescription> Attachments) { this->attachmentCount = Attachments.size(); this->pAttachments = Attachments.data();  return *this; }
-    RenderPassCreateInfo& setSubpassCount(uint32_t subpassCount) { this->subpassCount = subpassCount; return *this; }
-    RenderPassCreateInfo& setPSubpasses(const SubpassDescription* pSubpasses) { this->pSubpasses = pSubpasses; return *this; }
-    RenderPassCreateInfo& setSubpasses(detail::span<const SubpassDescription> Subpasses) { this->subpassCount = Subpasses.size(); this->pSubpasses = Subpasses.data();  return *this; }
-    RenderPassCreateInfo& setDependencyCount(uint32_t dependencyCount) { this->dependencyCount = dependencyCount; return *this; }
-    RenderPassCreateInfo& setPDependencies(const SubpassDependency* pDependencies) { this->pDependencies = pDependencies; return *this; }
-    RenderPassCreateInfo& setDependencies(detail::span<const SubpassDependency> Dependencies) { this->dependencyCount = Dependencies.size(); this->pDependencies = Dependencies.data();  return *this; }
+    RenderPassCreateInfo& setFlags(RenderPassCreateFlags flags) {this->flags = flags; return *this; }
+    RenderPassCreateInfo& setAttachmentCount(uint32_t attachmentCount) {this->attachmentCount = attachmentCount; return *this; }
+    RenderPassCreateInfo& setPAttachments(const AttachmentDescription* pAttachments) {this->pAttachments = pAttachments; return *this; }
+    RenderPassCreateInfo& setPAttachments(detail::span<const AttachmentDescription> pAttachments) {this->attachmentCount = pAttachments.size(); this->pAttachments = pAttachments.data();  return *this; }
+    RenderPassCreateInfo& setSubpassCount(uint32_t subpassCount) {this->subpassCount = subpassCount; return *this; }
+    RenderPassCreateInfo& setPSubpasses(const SubpassDescription* pSubpasses) {this->pSubpasses = pSubpasses; return *this; }
+    RenderPassCreateInfo& setPSubpasses(detail::span<const SubpassDescription> pSubpasses) {this->subpassCount = pSubpasses.size(); this->pSubpasses = pSubpasses.data();  return *this; }
+    RenderPassCreateInfo& setDependencyCount(uint32_t dependencyCount) {this->dependencyCount = dependencyCount; return *this; }
+    RenderPassCreateInfo& setPDependencies(const SubpassDependency* pDependencies) {this->pDependencies = pDependencies; return *this; }
+    RenderPassCreateInfo& setPDependencies(detail::span<const SubpassDependency> pDependencies) {this->dependencyCount = pDependencies.size(); this->pDependencies = pDependencies.data();  return *this; }
 };
 struct EventCreateInfo {
     StructureType sType{StructureType::EventCreateInfo};
     const void* pNext = nullptr;
     EventCreateFlags flags{};
-    EventCreateInfo& setFlags(EventCreateFlags flags) { this->flags = flags; return *this; }
+    EventCreateInfo& setFlags(EventCreateFlags flags) {this->flags = flags; return *this; }
 };
 struct FenceCreateInfo {
     StructureType sType{StructureType::FenceCreateInfo};
     const void* pNext = nullptr;
     FenceCreateFlags flags{};
-    FenceCreateInfo& setFlags(FenceCreateFlags flags) { this->flags = flags; return *this; }
+    FenceCreateInfo& setFlags(FenceCreateFlags flags) {this->flags = flags; return *this; }
 };
 struct SemaphoreCreateInfo {
     StructureType sType{StructureType::SemaphoreCreateInfo};
     const void* pNext = nullptr;
     SemaphoreCreateFlags flags{};
-    SemaphoreCreateInfo& setFlags(SemaphoreCreateFlags flags) { this->flags = flags; return *this; }
+    SemaphoreCreateInfo& setFlags(SemaphoreCreateFlags flags) {this->flags = flags; return *this; }
 };
 struct QueryPoolCreateInfo {
     StructureType sType{StructureType::QueryPoolCreateInfo};
@@ -5164,10 +5162,10 @@ struct QueryPoolCreateInfo {
     QueryType queryType{static_cast<QueryType>(0)};
     uint32_t queryCount{0};
     QueryPipelineStatisticFlags pipelineStatistics{};
-    QueryPoolCreateInfo& setFlags(QueryPoolCreateFlags flags) { this->flags = flags; return *this; }
-    QueryPoolCreateInfo& setQueryType(QueryType queryType) { this->queryType = queryType; return *this; }
-    QueryPoolCreateInfo& setQueryCount(uint32_t queryCount) { this->queryCount = queryCount; return *this; }
-    QueryPoolCreateInfo& setPipelineStatistics(QueryPipelineStatisticFlags pipelineStatistics) { this->pipelineStatistics = pipelineStatistics; return *this; }
+    QueryPoolCreateInfo& setFlags(QueryPoolCreateFlags flags) {this->flags = flags; return *this; }
+    QueryPoolCreateInfo& setQueryType(QueryType queryType) {this->queryType = queryType; return *this; }
+    QueryPoolCreateInfo& setQueryCount(uint32_t queryCount) {this->queryCount = queryCount; return *this; }
+    QueryPoolCreateInfo& setPipelineStatistics(QueryPipelineStatisticFlags pipelineStatistics) {this->pipelineStatistics = pipelineStatistics; return *this; }
 };
 struct FramebufferCreateInfo {
     StructureType sType{StructureType::FramebufferCreateInfo};
@@ -5179,14 +5177,14 @@ struct FramebufferCreateInfo {
     uint32_t width{0};
     uint32_t height{0};
     uint32_t layers{0};
-    FramebufferCreateInfo& setFlags(FramebufferCreateFlags flags) { this->flags = flags; return *this; }
-    FramebufferCreateInfo& setRenderPass(RenderPass renderPass) { this->renderPass = renderPass; return *this; }
-    FramebufferCreateInfo& setAttachmentCount(uint32_t attachmentCount) { this->attachmentCount = attachmentCount; return *this; }
-    FramebufferCreateInfo& setPAttachments(const ImageView* pAttachments) { this->pAttachments = pAttachments; return *this; }
-    FramebufferCreateInfo& setAttachments(detail::span<const ImageView> Attachments) { this->attachmentCount = Attachments.size(); this->pAttachments = Attachments.data();  return *this; }
-    FramebufferCreateInfo& setWidth(uint32_t width) { this->width = width; return *this; }
-    FramebufferCreateInfo& setHeight(uint32_t height) { this->height = height; return *this; }
-    FramebufferCreateInfo& setLayers(uint32_t layers) { this->layers = layers; return *this; }
+    FramebufferCreateInfo& setFlags(FramebufferCreateFlags flags) {this->flags = flags; return *this; }
+    FramebufferCreateInfo& setRenderPass(RenderPass renderPass) {this->renderPass = renderPass; return *this; }
+    FramebufferCreateInfo& setAttachmentCount(uint32_t attachmentCount) {this->attachmentCount = attachmentCount; return *this; }
+    FramebufferCreateInfo& setPAttachments(const ImageView* pAttachments) {this->pAttachments = pAttachments; return *this; }
+    FramebufferCreateInfo& setPAttachments(detail::span<const ImageView> pAttachments) {this->attachmentCount = pAttachments.size(); this->pAttachments = pAttachments.data();  return *this; }
+    FramebufferCreateInfo& setWidth(uint32_t width) {this->width = width; return *this; }
+    FramebufferCreateInfo& setHeight(uint32_t height) {this->height = height; return *this; }
+    FramebufferCreateInfo& setLayers(uint32_t layers) {this->layers = layers; return *this; }
 };
 struct DrawIndirectCommand {
     uint32_t vertexCount{0};
@@ -5197,10 +5195,10 @@ struct DrawIndirectCommand {
         return vertexCount == value.vertexCount && instanceCount == value.instanceCount && firstVertex == value.firstVertex && firstInstance == value.firstInstance 
         ;}
     constexpr bool operator!=(DrawIndirectCommand const& value) const {return !(*this == value);}
-    DrawIndirectCommand& setVertexCount(uint32_t vertexCount) { this->vertexCount = vertexCount; return *this; }
-    DrawIndirectCommand& setInstanceCount(uint32_t instanceCount) { this->instanceCount = instanceCount; return *this; }
-    DrawIndirectCommand& setFirstVertex(uint32_t firstVertex) { this->firstVertex = firstVertex; return *this; }
-    DrawIndirectCommand& setFirstInstance(uint32_t firstInstance) { this->firstInstance = firstInstance; return *this; }
+    DrawIndirectCommand& setVertexCount(uint32_t vertexCount) {this->vertexCount = vertexCount; return *this; }
+    DrawIndirectCommand& setInstanceCount(uint32_t instanceCount) {this->instanceCount = instanceCount; return *this; }
+    DrawIndirectCommand& setFirstVertex(uint32_t firstVertex) {this->firstVertex = firstVertex; return *this; }
+    DrawIndirectCommand& setFirstInstance(uint32_t firstInstance) {this->firstInstance = firstInstance; return *this; }
 };
 struct DrawIndexedIndirectCommand {
     uint32_t indexCount{0};
@@ -5212,11 +5210,11 @@ struct DrawIndexedIndirectCommand {
         return indexCount == value.indexCount && instanceCount == value.instanceCount && firstIndex == value.firstIndex && vertexOffset == value.vertexOffset 
         && firstInstance == value.firstInstance ;}
     constexpr bool operator!=(DrawIndexedIndirectCommand const& value) const {return !(*this == value);}
-    DrawIndexedIndirectCommand& setIndexCount(uint32_t indexCount) { this->indexCount = indexCount; return *this; }
-    DrawIndexedIndirectCommand& setInstanceCount(uint32_t instanceCount) { this->instanceCount = instanceCount; return *this; }
-    DrawIndexedIndirectCommand& setFirstIndex(uint32_t firstIndex) { this->firstIndex = firstIndex; return *this; }
-    DrawIndexedIndirectCommand& setVertexOffset(int32_t vertexOffset) { this->vertexOffset = vertexOffset; return *this; }
-    DrawIndexedIndirectCommand& setFirstInstance(uint32_t firstInstance) { this->firstInstance = firstInstance; return *this; }
+    DrawIndexedIndirectCommand& setIndexCount(uint32_t indexCount) {this->indexCount = indexCount; return *this; }
+    DrawIndexedIndirectCommand& setInstanceCount(uint32_t instanceCount) {this->instanceCount = instanceCount; return *this; }
+    DrawIndexedIndirectCommand& setFirstIndex(uint32_t firstIndex) {this->firstIndex = firstIndex; return *this; }
+    DrawIndexedIndirectCommand& setVertexOffset(int32_t vertexOffset) {this->vertexOffset = vertexOffset; return *this; }
+    DrawIndexedIndirectCommand& setFirstInstance(uint32_t firstInstance) {this->firstInstance = firstInstance; return *this; }
 };
 struct DispatchIndirectCommand {
     uint32_t x{0};
@@ -5225,9 +5223,9 @@ struct DispatchIndirectCommand {
     constexpr bool operator==(DispatchIndirectCommand const& value) const {
         return x == value.x && y == value.y && z == value.z ;}
     constexpr bool operator!=(DispatchIndirectCommand const& value) const {return !(*this == value);}
-    DispatchIndirectCommand& setX(uint32_t x) { this->x = x; return *this; }
-    DispatchIndirectCommand& setY(uint32_t y) { this->y = y; return *this; }
-    DispatchIndirectCommand& setZ(uint32_t z) { this->z = z; return *this; }
+    DispatchIndirectCommand& setX(uint32_t x) {this->x = x; return *this; }
+    DispatchIndirectCommand& setY(uint32_t y) {this->y = y; return *this; }
+    DispatchIndirectCommand& setZ(uint32_t z) {this->z = z; return *this; }
 };
 struct SubmitInfo {
     StructureType sType{StructureType::SubmitInfo};
@@ -5239,17 +5237,17 @@ struct SubmitInfo {
     const CommandBuffer* pCommandBuffers = nullptr;
     uint32_t signalSemaphoreCount{0};
     const Semaphore* pSignalSemaphores = nullptr;
-    SubmitInfo& setWaitSemaphoreCount(uint32_t waitSemaphoreCount) { this->waitSemaphoreCount = waitSemaphoreCount; return *this; }
-    SubmitInfo& setPWaitSemaphores(const Semaphore* pWaitSemaphores) { this->pWaitSemaphores = pWaitSemaphores; return *this; }
-    SubmitInfo& setWaitSemaphores(detail::span<const Semaphore> WaitSemaphores) { this->waitSemaphoreCount = WaitSemaphores.size(); this->pWaitSemaphores = WaitSemaphores.data();  return *this; }
-    SubmitInfo& setPWaitDstStageMask(const PipelineStageFlags* pWaitDstStageMask) { this->pWaitDstStageMask = pWaitDstStageMask; return *this; }
-    SubmitInfo& setWaitDstStageMask(detail::span<const PipelineStageFlags> WaitDstStageMask) { this->waitSemaphoreCount = WaitDstStageMask.size(); this->pWaitDstStageMask = WaitDstStageMask.data();  return *this; }
-    SubmitInfo& setCommandBufferCount(uint32_t commandBufferCount) { this->commandBufferCount = commandBufferCount; return *this; }
-    SubmitInfo& setPCommandBuffers(const CommandBuffer* pCommandBuffers) { this->pCommandBuffers = pCommandBuffers; return *this; }
-    SubmitInfo& setCommandBuffers(detail::span<const CommandBuffer> CommandBuffers) { this->commandBufferCount = CommandBuffers.size(); this->pCommandBuffers = CommandBuffers.data();  return *this; }
-    SubmitInfo& setSignalSemaphoreCount(uint32_t signalSemaphoreCount) { this->signalSemaphoreCount = signalSemaphoreCount; return *this; }
-    SubmitInfo& setPSignalSemaphores(const Semaphore* pSignalSemaphores) { this->pSignalSemaphores = pSignalSemaphores; return *this; }
-    SubmitInfo& setSignalSemaphores(detail::span<const Semaphore> SignalSemaphores) { this->signalSemaphoreCount = SignalSemaphores.size(); this->pSignalSemaphores = SignalSemaphores.data();  return *this; }
+    SubmitInfo& setWaitSemaphoreCount(uint32_t waitSemaphoreCount) {this->waitSemaphoreCount = waitSemaphoreCount; return *this; }
+    SubmitInfo& setPWaitSemaphores(const Semaphore* pWaitSemaphores) {this->pWaitSemaphores = pWaitSemaphores; return *this; }
+    SubmitInfo& setPWaitSemaphores(detail::span<const Semaphore> pWaitSemaphores) {this->waitSemaphoreCount = pWaitSemaphores.size(); this->pWaitSemaphores = pWaitSemaphores.data();  return *this; }
+    SubmitInfo& setPWaitDstStageMask(const PipelineStageFlags* pWaitDstStageMask) {this->pWaitDstStageMask = pWaitDstStageMask; return *this; }
+    SubmitInfo& setPWaitDstStageMask(detail::span<const PipelineStageFlags> pWaitDstStageMask) {this->waitSemaphoreCount = pWaitDstStageMask.size(); this->pWaitDstStageMask = pWaitDstStageMask.data();  return *this; }
+    SubmitInfo& setCommandBufferCount(uint32_t commandBufferCount) {this->commandBufferCount = commandBufferCount; return *this; }
+    SubmitInfo& setPCommandBuffers(const CommandBuffer* pCommandBuffers) {this->pCommandBuffers = pCommandBuffers; return *this; }
+    SubmitInfo& setPCommandBuffers(detail::span<const CommandBuffer> pCommandBuffers) {this->commandBufferCount = pCommandBuffers.size(); this->pCommandBuffers = pCommandBuffers.data();  return *this; }
+    SubmitInfo& setSignalSemaphoreCount(uint32_t signalSemaphoreCount) {this->signalSemaphoreCount = signalSemaphoreCount; return *this; }
+    SubmitInfo& setPSignalSemaphores(const Semaphore* pSignalSemaphores) {this->pSignalSemaphores = pSignalSemaphores; return *this; }
+    SubmitInfo& setPSignalSemaphores(detail::span<const Semaphore> pSignalSemaphores) {this->signalSemaphoreCount = pSignalSemaphores.size(); this->pSignalSemaphores = pSignalSemaphores.data();  return *this; }
 };
 struct DisplayPropertiesKHR {
     DisplayKHR display{};
@@ -5259,19 +5257,19 @@ struct DisplayPropertiesKHR {
     SurfaceTransformFlagsKHR supportedTransforms{};
     Bool32 planeReorderPossible{0};
     Bool32 persistentContent{0};
-    DisplayPropertiesKHR& setDisplay(DisplayKHR display) { this->display = display; return *this; }
-    DisplayPropertiesKHR& setDisplayName(const char* displayName) { this->displayName = displayName; return *this; }
-    DisplayPropertiesKHR& setPhysicalDimensions(Extent2D physicalDimensions) { this->physicalDimensions = physicalDimensions; return *this; }
-    DisplayPropertiesKHR& setPhysicalResolution(Extent2D physicalResolution) { this->physicalResolution = physicalResolution; return *this; }
-    DisplayPropertiesKHR& setSupportedTransforms(SurfaceTransformFlagsKHR supportedTransforms) { this->supportedTransforms = supportedTransforms; return *this; }
-    DisplayPropertiesKHR& setPlaneReorderPossible(Bool32 planeReorderPossible) { this->planeReorderPossible = planeReorderPossible; return *this; }
-    DisplayPropertiesKHR& setPersistentContent(Bool32 persistentContent) { this->persistentContent = persistentContent; return *this; }
+    DisplayPropertiesKHR& setDisplay(DisplayKHR display) {this->display = display; return *this; }
+    DisplayPropertiesKHR& setDisplayName(const char* displayName) {this->displayName = displayName; return *this; }
+    DisplayPropertiesKHR& setPhysicalDimensions(Extent2D physicalDimensions) {this->physicalDimensions = physicalDimensions; return *this; }
+    DisplayPropertiesKHR& setPhysicalResolution(Extent2D physicalResolution) {this->physicalResolution = physicalResolution; return *this; }
+    DisplayPropertiesKHR& setSupportedTransforms(SurfaceTransformFlagsKHR supportedTransforms) {this->supportedTransforms = supportedTransforms; return *this; }
+    DisplayPropertiesKHR& setPlaneReorderPossible(Bool32 planeReorderPossible) {this->planeReorderPossible = planeReorderPossible; return *this; }
+    DisplayPropertiesKHR& setPersistentContent(Bool32 persistentContent) {this->persistentContent = persistentContent; return *this; }
 };
 struct DisplayPlanePropertiesKHR {
     DisplayKHR currentDisplay{};
     uint32_t currentStackIndex{0};
-    DisplayPlanePropertiesKHR& setCurrentDisplay(DisplayKHR currentDisplay) { this->currentDisplay = currentDisplay; return *this; }
-    DisplayPlanePropertiesKHR& setCurrentStackIndex(uint32_t currentStackIndex) { this->currentStackIndex = currentStackIndex; return *this; }
+    DisplayPlanePropertiesKHR& setCurrentDisplay(DisplayKHR currentDisplay) {this->currentDisplay = currentDisplay; return *this; }
+    DisplayPlanePropertiesKHR& setCurrentStackIndex(uint32_t currentStackIndex) {this->currentStackIndex = currentStackIndex; return *this; }
 };
 struct DisplayModeParametersKHR {
     Extent2D visibleRegion{};
@@ -5279,22 +5277,22 @@ struct DisplayModeParametersKHR {
     constexpr bool operator==(DisplayModeParametersKHR const& value) const {
         return visibleRegion == value.visibleRegion && refreshRate == value.refreshRate ;}
     constexpr bool operator!=(DisplayModeParametersKHR const& value) const {return !(*this == value);}
-    DisplayModeParametersKHR& setVisibleRegion(Extent2D visibleRegion) { this->visibleRegion = visibleRegion; return *this; }
-    DisplayModeParametersKHR& setRefreshRate(uint32_t refreshRate) { this->refreshRate = refreshRate; return *this; }
+    DisplayModeParametersKHR& setVisibleRegion(Extent2D visibleRegion) {this->visibleRegion = visibleRegion; return *this; }
+    DisplayModeParametersKHR& setRefreshRate(uint32_t refreshRate) {this->refreshRate = refreshRate; return *this; }
 };
 struct DisplayModePropertiesKHR {
     DisplayModeKHR displayMode{};
     DisplayModeParametersKHR parameters{};
-    DisplayModePropertiesKHR& setDisplayMode(DisplayModeKHR displayMode) { this->displayMode = displayMode; return *this; }
-    DisplayModePropertiesKHR& setParameters(DisplayModeParametersKHR parameters) { this->parameters = parameters; return *this; }
+    DisplayModePropertiesKHR& setDisplayMode(DisplayModeKHR displayMode) {this->displayMode = displayMode; return *this; }
+    DisplayModePropertiesKHR& setParameters(DisplayModeParametersKHR parameters) {this->parameters = parameters; return *this; }
 };
 struct DisplayModeCreateInfoKHR {
     StructureType sType{StructureType::DisplayModeCreateInfoKHR};
     const void* pNext = nullptr;
     DisplayModeCreateFlagsKHR flags{};
     DisplayModeParametersKHR parameters{};
-    DisplayModeCreateInfoKHR& setFlags(DisplayModeCreateFlagsKHR flags) { this->flags = flags; return *this; }
-    DisplayModeCreateInfoKHR& setParameters(DisplayModeParametersKHR parameters) { this->parameters = parameters; return *this; }
+    DisplayModeCreateInfoKHR& setFlags(DisplayModeCreateFlagsKHR flags) {this->flags = flags; return *this; }
+    DisplayModeCreateInfoKHR& setParameters(DisplayModeParametersKHR parameters) {this->parameters = parameters; return *this; }
 };
 struct DisplayPlaneCapabilitiesKHR {
     DisplayPlaneAlphaFlagsKHR supportedAlpha{};
@@ -5311,15 +5309,15 @@ struct DisplayPlaneCapabilitiesKHR {
         && maxSrcExtent == value.maxSrcExtent && minDstPosition == value.minDstPosition && maxDstPosition == value.maxDstPosition && minDstExtent == value.minDstExtent 
         && maxDstExtent == value.maxDstExtent ;}
     constexpr bool operator!=(DisplayPlaneCapabilitiesKHR const& value) const {return !(*this == value);}
-    DisplayPlaneCapabilitiesKHR& setSupportedAlpha(DisplayPlaneAlphaFlagsKHR supportedAlpha) { this->supportedAlpha = supportedAlpha; return *this; }
-    DisplayPlaneCapabilitiesKHR& setMinSrcPosition(Offset2D minSrcPosition) { this->minSrcPosition = minSrcPosition; return *this; }
-    DisplayPlaneCapabilitiesKHR& setMaxSrcPosition(Offset2D maxSrcPosition) { this->maxSrcPosition = maxSrcPosition; return *this; }
-    DisplayPlaneCapabilitiesKHR& setMinSrcExtent(Extent2D minSrcExtent) { this->minSrcExtent = minSrcExtent; return *this; }
-    DisplayPlaneCapabilitiesKHR& setMaxSrcExtent(Extent2D maxSrcExtent) { this->maxSrcExtent = maxSrcExtent; return *this; }
-    DisplayPlaneCapabilitiesKHR& setMinDstPosition(Offset2D minDstPosition) { this->minDstPosition = minDstPosition; return *this; }
-    DisplayPlaneCapabilitiesKHR& setMaxDstPosition(Offset2D maxDstPosition) { this->maxDstPosition = maxDstPosition; return *this; }
-    DisplayPlaneCapabilitiesKHR& setMinDstExtent(Extent2D minDstExtent) { this->minDstExtent = minDstExtent; return *this; }
-    DisplayPlaneCapabilitiesKHR& setMaxDstExtent(Extent2D maxDstExtent) { this->maxDstExtent = maxDstExtent; return *this; }
+    DisplayPlaneCapabilitiesKHR& setSupportedAlpha(DisplayPlaneAlphaFlagsKHR supportedAlpha) {this->supportedAlpha = supportedAlpha; return *this; }
+    DisplayPlaneCapabilitiesKHR& setMinSrcPosition(Offset2D minSrcPosition) {this->minSrcPosition = minSrcPosition; return *this; }
+    DisplayPlaneCapabilitiesKHR& setMaxSrcPosition(Offset2D maxSrcPosition) {this->maxSrcPosition = maxSrcPosition; return *this; }
+    DisplayPlaneCapabilitiesKHR& setMinSrcExtent(Extent2D minSrcExtent) {this->minSrcExtent = minSrcExtent; return *this; }
+    DisplayPlaneCapabilitiesKHR& setMaxSrcExtent(Extent2D maxSrcExtent) {this->maxSrcExtent = maxSrcExtent; return *this; }
+    DisplayPlaneCapabilitiesKHR& setMinDstPosition(Offset2D minDstPosition) {this->minDstPosition = minDstPosition; return *this; }
+    DisplayPlaneCapabilitiesKHR& setMaxDstPosition(Offset2D maxDstPosition) {this->maxDstPosition = maxDstPosition; return *this; }
+    DisplayPlaneCapabilitiesKHR& setMinDstExtent(Extent2D minDstExtent) {this->minDstExtent = minDstExtent; return *this; }
+    DisplayPlaneCapabilitiesKHR& setMaxDstExtent(Extent2D maxDstExtent) {this->maxDstExtent = maxDstExtent; return *this; }
 };
 struct DisplaySurfaceCreateInfoKHR {
     StructureType sType{StructureType::DisplaySurfaceCreateInfoKHR};
@@ -5332,14 +5330,14 @@ struct DisplaySurfaceCreateInfoKHR {
     float globalAlpha{0.f};
     DisplayPlaneAlphaFlagBitsKHR alphaMode{static_cast<DisplayPlaneAlphaFlagBitsKHR>(0)};
     Extent2D imageExtent{};
-    DisplaySurfaceCreateInfoKHR& setFlags(DisplaySurfaceCreateFlagsKHR flags) { this->flags = flags; return *this; }
-    DisplaySurfaceCreateInfoKHR& setDisplayMode(DisplayModeKHR displayMode) { this->displayMode = displayMode; return *this; }
-    DisplaySurfaceCreateInfoKHR& setPlaneIndex(uint32_t planeIndex) { this->planeIndex = planeIndex; return *this; }
-    DisplaySurfaceCreateInfoKHR& setPlaneStackIndex(uint32_t planeStackIndex) { this->planeStackIndex = planeStackIndex; return *this; }
-    DisplaySurfaceCreateInfoKHR& setTransform(SurfaceTransformFlagBitsKHR transform) { this->transform = transform; return *this; }
-    DisplaySurfaceCreateInfoKHR& setGlobalAlpha(float globalAlpha) { this->globalAlpha = globalAlpha; return *this; }
-    DisplaySurfaceCreateInfoKHR& setAlphaMode(DisplayPlaneAlphaFlagBitsKHR alphaMode) { this->alphaMode = alphaMode; return *this; }
-    DisplaySurfaceCreateInfoKHR& setImageExtent(Extent2D imageExtent) { this->imageExtent = imageExtent; return *this; }
+    DisplaySurfaceCreateInfoKHR& setFlags(DisplaySurfaceCreateFlagsKHR flags) {this->flags = flags; return *this; }
+    DisplaySurfaceCreateInfoKHR& setDisplayMode(DisplayModeKHR displayMode) {this->displayMode = displayMode; return *this; }
+    DisplaySurfaceCreateInfoKHR& setPlaneIndex(uint32_t planeIndex) {this->planeIndex = planeIndex; return *this; }
+    DisplaySurfaceCreateInfoKHR& setPlaneStackIndex(uint32_t planeStackIndex) {this->planeStackIndex = planeStackIndex; return *this; }
+    DisplaySurfaceCreateInfoKHR& setTransform(SurfaceTransformFlagBitsKHR transform) {this->transform = transform; return *this; }
+    DisplaySurfaceCreateInfoKHR& setGlobalAlpha(float globalAlpha) {this->globalAlpha = globalAlpha; return *this; }
+    DisplaySurfaceCreateInfoKHR& setAlphaMode(DisplayPlaneAlphaFlagBitsKHR alphaMode) {this->alphaMode = alphaMode; return *this; }
+    DisplaySurfaceCreateInfoKHR& setImageExtent(Extent2D imageExtent) {this->imageExtent = imageExtent; return *this; }
 };
 struct DisplayPresentInfoKHR {
     StructureType sType{StructureType::DisplayPresentInfoKHR};
@@ -5347,9 +5345,9 @@ struct DisplayPresentInfoKHR {
     Rect2D srcRect{};
     Rect2D dstRect{};
     Bool32 persistent{0};
-    DisplayPresentInfoKHR& setSrcRect(Rect2D srcRect) { this->srcRect = srcRect; return *this; }
-    DisplayPresentInfoKHR& setDstRect(Rect2D dstRect) { this->dstRect = dstRect; return *this; }
-    DisplayPresentInfoKHR& setPersistent(Bool32 persistent) { this->persistent = persistent; return *this; }
+    DisplayPresentInfoKHR& setSrcRect(Rect2D srcRect) {this->srcRect = srcRect; return *this; }
+    DisplayPresentInfoKHR& setDstRect(Rect2D dstRect) {this->dstRect = dstRect; return *this; }
+    DisplayPresentInfoKHR& setPersistent(Bool32 persistent) {this->persistent = persistent; return *this; }
 };
 struct SurfaceCapabilitiesKHR {
     uint32_t minImageCount{0};
@@ -5368,16 +5366,16 @@ struct SurfaceCapabilitiesKHR {
         && currentTransform == value.currentTransform && supportedCompositeAlpha == value.supportedCompositeAlpha && supportedUsageFlags == value.supportedUsageFlags 
         ;}
     constexpr bool operator!=(SurfaceCapabilitiesKHR const& value) const {return !(*this == value);}
-    SurfaceCapabilitiesKHR& setMinImageCount(uint32_t minImageCount) { this->minImageCount = minImageCount; return *this; }
-    SurfaceCapabilitiesKHR& setMaxImageCount(uint32_t maxImageCount) { this->maxImageCount = maxImageCount; return *this; }
-    SurfaceCapabilitiesKHR& setCurrentExtent(Extent2D currentExtent) { this->currentExtent = currentExtent; return *this; }
-    SurfaceCapabilitiesKHR& setMinImageExtent(Extent2D minImageExtent) { this->minImageExtent = minImageExtent; return *this; }
-    SurfaceCapabilitiesKHR& setMaxImageExtent(Extent2D maxImageExtent) { this->maxImageExtent = maxImageExtent; return *this; }
-    SurfaceCapabilitiesKHR& setMaxImageArrayLayers(uint32_t maxImageArrayLayers) { this->maxImageArrayLayers = maxImageArrayLayers; return *this; }
-    SurfaceCapabilitiesKHR& setSupportedTransforms(SurfaceTransformFlagsKHR supportedTransforms) { this->supportedTransforms = supportedTransforms; return *this; }
-    SurfaceCapabilitiesKHR& setCurrentTransform(SurfaceTransformFlagBitsKHR currentTransform) { this->currentTransform = currentTransform; return *this; }
-    SurfaceCapabilitiesKHR& setSupportedCompositeAlpha(CompositeAlphaFlagsKHR supportedCompositeAlpha) { this->supportedCompositeAlpha = supportedCompositeAlpha; return *this; }
-    SurfaceCapabilitiesKHR& setSupportedUsageFlags(ImageUsageFlags supportedUsageFlags) { this->supportedUsageFlags = supportedUsageFlags; return *this; }
+    SurfaceCapabilitiesKHR& setMinImageCount(uint32_t minImageCount) {this->minImageCount = minImageCount; return *this; }
+    SurfaceCapabilitiesKHR& setMaxImageCount(uint32_t maxImageCount) {this->maxImageCount = maxImageCount; return *this; }
+    SurfaceCapabilitiesKHR& setCurrentExtent(Extent2D currentExtent) {this->currentExtent = currentExtent; return *this; }
+    SurfaceCapabilitiesKHR& setMinImageExtent(Extent2D minImageExtent) {this->minImageExtent = minImageExtent; return *this; }
+    SurfaceCapabilitiesKHR& setMaxImageExtent(Extent2D maxImageExtent) {this->maxImageExtent = maxImageExtent; return *this; }
+    SurfaceCapabilitiesKHR& setMaxImageArrayLayers(uint32_t maxImageArrayLayers) {this->maxImageArrayLayers = maxImageArrayLayers; return *this; }
+    SurfaceCapabilitiesKHR& setSupportedTransforms(SurfaceTransformFlagsKHR supportedTransforms) {this->supportedTransforms = supportedTransforms; return *this; }
+    SurfaceCapabilitiesKHR& setCurrentTransform(SurfaceTransformFlagBitsKHR currentTransform) {this->currentTransform = currentTransform; return *this; }
+    SurfaceCapabilitiesKHR& setSupportedCompositeAlpha(CompositeAlphaFlagsKHR supportedCompositeAlpha) {this->supportedCompositeAlpha = supportedCompositeAlpha; return *this; }
+    SurfaceCapabilitiesKHR& setSupportedUsageFlags(ImageUsageFlags supportedUsageFlags) {this->supportedUsageFlags = supportedUsageFlags; return *this; }
 };
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 struct AndroidSurfaceCreateInfoKHR {
@@ -5385,9 +5383,9 @@ struct AndroidSurfaceCreateInfoKHR {
     const void* pNext = nullptr;
     AndroidSurfaceCreateFlagsKHR flags{};
     ANativeWindow* window = nullptr;
-    AndroidSurfaceCreateInfoKHR& setFlags(AndroidSurfaceCreateFlagsKHR flags) { this->flags = flags; return *this; }
-    AndroidSurfaceCreateInfoKHR& setWindow(ANativeWindow* window) { this->window = window; return *this; }
-    AndroidSurfaceCreateInfoKHR& setindow(ANativeWindow & indow) { this->window = &indow; return *this; }
+    AndroidSurfaceCreateInfoKHR& setFlags(AndroidSurfaceCreateFlagsKHR flags) {this->flags = flags; return *this; }
+    AndroidSurfaceCreateInfoKHR& setWindow(ANativeWindow* window) {this->window = window; return *this; }
+    AndroidSurfaceCreateInfoKHR& setWindow(ANativeWindow & window) {this->window = &window; return *this; }
 };
 #endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
 #if defined(VK_USE_PLATFORM_VI_NN)
@@ -5396,7 +5394,8 @@ struct ViSurfaceCreateInfoNN {
     const void* pNext = nullptr;
     ViSurfaceCreateFlagsNN flags{};
     void* window = nullptr;
-    ViSurfaceCreateInfoNN& setFlags(ViSurfaceCreateFlagsNN flags) { this->flags = flags; return *this; }
+    ViSurfaceCreateInfoNN& setFlags(ViSurfaceCreateFlagsNN flags) {this->flags = flags; return *this; }
+    ViSurfaceCreateInfoNN& setWindow(void* window) {this->window = window; return *this; }
 };
 #endif // defined(VK_USE_PLATFORM_VI_NN)
 #if defined(VK_USE_PLATFORM_WAYLAND_KHR)
@@ -5406,11 +5405,11 @@ struct WaylandSurfaceCreateInfoKHR {
     WaylandSurfaceCreateFlagsKHR flags{};
     wl_display* display = nullptr;
     wl_surface* surface = nullptr;
-    WaylandSurfaceCreateInfoKHR& setFlags(WaylandSurfaceCreateFlagsKHR flags) { this->flags = flags; return *this; }
-    WaylandSurfaceCreateInfoKHR& setDisplay(wl_display* display) { this->display = display; return *this; }
-    WaylandSurfaceCreateInfoKHR& setisplay(wl_display & isplay) { this->display = &isplay; return *this; }
-    WaylandSurfaceCreateInfoKHR& setSurface(wl_surface* surface) { this->surface = surface; return *this; }
-    WaylandSurfaceCreateInfoKHR& seturface(wl_surface & urface) { this->surface = &urface; return *this; }
+    WaylandSurfaceCreateInfoKHR& setFlags(WaylandSurfaceCreateFlagsKHR flags) {this->flags = flags; return *this; }
+    WaylandSurfaceCreateInfoKHR& setDisplay(wl_display* display) {this->display = display; return *this; }
+    WaylandSurfaceCreateInfoKHR& setDisplay(wl_display & display) {this->display = &display; return *this; }
+    WaylandSurfaceCreateInfoKHR& setSurface(wl_surface* surface) {this->surface = surface; return *this; }
+    WaylandSurfaceCreateInfoKHR& setSurface(wl_surface & surface) {this->surface = &surface; return *this; }
 };
 #endif // defined(VK_USE_PLATFORM_WAYLAND_KHR)
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
@@ -5420,9 +5419,9 @@ struct Win32SurfaceCreateInfoKHR {
     Win32SurfaceCreateFlagsKHR flags{};
     HINSTANCE hinstance{};
     HWND hwnd{};
-    Win32SurfaceCreateInfoKHR& setFlags(Win32SurfaceCreateFlagsKHR flags) { this->flags = flags; return *this; }
-    Win32SurfaceCreateInfoKHR& setHinstance(HINSTANCE hinstance) { this->hinstance = hinstance; return *this; }
-    Win32SurfaceCreateInfoKHR& setHwnd(HWND hwnd) { this->hwnd = hwnd; return *this; }
+    Win32SurfaceCreateInfoKHR& setFlags(Win32SurfaceCreateFlagsKHR flags) {this->flags = flags; return *this; }
+    Win32SurfaceCreateInfoKHR& setHinstance(HINSTANCE hinstance) {this->hinstance = hinstance; return *this; }
+    Win32SurfaceCreateInfoKHR& setHwnd(HWND hwnd) {this->hwnd = hwnd; return *this; }
 };
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 #if defined(VK_USE_PLATFORM_XLIB_KHR)
@@ -5432,10 +5431,10 @@ struct XlibSurfaceCreateInfoKHR {
     XlibSurfaceCreateFlagsKHR flags{};
     Display* dpy = nullptr;
     Window window{};
-    XlibSurfaceCreateInfoKHR& setFlags(XlibSurfaceCreateFlagsKHR flags) { this->flags = flags; return *this; }
-    XlibSurfaceCreateInfoKHR& setDpy(Display* dpy) { this->dpy = dpy; return *this; }
-    XlibSurfaceCreateInfoKHR& setpy(Display & py) { this->dpy = &py; return *this; }
-    XlibSurfaceCreateInfoKHR& setWindow(Window window) { this->window = window; return *this; }
+    XlibSurfaceCreateInfoKHR& setFlags(XlibSurfaceCreateFlagsKHR flags) {this->flags = flags; return *this; }
+    XlibSurfaceCreateInfoKHR& setDpy(Display* dpy) {this->dpy = dpy; return *this; }
+    XlibSurfaceCreateInfoKHR& setDpy(Display & dpy) {this->dpy = &dpy; return *this; }
+    XlibSurfaceCreateInfoKHR& setWindow(Window window) {this->window = window; return *this; }
 };
 #endif // defined(VK_USE_PLATFORM_XLIB_KHR)
 #if defined(VK_USE_PLATFORM_XCB_KHR)
@@ -5445,10 +5444,10 @@ struct XcbSurfaceCreateInfoKHR {
     XcbSurfaceCreateFlagsKHR flags{};
     xcb_connection_t* connection = nullptr;
     xcb_window_t window{};
-    XcbSurfaceCreateInfoKHR& setFlags(XcbSurfaceCreateFlagsKHR flags) { this->flags = flags; return *this; }
-    XcbSurfaceCreateInfoKHR& setConnection(xcb_connection_t* connection) { this->connection = connection; return *this; }
-    XcbSurfaceCreateInfoKHR& setonnection(xcb_connection_t & onnection) { this->connection = &onnection; return *this; }
-    XcbSurfaceCreateInfoKHR& setWindow(xcb_window_t window) { this->window = window; return *this; }
+    XcbSurfaceCreateInfoKHR& setFlags(XcbSurfaceCreateFlagsKHR flags) {this->flags = flags; return *this; }
+    XcbSurfaceCreateInfoKHR& setConnection(xcb_connection_t* connection) {this->connection = connection; return *this; }
+    XcbSurfaceCreateInfoKHR& setConnection(xcb_connection_t & connection) {this->connection = &connection; return *this; }
+    XcbSurfaceCreateInfoKHR& setWindow(xcb_window_t window) {this->window = window; return *this; }
 };
 #endif // defined(VK_USE_PLATFORM_XCB_KHR)
 #if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
@@ -5458,11 +5457,11 @@ struct DirectFBSurfaceCreateInfoEXT {
     DirectFBSurfaceCreateFlagsEXT flags{};
     IDirectFB* dfb = nullptr;
     IDirectFBSurface* surface = nullptr;
-    DirectFBSurfaceCreateInfoEXT& setFlags(DirectFBSurfaceCreateFlagsEXT flags) { this->flags = flags; return *this; }
-    DirectFBSurfaceCreateInfoEXT& setDfb(IDirectFB* dfb) { this->dfb = dfb; return *this; }
-    DirectFBSurfaceCreateInfoEXT& setfb(IDirectFB & fb) { this->dfb = &fb; return *this; }
-    DirectFBSurfaceCreateInfoEXT& setSurface(IDirectFBSurface* surface) { this->surface = surface; return *this; }
-    DirectFBSurfaceCreateInfoEXT& seturface(IDirectFBSurface & urface) { this->surface = &urface; return *this; }
+    DirectFBSurfaceCreateInfoEXT& setFlags(DirectFBSurfaceCreateFlagsEXT flags) {this->flags = flags; return *this; }
+    DirectFBSurfaceCreateInfoEXT& setDfb(IDirectFB* dfb) {this->dfb = dfb; return *this; }
+    DirectFBSurfaceCreateInfoEXT& setDfb(IDirectFB & dfb) {this->dfb = &dfb; return *this; }
+    DirectFBSurfaceCreateInfoEXT& setSurface(IDirectFBSurface* surface) {this->surface = surface; return *this; }
+    DirectFBSurfaceCreateInfoEXT& setSurface(IDirectFBSurface & surface) {this->surface = &surface; return *this; }
 };
 #endif // defined(VK_USE_PLATFORM_DIRECTFB_EXT)
 #if defined(VK_USE_PLATFORM_FUCHSIA)
@@ -5471,8 +5470,8 @@ struct ImagePipeSurfaceCreateInfoFUCHSIA {
     const void* pNext = nullptr;
     ImagePipeSurfaceCreateFlagsFUCHSIA flags{};
     zx_handle_t imagePipeHandle{};
-    ImagePipeSurfaceCreateInfoFUCHSIA& setFlags(ImagePipeSurfaceCreateFlagsFUCHSIA flags) { this->flags = flags; return *this; }
-    ImagePipeSurfaceCreateInfoFUCHSIA& setImagePipeHandle(zx_handle_t imagePipeHandle) { this->imagePipeHandle = imagePipeHandle; return *this; }
+    ImagePipeSurfaceCreateInfoFUCHSIA& setFlags(ImagePipeSurfaceCreateFlagsFUCHSIA flags) {this->flags = flags; return *this; }
+    ImagePipeSurfaceCreateInfoFUCHSIA& setImagePipeHandle(zx_handle_t imagePipeHandle) {this->imagePipeHandle = imagePipeHandle; return *this; }
 };
 #endif // defined(VK_USE_PLATFORM_FUCHSIA)
 #if defined(VK_USE_PLATFORM_GGP)
@@ -5481,8 +5480,8 @@ struct StreamDescriptorSurfaceCreateInfoGGP {
     const void* pNext = nullptr;
     StreamDescriptorSurfaceCreateFlagsGGP flags{};
     GgpStreamDescriptor streamDescriptor{};
-    StreamDescriptorSurfaceCreateInfoGGP& setFlags(StreamDescriptorSurfaceCreateFlagsGGP flags) { this->flags = flags; return *this; }
-    StreamDescriptorSurfaceCreateInfoGGP& setStreamDescriptor(GgpStreamDescriptor streamDescriptor) { this->streamDescriptor = streamDescriptor; return *this; }
+    StreamDescriptorSurfaceCreateInfoGGP& setFlags(StreamDescriptorSurfaceCreateFlagsGGP flags) {this->flags = flags; return *this; }
+    StreamDescriptorSurfaceCreateInfoGGP& setStreamDescriptor(GgpStreamDescriptor streamDescriptor) {this->streamDescriptor = streamDescriptor; return *this; }
 };
 #endif // defined(VK_USE_PLATFORM_GGP)
 struct SurfaceFormatKHR {
@@ -5491,8 +5490,8 @@ struct SurfaceFormatKHR {
     constexpr bool operator==(SurfaceFormatKHR const& value) const {
         return format == value.format && colorSpace == value.colorSpace ;}
     constexpr bool operator!=(SurfaceFormatKHR const& value) const {return !(*this == value);}
-    SurfaceFormatKHR& setFormat(Format format) { this->format = format; return *this; }
-    SurfaceFormatKHR& setColorSpace(ColorSpaceKHR colorSpace) { this->colorSpace = colorSpace; return *this; }
+    SurfaceFormatKHR& setFormat(Format format) {this->format = format; return *this; }
+    SurfaceFormatKHR& setColorSpace(ColorSpaceKHR colorSpace) {this->colorSpace = colorSpace; return *this; }
 };
 struct SwapchainCreateInfoKHR {
     StructureType sType{StructureType::SwapchainCreateInfoKHR};
@@ -5513,23 +5512,23 @@ struct SwapchainCreateInfoKHR {
     PresentModeKHR presentMode{static_cast<PresentModeKHR>(0)};
     Bool32 clipped{0};
     SwapchainKHR oldSwapchain{};
-    SwapchainCreateInfoKHR& setFlags(SwapchainCreateFlagsKHR flags) { this->flags = flags; return *this; }
-    SwapchainCreateInfoKHR& setSurface(SurfaceKHR surface) { this->surface = surface; return *this; }
-    SwapchainCreateInfoKHR& setMinImageCount(uint32_t minImageCount) { this->minImageCount = minImageCount; return *this; }
-    SwapchainCreateInfoKHR& setImageFormat(Format imageFormat) { this->imageFormat = imageFormat; return *this; }
-    SwapchainCreateInfoKHR& setImageColorSpace(ColorSpaceKHR imageColorSpace) { this->imageColorSpace = imageColorSpace; return *this; }
-    SwapchainCreateInfoKHR& setImageExtent(Extent2D imageExtent) { this->imageExtent = imageExtent; return *this; }
-    SwapchainCreateInfoKHR& setImageArrayLayers(uint32_t imageArrayLayers) { this->imageArrayLayers = imageArrayLayers; return *this; }
-    SwapchainCreateInfoKHR& setImageUsage(ImageUsageFlags imageUsage) { this->imageUsage = imageUsage; return *this; }
-    SwapchainCreateInfoKHR& setImageSharingMode(SharingMode imageSharingMode) { this->imageSharingMode = imageSharingMode; return *this; }
-    SwapchainCreateInfoKHR& setQueueFamilyIndexCount(uint32_t queueFamilyIndexCount) { this->queueFamilyIndexCount = queueFamilyIndexCount; return *this; }
-    SwapchainCreateInfoKHR& setPQueueFamilyIndices(const uint32_t* pQueueFamilyIndices) { this->pQueueFamilyIndices = pQueueFamilyIndices; return *this; }
-    SwapchainCreateInfoKHR& setQueueFamilyIndices(detail::span<const uint32_t> QueueFamilyIndices) { this->queueFamilyIndexCount = QueueFamilyIndices.size(); this->pQueueFamilyIndices = QueueFamilyIndices.data();  return *this; }
-    SwapchainCreateInfoKHR& setPreTransform(SurfaceTransformFlagBitsKHR preTransform) { this->preTransform = preTransform; return *this; }
-    SwapchainCreateInfoKHR& setCompositeAlpha(CompositeAlphaFlagBitsKHR compositeAlpha) { this->compositeAlpha = compositeAlpha; return *this; }
-    SwapchainCreateInfoKHR& setPresentMode(PresentModeKHR presentMode) { this->presentMode = presentMode; return *this; }
-    SwapchainCreateInfoKHR& setClipped(Bool32 clipped) { this->clipped = clipped; return *this; }
-    SwapchainCreateInfoKHR& setOldSwapchain(SwapchainKHR oldSwapchain) { this->oldSwapchain = oldSwapchain; return *this; }
+    SwapchainCreateInfoKHR& setFlags(SwapchainCreateFlagsKHR flags) {this->flags = flags; return *this; }
+    SwapchainCreateInfoKHR& setSurface(SurfaceKHR surface) {this->surface = surface; return *this; }
+    SwapchainCreateInfoKHR& setMinImageCount(uint32_t minImageCount) {this->minImageCount = minImageCount; return *this; }
+    SwapchainCreateInfoKHR& setImageFormat(Format imageFormat) {this->imageFormat = imageFormat; return *this; }
+    SwapchainCreateInfoKHR& setImageColorSpace(ColorSpaceKHR imageColorSpace) {this->imageColorSpace = imageColorSpace; return *this; }
+    SwapchainCreateInfoKHR& setImageExtent(Extent2D imageExtent) {this->imageExtent = imageExtent; return *this; }
+    SwapchainCreateInfoKHR& setImageArrayLayers(uint32_t imageArrayLayers) {this->imageArrayLayers = imageArrayLayers; return *this; }
+    SwapchainCreateInfoKHR& setImageUsage(ImageUsageFlags imageUsage) {this->imageUsage = imageUsage; return *this; }
+    SwapchainCreateInfoKHR& setImageSharingMode(SharingMode imageSharingMode) {this->imageSharingMode = imageSharingMode; return *this; }
+    SwapchainCreateInfoKHR& setQueueFamilyIndexCount(uint32_t queueFamilyIndexCount) {this->queueFamilyIndexCount = queueFamilyIndexCount; return *this; }
+    SwapchainCreateInfoKHR& setPQueueFamilyIndices(const uint32_t* pQueueFamilyIndices) {this->pQueueFamilyIndices = pQueueFamilyIndices; return *this; }
+    SwapchainCreateInfoKHR& setPQueueFamilyIndices(detail::span<const uint32_t> pQueueFamilyIndices) {this->queueFamilyIndexCount = pQueueFamilyIndices.size(); this->pQueueFamilyIndices = pQueueFamilyIndices.data();  return *this; }
+    SwapchainCreateInfoKHR& setPreTransform(SurfaceTransformFlagBitsKHR preTransform) {this->preTransform = preTransform; return *this; }
+    SwapchainCreateInfoKHR& setCompositeAlpha(CompositeAlphaFlagBitsKHR compositeAlpha) {this->compositeAlpha = compositeAlpha; return *this; }
+    SwapchainCreateInfoKHR& setPresentMode(PresentModeKHR presentMode) {this->presentMode = presentMode; return *this; }
+    SwapchainCreateInfoKHR& setClipped(Bool32 clipped) {this->clipped = clipped; return *this; }
+    SwapchainCreateInfoKHR& setOldSwapchain(SwapchainKHR oldSwapchain) {this->oldSwapchain = oldSwapchain; return *this; }
 };
 struct PresentInfoKHR {
     StructureType sType{StructureType::PresentInfoKHR};
@@ -5540,16 +5539,16 @@ struct PresentInfoKHR {
     const SwapchainKHR* pSwapchains = nullptr;
     const uint32_t* pImageIndices = nullptr;
     Result* pResults = nullptr;
-    PresentInfoKHR& setWaitSemaphoreCount(uint32_t waitSemaphoreCount) { this->waitSemaphoreCount = waitSemaphoreCount; return *this; }
-    PresentInfoKHR& setPWaitSemaphores(const Semaphore* pWaitSemaphores) { this->pWaitSemaphores = pWaitSemaphores; return *this; }
-    PresentInfoKHR& setWaitSemaphores(detail::span<const Semaphore> WaitSemaphores) { this->waitSemaphoreCount = WaitSemaphores.size(); this->pWaitSemaphores = WaitSemaphores.data();  return *this; }
-    PresentInfoKHR& setSwapchainCount(uint32_t swapchainCount) { this->swapchainCount = swapchainCount; return *this; }
-    PresentInfoKHR& setPSwapchains(const SwapchainKHR* pSwapchains) { this->pSwapchains = pSwapchains; return *this; }
-    PresentInfoKHR& setSwapchains(detail::span<const SwapchainKHR> Swapchains) { this->swapchainCount = Swapchains.size(); this->pSwapchains = Swapchains.data();  return *this; }
-    PresentInfoKHR& setPImageIndices(const uint32_t* pImageIndices) { this->pImageIndices = pImageIndices; return *this; }
-    PresentInfoKHR& setImageIndices(detail::span<const uint32_t> ImageIndices) { this->swapchainCount = ImageIndices.size(); this->pImageIndices = ImageIndices.data();  return *this; }
-    PresentInfoKHR& setPResults(Result* pResults) { this->pResults = pResults; return *this; }
-    PresentInfoKHR& setResults(detail::span<Result> Results) { this->swapchainCount = Results.size(); this->pResults = Results.data();  return *this; }
+    PresentInfoKHR& setWaitSemaphoreCount(uint32_t waitSemaphoreCount) {this->waitSemaphoreCount = waitSemaphoreCount; return *this; }
+    PresentInfoKHR& setPWaitSemaphores(const Semaphore* pWaitSemaphores) {this->pWaitSemaphores = pWaitSemaphores; return *this; }
+    PresentInfoKHR& setPWaitSemaphores(detail::span<const Semaphore> pWaitSemaphores) {this->waitSemaphoreCount = pWaitSemaphores.size(); this->pWaitSemaphores = pWaitSemaphores.data();  return *this; }
+    PresentInfoKHR& setSwapchainCount(uint32_t swapchainCount) {this->swapchainCount = swapchainCount; return *this; }
+    PresentInfoKHR& setPSwapchains(const SwapchainKHR* pSwapchains) {this->pSwapchains = pSwapchains; return *this; }
+    PresentInfoKHR& setPSwapchains(detail::span<const SwapchainKHR> pSwapchains) {this->swapchainCount = pSwapchains.size(); this->pSwapchains = pSwapchains.data();  return *this; }
+    PresentInfoKHR& setPImageIndices(const uint32_t* pImageIndices) {this->pImageIndices = pImageIndices; return *this; }
+    PresentInfoKHR& setPImageIndices(detail::span<const uint32_t> pImageIndices) {this->swapchainCount = pImageIndices.size(); this->pImageIndices = pImageIndices.data();  return *this; }
+    PresentInfoKHR& setPResults(Result* pResults) {this->pResults = pResults; return *this; }
+    PresentInfoKHR& setPResults(detail::span<Result> pResults) {this->swapchainCount = pResults.size(); this->pResults = pResults.data();  return *this; }
 };
 struct DebugReportCallbackCreateInfoEXT {
     StructureType sType{StructureType::DebugReportCallbackCreateInfoEXT};
@@ -5557,17 +5556,18 @@ struct DebugReportCallbackCreateInfoEXT {
     DebugReportFlagsEXT flags{};
     PFN_DebugReportCallbackEXT pfnCallback{};
     void* pUserData = nullptr;
-    DebugReportCallbackCreateInfoEXT& setFlags(DebugReportFlagsEXT flags) { this->flags = flags; return *this; }
-    DebugReportCallbackCreateInfoEXT& setPfnCallback(PFN_DebugReportCallbackEXT pfnCallback) { this->pfnCallback = pfnCallback; return *this; }
+    DebugReportCallbackCreateInfoEXT& setFlags(DebugReportFlagsEXT flags) {this->flags = flags; return *this; }
+    DebugReportCallbackCreateInfoEXT& setPfnCallback(PFN_DebugReportCallbackEXT pfnCallback) {this->pfnCallback = pfnCallback; return *this; }
+    DebugReportCallbackCreateInfoEXT& setPUserData(void* pUserData) {this->pUserData = pUserData; return *this; }
 };
 struct ValidationFlagsEXT {
     StructureType sType{StructureType::ValidationFlagsEXT};
     const void* pNext = nullptr;
     uint32_t disabledValidationCheckCount{0};
     const ValidationCheckEXT* pDisabledValidationChecks = nullptr;
-    ValidationFlagsEXT& setDisabledValidationCheckCount(uint32_t disabledValidationCheckCount) { this->disabledValidationCheckCount = disabledValidationCheckCount; return *this; }
-    ValidationFlagsEXT& setPDisabledValidationChecks(const ValidationCheckEXT* pDisabledValidationChecks) { this->pDisabledValidationChecks = pDisabledValidationChecks; return *this; }
-    ValidationFlagsEXT& setDisabledValidationChecks(detail::span<const ValidationCheckEXT> DisabledValidationChecks) { this->disabledValidationCheckCount = DisabledValidationChecks.size(); this->pDisabledValidationChecks = DisabledValidationChecks.data();  return *this; }
+    ValidationFlagsEXT& setDisabledValidationCheckCount(uint32_t disabledValidationCheckCount) {this->disabledValidationCheckCount = disabledValidationCheckCount; return *this; }
+    ValidationFlagsEXT& setPDisabledValidationChecks(const ValidationCheckEXT* pDisabledValidationChecks) {this->pDisabledValidationChecks = pDisabledValidationChecks; return *this; }
+    ValidationFlagsEXT& setPDisabledValidationChecks(detail::span<const ValidationCheckEXT> pDisabledValidationChecks) {this->disabledValidationCheckCount = pDisabledValidationChecks.size(); this->pDisabledValidationChecks = pDisabledValidationChecks.data();  return *this; }
 };
 struct ValidationFeaturesEXT {
     StructureType sType{StructureType::ValidationFeaturesEXT};
@@ -5576,18 +5576,18 @@ struct ValidationFeaturesEXT {
     const ValidationFeatureEnableEXT* pEnabledValidationFeatures = nullptr;
     uint32_t disabledValidationFeatureCount{0};
     const ValidationFeatureDisableEXT* pDisabledValidationFeatures = nullptr;
-    ValidationFeaturesEXT& setEnabledValidationFeatureCount(uint32_t enabledValidationFeatureCount) { this->enabledValidationFeatureCount = enabledValidationFeatureCount; return *this; }
-    ValidationFeaturesEXT& setPEnabledValidationFeatures(const ValidationFeatureEnableEXT* pEnabledValidationFeatures) { this->pEnabledValidationFeatures = pEnabledValidationFeatures; return *this; }
-    ValidationFeaturesEXT& setEnabledValidationFeatures(detail::span<const ValidationFeatureEnableEXT> EnabledValidationFeatures) { this->enabledValidationFeatureCount = EnabledValidationFeatures.size(); this->pEnabledValidationFeatures = EnabledValidationFeatures.data();  return *this; }
-    ValidationFeaturesEXT& setDisabledValidationFeatureCount(uint32_t disabledValidationFeatureCount) { this->disabledValidationFeatureCount = disabledValidationFeatureCount; return *this; }
-    ValidationFeaturesEXT& setPDisabledValidationFeatures(const ValidationFeatureDisableEXT* pDisabledValidationFeatures) { this->pDisabledValidationFeatures = pDisabledValidationFeatures; return *this; }
-    ValidationFeaturesEXT& setDisabledValidationFeatures(detail::span<const ValidationFeatureDisableEXT> DisabledValidationFeatures) { this->disabledValidationFeatureCount = DisabledValidationFeatures.size(); this->pDisabledValidationFeatures = DisabledValidationFeatures.data();  return *this; }
+    ValidationFeaturesEXT& setEnabledValidationFeatureCount(uint32_t enabledValidationFeatureCount) {this->enabledValidationFeatureCount = enabledValidationFeatureCount; return *this; }
+    ValidationFeaturesEXT& setPEnabledValidationFeatures(const ValidationFeatureEnableEXT* pEnabledValidationFeatures) {this->pEnabledValidationFeatures = pEnabledValidationFeatures; return *this; }
+    ValidationFeaturesEXT& setPEnabledValidationFeatures(detail::span<const ValidationFeatureEnableEXT> pEnabledValidationFeatures) {this->enabledValidationFeatureCount = pEnabledValidationFeatures.size(); this->pEnabledValidationFeatures = pEnabledValidationFeatures.data();  return *this; }
+    ValidationFeaturesEXT& setDisabledValidationFeatureCount(uint32_t disabledValidationFeatureCount) {this->disabledValidationFeatureCount = disabledValidationFeatureCount; return *this; }
+    ValidationFeaturesEXT& setPDisabledValidationFeatures(const ValidationFeatureDisableEXT* pDisabledValidationFeatures) {this->pDisabledValidationFeatures = pDisabledValidationFeatures; return *this; }
+    ValidationFeaturesEXT& setPDisabledValidationFeatures(detail::span<const ValidationFeatureDisableEXT> pDisabledValidationFeatures) {this->disabledValidationFeatureCount = pDisabledValidationFeatures.size(); this->pDisabledValidationFeatures = pDisabledValidationFeatures.data();  return *this; }
 };
 struct PipelineRasterizationStateRasterizationOrderAMD {
     StructureType sType{StructureType::PipelineRasterizationStateRasterizationOrderAMD};
     const void* pNext = nullptr;
     RasterizationOrderAMD rasterizationOrder{static_cast<RasterizationOrderAMD>(0)};
-    PipelineRasterizationStateRasterizationOrderAMD& setRasterizationOrder(RasterizationOrderAMD rasterizationOrder) { this->rasterizationOrder = rasterizationOrder; return *this; }
+    PipelineRasterizationStateRasterizationOrderAMD& setRasterizationOrder(RasterizationOrderAMD rasterizationOrder) {this->rasterizationOrder = rasterizationOrder; return *this; }
 };
 struct DebugMarkerObjectNameInfoEXT {
     StructureType sType{StructureType::DebugMarkerObjectNameInfoEXT};
@@ -5595,9 +5595,9 @@ struct DebugMarkerObjectNameInfoEXT {
     DebugReportObjectTypeEXT objectType{static_cast<DebugReportObjectTypeEXT>(0)};
     uint64_t object{0};
     const char* pObjectName = nullptr;
-    DebugMarkerObjectNameInfoEXT& setObjectType(DebugReportObjectTypeEXT objectType) { this->objectType = objectType; return *this; }
-    DebugMarkerObjectNameInfoEXT& setObject(uint64_t object) { this->object = object; return *this; }
-    DebugMarkerObjectNameInfoEXT& setPObjectName(const char* pObjectName) { this->pObjectName = pObjectName; return *this; }
+    DebugMarkerObjectNameInfoEXT& setObjectType(DebugReportObjectTypeEXT objectType) {this->objectType = objectType; return *this; }
+    DebugMarkerObjectNameInfoEXT& setObject(uint64_t object) {this->object = object; return *this; }
+    DebugMarkerObjectNameInfoEXT& setPObjectName(const char* pObjectName) {this->pObjectName = pObjectName; return *this; }
 };
 struct DebugMarkerObjectTagInfoEXT {
     StructureType sType{StructureType::DebugMarkerObjectTagInfoEXT};
@@ -5607,40 +5607,40 @@ struct DebugMarkerObjectTagInfoEXT {
     uint64_t tagName{0};
     size_t tagSize{0};
     const void* pTag = nullptr;
-    DebugMarkerObjectTagInfoEXT& setObjectType(DebugReportObjectTypeEXT objectType) { this->objectType = objectType; return *this; }
-    DebugMarkerObjectTagInfoEXT& setObject(uint64_t object) { this->object = object; return *this; }
-    DebugMarkerObjectTagInfoEXT& setTagName(uint64_t tagName) { this->tagName = tagName; return *this; }
-    DebugMarkerObjectTagInfoEXT& setTagSize(size_t tagSize) { this->tagSize = tagSize; return *this; }
-    DebugMarkerObjectTagInfoEXT& setPTag(const void* pTag) { this->pTag = pTag; return *this; }
-    DebugMarkerObjectTagInfoEXT& setTag(detail::span<const std::byte> Tag) { this->tagSize = Tag.size(); this->pTag = Tag.data();  return *this; }
+    DebugMarkerObjectTagInfoEXT& setObjectType(DebugReportObjectTypeEXT objectType) {this->objectType = objectType; return *this; }
+    DebugMarkerObjectTagInfoEXT& setObject(uint64_t object) {this->object = object; return *this; }
+    DebugMarkerObjectTagInfoEXT& setTagName(uint64_t tagName) {this->tagName = tagName; return *this; }
+    DebugMarkerObjectTagInfoEXT& setTagSize(size_t tagSize) {this->tagSize = tagSize; return *this; }
+    DebugMarkerObjectTagInfoEXT& setPTag(const void* pTag) {this->pTag = pTag; return *this; }
+    DebugMarkerObjectTagInfoEXT& setPTag(detail::span<const std::byte> pTag) {this->tagSize = pTag.size(); this->pTag = pTag.data();  return *this; }
 };
 struct DebugMarkerMarkerInfoEXT {
     StructureType sType{StructureType::DebugMarkerMarkerInfoEXT};
     const void* pNext = nullptr;
     const char* pMarkerName = nullptr;
     float color[4];
-    DebugMarkerMarkerInfoEXT& setPMarkerName(const char* pMarkerName) { this->pMarkerName = pMarkerName; return *this; }
-    DebugMarkerMarkerInfoEXT& setColor(float color[4]) { for(uint32_t i = 0; i < 4; i++) this->color[i] = color[i]; return *this; }
+    DebugMarkerMarkerInfoEXT& setPMarkerName(const char* pMarkerName) {this->pMarkerName = pMarkerName; return *this; }
+    DebugMarkerMarkerInfoEXT& setColor(float color[4]) {for(uint32_t i = 0; i < 4; i++) this->color[i] = color[i]; return *this; }
 };
 struct DedicatedAllocationImageCreateInfoNV {
     StructureType sType{StructureType::DedicatedAllocationImageCreateInfoNV};
     const void* pNext = nullptr;
     Bool32 dedicatedAllocation{0};
-    DedicatedAllocationImageCreateInfoNV& setDedicatedAllocation(Bool32 dedicatedAllocation) { this->dedicatedAllocation = dedicatedAllocation; return *this; }
+    DedicatedAllocationImageCreateInfoNV& setDedicatedAllocation(Bool32 dedicatedAllocation) {this->dedicatedAllocation = dedicatedAllocation; return *this; }
 };
 struct DedicatedAllocationBufferCreateInfoNV {
     StructureType sType{StructureType::DedicatedAllocationBufferCreateInfoNV};
     const void* pNext = nullptr;
     Bool32 dedicatedAllocation{0};
-    DedicatedAllocationBufferCreateInfoNV& setDedicatedAllocation(Bool32 dedicatedAllocation) { this->dedicatedAllocation = dedicatedAllocation; return *this; }
+    DedicatedAllocationBufferCreateInfoNV& setDedicatedAllocation(Bool32 dedicatedAllocation) {this->dedicatedAllocation = dedicatedAllocation; return *this; }
 };
 struct DedicatedAllocationMemoryAllocateInfoNV {
     StructureType sType{StructureType::DedicatedAllocationMemoryAllocateInfoNV};
     const void* pNext = nullptr;
     Image image{};
     Buffer buffer{};
-    DedicatedAllocationMemoryAllocateInfoNV& setImage(Image image) { this->image = image; return *this; }
-    DedicatedAllocationMemoryAllocateInfoNV& setBuffer(Buffer buffer) { this->buffer = buffer; return *this; }
+    DedicatedAllocationMemoryAllocateInfoNV& setImage(Image image) {this->image = image; return *this; }
+    DedicatedAllocationMemoryAllocateInfoNV& setBuffer(Buffer buffer) {this->buffer = buffer; return *this; }
 };
 struct ExternalImageFormatPropertiesNV {
     ImageFormatProperties imageFormatProperties{};
@@ -5651,22 +5651,22 @@ struct ExternalImageFormatPropertiesNV {
         return imageFormatProperties == value.imageFormatProperties && externalMemoryFeatures == value.externalMemoryFeatures && exportFromImportedHandleTypes == value.exportFromImportedHandleTypes 
         && compatibleHandleTypes == value.compatibleHandleTypes ;}
     constexpr bool operator!=(ExternalImageFormatPropertiesNV const& value) const {return !(*this == value);}
-    ExternalImageFormatPropertiesNV& setImageFormatProperties(ImageFormatProperties imageFormatProperties) { this->imageFormatProperties = imageFormatProperties; return *this; }
-    ExternalImageFormatPropertiesNV& setExternalMemoryFeatures(ExternalMemoryFeatureFlagsNV externalMemoryFeatures) { this->externalMemoryFeatures = externalMemoryFeatures; return *this; }
-    ExternalImageFormatPropertiesNV& setExportFromImportedHandleTypes(ExternalMemoryHandleTypeFlagsNV exportFromImportedHandleTypes) { this->exportFromImportedHandleTypes = exportFromImportedHandleTypes; return *this; }
-    ExternalImageFormatPropertiesNV& setCompatibleHandleTypes(ExternalMemoryHandleTypeFlagsNV compatibleHandleTypes) { this->compatibleHandleTypes = compatibleHandleTypes; return *this; }
+    ExternalImageFormatPropertiesNV& setImageFormatProperties(ImageFormatProperties imageFormatProperties) {this->imageFormatProperties = imageFormatProperties; return *this; }
+    ExternalImageFormatPropertiesNV& setExternalMemoryFeatures(ExternalMemoryFeatureFlagsNV externalMemoryFeatures) {this->externalMemoryFeatures = externalMemoryFeatures; return *this; }
+    ExternalImageFormatPropertiesNV& setExportFromImportedHandleTypes(ExternalMemoryHandleTypeFlagsNV exportFromImportedHandleTypes) {this->exportFromImportedHandleTypes = exportFromImportedHandleTypes; return *this; }
+    ExternalImageFormatPropertiesNV& setCompatibleHandleTypes(ExternalMemoryHandleTypeFlagsNV compatibleHandleTypes) {this->compatibleHandleTypes = compatibleHandleTypes; return *this; }
 };
 struct ExternalMemoryImageCreateInfoNV {
     StructureType sType{StructureType::ExternalMemoryImageCreateInfoNV};
     const void* pNext = nullptr;
     ExternalMemoryHandleTypeFlagsNV handleTypes{};
-    ExternalMemoryImageCreateInfoNV& setHandleTypes(ExternalMemoryHandleTypeFlagsNV handleTypes) { this->handleTypes = handleTypes; return *this; }
+    ExternalMemoryImageCreateInfoNV& setHandleTypes(ExternalMemoryHandleTypeFlagsNV handleTypes) {this->handleTypes = handleTypes; return *this; }
 };
 struct ExportMemoryAllocateInfoNV {
     StructureType sType{StructureType::ExportMemoryAllocateInfoNV};
     const void* pNext = nullptr;
     ExternalMemoryHandleTypeFlagsNV handleTypes{};
-    ExportMemoryAllocateInfoNV& setHandleTypes(ExternalMemoryHandleTypeFlagsNV handleTypes) { this->handleTypes = handleTypes; return *this; }
+    ExportMemoryAllocateInfoNV& setHandleTypes(ExternalMemoryHandleTypeFlagsNV handleTypes) {this->handleTypes = handleTypes; return *this; }
 };
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ImportMemoryWin32HandleInfoNV {
@@ -5674,17 +5674,17 @@ struct ImportMemoryWin32HandleInfoNV {
     const void* pNext = nullptr;
     ExternalMemoryHandleTypeFlagsNV handleType{};
     HANDLE handle{};
-    ImportMemoryWin32HandleInfoNV& setHandleType(ExternalMemoryHandleTypeFlagsNV handleType) { this->handleType = handleType; return *this; }
-    ImportMemoryWin32HandleInfoNV& setHandle(HANDLE handle) { this->handle = handle; return *this; }
+    ImportMemoryWin32HandleInfoNV& setHandleType(ExternalMemoryHandleTypeFlagsNV handleType) {this->handleType = handleType; return *this; }
+    ImportMemoryWin32HandleInfoNV& setHandle(HANDLE handle) {this->handle = handle; return *this; }
 };
 struct ExportMemoryWin32HandleInfoNV {
     StructureType sType{StructureType::ExportMemoryWin32HandleInfoNV};
     const void* pNext = nullptr;
     const SECURITY_ATTRIBUTES* pAttributes = nullptr;
     DWORD dwAccess{};
-    ExportMemoryWin32HandleInfoNV& setPAttributes(const SECURITY_ATTRIBUTES* pAttributes) { this->pAttributes = pAttributes; return *this; }
-    ExportMemoryWin32HandleInfoNV& setAttributes(SECURITY_ATTRIBUTES const& Attributes) { this->pAttributes = &Attributes; return *this; }
-    ExportMemoryWin32HandleInfoNV& setDwAccess(DWORD dwAccess) { this->dwAccess = dwAccess; return *this; }
+    ExportMemoryWin32HandleInfoNV& setPAttributes(const SECURITY_ATTRIBUTES* pAttributes) {this->pAttributes = pAttributes; return *this; }
+    ExportMemoryWin32HandleInfoNV& setPAttributes(SECURITY_ATTRIBUTES const& pAttributes) {this->pAttributes = &pAttributes; return *this; }
+    ExportMemoryWin32HandleInfoNV& setDwAccess(DWORD dwAccess) {this->dwAccess = dwAccess; return *this; }
 };
 struct Win32KeyedMutexAcquireReleaseInfoNV {
     StructureType sType{StructureType::Win32KeyedMutexAcquireReleaseInfoNV};
@@ -5696,43 +5696,43 @@ struct Win32KeyedMutexAcquireReleaseInfoNV {
     uint32_t releaseCount{0};
     const DeviceMemory* pReleaseSyncs = nullptr;
     const uint64_t* pReleaseKeys = nullptr;
-    Win32KeyedMutexAcquireReleaseInfoNV& setAcquireCount(uint32_t acquireCount) { this->acquireCount = acquireCount; return *this; }
-    Win32KeyedMutexAcquireReleaseInfoNV& setPAcquireSyncs(const DeviceMemory* pAcquireSyncs) { this->pAcquireSyncs = pAcquireSyncs; return *this; }
-    Win32KeyedMutexAcquireReleaseInfoNV& setAcquireSyncs(detail::span<const DeviceMemory> AcquireSyncs) { this->acquireCount = AcquireSyncs.size(); this->pAcquireSyncs = AcquireSyncs.data();  return *this; }
-    Win32KeyedMutexAcquireReleaseInfoNV& setPAcquireKeys(const uint64_t* pAcquireKeys) { this->pAcquireKeys = pAcquireKeys; return *this; }
-    Win32KeyedMutexAcquireReleaseInfoNV& setAcquireKeys(detail::span<const uint64_t> AcquireKeys) { this->acquireCount = AcquireKeys.size(); this->pAcquireKeys = AcquireKeys.data();  return *this; }
-    Win32KeyedMutexAcquireReleaseInfoNV& setPAcquireTimeoutMilliseconds(const uint32_t* pAcquireTimeoutMilliseconds) { this->pAcquireTimeoutMilliseconds = pAcquireTimeoutMilliseconds; return *this; }
-    Win32KeyedMutexAcquireReleaseInfoNV& setAcquireTimeoutMilliseconds(detail::span<const uint32_t> AcquireTimeoutMilliseconds) { this->acquireCount = AcquireTimeoutMilliseconds.size(); this->pAcquireTimeoutMilliseconds = AcquireTimeoutMilliseconds.data();  return *this; }
-    Win32KeyedMutexAcquireReleaseInfoNV& setReleaseCount(uint32_t releaseCount) { this->releaseCount = releaseCount; return *this; }
-    Win32KeyedMutexAcquireReleaseInfoNV& setPReleaseSyncs(const DeviceMemory* pReleaseSyncs) { this->pReleaseSyncs = pReleaseSyncs; return *this; }
-    Win32KeyedMutexAcquireReleaseInfoNV& setReleaseSyncs(detail::span<const DeviceMemory> ReleaseSyncs) { this->releaseCount = ReleaseSyncs.size(); this->pReleaseSyncs = ReleaseSyncs.data();  return *this; }
-    Win32KeyedMutexAcquireReleaseInfoNV& setPReleaseKeys(const uint64_t* pReleaseKeys) { this->pReleaseKeys = pReleaseKeys; return *this; }
-    Win32KeyedMutexAcquireReleaseInfoNV& setReleaseKeys(detail::span<const uint64_t> ReleaseKeys) { this->releaseCount = ReleaseKeys.size(); this->pReleaseKeys = ReleaseKeys.data();  return *this; }
+    Win32KeyedMutexAcquireReleaseInfoNV& setAcquireCount(uint32_t acquireCount) {this->acquireCount = acquireCount; return *this; }
+    Win32KeyedMutexAcquireReleaseInfoNV& setPAcquireSyncs(const DeviceMemory* pAcquireSyncs) {this->pAcquireSyncs = pAcquireSyncs; return *this; }
+    Win32KeyedMutexAcquireReleaseInfoNV& setPAcquireSyncs(detail::span<const DeviceMemory> pAcquireSyncs) {this->acquireCount = pAcquireSyncs.size(); this->pAcquireSyncs = pAcquireSyncs.data();  return *this; }
+    Win32KeyedMutexAcquireReleaseInfoNV& setPAcquireKeys(const uint64_t* pAcquireKeys) {this->pAcquireKeys = pAcquireKeys; return *this; }
+    Win32KeyedMutexAcquireReleaseInfoNV& setPAcquireKeys(detail::span<const uint64_t> pAcquireKeys) {this->acquireCount = pAcquireKeys.size(); this->pAcquireKeys = pAcquireKeys.data();  return *this; }
+    Win32KeyedMutexAcquireReleaseInfoNV& setPAcquireTimeoutMilliseconds(const uint32_t* pAcquireTimeoutMilliseconds) {this->pAcquireTimeoutMilliseconds = pAcquireTimeoutMilliseconds; return *this; }
+    Win32KeyedMutexAcquireReleaseInfoNV& setPAcquireTimeoutMilliseconds(detail::span<const uint32_t> pAcquireTimeoutMilliseconds) {this->acquireCount = pAcquireTimeoutMilliseconds.size(); this->pAcquireTimeoutMilliseconds = pAcquireTimeoutMilliseconds.data();  return *this; }
+    Win32KeyedMutexAcquireReleaseInfoNV& setReleaseCount(uint32_t releaseCount) {this->releaseCount = releaseCount; return *this; }
+    Win32KeyedMutexAcquireReleaseInfoNV& setPReleaseSyncs(const DeviceMemory* pReleaseSyncs) {this->pReleaseSyncs = pReleaseSyncs; return *this; }
+    Win32KeyedMutexAcquireReleaseInfoNV& setPReleaseSyncs(detail::span<const DeviceMemory> pReleaseSyncs) {this->releaseCount = pReleaseSyncs.size(); this->pReleaseSyncs = pReleaseSyncs.data();  return *this; }
+    Win32KeyedMutexAcquireReleaseInfoNV& setPReleaseKeys(const uint64_t* pReleaseKeys) {this->pReleaseKeys = pReleaseKeys; return *this; }
+    Win32KeyedMutexAcquireReleaseInfoNV& setPReleaseKeys(detail::span<const uint64_t> pReleaseKeys) {this->releaseCount = pReleaseKeys.size(); this->pReleaseKeys = pReleaseKeys.data();  return *this; }
 };
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 struct PhysicalDeviceDeviceGeneratedCommandsFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceDeviceGeneratedCommandsFeaturesNV};
     void* pNext = nullptr;
     Bool32 deviceGeneratedCommands{0};
-    PhysicalDeviceDeviceGeneratedCommandsFeaturesNV& setDeviceGeneratedCommands(Bool32 deviceGeneratedCommands) { this->deviceGeneratedCommands = deviceGeneratedCommands; return *this; }
+    PhysicalDeviceDeviceGeneratedCommandsFeaturesNV& setDeviceGeneratedCommands(Bool32 deviceGeneratedCommands) {this->deviceGeneratedCommands = deviceGeneratedCommands; return *this; }
 };
 struct DevicePrivateDataCreateInfoEXT {
     StructureType sType{StructureType::DevicePrivateDataCreateInfoEXT};
     const void* pNext = nullptr;
     uint32_t privateDataSlotRequestCount{0};
-    DevicePrivateDataCreateInfoEXT& setPrivateDataSlotRequestCount(uint32_t privateDataSlotRequestCount) { this->privateDataSlotRequestCount = privateDataSlotRequestCount; return *this; }
+    DevicePrivateDataCreateInfoEXT& setPrivateDataSlotRequestCount(uint32_t privateDataSlotRequestCount) {this->privateDataSlotRequestCount = privateDataSlotRequestCount; return *this; }
 };
 struct PrivateDataSlotCreateInfoEXT {
     StructureType sType{StructureType::PrivateDataSlotCreateInfoEXT};
     const void* pNext = nullptr;
     PrivateDataSlotCreateFlagsEXT flags{};
-    PrivateDataSlotCreateInfoEXT& setFlags(PrivateDataSlotCreateFlagsEXT flags) { this->flags = flags; return *this; }
+    PrivateDataSlotCreateInfoEXT& setFlags(PrivateDataSlotCreateFlagsEXT flags) {this->flags = flags; return *this; }
 };
 struct PhysicalDevicePrivateDataFeaturesEXT {
     StructureType sType{StructureType::PhysicalDevicePrivateDataFeaturesEXT};
     void* pNext = nullptr;
     Bool32 privateData{0};
-    PhysicalDevicePrivateDataFeaturesEXT& setPrivateData(Bool32 privateData) { this->privateData = privateData; return *this; }
+    PhysicalDevicePrivateDataFeaturesEXT& setPrivateData(Bool32 privateData) {this->privateData = privateData; return *this; }
 };
 struct PhysicalDeviceDeviceGeneratedCommandsPropertiesNV {
     StructureType sType{StructureType::PhysicalDeviceDeviceGeneratedCommandsPropertiesNV};
@@ -5746,15 +5746,15 @@ struct PhysicalDeviceDeviceGeneratedCommandsPropertiesNV {
     uint32_t minSequencesCountBufferOffsetAlignment{0};
     uint32_t minSequencesIndexBufferOffsetAlignment{0};
     uint32_t minIndirectCommandsBufferOffsetAlignment{0};
-    PhysicalDeviceDeviceGeneratedCommandsPropertiesNV& setMaxGraphicsShaderGroupCount(uint32_t maxGraphicsShaderGroupCount) { this->maxGraphicsShaderGroupCount = maxGraphicsShaderGroupCount; return *this; }
-    PhysicalDeviceDeviceGeneratedCommandsPropertiesNV& setMaxIndirectSequenceCount(uint32_t maxIndirectSequenceCount) { this->maxIndirectSequenceCount = maxIndirectSequenceCount; return *this; }
-    PhysicalDeviceDeviceGeneratedCommandsPropertiesNV& setMaxIndirectCommandsTokenCount(uint32_t maxIndirectCommandsTokenCount) { this->maxIndirectCommandsTokenCount = maxIndirectCommandsTokenCount; return *this; }
-    PhysicalDeviceDeviceGeneratedCommandsPropertiesNV& setMaxIndirectCommandsStreamCount(uint32_t maxIndirectCommandsStreamCount) { this->maxIndirectCommandsStreamCount = maxIndirectCommandsStreamCount; return *this; }
-    PhysicalDeviceDeviceGeneratedCommandsPropertiesNV& setMaxIndirectCommandsTokenOffset(uint32_t maxIndirectCommandsTokenOffset) { this->maxIndirectCommandsTokenOffset = maxIndirectCommandsTokenOffset; return *this; }
-    PhysicalDeviceDeviceGeneratedCommandsPropertiesNV& setMaxIndirectCommandsStreamStride(uint32_t maxIndirectCommandsStreamStride) { this->maxIndirectCommandsStreamStride = maxIndirectCommandsStreamStride; return *this; }
-    PhysicalDeviceDeviceGeneratedCommandsPropertiesNV& setMinSequencesCountBufferOffsetAlignment(uint32_t minSequencesCountBufferOffsetAlignment) { this->minSequencesCountBufferOffsetAlignment = minSequencesCountBufferOffsetAlignment; return *this; }
-    PhysicalDeviceDeviceGeneratedCommandsPropertiesNV& setMinSequencesIndexBufferOffsetAlignment(uint32_t minSequencesIndexBufferOffsetAlignment) { this->minSequencesIndexBufferOffsetAlignment = minSequencesIndexBufferOffsetAlignment; return *this; }
-    PhysicalDeviceDeviceGeneratedCommandsPropertiesNV& setMinIndirectCommandsBufferOffsetAlignment(uint32_t minIndirectCommandsBufferOffsetAlignment) { this->minIndirectCommandsBufferOffsetAlignment = minIndirectCommandsBufferOffsetAlignment; return *this; }
+    PhysicalDeviceDeviceGeneratedCommandsPropertiesNV& setMaxGraphicsShaderGroupCount(uint32_t maxGraphicsShaderGroupCount) {this->maxGraphicsShaderGroupCount = maxGraphicsShaderGroupCount; return *this; }
+    PhysicalDeviceDeviceGeneratedCommandsPropertiesNV& setMaxIndirectSequenceCount(uint32_t maxIndirectSequenceCount) {this->maxIndirectSequenceCount = maxIndirectSequenceCount; return *this; }
+    PhysicalDeviceDeviceGeneratedCommandsPropertiesNV& setMaxIndirectCommandsTokenCount(uint32_t maxIndirectCommandsTokenCount) {this->maxIndirectCommandsTokenCount = maxIndirectCommandsTokenCount; return *this; }
+    PhysicalDeviceDeviceGeneratedCommandsPropertiesNV& setMaxIndirectCommandsStreamCount(uint32_t maxIndirectCommandsStreamCount) {this->maxIndirectCommandsStreamCount = maxIndirectCommandsStreamCount; return *this; }
+    PhysicalDeviceDeviceGeneratedCommandsPropertiesNV& setMaxIndirectCommandsTokenOffset(uint32_t maxIndirectCommandsTokenOffset) {this->maxIndirectCommandsTokenOffset = maxIndirectCommandsTokenOffset; return *this; }
+    PhysicalDeviceDeviceGeneratedCommandsPropertiesNV& setMaxIndirectCommandsStreamStride(uint32_t maxIndirectCommandsStreamStride) {this->maxIndirectCommandsStreamStride = maxIndirectCommandsStreamStride; return *this; }
+    PhysicalDeviceDeviceGeneratedCommandsPropertiesNV& setMinSequencesCountBufferOffsetAlignment(uint32_t minSequencesCountBufferOffsetAlignment) {this->minSequencesCountBufferOffsetAlignment = minSequencesCountBufferOffsetAlignment; return *this; }
+    PhysicalDeviceDeviceGeneratedCommandsPropertiesNV& setMinSequencesIndexBufferOffsetAlignment(uint32_t minSequencesIndexBufferOffsetAlignment) {this->minSequencesIndexBufferOffsetAlignment = minSequencesIndexBufferOffsetAlignment; return *this; }
+    PhysicalDeviceDeviceGeneratedCommandsPropertiesNV& setMinIndirectCommandsBufferOffsetAlignment(uint32_t minIndirectCommandsBufferOffsetAlignment) {this->minIndirectCommandsBufferOffsetAlignment = minIndirectCommandsBufferOffsetAlignment; return *this; }
 };
 struct GraphicsShaderGroupCreateInfoNV {
     StructureType sType{StructureType::GraphicsShaderGroupCreateInfoNV};
@@ -5763,13 +5763,13 @@ struct GraphicsShaderGroupCreateInfoNV {
     const PipelineShaderStageCreateInfo* pStages = nullptr;
     const PipelineVertexInputStateCreateInfo* pVertexInputState = nullptr;
     const PipelineTessellationStateCreateInfo* pTessellationState = nullptr;
-    GraphicsShaderGroupCreateInfoNV& setStageCount(uint32_t stageCount) { this->stageCount = stageCount; return *this; }
-    GraphicsShaderGroupCreateInfoNV& setPStages(const PipelineShaderStageCreateInfo* pStages) { this->pStages = pStages; return *this; }
-    GraphicsShaderGroupCreateInfoNV& setStages(detail::span<const PipelineShaderStageCreateInfo> Stages) { this->stageCount = Stages.size(); this->pStages = Stages.data();  return *this; }
-    GraphicsShaderGroupCreateInfoNV& setPVertexInputState(const PipelineVertexInputStateCreateInfo* pVertexInputState) { this->pVertexInputState = pVertexInputState; return *this; }
-    GraphicsShaderGroupCreateInfoNV& setVertexInputState(PipelineVertexInputStateCreateInfo const& VertexInputState) { this->pVertexInputState = &VertexInputState; return *this; }
-    GraphicsShaderGroupCreateInfoNV& setPTessellationState(const PipelineTessellationStateCreateInfo* pTessellationState) { this->pTessellationState = pTessellationState; return *this; }
-    GraphicsShaderGroupCreateInfoNV& setTessellationState(PipelineTessellationStateCreateInfo const& TessellationState) { this->pTessellationState = &TessellationState; return *this; }
+    GraphicsShaderGroupCreateInfoNV& setStageCount(uint32_t stageCount) {this->stageCount = stageCount; return *this; }
+    GraphicsShaderGroupCreateInfoNV& setPStages(const PipelineShaderStageCreateInfo* pStages) {this->pStages = pStages; return *this; }
+    GraphicsShaderGroupCreateInfoNV& setPStages(detail::span<const PipelineShaderStageCreateInfo> pStages) {this->stageCount = pStages.size(); this->pStages = pStages.data();  return *this; }
+    GraphicsShaderGroupCreateInfoNV& setPVertexInputState(const PipelineVertexInputStateCreateInfo* pVertexInputState) {this->pVertexInputState = pVertexInputState; return *this; }
+    GraphicsShaderGroupCreateInfoNV& setPVertexInputState(PipelineVertexInputStateCreateInfo const& pVertexInputState) {this->pVertexInputState = &pVertexInputState; return *this; }
+    GraphicsShaderGroupCreateInfoNV& setPTessellationState(const PipelineTessellationStateCreateInfo* pTessellationState) {this->pTessellationState = pTessellationState; return *this; }
+    GraphicsShaderGroupCreateInfoNV& setPTessellationState(PipelineTessellationStateCreateInfo const& pTessellationState) {this->pTessellationState = &pTessellationState; return *this; }
 };
 struct GraphicsPipelineShaderGroupsCreateInfoNV {
     StructureType sType{StructureType::GraphicsPipelineShaderGroupsCreateInfoNV};
@@ -5778,19 +5778,19 @@ struct GraphicsPipelineShaderGroupsCreateInfoNV {
     const GraphicsShaderGroupCreateInfoNV* pGroups = nullptr;
     uint32_t pipelineCount{0};
     const Pipeline* pPipelines = nullptr;
-    GraphicsPipelineShaderGroupsCreateInfoNV& setGroupCount(uint32_t groupCount) { this->groupCount = groupCount; return *this; }
-    GraphicsPipelineShaderGroupsCreateInfoNV& setPGroups(const GraphicsShaderGroupCreateInfoNV* pGroups) { this->pGroups = pGroups; return *this; }
-    GraphicsPipelineShaderGroupsCreateInfoNV& setGroups(detail::span<const GraphicsShaderGroupCreateInfoNV> Groups) { this->groupCount = Groups.size(); this->pGroups = Groups.data();  return *this; }
-    GraphicsPipelineShaderGroupsCreateInfoNV& setPipelineCount(uint32_t pipelineCount) { this->pipelineCount = pipelineCount; return *this; }
-    GraphicsPipelineShaderGroupsCreateInfoNV& setPPipelines(const Pipeline* pPipelines) { this->pPipelines = pPipelines; return *this; }
-    GraphicsPipelineShaderGroupsCreateInfoNV& setPipelines(detail::span<const Pipeline> Pipelines) { this->pipelineCount = Pipelines.size(); this->pPipelines = Pipelines.data();  return *this; }
+    GraphicsPipelineShaderGroupsCreateInfoNV& setGroupCount(uint32_t groupCount) {this->groupCount = groupCount; return *this; }
+    GraphicsPipelineShaderGroupsCreateInfoNV& setPGroups(const GraphicsShaderGroupCreateInfoNV* pGroups) {this->pGroups = pGroups; return *this; }
+    GraphicsPipelineShaderGroupsCreateInfoNV& setPGroups(detail::span<const GraphicsShaderGroupCreateInfoNV> pGroups) {this->groupCount = pGroups.size(); this->pGroups = pGroups.data();  return *this; }
+    GraphicsPipelineShaderGroupsCreateInfoNV& setPipelineCount(uint32_t pipelineCount) {this->pipelineCount = pipelineCount; return *this; }
+    GraphicsPipelineShaderGroupsCreateInfoNV& setPPipelines(const Pipeline* pPipelines) {this->pPipelines = pPipelines; return *this; }
+    GraphicsPipelineShaderGroupsCreateInfoNV& setPPipelines(detail::span<const Pipeline> pPipelines) {this->pipelineCount = pPipelines.size(); this->pPipelines = pPipelines.data();  return *this; }
 };
 struct BindShaderGroupIndirectCommandNV {
     uint32_t groupIndex{0};
     constexpr bool operator==(BindShaderGroupIndirectCommandNV const& value) const {
         return groupIndex == value.groupIndex ;}
     constexpr bool operator!=(BindShaderGroupIndirectCommandNV const& value) const {return !(*this == value);}
-    BindShaderGroupIndirectCommandNV& setGroupIndex(uint32_t groupIndex) { this->groupIndex = groupIndex; return *this; }
+    BindShaderGroupIndirectCommandNV& setGroupIndex(uint32_t groupIndex) {this->groupIndex = groupIndex; return *this; }
 };
 struct BindIndexBufferIndirectCommandNV {
     DeviceAddress bufferAddress{0};
@@ -5799,9 +5799,9 @@ struct BindIndexBufferIndirectCommandNV {
     constexpr bool operator==(BindIndexBufferIndirectCommandNV const& value) const {
         return bufferAddress == value.bufferAddress && size == value.size && indexType == value.indexType ;}
     constexpr bool operator!=(BindIndexBufferIndirectCommandNV const& value) const {return !(*this == value);}
-    BindIndexBufferIndirectCommandNV& setBufferAddress(DeviceAddress bufferAddress) { this->bufferAddress = bufferAddress; return *this; }
-    BindIndexBufferIndirectCommandNV& setSize(uint32_t size) { this->size = size; return *this; }
-    BindIndexBufferIndirectCommandNV& setIndexType(IndexType indexType) { this->indexType = indexType; return *this; }
+    BindIndexBufferIndirectCommandNV& setBufferAddress(DeviceAddress bufferAddress) {this->bufferAddress = bufferAddress; return *this; }
+    BindIndexBufferIndirectCommandNV& setSize(uint32_t size) {this->size = size; return *this; }
+    BindIndexBufferIndirectCommandNV& setIndexType(IndexType indexType) {this->indexType = indexType; return *this; }
 };
 struct BindVertexBufferIndirectCommandNV {
     DeviceAddress bufferAddress{0};
@@ -5810,22 +5810,22 @@ struct BindVertexBufferIndirectCommandNV {
     constexpr bool operator==(BindVertexBufferIndirectCommandNV const& value) const {
         return bufferAddress == value.bufferAddress && size == value.size && stride == value.stride ;}
     constexpr bool operator!=(BindVertexBufferIndirectCommandNV const& value) const {return !(*this == value);}
-    BindVertexBufferIndirectCommandNV& setBufferAddress(DeviceAddress bufferAddress) { this->bufferAddress = bufferAddress; return *this; }
-    BindVertexBufferIndirectCommandNV& setSize(uint32_t size) { this->size = size; return *this; }
-    BindVertexBufferIndirectCommandNV& setStride(uint32_t stride) { this->stride = stride; return *this; }
+    BindVertexBufferIndirectCommandNV& setBufferAddress(DeviceAddress bufferAddress) {this->bufferAddress = bufferAddress; return *this; }
+    BindVertexBufferIndirectCommandNV& setSize(uint32_t size) {this->size = size; return *this; }
+    BindVertexBufferIndirectCommandNV& setStride(uint32_t stride) {this->stride = stride; return *this; }
 };
 struct SetStateFlagsIndirectCommandNV {
     uint32_t data{0};
     constexpr bool operator==(SetStateFlagsIndirectCommandNV const& value) const {
         return data == value.data ;}
     constexpr bool operator!=(SetStateFlagsIndirectCommandNV const& value) const {return !(*this == value);}
-    SetStateFlagsIndirectCommandNV& setData(uint32_t data) { this->data = data; return *this; }
+    SetStateFlagsIndirectCommandNV& setData(uint32_t data) {this->data = data; return *this; }
 };
 struct IndirectCommandsStreamNV {
     Buffer buffer{};
     DeviceSize offset{0};
-    IndirectCommandsStreamNV& setBuffer(Buffer buffer) { this->buffer = buffer; return *this; }
-    IndirectCommandsStreamNV& setOffset(DeviceSize offset) { this->offset = offset; return *this; }
+    IndirectCommandsStreamNV& setBuffer(Buffer buffer) {this->buffer = buffer; return *this; }
+    IndirectCommandsStreamNV& setOffset(DeviceSize offset) {this->offset = offset; return *this; }
 };
 struct IndirectCommandsLayoutTokenNV {
     StructureType sType{StructureType::IndirectCommandsLayoutTokenNV};
@@ -5843,21 +5843,21 @@ struct IndirectCommandsLayoutTokenNV {
     uint32_t indexTypeCount{0};
     const IndexType* pIndexTypes = nullptr;
     const uint32_t* pIndexTypeValues = nullptr;
-    IndirectCommandsLayoutTokenNV& setTokenType(IndirectCommandsTokenTypeNV tokenType) { this->tokenType = tokenType; return *this; }
-    IndirectCommandsLayoutTokenNV& setStream(uint32_t stream) { this->stream = stream; return *this; }
-    IndirectCommandsLayoutTokenNV& setOffset(uint32_t offset) { this->offset = offset; return *this; }
-    IndirectCommandsLayoutTokenNV& setVertexBindingUnit(uint32_t vertexBindingUnit) { this->vertexBindingUnit = vertexBindingUnit; return *this; }
-    IndirectCommandsLayoutTokenNV& setVertexDynamicStride(Bool32 vertexDynamicStride) { this->vertexDynamicStride = vertexDynamicStride; return *this; }
-    IndirectCommandsLayoutTokenNV& setPushconstantPipelineLayout(PipelineLayout pushconstantPipelineLayout) { this->pushconstantPipelineLayout = pushconstantPipelineLayout; return *this; }
-    IndirectCommandsLayoutTokenNV& setPushconstantShaderStageFlags(ShaderStageFlags pushconstantShaderStageFlags) { this->pushconstantShaderStageFlags = pushconstantShaderStageFlags; return *this; }
-    IndirectCommandsLayoutTokenNV& setPushconstantOffset(uint32_t pushconstantOffset) { this->pushconstantOffset = pushconstantOffset; return *this; }
-    IndirectCommandsLayoutTokenNV& setPushconstantSize(uint32_t pushconstantSize) { this->pushconstantSize = pushconstantSize; return *this; }
-    IndirectCommandsLayoutTokenNV& setIndirectStateFlags(IndirectStateFlagsNV indirectStateFlags) { this->indirectStateFlags = indirectStateFlags; return *this; }
-    IndirectCommandsLayoutTokenNV& setIndexTypeCount(uint32_t indexTypeCount) { this->indexTypeCount = indexTypeCount; return *this; }
-    IndirectCommandsLayoutTokenNV& setPIndexTypes(const IndexType* pIndexTypes) { this->pIndexTypes = pIndexTypes; return *this; }
-    IndirectCommandsLayoutTokenNV& setIndexTypes(detail::span<const IndexType> IndexTypes) { this->indexTypeCount = IndexTypes.size(); this->pIndexTypes = IndexTypes.data();  return *this; }
-    IndirectCommandsLayoutTokenNV& setPIndexTypeValues(const uint32_t* pIndexTypeValues) { this->pIndexTypeValues = pIndexTypeValues; return *this; }
-    IndirectCommandsLayoutTokenNV& setIndexTypeValues(detail::span<const uint32_t> IndexTypeValues) { this->indexTypeCount = IndexTypeValues.size(); this->pIndexTypeValues = IndexTypeValues.data();  return *this; }
+    IndirectCommandsLayoutTokenNV& setTokenType(IndirectCommandsTokenTypeNV tokenType) {this->tokenType = tokenType; return *this; }
+    IndirectCommandsLayoutTokenNV& setStream(uint32_t stream) {this->stream = stream; return *this; }
+    IndirectCommandsLayoutTokenNV& setOffset(uint32_t offset) {this->offset = offset; return *this; }
+    IndirectCommandsLayoutTokenNV& setVertexBindingUnit(uint32_t vertexBindingUnit) {this->vertexBindingUnit = vertexBindingUnit; return *this; }
+    IndirectCommandsLayoutTokenNV& setVertexDynamicStride(Bool32 vertexDynamicStride) {this->vertexDynamicStride = vertexDynamicStride; return *this; }
+    IndirectCommandsLayoutTokenNV& setPushconstantPipelineLayout(PipelineLayout pushconstantPipelineLayout) {this->pushconstantPipelineLayout = pushconstantPipelineLayout; return *this; }
+    IndirectCommandsLayoutTokenNV& setPushconstantShaderStageFlags(ShaderStageFlags pushconstantShaderStageFlags) {this->pushconstantShaderStageFlags = pushconstantShaderStageFlags; return *this; }
+    IndirectCommandsLayoutTokenNV& setPushconstantOffset(uint32_t pushconstantOffset) {this->pushconstantOffset = pushconstantOffset; return *this; }
+    IndirectCommandsLayoutTokenNV& setPushconstantSize(uint32_t pushconstantSize) {this->pushconstantSize = pushconstantSize; return *this; }
+    IndirectCommandsLayoutTokenNV& setIndirectStateFlags(IndirectStateFlagsNV indirectStateFlags) {this->indirectStateFlags = indirectStateFlags; return *this; }
+    IndirectCommandsLayoutTokenNV& setIndexTypeCount(uint32_t indexTypeCount) {this->indexTypeCount = indexTypeCount; return *this; }
+    IndirectCommandsLayoutTokenNV& setPIndexTypes(const IndexType* pIndexTypes) {this->pIndexTypes = pIndexTypes; return *this; }
+    IndirectCommandsLayoutTokenNV& setPIndexTypes(detail::span<const IndexType> pIndexTypes) {this->indexTypeCount = pIndexTypes.size(); this->pIndexTypes = pIndexTypes.data();  return *this; }
+    IndirectCommandsLayoutTokenNV& setPIndexTypeValues(const uint32_t* pIndexTypeValues) {this->pIndexTypeValues = pIndexTypeValues; return *this; }
+    IndirectCommandsLayoutTokenNV& setPIndexTypeValues(detail::span<const uint32_t> pIndexTypeValues) {this->indexTypeCount = pIndexTypeValues.size(); this->pIndexTypeValues = pIndexTypeValues.data();  return *this; }
 };
 struct IndirectCommandsLayoutCreateInfoNV {
     StructureType sType{StructureType::IndirectCommandsLayoutCreateInfoNV};
@@ -5868,14 +5868,14 @@ struct IndirectCommandsLayoutCreateInfoNV {
     const IndirectCommandsLayoutTokenNV* pTokens = nullptr;
     uint32_t streamCount{0};
     const uint32_t* pStreamStrides = nullptr;
-    IndirectCommandsLayoutCreateInfoNV& setFlags(IndirectCommandsLayoutUsageFlagsNV flags) { this->flags = flags; return *this; }
-    IndirectCommandsLayoutCreateInfoNV& setPipelineBindPoint(PipelineBindPoint pipelineBindPoint) { this->pipelineBindPoint = pipelineBindPoint; return *this; }
-    IndirectCommandsLayoutCreateInfoNV& setTokenCount(uint32_t tokenCount) { this->tokenCount = tokenCount; return *this; }
-    IndirectCommandsLayoutCreateInfoNV& setPTokens(const IndirectCommandsLayoutTokenNV* pTokens) { this->pTokens = pTokens; return *this; }
-    IndirectCommandsLayoutCreateInfoNV& setTokens(detail::span<const IndirectCommandsLayoutTokenNV> Tokens) { this->tokenCount = Tokens.size(); this->pTokens = Tokens.data();  return *this; }
-    IndirectCommandsLayoutCreateInfoNV& setStreamCount(uint32_t streamCount) { this->streamCount = streamCount; return *this; }
-    IndirectCommandsLayoutCreateInfoNV& setPStreamStrides(const uint32_t* pStreamStrides) { this->pStreamStrides = pStreamStrides; return *this; }
-    IndirectCommandsLayoutCreateInfoNV& setStreamStrides(detail::span<const uint32_t> StreamStrides) { this->streamCount = StreamStrides.size(); this->pStreamStrides = StreamStrides.data();  return *this; }
+    IndirectCommandsLayoutCreateInfoNV& setFlags(IndirectCommandsLayoutUsageFlagsNV flags) {this->flags = flags; return *this; }
+    IndirectCommandsLayoutCreateInfoNV& setPipelineBindPoint(PipelineBindPoint pipelineBindPoint) {this->pipelineBindPoint = pipelineBindPoint; return *this; }
+    IndirectCommandsLayoutCreateInfoNV& setTokenCount(uint32_t tokenCount) {this->tokenCount = tokenCount; return *this; }
+    IndirectCommandsLayoutCreateInfoNV& setPTokens(const IndirectCommandsLayoutTokenNV* pTokens) {this->pTokens = pTokens; return *this; }
+    IndirectCommandsLayoutCreateInfoNV& setPTokens(detail::span<const IndirectCommandsLayoutTokenNV> pTokens) {this->tokenCount = pTokens.size(); this->pTokens = pTokens.data();  return *this; }
+    IndirectCommandsLayoutCreateInfoNV& setStreamCount(uint32_t streamCount) {this->streamCount = streamCount; return *this; }
+    IndirectCommandsLayoutCreateInfoNV& setPStreamStrides(const uint32_t* pStreamStrides) {this->pStreamStrides = pStreamStrides; return *this; }
+    IndirectCommandsLayoutCreateInfoNV& setPStreamStrides(detail::span<const uint32_t> pStreamStrides) {this->streamCount = pStreamStrides.size(); this->pStreamStrides = pStreamStrides.data();  return *this; }
 };
 struct GeneratedCommandsInfoNV {
     StructureType sType{StructureType::GeneratedCommandsInfoNV};
@@ -5893,20 +5893,20 @@ struct GeneratedCommandsInfoNV {
     DeviceSize sequencesCountOffset{0};
     Buffer sequencesIndexBuffer{};
     DeviceSize sequencesIndexOffset{0};
-    GeneratedCommandsInfoNV& setPipelineBindPoint(PipelineBindPoint pipelineBindPoint) { this->pipelineBindPoint = pipelineBindPoint; return *this; }
-    GeneratedCommandsInfoNV& setPipeline(Pipeline pipeline) { this->pipeline = pipeline; return *this; }
-    GeneratedCommandsInfoNV& setIndirectCommandsLayout(IndirectCommandsLayoutNV indirectCommandsLayout) { this->indirectCommandsLayout = indirectCommandsLayout; return *this; }
-    GeneratedCommandsInfoNV& setStreamCount(uint32_t streamCount) { this->streamCount = streamCount; return *this; }
-    GeneratedCommandsInfoNV& setPStreams(const IndirectCommandsStreamNV* pStreams) { this->pStreams = pStreams; return *this; }
-    GeneratedCommandsInfoNV& setStreams(detail::span<const IndirectCommandsStreamNV> Streams) { this->streamCount = Streams.size(); this->pStreams = Streams.data();  return *this; }
-    GeneratedCommandsInfoNV& setSequencesCount(uint32_t sequencesCount) { this->sequencesCount = sequencesCount; return *this; }
-    GeneratedCommandsInfoNV& setPreprocessBuffer(Buffer preprocessBuffer) { this->preprocessBuffer = preprocessBuffer; return *this; }
-    GeneratedCommandsInfoNV& setPreprocessOffset(DeviceSize preprocessOffset) { this->preprocessOffset = preprocessOffset; return *this; }
-    GeneratedCommandsInfoNV& setPreprocessSize(DeviceSize preprocessSize) { this->preprocessSize = preprocessSize; return *this; }
-    GeneratedCommandsInfoNV& setSequencesCountBuffer(Buffer sequencesCountBuffer) { this->sequencesCountBuffer = sequencesCountBuffer; return *this; }
-    GeneratedCommandsInfoNV& setSequencesCountOffset(DeviceSize sequencesCountOffset) { this->sequencesCountOffset = sequencesCountOffset; return *this; }
-    GeneratedCommandsInfoNV& setSequencesIndexBuffer(Buffer sequencesIndexBuffer) { this->sequencesIndexBuffer = sequencesIndexBuffer; return *this; }
-    GeneratedCommandsInfoNV& setSequencesIndexOffset(DeviceSize sequencesIndexOffset) { this->sequencesIndexOffset = sequencesIndexOffset; return *this; }
+    GeneratedCommandsInfoNV& setPipelineBindPoint(PipelineBindPoint pipelineBindPoint) {this->pipelineBindPoint = pipelineBindPoint; return *this; }
+    GeneratedCommandsInfoNV& setPipeline(Pipeline pipeline) {this->pipeline = pipeline; return *this; }
+    GeneratedCommandsInfoNV& setIndirectCommandsLayout(IndirectCommandsLayoutNV indirectCommandsLayout) {this->indirectCommandsLayout = indirectCommandsLayout; return *this; }
+    GeneratedCommandsInfoNV& setStreamCount(uint32_t streamCount) {this->streamCount = streamCount; return *this; }
+    GeneratedCommandsInfoNV& setPStreams(const IndirectCommandsStreamNV* pStreams) {this->pStreams = pStreams; return *this; }
+    GeneratedCommandsInfoNV& setPStreams(detail::span<const IndirectCommandsStreamNV> pStreams) {this->streamCount = pStreams.size(); this->pStreams = pStreams.data();  return *this; }
+    GeneratedCommandsInfoNV& setSequencesCount(uint32_t sequencesCount) {this->sequencesCount = sequencesCount; return *this; }
+    GeneratedCommandsInfoNV& setPreprocessBuffer(Buffer preprocessBuffer) {this->preprocessBuffer = preprocessBuffer; return *this; }
+    GeneratedCommandsInfoNV& setPreprocessOffset(DeviceSize preprocessOffset) {this->preprocessOffset = preprocessOffset; return *this; }
+    GeneratedCommandsInfoNV& setPreprocessSize(DeviceSize preprocessSize) {this->preprocessSize = preprocessSize; return *this; }
+    GeneratedCommandsInfoNV& setSequencesCountBuffer(Buffer sequencesCountBuffer) {this->sequencesCountBuffer = sequencesCountBuffer; return *this; }
+    GeneratedCommandsInfoNV& setSequencesCountOffset(DeviceSize sequencesCountOffset) {this->sequencesCountOffset = sequencesCountOffset; return *this; }
+    GeneratedCommandsInfoNV& setSequencesIndexBuffer(Buffer sequencesIndexBuffer) {this->sequencesIndexBuffer = sequencesIndexBuffer; return *this; }
+    GeneratedCommandsInfoNV& setSequencesIndexOffset(DeviceSize sequencesIndexOffset) {this->sequencesIndexOffset = sequencesIndexOffset; return *this; }
 };
 struct GeneratedCommandsMemoryRequirementsInfoNV {
     StructureType sType{StructureType::GeneratedCommandsMemoryRequirementsInfoNV};
@@ -5915,37 +5915,37 @@ struct GeneratedCommandsMemoryRequirementsInfoNV {
     Pipeline pipeline{};
     IndirectCommandsLayoutNV indirectCommandsLayout{};
     uint32_t maxSequencesCount{0};
-    GeneratedCommandsMemoryRequirementsInfoNV& setPipelineBindPoint(PipelineBindPoint pipelineBindPoint) { this->pipelineBindPoint = pipelineBindPoint; return *this; }
-    GeneratedCommandsMemoryRequirementsInfoNV& setPipeline(Pipeline pipeline) { this->pipeline = pipeline; return *this; }
-    GeneratedCommandsMemoryRequirementsInfoNV& setIndirectCommandsLayout(IndirectCommandsLayoutNV indirectCommandsLayout) { this->indirectCommandsLayout = indirectCommandsLayout; return *this; }
-    GeneratedCommandsMemoryRequirementsInfoNV& setMaxSequencesCount(uint32_t maxSequencesCount) { this->maxSequencesCount = maxSequencesCount; return *this; }
+    GeneratedCommandsMemoryRequirementsInfoNV& setPipelineBindPoint(PipelineBindPoint pipelineBindPoint) {this->pipelineBindPoint = pipelineBindPoint; return *this; }
+    GeneratedCommandsMemoryRequirementsInfoNV& setPipeline(Pipeline pipeline) {this->pipeline = pipeline; return *this; }
+    GeneratedCommandsMemoryRequirementsInfoNV& setIndirectCommandsLayout(IndirectCommandsLayoutNV indirectCommandsLayout) {this->indirectCommandsLayout = indirectCommandsLayout; return *this; }
+    GeneratedCommandsMemoryRequirementsInfoNV& setMaxSequencesCount(uint32_t maxSequencesCount) {this->maxSequencesCount = maxSequencesCount; return *this; }
 };
 struct PhysicalDeviceFeatures2 {
     StructureType sType{StructureType::PhysicalDeviceFeatures2};
     void* pNext = nullptr;
     PhysicalDeviceFeatures features{};
-    PhysicalDeviceFeatures2& setFeatures(PhysicalDeviceFeatures features) { this->features = features; return *this; }
+    PhysicalDeviceFeatures2& setFeatures(PhysicalDeviceFeatures features) {this->features = features; return *this; }
 };
 using PhysicalDeviceFeatures2KHR = PhysicalDeviceFeatures2;
 struct PhysicalDeviceProperties2 {
     StructureType sType{StructureType::PhysicalDeviceProperties2};
     void* pNext = nullptr;
     PhysicalDeviceProperties properties{};
-    PhysicalDeviceProperties2& setProperties(PhysicalDeviceProperties properties) { this->properties = properties; return *this; }
+    PhysicalDeviceProperties2& setProperties(PhysicalDeviceProperties properties) {this->properties = properties; return *this; }
 };
 using PhysicalDeviceProperties2KHR = PhysicalDeviceProperties2;
 struct FormatProperties2 {
     StructureType sType{StructureType::FormatProperties2};
     void* pNext = nullptr;
     FormatProperties formatProperties{};
-    FormatProperties2& setFormatProperties(FormatProperties formatProperties) { this->formatProperties = formatProperties; return *this; }
+    FormatProperties2& setFormatProperties(FormatProperties formatProperties) {this->formatProperties = formatProperties; return *this; }
 };
 using FormatProperties2KHR = FormatProperties2;
 struct ImageFormatProperties2 {
     StructureType sType{StructureType::ImageFormatProperties2};
     void* pNext = nullptr;
     ImageFormatProperties imageFormatProperties{};
-    ImageFormatProperties2& setImageFormatProperties(ImageFormatProperties imageFormatProperties) { this->imageFormatProperties = imageFormatProperties; return *this; }
+    ImageFormatProperties2& setImageFormatProperties(ImageFormatProperties imageFormatProperties) {this->imageFormatProperties = imageFormatProperties; return *this; }
 };
 using ImageFormatProperties2KHR = ImageFormatProperties2;
 struct PhysicalDeviceImageFormatInfo2 {
@@ -5956,32 +5956,32 @@ struct PhysicalDeviceImageFormatInfo2 {
     ImageTiling tiling{static_cast<ImageTiling>(0)};
     ImageUsageFlags usage{};
     ImageCreateFlags flags{};
-    PhysicalDeviceImageFormatInfo2& setFormat(Format format) { this->format = format; return *this; }
-    PhysicalDeviceImageFormatInfo2& setType(ImageType type) { this->type = type; return *this; }
-    PhysicalDeviceImageFormatInfo2& setTiling(ImageTiling tiling) { this->tiling = tiling; return *this; }
-    PhysicalDeviceImageFormatInfo2& setUsage(ImageUsageFlags usage) { this->usage = usage; return *this; }
-    PhysicalDeviceImageFormatInfo2& setFlags(ImageCreateFlags flags) { this->flags = flags; return *this; }
+    PhysicalDeviceImageFormatInfo2& setFormat(Format format) {this->format = format; return *this; }
+    PhysicalDeviceImageFormatInfo2& setType(ImageType type) {this->type = type; return *this; }
+    PhysicalDeviceImageFormatInfo2& setTiling(ImageTiling tiling) {this->tiling = tiling; return *this; }
+    PhysicalDeviceImageFormatInfo2& setUsage(ImageUsageFlags usage) {this->usage = usage; return *this; }
+    PhysicalDeviceImageFormatInfo2& setFlags(ImageCreateFlags flags) {this->flags = flags; return *this; }
 };
 using PhysicalDeviceImageFormatInfo2KHR = PhysicalDeviceImageFormatInfo2;
 struct QueueFamilyProperties2 {
     StructureType sType{StructureType::QueueFamilyProperties2};
     void* pNext = nullptr;
     QueueFamilyProperties queueFamilyProperties{};
-    QueueFamilyProperties2& setQueueFamilyProperties(QueueFamilyProperties queueFamilyProperties) { this->queueFamilyProperties = queueFamilyProperties; return *this; }
+    QueueFamilyProperties2& setQueueFamilyProperties(QueueFamilyProperties queueFamilyProperties) {this->queueFamilyProperties = queueFamilyProperties; return *this; }
 };
 using QueueFamilyProperties2KHR = QueueFamilyProperties2;
 struct PhysicalDeviceMemoryProperties2 {
     StructureType sType{StructureType::PhysicalDeviceMemoryProperties2};
     void* pNext = nullptr;
     PhysicalDeviceMemoryProperties memoryProperties{};
-    PhysicalDeviceMemoryProperties2& setMemoryProperties(PhysicalDeviceMemoryProperties memoryProperties) { this->memoryProperties = memoryProperties; return *this; }
+    PhysicalDeviceMemoryProperties2& setMemoryProperties(PhysicalDeviceMemoryProperties memoryProperties) {this->memoryProperties = memoryProperties; return *this; }
 };
 using PhysicalDeviceMemoryProperties2KHR = PhysicalDeviceMemoryProperties2;
 struct SparseImageFormatProperties2 {
     StructureType sType{StructureType::SparseImageFormatProperties2};
     void* pNext = nullptr;
     SparseImageFormatProperties properties{};
-    SparseImageFormatProperties2& setProperties(SparseImageFormatProperties properties) { this->properties = properties; return *this; }
+    SparseImageFormatProperties2& setProperties(SparseImageFormatProperties properties) {this->properties = properties; return *this; }
 };
 using SparseImageFormatProperties2KHR = SparseImageFormatProperties2;
 struct PhysicalDeviceSparseImageFormatInfo2 {
@@ -5992,18 +5992,18 @@ struct PhysicalDeviceSparseImageFormatInfo2 {
     SampleCountFlagBits samples{static_cast<SampleCountFlagBits>(0)};
     ImageUsageFlags usage{};
     ImageTiling tiling{static_cast<ImageTiling>(0)};
-    PhysicalDeviceSparseImageFormatInfo2& setFormat(Format format) { this->format = format; return *this; }
-    PhysicalDeviceSparseImageFormatInfo2& setType(ImageType type) { this->type = type; return *this; }
-    PhysicalDeviceSparseImageFormatInfo2& setSamples(SampleCountFlagBits samples) { this->samples = samples; return *this; }
-    PhysicalDeviceSparseImageFormatInfo2& setUsage(ImageUsageFlags usage) { this->usage = usage; return *this; }
-    PhysicalDeviceSparseImageFormatInfo2& setTiling(ImageTiling tiling) { this->tiling = tiling; return *this; }
+    PhysicalDeviceSparseImageFormatInfo2& setFormat(Format format) {this->format = format; return *this; }
+    PhysicalDeviceSparseImageFormatInfo2& setType(ImageType type) {this->type = type; return *this; }
+    PhysicalDeviceSparseImageFormatInfo2& setSamples(SampleCountFlagBits samples) {this->samples = samples; return *this; }
+    PhysicalDeviceSparseImageFormatInfo2& setUsage(ImageUsageFlags usage) {this->usage = usage; return *this; }
+    PhysicalDeviceSparseImageFormatInfo2& setTiling(ImageTiling tiling) {this->tiling = tiling; return *this; }
 };
 using PhysicalDeviceSparseImageFormatInfo2KHR = PhysicalDeviceSparseImageFormatInfo2;
 struct PhysicalDevicePushDescriptorPropertiesKHR {
     StructureType sType{StructureType::PhysicalDevicePushDescriptorPropertiesKHR};
     void* pNext = nullptr;
     uint32_t maxPushDescriptors{0};
-    PhysicalDevicePushDescriptorPropertiesKHR& setMaxPushDescriptors(uint32_t maxPushDescriptors) { this->maxPushDescriptors = maxPushDescriptors; return *this; }
+    PhysicalDevicePushDescriptorPropertiesKHR& setMaxPushDescriptors(uint32_t maxPushDescriptors) {this->maxPushDescriptors = maxPushDescriptors; return *this; }
 };
 struct ConformanceVersion {
     uint8_t major{0};
@@ -6013,10 +6013,10 @@ struct ConformanceVersion {
     constexpr bool operator==(ConformanceVersion const& value) const {
         return major == value.major && minor == value.minor && subminor == value.subminor && patch == value.patch ;}
     constexpr bool operator!=(ConformanceVersion const& value) const {return !(*this == value);}
-    ConformanceVersion& setMajor(uint8_t major) { this->major = major; return *this; }
-    ConformanceVersion& setMinor(uint8_t minor) { this->minor = minor; return *this; }
-    ConformanceVersion& setSubminor(uint8_t subminor) { this->subminor = subminor; return *this; }
-    ConformanceVersion& setPatch(uint8_t patch) { this->patch = patch; return *this; }
+    ConformanceVersion& setMajor(uint8_t major) {this->major = major; return *this; }
+    ConformanceVersion& setMinor(uint8_t minor) {this->minor = minor; return *this; }
+    ConformanceVersion& setSubminor(uint8_t subminor) {this->subminor = subminor; return *this; }
+    ConformanceVersion& setPatch(uint8_t patch) {this->patch = patch; return *this; }
 };
 using ConformanceVersionKHR = ConformanceVersion;
 struct PhysicalDeviceDriverProperties {
@@ -6026,10 +6026,10 @@ struct PhysicalDeviceDriverProperties {
     char driverName[MAX_DRIVER_NAME_SIZE];
     char driverInfo[MAX_DRIVER_INFO_SIZE];
     ConformanceVersion conformanceVersion{};
-    PhysicalDeviceDriverProperties& setDriverID(DriverId driverID) { this->driverID = driverID; return *this; }
-    PhysicalDeviceDriverProperties& setDriverName(char driverName[MAX_DRIVER_NAME_SIZE]) { for(uint32_t i = 0; i < MAX_DRIVER_NAME_SIZE; i++) this->driverName[i] = driverName[i]; return *this; }
-    PhysicalDeviceDriverProperties& setDriverInfo(char driverInfo[MAX_DRIVER_INFO_SIZE]) { for(uint32_t i = 0; i < MAX_DRIVER_INFO_SIZE; i++) this->driverInfo[i] = driverInfo[i]; return *this; }
-    PhysicalDeviceDriverProperties& setConformanceVersion(ConformanceVersion conformanceVersion) { this->conformanceVersion = conformanceVersion; return *this; }
+    PhysicalDeviceDriverProperties& setDriverID(DriverId driverID) {this->driverID = driverID; return *this; }
+    PhysicalDeviceDriverProperties& setDriverName(char driverName[MAX_DRIVER_NAME_SIZE]) {for(uint32_t i = 0; i < MAX_DRIVER_NAME_SIZE; i++) this->driverName[i] = driverName[i]; return *this; }
+    PhysicalDeviceDriverProperties& setDriverInfo(char driverInfo[MAX_DRIVER_INFO_SIZE]) {for(uint32_t i = 0; i < MAX_DRIVER_INFO_SIZE; i++) this->driverInfo[i] = driverInfo[i]; return *this; }
+    PhysicalDeviceDriverProperties& setConformanceVersion(ConformanceVersion conformanceVersion) {this->conformanceVersion = conformanceVersion; return *this; }
 };
 using PhysicalDeviceDriverPropertiesKHR = PhysicalDeviceDriverProperties;
 struct RectLayerKHR {
@@ -6039,33 +6039,33 @@ struct RectLayerKHR {
     constexpr bool operator==(RectLayerKHR const& value) const {
         return offset == value.offset && extent == value.extent && layer == value.layer ;}
     constexpr bool operator!=(RectLayerKHR const& value) const {return !(*this == value);}
-    RectLayerKHR& setOffset(Offset2D offset) { this->offset = offset; return *this; }
-    RectLayerKHR& setExtent(Extent2D extent) { this->extent = extent; return *this; }
-    RectLayerKHR& setLayer(uint32_t layer) { this->layer = layer; return *this; }
+    RectLayerKHR& setOffset(Offset2D offset) {this->offset = offset; return *this; }
+    RectLayerKHR& setExtent(Extent2D extent) {this->extent = extent; return *this; }
+    RectLayerKHR& setLayer(uint32_t layer) {this->layer = layer; return *this; }
 };
 struct PresentRegionKHR {
     uint32_t rectangleCount{0};
     const RectLayerKHR* pRectangles = nullptr;
-    PresentRegionKHR& setRectangleCount(uint32_t rectangleCount) { this->rectangleCount = rectangleCount; return *this; }
-    PresentRegionKHR& setPRectangles(const RectLayerKHR* pRectangles) { this->pRectangles = pRectangles; return *this; }
-    PresentRegionKHR& setRectangles(detail::span<const RectLayerKHR> Rectangles) { this->rectangleCount = Rectangles.size(); this->pRectangles = Rectangles.data();  return *this; }
+    PresentRegionKHR& setRectangleCount(uint32_t rectangleCount) {this->rectangleCount = rectangleCount; return *this; }
+    PresentRegionKHR& setPRectangles(const RectLayerKHR* pRectangles) {this->pRectangles = pRectangles; return *this; }
+    PresentRegionKHR& setPRectangles(detail::span<const RectLayerKHR> pRectangles) {this->rectangleCount = pRectangles.size(); this->pRectangles = pRectangles.data();  return *this; }
 };
 struct PresentRegionsKHR {
     StructureType sType{StructureType::PresentRegionsKHR};
     const void* pNext = nullptr;
     uint32_t swapchainCount{0};
     const PresentRegionKHR* pRegions = nullptr;
-    PresentRegionsKHR& setSwapchainCount(uint32_t swapchainCount) { this->swapchainCount = swapchainCount; return *this; }
-    PresentRegionsKHR& setPRegions(const PresentRegionKHR* pRegions) { this->pRegions = pRegions; return *this; }
-    PresentRegionsKHR& setRegions(detail::span<const PresentRegionKHR> Regions) { this->swapchainCount = Regions.size(); this->pRegions = Regions.data();  return *this; }
+    PresentRegionsKHR& setSwapchainCount(uint32_t swapchainCount) {this->swapchainCount = swapchainCount; return *this; }
+    PresentRegionsKHR& setPRegions(const PresentRegionKHR* pRegions) {this->pRegions = pRegions; return *this; }
+    PresentRegionsKHR& setPRegions(detail::span<const PresentRegionKHR> pRegions) {this->swapchainCount = pRegions.size(); this->pRegions = pRegions.data();  return *this; }
 };
 struct PhysicalDeviceVariablePointersFeatures {
     StructureType sType{StructureType::PhysicalDeviceVariablePointersFeatures};
     void* pNext = nullptr;
     Bool32 variablePointersStorageBuffer{0};
     Bool32 variablePointers{0};
-    PhysicalDeviceVariablePointersFeatures& setVariablePointersStorageBuffer(Bool32 variablePointersStorageBuffer) { this->variablePointersStorageBuffer = variablePointersStorageBuffer; return *this; }
-    PhysicalDeviceVariablePointersFeatures& setVariablePointers(Bool32 variablePointers) { this->variablePointers = variablePointers; return *this; }
+    PhysicalDeviceVariablePointersFeatures& setVariablePointersStorageBuffer(Bool32 variablePointersStorageBuffer) {this->variablePointersStorageBuffer = variablePointersStorageBuffer; return *this; }
+    PhysicalDeviceVariablePointersFeatures& setVariablePointers(Bool32 variablePointers) {this->variablePointers = variablePointers; return *this; }
 };
 using PhysicalDeviceVariablePointersFeaturesKHR = PhysicalDeviceVariablePointersFeatures;
 using PhysicalDeviceVariablePointerFeaturesKHR = PhysicalDeviceVariablePointersFeatures;
@@ -6078,23 +6078,23 @@ struct ExternalMemoryProperties {
         return externalMemoryFeatures == value.externalMemoryFeatures && exportFromImportedHandleTypes == value.exportFromImportedHandleTypes 
         && compatibleHandleTypes == value.compatibleHandleTypes ;}
     constexpr bool operator!=(ExternalMemoryProperties const& value) const {return !(*this == value);}
-    ExternalMemoryProperties& setExternalMemoryFeatures(ExternalMemoryFeatureFlags externalMemoryFeatures) { this->externalMemoryFeatures = externalMemoryFeatures; return *this; }
-    ExternalMemoryProperties& setExportFromImportedHandleTypes(ExternalMemoryHandleTypeFlags exportFromImportedHandleTypes) { this->exportFromImportedHandleTypes = exportFromImportedHandleTypes; return *this; }
-    ExternalMemoryProperties& setCompatibleHandleTypes(ExternalMemoryHandleTypeFlags compatibleHandleTypes) { this->compatibleHandleTypes = compatibleHandleTypes; return *this; }
+    ExternalMemoryProperties& setExternalMemoryFeatures(ExternalMemoryFeatureFlags externalMemoryFeatures) {this->externalMemoryFeatures = externalMemoryFeatures; return *this; }
+    ExternalMemoryProperties& setExportFromImportedHandleTypes(ExternalMemoryHandleTypeFlags exportFromImportedHandleTypes) {this->exportFromImportedHandleTypes = exportFromImportedHandleTypes; return *this; }
+    ExternalMemoryProperties& setCompatibleHandleTypes(ExternalMemoryHandleTypeFlags compatibleHandleTypes) {this->compatibleHandleTypes = compatibleHandleTypes; return *this; }
 };
 using ExternalMemoryPropertiesKHR = ExternalMemoryProperties;
 struct PhysicalDeviceExternalImageFormatInfo {
     StructureType sType{StructureType::PhysicalDeviceExternalImageFormatInfo};
     const void* pNext = nullptr;
     ExternalMemoryHandleTypeFlagBits handleType{static_cast<ExternalMemoryHandleTypeFlagBits>(0)};
-    PhysicalDeviceExternalImageFormatInfo& setHandleType(ExternalMemoryHandleTypeFlagBits handleType) { this->handleType = handleType; return *this; }
+    PhysicalDeviceExternalImageFormatInfo& setHandleType(ExternalMemoryHandleTypeFlagBits handleType) {this->handleType = handleType; return *this; }
 };
 using PhysicalDeviceExternalImageFormatInfoKHR = PhysicalDeviceExternalImageFormatInfo;
 struct ExternalImageFormatProperties {
     StructureType sType{StructureType::ExternalImageFormatProperties};
     void* pNext = nullptr;
     ExternalMemoryProperties externalMemoryProperties{};
-    ExternalImageFormatProperties& setExternalMemoryProperties(ExternalMemoryProperties externalMemoryProperties) { this->externalMemoryProperties = externalMemoryProperties; return *this; }
+    ExternalImageFormatProperties& setExternalMemoryProperties(ExternalMemoryProperties externalMemoryProperties) {this->externalMemoryProperties = externalMemoryProperties; return *this; }
 };
 using ExternalImageFormatPropertiesKHR = ExternalImageFormatProperties;
 struct PhysicalDeviceExternalBufferInfo {
@@ -6103,16 +6103,16 @@ struct PhysicalDeviceExternalBufferInfo {
     BufferCreateFlags flags{};
     BufferUsageFlags usage{};
     ExternalMemoryHandleTypeFlagBits handleType{static_cast<ExternalMemoryHandleTypeFlagBits>(0)};
-    PhysicalDeviceExternalBufferInfo& setFlags(BufferCreateFlags flags) { this->flags = flags; return *this; }
-    PhysicalDeviceExternalBufferInfo& setUsage(BufferUsageFlags usage) { this->usage = usage; return *this; }
-    PhysicalDeviceExternalBufferInfo& setHandleType(ExternalMemoryHandleTypeFlagBits handleType) { this->handleType = handleType; return *this; }
+    PhysicalDeviceExternalBufferInfo& setFlags(BufferCreateFlags flags) {this->flags = flags; return *this; }
+    PhysicalDeviceExternalBufferInfo& setUsage(BufferUsageFlags usage) {this->usage = usage; return *this; }
+    PhysicalDeviceExternalBufferInfo& setHandleType(ExternalMemoryHandleTypeFlagBits handleType) {this->handleType = handleType; return *this; }
 };
 using PhysicalDeviceExternalBufferInfoKHR = PhysicalDeviceExternalBufferInfo;
 struct ExternalBufferProperties {
     StructureType sType{StructureType::ExternalBufferProperties};
     void* pNext = nullptr;
     ExternalMemoryProperties externalMemoryProperties{};
-    ExternalBufferProperties& setExternalMemoryProperties(ExternalMemoryProperties externalMemoryProperties) { this->externalMemoryProperties = externalMemoryProperties; return *this; }
+    ExternalBufferProperties& setExternalMemoryProperties(ExternalMemoryProperties externalMemoryProperties) {this->externalMemoryProperties = externalMemoryProperties; return *this; }
 };
 using ExternalBufferPropertiesKHR = ExternalBufferProperties;
 struct PhysicalDeviceIDProperties {
@@ -6123,32 +6123,32 @@ struct PhysicalDeviceIDProperties {
     uint8_t deviceLUID[LUID_SIZE];
     uint32_t deviceNodeMask{0};
     Bool32 deviceLUIDValid{0};
-    PhysicalDeviceIDProperties& setDeviceUUID(uint8_t deviceUUID[UUID_SIZE]) { for(uint32_t i = 0; i < UUID_SIZE; i++) this->deviceUUID[i] = deviceUUID[i]; return *this; }
-    PhysicalDeviceIDProperties& setDriverUUID(uint8_t driverUUID[UUID_SIZE]) { for(uint32_t i = 0; i < UUID_SIZE; i++) this->driverUUID[i] = driverUUID[i]; return *this; }
-    PhysicalDeviceIDProperties& setDeviceLUID(uint8_t deviceLUID[LUID_SIZE]) { for(uint32_t i = 0; i < LUID_SIZE; i++) this->deviceLUID[i] = deviceLUID[i]; return *this; }
-    PhysicalDeviceIDProperties& setDeviceNodeMask(uint32_t deviceNodeMask) { this->deviceNodeMask = deviceNodeMask; return *this; }
-    PhysicalDeviceIDProperties& setDeviceLUIDValid(Bool32 deviceLUIDValid) { this->deviceLUIDValid = deviceLUIDValid; return *this; }
+    PhysicalDeviceIDProperties& setDeviceUUID(uint8_t deviceUUID[UUID_SIZE]) {for(uint32_t i = 0; i < UUID_SIZE; i++) this->deviceUUID[i] = deviceUUID[i]; return *this; }
+    PhysicalDeviceIDProperties& setDriverUUID(uint8_t driverUUID[UUID_SIZE]) {for(uint32_t i = 0; i < UUID_SIZE; i++) this->driverUUID[i] = driverUUID[i]; return *this; }
+    PhysicalDeviceIDProperties& setDeviceLUID(uint8_t deviceLUID[LUID_SIZE]) {for(uint32_t i = 0; i < LUID_SIZE; i++) this->deviceLUID[i] = deviceLUID[i]; return *this; }
+    PhysicalDeviceIDProperties& setDeviceNodeMask(uint32_t deviceNodeMask) {this->deviceNodeMask = deviceNodeMask; return *this; }
+    PhysicalDeviceIDProperties& setDeviceLUIDValid(Bool32 deviceLUIDValid) {this->deviceLUIDValid = deviceLUIDValid; return *this; }
 };
 using PhysicalDeviceIDPropertiesKHR = PhysicalDeviceIDProperties;
 struct ExternalMemoryImageCreateInfo {
     StructureType sType{StructureType::ExternalMemoryImageCreateInfo};
     const void* pNext = nullptr;
     ExternalMemoryHandleTypeFlags handleTypes{};
-    ExternalMemoryImageCreateInfo& setHandleTypes(ExternalMemoryHandleTypeFlags handleTypes) { this->handleTypes = handleTypes; return *this; }
+    ExternalMemoryImageCreateInfo& setHandleTypes(ExternalMemoryHandleTypeFlags handleTypes) {this->handleTypes = handleTypes; return *this; }
 };
 using ExternalMemoryImageCreateInfoKHR = ExternalMemoryImageCreateInfo;
 struct ExternalMemoryBufferCreateInfo {
     StructureType sType{StructureType::ExternalMemoryBufferCreateInfo};
     const void* pNext = nullptr;
     ExternalMemoryHandleTypeFlags handleTypes{};
-    ExternalMemoryBufferCreateInfo& setHandleTypes(ExternalMemoryHandleTypeFlags handleTypes) { this->handleTypes = handleTypes; return *this; }
+    ExternalMemoryBufferCreateInfo& setHandleTypes(ExternalMemoryHandleTypeFlags handleTypes) {this->handleTypes = handleTypes; return *this; }
 };
 using ExternalMemoryBufferCreateInfoKHR = ExternalMemoryBufferCreateInfo;
 struct ExportMemoryAllocateInfo {
     StructureType sType{StructureType::ExportMemoryAllocateInfo};
     const void* pNext = nullptr;
     ExternalMemoryHandleTypeFlags handleTypes{};
-    ExportMemoryAllocateInfo& setHandleTypes(ExternalMemoryHandleTypeFlags handleTypes) { this->handleTypes = handleTypes; return *this; }
+    ExportMemoryAllocateInfo& setHandleTypes(ExternalMemoryHandleTypeFlags handleTypes) {this->handleTypes = handleTypes; return *this; }
 };
 using ExportMemoryAllocateInfoKHR = ExportMemoryAllocateInfo;
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
@@ -6158,9 +6158,9 @@ struct ImportMemoryWin32HandleInfoKHR {
     ExternalMemoryHandleTypeFlagBits handleType{static_cast<ExternalMemoryHandleTypeFlagBits>(0)};
     HANDLE handle{};
     LPCWSTR name{};
-    ImportMemoryWin32HandleInfoKHR& setHandleType(ExternalMemoryHandleTypeFlagBits handleType) { this->handleType = handleType; return *this; }
-    ImportMemoryWin32HandleInfoKHR& setHandle(HANDLE handle) { this->handle = handle; return *this; }
-    ImportMemoryWin32HandleInfoKHR& setName(LPCWSTR name) { this->name = name; return *this; }
+    ImportMemoryWin32HandleInfoKHR& setHandleType(ExternalMemoryHandleTypeFlagBits handleType) {this->handleType = handleType; return *this; }
+    ImportMemoryWin32HandleInfoKHR& setHandle(HANDLE handle) {this->handle = handle; return *this; }
+    ImportMemoryWin32HandleInfoKHR& setName(LPCWSTR name) {this->name = name; return *this; }
 };
 struct ExportMemoryWin32HandleInfoKHR {
     StructureType sType{StructureType::ExportMemoryWin32HandleInfoKHR};
@@ -6168,24 +6168,24 @@ struct ExportMemoryWin32HandleInfoKHR {
     const SECURITY_ATTRIBUTES* pAttributes = nullptr;
     DWORD dwAccess{};
     LPCWSTR name{};
-    ExportMemoryWin32HandleInfoKHR& setPAttributes(const SECURITY_ATTRIBUTES* pAttributes) { this->pAttributes = pAttributes; return *this; }
-    ExportMemoryWin32HandleInfoKHR& setAttributes(SECURITY_ATTRIBUTES const& Attributes) { this->pAttributes = &Attributes; return *this; }
-    ExportMemoryWin32HandleInfoKHR& setDwAccess(DWORD dwAccess) { this->dwAccess = dwAccess; return *this; }
-    ExportMemoryWin32HandleInfoKHR& setName(LPCWSTR name) { this->name = name; return *this; }
+    ExportMemoryWin32HandleInfoKHR& setPAttributes(const SECURITY_ATTRIBUTES* pAttributes) {this->pAttributes = pAttributes; return *this; }
+    ExportMemoryWin32HandleInfoKHR& setPAttributes(SECURITY_ATTRIBUTES const& pAttributes) {this->pAttributes = &pAttributes; return *this; }
+    ExportMemoryWin32HandleInfoKHR& setDwAccess(DWORD dwAccess) {this->dwAccess = dwAccess; return *this; }
+    ExportMemoryWin32HandleInfoKHR& setName(LPCWSTR name) {this->name = name; return *this; }
 };
 struct MemoryWin32HandlePropertiesKHR {
     StructureType sType{StructureType::MemoryWin32HandlePropertiesKHR};
     void* pNext = nullptr;
     uint32_t memoryTypeBits{0};
-    MemoryWin32HandlePropertiesKHR& setMemoryTypeBits(uint32_t memoryTypeBits) { this->memoryTypeBits = memoryTypeBits; return *this; }
+    MemoryWin32HandlePropertiesKHR& setMemoryTypeBits(uint32_t memoryTypeBits) {this->memoryTypeBits = memoryTypeBits; return *this; }
 };
 struct MemoryGetWin32HandleInfoKHR {
     StructureType sType{StructureType::MemoryGetWin32HandleInfoKHR};
     const void* pNext = nullptr;
     DeviceMemory memory{};
     ExternalMemoryHandleTypeFlagBits handleType{static_cast<ExternalMemoryHandleTypeFlagBits>(0)};
-    MemoryGetWin32HandleInfoKHR& setMemory(DeviceMemory memory) { this->memory = memory; return *this; }
-    MemoryGetWin32HandleInfoKHR& setHandleType(ExternalMemoryHandleTypeFlagBits handleType) { this->handleType = handleType; return *this; }
+    MemoryGetWin32HandleInfoKHR& setMemory(DeviceMemory memory) {this->memory = memory; return *this; }
+    MemoryGetWin32HandleInfoKHR& setHandleType(ExternalMemoryHandleTypeFlagBits handleType) {this->handleType = handleType; return *this; }
 };
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ImportMemoryFdInfoKHR {
@@ -6193,22 +6193,22 @@ struct ImportMemoryFdInfoKHR {
     const void* pNext = nullptr;
     ExternalMemoryHandleTypeFlagBits handleType{static_cast<ExternalMemoryHandleTypeFlagBits>(0)};
     int fd{0};
-    ImportMemoryFdInfoKHR& setHandleType(ExternalMemoryHandleTypeFlagBits handleType) { this->handleType = handleType; return *this; }
-    ImportMemoryFdInfoKHR& setFd(int fd) { this->fd = fd; return *this; }
+    ImportMemoryFdInfoKHR& setHandleType(ExternalMemoryHandleTypeFlagBits handleType) {this->handleType = handleType; return *this; }
+    ImportMemoryFdInfoKHR& setFd(int fd) {this->fd = fd; return *this; }
 };
 struct MemoryFdPropertiesKHR {
     StructureType sType{StructureType::MemoryFdPropertiesKHR};
     void* pNext = nullptr;
     uint32_t memoryTypeBits{0};
-    MemoryFdPropertiesKHR& setMemoryTypeBits(uint32_t memoryTypeBits) { this->memoryTypeBits = memoryTypeBits; return *this; }
+    MemoryFdPropertiesKHR& setMemoryTypeBits(uint32_t memoryTypeBits) {this->memoryTypeBits = memoryTypeBits; return *this; }
 };
 struct MemoryGetFdInfoKHR {
     StructureType sType{StructureType::MemoryGetFdInfoKHR};
     const void* pNext = nullptr;
     DeviceMemory memory{};
     ExternalMemoryHandleTypeFlagBits handleType{static_cast<ExternalMemoryHandleTypeFlagBits>(0)};
-    MemoryGetFdInfoKHR& setMemory(DeviceMemory memory) { this->memory = memory; return *this; }
-    MemoryGetFdInfoKHR& setHandleType(ExternalMemoryHandleTypeFlagBits handleType) { this->handleType = handleType; return *this; }
+    MemoryGetFdInfoKHR& setMemory(DeviceMemory memory) {this->memory = memory; return *this; }
+    MemoryGetFdInfoKHR& setHandleType(ExternalMemoryHandleTypeFlagBits handleType) {this->handleType = handleType; return *this; }
 };
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct Win32KeyedMutexAcquireReleaseInfoKHR {
@@ -6221,25 +6221,25 @@ struct Win32KeyedMutexAcquireReleaseInfoKHR {
     uint32_t releaseCount{0};
     const DeviceMemory* pReleaseSyncs = nullptr;
     const uint64_t* pReleaseKeys = nullptr;
-    Win32KeyedMutexAcquireReleaseInfoKHR& setAcquireCount(uint32_t acquireCount) { this->acquireCount = acquireCount; return *this; }
-    Win32KeyedMutexAcquireReleaseInfoKHR& setPAcquireSyncs(const DeviceMemory* pAcquireSyncs) { this->pAcquireSyncs = pAcquireSyncs; return *this; }
-    Win32KeyedMutexAcquireReleaseInfoKHR& setAcquireSyncs(detail::span<const DeviceMemory> AcquireSyncs) { this->acquireCount = AcquireSyncs.size(); this->pAcquireSyncs = AcquireSyncs.data();  return *this; }
-    Win32KeyedMutexAcquireReleaseInfoKHR& setPAcquireKeys(const uint64_t* pAcquireKeys) { this->pAcquireKeys = pAcquireKeys; return *this; }
-    Win32KeyedMutexAcquireReleaseInfoKHR& setAcquireKeys(detail::span<const uint64_t> AcquireKeys) { this->acquireCount = AcquireKeys.size(); this->pAcquireKeys = AcquireKeys.data();  return *this; }
-    Win32KeyedMutexAcquireReleaseInfoKHR& setPAcquireTimeouts(const uint32_t* pAcquireTimeouts) { this->pAcquireTimeouts = pAcquireTimeouts; return *this; }
-    Win32KeyedMutexAcquireReleaseInfoKHR& setAcquireTimeouts(detail::span<const uint32_t> AcquireTimeouts) { this->acquireCount = AcquireTimeouts.size(); this->pAcquireTimeouts = AcquireTimeouts.data();  return *this; }
-    Win32KeyedMutexAcquireReleaseInfoKHR& setReleaseCount(uint32_t releaseCount) { this->releaseCount = releaseCount; return *this; }
-    Win32KeyedMutexAcquireReleaseInfoKHR& setPReleaseSyncs(const DeviceMemory* pReleaseSyncs) { this->pReleaseSyncs = pReleaseSyncs; return *this; }
-    Win32KeyedMutexAcquireReleaseInfoKHR& setReleaseSyncs(detail::span<const DeviceMemory> ReleaseSyncs) { this->releaseCount = ReleaseSyncs.size(); this->pReleaseSyncs = ReleaseSyncs.data();  return *this; }
-    Win32KeyedMutexAcquireReleaseInfoKHR& setPReleaseKeys(const uint64_t* pReleaseKeys) { this->pReleaseKeys = pReleaseKeys; return *this; }
-    Win32KeyedMutexAcquireReleaseInfoKHR& setReleaseKeys(detail::span<const uint64_t> ReleaseKeys) { this->releaseCount = ReleaseKeys.size(); this->pReleaseKeys = ReleaseKeys.data();  return *this; }
+    Win32KeyedMutexAcquireReleaseInfoKHR& setAcquireCount(uint32_t acquireCount) {this->acquireCount = acquireCount; return *this; }
+    Win32KeyedMutexAcquireReleaseInfoKHR& setPAcquireSyncs(const DeviceMemory* pAcquireSyncs) {this->pAcquireSyncs = pAcquireSyncs; return *this; }
+    Win32KeyedMutexAcquireReleaseInfoKHR& setPAcquireSyncs(detail::span<const DeviceMemory> pAcquireSyncs) {this->acquireCount = pAcquireSyncs.size(); this->pAcquireSyncs = pAcquireSyncs.data();  return *this; }
+    Win32KeyedMutexAcquireReleaseInfoKHR& setPAcquireKeys(const uint64_t* pAcquireKeys) {this->pAcquireKeys = pAcquireKeys; return *this; }
+    Win32KeyedMutexAcquireReleaseInfoKHR& setPAcquireKeys(detail::span<const uint64_t> pAcquireKeys) {this->acquireCount = pAcquireKeys.size(); this->pAcquireKeys = pAcquireKeys.data();  return *this; }
+    Win32KeyedMutexAcquireReleaseInfoKHR& setPAcquireTimeouts(const uint32_t* pAcquireTimeouts) {this->pAcquireTimeouts = pAcquireTimeouts; return *this; }
+    Win32KeyedMutexAcquireReleaseInfoKHR& setPAcquireTimeouts(detail::span<const uint32_t> pAcquireTimeouts) {this->acquireCount = pAcquireTimeouts.size(); this->pAcquireTimeouts = pAcquireTimeouts.data();  return *this; }
+    Win32KeyedMutexAcquireReleaseInfoKHR& setReleaseCount(uint32_t releaseCount) {this->releaseCount = releaseCount; return *this; }
+    Win32KeyedMutexAcquireReleaseInfoKHR& setPReleaseSyncs(const DeviceMemory* pReleaseSyncs) {this->pReleaseSyncs = pReleaseSyncs; return *this; }
+    Win32KeyedMutexAcquireReleaseInfoKHR& setPReleaseSyncs(detail::span<const DeviceMemory> pReleaseSyncs) {this->releaseCount = pReleaseSyncs.size(); this->pReleaseSyncs = pReleaseSyncs.data();  return *this; }
+    Win32KeyedMutexAcquireReleaseInfoKHR& setPReleaseKeys(const uint64_t* pReleaseKeys) {this->pReleaseKeys = pReleaseKeys; return *this; }
+    Win32KeyedMutexAcquireReleaseInfoKHR& setPReleaseKeys(detail::span<const uint64_t> pReleaseKeys) {this->releaseCount = pReleaseKeys.size(); this->pReleaseKeys = pReleaseKeys.data();  return *this; }
 };
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 struct PhysicalDeviceExternalSemaphoreInfo {
     StructureType sType{StructureType::PhysicalDeviceExternalSemaphoreInfo};
     const void* pNext = nullptr;
     ExternalSemaphoreHandleTypeFlagBits handleType{static_cast<ExternalSemaphoreHandleTypeFlagBits>(0)};
-    PhysicalDeviceExternalSemaphoreInfo& setHandleType(ExternalSemaphoreHandleTypeFlagBits handleType) { this->handleType = handleType; return *this; }
+    PhysicalDeviceExternalSemaphoreInfo& setHandleType(ExternalSemaphoreHandleTypeFlagBits handleType) {this->handleType = handleType; return *this; }
 };
 using PhysicalDeviceExternalSemaphoreInfoKHR = PhysicalDeviceExternalSemaphoreInfo;
 struct ExternalSemaphoreProperties {
@@ -6248,16 +6248,16 @@ struct ExternalSemaphoreProperties {
     ExternalSemaphoreHandleTypeFlags exportFromImportedHandleTypes{};
     ExternalSemaphoreHandleTypeFlags compatibleHandleTypes{};
     ExternalSemaphoreFeatureFlags externalSemaphoreFeatures{};
-    ExternalSemaphoreProperties& setExportFromImportedHandleTypes(ExternalSemaphoreHandleTypeFlags exportFromImportedHandleTypes) { this->exportFromImportedHandleTypes = exportFromImportedHandleTypes; return *this; }
-    ExternalSemaphoreProperties& setCompatibleHandleTypes(ExternalSemaphoreHandleTypeFlags compatibleHandleTypes) { this->compatibleHandleTypes = compatibleHandleTypes; return *this; }
-    ExternalSemaphoreProperties& setExternalSemaphoreFeatures(ExternalSemaphoreFeatureFlags externalSemaphoreFeatures) { this->externalSemaphoreFeatures = externalSemaphoreFeatures; return *this; }
+    ExternalSemaphoreProperties& setExportFromImportedHandleTypes(ExternalSemaphoreHandleTypeFlags exportFromImportedHandleTypes) {this->exportFromImportedHandleTypes = exportFromImportedHandleTypes; return *this; }
+    ExternalSemaphoreProperties& setCompatibleHandleTypes(ExternalSemaphoreHandleTypeFlags compatibleHandleTypes) {this->compatibleHandleTypes = compatibleHandleTypes; return *this; }
+    ExternalSemaphoreProperties& setExternalSemaphoreFeatures(ExternalSemaphoreFeatureFlags externalSemaphoreFeatures) {this->externalSemaphoreFeatures = externalSemaphoreFeatures; return *this; }
 };
 using ExternalSemaphorePropertiesKHR = ExternalSemaphoreProperties;
 struct ExportSemaphoreCreateInfo {
     StructureType sType{StructureType::ExportSemaphoreCreateInfo};
     const void* pNext = nullptr;
     ExternalSemaphoreHandleTypeFlags handleTypes{};
-    ExportSemaphoreCreateInfo& setHandleTypes(ExternalSemaphoreHandleTypeFlags handleTypes) { this->handleTypes = handleTypes; return *this; }
+    ExportSemaphoreCreateInfo& setHandleTypes(ExternalSemaphoreHandleTypeFlags handleTypes) {this->handleTypes = handleTypes; return *this; }
 };
 using ExportSemaphoreCreateInfoKHR = ExportSemaphoreCreateInfo;
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
@@ -6269,11 +6269,11 @@ struct ImportSemaphoreWin32HandleInfoKHR {
     ExternalSemaphoreHandleTypeFlagBits handleType{static_cast<ExternalSemaphoreHandleTypeFlagBits>(0)};
     HANDLE handle{};
     LPCWSTR name{};
-    ImportSemaphoreWin32HandleInfoKHR& setSemaphore(Semaphore semaphore) { this->semaphore = semaphore; return *this; }
-    ImportSemaphoreWin32HandleInfoKHR& setFlags(SemaphoreImportFlags flags) { this->flags = flags; return *this; }
-    ImportSemaphoreWin32HandleInfoKHR& setHandleType(ExternalSemaphoreHandleTypeFlagBits handleType) { this->handleType = handleType; return *this; }
-    ImportSemaphoreWin32HandleInfoKHR& setHandle(HANDLE handle) { this->handle = handle; return *this; }
-    ImportSemaphoreWin32HandleInfoKHR& setName(LPCWSTR name) { this->name = name; return *this; }
+    ImportSemaphoreWin32HandleInfoKHR& setSemaphore(Semaphore semaphore) {this->semaphore = semaphore; return *this; }
+    ImportSemaphoreWin32HandleInfoKHR& setFlags(SemaphoreImportFlags flags) {this->flags = flags; return *this; }
+    ImportSemaphoreWin32HandleInfoKHR& setHandleType(ExternalSemaphoreHandleTypeFlagBits handleType) {this->handleType = handleType; return *this; }
+    ImportSemaphoreWin32HandleInfoKHR& setHandle(HANDLE handle) {this->handle = handle; return *this; }
+    ImportSemaphoreWin32HandleInfoKHR& setName(LPCWSTR name) {this->name = name; return *this; }
 };
 struct ExportSemaphoreWin32HandleInfoKHR {
     StructureType sType{StructureType::ExportSemaphoreWin32HandleInfoKHR};
@@ -6281,10 +6281,10 @@ struct ExportSemaphoreWin32HandleInfoKHR {
     const SECURITY_ATTRIBUTES* pAttributes = nullptr;
     DWORD dwAccess{};
     LPCWSTR name{};
-    ExportSemaphoreWin32HandleInfoKHR& setPAttributes(const SECURITY_ATTRIBUTES* pAttributes) { this->pAttributes = pAttributes; return *this; }
-    ExportSemaphoreWin32HandleInfoKHR& setAttributes(SECURITY_ATTRIBUTES const& Attributes) { this->pAttributes = &Attributes; return *this; }
-    ExportSemaphoreWin32HandleInfoKHR& setDwAccess(DWORD dwAccess) { this->dwAccess = dwAccess; return *this; }
-    ExportSemaphoreWin32HandleInfoKHR& setName(LPCWSTR name) { this->name = name; return *this; }
+    ExportSemaphoreWin32HandleInfoKHR& setPAttributes(const SECURITY_ATTRIBUTES* pAttributes) {this->pAttributes = pAttributes; return *this; }
+    ExportSemaphoreWin32HandleInfoKHR& setPAttributes(SECURITY_ATTRIBUTES const& pAttributes) {this->pAttributes = &pAttributes; return *this; }
+    ExportSemaphoreWin32HandleInfoKHR& setDwAccess(DWORD dwAccess) {this->dwAccess = dwAccess; return *this; }
+    ExportSemaphoreWin32HandleInfoKHR& setName(LPCWSTR name) {this->name = name; return *this; }
 };
 struct D3D12FenceSubmitInfoKHR {
     StructureType sType{StructureType::D3D12FenceSubmitInfoKHR};
@@ -6293,20 +6293,20 @@ struct D3D12FenceSubmitInfoKHR {
     const uint64_t* pWaitSemaphoreValues = nullptr;
     uint32_t signalSemaphoreValuesCount{0};
     const uint64_t* pSignalSemaphoreValues = nullptr;
-    D3D12FenceSubmitInfoKHR& setWaitSemaphoreValuesCount(uint32_t waitSemaphoreValuesCount) { this->waitSemaphoreValuesCount = waitSemaphoreValuesCount; return *this; }
-    D3D12FenceSubmitInfoKHR& setPWaitSemaphoreValues(const uint64_t* pWaitSemaphoreValues) { this->pWaitSemaphoreValues = pWaitSemaphoreValues; return *this; }
-    D3D12FenceSubmitInfoKHR& setWaitSemaphoreValues(detail::span<const uint64_t> WaitSemaphoreValues) { this->waitSemaphoreValuesCount = WaitSemaphoreValues.size(); this->pWaitSemaphoreValues = WaitSemaphoreValues.data();  return *this; }
-    D3D12FenceSubmitInfoKHR& setSignalSemaphoreValuesCount(uint32_t signalSemaphoreValuesCount) { this->signalSemaphoreValuesCount = signalSemaphoreValuesCount; return *this; }
-    D3D12FenceSubmitInfoKHR& setPSignalSemaphoreValues(const uint64_t* pSignalSemaphoreValues) { this->pSignalSemaphoreValues = pSignalSemaphoreValues; return *this; }
-    D3D12FenceSubmitInfoKHR& setSignalSemaphoreValues(detail::span<const uint64_t> SignalSemaphoreValues) { this->signalSemaphoreValuesCount = SignalSemaphoreValues.size(); this->pSignalSemaphoreValues = SignalSemaphoreValues.data();  return *this; }
+    D3D12FenceSubmitInfoKHR& setWaitSemaphoreValuesCount(uint32_t waitSemaphoreValuesCount) {this->waitSemaphoreValuesCount = waitSemaphoreValuesCount; return *this; }
+    D3D12FenceSubmitInfoKHR& setPWaitSemaphoreValues(const uint64_t* pWaitSemaphoreValues) {this->pWaitSemaphoreValues = pWaitSemaphoreValues; return *this; }
+    D3D12FenceSubmitInfoKHR& setPWaitSemaphoreValues(detail::span<const uint64_t> pWaitSemaphoreValues) {this->waitSemaphoreValuesCount = pWaitSemaphoreValues.size(); this->pWaitSemaphoreValues = pWaitSemaphoreValues.data();  return *this; }
+    D3D12FenceSubmitInfoKHR& setSignalSemaphoreValuesCount(uint32_t signalSemaphoreValuesCount) {this->signalSemaphoreValuesCount = signalSemaphoreValuesCount; return *this; }
+    D3D12FenceSubmitInfoKHR& setPSignalSemaphoreValues(const uint64_t* pSignalSemaphoreValues) {this->pSignalSemaphoreValues = pSignalSemaphoreValues; return *this; }
+    D3D12FenceSubmitInfoKHR& setPSignalSemaphoreValues(detail::span<const uint64_t> pSignalSemaphoreValues) {this->signalSemaphoreValuesCount = pSignalSemaphoreValues.size(); this->pSignalSemaphoreValues = pSignalSemaphoreValues.data();  return *this; }
 };
 struct SemaphoreGetWin32HandleInfoKHR {
     StructureType sType{StructureType::SemaphoreGetWin32HandleInfoKHR};
     const void* pNext = nullptr;
     Semaphore semaphore{};
     ExternalSemaphoreHandleTypeFlagBits handleType{static_cast<ExternalSemaphoreHandleTypeFlagBits>(0)};
-    SemaphoreGetWin32HandleInfoKHR& setSemaphore(Semaphore semaphore) { this->semaphore = semaphore; return *this; }
-    SemaphoreGetWin32HandleInfoKHR& setHandleType(ExternalSemaphoreHandleTypeFlagBits handleType) { this->handleType = handleType; return *this; }
+    SemaphoreGetWin32HandleInfoKHR& setSemaphore(Semaphore semaphore) {this->semaphore = semaphore; return *this; }
+    SemaphoreGetWin32HandleInfoKHR& setHandleType(ExternalSemaphoreHandleTypeFlagBits handleType) {this->handleType = handleType; return *this; }
 };
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ImportSemaphoreFdInfoKHR {
@@ -6316,24 +6316,24 @@ struct ImportSemaphoreFdInfoKHR {
     SemaphoreImportFlags flags{};
     ExternalSemaphoreHandleTypeFlagBits handleType{static_cast<ExternalSemaphoreHandleTypeFlagBits>(0)};
     int fd{0};
-    ImportSemaphoreFdInfoKHR& setSemaphore(Semaphore semaphore) { this->semaphore = semaphore; return *this; }
-    ImportSemaphoreFdInfoKHR& setFlags(SemaphoreImportFlags flags) { this->flags = flags; return *this; }
-    ImportSemaphoreFdInfoKHR& setHandleType(ExternalSemaphoreHandleTypeFlagBits handleType) { this->handleType = handleType; return *this; }
-    ImportSemaphoreFdInfoKHR& setFd(int fd) { this->fd = fd; return *this; }
+    ImportSemaphoreFdInfoKHR& setSemaphore(Semaphore semaphore) {this->semaphore = semaphore; return *this; }
+    ImportSemaphoreFdInfoKHR& setFlags(SemaphoreImportFlags flags) {this->flags = flags; return *this; }
+    ImportSemaphoreFdInfoKHR& setHandleType(ExternalSemaphoreHandleTypeFlagBits handleType) {this->handleType = handleType; return *this; }
+    ImportSemaphoreFdInfoKHR& setFd(int fd) {this->fd = fd; return *this; }
 };
 struct SemaphoreGetFdInfoKHR {
     StructureType sType{StructureType::SemaphoreGetFdInfoKHR};
     const void* pNext = nullptr;
     Semaphore semaphore{};
     ExternalSemaphoreHandleTypeFlagBits handleType{static_cast<ExternalSemaphoreHandleTypeFlagBits>(0)};
-    SemaphoreGetFdInfoKHR& setSemaphore(Semaphore semaphore) { this->semaphore = semaphore; return *this; }
-    SemaphoreGetFdInfoKHR& setHandleType(ExternalSemaphoreHandleTypeFlagBits handleType) { this->handleType = handleType; return *this; }
+    SemaphoreGetFdInfoKHR& setSemaphore(Semaphore semaphore) {this->semaphore = semaphore; return *this; }
+    SemaphoreGetFdInfoKHR& setHandleType(ExternalSemaphoreHandleTypeFlagBits handleType) {this->handleType = handleType; return *this; }
 };
 struct PhysicalDeviceExternalFenceInfo {
     StructureType sType{StructureType::PhysicalDeviceExternalFenceInfo};
     const void* pNext = nullptr;
     ExternalFenceHandleTypeFlagBits handleType{static_cast<ExternalFenceHandleTypeFlagBits>(0)};
-    PhysicalDeviceExternalFenceInfo& setHandleType(ExternalFenceHandleTypeFlagBits handleType) { this->handleType = handleType; return *this; }
+    PhysicalDeviceExternalFenceInfo& setHandleType(ExternalFenceHandleTypeFlagBits handleType) {this->handleType = handleType; return *this; }
 };
 using PhysicalDeviceExternalFenceInfoKHR = PhysicalDeviceExternalFenceInfo;
 struct ExternalFenceProperties {
@@ -6342,16 +6342,16 @@ struct ExternalFenceProperties {
     ExternalFenceHandleTypeFlags exportFromImportedHandleTypes{};
     ExternalFenceHandleTypeFlags compatibleHandleTypes{};
     ExternalFenceFeatureFlags externalFenceFeatures{};
-    ExternalFenceProperties& setExportFromImportedHandleTypes(ExternalFenceHandleTypeFlags exportFromImportedHandleTypes) { this->exportFromImportedHandleTypes = exportFromImportedHandleTypes; return *this; }
-    ExternalFenceProperties& setCompatibleHandleTypes(ExternalFenceHandleTypeFlags compatibleHandleTypes) { this->compatibleHandleTypes = compatibleHandleTypes; return *this; }
-    ExternalFenceProperties& setExternalFenceFeatures(ExternalFenceFeatureFlags externalFenceFeatures) { this->externalFenceFeatures = externalFenceFeatures; return *this; }
+    ExternalFenceProperties& setExportFromImportedHandleTypes(ExternalFenceHandleTypeFlags exportFromImportedHandleTypes) {this->exportFromImportedHandleTypes = exportFromImportedHandleTypes; return *this; }
+    ExternalFenceProperties& setCompatibleHandleTypes(ExternalFenceHandleTypeFlags compatibleHandleTypes) {this->compatibleHandleTypes = compatibleHandleTypes; return *this; }
+    ExternalFenceProperties& setExternalFenceFeatures(ExternalFenceFeatureFlags externalFenceFeatures) {this->externalFenceFeatures = externalFenceFeatures; return *this; }
 };
 using ExternalFencePropertiesKHR = ExternalFenceProperties;
 struct ExportFenceCreateInfo {
     StructureType sType{StructureType::ExportFenceCreateInfo};
     const void* pNext = nullptr;
     ExternalFenceHandleTypeFlags handleTypes{};
-    ExportFenceCreateInfo& setHandleTypes(ExternalFenceHandleTypeFlags handleTypes) { this->handleTypes = handleTypes; return *this; }
+    ExportFenceCreateInfo& setHandleTypes(ExternalFenceHandleTypeFlags handleTypes) {this->handleTypes = handleTypes; return *this; }
 };
 using ExportFenceCreateInfoKHR = ExportFenceCreateInfo;
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
@@ -6363,11 +6363,11 @@ struct ImportFenceWin32HandleInfoKHR {
     ExternalFenceHandleTypeFlagBits handleType{static_cast<ExternalFenceHandleTypeFlagBits>(0)};
     HANDLE handle{};
     LPCWSTR name{};
-    ImportFenceWin32HandleInfoKHR& setFence(Fence fence) { this->fence = fence; return *this; }
-    ImportFenceWin32HandleInfoKHR& setFlags(FenceImportFlags flags) { this->flags = flags; return *this; }
-    ImportFenceWin32HandleInfoKHR& setHandleType(ExternalFenceHandleTypeFlagBits handleType) { this->handleType = handleType; return *this; }
-    ImportFenceWin32HandleInfoKHR& setHandle(HANDLE handle) { this->handle = handle; return *this; }
-    ImportFenceWin32HandleInfoKHR& setName(LPCWSTR name) { this->name = name; return *this; }
+    ImportFenceWin32HandleInfoKHR& setFence(Fence fence) {this->fence = fence; return *this; }
+    ImportFenceWin32HandleInfoKHR& setFlags(FenceImportFlags flags) {this->flags = flags; return *this; }
+    ImportFenceWin32HandleInfoKHR& setHandleType(ExternalFenceHandleTypeFlagBits handleType) {this->handleType = handleType; return *this; }
+    ImportFenceWin32HandleInfoKHR& setHandle(HANDLE handle) {this->handle = handle; return *this; }
+    ImportFenceWin32HandleInfoKHR& setName(LPCWSTR name) {this->name = name; return *this; }
 };
 struct ExportFenceWin32HandleInfoKHR {
     StructureType sType{StructureType::ExportFenceWin32HandleInfoKHR};
@@ -6375,18 +6375,18 @@ struct ExportFenceWin32HandleInfoKHR {
     const SECURITY_ATTRIBUTES* pAttributes = nullptr;
     DWORD dwAccess{};
     LPCWSTR name{};
-    ExportFenceWin32HandleInfoKHR& setPAttributes(const SECURITY_ATTRIBUTES* pAttributes) { this->pAttributes = pAttributes; return *this; }
-    ExportFenceWin32HandleInfoKHR& setAttributes(SECURITY_ATTRIBUTES const& Attributes) { this->pAttributes = &Attributes; return *this; }
-    ExportFenceWin32HandleInfoKHR& setDwAccess(DWORD dwAccess) { this->dwAccess = dwAccess; return *this; }
-    ExportFenceWin32HandleInfoKHR& setName(LPCWSTR name) { this->name = name; return *this; }
+    ExportFenceWin32HandleInfoKHR& setPAttributes(const SECURITY_ATTRIBUTES* pAttributes) {this->pAttributes = pAttributes; return *this; }
+    ExportFenceWin32HandleInfoKHR& setPAttributes(SECURITY_ATTRIBUTES const& pAttributes) {this->pAttributes = &pAttributes; return *this; }
+    ExportFenceWin32HandleInfoKHR& setDwAccess(DWORD dwAccess) {this->dwAccess = dwAccess; return *this; }
+    ExportFenceWin32HandleInfoKHR& setName(LPCWSTR name) {this->name = name; return *this; }
 };
 struct FenceGetWin32HandleInfoKHR {
     StructureType sType{StructureType::FenceGetWin32HandleInfoKHR};
     const void* pNext = nullptr;
     Fence fence{};
     ExternalFenceHandleTypeFlagBits handleType{static_cast<ExternalFenceHandleTypeFlagBits>(0)};
-    FenceGetWin32HandleInfoKHR& setFence(Fence fence) { this->fence = fence; return *this; }
-    FenceGetWin32HandleInfoKHR& setHandleType(ExternalFenceHandleTypeFlagBits handleType) { this->handleType = handleType; return *this; }
+    FenceGetWin32HandleInfoKHR& setFence(Fence fence) {this->fence = fence; return *this; }
+    FenceGetWin32HandleInfoKHR& setHandleType(ExternalFenceHandleTypeFlagBits handleType) {this->handleType = handleType; return *this; }
 };
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 struct ImportFenceFdInfoKHR {
@@ -6396,18 +6396,18 @@ struct ImportFenceFdInfoKHR {
     FenceImportFlags flags{};
     ExternalFenceHandleTypeFlagBits handleType{static_cast<ExternalFenceHandleTypeFlagBits>(0)};
     int fd{0};
-    ImportFenceFdInfoKHR& setFence(Fence fence) { this->fence = fence; return *this; }
-    ImportFenceFdInfoKHR& setFlags(FenceImportFlags flags) { this->flags = flags; return *this; }
-    ImportFenceFdInfoKHR& setHandleType(ExternalFenceHandleTypeFlagBits handleType) { this->handleType = handleType; return *this; }
-    ImportFenceFdInfoKHR& setFd(int fd) { this->fd = fd; return *this; }
+    ImportFenceFdInfoKHR& setFence(Fence fence) {this->fence = fence; return *this; }
+    ImportFenceFdInfoKHR& setFlags(FenceImportFlags flags) {this->flags = flags; return *this; }
+    ImportFenceFdInfoKHR& setHandleType(ExternalFenceHandleTypeFlagBits handleType) {this->handleType = handleType; return *this; }
+    ImportFenceFdInfoKHR& setFd(int fd) {this->fd = fd; return *this; }
 };
 struct FenceGetFdInfoKHR {
     StructureType sType{StructureType::FenceGetFdInfoKHR};
     const void* pNext = nullptr;
     Fence fence{};
     ExternalFenceHandleTypeFlagBits handleType{static_cast<ExternalFenceHandleTypeFlagBits>(0)};
-    FenceGetFdInfoKHR& setFence(Fence fence) { this->fence = fence; return *this; }
-    FenceGetFdInfoKHR& setHandleType(ExternalFenceHandleTypeFlagBits handleType) { this->handleType = handleType; return *this; }
+    FenceGetFdInfoKHR& setFence(Fence fence) {this->fence = fence; return *this; }
+    FenceGetFdInfoKHR& setHandleType(ExternalFenceHandleTypeFlagBits handleType) {this->handleType = handleType; return *this; }
 };
 struct PhysicalDeviceMultiviewFeatures {
     StructureType sType{StructureType::PhysicalDeviceMultiviewFeatures};
@@ -6415,9 +6415,9 @@ struct PhysicalDeviceMultiviewFeatures {
     Bool32 multiview{0};
     Bool32 multiviewGeometryShader{0};
     Bool32 multiviewTessellationShader{0};
-    PhysicalDeviceMultiviewFeatures& setMultiview(Bool32 multiview) { this->multiview = multiview; return *this; }
-    PhysicalDeviceMultiviewFeatures& setMultiviewGeometryShader(Bool32 multiviewGeometryShader) { this->multiviewGeometryShader = multiviewGeometryShader; return *this; }
-    PhysicalDeviceMultiviewFeatures& setMultiviewTessellationShader(Bool32 multiviewTessellationShader) { this->multiviewTessellationShader = multiviewTessellationShader; return *this; }
+    PhysicalDeviceMultiviewFeatures& setMultiview(Bool32 multiview) {this->multiview = multiview; return *this; }
+    PhysicalDeviceMultiviewFeatures& setMultiviewGeometryShader(Bool32 multiviewGeometryShader) {this->multiviewGeometryShader = multiviewGeometryShader; return *this; }
+    PhysicalDeviceMultiviewFeatures& setMultiviewTessellationShader(Bool32 multiviewTessellationShader) {this->multiviewTessellationShader = multiviewTessellationShader; return *this; }
 };
 using PhysicalDeviceMultiviewFeaturesKHR = PhysicalDeviceMultiviewFeatures;
 struct PhysicalDeviceMultiviewProperties {
@@ -6425,8 +6425,8 @@ struct PhysicalDeviceMultiviewProperties {
     void* pNext = nullptr;
     uint32_t maxMultiviewViewCount{0};
     uint32_t maxMultiviewInstanceIndex{0};
-    PhysicalDeviceMultiviewProperties& setMaxMultiviewViewCount(uint32_t maxMultiviewViewCount) { this->maxMultiviewViewCount = maxMultiviewViewCount; return *this; }
-    PhysicalDeviceMultiviewProperties& setMaxMultiviewInstanceIndex(uint32_t maxMultiviewInstanceIndex) { this->maxMultiviewInstanceIndex = maxMultiviewInstanceIndex; return *this; }
+    PhysicalDeviceMultiviewProperties& setMaxMultiviewViewCount(uint32_t maxMultiviewViewCount) {this->maxMultiviewViewCount = maxMultiviewViewCount; return *this; }
+    PhysicalDeviceMultiviewProperties& setMaxMultiviewInstanceIndex(uint32_t maxMultiviewInstanceIndex) {this->maxMultiviewInstanceIndex = maxMultiviewInstanceIndex; return *this; }
 };
 using PhysicalDeviceMultiviewPropertiesKHR = PhysicalDeviceMultiviewProperties;
 struct RenderPassMultiviewCreateInfo {
@@ -6438,15 +6438,15 @@ struct RenderPassMultiviewCreateInfo {
     const int32_t* pViewOffsets = nullptr;
     uint32_t correlationMaskCount{0};
     const uint32_t* pCorrelationMasks = nullptr;
-    RenderPassMultiviewCreateInfo& setSubpassCount(uint32_t subpassCount) { this->subpassCount = subpassCount; return *this; }
-    RenderPassMultiviewCreateInfo& setPViewMasks(const uint32_t* pViewMasks) { this->pViewMasks = pViewMasks; return *this; }
-    RenderPassMultiviewCreateInfo& setViewMasks(detail::span<const uint32_t> ViewMasks) { this->subpassCount = ViewMasks.size(); this->pViewMasks = ViewMasks.data();  return *this; }
-    RenderPassMultiviewCreateInfo& setDependencyCount(uint32_t dependencyCount) { this->dependencyCount = dependencyCount; return *this; }
-    RenderPassMultiviewCreateInfo& setPViewOffsets(const int32_t* pViewOffsets) { this->pViewOffsets = pViewOffsets; return *this; }
-    RenderPassMultiviewCreateInfo& setViewOffsets(detail::span<const int32_t> ViewOffsets) { this->dependencyCount = ViewOffsets.size(); this->pViewOffsets = ViewOffsets.data();  return *this; }
-    RenderPassMultiviewCreateInfo& setCorrelationMaskCount(uint32_t correlationMaskCount) { this->correlationMaskCount = correlationMaskCount; return *this; }
-    RenderPassMultiviewCreateInfo& setPCorrelationMasks(const uint32_t* pCorrelationMasks) { this->pCorrelationMasks = pCorrelationMasks; return *this; }
-    RenderPassMultiviewCreateInfo& setCorrelationMasks(detail::span<const uint32_t> CorrelationMasks) { this->correlationMaskCount = CorrelationMasks.size(); this->pCorrelationMasks = CorrelationMasks.data();  return *this; }
+    RenderPassMultiviewCreateInfo& setSubpassCount(uint32_t subpassCount) {this->subpassCount = subpassCount; return *this; }
+    RenderPassMultiviewCreateInfo& setPViewMasks(const uint32_t* pViewMasks) {this->pViewMasks = pViewMasks; return *this; }
+    RenderPassMultiviewCreateInfo& setPViewMasks(detail::span<const uint32_t> pViewMasks) {this->subpassCount = pViewMasks.size(); this->pViewMasks = pViewMasks.data();  return *this; }
+    RenderPassMultiviewCreateInfo& setDependencyCount(uint32_t dependencyCount) {this->dependencyCount = dependencyCount; return *this; }
+    RenderPassMultiviewCreateInfo& setPViewOffsets(const int32_t* pViewOffsets) {this->pViewOffsets = pViewOffsets; return *this; }
+    RenderPassMultiviewCreateInfo& setPViewOffsets(detail::span<const int32_t> pViewOffsets) {this->dependencyCount = pViewOffsets.size(); this->pViewOffsets = pViewOffsets.data();  return *this; }
+    RenderPassMultiviewCreateInfo& setCorrelationMaskCount(uint32_t correlationMaskCount) {this->correlationMaskCount = correlationMaskCount; return *this; }
+    RenderPassMultiviewCreateInfo& setPCorrelationMasks(const uint32_t* pCorrelationMasks) {this->pCorrelationMasks = pCorrelationMasks; return *this; }
+    RenderPassMultiviewCreateInfo& setPCorrelationMasks(detail::span<const uint32_t> pCorrelationMasks) {this->correlationMaskCount = pCorrelationMasks.size(); this->pCorrelationMasks = pCorrelationMasks.data();  return *this; }
 };
 using RenderPassMultiviewCreateInfoKHR = RenderPassMultiviewCreateInfo;
 struct SurfaceCapabilities2EXT {
@@ -6463,41 +6463,41 @@ struct SurfaceCapabilities2EXT {
     CompositeAlphaFlagsKHR supportedCompositeAlpha{};
     ImageUsageFlags supportedUsageFlags{};
     SurfaceCounterFlagsEXT supportedSurfaceCounters{};
-    SurfaceCapabilities2EXT& setMinImageCount(uint32_t minImageCount) { this->minImageCount = minImageCount; return *this; }
-    SurfaceCapabilities2EXT& setMaxImageCount(uint32_t maxImageCount) { this->maxImageCount = maxImageCount; return *this; }
-    SurfaceCapabilities2EXT& setCurrentExtent(Extent2D currentExtent) { this->currentExtent = currentExtent; return *this; }
-    SurfaceCapabilities2EXT& setMinImageExtent(Extent2D minImageExtent) { this->minImageExtent = minImageExtent; return *this; }
-    SurfaceCapabilities2EXT& setMaxImageExtent(Extent2D maxImageExtent) { this->maxImageExtent = maxImageExtent; return *this; }
-    SurfaceCapabilities2EXT& setMaxImageArrayLayers(uint32_t maxImageArrayLayers) { this->maxImageArrayLayers = maxImageArrayLayers; return *this; }
-    SurfaceCapabilities2EXT& setSupportedTransforms(SurfaceTransformFlagsKHR supportedTransforms) { this->supportedTransforms = supportedTransforms; return *this; }
-    SurfaceCapabilities2EXT& setCurrentTransform(SurfaceTransformFlagBitsKHR currentTransform) { this->currentTransform = currentTransform; return *this; }
-    SurfaceCapabilities2EXT& setSupportedCompositeAlpha(CompositeAlphaFlagsKHR supportedCompositeAlpha) { this->supportedCompositeAlpha = supportedCompositeAlpha; return *this; }
-    SurfaceCapabilities2EXT& setSupportedUsageFlags(ImageUsageFlags supportedUsageFlags) { this->supportedUsageFlags = supportedUsageFlags; return *this; }
-    SurfaceCapabilities2EXT& setSupportedSurfaceCounters(SurfaceCounterFlagsEXT supportedSurfaceCounters) { this->supportedSurfaceCounters = supportedSurfaceCounters; return *this; }
+    SurfaceCapabilities2EXT& setMinImageCount(uint32_t minImageCount) {this->minImageCount = minImageCount; return *this; }
+    SurfaceCapabilities2EXT& setMaxImageCount(uint32_t maxImageCount) {this->maxImageCount = maxImageCount; return *this; }
+    SurfaceCapabilities2EXT& setCurrentExtent(Extent2D currentExtent) {this->currentExtent = currentExtent; return *this; }
+    SurfaceCapabilities2EXT& setMinImageExtent(Extent2D minImageExtent) {this->minImageExtent = minImageExtent; return *this; }
+    SurfaceCapabilities2EXT& setMaxImageExtent(Extent2D maxImageExtent) {this->maxImageExtent = maxImageExtent; return *this; }
+    SurfaceCapabilities2EXT& setMaxImageArrayLayers(uint32_t maxImageArrayLayers) {this->maxImageArrayLayers = maxImageArrayLayers; return *this; }
+    SurfaceCapabilities2EXT& setSupportedTransforms(SurfaceTransformFlagsKHR supportedTransforms) {this->supportedTransforms = supportedTransforms; return *this; }
+    SurfaceCapabilities2EXT& setCurrentTransform(SurfaceTransformFlagBitsKHR currentTransform) {this->currentTransform = currentTransform; return *this; }
+    SurfaceCapabilities2EXT& setSupportedCompositeAlpha(CompositeAlphaFlagsKHR supportedCompositeAlpha) {this->supportedCompositeAlpha = supportedCompositeAlpha; return *this; }
+    SurfaceCapabilities2EXT& setSupportedUsageFlags(ImageUsageFlags supportedUsageFlags) {this->supportedUsageFlags = supportedUsageFlags; return *this; }
+    SurfaceCapabilities2EXT& setSupportedSurfaceCounters(SurfaceCounterFlagsEXT supportedSurfaceCounters) {this->supportedSurfaceCounters = supportedSurfaceCounters; return *this; }
 };
 struct DisplayPowerInfoEXT {
     StructureType sType{StructureType::DisplayPowerInfoEXT};
     const void* pNext = nullptr;
     DisplayPowerStateEXT powerState{static_cast<DisplayPowerStateEXT>(0)};
-    DisplayPowerInfoEXT& setPowerState(DisplayPowerStateEXT powerState) { this->powerState = powerState; return *this; }
+    DisplayPowerInfoEXT& setPowerState(DisplayPowerStateEXT powerState) {this->powerState = powerState; return *this; }
 };
 struct DeviceEventInfoEXT {
     StructureType sType{StructureType::DeviceEventInfoEXT};
     const void* pNext = nullptr;
     DeviceEventTypeEXT deviceEvent{static_cast<DeviceEventTypeEXT>(0)};
-    DeviceEventInfoEXT& setDeviceEvent(DeviceEventTypeEXT deviceEvent) { this->deviceEvent = deviceEvent; return *this; }
+    DeviceEventInfoEXT& setDeviceEvent(DeviceEventTypeEXT deviceEvent) {this->deviceEvent = deviceEvent; return *this; }
 };
 struct DisplayEventInfoEXT {
     StructureType sType{StructureType::DisplayEventInfoEXT};
     const void* pNext = nullptr;
     DisplayEventTypeEXT displayEvent{static_cast<DisplayEventTypeEXT>(0)};
-    DisplayEventInfoEXT& setDisplayEvent(DisplayEventTypeEXT displayEvent) { this->displayEvent = displayEvent; return *this; }
+    DisplayEventInfoEXT& setDisplayEvent(DisplayEventTypeEXT displayEvent) {this->displayEvent = displayEvent; return *this; }
 };
 struct SwapchainCounterCreateInfoEXT {
     StructureType sType{StructureType::SwapchainCounterCreateInfoEXT};
     const void* pNext = nullptr;
     SurfaceCounterFlagsEXT surfaceCounters{};
-    SwapchainCounterCreateInfoEXT& setSurfaceCounters(SurfaceCounterFlagsEXT surfaceCounters) { this->surfaceCounters = surfaceCounters; return *this; }
+    SwapchainCounterCreateInfoEXT& setSurfaceCounters(SurfaceCounterFlagsEXT surfaceCounters) {this->surfaceCounters = surfaceCounters; return *this; }
 };
 struct PhysicalDeviceGroupProperties {
     StructureType sType{StructureType::PhysicalDeviceGroupProperties};
@@ -6505,9 +6505,9 @@ struct PhysicalDeviceGroupProperties {
     uint32_t physicalDeviceCount{0};
     PhysicalDevice physicalDevices[MAX_DEVICE_GROUP_SIZE];
     Bool32 subsetAllocation{0};
-    PhysicalDeviceGroupProperties& setPhysicalDeviceCount(uint32_t physicalDeviceCount) { this->physicalDeviceCount = physicalDeviceCount; return *this; }
-    PhysicalDeviceGroupProperties& setPhysicalDevices(PhysicalDevice physicalDevices[MAX_DEVICE_GROUP_SIZE]) { for(uint32_t i = 0; i < MAX_DEVICE_GROUP_SIZE; i++) this->physicalDevices[i] = physicalDevices[i]; return *this; }
-    PhysicalDeviceGroupProperties& setSubsetAllocation(Bool32 subsetAllocation) { this->subsetAllocation = subsetAllocation; return *this; }
+    PhysicalDeviceGroupProperties& setPhysicalDeviceCount(uint32_t physicalDeviceCount) {this->physicalDeviceCount = physicalDeviceCount; return *this; }
+    PhysicalDeviceGroupProperties& setPhysicalDevices(PhysicalDevice physicalDevices[MAX_DEVICE_GROUP_SIZE]) {for(uint32_t i = 0; i < MAX_DEVICE_GROUP_SIZE; i++) this->physicalDevices[i] = physicalDevices[i]; return *this; }
+    PhysicalDeviceGroupProperties& setSubsetAllocation(Bool32 subsetAllocation) {this->subsetAllocation = subsetAllocation; return *this; }
 };
 using PhysicalDeviceGroupPropertiesKHR = PhysicalDeviceGroupProperties;
 struct MemoryAllocateFlagsInfo {
@@ -6515,8 +6515,8 @@ struct MemoryAllocateFlagsInfo {
     const void* pNext = nullptr;
     MemoryAllocateFlags flags{};
     uint32_t deviceMask{0};
-    MemoryAllocateFlagsInfo& setFlags(MemoryAllocateFlags flags) { this->flags = flags; return *this; }
-    MemoryAllocateFlagsInfo& setDeviceMask(uint32_t deviceMask) { this->deviceMask = deviceMask; return *this; }
+    MemoryAllocateFlagsInfo& setFlags(MemoryAllocateFlags flags) {this->flags = flags; return *this; }
+    MemoryAllocateFlagsInfo& setDeviceMask(uint32_t deviceMask) {this->deviceMask = deviceMask; return *this; }
 };
 using MemoryAllocateFlagsInfoKHR = MemoryAllocateFlagsInfo;
 struct BindBufferMemoryInfo {
@@ -6525,9 +6525,9 @@ struct BindBufferMemoryInfo {
     Buffer buffer{};
     DeviceMemory memory{};
     DeviceSize memoryOffset{0};
-    BindBufferMemoryInfo& setBuffer(Buffer buffer) { this->buffer = buffer; return *this; }
-    BindBufferMemoryInfo& setMemory(DeviceMemory memory) { this->memory = memory; return *this; }
-    BindBufferMemoryInfo& setMemoryOffset(DeviceSize memoryOffset) { this->memoryOffset = memoryOffset; return *this; }
+    BindBufferMemoryInfo& setBuffer(Buffer buffer) {this->buffer = buffer; return *this; }
+    BindBufferMemoryInfo& setMemory(DeviceMemory memory) {this->memory = memory; return *this; }
+    BindBufferMemoryInfo& setMemoryOffset(DeviceSize memoryOffset) {this->memoryOffset = memoryOffset; return *this; }
 };
 using BindBufferMemoryInfoKHR = BindBufferMemoryInfo;
 struct BindBufferMemoryDeviceGroupInfo {
@@ -6535,9 +6535,9 @@ struct BindBufferMemoryDeviceGroupInfo {
     const void* pNext = nullptr;
     uint32_t deviceIndexCount{0};
     const uint32_t* pDeviceIndices = nullptr;
-    BindBufferMemoryDeviceGroupInfo& setDeviceIndexCount(uint32_t deviceIndexCount) { this->deviceIndexCount = deviceIndexCount; return *this; }
-    BindBufferMemoryDeviceGroupInfo& setPDeviceIndices(const uint32_t* pDeviceIndices) { this->pDeviceIndices = pDeviceIndices; return *this; }
-    BindBufferMemoryDeviceGroupInfo& setDeviceIndices(detail::span<const uint32_t> DeviceIndices) { this->deviceIndexCount = DeviceIndices.size(); this->pDeviceIndices = DeviceIndices.data();  return *this; }
+    BindBufferMemoryDeviceGroupInfo& setDeviceIndexCount(uint32_t deviceIndexCount) {this->deviceIndexCount = deviceIndexCount; return *this; }
+    BindBufferMemoryDeviceGroupInfo& setPDeviceIndices(const uint32_t* pDeviceIndices) {this->pDeviceIndices = pDeviceIndices; return *this; }
+    BindBufferMemoryDeviceGroupInfo& setPDeviceIndices(detail::span<const uint32_t> pDeviceIndices) {this->deviceIndexCount = pDeviceIndices.size(); this->pDeviceIndices = pDeviceIndices.data();  return *this; }
 };
 using BindBufferMemoryDeviceGroupInfoKHR = BindBufferMemoryDeviceGroupInfo;
 struct BindImageMemoryInfo {
@@ -6546,9 +6546,9 @@ struct BindImageMemoryInfo {
     Image image{};
     DeviceMemory memory{};
     DeviceSize memoryOffset{0};
-    BindImageMemoryInfo& setImage(Image image) { this->image = image; return *this; }
-    BindImageMemoryInfo& setMemory(DeviceMemory memory) { this->memory = memory; return *this; }
-    BindImageMemoryInfo& setMemoryOffset(DeviceSize memoryOffset) { this->memoryOffset = memoryOffset; return *this; }
+    BindImageMemoryInfo& setImage(Image image) {this->image = image; return *this; }
+    BindImageMemoryInfo& setMemory(DeviceMemory memory) {this->memory = memory; return *this; }
+    BindImageMemoryInfo& setMemoryOffset(DeviceSize memoryOffset) {this->memoryOffset = memoryOffset; return *this; }
 };
 using BindImageMemoryInfoKHR = BindImageMemoryInfo;
 struct BindImageMemoryDeviceGroupInfo {
@@ -6558,12 +6558,12 @@ struct BindImageMemoryDeviceGroupInfo {
     const uint32_t* pDeviceIndices = nullptr;
     uint32_t splitInstanceBindRegionCount{0};
     const Rect2D* pSplitInstanceBindRegions = nullptr;
-    BindImageMemoryDeviceGroupInfo& setDeviceIndexCount(uint32_t deviceIndexCount) { this->deviceIndexCount = deviceIndexCount; return *this; }
-    BindImageMemoryDeviceGroupInfo& setPDeviceIndices(const uint32_t* pDeviceIndices) { this->pDeviceIndices = pDeviceIndices; return *this; }
-    BindImageMemoryDeviceGroupInfo& setDeviceIndices(detail::span<const uint32_t> DeviceIndices) { this->deviceIndexCount = DeviceIndices.size(); this->pDeviceIndices = DeviceIndices.data();  return *this; }
-    BindImageMemoryDeviceGroupInfo& setSplitInstanceBindRegionCount(uint32_t splitInstanceBindRegionCount) { this->splitInstanceBindRegionCount = splitInstanceBindRegionCount; return *this; }
-    BindImageMemoryDeviceGroupInfo& setPSplitInstanceBindRegions(const Rect2D* pSplitInstanceBindRegions) { this->pSplitInstanceBindRegions = pSplitInstanceBindRegions; return *this; }
-    BindImageMemoryDeviceGroupInfo& setSplitInstanceBindRegions(detail::span<const Rect2D> SplitInstanceBindRegions) { this->splitInstanceBindRegionCount = SplitInstanceBindRegions.size(); this->pSplitInstanceBindRegions = SplitInstanceBindRegions.data();  return *this; }
+    BindImageMemoryDeviceGroupInfo& setDeviceIndexCount(uint32_t deviceIndexCount) {this->deviceIndexCount = deviceIndexCount; return *this; }
+    BindImageMemoryDeviceGroupInfo& setPDeviceIndices(const uint32_t* pDeviceIndices) {this->pDeviceIndices = pDeviceIndices; return *this; }
+    BindImageMemoryDeviceGroupInfo& setPDeviceIndices(detail::span<const uint32_t> pDeviceIndices) {this->deviceIndexCount = pDeviceIndices.size(); this->pDeviceIndices = pDeviceIndices.data();  return *this; }
+    BindImageMemoryDeviceGroupInfo& setSplitInstanceBindRegionCount(uint32_t splitInstanceBindRegionCount) {this->splitInstanceBindRegionCount = splitInstanceBindRegionCount; return *this; }
+    BindImageMemoryDeviceGroupInfo& setPSplitInstanceBindRegions(const Rect2D* pSplitInstanceBindRegions) {this->pSplitInstanceBindRegions = pSplitInstanceBindRegions; return *this; }
+    BindImageMemoryDeviceGroupInfo& setPSplitInstanceBindRegions(detail::span<const Rect2D> pSplitInstanceBindRegions) {this->splitInstanceBindRegionCount = pSplitInstanceBindRegions.size(); this->pSplitInstanceBindRegions = pSplitInstanceBindRegions.data();  return *this; }
 };
 using BindImageMemoryDeviceGroupInfoKHR = BindImageMemoryDeviceGroupInfo;
 struct DeviceGroupRenderPassBeginInfo {
@@ -6572,17 +6572,17 @@ struct DeviceGroupRenderPassBeginInfo {
     uint32_t deviceMask{0};
     uint32_t deviceRenderAreaCount{0};
     const Rect2D* pDeviceRenderAreas = nullptr;
-    DeviceGroupRenderPassBeginInfo& setDeviceMask(uint32_t deviceMask) { this->deviceMask = deviceMask; return *this; }
-    DeviceGroupRenderPassBeginInfo& setDeviceRenderAreaCount(uint32_t deviceRenderAreaCount) { this->deviceRenderAreaCount = deviceRenderAreaCount; return *this; }
-    DeviceGroupRenderPassBeginInfo& setPDeviceRenderAreas(const Rect2D* pDeviceRenderAreas) { this->pDeviceRenderAreas = pDeviceRenderAreas; return *this; }
-    DeviceGroupRenderPassBeginInfo& setDeviceRenderAreas(detail::span<const Rect2D> DeviceRenderAreas) { this->deviceRenderAreaCount = DeviceRenderAreas.size(); this->pDeviceRenderAreas = DeviceRenderAreas.data();  return *this; }
+    DeviceGroupRenderPassBeginInfo& setDeviceMask(uint32_t deviceMask) {this->deviceMask = deviceMask; return *this; }
+    DeviceGroupRenderPassBeginInfo& setDeviceRenderAreaCount(uint32_t deviceRenderAreaCount) {this->deviceRenderAreaCount = deviceRenderAreaCount; return *this; }
+    DeviceGroupRenderPassBeginInfo& setPDeviceRenderAreas(const Rect2D* pDeviceRenderAreas) {this->pDeviceRenderAreas = pDeviceRenderAreas; return *this; }
+    DeviceGroupRenderPassBeginInfo& setPDeviceRenderAreas(detail::span<const Rect2D> pDeviceRenderAreas) {this->deviceRenderAreaCount = pDeviceRenderAreas.size(); this->pDeviceRenderAreas = pDeviceRenderAreas.data();  return *this; }
 };
 using DeviceGroupRenderPassBeginInfoKHR = DeviceGroupRenderPassBeginInfo;
 struct DeviceGroupCommandBufferBeginInfo {
     StructureType sType{StructureType::DeviceGroupCommandBufferBeginInfo};
     const void* pNext = nullptr;
     uint32_t deviceMask{0};
-    DeviceGroupCommandBufferBeginInfo& setDeviceMask(uint32_t deviceMask) { this->deviceMask = deviceMask; return *this; }
+    DeviceGroupCommandBufferBeginInfo& setDeviceMask(uint32_t deviceMask) {this->deviceMask = deviceMask; return *this; }
 };
 using DeviceGroupCommandBufferBeginInfoKHR = DeviceGroupCommandBufferBeginInfo;
 struct DeviceGroupSubmitInfo {
@@ -6594,15 +6594,15 @@ struct DeviceGroupSubmitInfo {
     const uint32_t* pCommandBufferDeviceMasks = nullptr;
     uint32_t signalSemaphoreCount{0};
     const uint32_t* pSignalSemaphoreDeviceIndices = nullptr;
-    DeviceGroupSubmitInfo& setWaitSemaphoreCount(uint32_t waitSemaphoreCount) { this->waitSemaphoreCount = waitSemaphoreCount; return *this; }
-    DeviceGroupSubmitInfo& setPWaitSemaphoreDeviceIndices(const uint32_t* pWaitSemaphoreDeviceIndices) { this->pWaitSemaphoreDeviceIndices = pWaitSemaphoreDeviceIndices; return *this; }
-    DeviceGroupSubmitInfo& setWaitSemaphoreDeviceIndices(detail::span<const uint32_t> WaitSemaphoreDeviceIndices) { this->waitSemaphoreCount = WaitSemaphoreDeviceIndices.size(); this->pWaitSemaphoreDeviceIndices = WaitSemaphoreDeviceIndices.data();  return *this; }
-    DeviceGroupSubmitInfo& setCommandBufferCount(uint32_t commandBufferCount) { this->commandBufferCount = commandBufferCount; return *this; }
-    DeviceGroupSubmitInfo& setPCommandBufferDeviceMasks(const uint32_t* pCommandBufferDeviceMasks) { this->pCommandBufferDeviceMasks = pCommandBufferDeviceMasks; return *this; }
-    DeviceGroupSubmitInfo& setCommandBufferDeviceMasks(detail::span<const uint32_t> CommandBufferDeviceMasks) { this->commandBufferCount = CommandBufferDeviceMasks.size(); this->pCommandBufferDeviceMasks = CommandBufferDeviceMasks.data();  return *this; }
-    DeviceGroupSubmitInfo& setSignalSemaphoreCount(uint32_t signalSemaphoreCount) { this->signalSemaphoreCount = signalSemaphoreCount; return *this; }
-    DeviceGroupSubmitInfo& setPSignalSemaphoreDeviceIndices(const uint32_t* pSignalSemaphoreDeviceIndices) { this->pSignalSemaphoreDeviceIndices = pSignalSemaphoreDeviceIndices; return *this; }
-    DeviceGroupSubmitInfo& setSignalSemaphoreDeviceIndices(detail::span<const uint32_t> SignalSemaphoreDeviceIndices) { this->signalSemaphoreCount = SignalSemaphoreDeviceIndices.size(); this->pSignalSemaphoreDeviceIndices = SignalSemaphoreDeviceIndices.data();  return *this; }
+    DeviceGroupSubmitInfo& setWaitSemaphoreCount(uint32_t waitSemaphoreCount) {this->waitSemaphoreCount = waitSemaphoreCount; return *this; }
+    DeviceGroupSubmitInfo& setPWaitSemaphoreDeviceIndices(const uint32_t* pWaitSemaphoreDeviceIndices) {this->pWaitSemaphoreDeviceIndices = pWaitSemaphoreDeviceIndices; return *this; }
+    DeviceGroupSubmitInfo& setPWaitSemaphoreDeviceIndices(detail::span<const uint32_t> pWaitSemaphoreDeviceIndices) {this->waitSemaphoreCount = pWaitSemaphoreDeviceIndices.size(); this->pWaitSemaphoreDeviceIndices = pWaitSemaphoreDeviceIndices.data();  return *this; }
+    DeviceGroupSubmitInfo& setCommandBufferCount(uint32_t commandBufferCount) {this->commandBufferCount = commandBufferCount; return *this; }
+    DeviceGroupSubmitInfo& setPCommandBufferDeviceMasks(const uint32_t* pCommandBufferDeviceMasks) {this->pCommandBufferDeviceMasks = pCommandBufferDeviceMasks; return *this; }
+    DeviceGroupSubmitInfo& setPCommandBufferDeviceMasks(detail::span<const uint32_t> pCommandBufferDeviceMasks) {this->commandBufferCount = pCommandBufferDeviceMasks.size(); this->pCommandBufferDeviceMasks = pCommandBufferDeviceMasks.data();  return *this; }
+    DeviceGroupSubmitInfo& setSignalSemaphoreCount(uint32_t signalSemaphoreCount) {this->signalSemaphoreCount = signalSemaphoreCount; return *this; }
+    DeviceGroupSubmitInfo& setPSignalSemaphoreDeviceIndices(const uint32_t* pSignalSemaphoreDeviceIndices) {this->pSignalSemaphoreDeviceIndices = pSignalSemaphoreDeviceIndices; return *this; }
+    DeviceGroupSubmitInfo& setPSignalSemaphoreDeviceIndices(detail::span<const uint32_t> pSignalSemaphoreDeviceIndices) {this->signalSemaphoreCount = pSignalSemaphoreDeviceIndices.size(); this->pSignalSemaphoreDeviceIndices = pSignalSemaphoreDeviceIndices.data();  return *this; }
 };
 using DeviceGroupSubmitInfoKHR = DeviceGroupSubmitInfo;
 struct DeviceGroupBindSparseInfo {
@@ -6610,8 +6610,8 @@ struct DeviceGroupBindSparseInfo {
     const void* pNext = nullptr;
     uint32_t resourceDeviceIndex{0};
     uint32_t memoryDeviceIndex{0};
-    DeviceGroupBindSparseInfo& setResourceDeviceIndex(uint32_t resourceDeviceIndex) { this->resourceDeviceIndex = resourceDeviceIndex; return *this; }
-    DeviceGroupBindSparseInfo& setMemoryDeviceIndex(uint32_t memoryDeviceIndex) { this->memoryDeviceIndex = memoryDeviceIndex; return *this; }
+    DeviceGroupBindSparseInfo& setResourceDeviceIndex(uint32_t resourceDeviceIndex) {this->resourceDeviceIndex = resourceDeviceIndex; return *this; }
+    DeviceGroupBindSparseInfo& setMemoryDeviceIndex(uint32_t memoryDeviceIndex) {this->memoryDeviceIndex = memoryDeviceIndex; return *this; }
 };
 using DeviceGroupBindSparseInfoKHR = DeviceGroupBindSparseInfo;
 struct DeviceGroupPresentCapabilitiesKHR {
@@ -6619,22 +6619,22 @@ struct DeviceGroupPresentCapabilitiesKHR {
     const void* pNext = nullptr;
     uint32_t presentMask[MAX_DEVICE_GROUP_SIZE];
     DeviceGroupPresentModeFlagsKHR modes{};
-    DeviceGroupPresentCapabilitiesKHR& setPresentMask(uint32_t presentMask[MAX_DEVICE_GROUP_SIZE]) { for(uint32_t i = 0; i < MAX_DEVICE_GROUP_SIZE; i++) this->presentMask[i] = presentMask[i]; return *this; }
-    DeviceGroupPresentCapabilitiesKHR& setModes(DeviceGroupPresentModeFlagsKHR modes) { this->modes = modes; return *this; }
+    DeviceGroupPresentCapabilitiesKHR& setPresentMask(uint32_t presentMask[MAX_DEVICE_GROUP_SIZE]) {for(uint32_t i = 0; i < MAX_DEVICE_GROUP_SIZE; i++) this->presentMask[i] = presentMask[i]; return *this; }
+    DeviceGroupPresentCapabilitiesKHR& setModes(DeviceGroupPresentModeFlagsKHR modes) {this->modes = modes; return *this; }
 };
 struct ImageSwapchainCreateInfoKHR {
     StructureType sType{StructureType::ImageSwapchainCreateInfoKHR};
     const void* pNext = nullptr;
     SwapchainKHR swapchain{};
-    ImageSwapchainCreateInfoKHR& setSwapchain(SwapchainKHR swapchain) { this->swapchain = swapchain; return *this; }
+    ImageSwapchainCreateInfoKHR& setSwapchain(SwapchainKHR swapchain) {this->swapchain = swapchain; return *this; }
 };
 struct BindImageMemorySwapchainInfoKHR {
     StructureType sType{StructureType::BindImageMemorySwapchainInfoKHR};
     const void* pNext = nullptr;
     SwapchainKHR swapchain{};
     uint32_t imageIndex{0};
-    BindImageMemorySwapchainInfoKHR& setSwapchain(SwapchainKHR swapchain) { this->swapchain = swapchain; return *this; }
-    BindImageMemorySwapchainInfoKHR& setImageIndex(uint32_t imageIndex) { this->imageIndex = imageIndex; return *this; }
+    BindImageMemorySwapchainInfoKHR& setSwapchain(SwapchainKHR swapchain) {this->swapchain = swapchain; return *this; }
+    BindImageMemorySwapchainInfoKHR& setImageIndex(uint32_t imageIndex) {this->imageIndex = imageIndex; return *this; }
 };
 struct AcquireNextImageInfoKHR {
     StructureType sType{StructureType::AcquireNextImageInfoKHR};
@@ -6644,11 +6644,11 @@ struct AcquireNextImageInfoKHR {
     Semaphore semaphore{};
     Fence fence{};
     uint32_t deviceMask{0};
-    AcquireNextImageInfoKHR& setSwapchain(SwapchainKHR swapchain) { this->swapchain = swapchain; return *this; }
-    AcquireNextImageInfoKHR& setTimeout(uint64_t timeout) { this->timeout = timeout; return *this; }
-    AcquireNextImageInfoKHR& setSemaphore(Semaphore semaphore) { this->semaphore = semaphore; return *this; }
-    AcquireNextImageInfoKHR& setFence(Fence fence) { this->fence = fence; return *this; }
-    AcquireNextImageInfoKHR& setDeviceMask(uint32_t deviceMask) { this->deviceMask = deviceMask; return *this; }
+    AcquireNextImageInfoKHR& setSwapchain(SwapchainKHR swapchain) {this->swapchain = swapchain; return *this; }
+    AcquireNextImageInfoKHR& setTimeout(uint64_t timeout) {this->timeout = timeout; return *this; }
+    AcquireNextImageInfoKHR& setSemaphore(Semaphore semaphore) {this->semaphore = semaphore; return *this; }
+    AcquireNextImageInfoKHR& setFence(Fence fence) {this->fence = fence; return *this; }
+    AcquireNextImageInfoKHR& setDeviceMask(uint32_t deviceMask) {this->deviceMask = deviceMask; return *this; }
 };
 struct DeviceGroupPresentInfoKHR {
     StructureType sType{StructureType::DeviceGroupPresentInfoKHR};
@@ -6656,26 +6656,26 @@ struct DeviceGroupPresentInfoKHR {
     uint32_t swapchainCount{0};
     const uint32_t* pDeviceMasks = nullptr;
     DeviceGroupPresentModeFlagBitsKHR mode{static_cast<DeviceGroupPresentModeFlagBitsKHR>(0)};
-    DeviceGroupPresentInfoKHR& setSwapchainCount(uint32_t swapchainCount) { this->swapchainCount = swapchainCount; return *this; }
-    DeviceGroupPresentInfoKHR& setPDeviceMasks(const uint32_t* pDeviceMasks) { this->pDeviceMasks = pDeviceMasks; return *this; }
-    DeviceGroupPresentInfoKHR& setDeviceMasks(detail::span<const uint32_t> DeviceMasks) { this->swapchainCount = DeviceMasks.size(); this->pDeviceMasks = DeviceMasks.data();  return *this; }
-    DeviceGroupPresentInfoKHR& setMode(DeviceGroupPresentModeFlagBitsKHR mode) { this->mode = mode; return *this; }
+    DeviceGroupPresentInfoKHR& setSwapchainCount(uint32_t swapchainCount) {this->swapchainCount = swapchainCount; return *this; }
+    DeviceGroupPresentInfoKHR& setPDeviceMasks(const uint32_t* pDeviceMasks) {this->pDeviceMasks = pDeviceMasks; return *this; }
+    DeviceGroupPresentInfoKHR& setPDeviceMasks(detail::span<const uint32_t> pDeviceMasks) {this->swapchainCount = pDeviceMasks.size(); this->pDeviceMasks = pDeviceMasks.data();  return *this; }
+    DeviceGroupPresentInfoKHR& setMode(DeviceGroupPresentModeFlagBitsKHR mode) {this->mode = mode; return *this; }
 };
 struct DeviceGroupDeviceCreateInfo {
     StructureType sType{StructureType::DeviceGroupDeviceCreateInfo};
     const void* pNext = nullptr;
     uint32_t physicalDeviceCount{0};
     const PhysicalDevice* pPhysicalDevices = nullptr;
-    DeviceGroupDeviceCreateInfo& setPhysicalDeviceCount(uint32_t physicalDeviceCount) { this->physicalDeviceCount = physicalDeviceCount; return *this; }
-    DeviceGroupDeviceCreateInfo& setPPhysicalDevices(const PhysicalDevice* pPhysicalDevices) { this->pPhysicalDevices = pPhysicalDevices; return *this; }
-    DeviceGroupDeviceCreateInfo& setPhysicalDevices(detail::span<const PhysicalDevice> PhysicalDevices) { this->physicalDeviceCount = PhysicalDevices.size(); this->pPhysicalDevices = PhysicalDevices.data();  return *this; }
+    DeviceGroupDeviceCreateInfo& setPhysicalDeviceCount(uint32_t physicalDeviceCount) {this->physicalDeviceCount = physicalDeviceCount; return *this; }
+    DeviceGroupDeviceCreateInfo& setPPhysicalDevices(const PhysicalDevice* pPhysicalDevices) {this->pPhysicalDevices = pPhysicalDevices; return *this; }
+    DeviceGroupDeviceCreateInfo& setPPhysicalDevices(detail::span<const PhysicalDevice> pPhysicalDevices) {this->physicalDeviceCount = pPhysicalDevices.size(); this->pPhysicalDevices = pPhysicalDevices.data();  return *this; }
 };
 using DeviceGroupDeviceCreateInfoKHR = DeviceGroupDeviceCreateInfo;
 struct DeviceGroupSwapchainCreateInfoKHR {
     StructureType sType{StructureType::DeviceGroupSwapchainCreateInfoKHR};
     const void* pNext = nullptr;
     DeviceGroupPresentModeFlagsKHR modes{};
-    DeviceGroupSwapchainCreateInfoKHR& setModes(DeviceGroupPresentModeFlagsKHR modes) { this->modes = modes; return *this; }
+    DeviceGroupSwapchainCreateInfoKHR& setModes(DeviceGroupPresentModeFlagsKHR modes) {this->modes = modes; return *this; }
 };
 struct DescriptorUpdateTemplateEntry {
     uint32_t dstBinding{0};
@@ -6688,12 +6688,12 @@ struct DescriptorUpdateTemplateEntry {
         return dstBinding == value.dstBinding && dstArrayElement == value.dstArrayElement && descriptorCount == value.descriptorCount && descriptorType == value.descriptorType 
         && offset == value.offset && stride == value.stride ;}
     constexpr bool operator!=(DescriptorUpdateTemplateEntry const& value) const {return !(*this == value);}
-    DescriptorUpdateTemplateEntry& setDstBinding(uint32_t dstBinding) { this->dstBinding = dstBinding; return *this; }
-    DescriptorUpdateTemplateEntry& setDstArrayElement(uint32_t dstArrayElement) { this->dstArrayElement = dstArrayElement; return *this; }
-    DescriptorUpdateTemplateEntry& setDescriptorCount(uint32_t descriptorCount) { this->descriptorCount = descriptorCount; return *this; }
-    DescriptorUpdateTemplateEntry& setDescriptorType(DescriptorType descriptorType) { this->descriptorType = descriptorType; return *this; }
-    DescriptorUpdateTemplateEntry& setOffset(size_t offset) { this->offset = offset; return *this; }
-    DescriptorUpdateTemplateEntry& setStride(size_t stride) { this->stride = stride; return *this; }
+    DescriptorUpdateTemplateEntry& setDstBinding(uint32_t dstBinding) {this->dstBinding = dstBinding; return *this; }
+    DescriptorUpdateTemplateEntry& setDstArrayElement(uint32_t dstArrayElement) {this->dstArrayElement = dstArrayElement; return *this; }
+    DescriptorUpdateTemplateEntry& setDescriptorCount(uint32_t descriptorCount) {this->descriptorCount = descriptorCount; return *this; }
+    DescriptorUpdateTemplateEntry& setDescriptorType(DescriptorType descriptorType) {this->descriptorType = descriptorType; return *this; }
+    DescriptorUpdateTemplateEntry& setOffset(size_t offset) {this->offset = offset; return *this; }
+    DescriptorUpdateTemplateEntry& setStride(size_t stride) {this->stride = stride; return *this; }
 };
 using DescriptorUpdateTemplateEntryKHR = DescriptorUpdateTemplateEntry;
 struct DescriptorUpdateTemplateCreateInfo {
@@ -6707,15 +6707,15 @@ struct DescriptorUpdateTemplateCreateInfo {
     PipelineBindPoint pipelineBindPoint{static_cast<PipelineBindPoint>(0)};
     PipelineLayout pipelineLayout{};
     uint32_t set{0};
-    DescriptorUpdateTemplateCreateInfo& setFlags(DescriptorUpdateTemplateCreateFlags flags) { this->flags = flags; return *this; }
-    DescriptorUpdateTemplateCreateInfo& setDescriptorUpdateEntryCount(uint32_t descriptorUpdateEntryCount) { this->descriptorUpdateEntryCount = descriptorUpdateEntryCount; return *this; }
-    DescriptorUpdateTemplateCreateInfo& setPDescriptorUpdateEntries(const DescriptorUpdateTemplateEntry* pDescriptorUpdateEntries) { this->pDescriptorUpdateEntries = pDescriptorUpdateEntries; return *this; }
-    DescriptorUpdateTemplateCreateInfo& setDescriptorUpdateEntries(detail::span<const DescriptorUpdateTemplateEntry> DescriptorUpdateEntries) { this->descriptorUpdateEntryCount = DescriptorUpdateEntries.size(); this->pDescriptorUpdateEntries = DescriptorUpdateEntries.data();  return *this; }
-    DescriptorUpdateTemplateCreateInfo& setTemplateType(DescriptorUpdateTemplateType templateType) { this->templateType = templateType; return *this; }
-    DescriptorUpdateTemplateCreateInfo& setDescriptorSetLayout(DescriptorSetLayout descriptorSetLayout) { this->descriptorSetLayout = descriptorSetLayout; return *this; }
-    DescriptorUpdateTemplateCreateInfo& setPipelineBindPoint(PipelineBindPoint pipelineBindPoint) { this->pipelineBindPoint = pipelineBindPoint; return *this; }
-    DescriptorUpdateTemplateCreateInfo& setPipelineLayout(PipelineLayout pipelineLayout) { this->pipelineLayout = pipelineLayout; return *this; }
-    DescriptorUpdateTemplateCreateInfo& setSet(uint32_t set) { this->set = set; return *this; }
+    DescriptorUpdateTemplateCreateInfo& setFlags(DescriptorUpdateTemplateCreateFlags flags) {this->flags = flags; return *this; }
+    DescriptorUpdateTemplateCreateInfo& setDescriptorUpdateEntryCount(uint32_t descriptorUpdateEntryCount) {this->descriptorUpdateEntryCount = descriptorUpdateEntryCount; return *this; }
+    DescriptorUpdateTemplateCreateInfo& setPDescriptorUpdateEntries(const DescriptorUpdateTemplateEntry* pDescriptorUpdateEntries) {this->pDescriptorUpdateEntries = pDescriptorUpdateEntries; return *this; }
+    DescriptorUpdateTemplateCreateInfo& setPDescriptorUpdateEntries(detail::span<const DescriptorUpdateTemplateEntry> pDescriptorUpdateEntries) {this->descriptorUpdateEntryCount = pDescriptorUpdateEntries.size(); this->pDescriptorUpdateEntries = pDescriptorUpdateEntries.data();  return *this; }
+    DescriptorUpdateTemplateCreateInfo& setTemplateType(DescriptorUpdateTemplateType templateType) {this->templateType = templateType; return *this; }
+    DescriptorUpdateTemplateCreateInfo& setDescriptorSetLayout(DescriptorSetLayout descriptorSetLayout) {this->descriptorSetLayout = descriptorSetLayout; return *this; }
+    DescriptorUpdateTemplateCreateInfo& setPipelineBindPoint(PipelineBindPoint pipelineBindPoint) {this->pipelineBindPoint = pipelineBindPoint; return *this; }
+    DescriptorUpdateTemplateCreateInfo& setPipelineLayout(PipelineLayout pipelineLayout) {this->pipelineLayout = pipelineLayout; return *this; }
+    DescriptorUpdateTemplateCreateInfo& setSet(uint32_t set) {this->set = set; return *this; }
 };
 using DescriptorUpdateTemplateCreateInfoKHR = DescriptorUpdateTemplateCreateInfo;
 struct XYColorEXT {
@@ -6724,8 +6724,8 @@ struct XYColorEXT {
     constexpr bool operator==(XYColorEXT const& value) const {
         return x == value.x && y == value.y ;}
     constexpr bool operator!=(XYColorEXT const& value) const {return !(*this == value);}
-    XYColorEXT& setX(float x) { this->x = x; return *this; }
-    XYColorEXT& setY(float y) { this->y = y; return *this; }
+    XYColorEXT& setX(float x) {this->x = x; return *this; }
+    XYColorEXT& setY(float y) {this->y = y; return *this; }
 };
 struct HdrMetadataEXT {
     StructureType sType{StructureType::HdrMetadataEXT};
@@ -6738,33 +6738,33 @@ struct HdrMetadataEXT {
     float minLuminance{0.f};
     float maxContentLightLevel{0.f};
     float maxFrameAverageLightLevel{0.f};
-    HdrMetadataEXT& setDisplayPrimaryRed(XYColorEXT displayPrimaryRed) { this->displayPrimaryRed = displayPrimaryRed; return *this; }
-    HdrMetadataEXT& setDisplayPrimaryGreen(XYColorEXT displayPrimaryGreen) { this->displayPrimaryGreen = displayPrimaryGreen; return *this; }
-    HdrMetadataEXT& setDisplayPrimaryBlue(XYColorEXT displayPrimaryBlue) { this->displayPrimaryBlue = displayPrimaryBlue; return *this; }
-    HdrMetadataEXT& setWhitePoint(XYColorEXT whitePoint) { this->whitePoint = whitePoint; return *this; }
-    HdrMetadataEXT& setMaxLuminance(float maxLuminance) { this->maxLuminance = maxLuminance; return *this; }
-    HdrMetadataEXT& setMinLuminance(float minLuminance) { this->minLuminance = minLuminance; return *this; }
-    HdrMetadataEXT& setMaxContentLightLevel(float maxContentLightLevel) { this->maxContentLightLevel = maxContentLightLevel; return *this; }
-    HdrMetadataEXT& setMaxFrameAverageLightLevel(float maxFrameAverageLightLevel) { this->maxFrameAverageLightLevel = maxFrameAverageLightLevel; return *this; }
+    HdrMetadataEXT& setDisplayPrimaryRed(XYColorEXT displayPrimaryRed) {this->displayPrimaryRed = displayPrimaryRed; return *this; }
+    HdrMetadataEXT& setDisplayPrimaryGreen(XYColorEXT displayPrimaryGreen) {this->displayPrimaryGreen = displayPrimaryGreen; return *this; }
+    HdrMetadataEXT& setDisplayPrimaryBlue(XYColorEXT displayPrimaryBlue) {this->displayPrimaryBlue = displayPrimaryBlue; return *this; }
+    HdrMetadataEXT& setWhitePoint(XYColorEXT whitePoint) {this->whitePoint = whitePoint; return *this; }
+    HdrMetadataEXT& setMaxLuminance(float maxLuminance) {this->maxLuminance = maxLuminance; return *this; }
+    HdrMetadataEXT& setMinLuminance(float minLuminance) {this->minLuminance = minLuminance; return *this; }
+    HdrMetadataEXT& setMaxContentLightLevel(float maxContentLightLevel) {this->maxContentLightLevel = maxContentLightLevel; return *this; }
+    HdrMetadataEXT& setMaxFrameAverageLightLevel(float maxFrameAverageLightLevel) {this->maxFrameAverageLightLevel = maxFrameAverageLightLevel; return *this; }
 };
 struct DisplayNativeHdrSurfaceCapabilitiesAMD {
     StructureType sType{StructureType::DisplayNativeHdrSurfaceCapabilitiesAMD};
     void* pNext = nullptr;
     Bool32 localDimmingSupport{0};
-    DisplayNativeHdrSurfaceCapabilitiesAMD& setLocalDimmingSupport(Bool32 localDimmingSupport) { this->localDimmingSupport = localDimmingSupport; return *this; }
+    DisplayNativeHdrSurfaceCapabilitiesAMD& setLocalDimmingSupport(Bool32 localDimmingSupport) {this->localDimmingSupport = localDimmingSupport; return *this; }
 };
 struct SwapchainDisplayNativeHdrCreateInfoAMD {
     StructureType sType{StructureType::SwapchainDisplayNativeHdrCreateInfoAMD};
     const void* pNext = nullptr;
     Bool32 localDimmingEnable{0};
-    SwapchainDisplayNativeHdrCreateInfoAMD& setLocalDimmingEnable(Bool32 localDimmingEnable) { this->localDimmingEnable = localDimmingEnable; return *this; }
+    SwapchainDisplayNativeHdrCreateInfoAMD& setLocalDimmingEnable(Bool32 localDimmingEnable) {this->localDimmingEnable = localDimmingEnable; return *this; }
 };
 struct RefreshCycleDurationGOOGLE {
     uint64_t refreshDuration{0};
     constexpr bool operator==(RefreshCycleDurationGOOGLE const& value) const {
         return refreshDuration == value.refreshDuration ;}
     constexpr bool operator!=(RefreshCycleDurationGOOGLE const& value) const {return !(*this == value);}
-    RefreshCycleDurationGOOGLE& setRefreshDuration(uint64_t refreshDuration) { this->refreshDuration = refreshDuration; return *this; }
+    RefreshCycleDurationGOOGLE& setRefreshDuration(uint64_t refreshDuration) {this->refreshDuration = refreshDuration; return *this; }
 };
 struct PastPresentationTimingGOOGLE {
     uint32_t presentID{0};
@@ -6776,11 +6776,11 @@ struct PastPresentationTimingGOOGLE {
         return presentID == value.presentID && desiredPresentTime == value.desiredPresentTime && actualPresentTime == value.actualPresentTime && earliestPresentTime == value.earliestPresentTime 
         && presentMargin == value.presentMargin ;}
     constexpr bool operator!=(PastPresentationTimingGOOGLE const& value) const {return !(*this == value);}
-    PastPresentationTimingGOOGLE& setPresentID(uint32_t presentID) { this->presentID = presentID; return *this; }
-    PastPresentationTimingGOOGLE& setDesiredPresentTime(uint64_t desiredPresentTime) { this->desiredPresentTime = desiredPresentTime; return *this; }
-    PastPresentationTimingGOOGLE& setActualPresentTime(uint64_t actualPresentTime) { this->actualPresentTime = actualPresentTime; return *this; }
-    PastPresentationTimingGOOGLE& setEarliestPresentTime(uint64_t earliestPresentTime) { this->earliestPresentTime = earliestPresentTime; return *this; }
-    PastPresentationTimingGOOGLE& setPresentMargin(uint64_t presentMargin) { this->presentMargin = presentMargin; return *this; }
+    PastPresentationTimingGOOGLE& setPresentID(uint32_t presentID) {this->presentID = presentID; return *this; }
+    PastPresentationTimingGOOGLE& setDesiredPresentTime(uint64_t desiredPresentTime) {this->desiredPresentTime = desiredPresentTime; return *this; }
+    PastPresentationTimingGOOGLE& setActualPresentTime(uint64_t actualPresentTime) {this->actualPresentTime = actualPresentTime; return *this; }
+    PastPresentationTimingGOOGLE& setEarliestPresentTime(uint64_t earliestPresentTime) {this->earliestPresentTime = earliestPresentTime; return *this; }
+    PastPresentationTimingGOOGLE& setPresentMargin(uint64_t presentMargin) {this->presentMargin = presentMargin; return *this; }
 };
 struct PresentTimeGOOGLE {
     uint32_t presentID{0};
@@ -6788,17 +6788,17 @@ struct PresentTimeGOOGLE {
     constexpr bool operator==(PresentTimeGOOGLE const& value) const {
         return presentID == value.presentID && desiredPresentTime == value.desiredPresentTime ;}
     constexpr bool operator!=(PresentTimeGOOGLE const& value) const {return !(*this == value);}
-    PresentTimeGOOGLE& setPresentID(uint32_t presentID) { this->presentID = presentID; return *this; }
-    PresentTimeGOOGLE& setDesiredPresentTime(uint64_t desiredPresentTime) { this->desiredPresentTime = desiredPresentTime; return *this; }
+    PresentTimeGOOGLE& setPresentID(uint32_t presentID) {this->presentID = presentID; return *this; }
+    PresentTimeGOOGLE& setDesiredPresentTime(uint64_t desiredPresentTime) {this->desiredPresentTime = desiredPresentTime; return *this; }
 };
 struct PresentTimesInfoGOOGLE {
     StructureType sType{StructureType::PresentTimesInfoGOOGLE};
     const void* pNext = nullptr;
     uint32_t swapchainCount{0};
     const PresentTimeGOOGLE* pTimes = nullptr;
-    PresentTimesInfoGOOGLE& setSwapchainCount(uint32_t swapchainCount) { this->swapchainCount = swapchainCount; return *this; }
-    PresentTimesInfoGOOGLE& setPTimes(const PresentTimeGOOGLE* pTimes) { this->pTimes = pTimes; return *this; }
-    PresentTimesInfoGOOGLE& setTimes(detail::span<const PresentTimeGOOGLE> Times) { this->swapchainCount = Times.size(); this->pTimes = Times.data();  return *this; }
+    PresentTimesInfoGOOGLE& setSwapchainCount(uint32_t swapchainCount) {this->swapchainCount = swapchainCount; return *this; }
+    PresentTimesInfoGOOGLE& setPTimes(const PresentTimeGOOGLE* pTimes) {this->pTimes = pTimes; return *this; }
+    PresentTimesInfoGOOGLE& setPTimes(detail::span<const PresentTimeGOOGLE> pTimes) {this->swapchainCount = pTimes.size(); this->pTimes = pTimes.data();  return *this; }
 };
 #if defined(VK_USE_PLATFORM_IOS_MVK)
 struct IOSSurfaceCreateInfoMVK {
@@ -6806,7 +6806,8 @@ struct IOSSurfaceCreateInfoMVK {
     const void* pNext = nullptr;
     IOSSurfaceCreateFlagsMVK flags{};
     const void* pView = nullptr;
-    IOSSurfaceCreateInfoMVK& setFlags(IOSSurfaceCreateFlagsMVK flags) { this->flags = flags; return *this; }
+    IOSSurfaceCreateInfoMVK& setFlags(IOSSurfaceCreateFlagsMVK flags) {this->flags = flags; return *this; }
+    IOSSurfaceCreateInfoMVK& setPView(const void* pView) {this->pView = pView; return *this; }
 };
 #endif // defined(VK_USE_PLATFORM_IOS_MVK)
 #if defined(VK_USE_PLATFORM_MACOS_MVK)
@@ -6815,7 +6816,8 @@ struct MacOSSurfaceCreateInfoMVK {
     const void* pNext = nullptr;
     MacOSSurfaceCreateFlagsMVK flags{};
     const void* pView = nullptr;
-    MacOSSurfaceCreateInfoMVK& setFlags(MacOSSurfaceCreateFlagsMVK flags) { this->flags = flags; return *this; }
+    MacOSSurfaceCreateInfoMVK& setFlags(MacOSSurfaceCreateFlagsMVK flags) {this->flags = flags; return *this; }
+    MacOSSurfaceCreateInfoMVK& setPView(const void* pView) {this->pView = pView; return *this; }
 };
 #endif // defined(VK_USE_PLATFORM_MACOS_MVK)
 #if defined(VK_USE_PLATFORM_METAL_EXT)
@@ -6824,9 +6826,9 @@ struct MetalSurfaceCreateInfoEXT {
     const void* pNext = nullptr;
     MetalSurfaceCreateFlagsEXT flags{};
     const CAMetalLayer* pLayer = nullptr;
-    MetalSurfaceCreateInfoEXT& setFlags(MetalSurfaceCreateFlagsEXT flags) { this->flags = flags; return *this; }
-    MetalSurfaceCreateInfoEXT& setPLayer(const CAMetalLayer* pLayer) { this->pLayer = pLayer; return *this; }
-    MetalSurfaceCreateInfoEXT& setLayer(CAMetalLayer const& Layer) { this->pLayer = &Layer; return *this; }
+    MetalSurfaceCreateInfoEXT& setFlags(MetalSurfaceCreateFlagsEXT flags) {this->flags = flags; return *this; }
+    MetalSurfaceCreateInfoEXT& setPLayer(const CAMetalLayer* pLayer) {this->pLayer = pLayer; return *this; }
+    MetalSurfaceCreateInfoEXT& setPLayer(CAMetalLayer const& pLayer) {this->pLayer = &pLayer; return *this; }
 };
 #endif // defined(VK_USE_PLATFORM_METAL_EXT)
 struct ViewportWScalingNV {
@@ -6835,8 +6837,8 @@ struct ViewportWScalingNV {
     constexpr bool operator==(ViewportWScalingNV const& value) const {
         return xcoeff == value.xcoeff && ycoeff == value.ycoeff ;}
     constexpr bool operator!=(ViewportWScalingNV const& value) const {return !(*this == value);}
-    ViewportWScalingNV& setXcoeff(float xcoeff) { this->xcoeff = xcoeff; return *this; }
-    ViewportWScalingNV& setYcoeff(float ycoeff) { this->ycoeff = ycoeff; return *this; }
+    ViewportWScalingNV& setXcoeff(float xcoeff) {this->xcoeff = xcoeff; return *this; }
+    ViewportWScalingNV& setYcoeff(float ycoeff) {this->ycoeff = ycoeff; return *this; }
 };
 struct PipelineViewportWScalingStateCreateInfoNV {
     StructureType sType{StructureType::PipelineViewportWScalingStateCreateInfoNV};
@@ -6844,10 +6846,10 @@ struct PipelineViewportWScalingStateCreateInfoNV {
     Bool32 viewportWScalingEnable{0};
     uint32_t viewportCount{0};
     const ViewportWScalingNV* pViewportWScalings = nullptr;
-    PipelineViewportWScalingStateCreateInfoNV& setViewportWScalingEnable(Bool32 viewportWScalingEnable) { this->viewportWScalingEnable = viewportWScalingEnable; return *this; }
-    PipelineViewportWScalingStateCreateInfoNV& setViewportCount(uint32_t viewportCount) { this->viewportCount = viewportCount; return *this; }
-    PipelineViewportWScalingStateCreateInfoNV& setPViewportWScalings(const ViewportWScalingNV* pViewportWScalings) { this->pViewportWScalings = pViewportWScalings; return *this; }
-    PipelineViewportWScalingStateCreateInfoNV& setViewportWScalings(detail::span<const ViewportWScalingNV> ViewportWScalings) { this->viewportCount = ViewportWScalings.size(); this->pViewportWScalings = ViewportWScalings.data();  return *this; }
+    PipelineViewportWScalingStateCreateInfoNV& setViewportWScalingEnable(Bool32 viewportWScalingEnable) {this->viewportWScalingEnable = viewportWScalingEnable; return *this; }
+    PipelineViewportWScalingStateCreateInfoNV& setViewportCount(uint32_t viewportCount) {this->viewportCount = viewportCount; return *this; }
+    PipelineViewportWScalingStateCreateInfoNV& setPViewportWScalings(const ViewportWScalingNV* pViewportWScalings) {this->pViewportWScalings = pViewportWScalings; return *this; }
+    PipelineViewportWScalingStateCreateInfoNV& setPViewportWScalings(detail::span<const ViewportWScalingNV> pViewportWScalings) {this->viewportCount = pViewportWScalings.size(); this->pViewportWScalings = pViewportWScalings.data();  return *this; }
 };
 struct ViewportSwizzleNV {
     ViewportCoordinateSwizzleNV x{static_cast<ViewportCoordinateSwizzleNV>(0)};
@@ -6857,10 +6859,10 @@ struct ViewportSwizzleNV {
     constexpr bool operator==(ViewportSwizzleNV const& value) const {
         return x == value.x && y == value.y && z == value.z && w == value.w ;}
     constexpr bool operator!=(ViewportSwizzleNV const& value) const {return !(*this == value);}
-    ViewportSwizzleNV& setX(ViewportCoordinateSwizzleNV x) { this->x = x; return *this; }
-    ViewportSwizzleNV& setY(ViewportCoordinateSwizzleNV y) { this->y = y; return *this; }
-    ViewportSwizzleNV& setZ(ViewportCoordinateSwizzleNV z) { this->z = z; return *this; }
-    ViewportSwizzleNV& setW(ViewportCoordinateSwizzleNV w) { this->w = w; return *this; }
+    ViewportSwizzleNV& setX(ViewportCoordinateSwizzleNV x) {this->x = x; return *this; }
+    ViewportSwizzleNV& setY(ViewportCoordinateSwizzleNV y) {this->y = y; return *this; }
+    ViewportSwizzleNV& setZ(ViewportCoordinateSwizzleNV z) {this->z = z; return *this; }
+    ViewportSwizzleNV& setW(ViewportCoordinateSwizzleNV w) {this->w = w; return *this; }
 };
 struct PipelineViewportSwizzleStateCreateInfoNV {
     StructureType sType{StructureType::PipelineViewportSwizzleStateCreateInfoNV};
@@ -6868,16 +6870,16 @@ struct PipelineViewportSwizzleStateCreateInfoNV {
     PipelineViewportSwizzleStateCreateFlagsNV flags{};
     uint32_t viewportCount{0};
     const ViewportSwizzleNV* pViewportSwizzles = nullptr;
-    PipelineViewportSwizzleStateCreateInfoNV& setFlags(PipelineViewportSwizzleStateCreateFlagsNV flags) { this->flags = flags; return *this; }
-    PipelineViewportSwizzleStateCreateInfoNV& setViewportCount(uint32_t viewportCount) { this->viewportCount = viewportCount; return *this; }
-    PipelineViewportSwizzleStateCreateInfoNV& setPViewportSwizzles(const ViewportSwizzleNV* pViewportSwizzles) { this->pViewportSwizzles = pViewportSwizzles; return *this; }
-    PipelineViewportSwizzleStateCreateInfoNV& setViewportSwizzles(detail::span<const ViewportSwizzleNV> ViewportSwizzles) { this->viewportCount = ViewportSwizzles.size(); this->pViewportSwizzles = ViewportSwizzles.data();  return *this; }
+    PipelineViewportSwizzleStateCreateInfoNV& setFlags(PipelineViewportSwizzleStateCreateFlagsNV flags) {this->flags = flags; return *this; }
+    PipelineViewportSwizzleStateCreateInfoNV& setViewportCount(uint32_t viewportCount) {this->viewportCount = viewportCount; return *this; }
+    PipelineViewportSwizzleStateCreateInfoNV& setPViewportSwizzles(const ViewportSwizzleNV* pViewportSwizzles) {this->pViewportSwizzles = pViewportSwizzles; return *this; }
+    PipelineViewportSwizzleStateCreateInfoNV& setPViewportSwizzles(detail::span<const ViewportSwizzleNV> pViewportSwizzles) {this->viewportCount = pViewportSwizzles.size(); this->pViewportSwizzles = pViewportSwizzles.data();  return *this; }
 };
 struct PhysicalDeviceDiscardRectanglePropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceDiscardRectanglePropertiesEXT};
     void* pNext = nullptr;
     uint32_t maxDiscardRectangles{0};
-    PhysicalDeviceDiscardRectanglePropertiesEXT& setMaxDiscardRectangles(uint32_t maxDiscardRectangles) { this->maxDiscardRectangles = maxDiscardRectangles; return *this; }
+    PhysicalDeviceDiscardRectanglePropertiesEXT& setMaxDiscardRectangles(uint32_t maxDiscardRectangles) {this->maxDiscardRectangles = maxDiscardRectangles; return *this; }
 };
 struct PipelineDiscardRectangleStateCreateInfoEXT {
     StructureType sType{StructureType::PipelineDiscardRectangleStateCreateInfoEXT};
@@ -6886,17 +6888,17 @@ struct PipelineDiscardRectangleStateCreateInfoEXT {
     DiscardRectangleModeEXT discardRectangleMode{static_cast<DiscardRectangleModeEXT>(0)};
     uint32_t discardRectangleCount{0};
     const Rect2D* pDiscardRectangles = nullptr;
-    PipelineDiscardRectangleStateCreateInfoEXT& setFlags(PipelineDiscardRectangleStateCreateFlagsEXT flags) { this->flags = flags; return *this; }
-    PipelineDiscardRectangleStateCreateInfoEXT& setDiscardRectangleMode(DiscardRectangleModeEXT discardRectangleMode) { this->discardRectangleMode = discardRectangleMode; return *this; }
-    PipelineDiscardRectangleStateCreateInfoEXT& setDiscardRectangleCount(uint32_t discardRectangleCount) { this->discardRectangleCount = discardRectangleCount; return *this; }
-    PipelineDiscardRectangleStateCreateInfoEXT& setPDiscardRectangles(const Rect2D* pDiscardRectangles) { this->pDiscardRectangles = pDiscardRectangles; return *this; }
-    PipelineDiscardRectangleStateCreateInfoEXT& setDiscardRectangles(detail::span<const Rect2D> DiscardRectangles) { this->discardRectangleCount = DiscardRectangles.size(); this->pDiscardRectangles = DiscardRectangles.data();  return *this; }
+    PipelineDiscardRectangleStateCreateInfoEXT& setFlags(PipelineDiscardRectangleStateCreateFlagsEXT flags) {this->flags = flags; return *this; }
+    PipelineDiscardRectangleStateCreateInfoEXT& setDiscardRectangleMode(DiscardRectangleModeEXT discardRectangleMode) {this->discardRectangleMode = discardRectangleMode; return *this; }
+    PipelineDiscardRectangleStateCreateInfoEXT& setDiscardRectangleCount(uint32_t discardRectangleCount) {this->discardRectangleCount = discardRectangleCount; return *this; }
+    PipelineDiscardRectangleStateCreateInfoEXT& setPDiscardRectangles(const Rect2D* pDiscardRectangles) {this->pDiscardRectangles = pDiscardRectangles; return *this; }
+    PipelineDiscardRectangleStateCreateInfoEXT& setPDiscardRectangles(detail::span<const Rect2D> pDiscardRectangles) {this->discardRectangleCount = pDiscardRectangles.size(); this->pDiscardRectangles = pDiscardRectangles.data();  return *this; }
 };
 struct PhysicalDeviceMultiviewPerViewAttributesPropertiesNVX {
     StructureType sType{StructureType::PhysicalDeviceMultiviewPerViewAttributesPropertiesNVX};
     void* pNext = nullptr;
     Bool32 perViewPositionAllComponents{0};
-    PhysicalDeviceMultiviewPerViewAttributesPropertiesNVX& setPerViewPositionAllComponents(Bool32 perViewPositionAllComponents) { this->perViewPositionAllComponents = perViewPositionAllComponents; return *this; }
+    PhysicalDeviceMultiviewPerViewAttributesPropertiesNVX& setPerViewPositionAllComponents(Bool32 perViewPositionAllComponents) {this->perViewPositionAllComponents = perViewPositionAllComponents; return *this; }
 };
 struct InputAttachmentAspectReference {
     uint32_t subpass{0};
@@ -6905,9 +6907,9 @@ struct InputAttachmentAspectReference {
     constexpr bool operator==(InputAttachmentAspectReference const& value) const {
         return subpass == value.subpass && inputAttachmentIndex == value.inputAttachmentIndex && aspectMask == value.aspectMask ;}
     constexpr bool operator!=(InputAttachmentAspectReference const& value) const {return !(*this == value);}
-    InputAttachmentAspectReference& setSubpass(uint32_t subpass) { this->subpass = subpass; return *this; }
-    InputAttachmentAspectReference& setInputAttachmentIndex(uint32_t inputAttachmentIndex) { this->inputAttachmentIndex = inputAttachmentIndex; return *this; }
-    InputAttachmentAspectReference& setAspectMask(ImageAspectFlags aspectMask) { this->aspectMask = aspectMask; return *this; }
+    InputAttachmentAspectReference& setSubpass(uint32_t subpass) {this->subpass = subpass; return *this; }
+    InputAttachmentAspectReference& setInputAttachmentIndex(uint32_t inputAttachmentIndex) {this->inputAttachmentIndex = inputAttachmentIndex; return *this; }
+    InputAttachmentAspectReference& setAspectMask(ImageAspectFlags aspectMask) {this->aspectMask = aspectMask; return *this; }
 };
 using InputAttachmentAspectReferenceKHR = InputAttachmentAspectReference;
 struct RenderPassInputAttachmentAspectCreateInfo {
@@ -6915,66 +6917,66 @@ struct RenderPassInputAttachmentAspectCreateInfo {
     const void* pNext = nullptr;
     uint32_t aspectReferenceCount{0};
     const InputAttachmentAspectReference* pAspectReferences = nullptr;
-    RenderPassInputAttachmentAspectCreateInfo& setAspectReferenceCount(uint32_t aspectReferenceCount) { this->aspectReferenceCount = aspectReferenceCount; return *this; }
-    RenderPassInputAttachmentAspectCreateInfo& setPAspectReferences(const InputAttachmentAspectReference* pAspectReferences) { this->pAspectReferences = pAspectReferences; return *this; }
-    RenderPassInputAttachmentAspectCreateInfo& setAspectReferences(detail::span<const InputAttachmentAspectReference> AspectReferences) { this->aspectReferenceCount = AspectReferences.size(); this->pAspectReferences = AspectReferences.data();  return *this; }
+    RenderPassInputAttachmentAspectCreateInfo& setAspectReferenceCount(uint32_t aspectReferenceCount) {this->aspectReferenceCount = aspectReferenceCount; return *this; }
+    RenderPassInputAttachmentAspectCreateInfo& setPAspectReferences(const InputAttachmentAspectReference* pAspectReferences) {this->pAspectReferences = pAspectReferences; return *this; }
+    RenderPassInputAttachmentAspectCreateInfo& setPAspectReferences(detail::span<const InputAttachmentAspectReference> pAspectReferences) {this->aspectReferenceCount = pAspectReferences.size(); this->pAspectReferences = pAspectReferences.data();  return *this; }
 };
 using RenderPassInputAttachmentAspectCreateInfoKHR = RenderPassInputAttachmentAspectCreateInfo;
 struct PhysicalDeviceSurfaceInfo2KHR {
     StructureType sType{StructureType::PhysicalDeviceSurfaceInfo2KHR};
     const void* pNext = nullptr;
     SurfaceKHR surface{};
-    PhysicalDeviceSurfaceInfo2KHR& setSurface(SurfaceKHR surface) { this->surface = surface; return *this; }
+    PhysicalDeviceSurfaceInfo2KHR& setSurface(SurfaceKHR surface) {this->surface = surface; return *this; }
 };
 struct SurfaceCapabilities2KHR {
     StructureType sType{StructureType::SurfaceCapabilities2KHR};
     void* pNext = nullptr;
     SurfaceCapabilitiesKHR surfaceCapabilities{};
-    SurfaceCapabilities2KHR& setSurfaceCapabilities(SurfaceCapabilitiesKHR surfaceCapabilities) { this->surfaceCapabilities = surfaceCapabilities; return *this; }
+    SurfaceCapabilities2KHR& setSurfaceCapabilities(SurfaceCapabilitiesKHR surfaceCapabilities) {this->surfaceCapabilities = surfaceCapabilities; return *this; }
 };
 struct SurfaceFormat2KHR {
     StructureType sType{StructureType::SurfaceFormat2KHR};
     void* pNext = nullptr;
     SurfaceFormatKHR surfaceFormat{};
-    SurfaceFormat2KHR& setSurfaceFormat(SurfaceFormatKHR surfaceFormat) { this->surfaceFormat = surfaceFormat; return *this; }
+    SurfaceFormat2KHR& setSurfaceFormat(SurfaceFormatKHR surfaceFormat) {this->surfaceFormat = surfaceFormat; return *this; }
 };
 struct DisplayProperties2KHR {
     StructureType sType{StructureType::DisplayProperties2KHR};
     void* pNext = nullptr;
     DisplayPropertiesKHR displayProperties{};
-    DisplayProperties2KHR& setDisplayProperties(DisplayPropertiesKHR displayProperties) { this->displayProperties = displayProperties; return *this; }
+    DisplayProperties2KHR& setDisplayProperties(DisplayPropertiesKHR displayProperties) {this->displayProperties = displayProperties; return *this; }
 };
 struct DisplayPlaneProperties2KHR {
     StructureType sType{StructureType::DisplayPlaneProperties2KHR};
     void* pNext = nullptr;
     DisplayPlanePropertiesKHR displayPlaneProperties{};
-    DisplayPlaneProperties2KHR& setDisplayPlaneProperties(DisplayPlanePropertiesKHR displayPlaneProperties) { this->displayPlaneProperties = displayPlaneProperties; return *this; }
+    DisplayPlaneProperties2KHR& setDisplayPlaneProperties(DisplayPlanePropertiesKHR displayPlaneProperties) {this->displayPlaneProperties = displayPlaneProperties; return *this; }
 };
 struct DisplayModeProperties2KHR {
     StructureType sType{StructureType::DisplayModeProperties2KHR};
     void* pNext = nullptr;
     DisplayModePropertiesKHR displayModeProperties{};
-    DisplayModeProperties2KHR& setDisplayModeProperties(DisplayModePropertiesKHR displayModeProperties) { this->displayModeProperties = displayModeProperties; return *this; }
+    DisplayModeProperties2KHR& setDisplayModeProperties(DisplayModePropertiesKHR displayModeProperties) {this->displayModeProperties = displayModeProperties; return *this; }
 };
 struct DisplayPlaneInfo2KHR {
     StructureType sType{StructureType::DisplayPlaneInfo2KHR};
     const void* pNext = nullptr;
     DisplayModeKHR mode{};
     uint32_t planeIndex{0};
-    DisplayPlaneInfo2KHR& setMode(DisplayModeKHR mode) { this->mode = mode; return *this; }
-    DisplayPlaneInfo2KHR& setPlaneIndex(uint32_t planeIndex) { this->planeIndex = planeIndex; return *this; }
+    DisplayPlaneInfo2KHR& setMode(DisplayModeKHR mode) {this->mode = mode; return *this; }
+    DisplayPlaneInfo2KHR& setPlaneIndex(uint32_t planeIndex) {this->planeIndex = planeIndex; return *this; }
 };
 struct DisplayPlaneCapabilities2KHR {
     StructureType sType{StructureType::DisplayPlaneCapabilities2KHR};
     void* pNext = nullptr;
     DisplayPlaneCapabilitiesKHR capabilities{};
-    DisplayPlaneCapabilities2KHR& setCapabilities(DisplayPlaneCapabilitiesKHR capabilities) { this->capabilities = capabilities; return *this; }
+    DisplayPlaneCapabilities2KHR& setCapabilities(DisplayPlaneCapabilitiesKHR capabilities) {this->capabilities = capabilities; return *this; }
 };
 struct SharedPresentSurfaceCapabilitiesKHR {
     StructureType sType{StructureType::SharedPresentSurfaceCapabilitiesKHR};
     void* pNext = nullptr;
     ImageUsageFlags sharedPresentSupportedUsageFlags{};
-    SharedPresentSurfaceCapabilitiesKHR& setSharedPresentSupportedUsageFlags(ImageUsageFlags sharedPresentSupportedUsageFlags) { this->sharedPresentSupportedUsageFlags = sharedPresentSupportedUsageFlags; return *this; }
+    SharedPresentSurfaceCapabilitiesKHR& setSharedPresentSupportedUsageFlags(ImageUsageFlags sharedPresentSupportedUsageFlags) {this->sharedPresentSupportedUsageFlags = sharedPresentSupportedUsageFlags; return *this; }
 };
 struct PhysicalDevice16BitStorageFeatures {
     StructureType sType{StructureType::PhysicalDevice16BitStorageFeatures};
@@ -6983,10 +6985,10 @@ struct PhysicalDevice16BitStorageFeatures {
     Bool32 uniformAndStorageBuffer16BitAccess{0};
     Bool32 storagePushConstant16{0};
     Bool32 storageInputOutput16{0};
-    PhysicalDevice16BitStorageFeatures& setStorageBuffer16BitAccess(Bool32 storageBuffer16BitAccess) { this->storageBuffer16BitAccess = storageBuffer16BitAccess; return *this; }
-    PhysicalDevice16BitStorageFeatures& setUniformAndStorageBuffer16BitAccess(Bool32 uniformAndStorageBuffer16BitAccess) { this->uniformAndStorageBuffer16BitAccess = uniformAndStorageBuffer16BitAccess; return *this; }
-    PhysicalDevice16BitStorageFeatures& setStoragePushConstant16(Bool32 storagePushConstant16) { this->storagePushConstant16 = storagePushConstant16; return *this; }
-    PhysicalDevice16BitStorageFeatures& setStorageInputOutput16(Bool32 storageInputOutput16) { this->storageInputOutput16 = storageInputOutput16; return *this; }
+    PhysicalDevice16BitStorageFeatures& setStorageBuffer16BitAccess(Bool32 storageBuffer16BitAccess) {this->storageBuffer16BitAccess = storageBuffer16BitAccess; return *this; }
+    PhysicalDevice16BitStorageFeatures& setUniformAndStorageBuffer16BitAccess(Bool32 uniformAndStorageBuffer16BitAccess) {this->uniformAndStorageBuffer16BitAccess = uniformAndStorageBuffer16BitAccess; return *this; }
+    PhysicalDevice16BitStorageFeatures& setStoragePushConstant16(Bool32 storagePushConstant16) {this->storagePushConstant16 = storagePushConstant16; return *this; }
+    PhysicalDevice16BitStorageFeatures& setStorageInputOutput16(Bool32 storageInputOutput16) {this->storageInputOutput16 = storageInputOutput16; return *this; }
 };
 using PhysicalDevice16BitStorageFeaturesKHR = PhysicalDevice16BitStorageFeatures;
 struct PhysicalDeviceSubgroupProperties {
@@ -6996,58 +6998,58 @@ struct PhysicalDeviceSubgroupProperties {
     ShaderStageFlags supportedStages{};
     SubgroupFeatureFlags supportedOperations{};
     Bool32 quadOperationsInAllStages{0};
-    PhysicalDeviceSubgroupProperties& setSubgroupSize(uint32_t subgroupSize) { this->subgroupSize = subgroupSize; return *this; }
-    PhysicalDeviceSubgroupProperties& setSupportedStages(ShaderStageFlags supportedStages) { this->supportedStages = supportedStages; return *this; }
-    PhysicalDeviceSubgroupProperties& setSupportedOperations(SubgroupFeatureFlags supportedOperations) { this->supportedOperations = supportedOperations; return *this; }
-    PhysicalDeviceSubgroupProperties& setQuadOperationsInAllStages(Bool32 quadOperationsInAllStages) { this->quadOperationsInAllStages = quadOperationsInAllStages; return *this; }
+    PhysicalDeviceSubgroupProperties& setSubgroupSize(uint32_t subgroupSize) {this->subgroupSize = subgroupSize; return *this; }
+    PhysicalDeviceSubgroupProperties& setSupportedStages(ShaderStageFlags supportedStages) {this->supportedStages = supportedStages; return *this; }
+    PhysicalDeviceSubgroupProperties& setSupportedOperations(SubgroupFeatureFlags supportedOperations) {this->supportedOperations = supportedOperations; return *this; }
+    PhysicalDeviceSubgroupProperties& setQuadOperationsInAllStages(Bool32 quadOperationsInAllStages) {this->quadOperationsInAllStages = quadOperationsInAllStages; return *this; }
 };
 struct PhysicalDeviceShaderSubgroupExtendedTypesFeatures {
     StructureType sType{StructureType::PhysicalDeviceShaderSubgroupExtendedTypesFeatures};
     void* pNext = nullptr;
     Bool32 shaderSubgroupExtendedTypes{0};
-    PhysicalDeviceShaderSubgroupExtendedTypesFeatures& setShaderSubgroupExtendedTypes(Bool32 shaderSubgroupExtendedTypes) { this->shaderSubgroupExtendedTypes = shaderSubgroupExtendedTypes; return *this; }
+    PhysicalDeviceShaderSubgroupExtendedTypesFeatures& setShaderSubgroupExtendedTypes(Bool32 shaderSubgroupExtendedTypes) {this->shaderSubgroupExtendedTypes = shaderSubgroupExtendedTypes; return *this; }
 };
 using PhysicalDeviceShaderSubgroupExtendedTypesFeaturesKHR = PhysicalDeviceShaderSubgroupExtendedTypesFeatures;
 struct BufferMemoryRequirementsInfo2 {
     StructureType sType{StructureType::BufferMemoryRequirementsInfo2};
     const void* pNext = nullptr;
     Buffer buffer{};
-    BufferMemoryRequirementsInfo2& setBuffer(Buffer buffer) { this->buffer = buffer; return *this; }
+    BufferMemoryRequirementsInfo2& setBuffer(Buffer buffer) {this->buffer = buffer; return *this; }
 };
 using BufferMemoryRequirementsInfo2KHR = BufferMemoryRequirementsInfo2;
 struct ImageMemoryRequirementsInfo2 {
     StructureType sType{StructureType::ImageMemoryRequirementsInfo2};
     const void* pNext = nullptr;
     Image image{};
-    ImageMemoryRequirementsInfo2& setImage(Image image) { this->image = image; return *this; }
+    ImageMemoryRequirementsInfo2& setImage(Image image) {this->image = image; return *this; }
 };
 using ImageMemoryRequirementsInfo2KHR = ImageMemoryRequirementsInfo2;
 struct ImageSparseMemoryRequirementsInfo2 {
     StructureType sType{StructureType::ImageSparseMemoryRequirementsInfo2};
     const void* pNext = nullptr;
     Image image{};
-    ImageSparseMemoryRequirementsInfo2& setImage(Image image) { this->image = image; return *this; }
+    ImageSparseMemoryRequirementsInfo2& setImage(Image image) {this->image = image; return *this; }
 };
 using ImageSparseMemoryRequirementsInfo2KHR = ImageSparseMemoryRequirementsInfo2;
 struct MemoryRequirements2 {
     StructureType sType{StructureType::MemoryRequirements2};
     void* pNext = nullptr;
     MemoryRequirements memoryRequirements{};
-    MemoryRequirements2& setMemoryRequirements(MemoryRequirements memoryRequirements) { this->memoryRequirements = memoryRequirements; return *this; }
+    MemoryRequirements2& setMemoryRequirements(MemoryRequirements memoryRequirements) {this->memoryRequirements = memoryRequirements; return *this; }
 };
 using MemoryRequirements2KHR = MemoryRequirements2;
 struct SparseImageMemoryRequirements2 {
     StructureType sType{StructureType::SparseImageMemoryRequirements2};
     void* pNext = nullptr;
     SparseImageMemoryRequirements memoryRequirements{};
-    SparseImageMemoryRequirements2& setMemoryRequirements(SparseImageMemoryRequirements memoryRequirements) { this->memoryRequirements = memoryRequirements; return *this; }
+    SparseImageMemoryRequirements2& setMemoryRequirements(SparseImageMemoryRequirements memoryRequirements) {this->memoryRequirements = memoryRequirements; return *this; }
 };
 using SparseImageMemoryRequirements2KHR = SparseImageMemoryRequirements2;
 struct PhysicalDevicePointClippingProperties {
     StructureType sType{StructureType::PhysicalDevicePointClippingProperties};
     void* pNext = nullptr;
     PointClippingBehavior pointClippingBehavior{static_cast<PointClippingBehavior>(0)};
-    PhysicalDevicePointClippingProperties& setPointClippingBehavior(PointClippingBehavior pointClippingBehavior) { this->pointClippingBehavior = pointClippingBehavior; return *this; }
+    PhysicalDevicePointClippingProperties& setPointClippingBehavior(PointClippingBehavior pointClippingBehavior) {this->pointClippingBehavior = pointClippingBehavior; return *this; }
 };
 using PhysicalDevicePointClippingPropertiesKHR = PhysicalDevicePointClippingProperties;
 struct MemoryDedicatedRequirements {
@@ -7055,8 +7057,8 @@ struct MemoryDedicatedRequirements {
     void* pNext = nullptr;
     Bool32 prefersDedicatedAllocation{0};
     Bool32 requiresDedicatedAllocation{0};
-    MemoryDedicatedRequirements& setPrefersDedicatedAllocation(Bool32 prefersDedicatedAllocation) { this->prefersDedicatedAllocation = prefersDedicatedAllocation; return *this; }
-    MemoryDedicatedRequirements& setRequiresDedicatedAllocation(Bool32 requiresDedicatedAllocation) { this->requiresDedicatedAllocation = requiresDedicatedAllocation; return *this; }
+    MemoryDedicatedRequirements& setPrefersDedicatedAllocation(Bool32 prefersDedicatedAllocation) {this->prefersDedicatedAllocation = prefersDedicatedAllocation; return *this; }
+    MemoryDedicatedRequirements& setRequiresDedicatedAllocation(Bool32 requiresDedicatedAllocation) {this->requiresDedicatedAllocation = requiresDedicatedAllocation; return *this; }
 };
 using MemoryDedicatedRequirementsKHR = MemoryDedicatedRequirements;
 struct MemoryDedicatedAllocateInfo {
@@ -7064,29 +7066,29 @@ struct MemoryDedicatedAllocateInfo {
     const void* pNext = nullptr;
     Image image{};
     Buffer buffer{};
-    MemoryDedicatedAllocateInfo& setImage(Image image) { this->image = image; return *this; }
-    MemoryDedicatedAllocateInfo& setBuffer(Buffer buffer) { this->buffer = buffer; return *this; }
+    MemoryDedicatedAllocateInfo& setImage(Image image) {this->image = image; return *this; }
+    MemoryDedicatedAllocateInfo& setBuffer(Buffer buffer) {this->buffer = buffer; return *this; }
 };
 using MemoryDedicatedAllocateInfoKHR = MemoryDedicatedAllocateInfo;
 struct ImageViewUsageCreateInfo {
     StructureType sType{StructureType::ImageViewUsageCreateInfo};
     const void* pNext = nullptr;
     ImageUsageFlags usage{};
-    ImageViewUsageCreateInfo& setUsage(ImageUsageFlags usage) { this->usage = usage; return *this; }
+    ImageViewUsageCreateInfo& setUsage(ImageUsageFlags usage) {this->usage = usage; return *this; }
 };
 using ImageViewUsageCreateInfoKHR = ImageViewUsageCreateInfo;
 struct PipelineTessellationDomainOriginStateCreateInfo {
     StructureType sType{StructureType::PipelineTessellationDomainOriginStateCreateInfo};
     const void* pNext = nullptr;
     TessellationDomainOrigin domainOrigin{static_cast<TessellationDomainOrigin>(0)};
-    PipelineTessellationDomainOriginStateCreateInfo& setDomainOrigin(TessellationDomainOrigin domainOrigin) { this->domainOrigin = domainOrigin; return *this; }
+    PipelineTessellationDomainOriginStateCreateInfo& setDomainOrigin(TessellationDomainOrigin domainOrigin) {this->domainOrigin = domainOrigin; return *this; }
 };
 using PipelineTessellationDomainOriginStateCreateInfoKHR = PipelineTessellationDomainOriginStateCreateInfo;
 struct SamplerYcbcrConversionInfo {
     StructureType sType{StructureType::SamplerYcbcrConversionInfo};
     const void* pNext = nullptr;
     SamplerYcbcrConversion conversion{};
-    SamplerYcbcrConversionInfo& setConversion(SamplerYcbcrConversion conversion) { this->conversion = conversion; return *this; }
+    SamplerYcbcrConversionInfo& setConversion(SamplerYcbcrConversion conversion) {this->conversion = conversion; return *this; }
 };
 using SamplerYcbcrConversionInfoKHR = SamplerYcbcrConversionInfo;
 struct SamplerYcbcrConversionCreateInfo {
@@ -7100,49 +7102,49 @@ struct SamplerYcbcrConversionCreateInfo {
     ChromaLocation yChromaOffset{static_cast<ChromaLocation>(0)};
     Filter chromaFilter{static_cast<Filter>(0)};
     Bool32 forceExplicitReconstruction{0};
-    SamplerYcbcrConversionCreateInfo& setFormat(Format format) { this->format = format; return *this; }
-    SamplerYcbcrConversionCreateInfo& setYcbcrModel(SamplerYcbcrModelConversion ycbcrModel) { this->ycbcrModel = ycbcrModel; return *this; }
-    SamplerYcbcrConversionCreateInfo& setYcbcrRange(SamplerYcbcrRange ycbcrRange) { this->ycbcrRange = ycbcrRange; return *this; }
-    SamplerYcbcrConversionCreateInfo& setComponents(ComponentMapping components) { this->components = components; return *this; }
-    SamplerYcbcrConversionCreateInfo& setXChromaOffset(ChromaLocation xChromaOffset) { this->xChromaOffset = xChromaOffset; return *this; }
-    SamplerYcbcrConversionCreateInfo& setYChromaOffset(ChromaLocation yChromaOffset) { this->yChromaOffset = yChromaOffset; return *this; }
-    SamplerYcbcrConversionCreateInfo& setChromaFilter(Filter chromaFilter) { this->chromaFilter = chromaFilter; return *this; }
-    SamplerYcbcrConversionCreateInfo& setForceExplicitReconstruction(Bool32 forceExplicitReconstruction) { this->forceExplicitReconstruction = forceExplicitReconstruction; return *this; }
+    SamplerYcbcrConversionCreateInfo& setFormat(Format format) {this->format = format; return *this; }
+    SamplerYcbcrConversionCreateInfo& setYcbcrModel(SamplerYcbcrModelConversion ycbcrModel) {this->ycbcrModel = ycbcrModel; return *this; }
+    SamplerYcbcrConversionCreateInfo& setYcbcrRange(SamplerYcbcrRange ycbcrRange) {this->ycbcrRange = ycbcrRange; return *this; }
+    SamplerYcbcrConversionCreateInfo& setComponents(ComponentMapping components) {this->components = components; return *this; }
+    SamplerYcbcrConversionCreateInfo& setXChromaOffset(ChromaLocation xChromaOffset) {this->xChromaOffset = xChromaOffset; return *this; }
+    SamplerYcbcrConversionCreateInfo& setYChromaOffset(ChromaLocation yChromaOffset) {this->yChromaOffset = yChromaOffset; return *this; }
+    SamplerYcbcrConversionCreateInfo& setChromaFilter(Filter chromaFilter) {this->chromaFilter = chromaFilter; return *this; }
+    SamplerYcbcrConversionCreateInfo& setForceExplicitReconstruction(Bool32 forceExplicitReconstruction) {this->forceExplicitReconstruction = forceExplicitReconstruction; return *this; }
 };
 using SamplerYcbcrConversionCreateInfoKHR = SamplerYcbcrConversionCreateInfo;
 struct BindImagePlaneMemoryInfo {
     StructureType sType{StructureType::BindImagePlaneMemoryInfo};
     const void* pNext = nullptr;
     ImageAspectFlagBits planeAspect{static_cast<ImageAspectFlagBits>(0)};
-    BindImagePlaneMemoryInfo& setPlaneAspect(ImageAspectFlagBits planeAspect) { this->planeAspect = planeAspect; return *this; }
+    BindImagePlaneMemoryInfo& setPlaneAspect(ImageAspectFlagBits planeAspect) {this->planeAspect = planeAspect; return *this; }
 };
 using BindImagePlaneMemoryInfoKHR = BindImagePlaneMemoryInfo;
 struct ImagePlaneMemoryRequirementsInfo {
     StructureType sType{StructureType::ImagePlaneMemoryRequirementsInfo};
     const void* pNext = nullptr;
     ImageAspectFlagBits planeAspect{static_cast<ImageAspectFlagBits>(0)};
-    ImagePlaneMemoryRequirementsInfo& setPlaneAspect(ImageAspectFlagBits planeAspect) { this->planeAspect = planeAspect; return *this; }
+    ImagePlaneMemoryRequirementsInfo& setPlaneAspect(ImageAspectFlagBits planeAspect) {this->planeAspect = planeAspect; return *this; }
 };
 using ImagePlaneMemoryRequirementsInfoKHR = ImagePlaneMemoryRequirementsInfo;
 struct PhysicalDeviceSamplerYcbcrConversionFeatures {
     StructureType sType{StructureType::PhysicalDeviceSamplerYcbcrConversionFeatures};
     void* pNext = nullptr;
     Bool32 samplerYcbcrConversion{0};
-    PhysicalDeviceSamplerYcbcrConversionFeatures& setSamplerYcbcrConversion(Bool32 samplerYcbcrConversion) { this->samplerYcbcrConversion = samplerYcbcrConversion; return *this; }
+    PhysicalDeviceSamplerYcbcrConversionFeatures& setSamplerYcbcrConversion(Bool32 samplerYcbcrConversion) {this->samplerYcbcrConversion = samplerYcbcrConversion; return *this; }
 };
 using PhysicalDeviceSamplerYcbcrConversionFeaturesKHR = PhysicalDeviceSamplerYcbcrConversionFeatures;
 struct SamplerYcbcrConversionImageFormatProperties {
     StructureType sType{StructureType::SamplerYcbcrConversionImageFormatProperties};
     void* pNext = nullptr;
     uint32_t combinedImageSamplerDescriptorCount{0};
-    SamplerYcbcrConversionImageFormatProperties& setCombinedImageSamplerDescriptorCount(uint32_t combinedImageSamplerDescriptorCount) { this->combinedImageSamplerDescriptorCount = combinedImageSamplerDescriptorCount; return *this; }
+    SamplerYcbcrConversionImageFormatProperties& setCombinedImageSamplerDescriptorCount(uint32_t combinedImageSamplerDescriptorCount) {this->combinedImageSamplerDescriptorCount = combinedImageSamplerDescriptorCount; return *this; }
 };
 using SamplerYcbcrConversionImageFormatPropertiesKHR = SamplerYcbcrConversionImageFormatProperties;
 struct TextureLODGatherFormatPropertiesAMD {
     StructureType sType{StructureType::TextureLodGatherFormatPropertiesAMD};
     void* pNext = nullptr;
     Bool32 supportsTextureGatherLODBiasAMD{0};
-    TextureLODGatherFormatPropertiesAMD& setSupportsTextureGatherLODBiasAMD(Bool32 supportsTextureGatherLODBiasAMD) { this->supportsTextureGatherLODBiasAMD = supportsTextureGatherLODBiasAMD; return *this; }
+    TextureLODGatherFormatPropertiesAMD& setSupportsTextureGatherLODBiasAMD(Bool32 supportsTextureGatherLODBiasAMD) {this->supportsTextureGatherLODBiasAMD = supportsTextureGatherLODBiasAMD; return *this; }
 };
 struct ConditionalRenderingBeginInfoEXT {
     StructureType sType{StructureType::ConditionalRenderingBeginInfoEXT};
@@ -7150,27 +7152,27 @@ struct ConditionalRenderingBeginInfoEXT {
     Buffer buffer{};
     DeviceSize offset{0};
     ConditionalRenderingFlagsEXT flags{};
-    ConditionalRenderingBeginInfoEXT& setBuffer(Buffer buffer) { this->buffer = buffer; return *this; }
-    ConditionalRenderingBeginInfoEXT& setOffset(DeviceSize offset) { this->offset = offset; return *this; }
-    ConditionalRenderingBeginInfoEXT& setFlags(ConditionalRenderingFlagsEXT flags) { this->flags = flags; return *this; }
+    ConditionalRenderingBeginInfoEXT& setBuffer(Buffer buffer) {this->buffer = buffer; return *this; }
+    ConditionalRenderingBeginInfoEXT& setOffset(DeviceSize offset) {this->offset = offset; return *this; }
+    ConditionalRenderingBeginInfoEXT& setFlags(ConditionalRenderingFlagsEXT flags) {this->flags = flags; return *this; }
 };
 struct ProtectedSubmitInfo {
     StructureType sType{StructureType::ProtectedSubmitInfo};
     const void* pNext = nullptr;
     Bool32 protectedSubmit{0};
-    ProtectedSubmitInfo& setProtectedSubmit(Bool32 protectedSubmit) { this->protectedSubmit = protectedSubmit; return *this; }
+    ProtectedSubmitInfo& setProtectedSubmit(Bool32 protectedSubmit) {this->protectedSubmit = protectedSubmit; return *this; }
 };
 struct PhysicalDeviceProtectedMemoryFeatures {
     StructureType sType{StructureType::PhysicalDeviceProtectedMemoryFeatures};
     void* pNext = nullptr;
     Bool32 protectedMemory{0};
-    PhysicalDeviceProtectedMemoryFeatures& setProtectedMemory(Bool32 protectedMemory) { this->protectedMemory = protectedMemory; return *this; }
+    PhysicalDeviceProtectedMemoryFeatures& setProtectedMemory(Bool32 protectedMemory) {this->protectedMemory = protectedMemory; return *this; }
 };
 struct PhysicalDeviceProtectedMemoryProperties {
     StructureType sType{StructureType::PhysicalDeviceProtectedMemoryProperties};
     void* pNext = nullptr;
     Bool32 protectedNoFault{0};
-    PhysicalDeviceProtectedMemoryProperties& setProtectedNoFault(Bool32 protectedNoFault) { this->protectedNoFault = protectedNoFault; return *this; }
+    PhysicalDeviceProtectedMemoryProperties& setProtectedNoFault(Bool32 protectedNoFault) {this->protectedNoFault = protectedNoFault; return *this; }
 };
 struct DeviceQueueInfo2 {
     StructureType sType{StructureType::DeviceQueueInfo2};
@@ -7178,9 +7180,9 @@ struct DeviceQueueInfo2 {
     DeviceQueueCreateFlags flags{};
     uint32_t queueFamilyIndex{0};
     uint32_t queueIndex{0};
-    DeviceQueueInfo2& setFlags(DeviceQueueCreateFlags flags) { this->flags = flags; return *this; }
-    DeviceQueueInfo2& setQueueFamilyIndex(uint32_t queueFamilyIndex) { this->queueFamilyIndex = queueFamilyIndex; return *this; }
-    DeviceQueueInfo2& setQueueIndex(uint32_t queueIndex) { this->queueIndex = queueIndex; return *this; }
+    DeviceQueueInfo2& setFlags(DeviceQueueCreateFlags flags) {this->flags = flags; return *this; }
+    DeviceQueueInfo2& setQueueFamilyIndex(uint32_t queueFamilyIndex) {this->queueFamilyIndex = queueFamilyIndex; return *this; }
+    DeviceQueueInfo2& setQueueIndex(uint32_t queueIndex) {this->queueIndex = queueIndex; return *this; }
 };
 struct PipelineCoverageToColorStateCreateInfoNV {
     StructureType sType{StructureType::PipelineCoverageToColorStateCreateInfoNV};
@@ -7188,17 +7190,17 @@ struct PipelineCoverageToColorStateCreateInfoNV {
     PipelineCoverageToColorStateCreateFlagsNV flags{};
     Bool32 coverageToColorEnable{0};
     uint32_t coverageToColorLocation{0};
-    PipelineCoverageToColorStateCreateInfoNV& setFlags(PipelineCoverageToColorStateCreateFlagsNV flags) { this->flags = flags; return *this; }
-    PipelineCoverageToColorStateCreateInfoNV& setCoverageToColorEnable(Bool32 coverageToColorEnable) { this->coverageToColorEnable = coverageToColorEnable; return *this; }
-    PipelineCoverageToColorStateCreateInfoNV& setCoverageToColorLocation(uint32_t coverageToColorLocation) { this->coverageToColorLocation = coverageToColorLocation; return *this; }
+    PipelineCoverageToColorStateCreateInfoNV& setFlags(PipelineCoverageToColorStateCreateFlagsNV flags) {this->flags = flags; return *this; }
+    PipelineCoverageToColorStateCreateInfoNV& setCoverageToColorEnable(Bool32 coverageToColorEnable) {this->coverageToColorEnable = coverageToColorEnable; return *this; }
+    PipelineCoverageToColorStateCreateInfoNV& setCoverageToColorLocation(uint32_t coverageToColorLocation) {this->coverageToColorLocation = coverageToColorLocation; return *this; }
 };
 struct PhysicalDeviceSamplerFilterMinmaxProperties {
     StructureType sType{StructureType::PhysicalDeviceSamplerFilterMinmaxProperties};
     void* pNext = nullptr;
     Bool32 filterMinmaxSingleComponentFormats{0};
     Bool32 filterMinmaxImageComponentMapping{0};
-    PhysicalDeviceSamplerFilterMinmaxProperties& setFilterMinmaxSingleComponentFormats(Bool32 filterMinmaxSingleComponentFormats) { this->filterMinmaxSingleComponentFormats = filterMinmaxSingleComponentFormats; return *this; }
-    PhysicalDeviceSamplerFilterMinmaxProperties& setFilterMinmaxImageComponentMapping(Bool32 filterMinmaxImageComponentMapping) { this->filterMinmaxImageComponentMapping = filterMinmaxImageComponentMapping; return *this; }
+    PhysicalDeviceSamplerFilterMinmaxProperties& setFilterMinmaxSingleComponentFormats(Bool32 filterMinmaxSingleComponentFormats) {this->filterMinmaxSingleComponentFormats = filterMinmaxSingleComponentFormats; return *this; }
+    PhysicalDeviceSamplerFilterMinmaxProperties& setFilterMinmaxImageComponentMapping(Bool32 filterMinmaxImageComponentMapping) {this->filterMinmaxImageComponentMapping = filterMinmaxImageComponentMapping; return *this; }
 };
 using PhysicalDeviceSamplerFilterMinmaxPropertiesEXT = PhysicalDeviceSamplerFilterMinmaxProperties;
 struct SampleLocationEXT {
@@ -7207,8 +7209,8 @@ struct SampleLocationEXT {
     constexpr bool operator==(SampleLocationEXT const& value) const {
         return x == value.x && y == value.y ;}
     constexpr bool operator!=(SampleLocationEXT const& value) const {return !(*this == value);}
-    SampleLocationEXT& setX(float x) { this->x = x; return *this; }
-    SampleLocationEXT& setY(float y) { this->y = y; return *this; }
+    SampleLocationEXT& setX(float x) {this->x = x; return *this; }
+    SampleLocationEXT& setY(float y) {this->y = y; return *this; }
 };
 struct SampleLocationsInfoEXT {
     StructureType sType{StructureType::SampleLocationsInfoEXT};
@@ -7217,23 +7219,23 @@ struct SampleLocationsInfoEXT {
     Extent2D sampleLocationGridSize{};
     uint32_t sampleLocationsCount{0};
     const SampleLocationEXT* pSampleLocations = nullptr;
-    SampleLocationsInfoEXT& setSampleLocationsPerPixel(SampleCountFlagBits sampleLocationsPerPixel) { this->sampleLocationsPerPixel = sampleLocationsPerPixel; return *this; }
-    SampleLocationsInfoEXT& setSampleLocationGridSize(Extent2D sampleLocationGridSize) { this->sampleLocationGridSize = sampleLocationGridSize; return *this; }
-    SampleLocationsInfoEXT& setSampleLocationsCount(uint32_t sampleLocationsCount) { this->sampleLocationsCount = sampleLocationsCount; return *this; }
-    SampleLocationsInfoEXT& setPSampleLocations(const SampleLocationEXT* pSampleLocations) { this->pSampleLocations = pSampleLocations; return *this; }
-    SampleLocationsInfoEXT& setSampleLocations(detail::span<const SampleLocationEXT> SampleLocations) { this->sampleLocationsCount = SampleLocations.size(); this->pSampleLocations = SampleLocations.data();  return *this; }
+    SampleLocationsInfoEXT& setSampleLocationsPerPixel(SampleCountFlagBits sampleLocationsPerPixel) {this->sampleLocationsPerPixel = sampleLocationsPerPixel; return *this; }
+    SampleLocationsInfoEXT& setSampleLocationGridSize(Extent2D sampleLocationGridSize) {this->sampleLocationGridSize = sampleLocationGridSize; return *this; }
+    SampleLocationsInfoEXT& setSampleLocationsCount(uint32_t sampleLocationsCount) {this->sampleLocationsCount = sampleLocationsCount; return *this; }
+    SampleLocationsInfoEXT& setPSampleLocations(const SampleLocationEXT* pSampleLocations) {this->pSampleLocations = pSampleLocations; return *this; }
+    SampleLocationsInfoEXT& setPSampleLocations(detail::span<const SampleLocationEXT> pSampleLocations) {this->sampleLocationsCount = pSampleLocations.size(); this->pSampleLocations = pSampleLocations.data();  return *this; }
 };
 struct AttachmentSampleLocationsEXT {
     uint32_t attachmentIndex{0};
     SampleLocationsInfoEXT sampleLocationsInfo{};
-    AttachmentSampleLocationsEXT& setAttachmentIndex(uint32_t attachmentIndex) { this->attachmentIndex = attachmentIndex; return *this; }
-    AttachmentSampleLocationsEXT& setSampleLocationsInfo(SampleLocationsInfoEXT sampleLocationsInfo) { this->sampleLocationsInfo = sampleLocationsInfo; return *this; }
+    AttachmentSampleLocationsEXT& setAttachmentIndex(uint32_t attachmentIndex) {this->attachmentIndex = attachmentIndex; return *this; }
+    AttachmentSampleLocationsEXT& setSampleLocationsInfo(SampleLocationsInfoEXT sampleLocationsInfo) {this->sampleLocationsInfo = sampleLocationsInfo; return *this; }
 };
 struct SubpassSampleLocationsEXT {
     uint32_t subpassIndex{0};
     SampleLocationsInfoEXT sampleLocationsInfo{};
-    SubpassSampleLocationsEXT& setSubpassIndex(uint32_t subpassIndex) { this->subpassIndex = subpassIndex; return *this; }
-    SubpassSampleLocationsEXT& setSampleLocationsInfo(SampleLocationsInfoEXT sampleLocationsInfo) { this->sampleLocationsInfo = sampleLocationsInfo; return *this; }
+    SubpassSampleLocationsEXT& setSubpassIndex(uint32_t subpassIndex) {this->subpassIndex = subpassIndex; return *this; }
+    SubpassSampleLocationsEXT& setSampleLocationsInfo(SampleLocationsInfoEXT sampleLocationsInfo) {this->sampleLocationsInfo = sampleLocationsInfo; return *this; }
 };
 struct RenderPassSampleLocationsBeginInfoEXT {
     StructureType sType{StructureType::RenderPassSampleLocationsBeginInfoEXT};
@@ -7242,20 +7244,20 @@ struct RenderPassSampleLocationsBeginInfoEXT {
     const AttachmentSampleLocationsEXT* pAttachmentInitialSampleLocations = nullptr;
     uint32_t postSubpassSampleLocationsCount{0};
     const SubpassSampleLocationsEXT* pPostSubpassSampleLocations = nullptr;
-    RenderPassSampleLocationsBeginInfoEXT& setAttachmentInitialSampleLocationsCount(uint32_t attachmentInitialSampleLocationsCount) { this->attachmentInitialSampleLocationsCount = attachmentInitialSampleLocationsCount; return *this; }
-    RenderPassSampleLocationsBeginInfoEXT& setPAttachmentInitialSampleLocations(const AttachmentSampleLocationsEXT* pAttachmentInitialSampleLocations) { this->pAttachmentInitialSampleLocations = pAttachmentInitialSampleLocations; return *this; }
-    RenderPassSampleLocationsBeginInfoEXT& setAttachmentInitialSampleLocations(detail::span<const AttachmentSampleLocationsEXT> AttachmentInitialSampleLocations) { this->attachmentInitialSampleLocationsCount = AttachmentInitialSampleLocations.size(); this->pAttachmentInitialSampleLocations = AttachmentInitialSampleLocations.data();  return *this; }
-    RenderPassSampleLocationsBeginInfoEXT& setPostSubpassSampleLocationsCount(uint32_t postSubpassSampleLocationsCount) { this->postSubpassSampleLocationsCount = postSubpassSampleLocationsCount; return *this; }
-    RenderPassSampleLocationsBeginInfoEXT& setPPostSubpassSampleLocations(const SubpassSampleLocationsEXT* pPostSubpassSampleLocations) { this->pPostSubpassSampleLocations = pPostSubpassSampleLocations; return *this; }
-    RenderPassSampleLocationsBeginInfoEXT& setPostSubpassSampleLocations(detail::span<const SubpassSampleLocationsEXT> PostSubpassSampleLocations) { this->postSubpassSampleLocationsCount = PostSubpassSampleLocations.size(); this->pPostSubpassSampleLocations = PostSubpassSampleLocations.data();  return *this; }
+    RenderPassSampleLocationsBeginInfoEXT& setAttachmentInitialSampleLocationsCount(uint32_t attachmentInitialSampleLocationsCount) {this->attachmentInitialSampleLocationsCount = attachmentInitialSampleLocationsCount; return *this; }
+    RenderPassSampleLocationsBeginInfoEXT& setPAttachmentInitialSampleLocations(const AttachmentSampleLocationsEXT* pAttachmentInitialSampleLocations) {this->pAttachmentInitialSampleLocations = pAttachmentInitialSampleLocations; return *this; }
+    RenderPassSampleLocationsBeginInfoEXT& setPAttachmentInitialSampleLocations(detail::span<const AttachmentSampleLocationsEXT> pAttachmentInitialSampleLocations) {this->attachmentInitialSampleLocationsCount = pAttachmentInitialSampleLocations.size(); this->pAttachmentInitialSampleLocations = pAttachmentInitialSampleLocations.data();  return *this; }
+    RenderPassSampleLocationsBeginInfoEXT& setPostSubpassSampleLocationsCount(uint32_t postSubpassSampleLocationsCount) {this->postSubpassSampleLocationsCount = postSubpassSampleLocationsCount; return *this; }
+    RenderPassSampleLocationsBeginInfoEXT& setPPostSubpassSampleLocations(const SubpassSampleLocationsEXT* pPostSubpassSampleLocations) {this->pPostSubpassSampleLocations = pPostSubpassSampleLocations; return *this; }
+    RenderPassSampleLocationsBeginInfoEXT& setPPostSubpassSampleLocations(detail::span<const SubpassSampleLocationsEXT> pPostSubpassSampleLocations) {this->postSubpassSampleLocationsCount = pPostSubpassSampleLocations.size(); this->pPostSubpassSampleLocations = pPostSubpassSampleLocations.data();  return *this; }
 };
 struct PipelineSampleLocationsStateCreateInfoEXT {
     StructureType sType{StructureType::PipelineSampleLocationsStateCreateInfoEXT};
     const void* pNext = nullptr;
     Bool32 sampleLocationsEnable{0};
     SampleLocationsInfoEXT sampleLocationsInfo{};
-    PipelineSampleLocationsStateCreateInfoEXT& setSampleLocationsEnable(Bool32 sampleLocationsEnable) { this->sampleLocationsEnable = sampleLocationsEnable; return *this; }
-    PipelineSampleLocationsStateCreateInfoEXT& setSampleLocationsInfo(SampleLocationsInfoEXT sampleLocationsInfo) { this->sampleLocationsInfo = sampleLocationsInfo; return *this; }
+    PipelineSampleLocationsStateCreateInfoEXT& setSampleLocationsEnable(Bool32 sampleLocationsEnable) {this->sampleLocationsEnable = sampleLocationsEnable; return *this; }
+    PipelineSampleLocationsStateCreateInfoEXT& setSampleLocationsInfo(SampleLocationsInfoEXT sampleLocationsInfo) {this->sampleLocationsInfo = sampleLocationsInfo; return *this; }
 };
 struct PhysicalDeviceSampleLocationsPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceSampleLocationsPropertiesEXT};
@@ -7265,30 +7267,30 @@ struct PhysicalDeviceSampleLocationsPropertiesEXT {
     float sampleLocationCoordinateRange[2];
     uint32_t sampleLocationSubPixelBits{0};
     Bool32 variableSampleLocations{0};
-    PhysicalDeviceSampleLocationsPropertiesEXT& setSampleLocationSampleCounts(SampleCountFlags sampleLocationSampleCounts) { this->sampleLocationSampleCounts = sampleLocationSampleCounts; return *this; }
-    PhysicalDeviceSampleLocationsPropertiesEXT& setMaxSampleLocationGridSize(Extent2D maxSampleLocationGridSize) { this->maxSampleLocationGridSize = maxSampleLocationGridSize; return *this; }
-    PhysicalDeviceSampleLocationsPropertiesEXT& setSampleLocationCoordinateRange(float sampleLocationCoordinateRange[2]) { for(uint32_t i = 0; i < 2; i++) this->sampleLocationCoordinateRange[i] = sampleLocationCoordinateRange[i]; return *this; }
-    PhysicalDeviceSampleLocationsPropertiesEXT& setSampleLocationSubPixelBits(uint32_t sampleLocationSubPixelBits) { this->sampleLocationSubPixelBits = sampleLocationSubPixelBits; return *this; }
-    PhysicalDeviceSampleLocationsPropertiesEXT& setVariableSampleLocations(Bool32 variableSampleLocations) { this->variableSampleLocations = variableSampleLocations; return *this; }
+    PhysicalDeviceSampleLocationsPropertiesEXT& setSampleLocationSampleCounts(SampleCountFlags sampleLocationSampleCounts) {this->sampleLocationSampleCounts = sampleLocationSampleCounts; return *this; }
+    PhysicalDeviceSampleLocationsPropertiesEXT& setMaxSampleLocationGridSize(Extent2D maxSampleLocationGridSize) {this->maxSampleLocationGridSize = maxSampleLocationGridSize; return *this; }
+    PhysicalDeviceSampleLocationsPropertiesEXT& setSampleLocationCoordinateRange(float sampleLocationCoordinateRange[2]) {for(uint32_t i = 0; i < 2; i++) this->sampleLocationCoordinateRange[i] = sampleLocationCoordinateRange[i]; return *this; }
+    PhysicalDeviceSampleLocationsPropertiesEXT& setSampleLocationSubPixelBits(uint32_t sampleLocationSubPixelBits) {this->sampleLocationSubPixelBits = sampleLocationSubPixelBits; return *this; }
+    PhysicalDeviceSampleLocationsPropertiesEXT& setVariableSampleLocations(Bool32 variableSampleLocations) {this->variableSampleLocations = variableSampleLocations; return *this; }
 };
 struct MultisamplePropertiesEXT {
     StructureType sType{StructureType::MultisamplePropertiesEXT};
     void* pNext = nullptr;
     Extent2D maxSampleLocationGridSize{};
-    MultisamplePropertiesEXT& setMaxSampleLocationGridSize(Extent2D maxSampleLocationGridSize) { this->maxSampleLocationGridSize = maxSampleLocationGridSize; return *this; }
+    MultisamplePropertiesEXT& setMaxSampleLocationGridSize(Extent2D maxSampleLocationGridSize) {this->maxSampleLocationGridSize = maxSampleLocationGridSize; return *this; }
 };
 struct SamplerReductionModeCreateInfo {
     StructureType sType{StructureType::SamplerReductionModeCreateInfo};
     const void* pNext = nullptr;
     SamplerReductionMode reductionMode{static_cast<SamplerReductionMode>(0)};
-    SamplerReductionModeCreateInfo& setReductionMode(SamplerReductionMode reductionMode) { this->reductionMode = reductionMode; return *this; }
+    SamplerReductionModeCreateInfo& setReductionMode(SamplerReductionMode reductionMode) {this->reductionMode = reductionMode; return *this; }
 };
 using SamplerReductionModeCreateInfoEXT = SamplerReductionModeCreateInfo;
 struct PhysicalDeviceBlendOperationAdvancedFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceBlendOperationAdvancedFeaturesEXT};
     void* pNext = nullptr;
     Bool32 advancedBlendCoherentOperations{0};
-    PhysicalDeviceBlendOperationAdvancedFeaturesEXT& setAdvancedBlendCoherentOperations(Bool32 advancedBlendCoherentOperations) { this->advancedBlendCoherentOperations = advancedBlendCoherentOperations; return *this; }
+    PhysicalDeviceBlendOperationAdvancedFeaturesEXT& setAdvancedBlendCoherentOperations(Bool32 advancedBlendCoherentOperations) {this->advancedBlendCoherentOperations = advancedBlendCoherentOperations; return *this; }
 };
 struct PhysicalDeviceBlendOperationAdvancedPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceBlendOperationAdvancedPropertiesEXT};
@@ -7299,12 +7301,12 @@ struct PhysicalDeviceBlendOperationAdvancedPropertiesEXT {
     Bool32 advancedBlendNonPremultipliedDstColor{0};
     Bool32 advancedBlendCorrelatedOverlap{0};
     Bool32 advancedBlendAllOperations{0};
-    PhysicalDeviceBlendOperationAdvancedPropertiesEXT& setAdvancedBlendMaxColorAttachments(uint32_t advancedBlendMaxColorAttachments) { this->advancedBlendMaxColorAttachments = advancedBlendMaxColorAttachments; return *this; }
-    PhysicalDeviceBlendOperationAdvancedPropertiesEXT& setAdvancedBlendIndependentBlend(Bool32 advancedBlendIndependentBlend) { this->advancedBlendIndependentBlend = advancedBlendIndependentBlend; return *this; }
-    PhysicalDeviceBlendOperationAdvancedPropertiesEXT& setAdvancedBlendNonPremultipliedSrcColor(Bool32 advancedBlendNonPremultipliedSrcColor) { this->advancedBlendNonPremultipliedSrcColor = advancedBlendNonPremultipliedSrcColor; return *this; }
-    PhysicalDeviceBlendOperationAdvancedPropertiesEXT& setAdvancedBlendNonPremultipliedDstColor(Bool32 advancedBlendNonPremultipliedDstColor) { this->advancedBlendNonPremultipliedDstColor = advancedBlendNonPremultipliedDstColor; return *this; }
-    PhysicalDeviceBlendOperationAdvancedPropertiesEXT& setAdvancedBlendCorrelatedOverlap(Bool32 advancedBlendCorrelatedOverlap) { this->advancedBlendCorrelatedOverlap = advancedBlendCorrelatedOverlap; return *this; }
-    PhysicalDeviceBlendOperationAdvancedPropertiesEXT& setAdvancedBlendAllOperations(Bool32 advancedBlendAllOperations) { this->advancedBlendAllOperations = advancedBlendAllOperations; return *this; }
+    PhysicalDeviceBlendOperationAdvancedPropertiesEXT& setAdvancedBlendMaxColorAttachments(uint32_t advancedBlendMaxColorAttachments) {this->advancedBlendMaxColorAttachments = advancedBlendMaxColorAttachments; return *this; }
+    PhysicalDeviceBlendOperationAdvancedPropertiesEXT& setAdvancedBlendIndependentBlend(Bool32 advancedBlendIndependentBlend) {this->advancedBlendIndependentBlend = advancedBlendIndependentBlend; return *this; }
+    PhysicalDeviceBlendOperationAdvancedPropertiesEXT& setAdvancedBlendNonPremultipliedSrcColor(Bool32 advancedBlendNonPremultipliedSrcColor) {this->advancedBlendNonPremultipliedSrcColor = advancedBlendNonPremultipliedSrcColor; return *this; }
+    PhysicalDeviceBlendOperationAdvancedPropertiesEXT& setAdvancedBlendNonPremultipliedDstColor(Bool32 advancedBlendNonPremultipliedDstColor) {this->advancedBlendNonPremultipliedDstColor = advancedBlendNonPremultipliedDstColor; return *this; }
+    PhysicalDeviceBlendOperationAdvancedPropertiesEXT& setAdvancedBlendCorrelatedOverlap(Bool32 advancedBlendCorrelatedOverlap) {this->advancedBlendCorrelatedOverlap = advancedBlendCorrelatedOverlap; return *this; }
+    PhysicalDeviceBlendOperationAdvancedPropertiesEXT& setAdvancedBlendAllOperations(Bool32 advancedBlendAllOperations) {this->advancedBlendAllOperations = advancedBlendAllOperations; return *this; }
 };
 struct PipelineColorBlendAdvancedStateCreateInfoEXT {
     StructureType sType{StructureType::PipelineColorBlendAdvancedStateCreateInfoEXT};
@@ -7312,17 +7314,17 @@ struct PipelineColorBlendAdvancedStateCreateInfoEXT {
     Bool32 srcPremultiplied{0};
     Bool32 dstPremultiplied{0};
     BlendOverlapEXT blendOverlap{static_cast<BlendOverlapEXT>(0)};
-    PipelineColorBlendAdvancedStateCreateInfoEXT& setSrcPremultiplied(Bool32 srcPremultiplied) { this->srcPremultiplied = srcPremultiplied; return *this; }
-    PipelineColorBlendAdvancedStateCreateInfoEXT& setDstPremultiplied(Bool32 dstPremultiplied) { this->dstPremultiplied = dstPremultiplied; return *this; }
-    PipelineColorBlendAdvancedStateCreateInfoEXT& setBlendOverlap(BlendOverlapEXT blendOverlap) { this->blendOverlap = blendOverlap; return *this; }
+    PipelineColorBlendAdvancedStateCreateInfoEXT& setSrcPremultiplied(Bool32 srcPremultiplied) {this->srcPremultiplied = srcPremultiplied; return *this; }
+    PipelineColorBlendAdvancedStateCreateInfoEXT& setDstPremultiplied(Bool32 dstPremultiplied) {this->dstPremultiplied = dstPremultiplied; return *this; }
+    PipelineColorBlendAdvancedStateCreateInfoEXT& setBlendOverlap(BlendOverlapEXT blendOverlap) {this->blendOverlap = blendOverlap; return *this; }
 };
 struct PhysicalDeviceInlineUniformBlockFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceInlineUniformBlockFeaturesEXT};
     void* pNext = nullptr;
     Bool32 inlineUniformBlock{0};
     Bool32 descriptorBindingInlineUniformBlockUpdateAfterBind{0};
-    PhysicalDeviceInlineUniformBlockFeaturesEXT& setInlineUniformBlock(Bool32 inlineUniformBlock) { this->inlineUniformBlock = inlineUniformBlock; return *this; }
-    PhysicalDeviceInlineUniformBlockFeaturesEXT& setDescriptorBindingInlineUniformBlockUpdateAfterBind(Bool32 descriptorBindingInlineUniformBlockUpdateAfterBind) { this->descriptorBindingInlineUniformBlockUpdateAfterBind = descriptorBindingInlineUniformBlockUpdateAfterBind; return *this; }
+    PhysicalDeviceInlineUniformBlockFeaturesEXT& setInlineUniformBlock(Bool32 inlineUniformBlock) {this->inlineUniformBlock = inlineUniformBlock; return *this; }
+    PhysicalDeviceInlineUniformBlockFeaturesEXT& setDescriptorBindingInlineUniformBlockUpdateAfterBind(Bool32 descriptorBindingInlineUniformBlockUpdateAfterBind) {this->descriptorBindingInlineUniformBlockUpdateAfterBind = descriptorBindingInlineUniformBlockUpdateAfterBind; return *this; }
 };
 struct PhysicalDeviceInlineUniformBlockPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceInlineUniformBlockPropertiesEXT};
@@ -7332,26 +7334,26 @@ struct PhysicalDeviceInlineUniformBlockPropertiesEXT {
     uint32_t maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks{0};
     uint32_t maxDescriptorSetInlineUniformBlocks{0};
     uint32_t maxDescriptorSetUpdateAfterBindInlineUniformBlocks{0};
-    PhysicalDeviceInlineUniformBlockPropertiesEXT& setMaxInlineUniformBlockSize(uint32_t maxInlineUniformBlockSize) { this->maxInlineUniformBlockSize = maxInlineUniformBlockSize; return *this; }
-    PhysicalDeviceInlineUniformBlockPropertiesEXT& setMaxPerStageDescriptorInlineUniformBlocks(uint32_t maxPerStageDescriptorInlineUniformBlocks) { this->maxPerStageDescriptorInlineUniformBlocks = maxPerStageDescriptorInlineUniformBlocks; return *this; }
-    PhysicalDeviceInlineUniformBlockPropertiesEXT& setMaxPerStageDescriptorUpdateAfterBindInlineUniformBlocks(uint32_t maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks) { this->maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks = maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks; return *this; }
-    PhysicalDeviceInlineUniformBlockPropertiesEXT& setMaxDescriptorSetInlineUniformBlocks(uint32_t maxDescriptorSetInlineUniformBlocks) { this->maxDescriptorSetInlineUniformBlocks = maxDescriptorSetInlineUniformBlocks; return *this; }
-    PhysicalDeviceInlineUniformBlockPropertiesEXT& setMaxDescriptorSetUpdateAfterBindInlineUniformBlocks(uint32_t maxDescriptorSetUpdateAfterBindInlineUniformBlocks) { this->maxDescriptorSetUpdateAfterBindInlineUniformBlocks = maxDescriptorSetUpdateAfterBindInlineUniformBlocks; return *this; }
+    PhysicalDeviceInlineUniformBlockPropertiesEXT& setMaxInlineUniformBlockSize(uint32_t maxInlineUniformBlockSize) {this->maxInlineUniformBlockSize = maxInlineUniformBlockSize; return *this; }
+    PhysicalDeviceInlineUniformBlockPropertiesEXT& setMaxPerStageDescriptorInlineUniformBlocks(uint32_t maxPerStageDescriptorInlineUniformBlocks) {this->maxPerStageDescriptorInlineUniformBlocks = maxPerStageDescriptorInlineUniformBlocks; return *this; }
+    PhysicalDeviceInlineUniformBlockPropertiesEXT& setMaxPerStageDescriptorUpdateAfterBindInlineUniformBlocks(uint32_t maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks) {this->maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks = maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks; return *this; }
+    PhysicalDeviceInlineUniformBlockPropertiesEXT& setMaxDescriptorSetInlineUniformBlocks(uint32_t maxDescriptorSetInlineUniformBlocks) {this->maxDescriptorSetInlineUniformBlocks = maxDescriptorSetInlineUniformBlocks; return *this; }
+    PhysicalDeviceInlineUniformBlockPropertiesEXT& setMaxDescriptorSetUpdateAfterBindInlineUniformBlocks(uint32_t maxDescriptorSetUpdateAfterBindInlineUniformBlocks) {this->maxDescriptorSetUpdateAfterBindInlineUniformBlocks = maxDescriptorSetUpdateAfterBindInlineUniformBlocks; return *this; }
 };
 struct WriteDescriptorSetInlineUniformBlockEXT {
     StructureType sType{StructureType::WriteDescriptorSetInlineUniformBlockEXT};
     const void* pNext = nullptr;
     uint32_t dataSize{0};
     const void* pData = nullptr;
-    WriteDescriptorSetInlineUniformBlockEXT& setDataSize(uint32_t dataSize) { this->dataSize = dataSize; return *this; }
-    WriteDescriptorSetInlineUniformBlockEXT& setPData(const void* pData) { this->pData = pData; return *this; }
-    WriteDescriptorSetInlineUniformBlockEXT& setData(detail::span<const std::byte> Data) { this->dataSize = Data.size(); this->pData = Data.data();  return *this; }
+    WriteDescriptorSetInlineUniformBlockEXT& setDataSize(uint32_t dataSize) {this->dataSize = dataSize; return *this; }
+    WriteDescriptorSetInlineUniformBlockEXT& setPData(const void* pData) {this->pData = pData; return *this; }
+    WriteDescriptorSetInlineUniformBlockEXT& setPData(detail::span<const std::byte> pData) {this->dataSize = pData.size(); this->pData = pData.data();  return *this; }
 };
 struct DescriptorPoolInlineUniformBlockCreateInfoEXT {
     StructureType sType{StructureType::DescriptorPoolInlineUniformBlockCreateInfoEXT};
     const void* pNext = nullptr;
     uint32_t maxInlineUniformBlockBindings{0};
-    DescriptorPoolInlineUniformBlockCreateInfoEXT& setMaxInlineUniformBlockBindings(uint32_t maxInlineUniformBlockBindings) { this->maxInlineUniformBlockBindings = maxInlineUniformBlockBindings; return *this; }
+    DescriptorPoolInlineUniformBlockCreateInfoEXT& setMaxInlineUniformBlockBindings(uint32_t maxInlineUniformBlockBindings) {this->maxInlineUniformBlockBindings = maxInlineUniformBlockBindings; return *this; }
 };
 struct PipelineCoverageModulationStateCreateInfoNV {
     StructureType sType{StructureType::PipelineCoverageModulationStateCreateInfoNV};
@@ -7361,21 +7363,21 @@ struct PipelineCoverageModulationStateCreateInfoNV {
     Bool32 coverageModulationTableEnable{0};
     uint32_t coverageModulationTableCount{0};
     const float* pCoverageModulationTable = nullptr;
-    PipelineCoverageModulationStateCreateInfoNV& setFlags(PipelineCoverageModulationStateCreateFlagsNV flags) { this->flags = flags; return *this; }
-    PipelineCoverageModulationStateCreateInfoNV& setCoverageModulationMode(CoverageModulationModeNV coverageModulationMode) { this->coverageModulationMode = coverageModulationMode; return *this; }
-    PipelineCoverageModulationStateCreateInfoNV& setCoverageModulationTableEnable(Bool32 coverageModulationTableEnable) { this->coverageModulationTableEnable = coverageModulationTableEnable; return *this; }
-    PipelineCoverageModulationStateCreateInfoNV& setCoverageModulationTableCount(uint32_t coverageModulationTableCount) { this->coverageModulationTableCount = coverageModulationTableCount; return *this; }
-    PipelineCoverageModulationStateCreateInfoNV& setPCoverageModulationTable(const float* pCoverageModulationTable) { this->pCoverageModulationTable = pCoverageModulationTable; return *this; }
-    PipelineCoverageModulationStateCreateInfoNV& setCoverageModulationTable(detail::span<const float> CoverageModulationTable) { this->coverageModulationTableCount = CoverageModulationTable.size(); this->pCoverageModulationTable = CoverageModulationTable.data();  return *this; }
+    PipelineCoverageModulationStateCreateInfoNV& setFlags(PipelineCoverageModulationStateCreateFlagsNV flags) {this->flags = flags; return *this; }
+    PipelineCoverageModulationStateCreateInfoNV& setCoverageModulationMode(CoverageModulationModeNV coverageModulationMode) {this->coverageModulationMode = coverageModulationMode; return *this; }
+    PipelineCoverageModulationStateCreateInfoNV& setCoverageModulationTableEnable(Bool32 coverageModulationTableEnable) {this->coverageModulationTableEnable = coverageModulationTableEnable; return *this; }
+    PipelineCoverageModulationStateCreateInfoNV& setCoverageModulationTableCount(uint32_t coverageModulationTableCount) {this->coverageModulationTableCount = coverageModulationTableCount; return *this; }
+    PipelineCoverageModulationStateCreateInfoNV& setPCoverageModulationTable(const float* pCoverageModulationTable) {this->pCoverageModulationTable = pCoverageModulationTable; return *this; }
+    PipelineCoverageModulationStateCreateInfoNV& setPCoverageModulationTable(detail::span<const float> pCoverageModulationTable) {this->coverageModulationTableCount = pCoverageModulationTable.size(); this->pCoverageModulationTable = pCoverageModulationTable.data();  return *this; }
 };
 struct ImageFormatListCreateInfo {
     StructureType sType{StructureType::ImageFormatListCreateInfo};
     const void* pNext = nullptr;
     uint32_t viewFormatCount{0};
     const Format* pViewFormats = nullptr;
-    ImageFormatListCreateInfo& setViewFormatCount(uint32_t viewFormatCount) { this->viewFormatCount = viewFormatCount; return *this; }
-    ImageFormatListCreateInfo& setPViewFormats(const Format* pViewFormats) { this->pViewFormats = pViewFormats; return *this; }
-    ImageFormatListCreateInfo& setViewFormats(detail::span<const Format> ViewFormats) { this->viewFormatCount = ViewFormats.size(); this->pViewFormats = ViewFormats.data();  return *this; }
+    ImageFormatListCreateInfo& setViewFormatCount(uint32_t viewFormatCount) {this->viewFormatCount = viewFormatCount; return *this; }
+    ImageFormatListCreateInfo& setPViewFormats(const Format* pViewFormats) {this->pViewFormats = pViewFormats; return *this; }
+    ImageFormatListCreateInfo& setPViewFormats(detail::span<const Format> pViewFormats) {this->viewFormatCount = pViewFormats.size(); this->pViewFormats = pViewFormats.data();  return *this; }
 };
 using ImageFormatListCreateInfoKHR = ImageFormatListCreateInfo;
 struct ValidationCacheCreateInfoEXT {
@@ -7384,38 +7386,38 @@ struct ValidationCacheCreateInfoEXT {
     ValidationCacheCreateFlagsEXT flags{};
     size_t initialDataSize{0};
     const void* pInitialData = nullptr;
-    ValidationCacheCreateInfoEXT& setFlags(ValidationCacheCreateFlagsEXT flags) { this->flags = flags; return *this; }
-    ValidationCacheCreateInfoEXT& setInitialDataSize(size_t initialDataSize) { this->initialDataSize = initialDataSize; return *this; }
-    ValidationCacheCreateInfoEXT& setPInitialData(const void* pInitialData) { this->pInitialData = pInitialData; return *this; }
-    ValidationCacheCreateInfoEXT& setInitialData(detail::span<const std::byte> InitialData) { this->initialDataSize = InitialData.size(); this->pInitialData = InitialData.data();  return *this; }
+    ValidationCacheCreateInfoEXT& setFlags(ValidationCacheCreateFlagsEXT flags) {this->flags = flags; return *this; }
+    ValidationCacheCreateInfoEXT& setInitialDataSize(size_t initialDataSize) {this->initialDataSize = initialDataSize; return *this; }
+    ValidationCacheCreateInfoEXT& setPInitialData(const void* pInitialData) {this->pInitialData = pInitialData; return *this; }
+    ValidationCacheCreateInfoEXT& setPInitialData(detail::span<const std::byte> pInitialData) {this->initialDataSize = pInitialData.size(); this->pInitialData = pInitialData.data();  return *this; }
 };
 struct ShaderModuleValidationCacheCreateInfoEXT {
     StructureType sType{StructureType::ShaderModuleValidationCacheCreateInfoEXT};
     const void* pNext = nullptr;
     ValidationCacheEXT validationCache{};
-    ShaderModuleValidationCacheCreateInfoEXT& setValidationCache(ValidationCacheEXT validationCache) { this->validationCache = validationCache; return *this; }
+    ShaderModuleValidationCacheCreateInfoEXT& setValidationCache(ValidationCacheEXT validationCache) {this->validationCache = validationCache; return *this; }
 };
 struct PhysicalDeviceMaintenance3Properties {
     StructureType sType{StructureType::PhysicalDeviceMaintenance3Properties};
     void* pNext = nullptr;
     uint32_t maxPerSetDescriptors{0};
     DeviceSize maxMemoryAllocationSize{0};
-    PhysicalDeviceMaintenance3Properties& setMaxPerSetDescriptors(uint32_t maxPerSetDescriptors) { this->maxPerSetDescriptors = maxPerSetDescriptors; return *this; }
-    PhysicalDeviceMaintenance3Properties& setMaxMemoryAllocationSize(DeviceSize maxMemoryAllocationSize) { this->maxMemoryAllocationSize = maxMemoryAllocationSize; return *this; }
+    PhysicalDeviceMaintenance3Properties& setMaxPerSetDescriptors(uint32_t maxPerSetDescriptors) {this->maxPerSetDescriptors = maxPerSetDescriptors; return *this; }
+    PhysicalDeviceMaintenance3Properties& setMaxMemoryAllocationSize(DeviceSize maxMemoryAllocationSize) {this->maxMemoryAllocationSize = maxMemoryAllocationSize; return *this; }
 };
 using PhysicalDeviceMaintenance3PropertiesKHR = PhysicalDeviceMaintenance3Properties;
 struct DescriptorSetLayoutSupport {
     StructureType sType{StructureType::DescriptorSetLayoutSupport};
     void* pNext = nullptr;
     Bool32 supported{0};
-    DescriptorSetLayoutSupport& setSupported(Bool32 supported) { this->supported = supported; return *this; }
+    DescriptorSetLayoutSupport& setSupported(Bool32 supported) {this->supported = supported; return *this; }
 };
 using DescriptorSetLayoutSupportKHR = DescriptorSetLayoutSupport;
 struct PhysicalDeviceShaderDrawParametersFeatures {
     StructureType sType{StructureType::PhysicalDeviceShaderDrawParametersFeatures};
     void* pNext = nullptr;
     Bool32 shaderDrawParameters{0};
-    PhysicalDeviceShaderDrawParametersFeatures& setShaderDrawParameters(Bool32 shaderDrawParameters) { this->shaderDrawParameters = shaderDrawParameters; return *this; }
+    PhysicalDeviceShaderDrawParametersFeatures& setShaderDrawParameters(Bool32 shaderDrawParameters) {this->shaderDrawParameters = shaderDrawParameters; return *this; }
 };
 using PhysicalDeviceShaderDrawParameterFeatures = PhysicalDeviceShaderDrawParametersFeatures;
 struct PhysicalDeviceShaderFloat16Int8Features {
@@ -7423,8 +7425,8 @@ struct PhysicalDeviceShaderFloat16Int8Features {
     void* pNext = nullptr;
     Bool32 shaderFloat16{0};
     Bool32 shaderInt8{0};
-    PhysicalDeviceShaderFloat16Int8Features& setShaderFloat16(Bool32 shaderFloat16) { this->shaderFloat16 = shaderFloat16; return *this; }
-    PhysicalDeviceShaderFloat16Int8Features& setShaderInt8(Bool32 shaderInt8) { this->shaderInt8 = shaderInt8; return *this; }
+    PhysicalDeviceShaderFloat16Int8Features& setShaderFloat16(Bool32 shaderFloat16) {this->shaderFloat16 = shaderFloat16; return *this; }
+    PhysicalDeviceShaderFloat16Int8Features& setShaderInt8(Bool32 shaderInt8) {this->shaderInt8 = shaderInt8; return *this; }
 };
 using PhysicalDeviceShaderFloat16Int8FeaturesKHR = PhysicalDeviceShaderFloat16Int8Features;
 using PhysicalDeviceFloat16Int8FeaturesKHR = PhysicalDeviceShaderFloat16Int8Features;
@@ -7448,30 +7450,30 @@ struct PhysicalDeviceFloatControlsProperties {
     Bool32 shaderRoundingModeRTZFloat16{0};
     Bool32 shaderRoundingModeRTZFloat32{0};
     Bool32 shaderRoundingModeRTZFloat64{0};
-    PhysicalDeviceFloatControlsProperties& setDenormBehaviorIndependence(ShaderFloatControlsIndependence denormBehaviorIndependence) { this->denormBehaviorIndependence = denormBehaviorIndependence; return *this; }
-    PhysicalDeviceFloatControlsProperties& setRoundingModeIndependence(ShaderFloatControlsIndependence roundingModeIndependence) { this->roundingModeIndependence = roundingModeIndependence; return *this; }
-    PhysicalDeviceFloatControlsProperties& setShaderSignedZeroInfNanPreserveFloat16(Bool32 shaderSignedZeroInfNanPreserveFloat16) { this->shaderSignedZeroInfNanPreserveFloat16 = shaderSignedZeroInfNanPreserveFloat16; return *this; }
-    PhysicalDeviceFloatControlsProperties& setShaderSignedZeroInfNanPreserveFloat32(Bool32 shaderSignedZeroInfNanPreserveFloat32) { this->shaderSignedZeroInfNanPreserveFloat32 = shaderSignedZeroInfNanPreserveFloat32; return *this; }
-    PhysicalDeviceFloatControlsProperties& setShaderSignedZeroInfNanPreserveFloat64(Bool32 shaderSignedZeroInfNanPreserveFloat64) { this->shaderSignedZeroInfNanPreserveFloat64 = shaderSignedZeroInfNanPreserveFloat64; return *this; }
-    PhysicalDeviceFloatControlsProperties& setShaderDenormPreserveFloat16(Bool32 shaderDenormPreserveFloat16) { this->shaderDenormPreserveFloat16 = shaderDenormPreserveFloat16; return *this; }
-    PhysicalDeviceFloatControlsProperties& setShaderDenormPreserveFloat32(Bool32 shaderDenormPreserveFloat32) { this->shaderDenormPreserveFloat32 = shaderDenormPreserveFloat32; return *this; }
-    PhysicalDeviceFloatControlsProperties& setShaderDenormPreserveFloat64(Bool32 shaderDenormPreserveFloat64) { this->shaderDenormPreserveFloat64 = shaderDenormPreserveFloat64; return *this; }
-    PhysicalDeviceFloatControlsProperties& setShaderDenormFlushToZeroFloat16(Bool32 shaderDenormFlushToZeroFloat16) { this->shaderDenormFlushToZeroFloat16 = shaderDenormFlushToZeroFloat16; return *this; }
-    PhysicalDeviceFloatControlsProperties& setShaderDenormFlushToZeroFloat32(Bool32 shaderDenormFlushToZeroFloat32) { this->shaderDenormFlushToZeroFloat32 = shaderDenormFlushToZeroFloat32; return *this; }
-    PhysicalDeviceFloatControlsProperties& setShaderDenormFlushToZeroFloat64(Bool32 shaderDenormFlushToZeroFloat64) { this->shaderDenormFlushToZeroFloat64 = shaderDenormFlushToZeroFloat64; return *this; }
-    PhysicalDeviceFloatControlsProperties& setShaderRoundingModeRTEFloat16(Bool32 shaderRoundingModeRTEFloat16) { this->shaderRoundingModeRTEFloat16 = shaderRoundingModeRTEFloat16; return *this; }
-    PhysicalDeviceFloatControlsProperties& setShaderRoundingModeRTEFloat32(Bool32 shaderRoundingModeRTEFloat32) { this->shaderRoundingModeRTEFloat32 = shaderRoundingModeRTEFloat32; return *this; }
-    PhysicalDeviceFloatControlsProperties& setShaderRoundingModeRTEFloat64(Bool32 shaderRoundingModeRTEFloat64) { this->shaderRoundingModeRTEFloat64 = shaderRoundingModeRTEFloat64; return *this; }
-    PhysicalDeviceFloatControlsProperties& setShaderRoundingModeRTZFloat16(Bool32 shaderRoundingModeRTZFloat16) { this->shaderRoundingModeRTZFloat16 = shaderRoundingModeRTZFloat16; return *this; }
-    PhysicalDeviceFloatControlsProperties& setShaderRoundingModeRTZFloat32(Bool32 shaderRoundingModeRTZFloat32) { this->shaderRoundingModeRTZFloat32 = shaderRoundingModeRTZFloat32; return *this; }
-    PhysicalDeviceFloatControlsProperties& setShaderRoundingModeRTZFloat64(Bool32 shaderRoundingModeRTZFloat64) { this->shaderRoundingModeRTZFloat64 = shaderRoundingModeRTZFloat64; return *this; }
+    PhysicalDeviceFloatControlsProperties& setDenormBehaviorIndependence(ShaderFloatControlsIndependence denormBehaviorIndependence) {this->denormBehaviorIndependence = denormBehaviorIndependence; return *this; }
+    PhysicalDeviceFloatControlsProperties& setRoundingModeIndependence(ShaderFloatControlsIndependence roundingModeIndependence) {this->roundingModeIndependence = roundingModeIndependence; return *this; }
+    PhysicalDeviceFloatControlsProperties& setShaderSignedZeroInfNanPreserveFloat16(Bool32 shaderSignedZeroInfNanPreserveFloat16) {this->shaderSignedZeroInfNanPreserveFloat16 = shaderSignedZeroInfNanPreserveFloat16; return *this; }
+    PhysicalDeviceFloatControlsProperties& setShaderSignedZeroInfNanPreserveFloat32(Bool32 shaderSignedZeroInfNanPreserveFloat32) {this->shaderSignedZeroInfNanPreserveFloat32 = shaderSignedZeroInfNanPreserveFloat32; return *this; }
+    PhysicalDeviceFloatControlsProperties& setShaderSignedZeroInfNanPreserveFloat64(Bool32 shaderSignedZeroInfNanPreserveFloat64) {this->shaderSignedZeroInfNanPreserveFloat64 = shaderSignedZeroInfNanPreserveFloat64; return *this; }
+    PhysicalDeviceFloatControlsProperties& setShaderDenormPreserveFloat16(Bool32 shaderDenormPreserveFloat16) {this->shaderDenormPreserveFloat16 = shaderDenormPreserveFloat16; return *this; }
+    PhysicalDeviceFloatControlsProperties& setShaderDenormPreserveFloat32(Bool32 shaderDenormPreserveFloat32) {this->shaderDenormPreserveFloat32 = shaderDenormPreserveFloat32; return *this; }
+    PhysicalDeviceFloatControlsProperties& setShaderDenormPreserveFloat64(Bool32 shaderDenormPreserveFloat64) {this->shaderDenormPreserveFloat64 = shaderDenormPreserveFloat64; return *this; }
+    PhysicalDeviceFloatControlsProperties& setShaderDenormFlushToZeroFloat16(Bool32 shaderDenormFlushToZeroFloat16) {this->shaderDenormFlushToZeroFloat16 = shaderDenormFlushToZeroFloat16; return *this; }
+    PhysicalDeviceFloatControlsProperties& setShaderDenormFlushToZeroFloat32(Bool32 shaderDenormFlushToZeroFloat32) {this->shaderDenormFlushToZeroFloat32 = shaderDenormFlushToZeroFloat32; return *this; }
+    PhysicalDeviceFloatControlsProperties& setShaderDenormFlushToZeroFloat64(Bool32 shaderDenormFlushToZeroFloat64) {this->shaderDenormFlushToZeroFloat64 = shaderDenormFlushToZeroFloat64; return *this; }
+    PhysicalDeviceFloatControlsProperties& setShaderRoundingModeRTEFloat16(Bool32 shaderRoundingModeRTEFloat16) {this->shaderRoundingModeRTEFloat16 = shaderRoundingModeRTEFloat16; return *this; }
+    PhysicalDeviceFloatControlsProperties& setShaderRoundingModeRTEFloat32(Bool32 shaderRoundingModeRTEFloat32) {this->shaderRoundingModeRTEFloat32 = shaderRoundingModeRTEFloat32; return *this; }
+    PhysicalDeviceFloatControlsProperties& setShaderRoundingModeRTEFloat64(Bool32 shaderRoundingModeRTEFloat64) {this->shaderRoundingModeRTEFloat64 = shaderRoundingModeRTEFloat64; return *this; }
+    PhysicalDeviceFloatControlsProperties& setShaderRoundingModeRTZFloat16(Bool32 shaderRoundingModeRTZFloat16) {this->shaderRoundingModeRTZFloat16 = shaderRoundingModeRTZFloat16; return *this; }
+    PhysicalDeviceFloatControlsProperties& setShaderRoundingModeRTZFloat32(Bool32 shaderRoundingModeRTZFloat32) {this->shaderRoundingModeRTZFloat32 = shaderRoundingModeRTZFloat32; return *this; }
+    PhysicalDeviceFloatControlsProperties& setShaderRoundingModeRTZFloat64(Bool32 shaderRoundingModeRTZFloat64) {this->shaderRoundingModeRTZFloat64 = shaderRoundingModeRTZFloat64; return *this; }
 };
 using PhysicalDeviceFloatControlsPropertiesKHR = PhysicalDeviceFloatControlsProperties;
 struct PhysicalDeviceHostQueryResetFeatures {
     StructureType sType{StructureType::PhysicalDeviceHostQueryResetFeatures};
     void* pNext = nullptr;
     Bool32 hostQueryReset{0};
-    PhysicalDeviceHostQueryResetFeatures& setHostQueryReset(Bool32 hostQueryReset) { this->hostQueryReset = hostQueryReset; return *this; }
+    PhysicalDeviceHostQueryResetFeatures& setHostQueryReset(Bool32 hostQueryReset) {this->hostQueryReset = hostQueryReset; return *this; }
 };
 using PhysicalDeviceHostQueryResetFeaturesEXT = PhysicalDeviceHostQueryResetFeatures;
 struct ShaderResourceUsageAMD {
@@ -7484,11 +7486,11 @@ struct ShaderResourceUsageAMD {
         return numUsedVgprs == value.numUsedVgprs && numUsedSgprs == value.numUsedSgprs && ldsSizePerLocalWorkGroup == value.ldsSizePerLocalWorkGroup 
         && ldsUsageSizeInBytes == value.ldsUsageSizeInBytes && scratchMemUsageInBytes == value.scratchMemUsageInBytes ;}
     constexpr bool operator!=(ShaderResourceUsageAMD const& value) const {return !(*this == value);}
-    ShaderResourceUsageAMD& setNumUsedVgprs(uint32_t numUsedVgprs) { this->numUsedVgprs = numUsedVgprs; return *this; }
-    ShaderResourceUsageAMD& setNumUsedSgprs(uint32_t numUsedSgprs) { this->numUsedSgprs = numUsedSgprs; return *this; }
-    ShaderResourceUsageAMD& setLdsSizePerLocalWorkGroup(uint32_t ldsSizePerLocalWorkGroup) { this->ldsSizePerLocalWorkGroup = ldsSizePerLocalWorkGroup; return *this; }
-    ShaderResourceUsageAMD& setLdsUsageSizeInBytes(size_t ldsUsageSizeInBytes) { this->ldsUsageSizeInBytes = ldsUsageSizeInBytes; return *this; }
-    ShaderResourceUsageAMD& setScratchMemUsageInBytes(size_t scratchMemUsageInBytes) { this->scratchMemUsageInBytes = scratchMemUsageInBytes; return *this; }
+    ShaderResourceUsageAMD& setNumUsedVgprs(uint32_t numUsedVgprs) {this->numUsedVgprs = numUsedVgprs; return *this; }
+    ShaderResourceUsageAMD& setNumUsedSgprs(uint32_t numUsedSgprs) {this->numUsedSgprs = numUsedSgprs; return *this; }
+    ShaderResourceUsageAMD& setLdsSizePerLocalWorkGroup(uint32_t ldsSizePerLocalWorkGroup) {this->ldsSizePerLocalWorkGroup = ldsSizePerLocalWorkGroup; return *this; }
+    ShaderResourceUsageAMD& setLdsUsageSizeInBytes(size_t ldsUsageSizeInBytes) {this->ldsUsageSizeInBytes = ldsUsageSizeInBytes; return *this; }
+    ShaderResourceUsageAMD& setScratchMemUsageInBytes(size_t scratchMemUsageInBytes) {this->scratchMemUsageInBytes = scratchMemUsageInBytes; return *this; }
 };
 struct ShaderStatisticsInfoAMD {
     ShaderStageFlags shaderStageMask{};
@@ -7505,19 +7507,19 @@ struct ShaderStatisticsInfoAMD {
         return is_equal && shaderStageMask == value.shaderStageMask && resourceUsage == value.resourceUsage && numPhysicalVgprs == value.numPhysicalVgprs && numPhysicalSgprs == value.numPhysicalSgprs 
         && numAvailableVgprs == value.numAvailableVgprs && numAvailableSgprs == value.numAvailableSgprs ;}
     constexpr bool operator!=(ShaderStatisticsInfoAMD const& value) const {return !(*this == value);}
-    ShaderStatisticsInfoAMD& setShaderStageMask(ShaderStageFlags shaderStageMask) { this->shaderStageMask = shaderStageMask; return *this; }
-    ShaderStatisticsInfoAMD& setResourceUsage(ShaderResourceUsageAMD resourceUsage) { this->resourceUsage = resourceUsage; return *this; }
-    ShaderStatisticsInfoAMD& setNumPhysicalVgprs(uint32_t numPhysicalVgprs) { this->numPhysicalVgprs = numPhysicalVgprs; return *this; }
-    ShaderStatisticsInfoAMD& setNumPhysicalSgprs(uint32_t numPhysicalSgprs) { this->numPhysicalSgprs = numPhysicalSgprs; return *this; }
-    ShaderStatisticsInfoAMD& setNumAvailableVgprs(uint32_t numAvailableVgprs) { this->numAvailableVgprs = numAvailableVgprs; return *this; }
-    ShaderStatisticsInfoAMD& setNumAvailableSgprs(uint32_t numAvailableSgprs) { this->numAvailableSgprs = numAvailableSgprs; return *this; }
-    ShaderStatisticsInfoAMD& setComputeWorkGroupSize(uint32_t computeWorkGroupSize[3]) { for(uint32_t i = 0; i < 3; i++) this->computeWorkGroupSize[i] = computeWorkGroupSize[i]; return *this; }
+    ShaderStatisticsInfoAMD& setShaderStageMask(ShaderStageFlags shaderStageMask) {this->shaderStageMask = shaderStageMask; return *this; }
+    ShaderStatisticsInfoAMD& setResourceUsage(ShaderResourceUsageAMD resourceUsage) {this->resourceUsage = resourceUsage; return *this; }
+    ShaderStatisticsInfoAMD& setNumPhysicalVgprs(uint32_t numPhysicalVgprs) {this->numPhysicalVgprs = numPhysicalVgprs; return *this; }
+    ShaderStatisticsInfoAMD& setNumPhysicalSgprs(uint32_t numPhysicalSgprs) {this->numPhysicalSgprs = numPhysicalSgprs; return *this; }
+    ShaderStatisticsInfoAMD& setNumAvailableVgprs(uint32_t numAvailableVgprs) {this->numAvailableVgprs = numAvailableVgprs; return *this; }
+    ShaderStatisticsInfoAMD& setNumAvailableSgprs(uint32_t numAvailableSgprs) {this->numAvailableSgprs = numAvailableSgprs; return *this; }
+    ShaderStatisticsInfoAMD& setComputeWorkGroupSize(uint32_t computeWorkGroupSize[3]) {for(uint32_t i = 0; i < 3; i++) this->computeWorkGroupSize[i] = computeWorkGroupSize[i]; return *this; }
 };
 struct DeviceQueueGlobalPriorityCreateInfoEXT {
     StructureType sType{StructureType::DeviceQueueGlobalPriorityCreateInfoEXT};
     const void* pNext = nullptr;
     QueueGlobalPriorityEXT globalPriority{static_cast<QueueGlobalPriorityEXT>(0)};
-    DeviceQueueGlobalPriorityCreateInfoEXT& setGlobalPriority(QueueGlobalPriorityEXT globalPriority) { this->globalPriority = globalPriority; return *this; }
+    DeviceQueueGlobalPriorityCreateInfoEXT& setGlobalPriority(QueueGlobalPriorityEXT globalPriority) {this->globalPriority = globalPriority; return *this; }
 };
 struct DebugUtilsObjectNameInfoEXT {
     StructureType sType{StructureType::DebugUtilsObjectNameInfoEXT};
@@ -7525,9 +7527,9 @@ struct DebugUtilsObjectNameInfoEXT {
     ObjectType objectType{static_cast<ObjectType>(0)};
     uint64_t objectHandle{0};
     const char* pObjectName = nullptr;
-    DebugUtilsObjectNameInfoEXT& setObjectType(ObjectType objectType) { this->objectType = objectType; return *this; }
-    DebugUtilsObjectNameInfoEXT& setObjectHandle(uint64_t objectHandle) { this->objectHandle = objectHandle; return *this; }
-    DebugUtilsObjectNameInfoEXT& setPObjectName(const char* pObjectName) { this->pObjectName = pObjectName; return *this; }
+    DebugUtilsObjectNameInfoEXT& setObjectType(ObjectType objectType) {this->objectType = objectType; return *this; }
+    DebugUtilsObjectNameInfoEXT& setObjectHandle(uint64_t objectHandle) {this->objectHandle = objectHandle; return *this; }
+    DebugUtilsObjectNameInfoEXT& setPObjectName(const char* pObjectName) {this->pObjectName = pObjectName; return *this; }
 };
 struct DebugUtilsObjectTagInfoEXT {
     StructureType sType{StructureType::DebugUtilsObjectTagInfoEXT};
@@ -7537,20 +7539,20 @@ struct DebugUtilsObjectTagInfoEXT {
     uint64_t tagName{0};
     size_t tagSize{0};
     const void* pTag = nullptr;
-    DebugUtilsObjectTagInfoEXT& setObjectType(ObjectType objectType) { this->objectType = objectType; return *this; }
-    DebugUtilsObjectTagInfoEXT& setObjectHandle(uint64_t objectHandle) { this->objectHandle = objectHandle; return *this; }
-    DebugUtilsObjectTagInfoEXT& setTagName(uint64_t tagName) { this->tagName = tagName; return *this; }
-    DebugUtilsObjectTagInfoEXT& setTagSize(size_t tagSize) { this->tagSize = tagSize; return *this; }
-    DebugUtilsObjectTagInfoEXT& setPTag(const void* pTag) { this->pTag = pTag; return *this; }
-    DebugUtilsObjectTagInfoEXT& setTag(detail::span<const std::byte> Tag) { this->tagSize = Tag.size(); this->pTag = Tag.data();  return *this; }
+    DebugUtilsObjectTagInfoEXT& setObjectType(ObjectType objectType) {this->objectType = objectType; return *this; }
+    DebugUtilsObjectTagInfoEXT& setObjectHandle(uint64_t objectHandle) {this->objectHandle = objectHandle; return *this; }
+    DebugUtilsObjectTagInfoEXT& setTagName(uint64_t tagName) {this->tagName = tagName; return *this; }
+    DebugUtilsObjectTagInfoEXT& setTagSize(size_t tagSize) {this->tagSize = tagSize; return *this; }
+    DebugUtilsObjectTagInfoEXT& setPTag(const void* pTag) {this->pTag = pTag; return *this; }
+    DebugUtilsObjectTagInfoEXT& setPTag(detail::span<const std::byte> pTag) {this->tagSize = pTag.size(); this->pTag = pTag.data();  return *this; }
 };
 struct DebugUtilsLabelEXT {
     StructureType sType{StructureType::DebugUtilsLabelEXT};
     const void* pNext = nullptr;
     const char* pLabelName = nullptr;
     float color[4];
-    DebugUtilsLabelEXT& setPLabelName(const char* pLabelName) { this->pLabelName = pLabelName; return *this; }
-    DebugUtilsLabelEXT& setColor(float color[4]) { for(uint32_t i = 0; i < 4; i++) this->color[i] = color[i]; return *this; }
+    DebugUtilsLabelEXT& setPLabelName(const char* pLabelName) {this->pLabelName = pLabelName; return *this; }
+    DebugUtilsLabelEXT& setColor(float color[4]) {for(uint32_t i = 0; i < 4; i++) this->color[i] = color[i]; return *this; }
 };
 struct DebugUtilsMessengerCreateInfoEXT {
     StructureType sType{StructureType::DebugUtilsMessengerCreateInfoEXT};
@@ -7560,10 +7562,11 @@ struct DebugUtilsMessengerCreateInfoEXT {
     DebugUtilsMessageTypeFlagsEXT messageType{};
     PFN_DebugUtilsMessengerCallbackEXT pfnUserCallback{};
     void* pUserData = nullptr;
-    DebugUtilsMessengerCreateInfoEXT& setFlags(DebugUtilsMessengerCreateFlagsEXT flags) { this->flags = flags; return *this; }
-    DebugUtilsMessengerCreateInfoEXT& setMessageSeverity(DebugUtilsMessageSeverityFlagsEXT messageSeverity) { this->messageSeverity = messageSeverity; return *this; }
-    DebugUtilsMessengerCreateInfoEXT& setMessageType(DebugUtilsMessageTypeFlagsEXT messageType) { this->messageType = messageType; return *this; }
-    DebugUtilsMessengerCreateInfoEXT& setPfnUserCallback(PFN_DebugUtilsMessengerCallbackEXT pfnUserCallback) { this->pfnUserCallback = pfnUserCallback; return *this; }
+    DebugUtilsMessengerCreateInfoEXT& setFlags(DebugUtilsMessengerCreateFlagsEXT flags) {this->flags = flags; return *this; }
+    DebugUtilsMessengerCreateInfoEXT& setMessageSeverity(DebugUtilsMessageSeverityFlagsEXT messageSeverity) {this->messageSeverity = messageSeverity; return *this; }
+    DebugUtilsMessengerCreateInfoEXT& setMessageType(DebugUtilsMessageTypeFlagsEXT messageType) {this->messageType = messageType; return *this; }
+    DebugUtilsMessengerCreateInfoEXT& setPfnUserCallback(PFN_DebugUtilsMessengerCallbackEXT pfnUserCallback) {this->pfnUserCallback = pfnUserCallback; return *this; }
+    DebugUtilsMessengerCreateInfoEXT& setPUserData(void* pUserData) {this->pUserData = pUserData; return *this; }
 };
 struct DebugUtilsMessengerCallbackDataEXT {
     StructureType sType{StructureType::DebugUtilsMessengerCallbackDataEXT};
@@ -7578,25 +7581,25 @@ struct DebugUtilsMessengerCallbackDataEXT {
     const DebugUtilsLabelEXT* pCmdBufLabels = nullptr;
     uint32_t objectCount{0};
     const DebugUtilsObjectNameInfoEXT* pObjects = nullptr;
-    DebugUtilsMessengerCallbackDataEXT& setFlags(DebugUtilsMessengerCallbackDataFlagsEXT flags) { this->flags = flags; return *this; }
-    DebugUtilsMessengerCallbackDataEXT& setPMessageIdName(const char* pMessageIdName) { this->pMessageIdName = pMessageIdName; return *this; }
-    DebugUtilsMessengerCallbackDataEXT& setMessageIdNumber(int32_t messageIdNumber) { this->messageIdNumber = messageIdNumber; return *this; }
-    DebugUtilsMessengerCallbackDataEXT& setPMessage(const char* pMessage) { this->pMessage = pMessage; return *this; }
-    DebugUtilsMessengerCallbackDataEXT& setQueueLabelCount(uint32_t queueLabelCount) { this->queueLabelCount = queueLabelCount; return *this; }
-    DebugUtilsMessengerCallbackDataEXT& setPQueueLabels(const DebugUtilsLabelEXT* pQueueLabels) { this->pQueueLabels = pQueueLabels; return *this; }
-    DebugUtilsMessengerCallbackDataEXT& setQueueLabels(detail::span<const DebugUtilsLabelEXT> QueueLabels) { this->queueLabelCount = QueueLabels.size(); this->pQueueLabels = QueueLabels.data();  return *this; }
-    DebugUtilsMessengerCallbackDataEXT& setCmdBufLabelCount(uint32_t cmdBufLabelCount) { this->cmdBufLabelCount = cmdBufLabelCount; return *this; }
-    DebugUtilsMessengerCallbackDataEXT& setPCmdBufLabels(const DebugUtilsLabelEXT* pCmdBufLabels) { this->pCmdBufLabels = pCmdBufLabels; return *this; }
-    DebugUtilsMessengerCallbackDataEXT& setCmdBufLabels(detail::span<const DebugUtilsLabelEXT> CmdBufLabels) { this->cmdBufLabelCount = CmdBufLabels.size(); this->pCmdBufLabels = CmdBufLabels.data();  return *this; }
-    DebugUtilsMessengerCallbackDataEXT& setObjectCount(uint32_t objectCount) { this->objectCount = objectCount; return *this; }
-    DebugUtilsMessengerCallbackDataEXT& setPObjects(const DebugUtilsObjectNameInfoEXT* pObjects) { this->pObjects = pObjects; return *this; }
-    DebugUtilsMessengerCallbackDataEXT& setObjects(detail::span<const DebugUtilsObjectNameInfoEXT> Objects) { this->objectCount = Objects.size(); this->pObjects = Objects.data();  return *this; }
+    DebugUtilsMessengerCallbackDataEXT& setFlags(DebugUtilsMessengerCallbackDataFlagsEXT flags) {this->flags = flags; return *this; }
+    DebugUtilsMessengerCallbackDataEXT& setPMessageIdName(const char* pMessageIdName) {this->pMessageIdName = pMessageIdName; return *this; }
+    DebugUtilsMessengerCallbackDataEXT& setMessageIdNumber(int32_t messageIdNumber) {this->messageIdNumber = messageIdNumber; return *this; }
+    DebugUtilsMessengerCallbackDataEXT& setPMessage(const char* pMessage) {this->pMessage = pMessage; return *this; }
+    DebugUtilsMessengerCallbackDataEXT& setQueueLabelCount(uint32_t queueLabelCount) {this->queueLabelCount = queueLabelCount; return *this; }
+    DebugUtilsMessengerCallbackDataEXT& setPQueueLabels(const DebugUtilsLabelEXT* pQueueLabels) {this->pQueueLabels = pQueueLabels; return *this; }
+    DebugUtilsMessengerCallbackDataEXT& setPQueueLabels(detail::span<const DebugUtilsLabelEXT> pQueueLabels) {this->queueLabelCount = pQueueLabels.size(); this->pQueueLabels = pQueueLabels.data();  return *this; }
+    DebugUtilsMessengerCallbackDataEXT& setCmdBufLabelCount(uint32_t cmdBufLabelCount) {this->cmdBufLabelCount = cmdBufLabelCount; return *this; }
+    DebugUtilsMessengerCallbackDataEXT& setPCmdBufLabels(const DebugUtilsLabelEXT* pCmdBufLabels) {this->pCmdBufLabels = pCmdBufLabels; return *this; }
+    DebugUtilsMessengerCallbackDataEXT& setPCmdBufLabels(detail::span<const DebugUtilsLabelEXT> pCmdBufLabels) {this->cmdBufLabelCount = pCmdBufLabels.size(); this->pCmdBufLabels = pCmdBufLabels.data();  return *this; }
+    DebugUtilsMessengerCallbackDataEXT& setObjectCount(uint32_t objectCount) {this->objectCount = objectCount; return *this; }
+    DebugUtilsMessengerCallbackDataEXT& setPObjects(const DebugUtilsObjectNameInfoEXT* pObjects) {this->pObjects = pObjects; return *this; }
+    DebugUtilsMessengerCallbackDataEXT& setPObjects(detail::span<const DebugUtilsObjectNameInfoEXT> pObjects) {this->objectCount = pObjects.size(); this->pObjects = pObjects.data();  return *this; }
 };
 struct PhysicalDeviceDeviceMemoryReportFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceDeviceMemoryReportFeaturesEXT};
     void* pNext = nullptr;
     Bool32 deviceMemoryReport{0};
-    PhysicalDeviceDeviceMemoryReportFeaturesEXT& setDeviceMemoryReport(Bool32 deviceMemoryReport) { this->deviceMemoryReport = deviceMemoryReport; return *this; }
+    PhysicalDeviceDeviceMemoryReportFeaturesEXT& setDeviceMemoryReport(Bool32 deviceMemoryReport) {this->deviceMemoryReport = deviceMemoryReport; return *this; }
 };
 struct DeviceDeviceMemoryReportCreateInfoEXT {
     StructureType sType{StructureType::DeviceDeviceMemoryReportCreateInfoEXT};
@@ -7604,8 +7607,9 @@ struct DeviceDeviceMemoryReportCreateInfoEXT {
     DeviceMemoryReportFlagsEXT flags{};
     PFN_DeviceMemoryReportCallbackEXT pfnUserCallback{};
     void* pUserData = nullptr;
-    DeviceDeviceMemoryReportCreateInfoEXT& setFlags(DeviceMemoryReportFlagsEXT flags) { this->flags = flags; return *this; }
-    DeviceDeviceMemoryReportCreateInfoEXT& setPfnUserCallback(PFN_DeviceMemoryReportCallbackEXT pfnUserCallback) { this->pfnUserCallback = pfnUserCallback; return *this; }
+    DeviceDeviceMemoryReportCreateInfoEXT& setFlags(DeviceMemoryReportFlagsEXT flags) {this->flags = flags; return *this; }
+    DeviceDeviceMemoryReportCreateInfoEXT& setPfnUserCallback(PFN_DeviceMemoryReportCallbackEXT pfnUserCallback) {this->pfnUserCallback = pfnUserCallback; return *this; }
+    DeviceDeviceMemoryReportCreateInfoEXT& setPUserData(void* pUserData) {this->pUserData = pUserData; return *this; }
 };
 struct DeviceMemoryReportCallbackDataEXT {
     StructureType sType{StructureType::DeviceMemoryReportCallbackDataEXT};
@@ -7617,32 +7621,33 @@ struct DeviceMemoryReportCallbackDataEXT {
     ObjectType objectType{static_cast<ObjectType>(0)};
     uint64_t objectHandle{0};
     uint32_t heapIndex{0};
-    DeviceMemoryReportCallbackDataEXT& setFlags(DeviceMemoryReportFlagsEXT flags) { this->flags = flags; return *this; }
-    DeviceMemoryReportCallbackDataEXT& setType(DeviceMemoryReportEventTypeEXT type) { this->type = type; return *this; }
-    DeviceMemoryReportCallbackDataEXT& setMemoryObjectId(uint64_t memoryObjectId) { this->memoryObjectId = memoryObjectId; return *this; }
-    DeviceMemoryReportCallbackDataEXT& setSize(DeviceSize size) { this->size = size; return *this; }
-    DeviceMemoryReportCallbackDataEXT& setObjectType(ObjectType objectType) { this->objectType = objectType; return *this; }
-    DeviceMemoryReportCallbackDataEXT& setObjectHandle(uint64_t objectHandle) { this->objectHandle = objectHandle; return *this; }
-    DeviceMemoryReportCallbackDataEXT& setHeapIndex(uint32_t heapIndex) { this->heapIndex = heapIndex; return *this; }
+    DeviceMemoryReportCallbackDataEXT& setFlags(DeviceMemoryReportFlagsEXT flags) {this->flags = flags; return *this; }
+    DeviceMemoryReportCallbackDataEXT& setType(DeviceMemoryReportEventTypeEXT type) {this->type = type; return *this; }
+    DeviceMemoryReportCallbackDataEXT& setMemoryObjectId(uint64_t memoryObjectId) {this->memoryObjectId = memoryObjectId; return *this; }
+    DeviceMemoryReportCallbackDataEXT& setSize(DeviceSize size) {this->size = size; return *this; }
+    DeviceMemoryReportCallbackDataEXT& setObjectType(ObjectType objectType) {this->objectType = objectType; return *this; }
+    DeviceMemoryReportCallbackDataEXT& setObjectHandle(uint64_t objectHandle) {this->objectHandle = objectHandle; return *this; }
+    DeviceMemoryReportCallbackDataEXT& setHeapIndex(uint32_t heapIndex) {this->heapIndex = heapIndex; return *this; }
 };
 struct ImportMemoryHostPointerInfoEXT {
     StructureType sType{StructureType::ImportMemoryHostPointerInfoEXT};
     const void* pNext = nullptr;
     ExternalMemoryHandleTypeFlagBits handleType{static_cast<ExternalMemoryHandleTypeFlagBits>(0)};
     void* pHostPointer = nullptr;
-    ImportMemoryHostPointerInfoEXT& setHandleType(ExternalMemoryHandleTypeFlagBits handleType) { this->handleType = handleType; return *this; }
+    ImportMemoryHostPointerInfoEXT& setHandleType(ExternalMemoryHandleTypeFlagBits handleType) {this->handleType = handleType; return *this; }
+    ImportMemoryHostPointerInfoEXT& setPHostPointer(void* pHostPointer) {this->pHostPointer = pHostPointer; return *this; }
 };
 struct MemoryHostPointerPropertiesEXT {
     StructureType sType{StructureType::MemoryHostPointerPropertiesEXT};
     void* pNext = nullptr;
     uint32_t memoryTypeBits{0};
-    MemoryHostPointerPropertiesEXT& setMemoryTypeBits(uint32_t memoryTypeBits) { this->memoryTypeBits = memoryTypeBits; return *this; }
+    MemoryHostPointerPropertiesEXT& setMemoryTypeBits(uint32_t memoryTypeBits) {this->memoryTypeBits = memoryTypeBits; return *this; }
 };
 struct PhysicalDeviceExternalMemoryHostPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceExternalMemoryHostPropertiesEXT};
     void* pNext = nullptr;
     DeviceSize minImportedHostPointerAlignment{0};
-    PhysicalDeviceExternalMemoryHostPropertiesEXT& setMinImportedHostPointerAlignment(DeviceSize minImportedHostPointerAlignment) { this->minImportedHostPointerAlignment = minImportedHostPointerAlignment; return *this; }
+    PhysicalDeviceExternalMemoryHostPropertiesEXT& setMinImportedHostPointerAlignment(DeviceSize minImportedHostPointerAlignment) {this->minImportedHostPointerAlignment = minImportedHostPointerAlignment; return *this; }
 };
 struct PhysicalDeviceConservativeRasterizationPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceConservativeRasterizationPropertiesEXT};
@@ -7656,21 +7661,21 @@ struct PhysicalDeviceConservativeRasterizationPropertiesEXT {
     Bool32 degenerateLinesRasterized{0};
     Bool32 fullyCoveredFragmentShaderInputVariable{0};
     Bool32 conservativeRasterizationPostDepthCoverage{0};
-    PhysicalDeviceConservativeRasterizationPropertiesEXT& setPrimitiveOverestimationSize(float primitiveOverestimationSize) { this->primitiveOverestimationSize = primitiveOverestimationSize; return *this; }
-    PhysicalDeviceConservativeRasterizationPropertiesEXT& setMaxExtraPrimitiveOverestimationSize(float maxExtraPrimitiveOverestimationSize) { this->maxExtraPrimitiveOverestimationSize = maxExtraPrimitiveOverestimationSize; return *this; }
-    PhysicalDeviceConservativeRasterizationPropertiesEXT& setExtraPrimitiveOverestimationSizeGranularity(float extraPrimitiveOverestimationSizeGranularity) { this->extraPrimitiveOverestimationSizeGranularity = extraPrimitiveOverestimationSizeGranularity; return *this; }
-    PhysicalDeviceConservativeRasterizationPropertiesEXT& setPrimitiveUnderestimation(Bool32 primitiveUnderestimation) { this->primitiveUnderestimation = primitiveUnderestimation; return *this; }
-    PhysicalDeviceConservativeRasterizationPropertiesEXT& setConservativePointAndLineRasterization(Bool32 conservativePointAndLineRasterization) { this->conservativePointAndLineRasterization = conservativePointAndLineRasterization; return *this; }
-    PhysicalDeviceConservativeRasterizationPropertiesEXT& setDegenerateTrianglesRasterized(Bool32 degenerateTrianglesRasterized) { this->degenerateTrianglesRasterized = degenerateTrianglesRasterized; return *this; }
-    PhysicalDeviceConservativeRasterizationPropertiesEXT& setDegenerateLinesRasterized(Bool32 degenerateLinesRasterized) { this->degenerateLinesRasterized = degenerateLinesRasterized; return *this; }
-    PhysicalDeviceConservativeRasterizationPropertiesEXT& setFullyCoveredFragmentShaderInputVariable(Bool32 fullyCoveredFragmentShaderInputVariable) { this->fullyCoveredFragmentShaderInputVariable = fullyCoveredFragmentShaderInputVariable; return *this; }
-    PhysicalDeviceConservativeRasterizationPropertiesEXT& setConservativeRasterizationPostDepthCoverage(Bool32 conservativeRasterizationPostDepthCoverage) { this->conservativeRasterizationPostDepthCoverage = conservativeRasterizationPostDepthCoverage; return *this; }
+    PhysicalDeviceConservativeRasterizationPropertiesEXT& setPrimitiveOverestimationSize(float primitiveOverestimationSize) {this->primitiveOverestimationSize = primitiveOverestimationSize; return *this; }
+    PhysicalDeviceConservativeRasterizationPropertiesEXT& setMaxExtraPrimitiveOverestimationSize(float maxExtraPrimitiveOverestimationSize) {this->maxExtraPrimitiveOverestimationSize = maxExtraPrimitiveOverestimationSize; return *this; }
+    PhysicalDeviceConservativeRasterizationPropertiesEXT& setExtraPrimitiveOverestimationSizeGranularity(float extraPrimitiveOverestimationSizeGranularity) {this->extraPrimitiveOverestimationSizeGranularity = extraPrimitiveOverestimationSizeGranularity; return *this; }
+    PhysicalDeviceConservativeRasterizationPropertiesEXT& setPrimitiveUnderestimation(Bool32 primitiveUnderestimation) {this->primitiveUnderestimation = primitiveUnderestimation; return *this; }
+    PhysicalDeviceConservativeRasterizationPropertiesEXT& setConservativePointAndLineRasterization(Bool32 conservativePointAndLineRasterization) {this->conservativePointAndLineRasterization = conservativePointAndLineRasterization; return *this; }
+    PhysicalDeviceConservativeRasterizationPropertiesEXT& setDegenerateTrianglesRasterized(Bool32 degenerateTrianglesRasterized) {this->degenerateTrianglesRasterized = degenerateTrianglesRasterized; return *this; }
+    PhysicalDeviceConservativeRasterizationPropertiesEXT& setDegenerateLinesRasterized(Bool32 degenerateLinesRasterized) {this->degenerateLinesRasterized = degenerateLinesRasterized; return *this; }
+    PhysicalDeviceConservativeRasterizationPropertiesEXT& setFullyCoveredFragmentShaderInputVariable(Bool32 fullyCoveredFragmentShaderInputVariable) {this->fullyCoveredFragmentShaderInputVariable = fullyCoveredFragmentShaderInputVariable; return *this; }
+    PhysicalDeviceConservativeRasterizationPropertiesEXT& setConservativeRasterizationPostDepthCoverage(Bool32 conservativeRasterizationPostDepthCoverage) {this->conservativeRasterizationPostDepthCoverage = conservativeRasterizationPostDepthCoverage; return *this; }
 };
 struct CalibratedTimestampInfoEXT {
     StructureType sType{StructureType::CalibratedTimestampInfoEXT};
     const void* pNext = nullptr;
     TimeDomainEXT timeDomain{static_cast<TimeDomainEXT>(0)};
-    CalibratedTimestampInfoEXT& setTimeDomain(TimeDomainEXT timeDomain) { this->timeDomain = timeDomain; return *this; }
+    CalibratedTimestampInfoEXT& setTimeDomain(TimeDomainEXT timeDomain) {this->timeDomain = timeDomain; return *this; }
 };
 struct PhysicalDeviceShaderCorePropertiesAMD {
     StructureType sType{StructureType::PhysicalDeviceShaderCorePropertiesAMD};
@@ -7689,28 +7694,28 @@ struct PhysicalDeviceShaderCorePropertiesAMD {
     uint32_t minVgprAllocation{0};
     uint32_t maxVgprAllocation{0};
     uint32_t vgprAllocationGranularity{0};
-    PhysicalDeviceShaderCorePropertiesAMD& setShaderEngineCount(uint32_t shaderEngineCount) { this->shaderEngineCount = shaderEngineCount; return *this; }
-    PhysicalDeviceShaderCorePropertiesAMD& setShaderArraysPerEngineCount(uint32_t shaderArraysPerEngineCount) { this->shaderArraysPerEngineCount = shaderArraysPerEngineCount; return *this; }
-    PhysicalDeviceShaderCorePropertiesAMD& setComputeUnitsPerShaderArray(uint32_t computeUnitsPerShaderArray) { this->computeUnitsPerShaderArray = computeUnitsPerShaderArray; return *this; }
-    PhysicalDeviceShaderCorePropertiesAMD& setSimdPerComputeUnit(uint32_t simdPerComputeUnit) { this->simdPerComputeUnit = simdPerComputeUnit; return *this; }
-    PhysicalDeviceShaderCorePropertiesAMD& setWavefrontsPerSimd(uint32_t wavefrontsPerSimd) { this->wavefrontsPerSimd = wavefrontsPerSimd; return *this; }
-    PhysicalDeviceShaderCorePropertiesAMD& setWavefrontSize(uint32_t wavefrontSize) { this->wavefrontSize = wavefrontSize; return *this; }
-    PhysicalDeviceShaderCorePropertiesAMD& setSgprsPerSimd(uint32_t sgprsPerSimd) { this->sgprsPerSimd = sgprsPerSimd; return *this; }
-    PhysicalDeviceShaderCorePropertiesAMD& setMinSgprAllocation(uint32_t minSgprAllocation) { this->minSgprAllocation = minSgprAllocation; return *this; }
-    PhysicalDeviceShaderCorePropertiesAMD& setMaxSgprAllocation(uint32_t maxSgprAllocation) { this->maxSgprAllocation = maxSgprAllocation; return *this; }
-    PhysicalDeviceShaderCorePropertiesAMD& setSgprAllocationGranularity(uint32_t sgprAllocationGranularity) { this->sgprAllocationGranularity = sgprAllocationGranularity; return *this; }
-    PhysicalDeviceShaderCorePropertiesAMD& setVgprsPerSimd(uint32_t vgprsPerSimd) { this->vgprsPerSimd = vgprsPerSimd; return *this; }
-    PhysicalDeviceShaderCorePropertiesAMD& setMinVgprAllocation(uint32_t minVgprAllocation) { this->minVgprAllocation = minVgprAllocation; return *this; }
-    PhysicalDeviceShaderCorePropertiesAMD& setMaxVgprAllocation(uint32_t maxVgprAllocation) { this->maxVgprAllocation = maxVgprAllocation; return *this; }
-    PhysicalDeviceShaderCorePropertiesAMD& setVgprAllocationGranularity(uint32_t vgprAllocationGranularity) { this->vgprAllocationGranularity = vgprAllocationGranularity; return *this; }
+    PhysicalDeviceShaderCorePropertiesAMD& setShaderEngineCount(uint32_t shaderEngineCount) {this->shaderEngineCount = shaderEngineCount; return *this; }
+    PhysicalDeviceShaderCorePropertiesAMD& setShaderArraysPerEngineCount(uint32_t shaderArraysPerEngineCount) {this->shaderArraysPerEngineCount = shaderArraysPerEngineCount; return *this; }
+    PhysicalDeviceShaderCorePropertiesAMD& setComputeUnitsPerShaderArray(uint32_t computeUnitsPerShaderArray) {this->computeUnitsPerShaderArray = computeUnitsPerShaderArray; return *this; }
+    PhysicalDeviceShaderCorePropertiesAMD& setSimdPerComputeUnit(uint32_t simdPerComputeUnit) {this->simdPerComputeUnit = simdPerComputeUnit; return *this; }
+    PhysicalDeviceShaderCorePropertiesAMD& setWavefrontsPerSimd(uint32_t wavefrontsPerSimd) {this->wavefrontsPerSimd = wavefrontsPerSimd; return *this; }
+    PhysicalDeviceShaderCorePropertiesAMD& setWavefrontSize(uint32_t wavefrontSize) {this->wavefrontSize = wavefrontSize; return *this; }
+    PhysicalDeviceShaderCorePropertiesAMD& setSgprsPerSimd(uint32_t sgprsPerSimd) {this->sgprsPerSimd = sgprsPerSimd; return *this; }
+    PhysicalDeviceShaderCorePropertiesAMD& setMinSgprAllocation(uint32_t minSgprAllocation) {this->minSgprAllocation = minSgprAllocation; return *this; }
+    PhysicalDeviceShaderCorePropertiesAMD& setMaxSgprAllocation(uint32_t maxSgprAllocation) {this->maxSgprAllocation = maxSgprAllocation; return *this; }
+    PhysicalDeviceShaderCorePropertiesAMD& setSgprAllocationGranularity(uint32_t sgprAllocationGranularity) {this->sgprAllocationGranularity = sgprAllocationGranularity; return *this; }
+    PhysicalDeviceShaderCorePropertiesAMD& setVgprsPerSimd(uint32_t vgprsPerSimd) {this->vgprsPerSimd = vgprsPerSimd; return *this; }
+    PhysicalDeviceShaderCorePropertiesAMD& setMinVgprAllocation(uint32_t minVgprAllocation) {this->minVgprAllocation = minVgprAllocation; return *this; }
+    PhysicalDeviceShaderCorePropertiesAMD& setMaxVgprAllocation(uint32_t maxVgprAllocation) {this->maxVgprAllocation = maxVgprAllocation; return *this; }
+    PhysicalDeviceShaderCorePropertiesAMD& setVgprAllocationGranularity(uint32_t vgprAllocationGranularity) {this->vgprAllocationGranularity = vgprAllocationGranularity; return *this; }
 };
 struct PhysicalDeviceShaderCoreProperties2AMD {
     StructureType sType{StructureType::PhysicalDeviceShaderCoreProperties2AMD};
     void* pNext = nullptr;
     ShaderCorePropertiesFlagsAMD shaderCoreFeatures{};
     uint32_t activeComputeUnitCount{0};
-    PhysicalDeviceShaderCoreProperties2AMD& setShaderCoreFeatures(ShaderCorePropertiesFlagsAMD shaderCoreFeatures) { this->shaderCoreFeatures = shaderCoreFeatures; return *this; }
-    PhysicalDeviceShaderCoreProperties2AMD& setActiveComputeUnitCount(uint32_t activeComputeUnitCount) { this->activeComputeUnitCount = activeComputeUnitCount; return *this; }
+    PhysicalDeviceShaderCoreProperties2AMD& setShaderCoreFeatures(ShaderCorePropertiesFlagsAMD shaderCoreFeatures) {this->shaderCoreFeatures = shaderCoreFeatures; return *this; }
+    PhysicalDeviceShaderCoreProperties2AMD& setActiveComputeUnitCount(uint32_t activeComputeUnitCount) {this->activeComputeUnitCount = activeComputeUnitCount; return *this; }
 };
 struct PipelineRasterizationConservativeStateCreateInfoEXT {
     StructureType sType{StructureType::PipelineRasterizationConservativeStateCreateInfoEXT};
@@ -7718,9 +7723,9 @@ struct PipelineRasterizationConservativeStateCreateInfoEXT {
     PipelineRasterizationConservativeStateCreateFlagsEXT flags{};
     ConservativeRasterizationModeEXT conservativeRasterizationMode{static_cast<ConservativeRasterizationModeEXT>(0)};
     float extraPrimitiveOverestimationSize{0.f};
-    PipelineRasterizationConservativeStateCreateInfoEXT& setFlags(PipelineRasterizationConservativeStateCreateFlagsEXT flags) { this->flags = flags; return *this; }
-    PipelineRasterizationConservativeStateCreateInfoEXT& setConservativeRasterizationMode(ConservativeRasterizationModeEXT conservativeRasterizationMode) { this->conservativeRasterizationMode = conservativeRasterizationMode; return *this; }
-    PipelineRasterizationConservativeStateCreateInfoEXT& setExtraPrimitiveOverestimationSize(float extraPrimitiveOverestimationSize) { this->extraPrimitiveOverestimationSize = extraPrimitiveOverestimationSize; return *this; }
+    PipelineRasterizationConservativeStateCreateInfoEXT& setFlags(PipelineRasterizationConservativeStateCreateFlagsEXT flags) {this->flags = flags; return *this; }
+    PipelineRasterizationConservativeStateCreateInfoEXT& setConservativeRasterizationMode(ConservativeRasterizationModeEXT conservativeRasterizationMode) {this->conservativeRasterizationMode = conservativeRasterizationMode; return *this; }
+    PipelineRasterizationConservativeStateCreateInfoEXT& setExtraPrimitiveOverestimationSize(float extraPrimitiveOverestimationSize) {this->extraPrimitiveOverestimationSize = extraPrimitiveOverestimationSize; return *this; }
 };
 struct PhysicalDeviceDescriptorIndexingFeatures {
     StructureType sType{StructureType::PhysicalDeviceDescriptorIndexingFeatures};
@@ -7745,26 +7750,26 @@ struct PhysicalDeviceDescriptorIndexingFeatures {
     Bool32 descriptorBindingPartiallyBound{0};
     Bool32 descriptorBindingVariableDescriptorCount{0};
     Bool32 runtimeDescriptorArray{0};
-    PhysicalDeviceDescriptorIndexingFeatures& setShaderInputAttachmentArrayDynamicIndexing(Bool32 shaderInputAttachmentArrayDynamicIndexing) { this->shaderInputAttachmentArrayDynamicIndexing = shaderInputAttachmentArrayDynamicIndexing; return *this; }
-    PhysicalDeviceDescriptorIndexingFeatures& setShaderUniformTexelBufferArrayDynamicIndexing(Bool32 shaderUniformTexelBufferArrayDynamicIndexing) { this->shaderUniformTexelBufferArrayDynamicIndexing = shaderUniformTexelBufferArrayDynamicIndexing; return *this; }
-    PhysicalDeviceDescriptorIndexingFeatures& setShaderStorageTexelBufferArrayDynamicIndexing(Bool32 shaderStorageTexelBufferArrayDynamicIndexing) { this->shaderStorageTexelBufferArrayDynamicIndexing = shaderStorageTexelBufferArrayDynamicIndexing; return *this; }
-    PhysicalDeviceDescriptorIndexingFeatures& setShaderUniformBufferArrayNonUniformIndexing(Bool32 shaderUniformBufferArrayNonUniformIndexing) { this->shaderUniformBufferArrayNonUniformIndexing = shaderUniformBufferArrayNonUniformIndexing; return *this; }
-    PhysicalDeviceDescriptorIndexingFeatures& setShaderSampledImageArrayNonUniformIndexing(Bool32 shaderSampledImageArrayNonUniformIndexing) { this->shaderSampledImageArrayNonUniformIndexing = shaderSampledImageArrayNonUniformIndexing; return *this; }
-    PhysicalDeviceDescriptorIndexingFeatures& setShaderStorageBufferArrayNonUniformIndexing(Bool32 shaderStorageBufferArrayNonUniformIndexing) { this->shaderStorageBufferArrayNonUniformIndexing = shaderStorageBufferArrayNonUniformIndexing; return *this; }
-    PhysicalDeviceDescriptorIndexingFeatures& setShaderStorageImageArrayNonUniformIndexing(Bool32 shaderStorageImageArrayNonUniformIndexing) { this->shaderStorageImageArrayNonUniformIndexing = shaderStorageImageArrayNonUniformIndexing; return *this; }
-    PhysicalDeviceDescriptorIndexingFeatures& setShaderInputAttachmentArrayNonUniformIndexing(Bool32 shaderInputAttachmentArrayNonUniformIndexing) { this->shaderInputAttachmentArrayNonUniformIndexing = shaderInputAttachmentArrayNonUniformIndexing; return *this; }
-    PhysicalDeviceDescriptorIndexingFeatures& setShaderUniformTexelBufferArrayNonUniformIndexing(Bool32 shaderUniformTexelBufferArrayNonUniformIndexing) { this->shaderUniformTexelBufferArrayNonUniformIndexing = shaderUniformTexelBufferArrayNonUniformIndexing; return *this; }
-    PhysicalDeviceDescriptorIndexingFeatures& setShaderStorageTexelBufferArrayNonUniformIndexing(Bool32 shaderStorageTexelBufferArrayNonUniformIndexing) { this->shaderStorageTexelBufferArrayNonUniformIndexing = shaderStorageTexelBufferArrayNonUniformIndexing; return *this; }
-    PhysicalDeviceDescriptorIndexingFeatures& setDescriptorBindingUniformBufferUpdateAfterBind(Bool32 descriptorBindingUniformBufferUpdateAfterBind) { this->descriptorBindingUniformBufferUpdateAfterBind = descriptorBindingUniformBufferUpdateAfterBind; return *this; }
-    PhysicalDeviceDescriptorIndexingFeatures& setDescriptorBindingSampledImageUpdateAfterBind(Bool32 descriptorBindingSampledImageUpdateAfterBind) { this->descriptorBindingSampledImageUpdateAfterBind = descriptorBindingSampledImageUpdateAfterBind; return *this; }
-    PhysicalDeviceDescriptorIndexingFeatures& setDescriptorBindingStorageImageUpdateAfterBind(Bool32 descriptorBindingStorageImageUpdateAfterBind) { this->descriptorBindingStorageImageUpdateAfterBind = descriptorBindingStorageImageUpdateAfterBind; return *this; }
-    PhysicalDeviceDescriptorIndexingFeatures& setDescriptorBindingStorageBufferUpdateAfterBind(Bool32 descriptorBindingStorageBufferUpdateAfterBind) { this->descriptorBindingStorageBufferUpdateAfterBind = descriptorBindingStorageBufferUpdateAfterBind; return *this; }
-    PhysicalDeviceDescriptorIndexingFeatures& setDescriptorBindingUniformTexelBufferUpdateAfterBind(Bool32 descriptorBindingUniformTexelBufferUpdateAfterBind) { this->descriptorBindingUniformTexelBufferUpdateAfterBind = descriptorBindingUniformTexelBufferUpdateAfterBind; return *this; }
-    PhysicalDeviceDescriptorIndexingFeatures& setDescriptorBindingStorageTexelBufferUpdateAfterBind(Bool32 descriptorBindingStorageTexelBufferUpdateAfterBind) { this->descriptorBindingStorageTexelBufferUpdateAfterBind = descriptorBindingStorageTexelBufferUpdateAfterBind; return *this; }
-    PhysicalDeviceDescriptorIndexingFeatures& setDescriptorBindingUpdateUnusedWhilePending(Bool32 descriptorBindingUpdateUnusedWhilePending) { this->descriptorBindingUpdateUnusedWhilePending = descriptorBindingUpdateUnusedWhilePending; return *this; }
-    PhysicalDeviceDescriptorIndexingFeatures& setDescriptorBindingPartiallyBound(Bool32 descriptorBindingPartiallyBound) { this->descriptorBindingPartiallyBound = descriptorBindingPartiallyBound; return *this; }
-    PhysicalDeviceDescriptorIndexingFeatures& setDescriptorBindingVariableDescriptorCount(Bool32 descriptorBindingVariableDescriptorCount) { this->descriptorBindingVariableDescriptorCount = descriptorBindingVariableDescriptorCount; return *this; }
-    PhysicalDeviceDescriptorIndexingFeatures& setRuntimeDescriptorArray(Bool32 runtimeDescriptorArray) { this->runtimeDescriptorArray = runtimeDescriptorArray; return *this; }
+    PhysicalDeviceDescriptorIndexingFeatures& setShaderInputAttachmentArrayDynamicIndexing(Bool32 shaderInputAttachmentArrayDynamicIndexing) {this->shaderInputAttachmentArrayDynamicIndexing = shaderInputAttachmentArrayDynamicIndexing; return *this; }
+    PhysicalDeviceDescriptorIndexingFeatures& setShaderUniformTexelBufferArrayDynamicIndexing(Bool32 shaderUniformTexelBufferArrayDynamicIndexing) {this->shaderUniformTexelBufferArrayDynamicIndexing = shaderUniformTexelBufferArrayDynamicIndexing; return *this; }
+    PhysicalDeviceDescriptorIndexingFeatures& setShaderStorageTexelBufferArrayDynamicIndexing(Bool32 shaderStorageTexelBufferArrayDynamicIndexing) {this->shaderStorageTexelBufferArrayDynamicIndexing = shaderStorageTexelBufferArrayDynamicIndexing; return *this; }
+    PhysicalDeviceDescriptorIndexingFeatures& setShaderUniformBufferArrayNonUniformIndexing(Bool32 shaderUniformBufferArrayNonUniformIndexing) {this->shaderUniformBufferArrayNonUniformIndexing = shaderUniformBufferArrayNonUniformIndexing; return *this; }
+    PhysicalDeviceDescriptorIndexingFeatures& setShaderSampledImageArrayNonUniformIndexing(Bool32 shaderSampledImageArrayNonUniformIndexing) {this->shaderSampledImageArrayNonUniformIndexing = shaderSampledImageArrayNonUniformIndexing; return *this; }
+    PhysicalDeviceDescriptorIndexingFeatures& setShaderStorageBufferArrayNonUniformIndexing(Bool32 shaderStorageBufferArrayNonUniformIndexing) {this->shaderStorageBufferArrayNonUniformIndexing = shaderStorageBufferArrayNonUniformIndexing; return *this; }
+    PhysicalDeviceDescriptorIndexingFeatures& setShaderStorageImageArrayNonUniformIndexing(Bool32 shaderStorageImageArrayNonUniformIndexing) {this->shaderStorageImageArrayNonUniformIndexing = shaderStorageImageArrayNonUniformIndexing; return *this; }
+    PhysicalDeviceDescriptorIndexingFeatures& setShaderInputAttachmentArrayNonUniformIndexing(Bool32 shaderInputAttachmentArrayNonUniformIndexing) {this->shaderInputAttachmentArrayNonUniformIndexing = shaderInputAttachmentArrayNonUniformIndexing; return *this; }
+    PhysicalDeviceDescriptorIndexingFeatures& setShaderUniformTexelBufferArrayNonUniformIndexing(Bool32 shaderUniformTexelBufferArrayNonUniformIndexing) {this->shaderUniformTexelBufferArrayNonUniformIndexing = shaderUniformTexelBufferArrayNonUniformIndexing; return *this; }
+    PhysicalDeviceDescriptorIndexingFeatures& setShaderStorageTexelBufferArrayNonUniformIndexing(Bool32 shaderStorageTexelBufferArrayNonUniformIndexing) {this->shaderStorageTexelBufferArrayNonUniformIndexing = shaderStorageTexelBufferArrayNonUniformIndexing; return *this; }
+    PhysicalDeviceDescriptorIndexingFeatures& setDescriptorBindingUniformBufferUpdateAfterBind(Bool32 descriptorBindingUniformBufferUpdateAfterBind) {this->descriptorBindingUniformBufferUpdateAfterBind = descriptorBindingUniformBufferUpdateAfterBind; return *this; }
+    PhysicalDeviceDescriptorIndexingFeatures& setDescriptorBindingSampledImageUpdateAfterBind(Bool32 descriptorBindingSampledImageUpdateAfterBind) {this->descriptorBindingSampledImageUpdateAfterBind = descriptorBindingSampledImageUpdateAfterBind; return *this; }
+    PhysicalDeviceDescriptorIndexingFeatures& setDescriptorBindingStorageImageUpdateAfterBind(Bool32 descriptorBindingStorageImageUpdateAfterBind) {this->descriptorBindingStorageImageUpdateAfterBind = descriptorBindingStorageImageUpdateAfterBind; return *this; }
+    PhysicalDeviceDescriptorIndexingFeatures& setDescriptorBindingStorageBufferUpdateAfterBind(Bool32 descriptorBindingStorageBufferUpdateAfterBind) {this->descriptorBindingStorageBufferUpdateAfterBind = descriptorBindingStorageBufferUpdateAfterBind; return *this; }
+    PhysicalDeviceDescriptorIndexingFeatures& setDescriptorBindingUniformTexelBufferUpdateAfterBind(Bool32 descriptorBindingUniformTexelBufferUpdateAfterBind) {this->descriptorBindingUniformTexelBufferUpdateAfterBind = descriptorBindingUniformTexelBufferUpdateAfterBind; return *this; }
+    PhysicalDeviceDescriptorIndexingFeatures& setDescriptorBindingStorageTexelBufferUpdateAfterBind(Bool32 descriptorBindingStorageTexelBufferUpdateAfterBind) {this->descriptorBindingStorageTexelBufferUpdateAfterBind = descriptorBindingStorageTexelBufferUpdateAfterBind; return *this; }
+    PhysicalDeviceDescriptorIndexingFeatures& setDescriptorBindingUpdateUnusedWhilePending(Bool32 descriptorBindingUpdateUnusedWhilePending) {this->descriptorBindingUpdateUnusedWhilePending = descriptorBindingUpdateUnusedWhilePending; return *this; }
+    PhysicalDeviceDescriptorIndexingFeatures& setDescriptorBindingPartiallyBound(Bool32 descriptorBindingPartiallyBound) {this->descriptorBindingPartiallyBound = descriptorBindingPartiallyBound; return *this; }
+    PhysicalDeviceDescriptorIndexingFeatures& setDescriptorBindingVariableDescriptorCount(Bool32 descriptorBindingVariableDescriptorCount) {this->descriptorBindingVariableDescriptorCount = descriptorBindingVariableDescriptorCount; return *this; }
+    PhysicalDeviceDescriptorIndexingFeatures& setRuntimeDescriptorArray(Bool32 runtimeDescriptorArray) {this->runtimeDescriptorArray = runtimeDescriptorArray; return *this; }
 };
 using PhysicalDeviceDescriptorIndexingFeaturesEXT = PhysicalDeviceDescriptorIndexingFeatures;
 struct PhysicalDeviceDescriptorIndexingProperties {
@@ -7793,29 +7798,29 @@ struct PhysicalDeviceDescriptorIndexingProperties {
     uint32_t maxDescriptorSetUpdateAfterBindSampledImages{0};
     uint32_t maxDescriptorSetUpdateAfterBindStorageImages{0};
     uint32_t maxDescriptorSetUpdateAfterBindInputAttachments{0};
-    PhysicalDeviceDescriptorIndexingProperties& setMaxUpdateAfterBindDescriptorsInAllPools(uint32_t maxUpdateAfterBindDescriptorsInAllPools) { this->maxUpdateAfterBindDescriptorsInAllPools = maxUpdateAfterBindDescriptorsInAllPools; return *this; }
-    PhysicalDeviceDescriptorIndexingProperties& setShaderUniformBufferArrayNonUniformIndexingNative(Bool32 shaderUniformBufferArrayNonUniformIndexingNative) { this->shaderUniformBufferArrayNonUniformIndexingNative = shaderUniformBufferArrayNonUniformIndexingNative; return *this; }
-    PhysicalDeviceDescriptorIndexingProperties& setShaderSampledImageArrayNonUniformIndexingNative(Bool32 shaderSampledImageArrayNonUniformIndexingNative) { this->shaderSampledImageArrayNonUniformIndexingNative = shaderSampledImageArrayNonUniformIndexingNative; return *this; }
-    PhysicalDeviceDescriptorIndexingProperties& setShaderStorageBufferArrayNonUniformIndexingNative(Bool32 shaderStorageBufferArrayNonUniformIndexingNative) { this->shaderStorageBufferArrayNonUniformIndexingNative = shaderStorageBufferArrayNonUniformIndexingNative; return *this; }
-    PhysicalDeviceDescriptorIndexingProperties& setShaderStorageImageArrayNonUniformIndexingNative(Bool32 shaderStorageImageArrayNonUniformIndexingNative) { this->shaderStorageImageArrayNonUniformIndexingNative = shaderStorageImageArrayNonUniformIndexingNative; return *this; }
-    PhysicalDeviceDescriptorIndexingProperties& setShaderInputAttachmentArrayNonUniformIndexingNative(Bool32 shaderInputAttachmentArrayNonUniformIndexingNative) { this->shaderInputAttachmentArrayNonUniformIndexingNative = shaderInputAttachmentArrayNonUniformIndexingNative; return *this; }
-    PhysicalDeviceDescriptorIndexingProperties& setRobustBufferAccessUpdateAfterBind(Bool32 robustBufferAccessUpdateAfterBind) { this->robustBufferAccessUpdateAfterBind = robustBufferAccessUpdateAfterBind; return *this; }
-    PhysicalDeviceDescriptorIndexingProperties& setQuadDivergentImplicitLod(Bool32 quadDivergentImplicitLod) { this->quadDivergentImplicitLod = quadDivergentImplicitLod; return *this; }
-    PhysicalDeviceDescriptorIndexingProperties& setMaxPerStageDescriptorUpdateAfterBindSamplers(uint32_t maxPerStageDescriptorUpdateAfterBindSamplers) { this->maxPerStageDescriptorUpdateAfterBindSamplers = maxPerStageDescriptorUpdateAfterBindSamplers; return *this; }
-    PhysicalDeviceDescriptorIndexingProperties& setMaxPerStageDescriptorUpdateAfterBindUniformBuffers(uint32_t maxPerStageDescriptorUpdateAfterBindUniformBuffers) { this->maxPerStageDescriptorUpdateAfterBindUniformBuffers = maxPerStageDescriptorUpdateAfterBindUniformBuffers; return *this; }
-    PhysicalDeviceDescriptorIndexingProperties& setMaxPerStageDescriptorUpdateAfterBindStorageBuffers(uint32_t maxPerStageDescriptorUpdateAfterBindStorageBuffers) { this->maxPerStageDescriptorUpdateAfterBindStorageBuffers = maxPerStageDescriptorUpdateAfterBindStorageBuffers; return *this; }
-    PhysicalDeviceDescriptorIndexingProperties& setMaxPerStageDescriptorUpdateAfterBindSampledImages(uint32_t maxPerStageDescriptorUpdateAfterBindSampledImages) { this->maxPerStageDescriptorUpdateAfterBindSampledImages = maxPerStageDescriptorUpdateAfterBindSampledImages; return *this; }
-    PhysicalDeviceDescriptorIndexingProperties& setMaxPerStageDescriptorUpdateAfterBindStorageImages(uint32_t maxPerStageDescriptorUpdateAfterBindStorageImages) { this->maxPerStageDescriptorUpdateAfterBindStorageImages = maxPerStageDescriptorUpdateAfterBindStorageImages; return *this; }
-    PhysicalDeviceDescriptorIndexingProperties& setMaxPerStageDescriptorUpdateAfterBindInputAttachments(uint32_t maxPerStageDescriptorUpdateAfterBindInputAttachments) { this->maxPerStageDescriptorUpdateAfterBindInputAttachments = maxPerStageDescriptorUpdateAfterBindInputAttachments; return *this; }
-    PhysicalDeviceDescriptorIndexingProperties& setMaxPerStageUpdateAfterBindResources(uint32_t maxPerStageUpdateAfterBindResources) { this->maxPerStageUpdateAfterBindResources = maxPerStageUpdateAfterBindResources; return *this; }
-    PhysicalDeviceDescriptorIndexingProperties& setMaxDescriptorSetUpdateAfterBindSamplers(uint32_t maxDescriptorSetUpdateAfterBindSamplers) { this->maxDescriptorSetUpdateAfterBindSamplers = maxDescriptorSetUpdateAfterBindSamplers; return *this; }
-    PhysicalDeviceDescriptorIndexingProperties& setMaxDescriptorSetUpdateAfterBindUniformBuffers(uint32_t maxDescriptorSetUpdateAfterBindUniformBuffers) { this->maxDescriptorSetUpdateAfterBindUniformBuffers = maxDescriptorSetUpdateAfterBindUniformBuffers; return *this; }
-    PhysicalDeviceDescriptorIndexingProperties& setMaxDescriptorSetUpdateAfterBindUniformBuffersDynamic(uint32_t maxDescriptorSetUpdateAfterBindUniformBuffersDynamic) { this->maxDescriptorSetUpdateAfterBindUniformBuffersDynamic = maxDescriptorSetUpdateAfterBindUniformBuffersDynamic; return *this; }
-    PhysicalDeviceDescriptorIndexingProperties& setMaxDescriptorSetUpdateAfterBindStorageBuffers(uint32_t maxDescriptorSetUpdateAfterBindStorageBuffers) { this->maxDescriptorSetUpdateAfterBindStorageBuffers = maxDescriptorSetUpdateAfterBindStorageBuffers; return *this; }
-    PhysicalDeviceDescriptorIndexingProperties& setMaxDescriptorSetUpdateAfterBindStorageBuffersDynamic(uint32_t maxDescriptorSetUpdateAfterBindStorageBuffersDynamic) { this->maxDescriptorSetUpdateAfterBindStorageBuffersDynamic = maxDescriptorSetUpdateAfterBindStorageBuffersDynamic; return *this; }
-    PhysicalDeviceDescriptorIndexingProperties& setMaxDescriptorSetUpdateAfterBindSampledImages(uint32_t maxDescriptorSetUpdateAfterBindSampledImages) { this->maxDescriptorSetUpdateAfterBindSampledImages = maxDescriptorSetUpdateAfterBindSampledImages; return *this; }
-    PhysicalDeviceDescriptorIndexingProperties& setMaxDescriptorSetUpdateAfterBindStorageImages(uint32_t maxDescriptorSetUpdateAfterBindStorageImages) { this->maxDescriptorSetUpdateAfterBindStorageImages = maxDescriptorSetUpdateAfterBindStorageImages; return *this; }
-    PhysicalDeviceDescriptorIndexingProperties& setMaxDescriptorSetUpdateAfterBindInputAttachments(uint32_t maxDescriptorSetUpdateAfterBindInputAttachments) { this->maxDescriptorSetUpdateAfterBindInputAttachments = maxDescriptorSetUpdateAfterBindInputAttachments; return *this; }
+    PhysicalDeviceDescriptorIndexingProperties& setMaxUpdateAfterBindDescriptorsInAllPools(uint32_t maxUpdateAfterBindDescriptorsInAllPools) {this->maxUpdateAfterBindDescriptorsInAllPools = maxUpdateAfterBindDescriptorsInAllPools; return *this; }
+    PhysicalDeviceDescriptorIndexingProperties& setShaderUniformBufferArrayNonUniformIndexingNative(Bool32 shaderUniformBufferArrayNonUniformIndexingNative) {this->shaderUniformBufferArrayNonUniformIndexingNative = shaderUniformBufferArrayNonUniformIndexingNative; return *this; }
+    PhysicalDeviceDescriptorIndexingProperties& setShaderSampledImageArrayNonUniformIndexingNative(Bool32 shaderSampledImageArrayNonUniformIndexingNative) {this->shaderSampledImageArrayNonUniformIndexingNative = shaderSampledImageArrayNonUniformIndexingNative; return *this; }
+    PhysicalDeviceDescriptorIndexingProperties& setShaderStorageBufferArrayNonUniformIndexingNative(Bool32 shaderStorageBufferArrayNonUniformIndexingNative) {this->shaderStorageBufferArrayNonUniformIndexingNative = shaderStorageBufferArrayNonUniformIndexingNative; return *this; }
+    PhysicalDeviceDescriptorIndexingProperties& setShaderStorageImageArrayNonUniformIndexingNative(Bool32 shaderStorageImageArrayNonUniformIndexingNative) {this->shaderStorageImageArrayNonUniformIndexingNative = shaderStorageImageArrayNonUniformIndexingNative; return *this; }
+    PhysicalDeviceDescriptorIndexingProperties& setShaderInputAttachmentArrayNonUniformIndexingNative(Bool32 shaderInputAttachmentArrayNonUniformIndexingNative) {this->shaderInputAttachmentArrayNonUniformIndexingNative = shaderInputAttachmentArrayNonUniformIndexingNative; return *this; }
+    PhysicalDeviceDescriptorIndexingProperties& setRobustBufferAccessUpdateAfterBind(Bool32 robustBufferAccessUpdateAfterBind) {this->robustBufferAccessUpdateAfterBind = robustBufferAccessUpdateAfterBind; return *this; }
+    PhysicalDeviceDescriptorIndexingProperties& setQuadDivergentImplicitLod(Bool32 quadDivergentImplicitLod) {this->quadDivergentImplicitLod = quadDivergentImplicitLod; return *this; }
+    PhysicalDeviceDescriptorIndexingProperties& setMaxPerStageDescriptorUpdateAfterBindSamplers(uint32_t maxPerStageDescriptorUpdateAfterBindSamplers) {this->maxPerStageDescriptorUpdateAfterBindSamplers = maxPerStageDescriptorUpdateAfterBindSamplers; return *this; }
+    PhysicalDeviceDescriptorIndexingProperties& setMaxPerStageDescriptorUpdateAfterBindUniformBuffers(uint32_t maxPerStageDescriptorUpdateAfterBindUniformBuffers) {this->maxPerStageDescriptorUpdateAfterBindUniformBuffers = maxPerStageDescriptorUpdateAfterBindUniformBuffers; return *this; }
+    PhysicalDeviceDescriptorIndexingProperties& setMaxPerStageDescriptorUpdateAfterBindStorageBuffers(uint32_t maxPerStageDescriptorUpdateAfterBindStorageBuffers) {this->maxPerStageDescriptorUpdateAfterBindStorageBuffers = maxPerStageDescriptorUpdateAfterBindStorageBuffers; return *this; }
+    PhysicalDeviceDescriptorIndexingProperties& setMaxPerStageDescriptorUpdateAfterBindSampledImages(uint32_t maxPerStageDescriptorUpdateAfterBindSampledImages) {this->maxPerStageDescriptorUpdateAfterBindSampledImages = maxPerStageDescriptorUpdateAfterBindSampledImages; return *this; }
+    PhysicalDeviceDescriptorIndexingProperties& setMaxPerStageDescriptorUpdateAfterBindStorageImages(uint32_t maxPerStageDescriptorUpdateAfterBindStorageImages) {this->maxPerStageDescriptorUpdateAfterBindStorageImages = maxPerStageDescriptorUpdateAfterBindStorageImages; return *this; }
+    PhysicalDeviceDescriptorIndexingProperties& setMaxPerStageDescriptorUpdateAfterBindInputAttachments(uint32_t maxPerStageDescriptorUpdateAfterBindInputAttachments) {this->maxPerStageDescriptorUpdateAfterBindInputAttachments = maxPerStageDescriptorUpdateAfterBindInputAttachments; return *this; }
+    PhysicalDeviceDescriptorIndexingProperties& setMaxPerStageUpdateAfterBindResources(uint32_t maxPerStageUpdateAfterBindResources) {this->maxPerStageUpdateAfterBindResources = maxPerStageUpdateAfterBindResources; return *this; }
+    PhysicalDeviceDescriptorIndexingProperties& setMaxDescriptorSetUpdateAfterBindSamplers(uint32_t maxDescriptorSetUpdateAfterBindSamplers) {this->maxDescriptorSetUpdateAfterBindSamplers = maxDescriptorSetUpdateAfterBindSamplers; return *this; }
+    PhysicalDeviceDescriptorIndexingProperties& setMaxDescriptorSetUpdateAfterBindUniformBuffers(uint32_t maxDescriptorSetUpdateAfterBindUniformBuffers) {this->maxDescriptorSetUpdateAfterBindUniformBuffers = maxDescriptorSetUpdateAfterBindUniformBuffers; return *this; }
+    PhysicalDeviceDescriptorIndexingProperties& setMaxDescriptorSetUpdateAfterBindUniformBuffersDynamic(uint32_t maxDescriptorSetUpdateAfterBindUniformBuffersDynamic) {this->maxDescriptorSetUpdateAfterBindUniformBuffersDynamic = maxDescriptorSetUpdateAfterBindUniformBuffersDynamic; return *this; }
+    PhysicalDeviceDescriptorIndexingProperties& setMaxDescriptorSetUpdateAfterBindStorageBuffers(uint32_t maxDescriptorSetUpdateAfterBindStorageBuffers) {this->maxDescriptorSetUpdateAfterBindStorageBuffers = maxDescriptorSetUpdateAfterBindStorageBuffers; return *this; }
+    PhysicalDeviceDescriptorIndexingProperties& setMaxDescriptorSetUpdateAfterBindStorageBuffersDynamic(uint32_t maxDescriptorSetUpdateAfterBindStorageBuffersDynamic) {this->maxDescriptorSetUpdateAfterBindStorageBuffersDynamic = maxDescriptorSetUpdateAfterBindStorageBuffersDynamic; return *this; }
+    PhysicalDeviceDescriptorIndexingProperties& setMaxDescriptorSetUpdateAfterBindSampledImages(uint32_t maxDescriptorSetUpdateAfterBindSampledImages) {this->maxDescriptorSetUpdateAfterBindSampledImages = maxDescriptorSetUpdateAfterBindSampledImages; return *this; }
+    PhysicalDeviceDescriptorIndexingProperties& setMaxDescriptorSetUpdateAfterBindStorageImages(uint32_t maxDescriptorSetUpdateAfterBindStorageImages) {this->maxDescriptorSetUpdateAfterBindStorageImages = maxDescriptorSetUpdateAfterBindStorageImages; return *this; }
+    PhysicalDeviceDescriptorIndexingProperties& setMaxDescriptorSetUpdateAfterBindInputAttachments(uint32_t maxDescriptorSetUpdateAfterBindInputAttachments) {this->maxDescriptorSetUpdateAfterBindInputAttachments = maxDescriptorSetUpdateAfterBindInputAttachments; return *this; }
 };
 using PhysicalDeviceDescriptorIndexingPropertiesEXT = PhysicalDeviceDescriptorIndexingProperties;
 struct DescriptorSetLayoutBindingFlagsCreateInfo {
@@ -7823,9 +7828,9 @@ struct DescriptorSetLayoutBindingFlagsCreateInfo {
     const void* pNext = nullptr;
     uint32_t bindingCount{0};
     const DescriptorBindingFlags* pBindingFlags = nullptr;
-    DescriptorSetLayoutBindingFlagsCreateInfo& setBindingCount(uint32_t bindingCount) { this->bindingCount = bindingCount; return *this; }
-    DescriptorSetLayoutBindingFlagsCreateInfo& setPBindingFlags(const DescriptorBindingFlags* pBindingFlags) { this->pBindingFlags = pBindingFlags; return *this; }
-    DescriptorSetLayoutBindingFlagsCreateInfo& setBindingFlags(detail::span<const DescriptorBindingFlags> BindingFlags) { this->bindingCount = BindingFlags.size(); this->pBindingFlags = BindingFlags.data();  return *this; }
+    DescriptorSetLayoutBindingFlagsCreateInfo& setBindingCount(uint32_t bindingCount) {this->bindingCount = bindingCount; return *this; }
+    DescriptorSetLayoutBindingFlagsCreateInfo& setPBindingFlags(const DescriptorBindingFlags* pBindingFlags) {this->pBindingFlags = pBindingFlags; return *this; }
+    DescriptorSetLayoutBindingFlagsCreateInfo& setPBindingFlags(detail::span<const DescriptorBindingFlags> pBindingFlags) {this->bindingCount = pBindingFlags.size(); this->pBindingFlags = pBindingFlags.data();  return *this; }
 };
 using DescriptorSetLayoutBindingFlagsCreateInfoEXT = DescriptorSetLayoutBindingFlagsCreateInfo;
 struct DescriptorSetVariableDescriptorCountAllocateInfo {
@@ -7833,16 +7838,16 @@ struct DescriptorSetVariableDescriptorCountAllocateInfo {
     const void* pNext = nullptr;
     uint32_t descriptorSetCount{0};
     const uint32_t* pDescriptorCounts = nullptr;
-    DescriptorSetVariableDescriptorCountAllocateInfo& setDescriptorSetCount(uint32_t descriptorSetCount) { this->descriptorSetCount = descriptorSetCount; return *this; }
-    DescriptorSetVariableDescriptorCountAllocateInfo& setPDescriptorCounts(const uint32_t* pDescriptorCounts) { this->pDescriptorCounts = pDescriptorCounts; return *this; }
-    DescriptorSetVariableDescriptorCountAllocateInfo& setDescriptorCounts(detail::span<const uint32_t> DescriptorCounts) { this->descriptorSetCount = DescriptorCounts.size(); this->pDescriptorCounts = DescriptorCounts.data();  return *this; }
+    DescriptorSetVariableDescriptorCountAllocateInfo& setDescriptorSetCount(uint32_t descriptorSetCount) {this->descriptorSetCount = descriptorSetCount; return *this; }
+    DescriptorSetVariableDescriptorCountAllocateInfo& setPDescriptorCounts(const uint32_t* pDescriptorCounts) {this->pDescriptorCounts = pDescriptorCounts; return *this; }
+    DescriptorSetVariableDescriptorCountAllocateInfo& setPDescriptorCounts(detail::span<const uint32_t> pDescriptorCounts) {this->descriptorSetCount = pDescriptorCounts.size(); this->pDescriptorCounts = pDescriptorCounts.data();  return *this; }
 };
 using DescriptorSetVariableDescriptorCountAllocateInfoEXT = DescriptorSetVariableDescriptorCountAllocateInfo;
 struct DescriptorSetVariableDescriptorCountLayoutSupport {
     StructureType sType{StructureType::DescriptorSetVariableDescriptorCountLayoutSupport};
     void* pNext = nullptr;
     uint32_t maxVariableDescriptorCount{0};
-    DescriptorSetVariableDescriptorCountLayoutSupport& setMaxVariableDescriptorCount(uint32_t maxVariableDescriptorCount) { this->maxVariableDescriptorCount = maxVariableDescriptorCount; return *this; }
+    DescriptorSetVariableDescriptorCountLayoutSupport& setMaxVariableDescriptorCount(uint32_t maxVariableDescriptorCount) {this->maxVariableDescriptorCount = maxVariableDescriptorCount; return *this; }
 };
 using DescriptorSetVariableDescriptorCountLayoutSupportEXT = DescriptorSetVariableDescriptorCountLayoutSupport;
 struct AttachmentDescription2 {
@@ -7857,15 +7862,15 @@ struct AttachmentDescription2 {
     AttachmentStoreOp stencilStoreOp{static_cast<AttachmentStoreOp>(0)};
     ImageLayout initialLayout{static_cast<ImageLayout>(0)};
     ImageLayout finalLayout{static_cast<ImageLayout>(0)};
-    AttachmentDescription2& setFlags(AttachmentDescriptionFlags flags) { this->flags = flags; return *this; }
-    AttachmentDescription2& setFormat(Format format) { this->format = format; return *this; }
-    AttachmentDescription2& setSamples(SampleCountFlagBits samples) { this->samples = samples; return *this; }
-    AttachmentDescription2& setLoadOp(AttachmentLoadOp loadOp) { this->loadOp = loadOp; return *this; }
-    AttachmentDescription2& setStoreOp(AttachmentStoreOp storeOp) { this->storeOp = storeOp; return *this; }
-    AttachmentDescription2& setStencilLoadOp(AttachmentLoadOp stencilLoadOp) { this->stencilLoadOp = stencilLoadOp; return *this; }
-    AttachmentDescription2& setStencilStoreOp(AttachmentStoreOp stencilStoreOp) { this->stencilStoreOp = stencilStoreOp; return *this; }
-    AttachmentDescription2& setInitialLayout(ImageLayout initialLayout) { this->initialLayout = initialLayout; return *this; }
-    AttachmentDescription2& setFinalLayout(ImageLayout finalLayout) { this->finalLayout = finalLayout; return *this; }
+    AttachmentDescription2& setFlags(AttachmentDescriptionFlags flags) {this->flags = flags; return *this; }
+    AttachmentDescription2& setFormat(Format format) {this->format = format; return *this; }
+    AttachmentDescription2& setSamples(SampleCountFlagBits samples) {this->samples = samples; return *this; }
+    AttachmentDescription2& setLoadOp(AttachmentLoadOp loadOp) {this->loadOp = loadOp; return *this; }
+    AttachmentDescription2& setStoreOp(AttachmentStoreOp storeOp) {this->storeOp = storeOp; return *this; }
+    AttachmentDescription2& setStencilLoadOp(AttachmentLoadOp stencilLoadOp) {this->stencilLoadOp = stencilLoadOp; return *this; }
+    AttachmentDescription2& setStencilStoreOp(AttachmentStoreOp stencilStoreOp) {this->stencilStoreOp = stencilStoreOp; return *this; }
+    AttachmentDescription2& setInitialLayout(ImageLayout initialLayout) {this->initialLayout = initialLayout; return *this; }
+    AttachmentDescription2& setFinalLayout(ImageLayout finalLayout) {this->finalLayout = finalLayout; return *this; }
 };
 using AttachmentDescription2KHR = AttachmentDescription2;
 struct AttachmentReference2 {
@@ -7874,9 +7879,9 @@ struct AttachmentReference2 {
     uint32_t attachment{0};
     ImageLayout layout{static_cast<ImageLayout>(0)};
     ImageAspectFlags aspectMask{};
-    AttachmentReference2& setAttachment(uint32_t attachment) { this->attachment = attachment; return *this; }
-    AttachmentReference2& setLayout(ImageLayout layout) { this->layout = layout; return *this; }
-    AttachmentReference2& setAspectMask(ImageAspectFlags aspectMask) { this->aspectMask = aspectMask; return *this; }
+    AttachmentReference2& setAttachment(uint32_t attachment) {this->attachment = attachment; return *this; }
+    AttachmentReference2& setLayout(ImageLayout layout) {this->layout = layout; return *this; }
+    AttachmentReference2& setAspectMask(ImageAspectFlags aspectMask) {this->aspectMask = aspectMask; return *this; }
 };
 using AttachmentReference2KHR = AttachmentReference2;
 struct SubpassDescription2 {
@@ -7893,22 +7898,22 @@ struct SubpassDescription2 {
     const AttachmentReference2* pDepthStencilAttachment = nullptr;
     uint32_t preserveAttachmentCount{0};
     const uint32_t* pPreserveAttachments = nullptr;
-    SubpassDescription2& setFlags(SubpassDescriptionFlags flags) { this->flags = flags; return *this; }
-    SubpassDescription2& setPipelineBindPoint(PipelineBindPoint pipelineBindPoint) { this->pipelineBindPoint = pipelineBindPoint; return *this; }
-    SubpassDescription2& setViewMask(uint32_t viewMask) { this->viewMask = viewMask; return *this; }
-    SubpassDescription2& setInputAttachmentCount(uint32_t inputAttachmentCount) { this->inputAttachmentCount = inputAttachmentCount; return *this; }
-    SubpassDescription2& setPInputAttachments(const AttachmentReference2* pInputAttachments) { this->pInputAttachments = pInputAttachments; return *this; }
-    SubpassDescription2& setInputAttachments(detail::span<const AttachmentReference2> InputAttachments) { this->inputAttachmentCount = InputAttachments.size(); this->pInputAttachments = InputAttachments.data();  return *this; }
-    SubpassDescription2& setColorAttachmentCount(uint32_t colorAttachmentCount) { this->colorAttachmentCount = colorAttachmentCount; return *this; }
-    SubpassDescription2& setPColorAttachments(const AttachmentReference2* pColorAttachments) { this->pColorAttachments = pColorAttachments; return *this; }
-    SubpassDescription2& setColorAttachments(detail::span<const AttachmentReference2> ColorAttachments) { this->colorAttachmentCount = ColorAttachments.size(); this->pColorAttachments = ColorAttachments.data();  return *this; }
-    SubpassDescription2& setPResolveAttachments(const AttachmentReference2* pResolveAttachments) { this->pResolveAttachments = pResolveAttachments; return *this; }
-    SubpassDescription2& setResolveAttachments(detail::span<const AttachmentReference2> ResolveAttachments) { this->colorAttachmentCount = ResolveAttachments.size(); this->pResolveAttachments = ResolveAttachments.data();  return *this; }
-    SubpassDescription2& setPDepthStencilAttachment(const AttachmentReference2* pDepthStencilAttachment) { this->pDepthStencilAttachment = pDepthStencilAttachment; return *this; }
-    SubpassDescription2& setDepthStencilAttachment(AttachmentReference2 const& DepthStencilAttachment) { this->pDepthStencilAttachment = &DepthStencilAttachment; return *this; }
-    SubpassDescription2& setPreserveAttachmentCount(uint32_t preserveAttachmentCount) { this->preserveAttachmentCount = preserveAttachmentCount; return *this; }
-    SubpassDescription2& setPPreserveAttachments(const uint32_t* pPreserveAttachments) { this->pPreserveAttachments = pPreserveAttachments; return *this; }
-    SubpassDescription2& setPreserveAttachments(detail::span<const uint32_t> PreserveAttachments) { this->preserveAttachmentCount = PreserveAttachments.size(); this->pPreserveAttachments = PreserveAttachments.data();  return *this; }
+    SubpassDescription2& setFlags(SubpassDescriptionFlags flags) {this->flags = flags; return *this; }
+    SubpassDescription2& setPipelineBindPoint(PipelineBindPoint pipelineBindPoint) {this->pipelineBindPoint = pipelineBindPoint; return *this; }
+    SubpassDescription2& setViewMask(uint32_t viewMask) {this->viewMask = viewMask; return *this; }
+    SubpassDescription2& setInputAttachmentCount(uint32_t inputAttachmentCount) {this->inputAttachmentCount = inputAttachmentCount; return *this; }
+    SubpassDescription2& setPInputAttachments(const AttachmentReference2* pInputAttachments) {this->pInputAttachments = pInputAttachments; return *this; }
+    SubpassDescription2& setPInputAttachments(detail::span<const AttachmentReference2> pInputAttachments) {this->inputAttachmentCount = pInputAttachments.size(); this->pInputAttachments = pInputAttachments.data();  return *this; }
+    SubpassDescription2& setColorAttachmentCount(uint32_t colorAttachmentCount) {this->colorAttachmentCount = colorAttachmentCount; return *this; }
+    SubpassDescription2& setPColorAttachments(const AttachmentReference2* pColorAttachments) {this->pColorAttachments = pColorAttachments; return *this; }
+    SubpassDescription2& setPColorAttachments(detail::span<const AttachmentReference2> pColorAttachments) {this->colorAttachmentCount = pColorAttachments.size(); this->pColorAttachments = pColorAttachments.data();  return *this; }
+    SubpassDescription2& setPResolveAttachments(const AttachmentReference2* pResolveAttachments) {this->pResolveAttachments = pResolveAttachments; return *this; }
+    SubpassDescription2& setPResolveAttachments(detail::span<const AttachmentReference2> pResolveAttachments) {this->colorAttachmentCount = pResolveAttachments.size(); this->pResolveAttachments = pResolveAttachments.data();  return *this; }
+    SubpassDescription2& setPDepthStencilAttachment(const AttachmentReference2* pDepthStencilAttachment) {this->pDepthStencilAttachment = pDepthStencilAttachment; return *this; }
+    SubpassDescription2& setPDepthStencilAttachment(AttachmentReference2 const& pDepthStencilAttachment) {this->pDepthStencilAttachment = &pDepthStencilAttachment; return *this; }
+    SubpassDescription2& setPreserveAttachmentCount(uint32_t preserveAttachmentCount) {this->preserveAttachmentCount = preserveAttachmentCount; return *this; }
+    SubpassDescription2& setPPreserveAttachments(const uint32_t* pPreserveAttachments) {this->pPreserveAttachments = pPreserveAttachments; return *this; }
+    SubpassDescription2& setPPreserveAttachments(detail::span<const uint32_t> pPreserveAttachments) {this->preserveAttachmentCount = pPreserveAttachments.size(); this->pPreserveAttachments = pPreserveAttachments.data();  return *this; }
 };
 using SubpassDescription2KHR = SubpassDescription2;
 struct SubpassDependency2 {
@@ -7922,14 +7927,14 @@ struct SubpassDependency2 {
     AccessFlags dstAccessMask{};
     DependencyFlags dependencyFlags{};
     int32_t viewOffset{0};
-    SubpassDependency2& setSrcSubpass(uint32_t srcSubpass) { this->srcSubpass = srcSubpass; return *this; }
-    SubpassDependency2& setDstSubpass(uint32_t dstSubpass) { this->dstSubpass = dstSubpass; return *this; }
-    SubpassDependency2& setSrcStageMask(PipelineStageFlags srcStageMask) { this->srcStageMask = srcStageMask; return *this; }
-    SubpassDependency2& setDstStageMask(PipelineStageFlags dstStageMask) { this->dstStageMask = dstStageMask; return *this; }
-    SubpassDependency2& setSrcAccessMask(AccessFlags srcAccessMask) { this->srcAccessMask = srcAccessMask; return *this; }
-    SubpassDependency2& setDstAccessMask(AccessFlags dstAccessMask) { this->dstAccessMask = dstAccessMask; return *this; }
-    SubpassDependency2& setDependencyFlags(DependencyFlags dependencyFlags) { this->dependencyFlags = dependencyFlags; return *this; }
-    SubpassDependency2& setViewOffset(int32_t viewOffset) { this->viewOffset = viewOffset; return *this; }
+    SubpassDependency2& setSrcSubpass(uint32_t srcSubpass) {this->srcSubpass = srcSubpass; return *this; }
+    SubpassDependency2& setDstSubpass(uint32_t dstSubpass) {this->dstSubpass = dstSubpass; return *this; }
+    SubpassDependency2& setSrcStageMask(PipelineStageFlags srcStageMask) {this->srcStageMask = srcStageMask; return *this; }
+    SubpassDependency2& setDstStageMask(PipelineStageFlags dstStageMask) {this->dstStageMask = dstStageMask; return *this; }
+    SubpassDependency2& setSrcAccessMask(AccessFlags srcAccessMask) {this->srcAccessMask = srcAccessMask; return *this; }
+    SubpassDependency2& setDstAccessMask(AccessFlags dstAccessMask) {this->dstAccessMask = dstAccessMask; return *this; }
+    SubpassDependency2& setDependencyFlags(DependencyFlags dependencyFlags) {this->dependencyFlags = dependencyFlags; return *this; }
+    SubpassDependency2& setViewOffset(int32_t viewOffset) {this->viewOffset = viewOffset; return *this; }
 };
 using SubpassDependency2KHR = SubpassDependency2;
 struct RenderPassCreateInfo2 {
@@ -7944,26 +7949,26 @@ struct RenderPassCreateInfo2 {
     const SubpassDependency2* pDependencies = nullptr;
     uint32_t correlatedViewMaskCount{0};
     const uint32_t* pCorrelatedViewMasks = nullptr;
-    RenderPassCreateInfo2& setFlags(RenderPassCreateFlags flags) { this->flags = flags; return *this; }
-    RenderPassCreateInfo2& setAttachmentCount(uint32_t attachmentCount) { this->attachmentCount = attachmentCount; return *this; }
-    RenderPassCreateInfo2& setPAttachments(const AttachmentDescription2* pAttachments) { this->pAttachments = pAttachments; return *this; }
-    RenderPassCreateInfo2& setAttachments(detail::span<const AttachmentDescription2> Attachments) { this->attachmentCount = Attachments.size(); this->pAttachments = Attachments.data();  return *this; }
-    RenderPassCreateInfo2& setSubpassCount(uint32_t subpassCount) { this->subpassCount = subpassCount; return *this; }
-    RenderPassCreateInfo2& setPSubpasses(const SubpassDescription2* pSubpasses) { this->pSubpasses = pSubpasses; return *this; }
-    RenderPassCreateInfo2& setSubpasses(detail::span<const SubpassDescription2> Subpasses) { this->subpassCount = Subpasses.size(); this->pSubpasses = Subpasses.data();  return *this; }
-    RenderPassCreateInfo2& setDependencyCount(uint32_t dependencyCount) { this->dependencyCount = dependencyCount; return *this; }
-    RenderPassCreateInfo2& setPDependencies(const SubpassDependency2* pDependencies) { this->pDependencies = pDependencies; return *this; }
-    RenderPassCreateInfo2& setDependencies(detail::span<const SubpassDependency2> Dependencies) { this->dependencyCount = Dependencies.size(); this->pDependencies = Dependencies.data();  return *this; }
-    RenderPassCreateInfo2& setCorrelatedViewMaskCount(uint32_t correlatedViewMaskCount) { this->correlatedViewMaskCount = correlatedViewMaskCount; return *this; }
-    RenderPassCreateInfo2& setPCorrelatedViewMasks(const uint32_t* pCorrelatedViewMasks) { this->pCorrelatedViewMasks = pCorrelatedViewMasks; return *this; }
-    RenderPassCreateInfo2& setCorrelatedViewMasks(detail::span<const uint32_t> CorrelatedViewMasks) { this->correlatedViewMaskCount = CorrelatedViewMasks.size(); this->pCorrelatedViewMasks = CorrelatedViewMasks.data();  return *this; }
+    RenderPassCreateInfo2& setFlags(RenderPassCreateFlags flags) {this->flags = flags; return *this; }
+    RenderPassCreateInfo2& setAttachmentCount(uint32_t attachmentCount) {this->attachmentCount = attachmentCount; return *this; }
+    RenderPassCreateInfo2& setPAttachments(const AttachmentDescription2* pAttachments) {this->pAttachments = pAttachments; return *this; }
+    RenderPassCreateInfo2& setPAttachments(detail::span<const AttachmentDescription2> pAttachments) {this->attachmentCount = pAttachments.size(); this->pAttachments = pAttachments.data();  return *this; }
+    RenderPassCreateInfo2& setSubpassCount(uint32_t subpassCount) {this->subpassCount = subpassCount; return *this; }
+    RenderPassCreateInfo2& setPSubpasses(const SubpassDescription2* pSubpasses) {this->pSubpasses = pSubpasses; return *this; }
+    RenderPassCreateInfo2& setPSubpasses(detail::span<const SubpassDescription2> pSubpasses) {this->subpassCount = pSubpasses.size(); this->pSubpasses = pSubpasses.data();  return *this; }
+    RenderPassCreateInfo2& setDependencyCount(uint32_t dependencyCount) {this->dependencyCount = dependencyCount; return *this; }
+    RenderPassCreateInfo2& setPDependencies(const SubpassDependency2* pDependencies) {this->pDependencies = pDependencies; return *this; }
+    RenderPassCreateInfo2& setPDependencies(detail::span<const SubpassDependency2> pDependencies) {this->dependencyCount = pDependencies.size(); this->pDependencies = pDependencies.data();  return *this; }
+    RenderPassCreateInfo2& setCorrelatedViewMaskCount(uint32_t correlatedViewMaskCount) {this->correlatedViewMaskCount = correlatedViewMaskCount; return *this; }
+    RenderPassCreateInfo2& setPCorrelatedViewMasks(const uint32_t* pCorrelatedViewMasks) {this->pCorrelatedViewMasks = pCorrelatedViewMasks; return *this; }
+    RenderPassCreateInfo2& setPCorrelatedViewMasks(detail::span<const uint32_t> pCorrelatedViewMasks) {this->correlatedViewMaskCount = pCorrelatedViewMasks.size(); this->pCorrelatedViewMasks = pCorrelatedViewMasks.data();  return *this; }
 };
 using RenderPassCreateInfo2KHR = RenderPassCreateInfo2;
 struct SubpassBeginInfo {
     StructureType sType{StructureType::SubpassBeginInfo};
     const void* pNext = nullptr;
     SubpassContents contents{static_cast<SubpassContents>(0)};
-    SubpassBeginInfo& setContents(SubpassContents contents) { this->contents = contents; return *this; }
+    SubpassBeginInfo& setContents(SubpassContents contents) {this->contents = contents; return *this; }
 };
 using SubpassBeginInfoKHR = SubpassBeginInfo;
 struct SubpassEndInfo {
@@ -7975,14 +7980,14 @@ struct PhysicalDeviceTimelineSemaphoreFeatures {
     StructureType sType{StructureType::PhysicalDeviceTimelineSemaphoreFeatures};
     void* pNext = nullptr;
     Bool32 timelineSemaphore{0};
-    PhysicalDeviceTimelineSemaphoreFeatures& setTimelineSemaphore(Bool32 timelineSemaphore) { this->timelineSemaphore = timelineSemaphore; return *this; }
+    PhysicalDeviceTimelineSemaphoreFeatures& setTimelineSemaphore(Bool32 timelineSemaphore) {this->timelineSemaphore = timelineSemaphore; return *this; }
 };
 using PhysicalDeviceTimelineSemaphoreFeaturesKHR = PhysicalDeviceTimelineSemaphoreFeatures;
 struct PhysicalDeviceTimelineSemaphoreProperties {
     StructureType sType{StructureType::PhysicalDeviceTimelineSemaphoreProperties};
     void* pNext = nullptr;
     uint64_t maxTimelineSemaphoreValueDifference{0};
-    PhysicalDeviceTimelineSemaphoreProperties& setMaxTimelineSemaphoreValueDifference(uint64_t maxTimelineSemaphoreValueDifference) { this->maxTimelineSemaphoreValueDifference = maxTimelineSemaphoreValueDifference; return *this; }
+    PhysicalDeviceTimelineSemaphoreProperties& setMaxTimelineSemaphoreValueDifference(uint64_t maxTimelineSemaphoreValueDifference) {this->maxTimelineSemaphoreValueDifference = maxTimelineSemaphoreValueDifference; return *this; }
 };
 using PhysicalDeviceTimelineSemaphorePropertiesKHR = PhysicalDeviceTimelineSemaphoreProperties;
 struct SemaphoreTypeCreateInfo {
@@ -7990,8 +7995,8 @@ struct SemaphoreTypeCreateInfo {
     const void* pNext = nullptr;
     SemaphoreType semaphoreType{static_cast<SemaphoreType>(0)};
     uint64_t initialValue{0};
-    SemaphoreTypeCreateInfo& setSemaphoreType(SemaphoreType semaphoreType) { this->semaphoreType = semaphoreType; return *this; }
-    SemaphoreTypeCreateInfo& setInitialValue(uint64_t initialValue) { this->initialValue = initialValue; return *this; }
+    SemaphoreTypeCreateInfo& setSemaphoreType(SemaphoreType semaphoreType) {this->semaphoreType = semaphoreType; return *this; }
+    SemaphoreTypeCreateInfo& setInitialValue(uint64_t initialValue) {this->initialValue = initialValue; return *this; }
 };
 using SemaphoreTypeCreateInfoKHR = SemaphoreTypeCreateInfo;
 struct TimelineSemaphoreSubmitInfo {
@@ -8001,12 +8006,12 @@ struct TimelineSemaphoreSubmitInfo {
     const uint64_t* pWaitSemaphoreValues = nullptr;
     uint32_t signalSemaphoreValueCount{0};
     const uint64_t* pSignalSemaphoreValues = nullptr;
-    TimelineSemaphoreSubmitInfo& setWaitSemaphoreValueCount(uint32_t waitSemaphoreValueCount) { this->waitSemaphoreValueCount = waitSemaphoreValueCount; return *this; }
-    TimelineSemaphoreSubmitInfo& setPWaitSemaphoreValues(const uint64_t* pWaitSemaphoreValues) { this->pWaitSemaphoreValues = pWaitSemaphoreValues; return *this; }
-    TimelineSemaphoreSubmitInfo& setWaitSemaphoreValues(detail::span<const uint64_t> WaitSemaphoreValues) { this->waitSemaphoreValueCount = WaitSemaphoreValues.size(); this->pWaitSemaphoreValues = WaitSemaphoreValues.data();  return *this; }
-    TimelineSemaphoreSubmitInfo& setSignalSemaphoreValueCount(uint32_t signalSemaphoreValueCount) { this->signalSemaphoreValueCount = signalSemaphoreValueCount; return *this; }
-    TimelineSemaphoreSubmitInfo& setPSignalSemaphoreValues(const uint64_t* pSignalSemaphoreValues) { this->pSignalSemaphoreValues = pSignalSemaphoreValues; return *this; }
-    TimelineSemaphoreSubmitInfo& setSignalSemaphoreValues(detail::span<const uint64_t> SignalSemaphoreValues) { this->signalSemaphoreValueCount = SignalSemaphoreValues.size(); this->pSignalSemaphoreValues = SignalSemaphoreValues.data();  return *this; }
+    TimelineSemaphoreSubmitInfo& setWaitSemaphoreValueCount(uint32_t waitSemaphoreValueCount) {this->waitSemaphoreValueCount = waitSemaphoreValueCount; return *this; }
+    TimelineSemaphoreSubmitInfo& setPWaitSemaphoreValues(const uint64_t* pWaitSemaphoreValues) {this->pWaitSemaphoreValues = pWaitSemaphoreValues; return *this; }
+    TimelineSemaphoreSubmitInfo& setPWaitSemaphoreValues(detail::span<const uint64_t> pWaitSemaphoreValues) {this->waitSemaphoreValueCount = pWaitSemaphoreValues.size(); this->pWaitSemaphoreValues = pWaitSemaphoreValues.data();  return *this; }
+    TimelineSemaphoreSubmitInfo& setSignalSemaphoreValueCount(uint32_t signalSemaphoreValueCount) {this->signalSemaphoreValueCount = signalSemaphoreValueCount; return *this; }
+    TimelineSemaphoreSubmitInfo& setPSignalSemaphoreValues(const uint64_t* pSignalSemaphoreValues) {this->pSignalSemaphoreValues = pSignalSemaphoreValues; return *this; }
+    TimelineSemaphoreSubmitInfo& setPSignalSemaphoreValues(detail::span<const uint64_t> pSignalSemaphoreValues) {this->signalSemaphoreValueCount = pSignalSemaphoreValues.size(); this->pSignalSemaphoreValues = pSignalSemaphoreValues.data();  return *this; }
 };
 using TimelineSemaphoreSubmitInfoKHR = TimelineSemaphoreSubmitInfo;
 struct SemaphoreWaitInfo {
@@ -8016,12 +8021,12 @@ struct SemaphoreWaitInfo {
     uint32_t semaphoreCount{0};
     const Semaphore* pSemaphores = nullptr;
     const uint64_t* pValues = nullptr;
-    SemaphoreWaitInfo& setFlags(SemaphoreWaitFlags flags) { this->flags = flags; return *this; }
-    SemaphoreWaitInfo& setSemaphoreCount(uint32_t semaphoreCount) { this->semaphoreCount = semaphoreCount; return *this; }
-    SemaphoreWaitInfo& setPSemaphores(const Semaphore* pSemaphores) { this->pSemaphores = pSemaphores; return *this; }
-    SemaphoreWaitInfo& setSemaphores(detail::span<const Semaphore> Semaphores) { this->semaphoreCount = Semaphores.size(); this->pSemaphores = Semaphores.data();  return *this; }
-    SemaphoreWaitInfo& setPValues(const uint64_t* pValues) { this->pValues = pValues; return *this; }
-    SemaphoreWaitInfo& setValues(detail::span<const uint64_t> Values) { this->semaphoreCount = Values.size(); this->pValues = Values.data();  return *this; }
+    SemaphoreWaitInfo& setFlags(SemaphoreWaitFlags flags) {this->flags = flags; return *this; }
+    SemaphoreWaitInfo& setSemaphoreCount(uint32_t semaphoreCount) {this->semaphoreCount = semaphoreCount; return *this; }
+    SemaphoreWaitInfo& setPSemaphores(const Semaphore* pSemaphores) {this->pSemaphores = pSemaphores; return *this; }
+    SemaphoreWaitInfo& setPSemaphores(detail::span<const Semaphore> pSemaphores) {this->semaphoreCount = pSemaphores.size(); this->pSemaphores = pSemaphores.data();  return *this; }
+    SemaphoreWaitInfo& setPValues(const uint64_t* pValues) {this->pValues = pValues; return *this; }
+    SemaphoreWaitInfo& setPValues(detail::span<const uint64_t> pValues) {this->semaphoreCount = pValues.size(); this->pValues = pValues.data();  return *this; }
 };
 using SemaphoreWaitInfoKHR = SemaphoreWaitInfo;
 struct SemaphoreSignalInfo {
@@ -8029,8 +8034,8 @@ struct SemaphoreSignalInfo {
     const void* pNext = nullptr;
     Semaphore semaphore{};
     uint64_t value{0};
-    SemaphoreSignalInfo& setSemaphore(Semaphore semaphore) { this->semaphore = semaphore; return *this; }
-    SemaphoreSignalInfo& setValue(uint64_t value) { this->value = value; return *this; }
+    SemaphoreSignalInfo& setSemaphore(Semaphore semaphore) {this->semaphore = semaphore; return *this; }
+    SemaphoreSignalInfo& setValue(uint64_t value) {this->value = value; return *this; }
 };
 using SemaphoreSignalInfoKHR = SemaphoreSignalInfo;
 struct VertexInputBindingDivisorDescriptionEXT {
@@ -8039,23 +8044,23 @@ struct VertexInputBindingDivisorDescriptionEXT {
     constexpr bool operator==(VertexInputBindingDivisorDescriptionEXT const& value) const {
         return binding == value.binding && divisor == value.divisor ;}
     constexpr bool operator!=(VertexInputBindingDivisorDescriptionEXT const& value) const {return !(*this == value);}
-    VertexInputBindingDivisorDescriptionEXT& setBinding(uint32_t binding) { this->binding = binding; return *this; }
-    VertexInputBindingDivisorDescriptionEXT& setDivisor(uint32_t divisor) { this->divisor = divisor; return *this; }
+    VertexInputBindingDivisorDescriptionEXT& setBinding(uint32_t binding) {this->binding = binding; return *this; }
+    VertexInputBindingDivisorDescriptionEXT& setDivisor(uint32_t divisor) {this->divisor = divisor; return *this; }
 };
 struct PipelineVertexInputDivisorStateCreateInfoEXT {
     StructureType sType{StructureType::PipelineVertexInputDivisorStateCreateInfoEXT};
     const void* pNext = nullptr;
     uint32_t vertexBindingDivisorCount{0};
     const VertexInputBindingDivisorDescriptionEXT* pVertexBindingDivisors = nullptr;
-    PipelineVertexInputDivisorStateCreateInfoEXT& setVertexBindingDivisorCount(uint32_t vertexBindingDivisorCount) { this->vertexBindingDivisorCount = vertexBindingDivisorCount; return *this; }
-    PipelineVertexInputDivisorStateCreateInfoEXT& setPVertexBindingDivisors(const VertexInputBindingDivisorDescriptionEXT* pVertexBindingDivisors) { this->pVertexBindingDivisors = pVertexBindingDivisors; return *this; }
-    PipelineVertexInputDivisorStateCreateInfoEXT& setVertexBindingDivisors(detail::span<const VertexInputBindingDivisorDescriptionEXT> VertexBindingDivisors) { this->vertexBindingDivisorCount = VertexBindingDivisors.size(); this->pVertexBindingDivisors = VertexBindingDivisors.data();  return *this; }
+    PipelineVertexInputDivisorStateCreateInfoEXT& setVertexBindingDivisorCount(uint32_t vertexBindingDivisorCount) {this->vertexBindingDivisorCount = vertexBindingDivisorCount; return *this; }
+    PipelineVertexInputDivisorStateCreateInfoEXT& setPVertexBindingDivisors(const VertexInputBindingDivisorDescriptionEXT* pVertexBindingDivisors) {this->pVertexBindingDivisors = pVertexBindingDivisors; return *this; }
+    PipelineVertexInputDivisorStateCreateInfoEXT& setPVertexBindingDivisors(detail::span<const VertexInputBindingDivisorDescriptionEXT> pVertexBindingDivisors) {this->vertexBindingDivisorCount = pVertexBindingDivisors.size(); this->pVertexBindingDivisors = pVertexBindingDivisors.data();  return *this; }
 };
 struct PhysicalDeviceVertexAttributeDivisorPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceVertexAttributeDivisorPropertiesEXT};
     void* pNext = nullptr;
     uint32_t maxVertexAttribDivisor{0};
-    PhysicalDeviceVertexAttributeDivisorPropertiesEXT& setMaxVertexAttribDivisor(uint32_t maxVertexAttribDivisor) { this->maxVertexAttribDivisor = maxVertexAttribDivisor; return *this; }
+    PhysicalDeviceVertexAttributeDivisorPropertiesEXT& setMaxVertexAttribDivisor(uint32_t maxVertexAttribDivisor) {this->maxVertexAttribDivisor = maxVertexAttribDivisor; return *this; }
 };
 struct PhysicalDevicePCIBusInfoPropertiesEXT {
     StructureType sType{StructureType::PhysicalDevicePciBusInfoPropertiesEXT};
@@ -8064,38 +8069,38 @@ struct PhysicalDevicePCIBusInfoPropertiesEXT {
     uint32_t pciBus{0};
     uint32_t pciDevice{0};
     uint32_t pciFunction{0};
-    PhysicalDevicePCIBusInfoPropertiesEXT& setPciDomain(uint32_t pciDomain) { this->pciDomain = pciDomain; return *this; }
-    PhysicalDevicePCIBusInfoPropertiesEXT& setPciBus(uint32_t pciBus) { this->pciBus = pciBus; return *this; }
-    PhysicalDevicePCIBusInfoPropertiesEXT& setPciDevice(uint32_t pciDevice) { this->pciDevice = pciDevice; return *this; }
-    PhysicalDevicePCIBusInfoPropertiesEXT& setPciFunction(uint32_t pciFunction) { this->pciFunction = pciFunction; return *this; }
+    PhysicalDevicePCIBusInfoPropertiesEXT& setPciDomain(uint32_t pciDomain) {this->pciDomain = pciDomain; return *this; }
+    PhysicalDevicePCIBusInfoPropertiesEXT& setPciBus(uint32_t pciBus) {this->pciBus = pciBus; return *this; }
+    PhysicalDevicePCIBusInfoPropertiesEXT& setPciDevice(uint32_t pciDevice) {this->pciDevice = pciDevice; return *this; }
+    PhysicalDevicePCIBusInfoPropertiesEXT& setPciFunction(uint32_t pciFunction) {this->pciFunction = pciFunction; return *this; }
 };
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 struct ImportAndroidHardwareBufferInfoANDROID {
     StructureType sType{StructureType::ImportAndroidHardwareBufferInfoANDROID};
     const void* pNext = nullptr;
     AHardwareBuffer* buffer = nullptr;
-    ImportAndroidHardwareBufferInfoANDROID& setBuffer(AHardwareBuffer* buffer) { this->buffer = buffer; return *this; }
-    ImportAndroidHardwareBufferInfoANDROID& setuffer(AHardwareBuffer & uffer) { this->buffer = &uffer; return *this; }
+    ImportAndroidHardwareBufferInfoANDROID& setBuffer(AHardwareBuffer* buffer) {this->buffer = buffer; return *this; }
+    ImportAndroidHardwareBufferInfoANDROID& setBuffer(AHardwareBuffer & buffer) {this->buffer = &buffer; return *this; }
 };
 struct AndroidHardwareBufferUsageANDROID {
     StructureType sType{StructureType::AndroidHardwareBufferUsageANDROID};
     void* pNext = nullptr;
     uint64_t androidHardwareBufferUsage{0};
-    AndroidHardwareBufferUsageANDROID& setAndroidHardwareBufferUsage(uint64_t androidHardwareBufferUsage) { this->androidHardwareBufferUsage = androidHardwareBufferUsage; return *this; }
+    AndroidHardwareBufferUsageANDROID& setAndroidHardwareBufferUsage(uint64_t androidHardwareBufferUsage) {this->androidHardwareBufferUsage = androidHardwareBufferUsage; return *this; }
 };
 struct AndroidHardwareBufferPropertiesANDROID {
     StructureType sType{StructureType::AndroidHardwareBufferPropertiesANDROID};
     void* pNext = nullptr;
     DeviceSize allocationSize{0};
     uint32_t memoryTypeBits{0};
-    AndroidHardwareBufferPropertiesANDROID& setAllocationSize(DeviceSize allocationSize) { this->allocationSize = allocationSize; return *this; }
-    AndroidHardwareBufferPropertiesANDROID& setMemoryTypeBits(uint32_t memoryTypeBits) { this->memoryTypeBits = memoryTypeBits; return *this; }
+    AndroidHardwareBufferPropertiesANDROID& setAllocationSize(DeviceSize allocationSize) {this->allocationSize = allocationSize; return *this; }
+    AndroidHardwareBufferPropertiesANDROID& setMemoryTypeBits(uint32_t memoryTypeBits) {this->memoryTypeBits = memoryTypeBits; return *this; }
 };
 struct MemoryGetAndroidHardwareBufferInfoANDROID {
     StructureType sType{StructureType::MemoryGetAndroidHardwareBufferInfoANDROID};
     const void* pNext = nullptr;
     DeviceMemory memory{};
-    MemoryGetAndroidHardwareBufferInfoANDROID& setMemory(DeviceMemory memory) { this->memory = memory; return *this; }
+    MemoryGetAndroidHardwareBufferInfoANDROID& setMemory(DeviceMemory memory) {this->memory = memory; return *this; }
 };
 struct AndroidHardwareBufferFormatPropertiesANDROID {
     StructureType sType{StructureType::AndroidHardwareBufferFormatPropertiesANDROID};
@@ -8108,28 +8113,28 @@ struct AndroidHardwareBufferFormatPropertiesANDROID {
     SamplerYcbcrRange suggestedYcbcrRange{static_cast<SamplerYcbcrRange>(0)};
     ChromaLocation suggestedXChromaOffset{static_cast<ChromaLocation>(0)};
     ChromaLocation suggestedYChromaOffset{static_cast<ChromaLocation>(0)};
-    AndroidHardwareBufferFormatPropertiesANDROID& setFormat(Format format) { this->format = format; return *this; }
-    AndroidHardwareBufferFormatPropertiesANDROID& setExternalFormat(uint64_t externalFormat) { this->externalFormat = externalFormat; return *this; }
-    AndroidHardwareBufferFormatPropertiesANDROID& setFormatFeatures(FormatFeatureFlags formatFeatures) { this->formatFeatures = formatFeatures; return *this; }
-    AndroidHardwareBufferFormatPropertiesANDROID& setSamplerYcbcrConversionComponents(ComponentMapping samplerYcbcrConversionComponents) { this->samplerYcbcrConversionComponents = samplerYcbcrConversionComponents; return *this; }
-    AndroidHardwareBufferFormatPropertiesANDROID& setSuggestedYcbcrModel(SamplerYcbcrModelConversion suggestedYcbcrModel) { this->suggestedYcbcrModel = suggestedYcbcrModel; return *this; }
-    AndroidHardwareBufferFormatPropertiesANDROID& setSuggestedYcbcrRange(SamplerYcbcrRange suggestedYcbcrRange) { this->suggestedYcbcrRange = suggestedYcbcrRange; return *this; }
-    AndroidHardwareBufferFormatPropertiesANDROID& setSuggestedXChromaOffset(ChromaLocation suggestedXChromaOffset) { this->suggestedXChromaOffset = suggestedXChromaOffset; return *this; }
-    AndroidHardwareBufferFormatPropertiesANDROID& setSuggestedYChromaOffset(ChromaLocation suggestedYChromaOffset) { this->suggestedYChromaOffset = suggestedYChromaOffset; return *this; }
+    AndroidHardwareBufferFormatPropertiesANDROID& setFormat(Format format) {this->format = format; return *this; }
+    AndroidHardwareBufferFormatPropertiesANDROID& setExternalFormat(uint64_t externalFormat) {this->externalFormat = externalFormat; return *this; }
+    AndroidHardwareBufferFormatPropertiesANDROID& setFormatFeatures(FormatFeatureFlags formatFeatures) {this->formatFeatures = formatFeatures; return *this; }
+    AndroidHardwareBufferFormatPropertiesANDROID& setSamplerYcbcrConversionComponents(ComponentMapping samplerYcbcrConversionComponents) {this->samplerYcbcrConversionComponents = samplerYcbcrConversionComponents; return *this; }
+    AndroidHardwareBufferFormatPropertiesANDROID& setSuggestedYcbcrModel(SamplerYcbcrModelConversion suggestedYcbcrModel) {this->suggestedYcbcrModel = suggestedYcbcrModel; return *this; }
+    AndroidHardwareBufferFormatPropertiesANDROID& setSuggestedYcbcrRange(SamplerYcbcrRange suggestedYcbcrRange) {this->suggestedYcbcrRange = suggestedYcbcrRange; return *this; }
+    AndroidHardwareBufferFormatPropertiesANDROID& setSuggestedXChromaOffset(ChromaLocation suggestedXChromaOffset) {this->suggestedXChromaOffset = suggestedXChromaOffset; return *this; }
+    AndroidHardwareBufferFormatPropertiesANDROID& setSuggestedYChromaOffset(ChromaLocation suggestedYChromaOffset) {this->suggestedYChromaOffset = suggestedYChromaOffset; return *this; }
 };
 #endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
 struct CommandBufferInheritanceConditionalRenderingInfoEXT {
     StructureType sType{StructureType::CommandBufferInheritanceConditionalRenderingInfoEXT};
     const void* pNext = nullptr;
     Bool32 conditionalRenderingEnable{0};
-    CommandBufferInheritanceConditionalRenderingInfoEXT& setConditionalRenderingEnable(Bool32 conditionalRenderingEnable) { this->conditionalRenderingEnable = conditionalRenderingEnable; return *this; }
+    CommandBufferInheritanceConditionalRenderingInfoEXT& setConditionalRenderingEnable(Bool32 conditionalRenderingEnable) {this->conditionalRenderingEnable = conditionalRenderingEnable; return *this; }
 };
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 struct ExternalFormatANDROID {
     StructureType sType{StructureType::ExternalFormatANDROID};
     void* pNext = nullptr;
     uint64_t externalFormat{0};
-    ExternalFormatANDROID& setExternalFormat(uint64_t externalFormat) { this->externalFormat = externalFormat; return *this; }
+    ExternalFormatANDROID& setExternalFormat(uint64_t externalFormat) {this->externalFormat = externalFormat; return *this; }
 };
 #endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
 struct PhysicalDevice8BitStorageFeatures {
@@ -8138,9 +8143,9 @@ struct PhysicalDevice8BitStorageFeatures {
     Bool32 storageBuffer8BitAccess{0};
     Bool32 uniformAndStorageBuffer8BitAccess{0};
     Bool32 storagePushConstant8{0};
-    PhysicalDevice8BitStorageFeatures& setStorageBuffer8BitAccess(Bool32 storageBuffer8BitAccess) { this->storageBuffer8BitAccess = storageBuffer8BitAccess; return *this; }
-    PhysicalDevice8BitStorageFeatures& setUniformAndStorageBuffer8BitAccess(Bool32 uniformAndStorageBuffer8BitAccess) { this->uniformAndStorageBuffer8BitAccess = uniformAndStorageBuffer8BitAccess; return *this; }
-    PhysicalDevice8BitStorageFeatures& setStoragePushConstant8(Bool32 storagePushConstant8) { this->storagePushConstant8 = storagePushConstant8; return *this; }
+    PhysicalDevice8BitStorageFeatures& setStorageBuffer8BitAccess(Bool32 storageBuffer8BitAccess) {this->storageBuffer8BitAccess = storageBuffer8BitAccess; return *this; }
+    PhysicalDevice8BitStorageFeatures& setUniformAndStorageBuffer8BitAccess(Bool32 uniformAndStorageBuffer8BitAccess) {this->uniformAndStorageBuffer8BitAccess = uniformAndStorageBuffer8BitAccess; return *this; }
+    PhysicalDevice8BitStorageFeatures& setStoragePushConstant8(Bool32 storagePushConstant8) {this->storagePushConstant8 = storagePushConstant8; return *this; }
 };
 using PhysicalDevice8BitStorageFeaturesKHR = PhysicalDevice8BitStorageFeatures;
 struct PhysicalDeviceConditionalRenderingFeaturesEXT {
@@ -8148,8 +8153,8 @@ struct PhysicalDeviceConditionalRenderingFeaturesEXT {
     void* pNext = nullptr;
     Bool32 conditionalRendering{0};
     Bool32 inheritedConditionalRendering{0};
-    PhysicalDeviceConditionalRenderingFeaturesEXT& setConditionalRendering(Bool32 conditionalRendering) { this->conditionalRendering = conditionalRendering; return *this; }
-    PhysicalDeviceConditionalRenderingFeaturesEXT& setInheritedConditionalRendering(Bool32 inheritedConditionalRendering) { this->inheritedConditionalRendering = inheritedConditionalRendering; return *this; }
+    PhysicalDeviceConditionalRenderingFeaturesEXT& setConditionalRendering(Bool32 conditionalRendering) {this->conditionalRendering = conditionalRendering; return *this; }
+    PhysicalDeviceConditionalRenderingFeaturesEXT& setInheritedConditionalRendering(Bool32 inheritedConditionalRendering) {this->inheritedConditionalRendering = inheritedConditionalRendering; return *this; }
 };
 struct PhysicalDeviceVulkanMemoryModelFeatures {
     StructureType sType{StructureType::PhysicalDeviceVulkanMemoryModelFeatures};
@@ -8157,9 +8162,9 @@ struct PhysicalDeviceVulkanMemoryModelFeatures {
     Bool32 vulkanMemoryModel{0};
     Bool32 vulkanMemoryModelDeviceScope{0};
     Bool32 vulkanMemoryModelAvailabilityVisibilityChains{0};
-    PhysicalDeviceVulkanMemoryModelFeatures& setVulkanMemoryModel(Bool32 vulkanMemoryModel) { this->vulkanMemoryModel = vulkanMemoryModel; return *this; }
-    PhysicalDeviceVulkanMemoryModelFeatures& setVulkanMemoryModelDeviceScope(Bool32 vulkanMemoryModelDeviceScope) { this->vulkanMemoryModelDeviceScope = vulkanMemoryModelDeviceScope; return *this; }
-    PhysicalDeviceVulkanMemoryModelFeatures& setVulkanMemoryModelAvailabilityVisibilityChains(Bool32 vulkanMemoryModelAvailabilityVisibilityChains) { this->vulkanMemoryModelAvailabilityVisibilityChains = vulkanMemoryModelAvailabilityVisibilityChains; return *this; }
+    PhysicalDeviceVulkanMemoryModelFeatures& setVulkanMemoryModel(Bool32 vulkanMemoryModel) {this->vulkanMemoryModel = vulkanMemoryModel; return *this; }
+    PhysicalDeviceVulkanMemoryModelFeatures& setVulkanMemoryModelDeviceScope(Bool32 vulkanMemoryModelDeviceScope) {this->vulkanMemoryModelDeviceScope = vulkanMemoryModelDeviceScope; return *this; }
+    PhysicalDeviceVulkanMemoryModelFeatures& setVulkanMemoryModelAvailabilityVisibilityChains(Bool32 vulkanMemoryModelAvailabilityVisibilityChains) {this->vulkanMemoryModelAvailabilityVisibilityChains = vulkanMemoryModelAvailabilityVisibilityChains; return *this; }
 };
 using PhysicalDeviceVulkanMemoryModelFeaturesKHR = PhysicalDeviceVulkanMemoryModelFeatures;
 struct PhysicalDeviceShaderAtomicInt64Features {
@@ -8167,8 +8172,8 @@ struct PhysicalDeviceShaderAtomicInt64Features {
     void* pNext = nullptr;
     Bool32 shaderBufferInt64Atomics{0};
     Bool32 shaderSharedInt64Atomics{0};
-    PhysicalDeviceShaderAtomicInt64Features& setShaderBufferInt64Atomics(Bool32 shaderBufferInt64Atomics) { this->shaderBufferInt64Atomics = shaderBufferInt64Atomics; return *this; }
-    PhysicalDeviceShaderAtomicInt64Features& setShaderSharedInt64Atomics(Bool32 shaderSharedInt64Atomics) { this->shaderSharedInt64Atomics = shaderSharedInt64Atomics; return *this; }
+    PhysicalDeviceShaderAtomicInt64Features& setShaderBufferInt64Atomics(Bool32 shaderBufferInt64Atomics) {this->shaderBufferInt64Atomics = shaderBufferInt64Atomics; return *this; }
+    PhysicalDeviceShaderAtomicInt64Features& setShaderSharedInt64Atomics(Bool32 shaderSharedInt64Atomics) {this->shaderSharedInt64Atomics = shaderSharedInt64Atomics; return *this; }
 };
 using PhysicalDeviceShaderAtomicInt64FeaturesKHR = PhysicalDeviceShaderAtomicInt64Features;
 struct PhysicalDeviceShaderAtomicFloatFeaturesEXT {
@@ -8186,39 +8191,40 @@ struct PhysicalDeviceShaderAtomicFloatFeaturesEXT {
     Bool32 shaderImageFloat32AtomicAdd{0};
     Bool32 sparseImageFloat32Atomics{0};
     Bool32 sparseImageFloat32AtomicAdd{0};
-    PhysicalDeviceShaderAtomicFloatFeaturesEXT& setShaderBufferFloat32Atomics(Bool32 shaderBufferFloat32Atomics) { this->shaderBufferFloat32Atomics = shaderBufferFloat32Atomics; return *this; }
-    PhysicalDeviceShaderAtomicFloatFeaturesEXT& setShaderBufferFloat32AtomicAdd(Bool32 shaderBufferFloat32AtomicAdd) { this->shaderBufferFloat32AtomicAdd = shaderBufferFloat32AtomicAdd; return *this; }
-    PhysicalDeviceShaderAtomicFloatFeaturesEXT& setShaderBufferFloat64Atomics(Bool32 shaderBufferFloat64Atomics) { this->shaderBufferFloat64Atomics = shaderBufferFloat64Atomics; return *this; }
-    PhysicalDeviceShaderAtomicFloatFeaturesEXT& setShaderBufferFloat64AtomicAdd(Bool32 shaderBufferFloat64AtomicAdd) { this->shaderBufferFloat64AtomicAdd = shaderBufferFloat64AtomicAdd; return *this; }
-    PhysicalDeviceShaderAtomicFloatFeaturesEXT& setShaderSharedFloat32Atomics(Bool32 shaderSharedFloat32Atomics) { this->shaderSharedFloat32Atomics = shaderSharedFloat32Atomics; return *this; }
-    PhysicalDeviceShaderAtomicFloatFeaturesEXT& setShaderSharedFloat32AtomicAdd(Bool32 shaderSharedFloat32AtomicAdd) { this->shaderSharedFloat32AtomicAdd = shaderSharedFloat32AtomicAdd; return *this; }
-    PhysicalDeviceShaderAtomicFloatFeaturesEXT& setShaderSharedFloat64Atomics(Bool32 shaderSharedFloat64Atomics) { this->shaderSharedFloat64Atomics = shaderSharedFloat64Atomics; return *this; }
-    PhysicalDeviceShaderAtomicFloatFeaturesEXT& setShaderSharedFloat64AtomicAdd(Bool32 shaderSharedFloat64AtomicAdd) { this->shaderSharedFloat64AtomicAdd = shaderSharedFloat64AtomicAdd; return *this; }
-    PhysicalDeviceShaderAtomicFloatFeaturesEXT& setShaderImageFloat32Atomics(Bool32 shaderImageFloat32Atomics) { this->shaderImageFloat32Atomics = shaderImageFloat32Atomics; return *this; }
-    PhysicalDeviceShaderAtomicFloatFeaturesEXT& setShaderImageFloat32AtomicAdd(Bool32 shaderImageFloat32AtomicAdd) { this->shaderImageFloat32AtomicAdd = shaderImageFloat32AtomicAdd; return *this; }
-    PhysicalDeviceShaderAtomicFloatFeaturesEXT& setSparseImageFloat32Atomics(Bool32 sparseImageFloat32Atomics) { this->sparseImageFloat32Atomics = sparseImageFloat32Atomics; return *this; }
-    PhysicalDeviceShaderAtomicFloatFeaturesEXT& setSparseImageFloat32AtomicAdd(Bool32 sparseImageFloat32AtomicAdd) { this->sparseImageFloat32AtomicAdd = sparseImageFloat32AtomicAdd; return *this; }
+    PhysicalDeviceShaderAtomicFloatFeaturesEXT& setShaderBufferFloat32Atomics(Bool32 shaderBufferFloat32Atomics) {this->shaderBufferFloat32Atomics = shaderBufferFloat32Atomics; return *this; }
+    PhysicalDeviceShaderAtomicFloatFeaturesEXT& setShaderBufferFloat32AtomicAdd(Bool32 shaderBufferFloat32AtomicAdd) {this->shaderBufferFloat32AtomicAdd = shaderBufferFloat32AtomicAdd; return *this; }
+    PhysicalDeviceShaderAtomicFloatFeaturesEXT& setShaderBufferFloat64Atomics(Bool32 shaderBufferFloat64Atomics) {this->shaderBufferFloat64Atomics = shaderBufferFloat64Atomics; return *this; }
+    PhysicalDeviceShaderAtomicFloatFeaturesEXT& setShaderBufferFloat64AtomicAdd(Bool32 shaderBufferFloat64AtomicAdd) {this->shaderBufferFloat64AtomicAdd = shaderBufferFloat64AtomicAdd; return *this; }
+    PhysicalDeviceShaderAtomicFloatFeaturesEXT& setShaderSharedFloat32Atomics(Bool32 shaderSharedFloat32Atomics) {this->shaderSharedFloat32Atomics = shaderSharedFloat32Atomics; return *this; }
+    PhysicalDeviceShaderAtomicFloatFeaturesEXT& setShaderSharedFloat32AtomicAdd(Bool32 shaderSharedFloat32AtomicAdd) {this->shaderSharedFloat32AtomicAdd = shaderSharedFloat32AtomicAdd; return *this; }
+    PhysicalDeviceShaderAtomicFloatFeaturesEXT& setShaderSharedFloat64Atomics(Bool32 shaderSharedFloat64Atomics) {this->shaderSharedFloat64Atomics = shaderSharedFloat64Atomics; return *this; }
+    PhysicalDeviceShaderAtomicFloatFeaturesEXT& setShaderSharedFloat64AtomicAdd(Bool32 shaderSharedFloat64AtomicAdd) {this->shaderSharedFloat64AtomicAdd = shaderSharedFloat64AtomicAdd; return *this; }
+    PhysicalDeviceShaderAtomicFloatFeaturesEXT& setShaderImageFloat32Atomics(Bool32 shaderImageFloat32Atomics) {this->shaderImageFloat32Atomics = shaderImageFloat32Atomics; return *this; }
+    PhysicalDeviceShaderAtomicFloatFeaturesEXT& setShaderImageFloat32AtomicAdd(Bool32 shaderImageFloat32AtomicAdd) {this->shaderImageFloat32AtomicAdd = shaderImageFloat32AtomicAdd; return *this; }
+    PhysicalDeviceShaderAtomicFloatFeaturesEXT& setSparseImageFloat32Atomics(Bool32 sparseImageFloat32Atomics) {this->sparseImageFloat32Atomics = sparseImageFloat32Atomics; return *this; }
+    PhysicalDeviceShaderAtomicFloatFeaturesEXT& setSparseImageFloat32AtomicAdd(Bool32 sparseImageFloat32AtomicAdd) {this->sparseImageFloat32AtomicAdd = sparseImageFloat32AtomicAdd; return *this; }
 };
 struct PhysicalDeviceVertexAttributeDivisorFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceVertexAttributeDivisorFeaturesEXT};
     void* pNext = nullptr;
     Bool32 vertexAttributeInstanceRateDivisor{0};
     Bool32 vertexAttributeInstanceRateZeroDivisor{0};
-    PhysicalDeviceVertexAttributeDivisorFeaturesEXT& setVertexAttributeInstanceRateDivisor(Bool32 vertexAttributeInstanceRateDivisor) { this->vertexAttributeInstanceRateDivisor = vertexAttributeInstanceRateDivisor; return *this; }
-    PhysicalDeviceVertexAttributeDivisorFeaturesEXT& setVertexAttributeInstanceRateZeroDivisor(Bool32 vertexAttributeInstanceRateZeroDivisor) { this->vertexAttributeInstanceRateZeroDivisor = vertexAttributeInstanceRateZeroDivisor; return *this; }
+    PhysicalDeviceVertexAttributeDivisorFeaturesEXT& setVertexAttributeInstanceRateDivisor(Bool32 vertexAttributeInstanceRateDivisor) {this->vertexAttributeInstanceRateDivisor = vertexAttributeInstanceRateDivisor; return *this; }
+    PhysicalDeviceVertexAttributeDivisorFeaturesEXT& setVertexAttributeInstanceRateZeroDivisor(Bool32 vertexAttributeInstanceRateZeroDivisor) {this->vertexAttributeInstanceRateZeroDivisor = vertexAttributeInstanceRateZeroDivisor; return *this; }
 };
 struct QueueFamilyCheckpointPropertiesNV {
     StructureType sType{StructureType::QueueFamilyCheckpointPropertiesNV};
     void* pNext = nullptr;
     PipelineStageFlags checkpointExecutionStageMask{};
-    QueueFamilyCheckpointPropertiesNV& setCheckpointExecutionStageMask(PipelineStageFlags checkpointExecutionStageMask) { this->checkpointExecutionStageMask = checkpointExecutionStageMask; return *this; }
+    QueueFamilyCheckpointPropertiesNV& setCheckpointExecutionStageMask(PipelineStageFlags checkpointExecutionStageMask) {this->checkpointExecutionStageMask = checkpointExecutionStageMask; return *this; }
 };
 struct CheckpointDataNV {
     StructureType sType{StructureType::CheckpointDataNV};
     void* pNext = nullptr;
     PipelineStageFlagBits stage{static_cast<PipelineStageFlagBits>(0)};
     void* pCheckpointMarker = nullptr;
-    CheckpointDataNV& setStage(PipelineStageFlagBits stage) { this->stage = stage; return *this; }
+    CheckpointDataNV& setStage(PipelineStageFlagBits stage) {this->stage = stage; return *this; }
+    CheckpointDataNV& setPCheckpointMarker(void* pCheckpointMarker) {this->pCheckpointMarker = pCheckpointMarker; return *this; }
 };
 struct PhysicalDeviceDepthStencilResolveProperties {
     StructureType sType{StructureType::PhysicalDeviceDepthStencilResolveProperties};
@@ -8227,10 +8233,10 @@ struct PhysicalDeviceDepthStencilResolveProperties {
     ResolveModeFlags supportedStencilResolveModes{};
     Bool32 independentResolveNone{0};
     Bool32 independentResolve{0};
-    PhysicalDeviceDepthStencilResolveProperties& setSupportedDepthResolveModes(ResolveModeFlags supportedDepthResolveModes) { this->supportedDepthResolveModes = supportedDepthResolveModes; return *this; }
-    PhysicalDeviceDepthStencilResolveProperties& setSupportedStencilResolveModes(ResolveModeFlags supportedStencilResolveModes) { this->supportedStencilResolveModes = supportedStencilResolveModes; return *this; }
-    PhysicalDeviceDepthStencilResolveProperties& setIndependentResolveNone(Bool32 independentResolveNone) { this->independentResolveNone = independentResolveNone; return *this; }
-    PhysicalDeviceDepthStencilResolveProperties& setIndependentResolve(Bool32 independentResolve) { this->independentResolve = independentResolve; return *this; }
+    PhysicalDeviceDepthStencilResolveProperties& setSupportedDepthResolveModes(ResolveModeFlags supportedDepthResolveModes) {this->supportedDepthResolveModes = supportedDepthResolveModes; return *this; }
+    PhysicalDeviceDepthStencilResolveProperties& setSupportedStencilResolveModes(ResolveModeFlags supportedStencilResolveModes) {this->supportedStencilResolveModes = supportedStencilResolveModes; return *this; }
+    PhysicalDeviceDepthStencilResolveProperties& setIndependentResolveNone(Bool32 independentResolveNone) {this->independentResolveNone = independentResolveNone; return *this; }
+    PhysicalDeviceDepthStencilResolveProperties& setIndependentResolve(Bool32 independentResolve) {this->independentResolve = independentResolve; return *this; }
 };
 using PhysicalDeviceDepthStencilResolvePropertiesKHR = PhysicalDeviceDepthStencilResolveProperties;
 struct SubpassDescriptionDepthStencilResolve {
@@ -8239,31 +8245,31 @@ struct SubpassDescriptionDepthStencilResolve {
     ResolveModeFlagBits depthResolveMode{static_cast<ResolveModeFlagBits>(0)};
     ResolveModeFlagBits stencilResolveMode{static_cast<ResolveModeFlagBits>(0)};
     const AttachmentReference2* pDepthStencilResolveAttachment = nullptr;
-    SubpassDescriptionDepthStencilResolve& setDepthResolveMode(ResolveModeFlagBits depthResolveMode) { this->depthResolveMode = depthResolveMode; return *this; }
-    SubpassDescriptionDepthStencilResolve& setStencilResolveMode(ResolveModeFlagBits stencilResolveMode) { this->stencilResolveMode = stencilResolveMode; return *this; }
-    SubpassDescriptionDepthStencilResolve& setPDepthStencilResolveAttachment(const AttachmentReference2* pDepthStencilResolveAttachment) { this->pDepthStencilResolveAttachment = pDepthStencilResolveAttachment; return *this; }
-    SubpassDescriptionDepthStencilResolve& setDepthStencilResolveAttachment(AttachmentReference2 const& DepthStencilResolveAttachment) { this->pDepthStencilResolveAttachment = &DepthStencilResolveAttachment; return *this; }
+    SubpassDescriptionDepthStencilResolve& setDepthResolveMode(ResolveModeFlagBits depthResolveMode) {this->depthResolveMode = depthResolveMode; return *this; }
+    SubpassDescriptionDepthStencilResolve& setStencilResolveMode(ResolveModeFlagBits stencilResolveMode) {this->stencilResolveMode = stencilResolveMode; return *this; }
+    SubpassDescriptionDepthStencilResolve& setPDepthStencilResolveAttachment(const AttachmentReference2* pDepthStencilResolveAttachment) {this->pDepthStencilResolveAttachment = pDepthStencilResolveAttachment; return *this; }
+    SubpassDescriptionDepthStencilResolve& setPDepthStencilResolveAttachment(AttachmentReference2 const& pDepthStencilResolveAttachment) {this->pDepthStencilResolveAttachment = &pDepthStencilResolveAttachment; return *this; }
 };
 using SubpassDescriptionDepthStencilResolveKHR = SubpassDescriptionDepthStencilResolve;
 struct ImageViewASTCDecodeModeEXT {
     StructureType sType{StructureType::ImageViewAstcDecodeModeEXT};
     const void* pNext = nullptr;
     Format decodeMode{static_cast<Format>(0)};
-    ImageViewASTCDecodeModeEXT& setDecodeMode(Format decodeMode) { this->decodeMode = decodeMode; return *this; }
+    ImageViewASTCDecodeModeEXT& setDecodeMode(Format decodeMode) {this->decodeMode = decodeMode; return *this; }
 };
 struct PhysicalDeviceASTCDecodeFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceAstcDecodeFeaturesEXT};
     void* pNext = nullptr;
     Bool32 decodeModeSharedExponent{0};
-    PhysicalDeviceASTCDecodeFeaturesEXT& setDecodeModeSharedExponent(Bool32 decodeModeSharedExponent) { this->decodeModeSharedExponent = decodeModeSharedExponent; return *this; }
+    PhysicalDeviceASTCDecodeFeaturesEXT& setDecodeModeSharedExponent(Bool32 decodeModeSharedExponent) {this->decodeModeSharedExponent = decodeModeSharedExponent; return *this; }
 };
 struct PhysicalDeviceTransformFeedbackFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceTransformFeedbackFeaturesEXT};
     void* pNext = nullptr;
     Bool32 transformFeedback{0};
     Bool32 geometryStreams{0};
-    PhysicalDeviceTransformFeedbackFeaturesEXT& setTransformFeedback(Bool32 transformFeedback) { this->transformFeedback = transformFeedback; return *this; }
-    PhysicalDeviceTransformFeedbackFeaturesEXT& setGeometryStreams(Bool32 geometryStreams) { this->geometryStreams = geometryStreams; return *this; }
+    PhysicalDeviceTransformFeedbackFeaturesEXT& setTransformFeedback(Bool32 transformFeedback) {this->transformFeedback = transformFeedback; return *this; }
+    PhysicalDeviceTransformFeedbackFeaturesEXT& setGeometryStreams(Bool32 geometryStreams) {this->geometryStreams = geometryStreams; return *this; }
 };
 struct PhysicalDeviceTransformFeedbackPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceTransformFeedbackPropertiesEXT};
@@ -8278,90 +8284,90 @@ struct PhysicalDeviceTransformFeedbackPropertiesEXT {
     Bool32 transformFeedbackStreamsLinesTriangles{0};
     Bool32 transformFeedbackRasterizationStreamSelect{0};
     Bool32 transformFeedbackDraw{0};
-    PhysicalDeviceTransformFeedbackPropertiesEXT& setMaxTransformFeedbackStreams(uint32_t maxTransformFeedbackStreams) { this->maxTransformFeedbackStreams = maxTransformFeedbackStreams; return *this; }
-    PhysicalDeviceTransformFeedbackPropertiesEXT& setMaxTransformFeedbackBuffers(uint32_t maxTransformFeedbackBuffers) { this->maxTransformFeedbackBuffers = maxTransformFeedbackBuffers; return *this; }
-    PhysicalDeviceTransformFeedbackPropertiesEXT& setMaxTransformFeedbackBufferSize(DeviceSize maxTransformFeedbackBufferSize) { this->maxTransformFeedbackBufferSize = maxTransformFeedbackBufferSize; return *this; }
-    PhysicalDeviceTransformFeedbackPropertiesEXT& setMaxTransformFeedbackStreamDataSize(uint32_t maxTransformFeedbackStreamDataSize) { this->maxTransformFeedbackStreamDataSize = maxTransformFeedbackStreamDataSize; return *this; }
-    PhysicalDeviceTransformFeedbackPropertiesEXT& setMaxTransformFeedbackBufferDataSize(uint32_t maxTransformFeedbackBufferDataSize) { this->maxTransformFeedbackBufferDataSize = maxTransformFeedbackBufferDataSize; return *this; }
-    PhysicalDeviceTransformFeedbackPropertiesEXT& setMaxTransformFeedbackBufferDataStride(uint32_t maxTransformFeedbackBufferDataStride) { this->maxTransformFeedbackBufferDataStride = maxTransformFeedbackBufferDataStride; return *this; }
-    PhysicalDeviceTransformFeedbackPropertiesEXT& setTransformFeedbackQueries(Bool32 transformFeedbackQueries) { this->transformFeedbackQueries = transformFeedbackQueries; return *this; }
-    PhysicalDeviceTransformFeedbackPropertiesEXT& setTransformFeedbackStreamsLinesTriangles(Bool32 transformFeedbackStreamsLinesTriangles) { this->transformFeedbackStreamsLinesTriangles = transformFeedbackStreamsLinesTriangles; return *this; }
-    PhysicalDeviceTransformFeedbackPropertiesEXT& setTransformFeedbackRasterizationStreamSelect(Bool32 transformFeedbackRasterizationStreamSelect) { this->transformFeedbackRasterizationStreamSelect = transformFeedbackRasterizationStreamSelect; return *this; }
-    PhysicalDeviceTransformFeedbackPropertiesEXT& setTransformFeedbackDraw(Bool32 transformFeedbackDraw) { this->transformFeedbackDraw = transformFeedbackDraw; return *this; }
+    PhysicalDeviceTransformFeedbackPropertiesEXT& setMaxTransformFeedbackStreams(uint32_t maxTransformFeedbackStreams) {this->maxTransformFeedbackStreams = maxTransformFeedbackStreams; return *this; }
+    PhysicalDeviceTransformFeedbackPropertiesEXT& setMaxTransformFeedbackBuffers(uint32_t maxTransformFeedbackBuffers) {this->maxTransformFeedbackBuffers = maxTransformFeedbackBuffers; return *this; }
+    PhysicalDeviceTransformFeedbackPropertiesEXT& setMaxTransformFeedbackBufferSize(DeviceSize maxTransformFeedbackBufferSize) {this->maxTransformFeedbackBufferSize = maxTransformFeedbackBufferSize; return *this; }
+    PhysicalDeviceTransformFeedbackPropertiesEXT& setMaxTransformFeedbackStreamDataSize(uint32_t maxTransformFeedbackStreamDataSize) {this->maxTransformFeedbackStreamDataSize = maxTransformFeedbackStreamDataSize; return *this; }
+    PhysicalDeviceTransformFeedbackPropertiesEXT& setMaxTransformFeedbackBufferDataSize(uint32_t maxTransformFeedbackBufferDataSize) {this->maxTransformFeedbackBufferDataSize = maxTransformFeedbackBufferDataSize; return *this; }
+    PhysicalDeviceTransformFeedbackPropertiesEXT& setMaxTransformFeedbackBufferDataStride(uint32_t maxTransformFeedbackBufferDataStride) {this->maxTransformFeedbackBufferDataStride = maxTransformFeedbackBufferDataStride; return *this; }
+    PhysicalDeviceTransformFeedbackPropertiesEXT& setTransformFeedbackQueries(Bool32 transformFeedbackQueries) {this->transformFeedbackQueries = transformFeedbackQueries; return *this; }
+    PhysicalDeviceTransformFeedbackPropertiesEXT& setTransformFeedbackStreamsLinesTriangles(Bool32 transformFeedbackStreamsLinesTriangles) {this->transformFeedbackStreamsLinesTriangles = transformFeedbackStreamsLinesTriangles; return *this; }
+    PhysicalDeviceTransformFeedbackPropertiesEXT& setTransformFeedbackRasterizationStreamSelect(Bool32 transformFeedbackRasterizationStreamSelect) {this->transformFeedbackRasterizationStreamSelect = transformFeedbackRasterizationStreamSelect; return *this; }
+    PhysicalDeviceTransformFeedbackPropertiesEXT& setTransformFeedbackDraw(Bool32 transformFeedbackDraw) {this->transformFeedbackDraw = transformFeedbackDraw; return *this; }
 };
 struct PipelineRasterizationStateStreamCreateInfoEXT {
     StructureType sType{StructureType::PipelineRasterizationStateStreamCreateInfoEXT};
     const void* pNext = nullptr;
     PipelineRasterizationStateStreamCreateFlagsEXT flags{};
     uint32_t rasterizationStream{0};
-    PipelineRasterizationStateStreamCreateInfoEXT& setFlags(PipelineRasterizationStateStreamCreateFlagsEXT flags) { this->flags = flags; return *this; }
-    PipelineRasterizationStateStreamCreateInfoEXT& setRasterizationStream(uint32_t rasterizationStream) { this->rasterizationStream = rasterizationStream; return *this; }
+    PipelineRasterizationStateStreamCreateInfoEXT& setFlags(PipelineRasterizationStateStreamCreateFlagsEXT flags) {this->flags = flags; return *this; }
+    PipelineRasterizationStateStreamCreateInfoEXT& setRasterizationStream(uint32_t rasterizationStream) {this->rasterizationStream = rasterizationStream; return *this; }
 };
 struct PhysicalDeviceRepresentativeFragmentTestFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceRepresentativeFragmentTestFeaturesNV};
     void* pNext = nullptr;
     Bool32 representativeFragmentTest{0};
-    PhysicalDeviceRepresentativeFragmentTestFeaturesNV& setRepresentativeFragmentTest(Bool32 representativeFragmentTest) { this->representativeFragmentTest = representativeFragmentTest; return *this; }
+    PhysicalDeviceRepresentativeFragmentTestFeaturesNV& setRepresentativeFragmentTest(Bool32 representativeFragmentTest) {this->representativeFragmentTest = representativeFragmentTest; return *this; }
 };
 struct PipelineRepresentativeFragmentTestStateCreateInfoNV {
     StructureType sType{StructureType::PipelineRepresentativeFragmentTestStateCreateInfoNV};
     const void* pNext = nullptr;
     Bool32 representativeFragmentTestEnable{0};
-    PipelineRepresentativeFragmentTestStateCreateInfoNV& setRepresentativeFragmentTestEnable(Bool32 representativeFragmentTestEnable) { this->representativeFragmentTestEnable = representativeFragmentTestEnable; return *this; }
+    PipelineRepresentativeFragmentTestStateCreateInfoNV& setRepresentativeFragmentTestEnable(Bool32 representativeFragmentTestEnable) {this->representativeFragmentTestEnable = representativeFragmentTestEnable; return *this; }
 };
 struct PhysicalDeviceExclusiveScissorFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceExclusiveScissorFeaturesNV};
     void* pNext = nullptr;
     Bool32 exclusiveScissor{0};
-    PhysicalDeviceExclusiveScissorFeaturesNV& setExclusiveScissor(Bool32 exclusiveScissor) { this->exclusiveScissor = exclusiveScissor; return *this; }
+    PhysicalDeviceExclusiveScissorFeaturesNV& setExclusiveScissor(Bool32 exclusiveScissor) {this->exclusiveScissor = exclusiveScissor; return *this; }
 };
 struct PipelineViewportExclusiveScissorStateCreateInfoNV {
     StructureType sType{StructureType::PipelineViewportExclusiveScissorStateCreateInfoNV};
     const void* pNext = nullptr;
     uint32_t exclusiveScissorCount{0};
     const Rect2D* pExclusiveScissors = nullptr;
-    PipelineViewportExclusiveScissorStateCreateInfoNV& setExclusiveScissorCount(uint32_t exclusiveScissorCount) { this->exclusiveScissorCount = exclusiveScissorCount; return *this; }
-    PipelineViewportExclusiveScissorStateCreateInfoNV& setPExclusiveScissors(const Rect2D* pExclusiveScissors) { this->pExclusiveScissors = pExclusiveScissors; return *this; }
-    PipelineViewportExclusiveScissorStateCreateInfoNV& setExclusiveScissors(detail::span<const Rect2D> ExclusiveScissors) { this->exclusiveScissorCount = ExclusiveScissors.size(); this->pExclusiveScissors = ExclusiveScissors.data();  return *this; }
+    PipelineViewportExclusiveScissorStateCreateInfoNV& setExclusiveScissorCount(uint32_t exclusiveScissorCount) {this->exclusiveScissorCount = exclusiveScissorCount; return *this; }
+    PipelineViewportExclusiveScissorStateCreateInfoNV& setPExclusiveScissors(const Rect2D* pExclusiveScissors) {this->pExclusiveScissors = pExclusiveScissors; return *this; }
+    PipelineViewportExclusiveScissorStateCreateInfoNV& setPExclusiveScissors(detail::span<const Rect2D> pExclusiveScissors) {this->exclusiveScissorCount = pExclusiveScissors.size(); this->pExclusiveScissors = pExclusiveScissors.data();  return *this; }
 };
 struct PhysicalDeviceCornerSampledImageFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceCornerSampledImageFeaturesNV};
     void* pNext = nullptr;
     Bool32 cornerSampledImage{0};
-    PhysicalDeviceCornerSampledImageFeaturesNV& setCornerSampledImage(Bool32 cornerSampledImage) { this->cornerSampledImage = cornerSampledImage; return *this; }
+    PhysicalDeviceCornerSampledImageFeaturesNV& setCornerSampledImage(Bool32 cornerSampledImage) {this->cornerSampledImage = cornerSampledImage; return *this; }
 };
 struct PhysicalDeviceComputeShaderDerivativesFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceComputeShaderDerivativesFeaturesNV};
     void* pNext = nullptr;
     Bool32 computeDerivativeGroupQuads{0};
     Bool32 computeDerivativeGroupLinear{0};
-    PhysicalDeviceComputeShaderDerivativesFeaturesNV& setComputeDerivativeGroupQuads(Bool32 computeDerivativeGroupQuads) { this->computeDerivativeGroupQuads = computeDerivativeGroupQuads; return *this; }
-    PhysicalDeviceComputeShaderDerivativesFeaturesNV& setComputeDerivativeGroupLinear(Bool32 computeDerivativeGroupLinear) { this->computeDerivativeGroupLinear = computeDerivativeGroupLinear; return *this; }
+    PhysicalDeviceComputeShaderDerivativesFeaturesNV& setComputeDerivativeGroupQuads(Bool32 computeDerivativeGroupQuads) {this->computeDerivativeGroupQuads = computeDerivativeGroupQuads; return *this; }
+    PhysicalDeviceComputeShaderDerivativesFeaturesNV& setComputeDerivativeGroupLinear(Bool32 computeDerivativeGroupLinear) {this->computeDerivativeGroupLinear = computeDerivativeGroupLinear; return *this; }
 };
 struct PhysicalDeviceFragmentShaderBarycentricFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceFragmentShaderBarycentricFeaturesNV};
     void* pNext = nullptr;
     Bool32 fragmentShaderBarycentric{0};
-    PhysicalDeviceFragmentShaderBarycentricFeaturesNV& setFragmentShaderBarycentric(Bool32 fragmentShaderBarycentric) { this->fragmentShaderBarycentric = fragmentShaderBarycentric; return *this; }
+    PhysicalDeviceFragmentShaderBarycentricFeaturesNV& setFragmentShaderBarycentric(Bool32 fragmentShaderBarycentric) {this->fragmentShaderBarycentric = fragmentShaderBarycentric; return *this; }
 };
 struct PhysicalDeviceShaderImageFootprintFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceShaderImageFootprintFeaturesNV};
     void* pNext = nullptr;
     Bool32 imageFootprint{0};
-    PhysicalDeviceShaderImageFootprintFeaturesNV& setImageFootprint(Bool32 imageFootprint) { this->imageFootprint = imageFootprint; return *this; }
+    PhysicalDeviceShaderImageFootprintFeaturesNV& setImageFootprint(Bool32 imageFootprint) {this->imageFootprint = imageFootprint; return *this; }
 };
 struct PhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV};
     void* pNext = nullptr;
     Bool32 dedicatedAllocationImageAliasing{0};
-    PhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV& setDedicatedAllocationImageAliasing(Bool32 dedicatedAllocationImageAliasing) { this->dedicatedAllocationImageAliasing = dedicatedAllocationImageAliasing; return *this; }
+    PhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV& setDedicatedAllocationImageAliasing(Bool32 dedicatedAllocationImageAliasing) {this->dedicatedAllocationImageAliasing = dedicatedAllocationImageAliasing; return *this; }
 };
 struct ShadingRatePaletteNV {
     uint32_t shadingRatePaletteEntryCount{0};
     const ShadingRatePaletteEntryNV* pShadingRatePaletteEntries = nullptr;
-    ShadingRatePaletteNV& setShadingRatePaletteEntryCount(uint32_t shadingRatePaletteEntryCount) { this->shadingRatePaletteEntryCount = shadingRatePaletteEntryCount; return *this; }
-    ShadingRatePaletteNV& setPShadingRatePaletteEntries(const ShadingRatePaletteEntryNV* pShadingRatePaletteEntries) { this->pShadingRatePaletteEntries = pShadingRatePaletteEntries; return *this; }
-    ShadingRatePaletteNV& setShadingRatePaletteEntries(detail::span<const ShadingRatePaletteEntryNV> ShadingRatePaletteEntries) { this->shadingRatePaletteEntryCount = ShadingRatePaletteEntries.size(); this->pShadingRatePaletteEntries = ShadingRatePaletteEntries.data();  return *this; }
+    ShadingRatePaletteNV& setShadingRatePaletteEntryCount(uint32_t shadingRatePaletteEntryCount) {this->shadingRatePaletteEntryCount = shadingRatePaletteEntryCount; return *this; }
+    ShadingRatePaletteNV& setPShadingRatePaletteEntries(const ShadingRatePaletteEntryNV* pShadingRatePaletteEntries) {this->pShadingRatePaletteEntries = pShadingRatePaletteEntries; return *this; }
+    ShadingRatePaletteNV& setPShadingRatePaletteEntries(detail::span<const ShadingRatePaletteEntryNV> pShadingRatePaletteEntries) {this->shadingRatePaletteEntryCount = pShadingRatePaletteEntries.size(); this->pShadingRatePaletteEntries = pShadingRatePaletteEntries.data();  return *this; }
 };
 struct PipelineViewportShadingRateImageStateCreateInfoNV {
     StructureType sType{StructureType::PipelineViewportShadingRateImageStateCreateInfoNV};
@@ -8369,18 +8375,18 @@ struct PipelineViewportShadingRateImageStateCreateInfoNV {
     Bool32 shadingRateImageEnable{0};
     uint32_t viewportCount{0};
     const ShadingRatePaletteNV* pShadingRatePalettes = nullptr;
-    PipelineViewportShadingRateImageStateCreateInfoNV& setShadingRateImageEnable(Bool32 shadingRateImageEnable) { this->shadingRateImageEnable = shadingRateImageEnable; return *this; }
-    PipelineViewportShadingRateImageStateCreateInfoNV& setViewportCount(uint32_t viewportCount) { this->viewportCount = viewportCount; return *this; }
-    PipelineViewportShadingRateImageStateCreateInfoNV& setPShadingRatePalettes(const ShadingRatePaletteNV* pShadingRatePalettes) { this->pShadingRatePalettes = pShadingRatePalettes; return *this; }
-    PipelineViewportShadingRateImageStateCreateInfoNV& setShadingRatePalettes(detail::span<const ShadingRatePaletteNV> ShadingRatePalettes) { this->viewportCount = ShadingRatePalettes.size(); this->pShadingRatePalettes = ShadingRatePalettes.data();  return *this; }
+    PipelineViewportShadingRateImageStateCreateInfoNV& setShadingRateImageEnable(Bool32 shadingRateImageEnable) {this->shadingRateImageEnable = shadingRateImageEnable; return *this; }
+    PipelineViewportShadingRateImageStateCreateInfoNV& setViewportCount(uint32_t viewportCount) {this->viewportCount = viewportCount; return *this; }
+    PipelineViewportShadingRateImageStateCreateInfoNV& setPShadingRatePalettes(const ShadingRatePaletteNV* pShadingRatePalettes) {this->pShadingRatePalettes = pShadingRatePalettes; return *this; }
+    PipelineViewportShadingRateImageStateCreateInfoNV& setPShadingRatePalettes(detail::span<const ShadingRatePaletteNV> pShadingRatePalettes) {this->viewportCount = pShadingRatePalettes.size(); this->pShadingRatePalettes = pShadingRatePalettes.data();  return *this; }
 };
 struct PhysicalDeviceShadingRateImageFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceShadingRateImageFeaturesNV};
     void* pNext = nullptr;
     Bool32 shadingRateImage{0};
     Bool32 shadingRateCoarseSampleOrder{0};
-    PhysicalDeviceShadingRateImageFeaturesNV& setShadingRateImage(Bool32 shadingRateImage) { this->shadingRateImage = shadingRateImage; return *this; }
-    PhysicalDeviceShadingRateImageFeaturesNV& setShadingRateCoarseSampleOrder(Bool32 shadingRateCoarseSampleOrder) { this->shadingRateCoarseSampleOrder = shadingRateCoarseSampleOrder; return *this; }
+    PhysicalDeviceShadingRateImageFeaturesNV& setShadingRateImage(Bool32 shadingRateImage) {this->shadingRateImage = shadingRateImage; return *this; }
+    PhysicalDeviceShadingRateImageFeaturesNV& setShadingRateCoarseSampleOrder(Bool32 shadingRateCoarseSampleOrder) {this->shadingRateCoarseSampleOrder = shadingRateCoarseSampleOrder; return *this; }
 };
 struct PhysicalDeviceShadingRateImagePropertiesNV {
     StructureType sType{StructureType::PhysicalDeviceShadingRateImagePropertiesNV};
@@ -8388,9 +8394,9 @@ struct PhysicalDeviceShadingRateImagePropertiesNV {
     Extent2D shadingRateTexelSize{};
     uint32_t shadingRatePaletteSize{0};
     uint32_t shadingRateMaxCoarseSamples{0};
-    PhysicalDeviceShadingRateImagePropertiesNV& setShadingRateTexelSize(Extent2D shadingRateTexelSize) { this->shadingRateTexelSize = shadingRateTexelSize; return *this; }
-    PhysicalDeviceShadingRateImagePropertiesNV& setShadingRatePaletteSize(uint32_t shadingRatePaletteSize) { this->shadingRatePaletteSize = shadingRatePaletteSize; return *this; }
-    PhysicalDeviceShadingRateImagePropertiesNV& setShadingRateMaxCoarseSamples(uint32_t shadingRateMaxCoarseSamples) { this->shadingRateMaxCoarseSamples = shadingRateMaxCoarseSamples; return *this; }
+    PhysicalDeviceShadingRateImagePropertiesNV& setShadingRateTexelSize(Extent2D shadingRateTexelSize) {this->shadingRateTexelSize = shadingRateTexelSize; return *this; }
+    PhysicalDeviceShadingRateImagePropertiesNV& setShadingRatePaletteSize(uint32_t shadingRatePaletteSize) {this->shadingRatePaletteSize = shadingRatePaletteSize; return *this; }
+    PhysicalDeviceShadingRateImagePropertiesNV& setShadingRateMaxCoarseSamples(uint32_t shadingRateMaxCoarseSamples) {this->shadingRateMaxCoarseSamples = shadingRateMaxCoarseSamples; return *this; }
 };
 struct CoarseSampleLocationNV {
     uint32_t pixelX{0};
@@ -8399,20 +8405,20 @@ struct CoarseSampleLocationNV {
     constexpr bool operator==(CoarseSampleLocationNV const& value) const {
         return pixelX == value.pixelX && pixelY == value.pixelY && sample == value.sample ;}
     constexpr bool operator!=(CoarseSampleLocationNV const& value) const {return !(*this == value);}
-    CoarseSampleLocationNV& setPixelX(uint32_t pixelX) { this->pixelX = pixelX; return *this; }
-    CoarseSampleLocationNV& setPixelY(uint32_t pixelY) { this->pixelY = pixelY; return *this; }
-    CoarseSampleLocationNV& setSample(uint32_t sample) { this->sample = sample; return *this; }
+    CoarseSampleLocationNV& setPixelX(uint32_t pixelX) {this->pixelX = pixelX; return *this; }
+    CoarseSampleLocationNV& setPixelY(uint32_t pixelY) {this->pixelY = pixelY; return *this; }
+    CoarseSampleLocationNV& setSample(uint32_t sample) {this->sample = sample; return *this; }
 };
 struct CoarseSampleOrderCustomNV {
     ShadingRatePaletteEntryNV shadingRate{static_cast<ShadingRatePaletteEntryNV>(0)};
     uint32_t sampleCount{0};
     uint32_t sampleLocationCount{0};
     const CoarseSampleLocationNV* pSampleLocations = nullptr;
-    CoarseSampleOrderCustomNV& setShadingRate(ShadingRatePaletteEntryNV shadingRate) { this->shadingRate = shadingRate; return *this; }
-    CoarseSampleOrderCustomNV& setSampleCount(uint32_t sampleCount) { this->sampleCount = sampleCount; return *this; }
-    CoarseSampleOrderCustomNV& setSampleLocationCount(uint32_t sampleLocationCount) { this->sampleLocationCount = sampleLocationCount; return *this; }
-    CoarseSampleOrderCustomNV& setPSampleLocations(const CoarseSampleLocationNV* pSampleLocations) { this->pSampleLocations = pSampleLocations; return *this; }
-    CoarseSampleOrderCustomNV& setSampleLocations(detail::span<const CoarseSampleLocationNV> SampleLocations) { this->sampleLocationCount = SampleLocations.size(); this->pSampleLocations = SampleLocations.data();  return *this; }
+    CoarseSampleOrderCustomNV& setShadingRate(ShadingRatePaletteEntryNV shadingRate) {this->shadingRate = shadingRate; return *this; }
+    CoarseSampleOrderCustomNV& setSampleCount(uint32_t sampleCount) {this->sampleCount = sampleCount; return *this; }
+    CoarseSampleOrderCustomNV& setSampleLocationCount(uint32_t sampleLocationCount) {this->sampleLocationCount = sampleLocationCount; return *this; }
+    CoarseSampleOrderCustomNV& setPSampleLocations(const CoarseSampleLocationNV* pSampleLocations) {this->pSampleLocations = pSampleLocations; return *this; }
+    CoarseSampleOrderCustomNV& setPSampleLocations(detail::span<const CoarseSampleLocationNV> pSampleLocations) {this->sampleLocationCount = pSampleLocations.size(); this->pSampleLocations = pSampleLocations.data();  return *this; }
 };
 struct PipelineViewportCoarseSampleOrderStateCreateInfoNV {
     StructureType sType{StructureType::PipelineViewportCoarseSampleOrderStateCreateInfoNV};
@@ -8420,18 +8426,18 @@ struct PipelineViewportCoarseSampleOrderStateCreateInfoNV {
     CoarseSampleOrderTypeNV sampleOrderType{static_cast<CoarseSampleOrderTypeNV>(0)};
     uint32_t customSampleOrderCount{0};
     const CoarseSampleOrderCustomNV* pCustomSampleOrders = nullptr;
-    PipelineViewportCoarseSampleOrderStateCreateInfoNV& setSampleOrderType(CoarseSampleOrderTypeNV sampleOrderType) { this->sampleOrderType = sampleOrderType; return *this; }
-    PipelineViewportCoarseSampleOrderStateCreateInfoNV& setCustomSampleOrderCount(uint32_t customSampleOrderCount) { this->customSampleOrderCount = customSampleOrderCount; return *this; }
-    PipelineViewportCoarseSampleOrderStateCreateInfoNV& setPCustomSampleOrders(const CoarseSampleOrderCustomNV* pCustomSampleOrders) { this->pCustomSampleOrders = pCustomSampleOrders; return *this; }
-    PipelineViewportCoarseSampleOrderStateCreateInfoNV& setCustomSampleOrders(detail::span<const CoarseSampleOrderCustomNV> CustomSampleOrders) { this->customSampleOrderCount = CustomSampleOrders.size(); this->pCustomSampleOrders = CustomSampleOrders.data();  return *this; }
+    PipelineViewportCoarseSampleOrderStateCreateInfoNV& setSampleOrderType(CoarseSampleOrderTypeNV sampleOrderType) {this->sampleOrderType = sampleOrderType; return *this; }
+    PipelineViewportCoarseSampleOrderStateCreateInfoNV& setCustomSampleOrderCount(uint32_t customSampleOrderCount) {this->customSampleOrderCount = customSampleOrderCount; return *this; }
+    PipelineViewportCoarseSampleOrderStateCreateInfoNV& setPCustomSampleOrders(const CoarseSampleOrderCustomNV* pCustomSampleOrders) {this->pCustomSampleOrders = pCustomSampleOrders; return *this; }
+    PipelineViewportCoarseSampleOrderStateCreateInfoNV& setPCustomSampleOrders(detail::span<const CoarseSampleOrderCustomNV> pCustomSampleOrders) {this->customSampleOrderCount = pCustomSampleOrders.size(); this->pCustomSampleOrders = pCustomSampleOrders.data();  return *this; }
 };
 struct PhysicalDeviceMeshShaderFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceMeshShaderFeaturesNV};
     void* pNext = nullptr;
     Bool32 taskShader{0};
     Bool32 meshShader{0};
-    PhysicalDeviceMeshShaderFeaturesNV& setTaskShader(Bool32 taskShader) { this->taskShader = taskShader; return *this; }
-    PhysicalDeviceMeshShaderFeaturesNV& setMeshShader(Bool32 meshShader) { this->meshShader = meshShader; return *this; }
+    PhysicalDeviceMeshShaderFeaturesNV& setTaskShader(Bool32 taskShader) {this->taskShader = taskShader; return *this; }
+    PhysicalDeviceMeshShaderFeaturesNV& setMeshShader(Bool32 meshShader) {this->meshShader = meshShader; return *this; }
 };
 struct PhysicalDeviceMeshShaderPropertiesNV {
     StructureType sType{StructureType::PhysicalDeviceMeshShaderPropertiesNV};
@@ -8449,19 +8455,19 @@ struct PhysicalDeviceMeshShaderPropertiesNV {
     uint32_t maxMeshMultiviewViewCount{0};
     uint32_t meshOutputPerVertexGranularity{0};
     uint32_t meshOutputPerPrimitiveGranularity{0};
-    PhysicalDeviceMeshShaderPropertiesNV& setMaxDrawMeshTasksCount(uint32_t maxDrawMeshTasksCount) { this->maxDrawMeshTasksCount = maxDrawMeshTasksCount; return *this; }
-    PhysicalDeviceMeshShaderPropertiesNV& setMaxTaskWorkGroupInvocations(uint32_t maxTaskWorkGroupInvocations) { this->maxTaskWorkGroupInvocations = maxTaskWorkGroupInvocations; return *this; }
-    PhysicalDeviceMeshShaderPropertiesNV& setMaxTaskWorkGroupSize(uint32_t maxTaskWorkGroupSize[3]) { for(uint32_t i = 0; i < 3; i++) this->maxTaskWorkGroupSize[i] = maxTaskWorkGroupSize[i]; return *this; }
-    PhysicalDeviceMeshShaderPropertiesNV& setMaxTaskTotalMemorySize(uint32_t maxTaskTotalMemorySize) { this->maxTaskTotalMemorySize = maxTaskTotalMemorySize; return *this; }
-    PhysicalDeviceMeshShaderPropertiesNV& setMaxTaskOutputCount(uint32_t maxTaskOutputCount) { this->maxTaskOutputCount = maxTaskOutputCount; return *this; }
-    PhysicalDeviceMeshShaderPropertiesNV& setMaxMeshWorkGroupInvocations(uint32_t maxMeshWorkGroupInvocations) { this->maxMeshWorkGroupInvocations = maxMeshWorkGroupInvocations; return *this; }
-    PhysicalDeviceMeshShaderPropertiesNV& setMaxMeshWorkGroupSize(uint32_t maxMeshWorkGroupSize[3]) { for(uint32_t i = 0; i < 3; i++) this->maxMeshWorkGroupSize[i] = maxMeshWorkGroupSize[i]; return *this; }
-    PhysicalDeviceMeshShaderPropertiesNV& setMaxMeshTotalMemorySize(uint32_t maxMeshTotalMemorySize) { this->maxMeshTotalMemorySize = maxMeshTotalMemorySize; return *this; }
-    PhysicalDeviceMeshShaderPropertiesNV& setMaxMeshOutputVertices(uint32_t maxMeshOutputVertices) { this->maxMeshOutputVertices = maxMeshOutputVertices; return *this; }
-    PhysicalDeviceMeshShaderPropertiesNV& setMaxMeshOutputPrimitives(uint32_t maxMeshOutputPrimitives) { this->maxMeshOutputPrimitives = maxMeshOutputPrimitives; return *this; }
-    PhysicalDeviceMeshShaderPropertiesNV& setMaxMeshMultiviewViewCount(uint32_t maxMeshMultiviewViewCount) { this->maxMeshMultiviewViewCount = maxMeshMultiviewViewCount; return *this; }
-    PhysicalDeviceMeshShaderPropertiesNV& setMeshOutputPerVertexGranularity(uint32_t meshOutputPerVertexGranularity) { this->meshOutputPerVertexGranularity = meshOutputPerVertexGranularity; return *this; }
-    PhysicalDeviceMeshShaderPropertiesNV& setMeshOutputPerPrimitiveGranularity(uint32_t meshOutputPerPrimitiveGranularity) { this->meshOutputPerPrimitiveGranularity = meshOutputPerPrimitiveGranularity; return *this; }
+    PhysicalDeviceMeshShaderPropertiesNV& setMaxDrawMeshTasksCount(uint32_t maxDrawMeshTasksCount) {this->maxDrawMeshTasksCount = maxDrawMeshTasksCount; return *this; }
+    PhysicalDeviceMeshShaderPropertiesNV& setMaxTaskWorkGroupInvocations(uint32_t maxTaskWorkGroupInvocations) {this->maxTaskWorkGroupInvocations = maxTaskWorkGroupInvocations; return *this; }
+    PhysicalDeviceMeshShaderPropertiesNV& setMaxTaskWorkGroupSize(uint32_t maxTaskWorkGroupSize[3]) {for(uint32_t i = 0; i < 3; i++) this->maxTaskWorkGroupSize[i] = maxTaskWorkGroupSize[i]; return *this; }
+    PhysicalDeviceMeshShaderPropertiesNV& setMaxTaskTotalMemorySize(uint32_t maxTaskTotalMemorySize) {this->maxTaskTotalMemorySize = maxTaskTotalMemorySize; return *this; }
+    PhysicalDeviceMeshShaderPropertiesNV& setMaxTaskOutputCount(uint32_t maxTaskOutputCount) {this->maxTaskOutputCount = maxTaskOutputCount; return *this; }
+    PhysicalDeviceMeshShaderPropertiesNV& setMaxMeshWorkGroupInvocations(uint32_t maxMeshWorkGroupInvocations) {this->maxMeshWorkGroupInvocations = maxMeshWorkGroupInvocations; return *this; }
+    PhysicalDeviceMeshShaderPropertiesNV& setMaxMeshWorkGroupSize(uint32_t maxMeshWorkGroupSize[3]) {for(uint32_t i = 0; i < 3; i++) this->maxMeshWorkGroupSize[i] = maxMeshWorkGroupSize[i]; return *this; }
+    PhysicalDeviceMeshShaderPropertiesNV& setMaxMeshTotalMemorySize(uint32_t maxMeshTotalMemorySize) {this->maxMeshTotalMemorySize = maxMeshTotalMemorySize; return *this; }
+    PhysicalDeviceMeshShaderPropertiesNV& setMaxMeshOutputVertices(uint32_t maxMeshOutputVertices) {this->maxMeshOutputVertices = maxMeshOutputVertices; return *this; }
+    PhysicalDeviceMeshShaderPropertiesNV& setMaxMeshOutputPrimitives(uint32_t maxMeshOutputPrimitives) {this->maxMeshOutputPrimitives = maxMeshOutputPrimitives; return *this; }
+    PhysicalDeviceMeshShaderPropertiesNV& setMaxMeshMultiviewViewCount(uint32_t maxMeshMultiviewViewCount) {this->maxMeshMultiviewViewCount = maxMeshMultiviewViewCount; return *this; }
+    PhysicalDeviceMeshShaderPropertiesNV& setMeshOutputPerVertexGranularity(uint32_t meshOutputPerVertexGranularity) {this->meshOutputPerVertexGranularity = meshOutputPerVertexGranularity; return *this; }
+    PhysicalDeviceMeshShaderPropertiesNV& setMeshOutputPerPrimitiveGranularity(uint32_t meshOutputPerPrimitiveGranularity) {this->meshOutputPerPrimitiveGranularity = meshOutputPerPrimitiveGranularity; return *this; }
 };
 struct DrawMeshTasksIndirectCommandNV {
     uint32_t taskCount{0};
@@ -8469,8 +8475,8 @@ struct DrawMeshTasksIndirectCommandNV {
     constexpr bool operator==(DrawMeshTasksIndirectCommandNV const& value) const {
         return taskCount == value.taskCount && firstTask == value.firstTask ;}
     constexpr bool operator!=(DrawMeshTasksIndirectCommandNV const& value) const {return !(*this == value);}
-    DrawMeshTasksIndirectCommandNV& setTaskCount(uint32_t taskCount) { this->taskCount = taskCount; return *this; }
-    DrawMeshTasksIndirectCommandNV& setFirstTask(uint32_t firstTask) { this->firstTask = firstTask; return *this; }
+    DrawMeshTasksIndirectCommandNV& setTaskCount(uint32_t taskCount) {this->taskCount = taskCount; return *this; }
+    DrawMeshTasksIndirectCommandNV& setFirstTask(uint32_t firstTask) {this->firstTask = firstTask; return *this; }
 };
 struct RayTracingShaderGroupCreateInfoNV {
     StructureType sType{StructureType::RayTracingShaderGroupCreateInfoNV};
@@ -8480,11 +8486,11 @@ struct RayTracingShaderGroupCreateInfoNV {
     uint32_t closestHitShader{0};
     uint32_t anyHitShader{0};
     uint32_t intersectionShader{0};
-    RayTracingShaderGroupCreateInfoNV& setType(RayTracingShaderGroupTypeKHR type) { this->type = type; return *this; }
-    RayTracingShaderGroupCreateInfoNV& setGeneralShader(uint32_t generalShader) { this->generalShader = generalShader; return *this; }
-    RayTracingShaderGroupCreateInfoNV& setClosestHitShader(uint32_t closestHitShader) { this->closestHitShader = closestHitShader; return *this; }
-    RayTracingShaderGroupCreateInfoNV& setAnyHitShader(uint32_t anyHitShader) { this->anyHitShader = anyHitShader; return *this; }
-    RayTracingShaderGroupCreateInfoNV& setIntersectionShader(uint32_t intersectionShader) { this->intersectionShader = intersectionShader; return *this; }
+    RayTracingShaderGroupCreateInfoNV& setType(RayTracingShaderGroupTypeKHR type) {this->type = type; return *this; }
+    RayTracingShaderGroupCreateInfoNV& setGeneralShader(uint32_t generalShader) {this->generalShader = generalShader; return *this; }
+    RayTracingShaderGroupCreateInfoNV& setClosestHitShader(uint32_t closestHitShader) {this->closestHitShader = closestHitShader; return *this; }
+    RayTracingShaderGroupCreateInfoNV& setAnyHitShader(uint32_t anyHitShader) {this->anyHitShader = anyHitShader; return *this; }
+    RayTracingShaderGroupCreateInfoNV& setIntersectionShader(uint32_t intersectionShader) {this->intersectionShader = intersectionShader; return *this; }
 };
 struct RayTracingShaderGroupCreateInfoKHR {
     StructureType sType{StructureType::RayTracingShaderGroupCreateInfoKHR};
@@ -8495,11 +8501,12 @@ struct RayTracingShaderGroupCreateInfoKHR {
     uint32_t anyHitShader{0};
     uint32_t intersectionShader{0};
     const void* pShaderGroupCaptureReplayHandle = nullptr;
-    RayTracingShaderGroupCreateInfoKHR& setType(RayTracingShaderGroupTypeKHR type) { this->type = type; return *this; }
-    RayTracingShaderGroupCreateInfoKHR& setGeneralShader(uint32_t generalShader) { this->generalShader = generalShader; return *this; }
-    RayTracingShaderGroupCreateInfoKHR& setClosestHitShader(uint32_t closestHitShader) { this->closestHitShader = closestHitShader; return *this; }
-    RayTracingShaderGroupCreateInfoKHR& setAnyHitShader(uint32_t anyHitShader) { this->anyHitShader = anyHitShader; return *this; }
-    RayTracingShaderGroupCreateInfoKHR& setIntersectionShader(uint32_t intersectionShader) { this->intersectionShader = intersectionShader; return *this; }
+    RayTracingShaderGroupCreateInfoKHR& setType(RayTracingShaderGroupTypeKHR type) {this->type = type; return *this; }
+    RayTracingShaderGroupCreateInfoKHR& setGeneralShader(uint32_t generalShader) {this->generalShader = generalShader; return *this; }
+    RayTracingShaderGroupCreateInfoKHR& setClosestHitShader(uint32_t closestHitShader) {this->closestHitShader = closestHitShader; return *this; }
+    RayTracingShaderGroupCreateInfoKHR& setAnyHitShader(uint32_t anyHitShader) {this->anyHitShader = anyHitShader; return *this; }
+    RayTracingShaderGroupCreateInfoKHR& setIntersectionShader(uint32_t intersectionShader) {this->intersectionShader = intersectionShader; return *this; }
+    RayTracingShaderGroupCreateInfoKHR& setPShaderGroupCaptureReplayHandle(const void* pShaderGroupCaptureReplayHandle) {this->pShaderGroupCaptureReplayHandle = pShaderGroupCaptureReplayHandle; return *this; }
 };
 struct RayTracingPipelineCreateInfoNV {
     StructureType sType{StructureType::RayTracingPipelineCreateInfoNV};
@@ -8513,34 +8520,34 @@ struct RayTracingPipelineCreateInfoNV {
     PipelineLayout layout{};
     Pipeline basePipelineHandle{};
     int32_t basePipelineIndex{0};
-    RayTracingPipelineCreateInfoNV& setFlags(PipelineCreateFlags flags) { this->flags = flags; return *this; }
-    RayTracingPipelineCreateInfoNV& setStageCount(uint32_t stageCount) { this->stageCount = stageCount; return *this; }
-    RayTracingPipelineCreateInfoNV& setPStages(const PipelineShaderStageCreateInfo* pStages) { this->pStages = pStages; return *this; }
-    RayTracingPipelineCreateInfoNV& setStages(detail::span<const PipelineShaderStageCreateInfo> Stages) { this->stageCount = Stages.size(); this->pStages = Stages.data();  return *this; }
-    RayTracingPipelineCreateInfoNV& setGroupCount(uint32_t groupCount) { this->groupCount = groupCount; return *this; }
-    RayTracingPipelineCreateInfoNV& setPGroups(const RayTracingShaderGroupCreateInfoNV* pGroups) { this->pGroups = pGroups; return *this; }
-    RayTracingPipelineCreateInfoNV& setGroups(detail::span<const RayTracingShaderGroupCreateInfoNV> Groups) { this->groupCount = Groups.size(); this->pGroups = Groups.data();  return *this; }
-    RayTracingPipelineCreateInfoNV& setMaxRecursionDepth(uint32_t maxRecursionDepth) { this->maxRecursionDepth = maxRecursionDepth; return *this; }
-    RayTracingPipelineCreateInfoNV& setLayout(PipelineLayout layout) { this->layout = layout; return *this; }
-    RayTracingPipelineCreateInfoNV& setBasePipelineHandle(Pipeline basePipelineHandle) { this->basePipelineHandle = basePipelineHandle; return *this; }
-    RayTracingPipelineCreateInfoNV& setBasePipelineIndex(int32_t basePipelineIndex) { this->basePipelineIndex = basePipelineIndex; return *this; }
+    RayTracingPipelineCreateInfoNV& setFlags(PipelineCreateFlags flags) {this->flags = flags; return *this; }
+    RayTracingPipelineCreateInfoNV& setStageCount(uint32_t stageCount) {this->stageCount = stageCount; return *this; }
+    RayTracingPipelineCreateInfoNV& setPStages(const PipelineShaderStageCreateInfo* pStages) {this->pStages = pStages; return *this; }
+    RayTracingPipelineCreateInfoNV& setPStages(detail::span<const PipelineShaderStageCreateInfo> pStages) {this->stageCount = pStages.size(); this->pStages = pStages.data();  return *this; }
+    RayTracingPipelineCreateInfoNV& setGroupCount(uint32_t groupCount) {this->groupCount = groupCount; return *this; }
+    RayTracingPipelineCreateInfoNV& setPGroups(const RayTracingShaderGroupCreateInfoNV* pGroups) {this->pGroups = pGroups; return *this; }
+    RayTracingPipelineCreateInfoNV& setPGroups(detail::span<const RayTracingShaderGroupCreateInfoNV> pGroups) {this->groupCount = pGroups.size(); this->pGroups = pGroups.data();  return *this; }
+    RayTracingPipelineCreateInfoNV& setMaxRecursionDepth(uint32_t maxRecursionDepth) {this->maxRecursionDepth = maxRecursionDepth; return *this; }
+    RayTracingPipelineCreateInfoNV& setLayout(PipelineLayout layout) {this->layout = layout; return *this; }
+    RayTracingPipelineCreateInfoNV& setBasePipelineHandle(Pipeline basePipelineHandle) {this->basePipelineHandle = basePipelineHandle; return *this; }
+    RayTracingPipelineCreateInfoNV& setBasePipelineIndex(int32_t basePipelineIndex) {this->basePipelineIndex = basePipelineIndex; return *this; }
 };
 struct RayTracingPipelineInterfaceCreateInfoKHR {
     StructureType sType{StructureType::RayTracingPipelineInterfaceCreateInfoKHR};
     const void* pNext = nullptr;
     uint32_t maxPipelineRayPayloadSize{0};
     uint32_t maxPipelineRayHitAttributeSize{0};
-    RayTracingPipelineInterfaceCreateInfoKHR& setMaxPipelineRayPayloadSize(uint32_t maxPipelineRayPayloadSize) { this->maxPipelineRayPayloadSize = maxPipelineRayPayloadSize; return *this; }
-    RayTracingPipelineInterfaceCreateInfoKHR& setMaxPipelineRayHitAttributeSize(uint32_t maxPipelineRayHitAttributeSize) { this->maxPipelineRayHitAttributeSize = maxPipelineRayHitAttributeSize; return *this; }
+    RayTracingPipelineInterfaceCreateInfoKHR& setMaxPipelineRayPayloadSize(uint32_t maxPipelineRayPayloadSize) {this->maxPipelineRayPayloadSize = maxPipelineRayPayloadSize; return *this; }
+    RayTracingPipelineInterfaceCreateInfoKHR& setMaxPipelineRayHitAttributeSize(uint32_t maxPipelineRayHitAttributeSize) {this->maxPipelineRayHitAttributeSize = maxPipelineRayHitAttributeSize; return *this; }
 };
 struct PipelineLibraryCreateInfoKHR {
     StructureType sType{StructureType::PipelineLibraryCreateInfoKHR};
     const void* pNext = nullptr;
     uint32_t libraryCount{0};
     const Pipeline* pLibraries = nullptr;
-    PipelineLibraryCreateInfoKHR& setLibraryCount(uint32_t libraryCount) { this->libraryCount = libraryCount; return *this; }
-    PipelineLibraryCreateInfoKHR& setPLibraries(const Pipeline* pLibraries) { this->pLibraries = pLibraries; return *this; }
-    PipelineLibraryCreateInfoKHR& setLibraries(detail::span<const Pipeline> Libraries) { this->libraryCount = Libraries.size(); this->pLibraries = Libraries.data();  return *this; }
+    PipelineLibraryCreateInfoKHR& setLibraryCount(uint32_t libraryCount) {this->libraryCount = libraryCount; return *this; }
+    PipelineLibraryCreateInfoKHR& setPLibraries(const Pipeline* pLibraries) {this->pLibraries = pLibraries; return *this; }
+    PipelineLibraryCreateInfoKHR& setPLibraries(detail::span<const Pipeline> pLibraries) {this->libraryCount = pLibraries.size(); this->pLibraries = pLibraries.data();  return *this; }
 };
 struct RayTracingPipelineCreateInfoKHR {
     StructureType sType{StructureType::RayTracingPipelineCreateInfoKHR};
@@ -8557,23 +8564,23 @@ struct RayTracingPipelineCreateInfoKHR {
     PipelineLayout layout{};
     Pipeline basePipelineHandle{};
     int32_t basePipelineIndex{0};
-    RayTracingPipelineCreateInfoKHR& setFlags(PipelineCreateFlags flags) { this->flags = flags; return *this; }
-    RayTracingPipelineCreateInfoKHR& setStageCount(uint32_t stageCount) { this->stageCount = stageCount; return *this; }
-    RayTracingPipelineCreateInfoKHR& setPStages(const PipelineShaderStageCreateInfo* pStages) { this->pStages = pStages; return *this; }
-    RayTracingPipelineCreateInfoKHR& setStages(detail::span<const PipelineShaderStageCreateInfo> Stages) { this->stageCount = Stages.size(); this->pStages = Stages.data();  return *this; }
-    RayTracingPipelineCreateInfoKHR& setGroupCount(uint32_t groupCount) { this->groupCount = groupCount; return *this; }
-    RayTracingPipelineCreateInfoKHR& setPGroups(const RayTracingShaderGroupCreateInfoKHR* pGroups) { this->pGroups = pGroups; return *this; }
-    RayTracingPipelineCreateInfoKHR& setGroups(detail::span<const RayTracingShaderGroupCreateInfoKHR> Groups) { this->groupCount = Groups.size(); this->pGroups = Groups.data();  return *this; }
-    RayTracingPipelineCreateInfoKHR& setMaxPipelineRayRecursionDepth(uint32_t maxPipelineRayRecursionDepth) { this->maxPipelineRayRecursionDepth = maxPipelineRayRecursionDepth; return *this; }
-    RayTracingPipelineCreateInfoKHR& setPLibraryInfo(const PipelineLibraryCreateInfoKHR* pLibraryInfo) { this->pLibraryInfo = pLibraryInfo; return *this; }
-    RayTracingPipelineCreateInfoKHR& setLibraryInfo(PipelineLibraryCreateInfoKHR const& LibraryInfo) { this->pLibraryInfo = &LibraryInfo; return *this; }
-    RayTracingPipelineCreateInfoKHR& setPLibraryInterface(const RayTracingPipelineInterfaceCreateInfoKHR* pLibraryInterface) { this->pLibraryInterface = pLibraryInterface; return *this; }
-    RayTracingPipelineCreateInfoKHR& setLibraryInterface(RayTracingPipelineInterfaceCreateInfoKHR const& LibraryInterface) { this->pLibraryInterface = &LibraryInterface; return *this; }
-    RayTracingPipelineCreateInfoKHR& setPDynamicState(const PipelineDynamicStateCreateInfo* pDynamicState) { this->pDynamicState = pDynamicState; return *this; }
-    RayTracingPipelineCreateInfoKHR& setDynamicState(PipelineDynamicStateCreateInfo const& DynamicState) { this->pDynamicState = &DynamicState; return *this; }
-    RayTracingPipelineCreateInfoKHR& setLayout(PipelineLayout layout) { this->layout = layout; return *this; }
-    RayTracingPipelineCreateInfoKHR& setBasePipelineHandle(Pipeline basePipelineHandle) { this->basePipelineHandle = basePipelineHandle; return *this; }
-    RayTracingPipelineCreateInfoKHR& setBasePipelineIndex(int32_t basePipelineIndex) { this->basePipelineIndex = basePipelineIndex; return *this; }
+    RayTracingPipelineCreateInfoKHR& setFlags(PipelineCreateFlags flags) {this->flags = flags; return *this; }
+    RayTracingPipelineCreateInfoKHR& setStageCount(uint32_t stageCount) {this->stageCount = stageCount; return *this; }
+    RayTracingPipelineCreateInfoKHR& setPStages(const PipelineShaderStageCreateInfo* pStages) {this->pStages = pStages; return *this; }
+    RayTracingPipelineCreateInfoKHR& setPStages(detail::span<const PipelineShaderStageCreateInfo> pStages) {this->stageCount = pStages.size(); this->pStages = pStages.data();  return *this; }
+    RayTracingPipelineCreateInfoKHR& setGroupCount(uint32_t groupCount) {this->groupCount = groupCount; return *this; }
+    RayTracingPipelineCreateInfoKHR& setPGroups(const RayTracingShaderGroupCreateInfoKHR* pGroups) {this->pGroups = pGroups; return *this; }
+    RayTracingPipelineCreateInfoKHR& setPGroups(detail::span<const RayTracingShaderGroupCreateInfoKHR> pGroups) {this->groupCount = pGroups.size(); this->pGroups = pGroups.data();  return *this; }
+    RayTracingPipelineCreateInfoKHR& setMaxPipelineRayRecursionDepth(uint32_t maxPipelineRayRecursionDepth) {this->maxPipelineRayRecursionDepth = maxPipelineRayRecursionDepth; return *this; }
+    RayTracingPipelineCreateInfoKHR& setPLibraryInfo(const PipelineLibraryCreateInfoKHR* pLibraryInfo) {this->pLibraryInfo = pLibraryInfo; return *this; }
+    RayTracingPipelineCreateInfoKHR& setPLibraryInfo(PipelineLibraryCreateInfoKHR const& pLibraryInfo) {this->pLibraryInfo = &pLibraryInfo; return *this; }
+    RayTracingPipelineCreateInfoKHR& setPLibraryInterface(const RayTracingPipelineInterfaceCreateInfoKHR* pLibraryInterface) {this->pLibraryInterface = pLibraryInterface; return *this; }
+    RayTracingPipelineCreateInfoKHR& setPLibraryInterface(RayTracingPipelineInterfaceCreateInfoKHR const& pLibraryInterface) {this->pLibraryInterface = &pLibraryInterface; return *this; }
+    RayTracingPipelineCreateInfoKHR& setPDynamicState(const PipelineDynamicStateCreateInfo* pDynamicState) {this->pDynamicState = pDynamicState; return *this; }
+    RayTracingPipelineCreateInfoKHR& setPDynamicState(PipelineDynamicStateCreateInfo const& pDynamicState) {this->pDynamicState = &pDynamicState; return *this; }
+    RayTracingPipelineCreateInfoKHR& setLayout(PipelineLayout layout) {this->layout = layout; return *this; }
+    RayTracingPipelineCreateInfoKHR& setBasePipelineHandle(Pipeline basePipelineHandle) {this->basePipelineHandle = basePipelineHandle; return *this; }
+    RayTracingPipelineCreateInfoKHR& setBasePipelineIndex(int32_t basePipelineIndex) {this->basePipelineIndex = basePipelineIndex; return *this; }
 };
 struct GeometryTrianglesNV {
     StructureType sType{StructureType::GeometryTrianglesNV};
@@ -8589,17 +8596,17 @@ struct GeometryTrianglesNV {
     IndexType indexType{static_cast<IndexType>(0)};
     Buffer transformData{};
     DeviceSize transformOffset{0};
-    GeometryTrianglesNV& setVertexData(Buffer vertexData) { this->vertexData = vertexData; return *this; }
-    GeometryTrianglesNV& setVertexOffset(DeviceSize vertexOffset) { this->vertexOffset = vertexOffset; return *this; }
-    GeometryTrianglesNV& setVertexCount(uint32_t vertexCount) { this->vertexCount = vertexCount; return *this; }
-    GeometryTrianglesNV& setVertexStride(DeviceSize vertexStride) { this->vertexStride = vertexStride; return *this; }
-    GeometryTrianglesNV& setVertexFormat(Format vertexFormat) { this->vertexFormat = vertexFormat; return *this; }
-    GeometryTrianglesNV& setIndexData(Buffer indexData) { this->indexData = indexData; return *this; }
-    GeometryTrianglesNV& setIndexOffset(DeviceSize indexOffset) { this->indexOffset = indexOffset; return *this; }
-    GeometryTrianglesNV& setIndexCount(uint32_t indexCount) { this->indexCount = indexCount; return *this; }
-    GeometryTrianglesNV& setIndexType(IndexType indexType) { this->indexType = indexType; return *this; }
-    GeometryTrianglesNV& setTransformData(Buffer transformData) { this->transformData = transformData; return *this; }
-    GeometryTrianglesNV& setTransformOffset(DeviceSize transformOffset) { this->transformOffset = transformOffset; return *this; }
+    GeometryTrianglesNV& setVertexData(Buffer vertexData) {this->vertexData = vertexData; return *this; }
+    GeometryTrianglesNV& setVertexOffset(DeviceSize vertexOffset) {this->vertexOffset = vertexOffset; return *this; }
+    GeometryTrianglesNV& setVertexCount(uint32_t vertexCount) {this->vertexCount = vertexCount; return *this; }
+    GeometryTrianglesNV& setVertexStride(DeviceSize vertexStride) {this->vertexStride = vertexStride; return *this; }
+    GeometryTrianglesNV& setVertexFormat(Format vertexFormat) {this->vertexFormat = vertexFormat; return *this; }
+    GeometryTrianglesNV& setIndexData(Buffer indexData) {this->indexData = indexData; return *this; }
+    GeometryTrianglesNV& setIndexOffset(DeviceSize indexOffset) {this->indexOffset = indexOffset; return *this; }
+    GeometryTrianglesNV& setIndexCount(uint32_t indexCount) {this->indexCount = indexCount; return *this; }
+    GeometryTrianglesNV& setIndexType(IndexType indexType) {this->indexType = indexType; return *this; }
+    GeometryTrianglesNV& setTransformData(Buffer transformData) {this->transformData = transformData; return *this; }
+    GeometryTrianglesNV& setTransformOffset(DeviceSize transformOffset) {this->transformOffset = transformOffset; return *this; }
 };
 struct GeometryAABBNV {
     StructureType sType{StructureType::GeometryAabbNV};
@@ -8608,16 +8615,16 @@ struct GeometryAABBNV {
     uint32_t numAABBs{0};
     uint32_t stride{0};
     DeviceSize offset{0};
-    GeometryAABBNV& setAabbData(Buffer aabbData) { this->aabbData = aabbData; return *this; }
-    GeometryAABBNV& setNumAABBs(uint32_t numAABBs) { this->numAABBs = numAABBs; return *this; }
-    GeometryAABBNV& setStride(uint32_t stride) { this->stride = stride; return *this; }
-    GeometryAABBNV& setOffset(DeviceSize offset) { this->offset = offset; return *this; }
+    GeometryAABBNV& setAabbData(Buffer aabbData) {this->aabbData = aabbData; return *this; }
+    GeometryAABBNV& setNumAABBs(uint32_t numAABBs) {this->numAABBs = numAABBs; return *this; }
+    GeometryAABBNV& setStride(uint32_t stride) {this->stride = stride; return *this; }
+    GeometryAABBNV& setOffset(DeviceSize offset) {this->offset = offset; return *this; }
 };
 struct GeometryDataNV {
     GeometryTrianglesNV triangles{};
     GeometryAABBNV aabbs{};
-    GeometryDataNV& setTriangles(GeometryTrianglesNV triangles) { this->triangles = triangles; return *this; }
-    GeometryDataNV& setAabbs(GeometryAABBNV aabbs) { this->aabbs = aabbs; return *this; }
+    GeometryDataNV& setTriangles(GeometryTrianglesNV triangles) {this->triangles = triangles; return *this; }
+    GeometryDataNV& setAabbs(GeometryAABBNV aabbs) {this->aabbs = aabbs; return *this; }
 };
 struct GeometryNV {
     StructureType sType{StructureType::GeometryNV};
@@ -8625,9 +8632,9 @@ struct GeometryNV {
     GeometryTypeKHR geometryType{static_cast<GeometryTypeKHR>(0)};
     GeometryDataNV geometry{};
     GeometryFlagsKHR flags{};
-    GeometryNV& setGeometryType(GeometryTypeKHR geometryType) { this->geometryType = geometryType; return *this; }
-    GeometryNV& setGeometry(GeometryDataNV geometry) { this->geometry = geometry; return *this; }
-    GeometryNV& setFlags(GeometryFlagsKHR flags) { this->flags = flags; return *this; }
+    GeometryNV& setGeometryType(GeometryTypeKHR geometryType) {this->geometryType = geometryType; return *this; }
+    GeometryNV& setGeometry(GeometryDataNV geometry) {this->geometry = geometry; return *this; }
+    GeometryNV& setFlags(GeometryFlagsKHR flags) {this->flags = flags; return *this; }
 };
 struct AccelerationStructureInfoNV {
     StructureType sType{StructureType::AccelerationStructureInfoNV};
@@ -8637,20 +8644,20 @@ struct AccelerationStructureInfoNV {
     uint32_t instanceCount{0};
     uint32_t geometryCount{0};
     const GeometryNV* pGeometries = nullptr;
-    AccelerationStructureInfoNV& setType(AccelerationStructureTypeNV type) { this->type = type; return *this; }
-    AccelerationStructureInfoNV& setFlags(BuildAccelerationStructureFlagsNV flags) { this->flags = flags; return *this; }
-    AccelerationStructureInfoNV& setInstanceCount(uint32_t instanceCount) { this->instanceCount = instanceCount; return *this; }
-    AccelerationStructureInfoNV& setGeometryCount(uint32_t geometryCount) { this->geometryCount = geometryCount; return *this; }
-    AccelerationStructureInfoNV& setPGeometries(const GeometryNV* pGeometries) { this->pGeometries = pGeometries; return *this; }
-    AccelerationStructureInfoNV& setGeometries(detail::span<const GeometryNV> Geometries) { this->geometryCount = Geometries.size(); this->pGeometries = Geometries.data();  return *this; }
+    AccelerationStructureInfoNV& setType(AccelerationStructureTypeNV type) {this->type = type; return *this; }
+    AccelerationStructureInfoNV& setFlags(BuildAccelerationStructureFlagsNV flags) {this->flags = flags; return *this; }
+    AccelerationStructureInfoNV& setInstanceCount(uint32_t instanceCount) {this->instanceCount = instanceCount; return *this; }
+    AccelerationStructureInfoNV& setGeometryCount(uint32_t geometryCount) {this->geometryCount = geometryCount; return *this; }
+    AccelerationStructureInfoNV& setPGeometries(const GeometryNV* pGeometries) {this->pGeometries = pGeometries; return *this; }
+    AccelerationStructureInfoNV& setPGeometries(detail::span<const GeometryNV> pGeometries) {this->geometryCount = pGeometries.size(); this->pGeometries = pGeometries.data();  return *this; }
 };
 struct AccelerationStructureCreateInfoNV {
     StructureType sType{StructureType::AccelerationStructureCreateInfoNV};
     const void* pNext = nullptr;
     DeviceSize compactedSize{0};
     AccelerationStructureInfoNV info{};
-    AccelerationStructureCreateInfoNV& setCompactedSize(DeviceSize compactedSize) { this->compactedSize = compactedSize; return *this; }
-    AccelerationStructureCreateInfoNV& setInfo(AccelerationStructureInfoNV info) { this->info = info; return *this; }
+    AccelerationStructureCreateInfoNV& setCompactedSize(DeviceSize compactedSize) {this->compactedSize = compactedSize; return *this; }
+    AccelerationStructureCreateInfoNV& setInfo(AccelerationStructureInfoNV info) {this->info = info; return *this; }
 };
 struct BindAccelerationStructureMemoryInfoNV {
     StructureType sType{StructureType::BindAccelerationStructureMemoryInfoNV};
@@ -8660,38 +8667,38 @@ struct BindAccelerationStructureMemoryInfoNV {
     DeviceSize memoryOffset{0};
     uint32_t deviceIndexCount{0};
     const uint32_t* pDeviceIndices = nullptr;
-    BindAccelerationStructureMemoryInfoNV& setAccelerationStructure(AccelerationStructureNV accelerationStructure) { this->accelerationStructure = accelerationStructure; return *this; }
-    BindAccelerationStructureMemoryInfoNV& setMemory(DeviceMemory memory) { this->memory = memory; return *this; }
-    BindAccelerationStructureMemoryInfoNV& setMemoryOffset(DeviceSize memoryOffset) { this->memoryOffset = memoryOffset; return *this; }
-    BindAccelerationStructureMemoryInfoNV& setDeviceIndexCount(uint32_t deviceIndexCount) { this->deviceIndexCount = deviceIndexCount; return *this; }
-    BindAccelerationStructureMemoryInfoNV& setPDeviceIndices(const uint32_t* pDeviceIndices) { this->pDeviceIndices = pDeviceIndices; return *this; }
-    BindAccelerationStructureMemoryInfoNV& setDeviceIndices(detail::span<const uint32_t> DeviceIndices) { this->deviceIndexCount = DeviceIndices.size(); this->pDeviceIndices = DeviceIndices.data();  return *this; }
+    BindAccelerationStructureMemoryInfoNV& setAccelerationStructure(AccelerationStructureNV accelerationStructure) {this->accelerationStructure = accelerationStructure; return *this; }
+    BindAccelerationStructureMemoryInfoNV& setMemory(DeviceMemory memory) {this->memory = memory; return *this; }
+    BindAccelerationStructureMemoryInfoNV& setMemoryOffset(DeviceSize memoryOffset) {this->memoryOffset = memoryOffset; return *this; }
+    BindAccelerationStructureMemoryInfoNV& setDeviceIndexCount(uint32_t deviceIndexCount) {this->deviceIndexCount = deviceIndexCount; return *this; }
+    BindAccelerationStructureMemoryInfoNV& setPDeviceIndices(const uint32_t* pDeviceIndices) {this->pDeviceIndices = pDeviceIndices; return *this; }
+    BindAccelerationStructureMemoryInfoNV& setPDeviceIndices(detail::span<const uint32_t> pDeviceIndices) {this->deviceIndexCount = pDeviceIndices.size(); this->pDeviceIndices = pDeviceIndices.data();  return *this; }
 };
 struct WriteDescriptorSetAccelerationStructureKHR {
     StructureType sType{StructureType::WriteDescriptorSetAccelerationStructureKHR};
     const void* pNext = nullptr;
     uint32_t accelerationStructureCount{0};
     const AccelerationStructureKHR* pAccelerationStructures = nullptr;
-    WriteDescriptorSetAccelerationStructureKHR& setAccelerationStructureCount(uint32_t accelerationStructureCount) { this->accelerationStructureCount = accelerationStructureCount; return *this; }
-    WriteDescriptorSetAccelerationStructureKHR& setPAccelerationStructures(const AccelerationStructureKHR* pAccelerationStructures) { this->pAccelerationStructures = pAccelerationStructures; return *this; }
-    WriteDescriptorSetAccelerationStructureKHR& setAccelerationStructures(detail::span<const AccelerationStructureKHR> AccelerationStructures) { this->accelerationStructureCount = AccelerationStructures.size(); this->pAccelerationStructures = AccelerationStructures.data();  return *this; }
+    WriteDescriptorSetAccelerationStructureKHR& setAccelerationStructureCount(uint32_t accelerationStructureCount) {this->accelerationStructureCount = accelerationStructureCount; return *this; }
+    WriteDescriptorSetAccelerationStructureKHR& setPAccelerationStructures(const AccelerationStructureKHR* pAccelerationStructures) {this->pAccelerationStructures = pAccelerationStructures; return *this; }
+    WriteDescriptorSetAccelerationStructureKHR& setPAccelerationStructures(detail::span<const AccelerationStructureKHR> pAccelerationStructures) {this->accelerationStructureCount = pAccelerationStructures.size(); this->pAccelerationStructures = pAccelerationStructures.data();  return *this; }
 };
 struct WriteDescriptorSetAccelerationStructureNV {
     StructureType sType{StructureType::WriteDescriptorSetAccelerationStructureNV};
     const void* pNext = nullptr;
     uint32_t accelerationStructureCount{0};
     const AccelerationStructureNV* pAccelerationStructures = nullptr;
-    WriteDescriptorSetAccelerationStructureNV& setAccelerationStructureCount(uint32_t accelerationStructureCount) { this->accelerationStructureCount = accelerationStructureCount; return *this; }
-    WriteDescriptorSetAccelerationStructureNV& setPAccelerationStructures(const AccelerationStructureNV* pAccelerationStructures) { this->pAccelerationStructures = pAccelerationStructures; return *this; }
-    WriteDescriptorSetAccelerationStructureNV& setAccelerationStructures(detail::span<const AccelerationStructureNV> AccelerationStructures) { this->accelerationStructureCount = AccelerationStructures.size(); this->pAccelerationStructures = AccelerationStructures.data();  return *this; }
+    WriteDescriptorSetAccelerationStructureNV& setAccelerationStructureCount(uint32_t accelerationStructureCount) {this->accelerationStructureCount = accelerationStructureCount; return *this; }
+    WriteDescriptorSetAccelerationStructureNV& setPAccelerationStructures(const AccelerationStructureNV* pAccelerationStructures) {this->pAccelerationStructures = pAccelerationStructures; return *this; }
+    WriteDescriptorSetAccelerationStructureNV& setPAccelerationStructures(detail::span<const AccelerationStructureNV> pAccelerationStructures) {this->accelerationStructureCount = pAccelerationStructures.size(); this->pAccelerationStructures = pAccelerationStructures.data();  return *this; }
 };
 struct AccelerationStructureMemoryRequirementsInfoNV {
     StructureType sType{StructureType::AccelerationStructureMemoryRequirementsInfoNV};
     const void* pNext = nullptr;
     AccelerationStructureMemoryRequirementsTypeNV type{static_cast<AccelerationStructureMemoryRequirementsTypeNV>(0)};
     AccelerationStructureNV accelerationStructure{};
-    AccelerationStructureMemoryRequirementsInfoNV& setType(AccelerationStructureMemoryRequirementsTypeNV type) { this->type = type; return *this; }
-    AccelerationStructureMemoryRequirementsInfoNV& setAccelerationStructure(AccelerationStructureNV accelerationStructure) { this->accelerationStructure = accelerationStructure; return *this; }
+    AccelerationStructureMemoryRequirementsInfoNV& setType(AccelerationStructureMemoryRequirementsTypeNV type) {this->type = type; return *this; }
+    AccelerationStructureMemoryRequirementsInfoNV& setAccelerationStructure(AccelerationStructureNV accelerationStructure) {this->accelerationStructure = accelerationStructure; return *this; }
 };
 struct PhysicalDeviceAccelerationStructureFeaturesKHR {
     StructureType sType{StructureType::PhysicalDeviceAccelerationStructureFeaturesKHR};
@@ -8701,11 +8708,11 @@ struct PhysicalDeviceAccelerationStructureFeaturesKHR {
     Bool32 accelerationStructureIndirectBuild{0};
     Bool32 accelerationStructureHostCommands{0};
     Bool32 descriptorBindingAccelerationStructureUpdateAfterBind{0};
-    PhysicalDeviceAccelerationStructureFeaturesKHR& setAccelerationStructure(Bool32 accelerationStructure) { this->accelerationStructure = accelerationStructure; return *this; }
-    PhysicalDeviceAccelerationStructureFeaturesKHR& setAccelerationStructureCaptureReplay(Bool32 accelerationStructureCaptureReplay) { this->accelerationStructureCaptureReplay = accelerationStructureCaptureReplay; return *this; }
-    PhysicalDeviceAccelerationStructureFeaturesKHR& setAccelerationStructureIndirectBuild(Bool32 accelerationStructureIndirectBuild) { this->accelerationStructureIndirectBuild = accelerationStructureIndirectBuild; return *this; }
-    PhysicalDeviceAccelerationStructureFeaturesKHR& setAccelerationStructureHostCommands(Bool32 accelerationStructureHostCommands) { this->accelerationStructureHostCommands = accelerationStructureHostCommands; return *this; }
-    PhysicalDeviceAccelerationStructureFeaturesKHR& setDescriptorBindingAccelerationStructureUpdateAfterBind(Bool32 descriptorBindingAccelerationStructureUpdateAfterBind) { this->descriptorBindingAccelerationStructureUpdateAfterBind = descriptorBindingAccelerationStructureUpdateAfterBind; return *this; }
+    PhysicalDeviceAccelerationStructureFeaturesKHR& setAccelerationStructure(Bool32 accelerationStructure) {this->accelerationStructure = accelerationStructure; return *this; }
+    PhysicalDeviceAccelerationStructureFeaturesKHR& setAccelerationStructureCaptureReplay(Bool32 accelerationStructureCaptureReplay) {this->accelerationStructureCaptureReplay = accelerationStructureCaptureReplay; return *this; }
+    PhysicalDeviceAccelerationStructureFeaturesKHR& setAccelerationStructureIndirectBuild(Bool32 accelerationStructureIndirectBuild) {this->accelerationStructureIndirectBuild = accelerationStructureIndirectBuild; return *this; }
+    PhysicalDeviceAccelerationStructureFeaturesKHR& setAccelerationStructureHostCommands(Bool32 accelerationStructureHostCommands) {this->accelerationStructureHostCommands = accelerationStructureHostCommands; return *this; }
+    PhysicalDeviceAccelerationStructureFeaturesKHR& setDescriptorBindingAccelerationStructureUpdateAfterBind(Bool32 descriptorBindingAccelerationStructureUpdateAfterBind) {this->descriptorBindingAccelerationStructureUpdateAfterBind = descriptorBindingAccelerationStructureUpdateAfterBind; return *this; }
 };
 struct PhysicalDeviceRayTracingPipelineFeaturesKHR {
     StructureType sType{StructureType::PhysicalDeviceRayTracingPipelineFeaturesKHR};
@@ -8715,17 +8722,17 @@ struct PhysicalDeviceRayTracingPipelineFeaturesKHR {
     Bool32 rayTracingPipelineShaderGroupHandleCaptureReplayMixed{0};
     Bool32 rayTracingPipelineTraceRaysIndirect{0};
     Bool32 rayTraversalPrimitiveCulling{0};
-    PhysicalDeviceRayTracingPipelineFeaturesKHR& setRayTracingPipeline(Bool32 rayTracingPipeline) { this->rayTracingPipeline = rayTracingPipeline; return *this; }
-    PhysicalDeviceRayTracingPipelineFeaturesKHR& setRayTracingPipelineShaderGroupHandleCaptureReplay(Bool32 rayTracingPipelineShaderGroupHandleCaptureReplay) { this->rayTracingPipelineShaderGroupHandleCaptureReplay = rayTracingPipelineShaderGroupHandleCaptureReplay; return *this; }
-    PhysicalDeviceRayTracingPipelineFeaturesKHR& setRayTracingPipelineShaderGroupHandleCaptureReplayMixed(Bool32 rayTracingPipelineShaderGroupHandleCaptureReplayMixed) { this->rayTracingPipelineShaderGroupHandleCaptureReplayMixed = rayTracingPipelineShaderGroupHandleCaptureReplayMixed; return *this; }
-    PhysicalDeviceRayTracingPipelineFeaturesKHR& setRayTracingPipelineTraceRaysIndirect(Bool32 rayTracingPipelineTraceRaysIndirect) { this->rayTracingPipelineTraceRaysIndirect = rayTracingPipelineTraceRaysIndirect; return *this; }
-    PhysicalDeviceRayTracingPipelineFeaturesKHR& setRayTraversalPrimitiveCulling(Bool32 rayTraversalPrimitiveCulling) { this->rayTraversalPrimitiveCulling = rayTraversalPrimitiveCulling; return *this; }
+    PhysicalDeviceRayTracingPipelineFeaturesKHR& setRayTracingPipeline(Bool32 rayTracingPipeline) {this->rayTracingPipeline = rayTracingPipeline; return *this; }
+    PhysicalDeviceRayTracingPipelineFeaturesKHR& setRayTracingPipelineShaderGroupHandleCaptureReplay(Bool32 rayTracingPipelineShaderGroupHandleCaptureReplay) {this->rayTracingPipelineShaderGroupHandleCaptureReplay = rayTracingPipelineShaderGroupHandleCaptureReplay; return *this; }
+    PhysicalDeviceRayTracingPipelineFeaturesKHR& setRayTracingPipelineShaderGroupHandleCaptureReplayMixed(Bool32 rayTracingPipelineShaderGroupHandleCaptureReplayMixed) {this->rayTracingPipelineShaderGroupHandleCaptureReplayMixed = rayTracingPipelineShaderGroupHandleCaptureReplayMixed; return *this; }
+    PhysicalDeviceRayTracingPipelineFeaturesKHR& setRayTracingPipelineTraceRaysIndirect(Bool32 rayTracingPipelineTraceRaysIndirect) {this->rayTracingPipelineTraceRaysIndirect = rayTracingPipelineTraceRaysIndirect; return *this; }
+    PhysicalDeviceRayTracingPipelineFeaturesKHR& setRayTraversalPrimitiveCulling(Bool32 rayTraversalPrimitiveCulling) {this->rayTraversalPrimitiveCulling = rayTraversalPrimitiveCulling; return *this; }
 };
 struct PhysicalDeviceRayQueryFeaturesKHR {
     StructureType sType{StructureType::PhysicalDeviceRayQueryFeaturesKHR};
     void* pNext = nullptr;
     Bool32 rayQuery{0};
-    PhysicalDeviceRayQueryFeaturesKHR& setRayQuery(Bool32 rayQuery) { this->rayQuery = rayQuery; return *this; }
+    PhysicalDeviceRayQueryFeaturesKHR& setRayQuery(Bool32 rayQuery) {this->rayQuery = rayQuery; return *this; }
 };
 struct PhysicalDeviceAccelerationStructurePropertiesKHR {
     StructureType sType{StructureType::PhysicalDeviceAccelerationStructurePropertiesKHR};
@@ -8738,14 +8745,14 @@ struct PhysicalDeviceAccelerationStructurePropertiesKHR {
     uint32_t maxDescriptorSetAccelerationStructures{0};
     uint32_t maxDescriptorSetUpdateAfterBindAccelerationStructures{0};
     uint32_t minAccelerationStructureScratchOffsetAlignment{0};
-    PhysicalDeviceAccelerationStructurePropertiesKHR& setMaxGeometryCount(uint64_t maxGeometryCount) { this->maxGeometryCount = maxGeometryCount; return *this; }
-    PhysicalDeviceAccelerationStructurePropertiesKHR& setMaxInstanceCount(uint64_t maxInstanceCount) { this->maxInstanceCount = maxInstanceCount; return *this; }
-    PhysicalDeviceAccelerationStructurePropertiesKHR& setMaxPrimitiveCount(uint64_t maxPrimitiveCount) { this->maxPrimitiveCount = maxPrimitiveCount; return *this; }
-    PhysicalDeviceAccelerationStructurePropertiesKHR& setMaxPerStageDescriptorAccelerationStructures(uint32_t maxPerStageDescriptorAccelerationStructures) { this->maxPerStageDescriptorAccelerationStructures = maxPerStageDescriptorAccelerationStructures; return *this; }
-    PhysicalDeviceAccelerationStructurePropertiesKHR& setMaxPerStageDescriptorUpdateAfterBindAccelerationStructures(uint32_t maxPerStageDescriptorUpdateAfterBindAccelerationStructures) { this->maxPerStageDescriptorUpdateAfterBindAccelerationStructures = maxPerStageDescriptorUpdateAfterBindAccelerationStructures; return *this; }
-    PhysicalDeviceAccelerationStructurePropertiesKHR& setMaxDescriptorSetAccelerationStructures(uint32_t maxDescriptorSetAccelerationStructures) { this->maxDescriptorSetAccelerationStructures = maxDescriptorSetAccelerationStructures; return *this; }
-    PhysicalDeviceAccelerationStructurePropertiesKHR& setMaxDescriptorSetUpdateAfterBindAccelerationStructures(uint32_t maxDescriptorSetUpdateAfterBindAccelerationStructures) { this->maxDescriptorSetUpdateAfterBindAccelerationStructures = maxDescriptorSetUpdateAfterBindAccelerationStructures; return *this; }
-    PhysicalDeviceAccelerationStructurePropertiesKHR& setMinAccelerationStructureScratchOffsetAlignment(uint32_t minAccelerationStructureScratchOffsetAlignment) { this->minAccelerationStructureScratchOffsetAlignment = minAccelerationStructureScratchOffsetAlignment; return *this; }
+    PhysicalDeviceAccelerationStructurePropertiesKHR& setMaxGeometryCount(uint64_t maxGeometryCount) {this->maxGeometryCount = maxGeometryCount; return *this; }
+    PhysicalDeviceAccelerationStructurePropertiesKHR& setMaxInstanceCount(uint64_t maxInstanceCount) {this->maxInstanceCount = maxInstanceCount; return *this; }
+    PhysicalDeviceAccelerationStructurePropertiesKHR& setMaxPrimitiveCount(uint64_t maxPrimitiveCount) {this->maxPrimitiveCount = maxPrimitiveCount; return *this; }
+    PhysicalDeviceAccelerationStructurePropertiesKHR& setMaxPerStageDescriptorAccelerationStructures(uint32_t maxPerStageDescriptorAccelerationStructures) {this->maxPerStageDescriptorAccelerationStructures = maxPerStageDescriptorAccelerationStructures; return *this; }
+    PhysicalDeviceAccelerationStructurePropertiesKHR& setMaxPerStageDescriptorUpdateAfterBindAccelerationStructures(uint32_t maxPerStageDescriptorUpdateAfterBindAccelerationStructures) {this->maxPerStageDescriptorUpdateAfterBindAccelerationStructures = maxPerStageDescriptorUpdateAfterBindAccelerationStructures; return *this; }
+    PhysicalDeviceAccelerationStructurePropertiesKHR& setMaxDescriptorSetAccelerationStructures(uint32_t maxDescriptorSetAccelerationStructures) {this->maxDescriptorSetAccelerationStructures = maxDescriptorSetAccelerationStructures; return *this; }
+    PhysicalDeviceAccelerationStructurePropertiesKHR& setMaxDescriptorSetUpdateAfterBindAccelerationStructures(uint32_t maxDescriptorSetUpdateAfterBindAccelerationStructures) {this->maxDescriptorSetUpdateAfterBindAccelerationStructures = maxDescriptorSetUpdateAfterBindAccelerationStructures; return *this; }
+    PhysicalDeviceAccelerationStructurePropertiesKHR& setMinAccelerationStructureScratchOffsetAlignment(uint32_t minAccelerationStructureScratchOffsetAlignment) {this->minAccelerationStructureScratchOffsetAlignment = minAccelerationStructureScratchOffsetAlignment; return *this; }
 };
 struct PhysicalDeviceRayTracingPipelinePropertiesKHR {
     StructureType sType{StructureType::PhysicalDeviceRayTracingPipelinePropertiesKHR};
@@ -8758,14 +8765,14 @@ struct PhysicalDeviceRayTracingPipelinePropertiesKHR {
     uint32_t maxRayDispatchInvocationCount{0};
     uint32_t shaderGroupHandleAlignment{0};
     uint32_t maxRayHitAttributeSize{0};
-    PhysicalDeviceRayTracingPipelinePropertiesKHR& setShaderGroupHandleSize(uint32_t shaderGroupHandleSize) { this->shaderGroupHandleSize = shaderGroupHandleSize; return *this; }
-    PhysicalDeviceRayTracingPipelinePropertiesKHR& setMaxRayRecursionDepth(uint32_t maxRayRecursionDepth) { this->maxRayRecursionDepth = maxRayRecursionDepth; return *this; }
-    PhysicalDeviceRayTracingPipelinePropertiesKHR& setMaxShaderGroupStride(uint32_t maxShaderGroupStride) { this->maxShaderGroupStride = maxShaderGroupStride; return *this; }
-    PhysicalDeviceRayTracingPipelinePropertiesKHR& setShaderGroupBaseAlignment(uint32_t shaderGroupBaseAlignment) { this->shaderGroupBaseAlignment = shaderGroupBaseAlignment; return *this; }
-    PhysicalDeviceRayTracingPipelinePropertiesKHR& setShaderGroupHandleCaptureReplaySize(uint32_t shaderGroupHandleCaptureReplaySize) { this->shaderGroupHandleCaptureReplaySize = shaderGroupHandleCaptureReplaySize; return *this; }
-    PhysicalDeviceRayTracingPipelinePropertiesKHR& setMaxRayDispatchInvocationCount(uint32_t maxRayDispatchInvocationCount) { this->maxRayDispatchInvocationCount = maxRayDispatchInvocationCount; return *this; }
-    PhysicalDeviceRayTracingPipelinePropertiesKHR& setShaderGroupHandleAlignment(uint32_t shaderGroupHandleAlignment) { this->shaderGroupHandleAlignment = shaderGroupHandleAlignment; return *this; }
-    PhysicalDeviceRayTracingPipelinePropertiesKHR& setMaxRayHitAttributeSize(uint32_t maxRayHitAttributeSize) { this->maxRayHitAttributeSize = maxRayHitAttributeSize; return *this; }
+    PhysicalDeviceRayTracingPipelinePropertiesKHR& setShaderGroupHandleSize(uint32_t shaderGroupHandleSize) {this->shaderGroupHandleSize = shaderGroupHandleSize; return *this; }
+    PhysicalDeviceRayTracingPipelinePropertiesKHR& setMaxRayRecursionDepth(uint32_t maxRayRecursionDepth) {this->maxRayRecursionDepth = maxRayRecursionDepth; return *this; }
+    PhysicalDeviceRayTracingPipelinePropertiesKHR& setMaxShaderGroupStride(uint32_t maxShaderGroupStride) {this->maxShaderGroupStride = maxShaderGroupStride; return *this; }
+    PhysicalDeviceRayTracingPipelinePropertiesKHR& setShaderGroupBaseAlignment(uint32_t shaderGroupBaseAlignment) {this->shaderGroupBaseAlignment = shaderGroupBaseAlignment; return *this; }
+    PhysicalDeviceRayTracingPipelinePropertiesKHR& setShaderGroupHandleCaptureReplaySize(uint32_t shaderGroupHandleCaptureReplaySize) {this->shaderGroupHandleCaptureReplaySize = shaderGroupHandleCaptureReplaySize; return *this; }
+    PhysicalDeviceRayTracingPipelinePropertiesKHR& setMaxRayDispatchInvocationCount(uint32_t maxRayDispatchInvocationCount) {this->maxRayDispatchInvocationCount = maxRayDispatchInvocationCount; return *this; }
+    PhysicalDeviceRayTracingPipelinePropertiesKHR& setShaderGroupHandleAlignment(uint32_t shaderGroupHandleAlignment) {this->shaderGroupHandleAlignment = shaderGroupHandleAlignment; return *this; }
+    PhysicalDeviceRayTracingPipelinePropertiesKHR& setMaxRayHitAttributeSize(uint32_t maxRayHitAttributeSize) {this->maxRayHitAttributeSize = maxRayHitAttributeSize; return *this; }
 };
 struct PhysicalDeviceRayTracingPropertiesNV {
     StructureType sType{StructureType::PhysicalDeviceRayTracingPropertiesNV};
@@ -8778,14 +8785,14 @@ struct PhysicalDeviceRayTracingPropertiesNV {
     uint64_t maxInstanceCount{0};
     uint64_t maxTriangleCount{0};
     uint32_t maxDescriptorSetAccelerationStructures{0};
-    PhysicalDeviceRayTracingPropertiesNV& setShaderGroupHandleSize(uint32_t shaderGroupHandleSize) { this->shaderGroupHandleSize = shaderGroupHandleSize; return *this; }
-    PhysicalDeviceRayTracingPropertiesNV& setMaxRecursionDepth(uint32_t maxRecursionDepth) { this->maxRecursionDepth = maxRecursionDepth; return *this; }
-    PhysicalDeviceRayTracingPropertiesNV& setMaxShaderGroupStride(uint32_t maxShaderGroupStride) { this->maxShaderGroupStride = maxShaderGroupStride; return *this; }
-    PhysicalDeviceRayTracingPropertiesNV& setShaderGroupBaseAlignment(uint32_t shaderGroupBaseAlignment) { this->shaderGroupBaseAlignment = shaderGroupBaseAlignment; return *this; }
-    PhysicalDeviceRayTracingPropertiesNV& setMaxGeometryCount(uint64_t maxGeometryCount) { this->maxGeometryCount = maxGeometryCount; return *this; }
-    PhysicalDeviceRayTracingPropertiesNV& setMaxInstanceCount(uint64_t maxInstanceCount) { this->maxInstanceCount = maxInstanceCount; return *this; }
-    PhysicalDeviceRayTracingPropertiesNV& setMaxTriangleCount(uint64_t maxTriangleCount) { this->maxTriangleCount = maxTriangleCount; return *this; }
-    PhysicalDeviceRayTracingPropertiesNV& setMaxDescriptorSetAccelerationStructures(uint32_t maxDescriptorSetAccelerationStructures) { this->maxDescriptorSetAccelerationStructures = maxDescriptorSetAccelerationStructures; return *this; }
+    PhysicalDeviceRayTracingPropertiesNV& setShaderGroupHandleSize(uint32_t shaderGroupHandleSize) {this->shaderGroupHandleSize = shaderGroupHandleSize; return *this; }
+    PhysicalDeviceRayTracingPropertiesNV& setMaxRecursionDepth(uint32_t maxRecursionDepth) {this->maxRecursionDepth = maxRecursionDepth; return *this; }
+    PhysicalDeviceRayTracingPropertiesNV& setMaxShaderGroupStride(uint32_t maxShaderGroupStride) {this->maxShaderGroupStride = maxShaderGroupStride; return *this; }
+    PhysicalDeviceRayTracingPropertiesNV& setShaderGroupBaseAlignment(uint32_t shaderGroupBaseAlignment) {this->shaderGroupBaseAlignment = shaderGroupBaseAlignment; return *this; }
+    PhysicalDeviceRayTracingPropertiesNV& setMaxGeometryCount(uint64_t maxGeometryCount) {this->maxGeometryCount = maxGeometryCount; return *this; }
+    PhysicalDeviceRayTracingPropertiesNV& setMaxInstanceCount(uint64_t maxInstanceCount) {this->maxInstanceCount = maxInstanceCount; return *this; }
+    PhysicalDeviceRayTracingPropertiesNV& setMaxTriangleCount(uint64_t maxTriangleCount) {this->maxTriangleCount = maxTriangleCount; return *this; }
+    PhysicalDeviceRayTracingPropertiesNV& setMaxDescriptorSetAccelerationStructures(uint32_t maxDescriptorSetAccelerationStructures) {this->maxDescriptorSetAccelerationStructures = maxDescriptorSetAccelerationStructures; return *this; }
 };
 struct StridedDeviceAddressRegionKHR {
     DeviceAddress deviceAddress{0};
@@ -8794,9 +8801,9 @@ struct StridedDeviceAddressRegionKHR {
     constexpr bool operator==(StridedDeviceAddressRegionKHR const& value) const {
         return deviceAddress == value.deviceAddress && stride == value.stride && size == value.size ;}
     constexpr bool operator!=(StridedDeviceAddressRegionKHR const& value) const {return !(*this == value);}
-    StridedDeviceAddressRegionKHR& setDeviceAddress(DeviceAddress deviceAddress) { this->deviceAddress = deviceAddress; return *this; }
-    StridedDeviceAddressRegionKHR& setStride(DeviceSize stride) { this->stride = stride; return *this; }
-    StridedDeviceAddressRegionKHR& setSize(DeviceSize size) { this->size = size; return *this; }
+    StridedDeviceAddressRegionKHR& setDeviceAddress(DeviceAddress deviceAddress) {this->deviceAddress = deviceAddress; return *this; }
+    StridedDeviceAddressRegionKHR& setStride(DeviceSize stride) {this->stride = stride; return *this; }
+    StridedDeviceAddressRegionKHR& setSize(DeviceSize size) {this->size = size; return *this; }
 };
 struct TraceRaysIndirectCommandKHR {
     uint32_t width{0};
@@ -8805,9 +8812,9 @@ struct TraceRaysIndirectCommandKHR {
     constexpr bool operator==(TraceRaysIndirectCommandKHR const& value) const {
         return width == value.width && height == value.height && depth == value.depth ;}
     constexpr bool operator!=(TraceRaysIndirectCommandKHR const& value) const {return !(*this == value);}
-    TraceRaysIndirectCommandKHR& setWidth(uint32_t width) { this->width = width; return *this; }
-    TraceRaysIndirectCommandKHR& setHeight(uint32_t height) { this->height = height; return *this; }
-    TraceRaysIndirectCommandKHR& setDepth(uint32_t depth) { this->depth = depth; return *this; }
+    TraceRaysIndirectCommandKHR& setWidth(uint32_t width) {this->width = width; return *this; }
+    TraceRaysIndirectCommandKHR& setHeight(uint32_t height) {this->height = height; return *this; }
+    TraceRaysIndirectCommandKHR& setDepth(uint32_t depth) {this->depth = depth; return *this; }
 };
 struct DrmFormatModifierPropertiesEXT {
     uint64_t drmFormatModifier{0};
@@ -8817,18 +8824,18 @@ struct DrmFormatModifierPropertiesEXT {
         return drmFormatModifier == value.drmFormatModifier && drmFormatModifierPlaneCount == value.drmFormatModifierPlaneCount && drmFormatModifierTilingFeatures == value.drmFormatModifierTilingFeatures 
         ;}
     constexpr bool operator!=(DrmFormatModifierPropertiesEXT const& value) const {return !(*this == value);}
-    DrmFormatModifierPropertiesEXT& setDrmFormatModifier(uint64_t drmFormatModifier) { this->drmFormatModifier = drmFormatModifier; return *this; }
-    DrmFormatModifierPropertiesEXT& setDrmFormatModifierPlaneCount(uint32_t drmFormatModifierPlaneCount) { this->drmFormatModifierPlaneCount = drmFormatModifierPlaneCount; return *this; }
-    DrmFormatModifierPropertiesEXT& setDrmFormatModifierTilingFeatures(FormatFeatureFlags drmFormatModifierTilingFeatures) { this->drmFormatModifierTilingFeatures = drmFormatModifierTilingFeatures; return *this; }
+    DrmFormatModifierPropertiesEXT& setDrmFormatModifier(uint64_t drmFormatModifier) {this->drmFormatModifier = drmFormatModifier; return *this; }
+    DrmFormatModifierPropertiesEXT& setDrmFormatModifierPlaneCount(uint32_t drmFormatModifierPlaneCount) {this->drmFormatModifierPlaneCount = drmFormatModifierPlaneCount; return *this; }
+    DrmFormatModifierPropertiesEXT& setDrmFormatModifierTilingFeatures(FormatFeatureFlags drmFormatModifierTilingFeatures) {this->drmFormatModifierTilingFeatures = drmFormatModifierTilingFeatures; return *this; }
 };
 struct DrmFormatModifierPropertiesListEXT {
     StructureType sType{StructureType::DrmFormatModifierPropertiesListEXT};
     void* pNext = nullptr;
     uint32_t drmFormatModifierCount{0};
     DrmFormatModifierPropertiesEXT* pDrmFormatModifierProperties = nullptr;
-    DrmFormatModifierPropertiesListEXT& setDrmFormatModifierCount(uint32_t drmFormatModifierCount) { this->drmFormatModifierCount = drmFormatModifierCount; return *this; }
-    DrmFormatModifierPropertiesListEXT& setPDrmFormatModifierProperties(DrmFormatModifierPropertiesEXT* pDrmFormatModifierProperties) { this->pDrmFormatModifierProperties = pDrmFormatModifierProperties; return *this; }
-    DrmFormatModifierPropertiesListEXT& setDrmFormatModifierProperties(detail::span<DrmFormatModifierPropertiesEXT> DrmFormatModifierProperties) { this->drmFormatModifierCount = DrmFormatModifierProperties.size(); this->pDrmFormatModifierProperties = DrmFormatModifierProperties.data();  return *this; }
+    DrmFormatModifierPropertiesListEXT& setDrmFormatModifierCount(uint32_t drmFormatModifierCount) {this->drmFormatModifierCount = drmFormatModifierCount; return *this; }
+    DrmFormatModifierPropertiesListEXT& setPDrmFormatModifierProperties(DrmFormatModifierPropertiesEXT* pDrmFormatModifierProperties) {this->pDrmFormatModifierProperties = pDrmFormatModifierProperties; return *this; }
+    DrmFormatModifierPropertiesListEXT& setPDrmFormatModifierProperties(detail::span<DrmFormatModifierPropertiesEXT> pDrmFormatModifierProperties) {this->drmFormatModifierCount = pDrmFormatModifierProperties.size(); this->pDrmFormatModifierProperties = pDrmFormatModifierProperties.data();  return *this; }
 };
 struct PhysicalDeviceImageDrmFormatModifierInfoEXT {
     StructureType sType{StructureType::PhysicalDeviceImageDrmFormatModifierInfoEXT};
@@ -8837,20 +8844,20 @@ struct PhysicalDeviceImageDrmFormatModifierInfoEXT {
     SharingMode sharingMode{static_cast<SharingMode>(0)};
     uint32_t queueFamilyIndexCount{0};
     const uint32_t* pQueueFamilyIndices = nullptr;
-    PhysicalDeviceImageDrmFormatModifierInfoEXT& setDrmFormatModifier(uint64_t drmFormatModifier) { this->drmFormatModifier = drmFormatModifier; return *this; }
-    PhysicalDeviceImageDrmFormatModifierInfoEXT& setSharingMode(SharingMode sharingMode) { this->sharingMode = sharingMode; return *this; }
-    PhysicalDeviceImageDrmFormatModifierInfoEXT& setQueueFamilyIndexCount(uint32_t queueFamilyIndexCount) { this->queueFamilyIndexCount = queueFamilyIndexCount; return *this; }
-    PhysicalDeviceImageDrmFormatModifierInfoEXT& setPQueueFamilyIndices(const uint32_t* pQueueFamilyIndices) { this->pQueueFamilyIndices = pQueueFamilyIndices; return *this; }
-    PhysicalDeviceImageDrmFormatModifierInfoEXT& setQueueFamilyIndices(detail::span<const uint32_t> QueueFamilyIndices) { this->queueFamilyIndexCount = QueueFamilyIndices.size(); this->pQueueFamilyIndices = QueueFamilyIndices.data();  return *this; }
+    PhysicalDeviceImageDrmFormatModifierInfoEXT& setDrmFormatModifier(uint64_t drmFormatModifier) {this->drmFormatModifier = drmFormatModifier; return *this; }
+    PhysicalDeviceImageDrmFormatModifierInfoEXT& setSharingMode(SharingMode sharingMode) {this->sharingMode = sharingMode; return *this; }
+    PhysicalDeviceImageDrmFormatModifierInfoEXT& setQueueFamilyIndexCount(uint32_t queueFamilyIndexCount) {this->queueFamilyIndexCount = queueFamilyIndexCount; return *this; }
+    PhysicalDeviceImageDrmFormatModifierInfoEXT& setPQueueFamilyIndices(const uint32_t* pQueueFamilyIndices) {this->pQueueFamilyIndices = pQueueFamilyIndices; return *this; }
+    PhysicalDeviceImageDrmFormatModifierInfoEXT& setPQueueFamilyIndices(detail::span<const uint32_t> pQueueFamilyIndices) {this->queueFamilyIndexCount = pQueueFamilyIndices.size(); this->pQueueFamilyIndices = pQueueFamilyIndices.data();  return *this; }
 };
 struct ImageDrmFormatModifierListCreateInfoEXT {
     StructureType sType{StructureType::ImageDrmFormatModifierListCreateInfoEXT};
     const void* pNext = nullptr;
     uint32_t drmFormatModifierCount{0};
     const uint64_t* pDrmFormatModifiers = nullptr;
-    ImageDrmFormatModifierListCreateInfoEXT& setDrmFormatModifierCount(uint32_t drmFormatModifierCount) { this->drmFormatModifierCount = drmFormatModifierCount; return *this; }
-    ImageDrmFormatModifierListCreateInfoEXT& setPDrmFormatModifiers(const uint64_t* pDrmFormatModifiers) { this->pDrmFormatModifiers = pDrmFormatModifiers; return *this; }
-    ImageDrmFormatModifierListCreateInfoEXT& setDrmFormatModifiers(detail::span<const uint64_t> DrmFormatModifiers) { this->drmFormatModifierCount = DrmFormatModifiers.size(); this->pDrmFormatModifiers = DrmFormatModifiers.data();  return *this; }
+    ImageDrmFormatModifierListCreateInfoEXT& setDrmFormatModifierCount(uint32_t drmFormatModifierCount) {this->drmFormatModifierCount = drmFormatModifierCount; return *this; }
+    ImageDrmFormatModifierListCreateInfoEXT& setPDrmFormatModifiers(const uint64_t* pDrmFormatModifiers) {this->pDrmFormatModifiers = pDrmFormatModifiers; return *this; }
+    ImageDrmFormatModifierListCreateInfoEXT& setPDrmFormatModifiers(detail::span<const uint64_t> pDrmFormatModifiers) {this->drmFormatModifierCount = pDrmFormatModifiers.size(); this->pDrmFormatModifiers = pDrmFormatModifiers.data();  return *this; }
 };
 struct ImageDrmFormatModifierExplicitCreateInfoEXT {
     StructureType sType{StructureType::ImageDrmFormatModifierExplicitCreateInfoEXT};
@@ -8858,29 +8865,29 @@ struct ImageDrmFormatModifierExplicitCreateInfoEXT {
     uint64_t drmFormatModifier{0};
     uint32_t drmFormatModifierPlaneCount{0};
     const SubresourceLayout* pPlaneLayouts = nullptr;
-    ImageDrmFormatModifierExplicitCreateInfoEXT& setDrmFormatModifier(uint64_t drmFormatModifier) { this->drmFormatModifier = drmFormatModifier; return *this; }
-    ImageDrmFormatModifierExplicitCreateInfoEXT& setDrmFormatModifierPlaneCount(uint32_t drmFormatModifierPlaneCount) { this->drmFormatModifierPlaneCount = drmFormatModifierPlaneCount; return *this; }
-    ImageDrmFormatModifierExplicitCreateInfoEXT& setPPlaneLayouts(const SubresourceLayout* pPlaneLayouts) { this->pPlaneLayouts = pPlaneLayouts; return *this; }
-    ImageDrmFormatModifierExplicitCreateInfoEXT& setPlaneLayouts(detail::span<const SubresourceLayout> PlaneLayouts) { this->drmFormatModifierPlaneCount = PlaneLayouts.size(); this->pPlaneLayouts = PlaneLayouts.data();  return *this; }
+    ImageDrmFormatModifierExplicitCreateInfoEXT& setDrmFormatModifier(uint64_t drmFormatModifier) {this->drmFormatModifier = drmFormatModifier; return *this; }
+    ImageDrmFormatModifierExplicitCreateInfoEXT& setDrmFormatModifierPlaneCount(uint32_t drmFormatModifierPlaneCount) {this->drmFormatModifierPlaneCount = drmFormatModifierPlaneCount; return *this; }
+    ImageDrmFormatModifierExplicitCreateInfoEXT& setPPlaneLayouts(const SubresourceLayout* pPlaneLayouts) {this->pPlaneLayouts = pPlaneLayouts; return *this; }
+    ImageDrmFormatModifierExplicitCreateInfoEXT& setPPlaneLayouts(detail::span<const SubresourceLayout> pPlaneLayouts) {this->drmFormatModifierPlaneCount = pPlaneLayouts.size(); this->pPlaneLayouts = pPlaneLayouts.data();  return *this; }
 };
 struct ImageDrmFormatModifierPropertiesEXT {
     StructureType sType{StructureType::ImageDrmFormatModifierPropertiesEXT};
     void* pNext = nullptr;
     uint64_t drmFormatModifier{0};
-    ImageDrmFormatModifierPropertiesEXT& setDrmFormatModifier(uint64_t drmFormatModifier) { this->drmFormatModifier = drmFormatModifier; return *this; }
+    ImageDrmFormatModifierPropertiesEXT& setDrmFormatModifier(uint64_t drmFormatModifier) {this->drmFormatModifier = drmFormatModifier; return *this; }
 };
 struct ImageStencilUsageCreateInfo {
     StructureType sType{StructureType::ImageStencilUsageCreateInfo};
     const void* pNext = nullptr;
     ImageUsageFlags stencilUsage{};
-    ImageStencilUsageCreateInfo& setStencilUsage(ImageUsageFlags stencilUsage) { this->stencilUsage = stencilUsage; return *this; }
+    ImageStencilUsageCreateInfo& setStencilUsage(ImageUsageFlags stencilUsage) {this->stencilUsage = stencilUsage; return *this; }
 };
 using ImageStencilUsageCreateInfoEXT = ImageStencilUsageCreateInfo;
 struct DeviceMemoryOverallocationCreateInfoAMD {
     StructureType sType{StructureType::DeviceMemoryOverallocationCreateInfoAMD};
     const void* pNext = nullptr;
     MemoryOverallocationBehaviorAMD overallocationBehavior{static_cast<MemoryOverallocationBehaviorAMD>(0)};
-    DeviceMemoryOverallocationCreateInfoAMD& setOverallocationBehavior(MemoryOverallocationBehaviorAMD overallocationBehavior) { this->overallocationBehavior = overallocationBehavior; return *this; }
+    DeviceMemoryOverallocationCreateInfoAMD& setOverallocationBehavior(MemoryOverallocationBehaviorAMD overallocationBehavior) {this->overallocationBehavior = overallocationBehavior; return *this; }
 };
 struct PhysicalDeviceFragmentDensityMapFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceFragmentDensityMapFeaturesEXT};
@@ -8888,15 +8895,15 @@ struct PhysicalDeviceFragmentDensityMapFeaturesEXT {
     Bool32 fragmentDensityMap{0};
     Bool32 fragmentDensityMapDynamic{0};
     Bool32 fragmentDensityMapNonSubsampledImages{0};
-    PhysicalDeviceFragmentDensityMapFeaturesEXT& setFragmentDensityMap(Bool32 fragmentDensityMap) { this->fragmentDensityMap = fragmentDensityMap; return *this; }
-    PhysicalDeviceFragmentDensityMapFeaturesEXT& setFragmentDensityMapDynamic(Bool32 fragmentDensityMapDynamic) { this->fragmentDensityMapDynamic = fragmentDensityMapDynamic; return *this; }
-    PhysicalDeviceFragmentDensityMapFeaturesEXT& setFragmentDensityMapNonSubsampledImages(Bool32 fragmentDensityMapNonSubsampledImages) { this->fragmentDensityMapNonSubsampledImages = fragmentDensityMapNonSubsampledImages; return *this; }
+    PhysicalDeviceFragmentDensityMapFeaturesEXT& setFragmentDensityMap(Bool32 fragmentDensityMap) {this->fragmentDensityMap = fragmentDensityMap; return *this; }
+    PhysicalDeviceFragmentDensityMapFeaturesEXT& setFragmentDensityMapDynamic(Bool32 fragmentDensityMapDynamic) {this->fragmentDensityMapDynamic = fragmentDensityMapDynamic; return *this; }
+    PhysicalDeviceFragmentDensityMapFeaturesEXT& setFragmentDensityMapNonSubsampledImages(Bool32 fragmentDensityMapNonSubsampledImages) {this->fragmentDensityMapNonSubsampledImages = fragmentDensityMapNonSubsampledImages; return *this; }
 };
 struct PhysicalDeviceFragmentDensityMap2FeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceFragmentDensityMap2FeaturesEXT};
     void* pNext = nullptr;
     Bool32 fragmentDensityMapDeferred{0};
-    PhysicalDeviceFragmentDensityMap2FeaturesEXT& setFragmentDensityMapDeferred(Bool32 fragmentDensityMapDeferred) { this->fragmentDensityMapDeferred = fragmentDensityMapDeferred; return *this; }
+    PhysicalDeviceFragmentDensityMap2FeaturesEXT& setFragmentDensityMapDeferred(Bool32 fragmentDensityMapDeferred) {this->fragmentDensityMapDeferred = fragmentDensityMapDeferred; return *this; }
 };
 struct PhysicalDeviceFragmentDensityMapPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceFragmentDensityMapPropertiesEXT};
@@ -8904,9 +8911,9 @@ struct PhysicalDeviceFragmentDensityMapPropertiesEXT {
     Extent2D minFragmentDensityTexelSize{};
     Extent2D maxFragmentDensityTexelSize{};
     Bool32 fragmentDensityInvocations{0};
-    PhysicalDeviceFragmentDensityMapPropertiesEXT& setMinFragmentDensityTexelSize(Extent2D minFragmentDensityTexelSize) { this->minFragmentDensityTexelSize = minFragmentDensityTexelSize; return *this; }
-    PhysicalDeviceFragmentDensityMapPropertiesEXT& setMaxFragmentDensityTexelSize(Extent2D maxFragmentDensityTexelSize) { this->maxFragmentDensityTexelSize = maxFragmentDensityTexelSize; return *this; }
-    PhysicalDeviceFragmentDensityMapPropertiesEXT& setFragmentDensityInvocations(Bool32 fragmentDensityInvocations) { this->fragmentDensityInvocations = fragmentDensityInvocations; return *this; }
+    PhysicalDeviceFragmentDensityMapPropertiesEXT& setMinFragmentDensityTexelSize(Extent2D minFragmentDensityTexelSize) {this->minFragmentDensityTexelSize = minFragmentDensityTexelSize; return *this; }
+    PhysicalDeviceFragmentDensityMapPropertiesEXT& setMaxFragmentDensityTexelSize(Extent2D maxFragmentDensityTexelSize) {this->maxFragmentDensityTexelSize = maxFragmentDensityTexelSize; return *this; }
+    PhysicalDeviceFragmentDensityMapPropertiesEXT& setFragmentDensityInvocations(Bool32 fragmentDensityInvocations) {this->fragmentDensityInvocations = fragmentDensityInvocations; return *this; }
 };
 struct PhysicalDeviceFragmentDensityMap2PropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceFragmentDensityMap2PropertiesEXT};
@@ -8915,70 +8922,70 @@ struct PhysicalDeviceFragmentDensityMap2PropertiesEXT {
     Bool32 subsampledCoarseReconstructionEarlyAccess{0};
     uint32_t maxSubsampledArrayLayers{0};
     uint32_t maxDescriptorSetSubsampledSamplers{0};
-    PhysicalDeviceFragmentDensityMap2PropertiesEXT& setSubsampledLoads(Bool32 subsampledLoads) { this->subsampledLoads = subsampledLoads; return *this; }
-    PhysicalDeviceFragmentDensityMap2PropertiesEXT& setSubsampledCoarseReconstructionEarlyAccess(Bool32 subsampledCoarseReconstructionEarlyAccess) { this->subsampledCoarseReconstructionEarlyAccess = subsampledCoarseReconstructionEarlyAccess; return *this; }
-    PhysicalDeviceFragmentDensityMap2PropertiesEXT& setMaxSubsampledArrayLayers(uint32_t maxSubsampledArrayLayers) { this->maxSubsampledArrayLayers = maxSubsampledArrayLayers; return *this; }
-    PhysicalDeviceFragmentDensityMap2PropertiesEXT& setMaxDescriptorSetSubsampledSamplers(uint32_t maxDescriptorSetSubsampledSamplers) { this->maxDescriptorSetSubsampledSamplers = maxDescriptorSetSubsampledSamplers; return *this; }
+    PhysicalDeviceFragmentDensityMap2PropertiesEXT& setSubsampledLoads(Bool32 subsampledLoads) {this->subsampledLoads = subsampledLoads; return *this; }
+    PhysicalDeviceFragmentDensityMap2PropertiesEXT& setSubsampledCoarseReconstructionEarlyAccess(Bool32 subsampledCoarseReconstructionEarlyAccess) {this->subsampledCoarseReconstructionEarlyAccess = subsampledCoarseReconstructionEarlyAccess; return *this; }
+    PhysicalDeviceFragmentDensityMap2PropertiesEXT& setMaxSubsampledArrayLayers(uint32_t maxSubsampledArrayLayers) {this->maxSubsampledArrayLayers = maxSubsampledArrayLayers; return *this; }
+    PhysicalDeviceFragmentDensityMap2PropertiesEXT& setMaxDescriptorSetSubsampledSamplers(uint32_t maxDescriptorSetSubsampledSamplers) {this->maxDescriptorSetSubsampledSamplers = maxDescriptorSetSubsampledSamplers; return *this; }
 };
 struct RenderPassFragmentDensityMapCreateInfoEXT {
     StructureType sType{StructureType::RenderPassFragmentDensityMapCreateInfoEXT};
     const void* pNext = nullptr;
     AttachmentReference fragmentDensityMapAttachment{};
-    RenderPassFragmentDensityMapCreateInfoEXT& setFragmentDensityMapAttachment(AttachmentReference fragmentDensityMapAttachment) { this->fragmentDensityMapAttachment = fragmentDensityMapAttachment; return *this; }
+    RenderPassFragmentDensityMapCreateInfoEXT& setFragmentDensityMapAttachment(AttachmentReference fragmentDensityMapAttachment) {this->fragmentDensityMapAttachment = fragmentDensityMapAttachment; return *this; }
 };
 struct PhysicalDeviceScalarBlockLayoutFeatures {
     StructureType sType{StructureType::PhysicalDeviceScalarBlockLayoutFeatures};
     void* pNext = nullptr;
     Bool32 scalarBlockLayout{0};
-    PhysicalDeviceScalarBlockLayoutFeatures& setScalarBlockLayout(Bool32 scalarBlockLayout) { this->scalarBlockLayout = scalarBlockLayout; return *this; }
+    PhysicalDeviceScalarBlockLayoutFeatures& setScalarBlockLayout(Bool32 scalarBlockLayout) {this->scalarBlockLayout = scalarBlockLayout; return *this; }
 };
 using PhysicalDeviceScalarBlockLayoutFeaturesEXT = PhysicalDeviceScalarBlockLayoutFeatures;
 struct SurfaceProtectedCapabilitiesKHR {
     StructureType sType{StructureType::SurfaceProtectedCapabilitiesKHR};
     const void* pNext = nullptr;
     Bool32 supportsProtected{0};
-    SurfaceProtectedCapabilitiesKHR& setSupportsProtected(Bool32 supportsProtected) { this->supportsProtected = supportsProtected; return *this; }
+    SurfaceProtectedCapabilitiesKHR& setSupportsProtected(Bool32 supportsProtected) {this->supportsProtected = supportsProtected; return *this; }
 };
 struct PhysicalDeviceUniformBufferStandardLayoutFeatures {
     StructureType sType{StructureType::PhysicalDeviceUniformBufferStandardLayoutFeatures};
     void* pNext = nullptr;
     Bool32 uniformBufferStandardLayout{0};
-    PhysicalDeviceUniformBufferStandardLayoutFeatures& setUniformBufferStandardLayout(Bool32 uniformBufferStandardLayout) { this->uniformBufferStandardLayout = uniformBufferStandardLayout; return *this; }
+    PhysicalDeviceUniformBufferStandardLayoutFeatures& setUniformBufferStandardLayout(Bool32 uniformBufferStandardLayout) {this->uniformBufferStandardLayout = uniformBufferStandardLayout; return *this; }
 };
 using PhysicalDeviceUniformBufferStandardLayoutFeaturesKHR = PhysicalDeviceUniformBufferStandardLayoutFeatures;
 struct PhysicalDeviceDepthClipEnableFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceDepthClipEnableFeaturesEXT};
     void* pNext = nullptr;
     Bool32 depthClipEnable{0};
-    PhysicalDeviceDepthClipEnableFeaturesEXT& setDepthClipEnable(Bool32 depthClipEnable) { this->depthClipEnable = depthClipEnable; return *this; }
+    PhysicalDeviceDepthClipEnableFeaturesEXT& setDepthClipEnable(Bool32 depthClipEnable) {this->depthClipEnable = depthClipEnable; return *this; }
 };
 struct PipelineRasterizationDepthClipStateCreateInfoEXT {
     StructureType sType{StructureType::PipelineRasterizationDepthClipStateCreateInfoEXT};
     const void* pNext = nullptr;
     PipelineRasterizationDepthClipStateCreateFlagsEXT flags{};
     Bool32 depthClipEnable{0};
-    PipelineRasterizationDepthClipStateCreateInfoEXT& setFlags(PipelineRasterizationDepthClipStateCreateFlagsEXT flags) { this->flags = flags; return *this; }
-    PipelineRasterizationDepthClipStateCreateInfoEXT& setDepthClipEnable(Bool32 depthClipEnable) { this->depthClipEnable = depthClipEnable; return *this; }
+    PipelineRasterizationDepthClipStateCreateInfoEXT& setFlags(PipelineRasterizationDepthClipStateCreateFlagsEXT flags) {this->flags = flags; return *this; }
+    PipelineRasterizationDepthClipStateCreateInfoEXT& setDepthClipEnable(Bool32 depthClipEnable) {this->depthClipEnable = depthClipEnable; return *this; }
 };
 struct PhysicalDeviceMemoryBudgetPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceMemoryBudgetPropertiesEXT};
     void* pNext = nullptr;
     DeviceSize heapBudget[MAX_MEMORY_HEAPS];
     DeviceSize heapUsage[MAX_MEMORY_HEAPS];
-    PhysicalDeviceMemoryBudgetPropertiesEXT& setHeapBudget(DeviceSize heapBudget[MAX_MEMORY_HEAPS]) { for(uint32_t i = 0; i < MAX_MEMORY_HEAPS; i++) this->heapBudget[i] = heapBudget[i]; return *this; }
-    PhysicalDeviceMemoryBudgetPropertiesEXT& setHeapUsage(DeviceSize heapUsage[MAX_MEMORY_HEAPS]) { for(uint32_t i = 0; i < MAX_MEMORY_HEAPS; i++) this->heapUsage[i] = heapUsage[i]; return *this; }
+    PhysicalDeviceMemoryBudgetPropertiesEXT& setHeapBudget(DeviceSize heapBudget[MAX_MEMORY_HEAPS]) {for(uint32_t i = 0; i < MAX_MEMORY_HEAPS; i++) this->heapBudget[i] = heapBudget[i]; return *this; }
+    PhysicalDeviceMemoryBudgetPropertiesEXT& setHeapUsage(DeviceSize heapUsage[MAX_MEMORY_HEAPS]) {for(uint32_t i = 0; i < MAX_MEMORY_HEAPS; i++) this->heapUsage[i] = heapUsage[i]; return *this; }
 };
 struct PhysicalDeviceMemoryPriorityFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceMemoryPriorityFeaturesEXT};
     void* pNext = nullptr;
     Bool32 memoryPriority{0};
-    PhysicalDeviceMemoryPriorityFeaturesEXT& setMemoryPriority(Bool32 memoryPriority) { this->memoryPriority = memoryPriority; return *this; }
+    PhysicalDeviceMemoryPriorityFeaturesEXT& setMemoryPriority(Bool32 memoryPriority) {this->memoryPriority = memoryPriority; return *this; }
 };
 struct MemoryPriorityAllocateInfoEXT {
     StructureType sType{StructureType::MemoryPriorityAllocateInfoEXT};
     const void* pNext = nullptr;
     float priority{0.f};
-    MemoryPriorityAllocateInfoEXT& setPriority(float priority) { this->priority = priority; return *this; }
+    MemoryPriorityAllocateInfoEXT& setPriority(float priority) {this->priority = priority; return *this; }
 };
 struct PhysicalDeviceBufferDeviceAddressFeatures {
     StructureType sType{StructureType::PhysicalDeviceBufferDeviceAddressFeatures};
@@ -8986,9 +8993,9 @@ struct PhysicalDeviceBufferDeviceAddressFeatures {
     Bool32 bufferDeviceAddress{0};
     Bool32 bufferDeviceAddressCaptureReplay{0};
     Bool32 bufferDeviceAddressMultiDevice{0};
-    PhysicalDeviceBufferDeviceAddressFeatures& setBufferDeviceAddress(Bool32 bufferDeviceAddress) { this->bufferDeviceAddress = bufferDeviceAddress; return *this; }
-    PhysicalDeviceBufferDeviceAddressFeatures& setBufferDeviceAddressCaptureReplay(Bool32 bufferDeviceAddressCaptureReplay) { this->bufferDeviceAddressCaptureReplay = bufferDeviceAddressCaptureReplay; return *this; }
-    PhysicalDeviceBufferDeviceAddressFeatures& setBufferDeviceAddressMultiDevice(Bool32 bufferDeviceAddressMultiDevice) { this->bufferDeviceAddressMultiDevice = bufferDeviceAddressMultiDevice; return *this; }
+    PhysicalDeviceBufferDeviceAddressFeatures& setBufferDeviceAddress(Bool32 bufferDeviceAddress) {this->bufferDeviceAddress = bufferDeviceAddress; return *this; }
+    PhysicalDeviceBufferDeviceAddressFeatures& setBufferDeviceAddressCaptureReplay(Bool32 bufferDeviceAddressCaptureReplay) {this->bufferDeviceAddressCaptureReplay = bufferDeviceAddressCaptureReplay; return *this; }
+    PhysicalDeviceBufferDeviceAddressFeatures& setBufferDeviceAddressMultiDevice(Bool32 bufferDeviceAddressMultiDevice) {this->bufferDeviceAddressMultiDevice = bufferDeviceAddressMultiDevice; return *this; }
 };
 using PhysicalDeviceBufferDeviceAddressFeaturesKHR = PhysicalDeviceBufferDeviceAddressFeatures;
 struct PhysicalDeviceBufferDeviceAddressFeaturesEXT {
@@ -8997,16 +9004,16 @@ struct PhysicalDeviceBufferDeviceAddressFeaturesEXT {
     Bool32 bufferDeviceAddress{0};
     Bool32 bufferDeviceAddressCaptureReplay{0};
     Bool32 bufferDeviceAddressMultiDevice{0};
-    PhysicalDeviceBufferDeviceAddressFeaturesEXT& setBufferDeviceAddress(Bool32 bufferDeviceAddress) { this->bufferDeviceAddress = bufferDeviceAddress; return *this; }
-    PhysicalDeviceBufferDeviceAddressFeaturesEXT& setBufferDeviceAddressCaptureReplay(Bool32 bufferDeviceAddressCaptureReplay) { this->bufferDeviceAddressCaptureReplay = bufferDeviceAddressCaptureReplay; return *this; }
-    PhysicalDeviceBufferDeviceAddressFeaturesEXT& setBufferDeviceAddressMultiDevice(Bool32 bufferDeviceAddressMultiDevice) { this->bufferDeviceAddressMultiDevice = bufferDeviceAddressMultiDevice; return *this; }
+    PhysicalDeviceBufferDeviceAddressFeaturesEXT& setBufferDeviceAddress(Bool32 bufferDeviceAddress) {this->bufferDeviceAddress = bufferDeviceAddress; return *this; }
+    PhysicalDeviceBufferDeviceAddressFeaturesEXT& setBufferDeviceAddressCaptureReplay(Bool32 bufferDeviceAddressCaptureReplay) {this->bufferDeviceAddressCaptureReplay = bufferDeviceAddressCaptureReplay; return *this; }
+    PhysicalDeviceBufferDeviceAddressFeaturesEXT& setBufferDeviceAddressMultiDevice(Bool32 bufferDeviceAddressMultiDevice) {this->bufferDeviceAddressMultiDevice = bufferDeviceAddressMultiDevice; return *this; }
 };
 using PhysicalDeviceBufferAddressFeaturesEXT = PhysicalDeviceBufferDeviceAddressFeaturesEXT;
 struct BufferDeviceAddressInfo {
     StructureType sType{StructureType::BufferDeviceAddressInfo};
     const void* pNext = nullptr;
     Buffer buffer{};
-    BufferDeviceAddressInfo& setBuffer(Buffer buffer) { this->buffer = buffer; return *this; }
+    BufferDeviceAddressInfo& setBuffer(Buffer buffer) {this->buffer = buffer; return *this; }
 };
 using BufferDeviceAddressInfoKHR = BufferDeviceAddressInfo;
 using BufferDeviceAddressInfoEXT = BufferDeviceAddressInfo;
@@ -9014,34 +9021,34 @@ struct BufferOpaqueCaptureAddressCreateInfo {
     StructureType sType{StructureType::BufferOpaqueCaptureAddressCreateInfo};
     const void* pNext = nullptr;
     uint64_t opaqueCaptureAddress{0};
-    BufferOpaqueCaptureAddressCreateInfo& setOpaqueCaptureAddress(uint64_t opaqueCaptureAddress) { this->opaqueCaptureAddress = opaqueCaptureAddress; return *this; }
+    BufferOpaqueCaptureAddressCreateInfo& setOpaqueCaptureAddress(uint64_t opaqueCaptureAddress) {this->opaqueCaptureAddress = opaqueCaptureAddress; return *this; }
 };
 using BufferOpaqueCaptureAddressCreateInfoKHR = BufferOpaqueCaptureAddressCreateInfo;
 struct BufferDeviceAddressCreateInfoEXT {
     StructureType sType{StructureType::BufferDeviceAddressCreateInfoEXT};
     const void* pNext = nullptr;
     DeviceAddress deviceAddress{0};
-    BufferDeviceAddressCreateInfoEXT& setDeviceAddress(DeviceAddress deviceAddress) { this->deviceAddress = deviceAddress; return *this; }
+    BufferDeviceAddressCreateInfoEXT& setDeviceAddress(DeviceAddress deviceAddress) {this->deviceAddress = deviceAddress; return *this; }
 };
 struct PhysicalDeviceImageViewImageFormatInfoEXT {
     StructureType sType{StructureType::PhysicalDeviceImageViewImageFormatInfoEXT};
     void* pNext = nullptr;
     ImageViewType imageViewType{static_cast<ImageViewType>(0)};
-    PhysicalDeviceImageViewImageFormatInfoEXT& setImageViewType(ImageViewType imageViewType) { this->imageViewType = imageViewType; return *this; }
+    PhysicalDeviceImageViewImageFormatInfoEXT& setImageViewType(ImageViewType imageViewType) {this->imageViewType = imageViewType; return *this; }
 };
 struct FilterCubicImageViewImageFormatPropertiesEXT {
     StructureType sType{StructureType::FilterCubicImageViewImageFormatPropertiesEXT};
     void* pNext = nullptr;
     Bool32 filterCubic{0};
     Bool32 filterCubicMinmax{0};
-    FilterCubicImageViewImageFormatPropertiesEXT& setFilterCubic(Bool32 filterCubic) { this->filterCubic = filterCubic; return *this; }
-    FilterCubicImageViewImageFormatPropertiesEXT& setFilterCubicMinmax(Bool32 filterCubicMinmax) { this->filterCubicMinmax = filterCubicMinmax; return *this; }
+    FilterCubicImageViewImageFormatPropertiesEXT& setFilterCubic(Bool32 filterCubic) {this->filterCubic = filterCubic; return *this; }
+    FilterCubicImageViewImageFormatPropertiesEXT& setFilterCubicMinmax(Bool32 filterCubicMinmax) {this->filterCubicMinmax = filterCubicMinmax; return *this; }
 };
 struct PhysicalDeviceImagelessFramebufferFeatures {
     StructureType sType{StructureType::PhysicalDeviceImagelessFramebufferFeatures};
     void* pNext = nullptr;
     Bool32 imagelessFramebuffer{0};
-    PhysicalDeviceImagelessFramebufferFeatures& setImagelessFramebuffer(Bool32 imagelessFramebuffer) { this->imagelessFramebuffer = imagelessFramebuffer; return *this; }
+    PhysicalDeviceImagelessFramebufferFeatures& setImagelessFramebuffer(Bool32 imagelessFramebuffer) {this->imagelessFramebuffer = imagelessFramebuffer; return *this; }
 };
 using PhysicalDeviceImagelessFramebufferFeaturesKHR = PhysicalDeviceImagelessFramebufferFeatures;
 struct FramebufferAttachmentImageInfo {
@@ -9054,23 +9061,23 @@ struct FramebufferAttachmentImageInfo {
     uint32_t layerCount{0};
     uint32_t viewFormatCount{0};
     const Format* pViewFormats = nullptr;
-    FramebufferAttachmentImageInfo& setFlags(ImageCreateFlags flags) { this->flags = flags; return *this; }
-    FramebufferAttachmentImageInfo& setUsage(ImageUsageFlags usage) { this->usage = usage; return *this; }
-    FramebufferAttachmentImageInfo& setWidth(uint32_t width) { this->width = width; return *this; }
-    FramebufferAttachmentImageInfo& setHeight(uint32_t height) { this->height = height; return *this; }
-    FramebufferAttachmentImageInfo& setLayerCount(uint32_t layerCount) { this->layerCount = layerCount; return *this; }
-    FramebufferAttachmentImageInfo& setViewFormatCount(uint32_t viewFormatCount) { this->viewFormatCount = viewFormatCount; return *this; }
-    FramebufferAttachmentImageInfo& setPViewFormats(const Format* pViewFormats) { this->pViewFormats = pViewFormats; return *this; }
-    FramebufferAttachmentImageInfo& setViewFormats(detail::span<const Format> ViewFormats) { this->viewFormatCount = ViewFormats.size(); this->pViewFormats = ViewFormats.data();  return *this; }
+    FramebufferAttachmentImageInfo& setFlags(ImageCreateFlags flags) {this->flags = flags; return *this; }
+    FramebufferAttachmentImageInfo& setUsage(ImageUsageFlags usage) {this->usage = usage; return *this; }
+    FramebufferAttachmentImageInfo& setWidth(uint32_t width) {this->width = width; return *this; }
+    FramebufferAttachmentImageInfo& setHeight(uint32_t height) {this->height = height; return *this; }
+    FramebufferAttachmentImageInfo& setLayerCount(uint32_t layerCount) {this->layerCount = layerCount; return *this; }
+    FramebufferAttachmentImageInfo& setViewFormatCount(uint32_t viewFormatCount) {this->viewFormatCount = viewFormatCount; return *this; }
+    FramebufferAttachmentImageInfo& setPViewFormats(const Format* pViewFormats) {this->pViewFormats = pViewFormats; return *this; }
+    FramebufferAttachmentImageInfo& setPViewFormats(detail::span<const Format> pViewFormats) {this->viewFormatCount = pViewFormats.size(); this->pViewFormats = pViewFormats.data();  return *this; }
 };
 struct FramebufferAttachmentsCreateInfo {
     StructureType sType{StructureType::FramebufferAttachmentsCreateInfo};
     const void* pNext = nullptr;
     uint32_t attachmentImageInfoCount{0};
     const FramebufferAttachmentImageInfo* pAttachmentImageInfos = nullptr;
-    FramebufferAttachmentsCreateInfo& setAttachmentImageInfoCount(uint32_t attachmentImageInfoCount) { this->attachmentImageInfoCount = attachmentImageInfoCount; return *this; }
-    FramebufferAttachmentsCreateInfo& setPAttachmentImageInfos(const FramebufferAttachmentImageInfo* pAttachmentImageInfos) { this->pAttachmentImageInfos = pAttachmentImageInfos; return *this; }
-    FramebufferAttachmentsCreateInfo& setAttachmentImageInfos(detail::span<const FramebufferAttachmentImageInfo> AttachmentImageInfos) { this->attachmentImageInfoCount = AttachmentImageInfos.size(); this->pAttachmentImageInfos = AttachmentImageInfos.data();  return *this; }
+    FramebufferAttachmentsCreateInfo& setAttachmentImageInfoCount(uint32_t attachmentImageInfoCount) {this->attachmentImageInfoCount = attachmentImageInfoCount; return *this; }
+    FramebufferAttachmentsCreateInfo& setPAttachmentImageInfos(const FramebufferAttachmentImageInfo* pAttachmentImageInfos) {this->pAttachmentImageInfos = pAttachmentImageInfos; return *this; }
+    FramebufferAttachmentsCreateInfo& setPAttachmentImageInfos(detail::span<const FramebufferAttachmentImageInfo> pAttachmentImageInfos) {this->attachmentImageInfoCount = pAttachmentImageInfos.size(); this->pAttachmentImageInfos = pAttachmentImageInfos.data();  return *this; }
 };
 using FramebufferAttachmentsCreateInfoKHR = FramebufferAttachmentsCreateInfo;
 using FramebufferAttachmentImageInfoKHR = FramebufferAttachmentImageInfo;
@@ -9079,30 +9086,30 @@ struct RenderPassAttachmentBeginInfo {
     const void* pNext = nullptr;
     uint32_t attachmentCount{0};
     const ImageView* pAttachments = nullptr;
-    RenderPassAttachmentBeginInfo& setAttachmentCount(uint32_t attachmentCount) { this->attachmentCount = attachmentCount; return *this; }
-    RenderPassAttachmentBeginInfo& setPAttachments(const ImageView* pAttachments) { this->pAttachments = pAttachments; return *this; }
-    RenderPassAttachmentBeginInfo& setAttachments(detail::span<const ImageView> Attachments) { this->attachmentCount = Attachments.size(); this->pAttachments = Attachments.data();  return *this; }
+    RenderPassAttachmentBeginInfo& setAttachmentCount(uint32_t attachmentCount) {this->attachmentCount = attachmentCount; return *this; }
+    RenderPassAttachmentBeginInfo& setPAttachments(const ImageView* pAttachments) {this->pAttachments = pAttachments; return *this; }
+    RenderPassAttachmentBeginInfo& setPAttachments(detail::span<const ImageView> pAttachments) {this->attachmentCount = pAttachments.size(); this->pAttachments = pAttachments.data();  return *this; }
 };
 using RenderPassAttachmentBeginInfoKHR = RenderPassAttachmentBeginInfo;
 struct PhysicalDeviceTextureCompressionASTCHDRFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceTextureCompressionAstcHdrFeaturesEXT};
     void* pNext = nullptr;
     Bool32 textureCompressionASTC_HDR{0};
-    PhysicalDeviceTextureCompressionASTCHDRFeaturesEXT& setTextureCompressionASTC_HDR(Bool32 textureCompressionASTC_HDR) { this->textureCompressionASTC_HDR = textureCompressionASTC_HDR; return *this; }
+    PhysicalDeviceTextureCompressionASTCHDRFeaturesEXT& setTextureCompressionASTC_HDR(Bool32 textureCompressionASTC_HDR) {this->textureCompressionASTC_HDR = textureCompressionASTC_HDR; return *this; }
 };
 struct PhysicalDeviceCooperativeMatrixFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceCooperativeMatrixFeaturesNV};
     void* pNext = nullptr;
     Bool32 cooperativeMatrix{0};
     Bool32 cooperativeMatrixRobustBufferAccess{0};
-    PhysicalDeviceCooperativeMatrixFeaturesNV& setCooperativeMatrix(Bool32 cooperativeMatrix) { this->cooperativeMatrix = cooperativeMatrix; return *this; }
-    PhysicalDeviceCooperativeMatrixFeaturesNV& setCooperativeMatrixRobustBufferAccess(Bool32 cooperativeMatrixRobustBufferAccess) { this->cooperativeMatrixRobustBufferAccess = cooperativeMatrixRobustBufferAccess; return *this; }
+    PhysicalDeviceCooperativeMatrixFeaturesNV& setCooperativeMatrix(Bool32 cooperativeMatrix) {this->cooperativeMatrix = cooperativeMatrix; return *this; }
+    PhysicalDeviceCooperativeMatrixFeaturesNV& setCooperativeMatrixRobustBufferAccess(Bool32 cooperativeMatrixRobustBufferAccess) {this->cooperativeMatrixRobustBufferAccess = cooperativeMatrixRobustBufferAccess; return *this; }
 };
 struct PhysicalDeviceCooperativeMatrixPropertiesNV {
     StructureType sType{StructureType::PhysicalDeviceCooperativeMatrixPropertiesNV};
     void* pNext = nullptr;
     ShaderStageFlags cooperativeMatrixSupportedStages{};
-    PhysicalDeviceCooperativeMatrixPropertiesNV& setCooperativeMatrixSupportedStages(ShaderStageFlags cooperativeMatrixSupportedStages) { this->cooperativeMatrixSupportedStages = cooperativeMatrixSupportedStages; return *this; }
+    PhysicalDeviceCooperativeMatrixPropertiesNV& setCooperativeMatrixSupportedStages(ShaderStageFlags cooperativeMatrixSupportedStages) {this->cooperativeMatrixSupportedStages = cooperativeMatrixSupportedStages; return *this; }
 };
 struct CooperativeMatrixPropertiesNV {
     StructureType sType{StructureType::CooperativeMatrixPropertiesNV};
@@ -9115,20 +9122,20 @@ struct CooperativeMatrixPropertiesNV {
     ComponentTypeNV CType{static_cast<ComponentTypeNV>(0)};
     ComponentTypeNV DType{static_cast<ComponentTypeNV>(0)};
     ScopeNV scope{static_cast<ScopeNV>(0)};
-    CooperativeMatrixPropertiesNV& setMSize(uint32_t MSize) { this->MSize = MSize; return *this; }
-    CooperativeMatrixPropertiesNV& setNSize(uint32_t NSize) { this->NSize = NSize; return *this; }
-    CooperativeMatrixPropertiesNV& setKSize(uint32_t KSize) { this->KSize = KSize; return *this; }
-    CooperativeMatrixPropertiesNV& setAType(ComponentTypeNV AType) { this->AType = AType; return *this; }
-    CooperativeMatrixPropertiesNV& setBType(ComponentTypeNV BType) { this->BType = BType; return *this; }
-    CooperativeMatrixPropertiesNV& setCType(ComponentTypeNV CType) { this->CType = CType; return *this; }
-    CooperativeMatrixPropertiesNV& setDType(ComponentTypeNV DType) { this->DType = DType; return *this; }
-    CooperativeMatrixPropertiesNV& setScope(ScopeNV scope) { this->scope = scope; return *this; }
+    CooperativeMatrixPropertiesNV& setMSize(uint32_t MSize) {this->MSize = MSize; return *this; }
+    CooperativeMatrixPropertiesNV& setNSize(uint32_t NSize) {this->NSize = NSize; return *this; }
+    CooperativeMatrixPropertiesNV& setKSize(uint32_t KSize) {this->KSize = KSize; return *this; }
+    CooperativeMatrixPropertiesNV& setAType(ComponentTypeNV AType) {this->AType = AType; return *this; }
+    CooperativeMatrixPropertiesNV& setBType(ComponentTypeNV BType) {this->BType = BType; return *this; }
+    CooperativeMatrixPropertiesNV& setCType(ComponentTypeNV CType) {this->CType = CType; return *this; }
+    CooperativeMatrixPropertiesNV& setDType(ComponentTypeNV DType) {this->DType = DType; return *this; }
+    CooperativeMatrixPropertiesNV& setScope(ScopeNV scope) {this->scope = scope; return *this; }
 };
 struct PhysicalDeviceYcbcrImageArraysFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceYcbcrImageArraysFeaturesEXT};
     void* pNext = nullptr;
     Bool32 ycbcrImageArrays{0};
-    PhysicalDeviceYcbcrImageArraysFeaturesEXT& setYcbcrImageArrays(Bool32 ycbcrImageArrays) { this->ycbcrImageArrays = ycbcrImageArrays; return *this; }
+    PhysicalDeviceYcbcrImageArraysFeaturesEXT& setYcbcrImageArrays(Bool32 ycbcrImageArrays) {this->ycbcrImageArrays = ycbcrImageArrays; return *this; }
 };
 struct ImageViewHandleInfoNVX {
     StructureType sType{StructureType::ImageViewHandleInfoNVX};
@@ -9136,24 +9143,24 @@ struct ImageViewHandleInfoNVX {
     ImageView imageView{};
     DescriptorType descriptorType{static_cast<DescriptorType>(0)};
     Sampler sampler{};
-    ImageViewHandleInfoNVX& setImageView(ImageView imageView) { this->imageView = imageView; return *this; }
-    ImageViewHandleInfoNVX& setDescriptorType(DescriptorType descriptorType) { this->descriptorType = descriptorType; return *this; }
-    ImageViewHandleInfoNVX& setSampler(Sampler sampler) { this->sampler = sampler; return *this; }
+    ImageViewHandleInfoNVX& setImageView(ImageView imageView) {this->imageView = imageView; return *this; }
+    ImageViewHandleInfoNVX& setDescriptorType(DescriptorType descriptorType) {this->descriptorType = descriptorType; return *this; }
+    ImageViewHandleInfoNVX& setSampler(Sampler sampler) {this->sampler = sampler; return *this; }
 };
 struct ImageViewAddressPropertiesNVX {
     StructureType sType{StructureType::ImageViewAddressPropertiesNVX};
     void* pNext = nullptr;
     DeviceAddress deviceAddress{0};
     DeviceSize size{0};
-    ImageViewAddressPropertiesNVX& setDeviceAddress(DeviceAddress deviceAddress) { this->deviceAddress = deviceAddress; return *this; }
-    ImageViewAddressPropertiesNVX& setSize(DeviceSize size) { this->size = size; return *this; }
+    ImageViewAddressPropertiesNVX& setDeviceAddress(DeviceAddress deviceAddress) {this->deviceAddress = deviceAddress; return *this; }
+    ImageViewAddressPropertiesNVX& setSize(DeviceSize size) {this->size = size; return *this; }
 };
 #if defined(VK_USE_PLATFORM_GGP)
 struct PresentFrameTokenGGP {
     StructureType sType{StructureType::PresentFrameTokenGGP};
     const void* pNext = nullptr;
     GgpFrameToken frameToken{};
-    PresentFrameTokenGGP& setFrameToken(GgpFrameToken frameToken) { this->frameToken = frameToken; return *this; }
+    PresentFrameTokenGGP& setFrameToken(GgpFrameToken frameToken) {this->frameToken = frameToken; return *this; }
 };
 #endif // defined(VK_USE_PLATFORM_GGP)
 struct PipelineCreationFeedbackEXT {
@@ -9162,8 +9169,8 @@ struct PipelineCreationFeedbackEXT {
     constexpr bool operator==(PipelineCreationFeedbackEXT const& value) const {
         return flags == value.flags && duration == value.duration ;}
     constexpr bool operator!=(PipelineCreationFeedbackEXT const& value) const {return !(*this == value);}
-    PipelineCreationFeedbackEXT& setFlags(PipelineCreationFeedbackFlagsEXT flags) { this->flags = flags; return *this; }
-    PipelineCreationFeedbackEXT& setDuration(uint64_t duration) { this->duration = duration; return *this; }
+    PipelineCreationFeedbackEXT& setFlags(PipelineCreationFeedbackFlagsEXT flags) {this->flags = flags; return *this; }
+    PipelineCreationFeedbackEXT& setDuration(uint64_t duration) {this->duration = duration; return *this; }
 };
 struct PipelineCreationFeedbackCreateInfoEXT {
     StructureType sType{StructureType::PipelineCreationFeedbackCreateInfoEXT};
@@ -9171,30 +9178,30 @@ struct PipelineCreationFeedbackCreateInfoEXT {
     PipelineCreationFeedbackEXT* pPipelineCreationFeedback = nullptr;
     uint32_t pipelineStageCreationFeedbackCount{0};
     PipelineCreationFeedbackEXT* pPipelineStageCreationFeedbacks = nullptr;
-    PipelineCreationFeedbackCreateInfoEXT& setPPipelineCreationFeedback(PipelineCreationFeedbackEXT* pPipelineCreationFeedback) { this->pPipelineCreationFeedback = pPipelineCreationFeedback; return *this; }
-    PipelineCreationFeedbackCreateInfoEXT& setPipelineCreationFeedback(PipelineCreationFeedbackEXT & PipelineCreationFeedback) { this->pPipelineCreationFeedback = &PipelineCreationFeedback; return *this; }
-    PipelineCreationFeedbackCreateInfoEXT& setPipelineStageCreationFeedbackCount(uint32_t pipelineStageCreationFeedbackCount) { this->pipelineStageCreationFeedbackCount = pipelineStageCreationFeedbackCount; return *this; }
-    PipelineCreationFeedbackCreateInfoEXT& setPPipelineStageCreationFeedbacks(PipelineCreationFeedbackEXT* pPipelineStageCreationFeedbacks) { this->pPipelineStageCreationFeedbacks = pPipelineStageCreationFeedbacks; return *this; }
-    PipelineCreationFeedbackCreateInfoEXT& setPipelineStageCreationFeedbacks(detail::span<PipelineCreationFeedbackEXT> PipelineStageCreationFeedbacks) { this->pipelineStageCreationFeedbackCount = PipelineStageCreationFeedbacks.size(); this->pPipelineStageCreationFeedbacks = PipelineStageCreationFeedbacks.data();  return *this; }
+    PipelineCreationFeedbackCreateInfoEXT& setPPipelineCreationFeedback(PipelineCreationFeedbackEXT* pPipelineCreationFeedback) {this->pPipelineCreationFeedback = pPipelineCreationFeedback; return *this; }
+    PipelineCreationFeedbackCreateInfoEXT& setPPipelineCreationFeedback(PipelineCreationFeedbackEXT & pPipelineCreationFeedback) {this->pPipelineCreationFeedback = &pPipelineCreationFeedback; return *this; }
+    PipelineCreationFeedbackCreateInfoEXT& setPipelineStageCreationFeedbackCount(uint32_t pipelineStageCreationFeedbackCount) {this->pipelineStageCreationFeedbackCount = pipelineStageCreationFeedbackCount; return *this; }
+    PipelineCreationFeedbackCreateInfoEXT& setPPipelineStageCreationFeedbacks(PipelineCreationFeedbackEXT* pPipelineStageCreationFeedbacks) {this->pPipelineStageCreationFeedbacks = pPipelineStageCreationFeedbacks; return *this; }
+    PipelineCreationFeedbackCreateInfoEXT& setPPipelineStageCreationFeedbacks(detail::span<PipelineCreationFeedbackEXT> pPipelineStageCreationFeedbacks) {this->pipelineStageCreationFeedbackCount = pPipelineStageCreationFeedbacks.size(); this->pPipelineStageCreationFeedbacks = pPipelineStageCreationFeedbacks.data();  return *this; }
 };
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct SurfaceFullScreenExclusiveInfoEXT {
     StructureType sType{StructureType::SurfaceFullScreenExclusiveInfoEXT};
     void* pNext = nullptr;
     FullScreenExclusiveEXT fullScreenExclusive{static_cast<FullScreenExclusiveEXT>(0)};
-    SurfaceFullScreenExclusiveInfoEXT& setFullScreenExclusive(FullScreenExclusiveEXT fullScreenExclusive) { this->fullScreenExclusive = fullScreenExclusive; return *this; }
+    SurfaceFullScreenExclusiveInfoEXT& setFullScreenExclusive(FullScreenExclusiveEXT fullScreenExclusive) {this->fullScreenExclusive = fullScreenExclusive; return *this; }
 };
 struct SurfaceFullScreenExclusiveWin32InfoEXT {
     StructureType sType{StructureType::SurfaceFullScreenExclusiveWin32InfoEXT};
     const void* pNext = nullptr;
     HMONITOR hmonitor{};
-    SurfaceFullScreenExclusiveWin32InfoEXT& setHmonitor(HMONITOR hmonitor) { this->hmonitor = hmonitor; return *this; }
+    SurfaceFullScreenExclusiveWin32InfoEXT& setHmonitor(HMONITOR hmonitor) {this->hmonitor = hmonitor; return *this; }
 };
 struct SurfaceCapabilitiesFullScreenExclusiveEXT {
     StructureType sType{StructureType::SurfaceCapabilitiesFullScreenExclusiveEXT};
     void* pNext = nullptr;
     Bool32 fullScreenExclusiveSupported{0};
-    SurfaceCapabilitiesFullScreenExclusiveEXT& setFullScreenExclusiveSupported(Bool32 fullScreenExclusiveSupported) { this->fullScreenExclusiveSupported = fullScreenExclusiveSupported; return *this; }
+    SurfaceCapabilitiesFullScreenExclusiveEXT& setFullScreenExclusiveSupported(Bool32 fullScreenExclusiveSupported) {this->fullScreenExclusiveSupported = fullScreenExclusiveSupported; return *this; }
 };
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 struct PhysicalDevicePerformanceQueryFeaturesKHR {
@@ -9202,14 +9209,14 @@ struct PhysicalDevicePerformanceQueryFeaturesKHR {
     void* pNext = nullptr;
     Bool32 performanceCounterQueryPools{0};
     Bool32 performanceCounterMultipleQueryPools{0};
-    PhysicalDevicePerformanceQueryFeaturesKHR& setPerformanceCounterQueryPools(Bool32 performanceCounterQueryPools) { this->performanceCounterQueryPools = performanceCounterQueryPools; return *this; }
-    PhysicalDevicePerformanceQueryFeaturesKHR& setPerformanceCounterMultipleQueryPools(Bool32 performanceCounterMultipleQueryPools) { this->performanceCounterMultipleQueryPools = performanceCounterMultipleQueryPools; return *this; }
+    PhysicalDevicePerformanceQueryFeaturesKHR& setPerformanceCounterQueryPools(Bool32 performanceCounterQueryPools) {this->performanceCounterQueryPools = performanceCounterQueryPools; return *this; }
+    PhysicalDevicePerformanceQueryFeaturesKHR& setPerformanceCounterMultipleQueryPools(Bool32 performanceCounterMultipleQueryPools) {this->performanceCounterMultipleQueryPools = performanceCounterMultipleQueryPools; return *this; }
 };
 struct PhysicalDevicePerformanceQueryPropertiesKHR {
     StructureType sType{StructureType::PhysicalDevicePerformanceQueryPropertiesKHR};
     void* pNext = nullptr;
     Bool32 allowCommandBufferQueryCopies{0};
-    PhysicalDevicePerformanceQueryPropertiesKHR& setAllowCommandBufferQueryCopies(Bool32 allowCommandBufferQueryCopies) { this->allowCommandBufferQueryCopies = allowCommandBufferQueryCopies; return *this; }
+    PhysicalDevicePerformanceQueryPropertiesKHR& setAllowCommandBufferQueryCopies(Bool32 allowCommandBufferQueryCopies) {this->allowCommandBufferQueryCopies = allowCommandBufferQueryCopies; return *this; }
 };
 struct PerformanceCounterKHR {
     StructureType sType{StructureType::PerformanceCounterKHR};
@@ -9218,10 +9225,10 @@ struct PerformanceCounterKHR {
     PerformanceCounterScopeKHR scope{static_cast<PerformanceCounterScopeKHR>(0)};
     PerformanceCounterStorageKHR storage{static_cast<PerformanceCounterStorageKHR>(0)};
     uint8_t uuid[UUID_SIZE];
-    PerformanceCounterKHR& setUnit(PerformanceCounterUnitKHR unit) { this->unit = unit; return *this; }
-    PerformanceCounterKHR& setScope(PerformanceCounterScopeKHR scope) { this->scope = scope; return *this; }
-    PerformanceCounterKHR& setStorage(PerformanceCounterStorageKHR storage) { this->storage = storage; return *this; }
-    PerformanceCounterKHR& setUuid(uint8_t uuid[UUID_SIZE]) { for(uint32_t i = 0; i < UUID_SIZE; i++) this->uuid[i] = uuid[i]; return *this; }
+    PerformanceCounterKHR& setUnit(PerformanceCounterUnitKHR unit) {this->unit = unit; return *this; }
+    PerformanceCounterKHR& setScope(PerformanceCounterScopeKHR scope) {this->scope = scope; return *this; }
+    PerformanceCounterKHR& setStorage(PerformanceCounterStorageKHR storage) {this->storage = storage; return *this; }
+    PerformanceCounterKHR& setUuid(uint8_t uuid[UUID_SIZE]) {for(uint32_t i = 0; i < UUID_SIZE; i++) this->uuid[i] = uuid[i]; return *this; }
 };
 struct PerformanceCounterDescriptionKHR {
     StructureType sType{StructureType::PerformanceCounterDescriptionKHR};
@@ -9230,10 +9237,10 @@ struct PerformanceCounterDescriptionKHR {
     char name[MAX_DESCRIPTION_SIZE];
     char category[MAX_DESCRIPTION_SIZE];
     char description[MAX_DESCRIPTION_SIZE];
-    PerformanceCounterDescriptionKHR& setFlags(PerformanceCounterDescriptionFlagsKHR flags) { this->flags = flags; return *this; }
-    PerformanceCounterDescriptionKHR& setName(char name[MAX_DESCRIPTION_SIZE]) { for(uint32_t i = 0; i < MAX_DESCRIPTION_SIZE; i++) this->name[i] = name[i]; return *this; }
-    PerformanceCounterDescriptionKHR& setCategory(char category[MAX_DESCRIPTION_SIZE]) { for(uint32_t i = 0; i < MAX_DESCRIPTION_SIZE; i++) this->category[i] = category[i]; return *this; }
-    PerformanceCounterDescriptionKHR& setDescription(char description[MAX_DESCRIPTION_SIZE]) { for(uint32_t i = 0; i < MAX_DESCRIPTION_SIZE; i++) this->description[i] = description[i]; return *this; }
+    PerformanceCounterDescriptionKHR& setFlags(PerformanceCounterDescriptionFlagsKHR flags) {this->flags = flags; return *this; }
+    PerformanceCounterDescriptionKHR& setName(char name[MAX_DESCRIPTION_SIZE]) {for(uint32_t i = 0; i < MAX_DESCRIPTION_SIZE; i++) this->name[i] = name[i]; return *this; }
+    PerformanceCounterDescriptionKHR& setCategory(char category[MAX_DESCRIPTION_SIZE]) {for(uint32_t i = 0; i < MAX_DESCRIPTION_SIZE; i++) this->category[i] = category[i]; return *this; }
+    PerformanceCounterDescriptionKHR& setDescription(char description[MAX_DESCRIPTION_SIZE]) {for(uint32_t i = 0; i < MAX_DESCRIPTION_SIZE; i++) this->description[i] = description[i]; return *this; }
 };
 struct QueryPoolPerformanceCreateInfoKHR {
     StructureType sType{StructureType::QueryPoolPerformanceCreateInfoKHR};
@@ -9241,10 +9248,10 @@ struct QueryPoolPerformanceCreateInfoKHR {
     uint32_t queueFamilyIndex{0};
     uint32_t counterIndexCount{0};
     const uint32_t* pCounterIndices = nullptr;
-    QueryPoolPerformanceCreateInfoKHR& setQueueFamilyIndex(uint32_t queueFamilyIndex) { this->queueFamilyIndex = queueFamilyIndex; return *this; }
-    QueryPoolPerformanceCreateInfoKHR& setCounterIndexCount(uint32_t counterIndexCount) { this->counterIndexCount = counterIndexCount; return *this; }
-    QueryPoolPerformanceCreateInfoKHR& setPCounterIndices(const uint32_t* pCounterIndices) { this->pCounterIndices = pCounterIndices; return *this; }
-    QueryPoolPerformanceCreateInfoKHR& setCounterIndices(detail::span<const uint32_t> CounterIndices) { this->counterIndexCount = CounterIndices.size(); this->pCounterIndices = CounterIndices.data();  return *this; }
+    QueryPoolPerformanceCreateInfoKHR& setQueueFamilyIndex(uint32_t queueFamilyIndex) {this->queueFamilyIndex = queueFamilyIndex; return *this; }
+    QueryPoolPerformanceCreateInfoKHR& setCounterIndexCount(uint32_t counterIndexCount) {this->counterIndexCount = counterIndexCount; return *this; }
+    QueryPoolPerformanceCreateInfoKHR& setPCounterIndices(const uint32_t* pCounterIndices) {this->pCounterIndices = pCounterIndices; return *this; }
+    QueryPoolPerformanceCreateInfoKHR& setPCounterIndices(detail::span<const uint32_t> pCounterIndices) {this->counterIndexCount = pCounterIndices.size(); this->pCounterIndices = pCounterIndices.data();  return *this; }
 };
 union PerformanceCounterResultKHR {
     int32_t int32;
@@ -9257,46 +9264,46 @@ union PerformanceCounterResultKHR {
         return int32 == value.int32 && int64 == value.int64 && uint32 == value.uint32 && uint64 == value.uint64 && float32 == value.float32 && float64 == value.float64 
         ;}
     constexpr bool operator!=(PerformanceCounterResultKHR const& value) const {return !(*this == value);}
-    PerformanceCounterResultKHR& setInt32(int32_t int32) { this->int32 = int32; return *this; }
-    PerformanceCounterResultKHR& setInt64(int64_t int64) { this->int64 = int64; return *this; }
-    PerformanceCounterResultKHR& setUint32(uint32_t uint32) { this->uint32 = uint32; return *this; }
-    PerformanceCounterResultKHR& setUint64(uint64_t uint64) { this->uint64 = uint64; return *this; }
-    PerformanceCounterResultKHR& setFloat32(float float32) { this->float32 = float32; return *this; }
-    PerformanceCounterResultKHR& setFloat64(double float64) { this->float64 = float64; return *this; }
+    PerformanceCounterResultKHR& setInt32(int32_t int32) {this->int32 = int32; return *this; }
+    PerformanceCounterResultKHR& setInt64(int64_t int64) {this->int64 = int64; return *this; }
+    PerformanceCounterResultKHR& setUint32(uint32_t uint32) {this->uint32 = uint32; return *this; }
+    PerformanceCounterResultKHR& setUint64(uint64_t uint64) {this->uint64 = uint64; return *this; }
+    PerformanceCounterResultKHR& setFloat32(float float32) {this->float32 = float32; return *this; }
+    PerformanceCounterResultKHR& setFloat64(double float64) {this->float64 = float64; return *this; }
 };
 struct AcquireProfilingLockInfoKHR {
     StructureType sType{StructureType::AcquireProfilingLockInfoKHR};
     const void* pNext = nullptr;
     AcquireProfilingLockFlagsKHR flags{};
     uint64_t timeout{0};
-    AcquireProfilingLockInfoKHR& setFlags(AcquireProfilingLockFlagsKHR flags) { this->flags = flags; return *this; }
-    AcquireProfilingLockInfoKHR& setTimeout(uint64_t timeout) { this->timeout = timeout; return *this; }
+    AcquireProfilingLockInfoKHR& setFlags(AcquireProfilingLockFlagsKHR flags) {this->flags = flags; return *this; }
+    AcquireProfilingLockInfoKHR& setTimeout(uint64_t timeout) {this->timeout = timeout; return *this; }
 };
 struct PerformanceQuerySubmitInfoKHR {
     StructureType sType{StructureType::PerformanceQuerySubmitInfoKHR};
     const void* pNext = nullptr;
     uint32_t counterPassIndex{0};
-    PerformanceQuerySubmitInfoKHR& setCounterPassIndex(uint32_t counterPassIndex) { this->counterPassIndex = counterPassIndex; return *this; }
+    PerformanceQuerySubmitInfoKHR& setCounterPassIndex(uint32_t counterPassIndex) {this->counterPassIndex = counterPassIndex; return *this; }
 };
 struct HeadlessSurfaceCreateInfoEXT {
     StructureType sType{StructureType::HeadlessSurfaceCreateInfoEXT};
     const void* pNext = nullptr;
     HeadlessSurfaceCreateFlagsEXT flags{};
-    HeadlessSurfaceCreateInfoEXT& setFlags(HeadlessSurfaceCreateFlagsEXT flags) { this->flags = flags; return *this; }
+    HeadlessSurfaceCreateInfoEXT& setFlags(HeadlessSurfaceCreateFlagsEXT flags) {this->flags = flags; return *this; }
 };
 struct PhysicalDeviceCoverageReductionModeFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceCoverageReductionModeFeaturesNV};
     void* pNext = nullptr;
     Bool32 coverageReductionMode{0};
-    PhysicalDeviceCoverageReductionModeFeaturesNV& setCoverageReductionMode(Bool32 coverageReductionMode) { this->coverageReductionMode = coverageReductionMode; return *this; }
+    PhysicalDeviceCoverageReductionModeFeaturesNV& setCoverageReductionMode(Bool32 coverageReductionMode) {this->coverageReductionMode = coverageReductionMode; return *this; }
 };
 struct PipelineCoverageReductionStateCreateInfoNV {
     StructureType sType{StructureType::PipelineCoverageReductionStateCreateInfoNV};
     const void* pNext = nullptr;
     PipelineCoverageReductionStateCreateFlagsNV flags{};
     CoverageReductionModeNV coverageReductionMode{static_cast<CoverageReductionModeNV>(0)};
-    PipelineCoverageReductionStateCreateInfoNV& setFlags(PipelineCoverageReductionStateCreateFlagsNV flags) { this->flags = flags; return *this; }
-    PipelineCoverageReductionStateCreateInfoNV& setCoverageReductionMode(CoverageReductionModeNV coverageReductionMode) { this->coverageReductionMode = coverageReductionMode; return *this; }
+    PipelineCoverageReductionStateCreateInfoNV& setFlags(PipelineCoverageReductionStateCreateFlagsNV flags) {this->flags = flags; return *this; }
+    PipelineCoverageReductionStateCreateInfoNV& setCoverageReductionMode(CoverageReductionModeNV coverageReductionMode) {this->coverageReductionMode = coverageReductionMode; return *this; }
 };
 struct FramebufferMixedSamplesCombinationNV {
     StructureType sType{StructureType::FramebufferMixedSamplesCombinationNV};
@@ -9305,16 +9312,16 @@ struct FramebufferMixedSamplesCombinationNV {
     SampleCountFlagBits rasterizationSamples{static_cast<SampleCountFlagBits>(0)};
     SampleCountFlags depthStencilSamples{};
     SampleCountFlags colorSamples{};
-    FramebufferMixedSamplesCombinationNV& setCoverageReductionMode(CoverageReductionModeNV coverageReductionMode) { this->coverageReductionMode = coverageReductionMode; return *this; }
-    FramebufferMixedSamplesCombinationNV& setRasterizationSamples(SampleCountFlagBits rasterizationSamples) { this->rasterizationSamples = rasterizationSamples; return *this; }
-    FramebufferMixedSamplesCombinationNV& setDepthStencilSamples(SampleCountFlags depthStencilSamples) { this->depthStencilSamples = depthStencilSamples; return *this; }
-    FramebufferMixedSamplesCombinationNV& setColorSamples(SampleCountFlags colorSamples) { this->colorSamples = colorSamples; return *this; }
+    FramebufferMixedSamplesCombinationNV& setCoverageReductionMode(CoverageReductionModeNV coverageReductionMode) {this->coverageReductionMode = coverageReductionMode; return *this; }
+    FramebufferMixedSamplesCombinationNV& setRasterizationSamples(SampleCountFlagBits rasterizationSamples) {this->rasterizationSamples = rasterizationSamples; return *this; }
+    FramebufferMixedSamplesCombinationNV& setDepthStencilSamples(SampleCountFlags depthStencilSamples) {this->depthStencilSamples = depthStencilSamples; return *this; }
+    FramebufferMixedSamplesCombinationNV& setColorSamples(SampleCountFlags colorSamples) {this->colorSamples = colorSamples; return *this; }
 };
 struct PhysicalDeviceShaderIntegerFunctions2FeaturesINTEL {
     StructureType sType{StructureType::PhysicalDeviceShaderIntegerFunctions2FeaturesINTEL};
     void* pNext = nullptr;
     Bool32 shaderIntegerFunctions2{0};
-    PhysicalDeviceShaderIntegerFunctions2FeaturesINTEL& setShaderIntegerFunctions2(Bool32 shaderIntegerFunctions2) { this->shaderIntegerFunctions2 = shaderIntegerFunctions2; return *this; }
+    PhysicalDeviceShaderIntegerFunctions2FeaturesINTEL& setShaderIntegerFunctions2(Bool32 shaderIntegerFunctions2) {this->shaderIntegerFunctions2 = shaderIntegerFunctions2; return *this; }
 };
 union PerformanceValueDataINTEL {
     uint32_t value32;
@@ -9322,41 +9329,42 @@ union PerformanceValueDataINTEL {
     float valueFloat;
     Bool32 valueBool;
     const char* valueString;
-    PerformanceValueDataINTEL& setValue32(uint32_t value32) { this->value32 = value32; return *this; }
-    PerformanceValueDataINTEL& setValue64(uint64_t value64) { this->value64 = value64; return *this; }
-    PerformanceValueDataINTEL& setValueFloat(float valueFloat) { this->valueFloat = valueFloat; return *this; }
-    PerformanceValueDataINTEL& setValueBool(Bool32 valueBool) { this->valueBool = valueBool; return *this; }
-    PerformanceValueDataINTEL& setValueString(const char* valueString) { this->valueString = valueString; return *this; }
+    PerformanceValueDataINTEL& setValue32(uint32_t value32) {this->value32 = value32; return *this; }
+    PerformanceValueDataINTEL& setValue64(uint64_t value64) {this->value64 = value64; return *this; }
+    PerformanceValueDataINTEL& setValueFloat(float valueFloat) {this->valueFloat = valueFloat; return *this; }
+    PerformanceValueDataINTEL& setValueBool(Bool32 valueBool) {this->valueBool = valueBool; return *this; }
+    PerformanceValueDataINTEL& setValueString(const char* valueString) {this->valueString = valueString; return *this; }
 };
 struct PerformanceValueINTEL {
     PerformanceValueTypeINTEL type{static_cast<PerformanceValueTypeINTEL>(0)};
     PerformanceValueDataINTEL data{};
-    PerformanceValueINTEL& setType(PerformanceValueTypeINTEL type) { this->type = type; return *this; }
-    PerformanceValueINTEL& setData(PerformanceValueDataINTEL data) { this->data = data; return *this; }
+    PerformanceValueINTEL& setType(PerformanceValueTypeINTEL type) {this->type = type; return *this; }
+    PerformanceValueINTEL& setData(PerformanceValueDataINTEL data) {this->data = data; return *this; }
 };
 struct InitializePerformanceApiInfoINTEL {
     StructureType sType{StructureType::InitializePerformanceApiInfoINTEL};
     const void* pNext = nullptr;
     void* pUserData = nullptr;
+    InitializePerformanceApiInfoINTEL& setPUserData(void* pUserData) {this->pUserData = pUserData; return *this; }
 };
 struct QueryPoolPerformanceQueryCreateInfoINTEL {
     StructureType sType{StructureType::QueryPoolPerformanceQueryCreateInfoINTEL};
     const void* pNext = nullptr;
     QueryPoolSamplingModeINTEL performanceCountersSampling{static_cast<QueryPoolSamplingModeINTEL>(0)};
-    QueryPoolPerformanceQueryCreateInfoINTEL& setPerformanceCountersSampling(QueryPoolSamplingModeINTEL performanceCountersSampling) { this->performanceCountersSampling = performanceCountersSampling; return *this; }
+    QueryPoolPerformanceQueryCreateInfoINTEL& setPerformanceCountersSampling(QueryPoolSamplingModeINTEL performanceCountersSampling) {this->performanceCountersSampling = performanceCountersSampling; return *this; }
 };
 using QueryPoolCreateInfoINTEL = QueryPoolPerformanceQueryCreateInfoINTEL;
 struct PerformanceMarkerInfoINTEL {
     StructureType sType{StructureType::PerformanceMarkerInfoINTEL};
     const void* pNext = nullptr;
     uint64_t marker{0};
-    PerformanceMarkerInfoINTEL& setMarker(uint64_t marker) { this->marker = marker; return *this; }
+    PerformanceMarkerInfoINTEL& setMarker(uint64_t marker) {this->marker = marker; return *this; }
 };
 struct PerformanceStreamMarkerInfoINTEL {
     StructureType sType{StructureType::PerformanceStreamMarkerInfoINTEL};
     const void* pNext = nullptr;
     uint32_t marker{0};
-    PerformanceStreamMarkerInfoINTEL& setMarker(uint32_t marker) { this->marker = marker; return *this; }
+    PerformanceStreamMarkerInfoINTEL& setMarker(uint32_t marker) {this->marker = marker; return *this; }
 };
 struct PerformanceOverrideInfoINTEL {
     StructureType sType{StructureType::PerformanceOverrideInfoINTEL};
@@ -9364,43 +9372,43 @@ struct PerformanceOverrideInfoINTEL {
     PerformanceOverrideTypeINTEL type{static_cast<PerformanceOverrideTypeINTEL>(0)};
     Bool32 enable{0};
     uint64_t parameter{0};
-    PerformanceOverrideInfoINTEL& setType(PerformanceOverrideTypeINTEL type) { this->type = type; return *this; }
-    PerformanceOverrideInfoINTEL& setEnable(Bool32 enable) { this->enable = enable; return *this; }
-    PerformanceOverrideInfoINTEL& setParameter(uint64_t parameter) { this->parameter = parameter; return *this; }
+    PerformanceOverrideInfoINTEL& setType(PerformanceOverrideTypeINTEL type) {this->type = type; return *this; }
+    PerformanceOverrideInfoINTEL& setEnable(Bool32 enable) {this->enable = enable; return *this; }
+    PerformanceOverrideInfoINTEL& setParameter(uint64_t parameter) {this->parameter = parameter; return *this; }
 };
 struct PerformanceConfigurationAcquireInfoINTEL {
     StructureType sType{StructureType::PerformanceConfigurationAcquireInfoINTEL};
     const void* pNext = nullptr;
     PerformanceConfigurationTypeINTEL type{static_cast<PerformanceConfigurationTypeINTEL>(0)};
-    PerformanceConfigurationAcquireInfoINTEL& setType(PerformanceConfigurationTypeINTEL type) { this->type = type; return *this; }
+    PerformanceConfigurationAcquireInfoINTEL& setType(PerformanceConfigurationTypeINTEL type) {this->type = type; return *this; }
 };
 struct PhysicalDeviceShaderClockFeaturesKHR {
     StructureType sType{StructureType::PhysicalDeviceShaderClockFeaturesKHR};
     void* pNext = nullptr;
     Bool32 shaderSubgroupClock{0};
     Bool32 shaderDeviceClock{0};
-    PhysicalDeviceShaderClockFeaturesKHR& setShaderSubgroupClock(Bool32 shaderSubgroupClock) { this->shaderSubgroupClock = shaderSubgroupClock; return *this; }
-    PhysicalDeviceShaderClockFeaturesKHR& setShaderDeviceClock(Bool32 shaderDeviceClock) { this->shaderDeviceClock = shaderDeviceClock; return *this; }
+    PhysicalDeviceShaderClockFeaturesKHR& setShaderSubgroupClock(Bool32 shaderSubgroupClock) {this->shaderSubgroupClock = shaderSubgroupClock; return *this; }
+    PhysicalDeviceShaderClockFeaturesKHR& setShaderDeviceClock(Bool32 shaderDeviceClock) {this->shaderDeviceClock = shaderDeviceClock; return *this; }
 };
 struct PhysicalDeviceIndexTypeUint8FeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceIndexTypeUint8FeaturesEXT};
     void* pNext = nullptr;
     Bool32 indexTypeUint8{0};
-    PhysicalDeviceIndexTypeUint8FeaturesEXT& setIndexTypeUint8(Bool32 indexTypeUint8) { this->indexTypeUint8 = indexTypeUint8; return *this; }
+    PhysicalDeviceIndexTypeUint8FeaturesEXT& setIndexTypeUint8(Bool32 indexTypeUint8) {this->indexTypeUint8 = indexTypeUint8; return *this; }
 };
 struct PhysicalDeviceShaderSMBuiltinsPropertiesNV {
     StructureType sType{StructureType::PhysicalDeviceShaderSmBuiltinsPropertiesNV};
     void* pNext = nullptr;
     uint32_t shaderSMCount{0};
     uint32_t shaderWarpsPerSM{0};
-    PhysicalDeviceShaderSMBuiltinsPropertiesNV& setShaderSMCount(uint32_t shaderSMCount) { this->shaderSMCount = shaderSMCount; return *this; }
-    PhysicalDeviceShaderSMBuiltinsPropertiesNV& setShaderWarpsPerSM(uint32_t shaderWarpsPerSM) { this->shaderWarpsPerSM = shaderWarpsPerSM; return *this; }
+    PhysicalDeviceShaderSMBuiltinsPropertiesNV& setShaderSMCount(uint32_t shaderSMCount) {this->shaderSMCount = shaderSMCount; return *this; }
+    PhysicalDeviceShaderSMBuiltinsPropertiesNV& setShaderWarpsPerSM(uint32_t shaderWarpsPerSM) {this->shaderWarpsPerSM = shaderWarpsPerSM; return *this; }
 };
 struct PhysicalDeviceShaderSMBuiltinsFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceShaderSmBuiltinsFeaturesNV};
     void* pNext = nullptr;
     Bool32 shaderSMBuiltins{0};
-    PhysicalDeviceShaderSMBuiltinsFeaturesNV& setShaderSMBuiltins(Bool32 shaderSMBuiltins) { this->shaderSMBuiltins = shaderSMBuiltins; return *this; }
+    PhysicalDeviceShaderSMBuiltinsFeaturesNV& setShaderSMBuiltins(Bool32 shaderSMBuiltins) {this->shaderSMBuiltins = shaderSMBuiltins; return *this; }
 };
 struct PhysicalDeviceFragmentShaderInterlockFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceFragmentShaderInterlockFeaturesEXT};
@@ -9408,22 +9416,22 @@ struct PhysicalDeviceFragmentShaderInterlockFeaturesEXT {
     Bool32 fragmentShaderSampleInterlock{0};
     Bool32 fragmentShaderPixelInterlock{0};
     Bool32 fragmentShaderShadingRateInterlock{0};
-    PhysicalDeviceFragmentShaderInterlockFeaturesEXT& setFragmentShaderSampleInterlock(Bool32 fragmentShaderSampleInterlock) { this->fragmentShaderSampleInterlock = fragmentShaderSampleInterlock; return *this; }
-    PhysicalDeviceFragmentShaderInterlockFeaturesEXT& setFragmentShaderPixelInterlock(Bool32 fragmentShaderPixelInterlock) { this->fragmentShaderPixelInterlock = fragmentShaderPixelInterlock; return *this; }
-    PhysicalDeviceFragmentShaderInterlockFeaturesEXT& setFragmentShaderShadingRateInterlock(Bool32 fragmentShaderShadingRateInterlock) { this->fragmentShaderShadingRateInterlock = fragmentShaderShadingRateInterlock; return *this; }
+    PhysicalDeviceFragmentShaderInterlockFeaturesEXT& setFragmentShaderSampleInterlock(Bool32 fragmentShaderSampleInterlock) {this->fragmentShaderSampleInterlock = fragmentShaderSampleInterlock; return *this; }
+    PhysicalDeviceFragmentShaderInterlockFeaturesEXT& setFragmentShaderPixelInterlock(Bool32 fragmentShaderPixelInterlock) {this->fragmentShaderPixelInterlock = fragmentShaderPixelInterlock; return *this; }
+    PhysicalDeviceFragmentShaderInterlockFeaturesEXT& setFragmentShaderShadingRateInterlock(Bool32 fragmentShaderShadingRateInterlock) {this->fragmentShaderShadingRateInterlock = fragmentShaderShadingRateInterlock; return *this; }
 };
 struct PhysicalDeviceSeparateDepthStencilLayoutsFeatures {
     StructureType sType{StructureType::PhysicalDeviceSeparateDepthStencilLayoutsFeatures};
     void* pNext = nullptr;
     Bool32 separateDepthStencilLayouts{0};
-    PhysicalDeviceSeparateDepthStencilLayoutsFeatures& setSeparateDepthStencilLayouts(Bool32 separateDepthStencilLayouts) { this->separateDepthStencilLayouts = separateDepthStencilLayouts; return *this; }
+    PhysicalDeviceSeparateDepthStencilLayoutsFeatures& setSeparateDepthStencilLayouts(Bool32 separateDepthStencilLayouts) {this->separateDepthStencilLayouts = separateDepthStencilLayouts; return *this; }
 };
 using PhysicalDeviceSeparateDepthStencilLayoutsFeaturesKHR = PhysicalDeviceSeparateDepthStencilLayoutsFeatures;
 struct AttachmentReferenceStencilLayout {
     StructureType sType{StructureType::AttachmentReferenceStencilLayout};
     void* pNext = nullptr;
     ImageLayout stencilLayout{static_cast<ImageLayout>(0)};
-    AttachmentReferenceStencilLayout& setStencilLayout(ImageLayout stencilLayout) { this->stencilLayout = stencilLayout; return *this; }
+    AttachmentReferenceStencilLayout& setStencilLayout(ImageLayout stencilLayout) {this->stencilLayout = stencilLayout; return *this; }
 };
 using AttachmentReferenceStencilLayoutKHR = AttachmentReferenceStencilLayout;
 struct AttachmentDescriptionStencilLayout {
@@ -9431,21 +9439,21 @@ struct AttachmentDescriptionStencilLayout {
     void* pNext = nullptr;
     ImageLayout stencilInitialLayout{static_cast<ImageLayout>(0)};
     ImageLayout stencilFinalLayout{static_cast<ImageLayout>(0)};
-    AttachmentDescriptionStencilLayout& setStencilInitialLayout(ImageLayout stencilInitialLayout) { this->stencilInitialLayout = stencilInitialLayout; return *this; }
-    AttachmentDescriptionStencilLayout& setStencilFinalLayout(ImageLayout stencilFinalLayout) { this->stencilFinalLayout = stencilFinalLayout; return *this; }
+    AttachmentDescriptionStencilLayout& setStencilInitialLayout(ImageLayout stencilInitialLayout) {this->stencilInitialLayout = stencilInitialLayout; return *this; }
+    AttachmentDescriptionStencilLayout& setStencilFinalLayout(ImageLayout stencilFinalLayout) {this->stencilFinalLayout = stencilFinalLayout; return *this; }
 };
 using AttachmentDescriptionStencilLayoutKHR = AttachmentDescriptionStencilLayout;
 struct PhysicalDevicePipelineExecutablePropertiesFeaturesKHR {
     StructureType sType{StructureType::PhysicalDevicePipelineExecutablePropertiesFeaturesKHR};
     void* pNext = nullptr;
     Bool32 pipelineExecutableInfo{0};
-    PhysicalDevicePipelineExecutablePropertiesFeaturesKHR& setPipelineExecutableInfo(Bool32 pipelineExecutableInfo) { this->pipelineExecutableInfo = pipelineExecutableInfo; return *this; }
+    PhysicalDevicePipelineExecutablePropertiesFeaturesKHR& setPipelineExecutableInfo(Bool32 pipelineExecutableInfo) {this->pipelineExecutableInfo = pipelineExecutableInfo; return *this; }
 };
 struct PipelineInfoKHR {
     StructureType sType{StructureType::PipelineInfoKHR};
     const void* pNext = nullptr;
     Pipeline pipeline{};
-    PipelineInfoKHR& setPipeline(Pipeline pipeline) { this->pipeline = pipeline; return *this; }
+    PipelineInfoKHR& setPipeline(Pipeline pipeline) {this->pipeline = pipeline; return *this; }
 };
 struct PipelineExecutablePropertiesKHR {
     StructureType sType{StructureType::PipelineExecutablePropertiesKHR};
@@ -9454,18 +9462,18 @@ struct PipelineExecutablePropertiesKHR {
     char name[MAX_DESCRIPTION_SIZE];
     char description[MAX_DESCRIPTION_SIZE];
     uint32_t subgroupSize{0};
-    PipelineExecutablePropertiesKHR& setStages(ShaderStageFlags stages) { this->stages = stages; return *this; }
-    PipelineExecutablePropertiesKHR& setName(char name[MAX_DESCRIPTION_SIZE]) { for(uint32_t i = 0; i < MAX_DESCRIPTION_SIZE; i++) this->name[i] = name[i]; return *this; }
-    PipelineExecutablePropertiesKHR& setDescription(char description[MAX_DESCRIPTION_SIZE]) { for(uint32_t i = 0; i < MAX_DESCRIPTION_SIZE; i++) this->description[i] = description[i]; return *this; }
-    PipelineExecutablePropertiesKHR& setSubgroupSize(uint32_t subgroupSize) { this->subgroupSize = subgroupSize; return *this; }
+    PipelineExecutablePropertiesKHR& setStages(ShaderStageFlags stages) {this->stages = stages; return *this; }
+    PipelineExecutablePropertiesKHR& setName(char name[MAX_DESCRIPTION_SIZE]) {for(uint32_t i = 0; i < MAX_DESCRIPTION_SIZE; i++) this->name[i] = name[i]; return *this; }
+    PipelineExecutablePropertiesKHR& setDescription(char description[MAX_DESCRIPTION_SIZE]) {for(uint32_t i = 0; i < MAX_DESCRIPTION_SIZE; i++) this->description[i] = description[i]; return *this; }
+    PipelineExecutablePropertiesKHR& setSubgroupSize(uint32_t subgroupSize) {this->subgroupSize = subgroupSize; return *this; }
 };
 struct PipelineExecutableInfoKHR {
     StructureType sType{StructureType::PipelineExecutableInfoKHR};
     const void* pNext = nullptr;
     Pipeline pipeline{};
     uint32_t executableIndex{0};
-    PipelineExecutableInfoKHR& setPipeline(Pipeline pipeline) { this->pipeline = pipeline; return *this; }
-    PipelineExecutableInfoKHR& setExecutableIndex(uint32_t executableIndex) { this->executableIndex = executableIndex; return *this; }
+    PipelineExecutableInfoKHR& setPipeline(Pipeline pipeline) {this->pipeline = pipeline; return *this; }
+    PipelineExecutableInfoKHR& setExecutableIndex(uint32_t executableIndex) {this->executableIndex = executableIndex; return *this; }
 };
 union PipelineExecutableStatisticValueKHR {
     Bool32 b32;
@@ -9475,10 +9483,10 @@ union PipelineExecutableStatisticValueKHR {
     constexpr bool operator==(PipelineExecutableStatisticValueKHR const& value) const {
         return b32 == value.b32 && i64 == value.i64 && u64 == value.u64 && f64 == value.f64 ;}
     constexpr bool operator!=(PipelineExecutableStatisticValueKHR const& value) const {return !(*this == value);}
-    PipelineExecutableStatisticValueKHR& setB32(Bool32 b32) { this->b32 = b32; return *this; }
-    PipelineExecutableStatisticValueKHR& setI64(int64_t i64) { this->i64 = i64; return *this; }
-    PipelineExecutableStatisticValueKHR& setU64(uint64_t u64) { this->u64 = u64; return *this; }
-    PipelineExecutableStatisticValueKHR& setF64(double f64) { this->f64 = f64; return *this; }
+    PipelineExecutableStatisticValueKHR& setB32(Bool32 b32) {this->b32 = b32; return *this; }
+    PipelineExecutableStatisticValueKHR& setI64(int64_t i64) {this->i64 = i64; return *this; }
+    PipelineExecutableStatisticValueKHR& setU64(uint64_t u64) {this->u64 = u64; return *this; }
+    PipelineExecutableStatisticValueKHR& setF64(double f64) {this->f64 = f64; return *this; }
 };
 struct PipelineExecutableStatisticKHR {
     StructureType sType{StructureType::PipelineExecutableStatisticKHR};
@@ -9487,10 +9495,10 @@ struct PipelineExecutableStatisticKHR {
     char description[MAX_DESCRIPTION_SIZE];
     PipelineExecutableStatisticFormatKHR format{static_cast<PipelineExecutableStatisticFormatKHR>(0)};
     PipelineExecutableStatisticValueKHR value{};
-    PipelineExecutableStatisticKHR& setName(char name[MAX_DESCRIPTION_SIZE]) { for(uint32_t i = 0; i < MAX_DESCRIPTION_SIZE; i++) this->name[i] = name[i]; return *this; }
-    PipelineExecutableStatisticKHR& setDescription(char description[MAX_DESCRIPTION_SIZE]) { for(uint32_t i = 0; i < MAX_DESCRIPTION_SIZE; i++) this->description[i] = description[i]; return *this; }
-    PipelineExecutableStatisticKHR& setFormat(PipelineExecutableStatisticFormatKHR format) { this->format = format; return *this; }
-    PipelineExecutableStatisticKHR& setValue(PipelineExecutableStatisticValueKHR value) { this->value = value; return *this; }
+    PipelineExecutableStatisticKHR& setName(char name[MAX_DESCRIPTION_SIZE]) {for(uint32_t i = 0; i < MAX_DESCRIPTION_SIZE; i++) this->name[i] = name[i]; return *this; }
+    PipelineExecutableStatisticKHR& setDescription(char description[MAX_DESCRIPTION_SIZE]) {for(uint32_t i = 0; i < MAX_DESCRIPTION_SIZE; i++) this->description[i] = description[i]; return *this; }
+    PipelineExecutableStatisticKHR& setFormat(PipelineExecutableStatisticFormatKHR format) {this->format = format; return *this; }
+    PipelineExecutableStatisticKHR& setValue(PipelineExecutableStatisticValueKHR value) {this->value = value; return *this; }
 };
 struct PipelineExecutableInternalRepresentationKHR {
     StructureType sType{StructureType::PipelineExecutableInternalRepresentationKHR};
@@ -9500,24 +9508,24 @@ struct PipelineExecutableInternalRepresentationKHR {
     Bool32 isText{0};
     size_t dataSize{0};
     void* pData = nullptr;
-    PipelineExecutableInternalRepresentationKHR& setName(char name[MAX_DESCRIPTION_SIZE]) { for(uint32_t i = 0; i < MAX_DESCRIPTION_SIZE; i++) this->name[i] = name[i]; return *this; }
-    PipelineExecutableInternalRepresentationKHR& setDescription(char description[MAX_DESCRIPTION_SIZE]) { for(uint32_t i = 0; i < MAX_DESCRIPTION_SIZE; i++) this->description[i] = description[i]; return *this; }
-    PipelineExecutableInternalRepresentationKHR& setIsText(Bool32 isText) { this->isText = isText; return *this; }
-    PipelineExecutableInternalRepresentationKHR& setDataSize(size_t dataSize) { this->dataSize = dataSize; return *this; }
-    PipelineExecutableInternalRepresentationKHR& setPData(void* pData) { this->pData = pData; return *this; }
-    PipelineExecutableInternalRepresentationKHR& setData(detail::span<std::byte> Data) { this->dataSize = Data.size(); this->pData = Data.data();  return *this; }
+    PipelineExecutableInternalRepresentationKHR& setName(char name[MAX_DESCRIPTION_SIZE]) {for(uint32_t i = 0; i < MAX_DESCRIPTION_SIZE; i++) this->name[i] = name[i]; return *this; }
+    PipelineExecutableInternalRepresentationKHR& setDescription(char description[MAX_DESCRIPTION_SIZE]) {for(uint32_t i = 0; i < MAX_DESCRIPTION_SIZE; i++) this->description[i] = description[i]; return *this; }
+    PipelineExecutableInternalRepresentationKHR& setIsText(Bool32 isText) {this->isText = isText; return *this; }
+    PipelineExecutableInternalRepresentationKHR& setDataSize(size_t dataSize) {this->dataSize = dataSize; return *this; }
+    PipelineExecutableInternalRepresentationKHR& setPData(void* pData) {this->pData = pData; return *this; }
+    PipelineExecutableInternalRepresentationKHR& setPData(detail::span<std::byte> pData) {this->dataSize = pData.size(); this->pData = pData.data();  return *this; }
 };
 struct PhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXT};
     void* pNext = nullptr;
     Bool32 shaderDemoteToHelperInvocation{0};
-    PhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXT& setShaderDemoteToHelperInvocation(Bool32 shaderDemoteToHelperInvocation) { this->shaderDemoteToHelperInvocation = shaderDemoteToHelperInvocation; return *this; }
+    PhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXT& setShaderDemoteToHelperInvocation(Bool32 shaderDemoteToHelperInvocation) {this->shaderDemoteToHelperInvocation = shaderDemoteToHelperInvocation; return *this; }
 };
 struct PhysicalDeviceTexelBufferAlignmentFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceTexelBufferAlignmentFeaturesEXT};
     void* pNext = nullptr;
     Bool32 texelBufferAlignment{0};
-    PhysicalDeviceTexelBufferAlignmentFeaturesEXT& setTexelBufferAlignment(Bool32 texelBufferAlignment) { this->texelBufferAlignment = texelBufferAlignment; return *this; }
+    PhysicalDeviceTexelBufferAlignmentFeaturesEXT& setTexelBufferAlignment(Bool32 texelBufferAlignment) {this->texelBufferAlignment = texelBufferAlignment; return *this; }
 };
 struct PhysicalDeviceTexelBufferAlignmentPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceTexelBufferAlignmentPropertiesEXT};
@@ -9526,18 +9534,18 @@ struct PhysicalDeviceTexelBufferAlignmentPropertiesEXT {
     Bool32 storageTexelBufferOffsetSingleTexelAlignment{0};
     DeviceSize uniformTexelBufferOffsetAlignmentBytes{0};
     Bool32 uniformTexelBufferOffsetSingleTexelAlignment{0};
-    PhysicalDeviceTexelBufferAlignmentPropertiesEXT& setStorageTexelBufferOffsetAlignmentBytes(DeviceSize storageTexelBufferOffsetAlignmentBytes) { this->storageTexelBufferOffsetAlignmentBytes = storageTexelBufferOffsetAlignmentBytes; return *this; }
-    PhysicalDeviceTexelBufferAlignmentPropertiesEXT& setStorageTexelBufferOffsetSingleTexelAlignment(Bool32 storageTexelBufferOffsetSingleTexelAlignment) { this->storageTexelBufferOffsetSingleTexelAlignment = storageTexelBufferOffsetSingleTexelAlignment; return *this; }
-    PhysicalDeviceTexelBufferAlignmentPropertiesEXT& setUniformTexelBufferOffsetAlignmentBytes(DeviceSize uniformTexelBufferOffsetAlignmentBytes) { this->uniformTexelBufferOffsetAlignmentBytes = uniformTexelBufferOffsetAlignmentBytes; return *this; }
-    PhysicalDeviceTexelBufferAlignmentPropertiesEXT& setUniformTexelBufferOffsetSingleTexelAlignment(Bool32 uniformTexelBufferOffsetSingleTexelAlignment) { this->uniformTexelBufferOffsetSingleTexelAlignment = uniformTexelBufferOffsetSingleTexelAlignment; return *this; }
+    PhysicalDeviceTexelBufferAlignmentPropertiesEXT& setStorageTexelBufferOffsetAlignmentBytes(DeviceSize storageTexelBufferOffsetAlignmentBytes) {this->storageTexelBufferOffsetAlignmentBytes = storageTexelBufferOffsetAlignmentBytes; return *this; }
+    PhysicalDeviceTexelBufferAlignmentPropertiesEXT& setStorageTexelBufferOffsetSingleTexelAlignment(Bool32 storageTexelBufferOffsetSingleTexelAlignment) {this->storageTexelBufferOffsetSingleTexelAlignment = storageTexelBufferOffsetSingleTexelAlignment; return *this; }
+    PhysicalDeviceTexelBufferAlignmentPropertiesEXT& setUniformTexelBufferOffsetAlignmentBytes(DeviceSize uniformTexelBufferOffsetAlignmentBytes) {this->uniformTexelBufferOffsetAlignmentBytes = uniformTexelBufferOffsetAlignmentBytes; return *this; }
+    PhysicalDeviceTexelBufferAlignmentPropertiesEXT& setUniformTexelBufferOffsetSingleTexelAlignment(Bool32 uniformTexelBufferOffsetSingleTexelAlignment) {this->uniformTexelBufferOffsetSingleTexelAlignment = uniformTexelBufferOffsetSingleTexelAlignment; return *this; }
 };
 struct PhysicalDeviceSubgroupSizeControlFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceSubgroupSizeControlFeaturesEXT};
     void* pNext = nullptr;
     Bool32 subgroupSizeControl{0};
     Bool32 computeFullSubgroups{0};
-    PhysicalDeviceSubgroupSizeControlFeaturesEXT& setSubgroupSizeControl(Bool32 subgroupSizeControl) { this->subgroupSizeControl = subgroupSizeControl; return *this; }
-    PhysicalDeviceSubgroupSizeControlFeaturesEXT& setComputeFullSubgroups(Bool32 computeFullSubgroups) { this->computeFullSubgroups = computeFullSubgroups; return *this; }
+    PhysicalDeviceSubgroupSizeControlFeaturesEXT& setSubgroupSizeControl(Bool32 subgroupSizeControl) {this->subgroupSizeControl = subgroupSizeControl; return *this; }
+    PhysicalDeviceSubgroupSizeControlFeaturesEXT& setComputeFullSubgroups(Bool32 computeFullSubgroups) {this->computeFullSubgroups = computeFullSubgroups; return *this; }
 };
 struct PhysicalDeviceSubgroupSizeControlPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceSubgroupSizeControlPropertiesEXT};
@@ -9546,29 +9554,29 @@ struct PhysicalDeviceSubgroupSizeControlPropertiesEXT {
     uint32_t maxSubgroupSize{0};
     uint32_t maxComputeWorkgroupSubgroups{0};
     ShaderStageFlags requiredSubgroupSizeStages{};
-    PhysicalDeviceSubgroupSizeControlPropertiesEXT& setMinSubgroupSize(uint32_t minSubgroupSize) { this->minSubgroupSize = minSubgroupSize; return *this; }
-    PhysicalDeviceSubgroupSizeControlPropertiesEXT& setMaxSubgroupSize(uint32_t maxSubgroupSize) { this->maxSubgroupSize = maxSubgroupSize; return *this; }
-    PhysicalDeviceSubgroupSizeControlPropertiesEXT& setMaxComputeWorkgroupSubgroups(uint32_t maxComputeWorkgroupSubgroups) { this->maxComputeWorkgroupSubgroups = maxComputeWorkgroupSubgroups; return *this; }
-    PhysicalDeviceSubgroupSizeControlPropertiesEXT& setRequiredSubgroupSizeStages(ShaderStageFlags requiredSubgroupSizeStages) { this->requiredSubgroupSizeStages = requiredSubgroupSizeStages; return *this; }
+    PhysicalDeviceSubgroupSizeControlPropertiesEXT& setMinSubgroupSize(uint32_t minSubgroupSize) {this->minSubgroupSize = minSubgroupSize; return *this; }
+    PhysicalDeviceSubgroupSizeControlPropertiesEXT& setMaxSubgroupSize(uint32_t maxSubgroupSize) {this->maxSubgroupSize = maxSubgroupSize; return *this; }
+    PhysicalDeviceSubgroupSizeControlPropertiesEXT& setMaxComputeWorkgroupSubgroups(uint32_t maxComputeWorkgroupSubgroups) {this->maxComputeWorkgroupSubgroups = maxComputeWorkgroupSubgroups; return *this; }
+    PhysicalDeviceSubgroupSizeControlPropertiesEXT& setRequiredSubgroupSizeStages(ShaderStageFlags requiredSubgroupSizeStages) {this->requiredSubgroupSizeStages = requiredSubgroupSizeStages; return *this; }
 };
 struct PipelineShaderStageRequiredSubgroupSizeCreateInfoEXT {
     StructureType sType{StructureType::PipelineShaderStageRequiredSubgroupSizeCreateInfoEXT};
     void* pNext = nullptr;
     uint32_t requiredSubgroupSize{0};
-    PipelineShaderStageRequiredSubgroupSizeCreateInfoEXT& setRequiredSubgroupSize(uint32_t requiredSubgroupSize) { this->requiredSubgroupSize = requiredSubgroupSize; return *this; }
+    PipelineShaderStageRequiredSubgroupSizeCreateInfoEXT& setRequiredSubgroupSize(uint32_t requiredSubgroupSize) {this->requiredSubgroupSize = requiredSubgroupSize; return *this; }
 };
 struct MemoryOpaqueCaptureAddressAllocateInfo {
     StructureType sType{StructureType::MemoryOpaqueCaptureAddressAllocateInfo};
     const void* pNext = nullptr;
     uint64_t opaqueCaptureAddress{0};
-    MemoryOpaqueCaptureAddressAllocateInfo& setOpaqueCaptureAddress(uint64_t opaqueCaptureAddress) { this->opaqueCaptureAddress = opaqueCaptureAddress; return *this; }
+    MemoryOpaqueCaptureAddressAllocateInfo& setOpaqueCaptureAddress(uint64_t opaqueCaptureAddress) {this->opaqueCaptureAddress = opaqueCaptureAddress; return *this; }
 };
 using MemoryOpaqueCaptureAddressAllocateInfoKHR = MemoryOpaqueCaptureAddressAllocateInfo;
 struct DeviceMemoryOpaqueCaptureAddressInfo {
     StructureType sType{StructureType::DeviceMemoryOpaqueCaptureAddressInfo};
     const void* pNext = nullptr;
     DeviceMemory memory{};
-    DeviceMemoryOpaqueCaptureAddressInfo& setMemory(DeviceMemory memory) { this->memory = memory; return *this; }
+    DeviceMemoryOpaqueCaptureAddressInfo& setMemory(DeviceMemory memory) {this->memory = memory; return *this; }
 };
 using DeviceMemoryOpaqueCaptureAddressInfoKHR = DeviceMemoryOpaqueCaptureAddressInfo;
 struct PhysicalDeviceLineRasterizationFeaturesEXT {
@@ -9580,18 +9588,18 @@ struct PhysicalDeviceLineRasterizationFeaturesEXT {
     Bool32 stippledRectangularLines{0};
     Bool32 stippledBresenhamLines{0};
     Bool32 stippledSmoothLines{0};
-    PhysicalDeviceLineRasterizationFeaturesEXT& setRectangularLines(Bool32 rectangularLines) { this->rectangularLines = rectangularLines; return *this; }
-    PhysicalDeviceLineRasterizationFeaturesEXT& setBresenhamLines(Bool32 bresenhamLines) { this->bresenhamLines = bresenhamLines; return *this; }
-    PhysicalDeviceLineRasterizationFeaturesEXT& setSmoothLines(Bool32 smoothLines) { this->smoothLines = smoothLines; return *this; }
-    PhysicalDeviceLineRasterizationFeaturesEXT& setStippledRectangularLines(Bool32 stippledRectangularLines) { this->stippledRectangularLines = stippledRectangularLines; return *this; }
-    PhysicalDeviceLineRasterizationFeaturesEXT& setStippledBresenhamLines(Bool32 stippledBresenhamLines) { this->stippledBresenhamLines = stippledBresenhamLines; return *this; }
-    PhysicalDeviceLineRasterizationFeaturesEXT& setStippledSmoothLines(Bool32 stippledSmoothLines) { this->stippledSmoothLines = stippledSmoothLines; return *this; }
+    PhysicalDeviceLineRasterizationFeaturesEXT& setRectangularLines(Bool32 rectangularLines) {this->rectangularLines = rectangularLines; return *this; }
+    PhysicalDeviceLineRasterizationFeaturesEXT& setBresenhamLines(Bool32 bresenhamLines) {this->bresenhamLines = bresenhamLines; return *this; }
+    PhysicalDeviceLineRasterizationFeaturesEXT& setSmoothLines(Bool32 smoothLines) {this->smoothLines = smoothLines; return *this; }
+    PhysicalDeviceLineRasterizationFeaturesEXT& setStippledRectangularLines(Bool32 stippledRectangularLines) {this->stippledRectangularLines = stippledRectangularLines; return *this; }
+    PhysicalDeviceLineRasterizationFeaturesEXT& setStippledBresenhamLines(Bool32 stippledBresenhamLines) {this->stippledBresenhamLines = stippledBresenhamLines; return *this; }
+    PhysicalDeviceLineRasterizationFeaturesEXT& setStippledSmoothLines(Bool32 stippledSmoothLines) {this->stippledSmoothLines = stippledSmoothLines; return *this; }
 };
 struct PhysicalDeviceLineRasterizationPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceLineRasterizationPropertiesEXT};
     void* pNext = nullptr;
     uint32_t lineSubPixelPrecisionBits{0};
-    PhysicalDeviceLineRasterizationPropertiesEXT& setLineSubPixelPrecisionBits(uint32_t lineSubPixelPrecisionBits) { this->lineSubPixelPrecisionBits = lineSubPixelPrecisionBits; return *this; }
+    PhysicalDeviceLineRasterizationPropertiesEXT& setLineSubPixelPrecisionBits(uint32_t lineSubPixelPrecisionBits) {this->lineSubPixelPrecisionBits = lineSubPixelPrecisionBits; return *this; }
 };
 struct PipelineRasterizationLineStateCreateInfoEXT {
     StructureType sType{StructureType::PipelineRasterizationLineStateCreateInfoEXT};
@@ -9600,16 +9608,16 @@ struct PipelineRasterizationLineStateCreateInfoEXT {
     Bool32 stippledLineEnable{0};
     uint32_t lineStippleFactor{0};
     uint16_t lineStipplePattern{0};
-    PipelineRasterizationLineStateCreateInfoEXT& setLineRasterizationMode(LineRasterizationModeEXT lineRasterizationMode) { this->lineRasterizationMode = lineRasterizationMode; return *this; }
-    PipelineRasterizationLineStateCreateInfoEXT& setStippledLineEnable(Bool32 stippledLineEnable) { this->stippledLineEnable = stippledLineEnable; return *this; }
-    PipelineRasterizationLineStateCreateInfoEXT& setLineStippleFactor(uint32_t lineStippleFactor) { this->lineStippleFactor = lineStippleFactor; return *this; }
-    PipelineRasterizationLineStateCreateInfoEXT& setLineStipplePattern(uint16_t lineStipplePattern) { this->lineStipplePattern = lineStipplePattern; return *this; }
+    PipelineRasterizationLineStateCreateInfoEXT& setLineRasterizationMode(LineRasterizationModeEXT lineRasterizationMode) {this->lineRasterizationMode = lineRasterizationMode; return *this; }
+    PipelineRasterizationLineStateCreateInfoEXT& setStippledLineEnable(Bool32 stippledLineEnable) {this->stippledLineEnable = stippledLineEnable; return *this; }
+    PipelineRasterizationLineStateCreateInfoEXT& setLineStippleFactor(uint32_t lineStippleFactor) {this->lineStippleFactor = lineStippleFactor; return *this; }
+    PipelineRasterizationLineStateCreateInfoEXT& setLineStipplePattern(uint16_t lineStipplePattern) {this->lineStipplePattern = lineStipplePattern; return *this; }
 };
 struct PhysicalDevicePipelineCreationCacheControlFeaturesEXT {
     StructureType sType{StructureType::PhysicalDevicePipelineCreationCacheControlFeaturesEXT};
     void* pNext = nullptr;
     Bool32 pipelineCreationCacheControl{0};
-    PhysicalDevicePipelineCreationCacheControlFeaturesEXT& setPipelineCreationCacheControl(Bool32 pipelineCreationCacheControl) { this->pipelineCreationCacheControl = pipelineCreationCacheControl; return *this; }
+    PhysicalDevicePipelineCreationCacheControlFeaturesEXT& setPipelineCreationCacheControl(Bool32 pipelineCreationCacheControl) {this->pipelineCreationCacheControl = pipelineCreationCacheControl; return *this; }
 };
 struct PhysicalDeviceVulkan11Features {
     StructureType sType{StructureType::PhysicalDeviceVulkan11Features};
@@ -9626,18 +9634,18 @@ struct PhysicalDeviceVulkan11Features {
     Bool32 protectedMemory{0};
     Bool32 samplerYcbcrConversion{0};
     Bool32 shaderDrawParameters{0};
-    PhysicalDeviceVulkan11Features& setStorageBuffer16BitAccess(Bool32 storageBuffer16BitAccess) { this->storageBuffer16BitAccess = storageBuffer16BitAccess; return *this; }
-    PhysicalDeviceVulkan11Features& setUniformAndStorageBuffer16BitAccess(Bool32 uniformAndStorageBuffer16BitAccess) { this->uniformAndStorageBuffer16BitAccess = uniformAndStorageBuffer16BitAccess; return *this; }
-    PhysicalDeviceVulkan11Features& setStoragePushConstant16(Bool32 storagePushConstant16) { this->storagePushConstant16 = storagePushConstant16; return *this; }
-    PhysicalDeviceVulkan11Features& setStorageInputOutput16(Bool32 storageInputOutput16) { this->storageInputOutput16 = storageInputOutput16; return *this; }
-    PhysicalDeviceVulkan11Features& setMultiview(Bool32 multiview) { this->multiview = multiview; return *this; }
-    PhysicalDeviceVulkan11Features& setMultiviewGeometryShader(Bool32 multiviewGeometryShader) { this->multiviewGeometryShader = multiviewGeometryShader; return *this; }
-    PhysicalDeviceVulkan11Features& setMultiviewTessellationShader(Bool32 multiviewTessellationShader) { this->multiviewTessellationShader = multiviewTessellationShader; return *this; }
-    PhysicalDeviceVulkan11Features& setVariablePointersStorageBuffer(Bool32 variablePointersStorageBuffer) { this->variablePointersStorageBuffer = variablePointersStorageBuffer; return *this; }
-    PhysicalDeviceVulkan11Features& setVariablePointers(Bool32 variablePointers) { this->variablePointers = variablePointers; return *this; }
-    PhysicalDeviceVulkan11Features& setProtectedMemory(Bool32 protectedMemory) { this->protectedMemory = protectedMemory; return *this; }
-    PhysicalDeviceVulkan11Features& setSamplerYcbcrConversion(Bool32 samplerYcbcrConversion) { this->samplerYcbcrConversion = samplerYcbcrConversion; return *this; }
-    PhysicalDeviceVulkan11Features& setShaderDrawParameters(Bool32 shaderDrawParameters) { this->shaderDrawParameters = shaderDrawParameters; return *this; }
+    PhysicalDeviceVulkan11Features& setStorageBuffer16BitAccess(Bool32 storageBuffer16BitAccess) {this->storageBuffer16BitAccess = storageBuffer16BitAccess; return *this; }
+    PhysicalDeviceVulkan11Features& setUniformAndStorageBuffer16BitAccess(Bool32 uniformAndStorageBuffer16BitAccess) {this->uniformAndStorageBuffer16BitAccess = uniformAndStorageBuffer16BitAccess; return *this; }
+    PhysicalDeviceVulkan11Features& setStoragePushConstant16(Bool32 storagePushConstant16) {this->storagePushConstant16 = storagePushConstant16; return *this; }
+    PhysicalDeviceVulkan11Features& setStorageInputOutput16(Bool32 storageInputOutput16) {this->storageInputOutput16 = storageInputOutput16; return *this; }
+    PhysicalDeviceVulkan11Features& setMultiview(Bool32 multiview) {this->multiview = multiview; return *this; }
+    PhysicalDeviceVulkan11Features& setMultiviewGeometryShader(Bool32 multiviewGeometryShader) {this->multiviewGeometryShader = multiviewGeometryShader; return *this; }
+    PhysicalDeviceVulkan11Features& setMultiviewTessellationShader(Bool32 multiviewTessellationShader) {this->multiviewTessellationShader = multiviewTessellationShader; return *this; }
+    PhysicalDeviceVulkan11Features& setVariablePointersStorageBuffer(Bool32 variablePointersStorageBuffer) {this->variablePointersStorageBuffer = variablePointersStorageBuffer; return *this; }
+    PhysicalDeviceVulkan11Features& setVariablePointers(Bool32 variablePointers) {this->variablePointers = variablePointers; return *this; }
+    PhysicalDeviceVulkan11Features& setProtectedMemory(Bool32 protectedMemory) {this->protectedMemory = protectedMemory; return *this; }
+    PhysicalDeviceVulkan11Features& setSamplerYcbcrConversion(Bool32 samplerYcbcrConversion) {this->samplerYcbcrConversion = samplerYcbcrConversion; return *this; }
+    PhysicalDeviceVulkan11Features& setShaderDrawParameters(Bool32 shaderDrawParameters) {this->shaderDrawParameters = shaderDrawParameters; return *this; }
 };
 struct PhysicalDeviceVulkan11Properties {
     StructureType sType{StructureType::PhysicalDeviceVulkan11Properties};
@@ -9657,21 +9665,21 @@ struct PhysicalDeviceVulkan11Properties {
     Bool32 protectedNoFault{0};
     uint32_t maxPerSetDescriptors{0};
     DeviceSize maxMemoryAllocationSize{0};
-    PhysicalDeviceVulkan11Properties& setDeviceUUID(uint8_t deviceUUID[UUID_SIZE]) { for(uint32_t i = 0; i < UUID_SIZE; i++) this->deviceUUID[i] = deviceUUID[i]; return *this; }
-    PhysicalDeviceVulkan11Properties& setDriverUUID(uint8_t driverUUID[UUID_SIZE]) { for(uint32_t i = 0; i < UUID_SIZE; i++) this->driverUUID[i] = driverUUID[i]; return *this; }
-    PhysicalDeviceVulkan11Properties& setDeviceLUID(uint8_t deviceLUID[LUID_SIZE]) { for(uint32_t i = 0; i < LUID_SIZE; i++) this->deviceLUID[i] = deviceLUID[i]; return *this; }
-    PhysicalDeviceVulkan11Properties& setDeviceNodeMask(uint32_t deviceNodeMask) { this->deviceNodeMask = deviceNodeMask; return *this; }
-    PhysicalDeviceVulkan11Properties& setDeviceLUIDValid(Bool32 deviceLUIDValid) { this->deviceLUIDValid = deviceLUIDValid; return *this; }
-    PhysicalDeviceVulkan11Properties& setSubgroupSize(uint32_t subgroupSize) { this->subgroupSize = subgroupSize; return *this; }
-    PhysicalDeviceVulkan11Properties& setSubgroupSupportedStages(ShaderStageFlags subgroupSupportedStages) { this->subgroupSupportedStages = subgroupSupportedStages; return *this; }
-    PhysicalDeviceVulkan11Properties& setSubgroupSupportedOperations(SubgroupFeatureFlags subgroupSupportedOperations) { this->subgroupSupportedOperations = subgroupSupportedOperations; return *this; }
-    PhysicalDeviceVulkan11Properties& setSubgroupQuadOperationsInAllStages(Bool32 subgroupQuadOperationsInAllStages) { this->subgroupQuadOperationsInAllStages = subgroupQuadOperationsInAllStages; return *this; }
-    PhysicalDeviceVulkan11Properties& setPointClippingBehavior(PointClippingBehavior pointClippingBehavior) { this->pointClippingBehavior = pointClippingBehavior; return *this; }
-    PhysicalDeviceVulkan11Properties& setMaxMultiviewViewCount(uint32_t maxMultiviewViewCount) { this->maxMultiviewViewCount = maxMultiviewViewCount; return *this; }
-    PhysicalDeviceVulkan11Properties& setMaxMultiviewInstanceIndex(uint32_t maxMultiviewInstanceIndex) { this->maxMultiviewInstanceIndex = maxMultiviewInstanceIndex; return *this; }
-    PhysicalDeviceVulkan11Properties& setProtectedNoFault(Bool32 protectedNoFault) { this->protectedNoFault = protectedNoFault; return *this; }
-    PhysicalDeviceVulkan11Properties& setMaxPerSetDescriptors(uint32_t maxPerSetDescriptors) { this->maxPerSetDescriptors = maxPerSetDescriptors; return *this; }
-    PhysicalDeviceVulkan11Properties& setMaxMemoryAllocationSize(DeviceSize maxMemoryAllocationSize) { this->maxMemoryAllocationSize = maxMemoryAllocationSize; return *this; }
+    PhysicalDeviceVulkan11Properties& setDeviceUUID(uint8_t deviceUUID[UUID_SIZE]) {for(uint32_t i = 0; i < UUID_SIZE; i++) this->deviceUUID[i] = deviceUUID[i]; return *this; }
+    PhysicalDeviceVulkan11Properties& setDriverUUID(uint8_t driverUUID[UUID_SIZE]) {for(uint32_t i = 0; i < UUID_SIZE; i++) this->driverUUID[i] = driverUUID[i]; return *this; }
+    PhysicalDeviceVulkan11Properties& setDeviceLUID(uint8_t deviceLUID[LUID_SIZE]) {for(uint32_t i = 0; i < LUID_SIZE; i++) this->deviceLUID[i] = deviceLUID[i]; return *this; }
+    PhysicalDeviceVulkan11Properties& setDeviceNodeMask(uint32_t deviceNodeMask) {this->deviceNodeMask = deviceNodeMask; return *this; }
+    PhysicalDeviceVulkan11Properties& setDeviceLUIDValid(Bool32 deviceLUIDValid) {this->deviceLUIDValid = deviceLUIDValid; return *this; }
+    PhysicalDeviceVulkan11Properties& setSubgroupSize(uint32_t subgroupSize) {this->subgroupSize = subgroupSize; return *this; }
+    PhysicalDeviceVulkan11Properties& setSubgroupSupportedStages(ShaderStageFlags subgroupSupportedStages) {this->subgroupSupportedStages = subgroupSupportedStages; return *this; }
+    PhysicalDeviceVulkan11Properties& setSubgroupSupportedOperations(SubgroupFeatureFlags subgroupSupportedOperations) {this->subgroupSupportedOperations = subgroupSupportedOperations; return *this; }
+    PhysicalDeviceVulkan11Properties& setSubgroupQuadOperationsInAllStages(Bool32 subgroupQuadOperationsInAllStages) {this->subgroupQuadOperationsInAllStages = subgroupQuadOperationsInAllStages; return *this; }
+    PhysicalDeviceVulkan11Properties& setPointClippingBehavior(PointClippingBehavior pointClippingBehavior) {this->pointClippingBehavior = pointClippingBehavior; return *this; }
+    PhysicalDeviceVulkan11Properties& setMaxMultiviewViewCount(uint32_t maxMultiviewViewCount) {this->maxMultiviewViewCount = maxMultiviewViewCount; return *this; }
+    PhysicalDeviceVulkan11Properties& setMaxMultiviewInstanceIndex(uint32_t maxMultiviewInstanceIndex) {this->maxMultiviewInstanceIndex = maxMultiviewInstanceIndex; return *this; }
+    PhysicalDeviceVulkan11Properties& setProtectedNoFault(Bool32 protectedNoFault) {this->protectedNoFault = protectedNoFault; return *this; }
+    PhysicalDeviceVulkan11Properties& setMaxPerSetDescriptors(uint32_t maxPerSetDescriptors) {this->maxPerSetDescriptors = maxPerSetDescriptors; return *this; }
+    PhysicalDeviceVulkan11Properties& setMaxMemoryAllocationSize(DeviceSize maxMemoryAllocationSize) {this->maxMemoryAllocationSize = maxMemoryAllocationSize; return *this; }
 };
 struct PhysicalDeviceVulkan12Features {
     StructureType sType{StructureType::PhysicalDeviceVulkan12Features};
@@ -9723,53 +9731,53 @@ struct PhysicalDeviceVulkan12Features {
     Bool32 shaderOutputViewportIndex{0};
     Bool32 shaderOutputLayer{0};
     Bool32 subgroupBroadcastDynamicId{0};
-    PhysicalDeviceVulkan12Features& setSamplerMirrorClampToEdge(Bool32 samplerMirrorClampToEdge) { this->samplerMirrorClampToEdge = samplerMirrorClampToEdge; return *this; }
-    PhysicalDeviceVulkan12Features& setDrawIndirectCount(Bool32 drawIndirectCount) { this->drawIndirectCount = drawIndirectCount; return *this; }
-    PhysicalDeviceVulkan12Features& setStorageBuffer8BitAccess(Bool32 storageBuffer8BitAccess) { this->storageBuffer8BitAccess = storageBuffer8BitAccess; return *this; }
-    PhysicalDeviceVulkan12Features& setUniformAndStorageBuffer8BitAccess(Bool32 uniformAndStorageBuffer8BitAccess) { this->uniformAndStorageBuffer8BitAccess = uniformAndStorageBuffer8BitAccess; return *this; }
-    PhysicalDeviceVulkan12Features& setStoragePushConstant8(Bool32 storagePushConstant8) { this->storagePushConstant8 = storagePushConstant8; return *this; }
-    PhysicalDeviceVulkan12Features& setShaderBufferInt64Atomics(Bool32 shaderBufferInt64Atomics) { this->shaderBufferInt64Atomics = shaderBufferInt64Atomics; return *this; }
-    PhysicalDeviceVulkan12Features& setShaderSharedInt64Atomics(Bool32 shaderSharedInt64Atomics) { this->shaderSharedInt64Atomics = shaderSharedInt64Atomics; return *this; }
-    PhysicalDeviceVulkan12Features& setShaderFloat16(Bool32 shaderFloat16) { this->shaderFloat16 = shaderFloat16; return *this; }
-    PhysicalDeviceVulkan12Features& setShaderInt8(Bool32 shaderInt8) { this->shaderInt8 = shaderInt8; return *this; }
-    PhysicalDeviceVulkan12Features& setDescriptorIndexing(Bool32 descriptorIndexing) { this->descriptorIndexing = descriptorIndexing; return *this; }
-    PhysicalDeviceVulkan12Features& setShaderInputAttachmentArrayDynamicIndexing(Bool32 shaderInputAttachmentArrayDynamicIndexing) { this->shaderInputAttachmentArrayDynamicIndexing = shaderInputAttachmentArrayDynamicIndexing; return *this; }
-    PhysicalDeviceVulkan12Features& setShaderUniformTexelBufferArrayDynamicIndexing(Bool32 shaderUniformTexelBufferArrayDynamicIndexing) { this->shaderUniformTexelBufferArrayDynamicIndexing = shaderUniformTexelBufferArrayDynamicIndexing; return *this; }
-    PhysicalDeviceVulkan12Features& setShaderStorageTexelBufferArrayDynamicIndexing(Bool32 shaderStorageTexelBufferArrayDynamicIndexing) { this->shaderStorageTexelBufferArrayDynamicIndexing = shaderStorageTexelBufferArrayDynamicIndexing; return *this; }
-    PhysicalDeviceVulkan12Features& setShaderUniformBufferArrayNonUniformIndexing(Bool32 shaderUniformBufferArrayNonUniformIndexing) { this->shaderUniformBufferArrayNonUniformIndexing = shaderUniformBufferArrayNonUniformIndexing; return *this; }
-    PhysicalDeviceVulkan12Features& setShaderSampledImageArrayNonUniformIndexing(Bool32 shaderSampledImageArrayNonUniformIndexing) { this->shaderSampledImageArrayNonUniformIndexing = shaderSampledImageArrayNonUniformIndexing; return *this; }
-    PhysicalDeviceVulkan12Features& setShaderStorageBufferArrayNonUniformIndexing(Bool32 shaderStorageBufferArrayNonUniformIndexing) { this->shaderStorageBufferArrayNonUniformIndexing = shaderStorageBufferArrayNonUniformIndexing; return *this; }
-    PhysicalDeviceVulkan12Features& setShaderStorageImageArrayNonUniformIndexing(Bool32 shaderStorageImageArrayNonUniformIndexing) { this->shaderStorageImageArrayNonUniformIndexing = shaderStorageImageArrayNonUniformIndexing; return *this; }
-    PhysicalDeviceVulkan12Features& setShaderInputAttachmentArrayNonUniformIndexing(Bool32 shaderInputAttachmentArrayNonUniformIndexing) { this->shaderInputAttachmentArrayNonUniformIndexing = shaderInputAttachmentArrayNonUniformIndexing; return *this; }
-    PhysicalDeviceVulkan12Features& setShaderUniformTexelBufferArrayNonUniformIndexing(Bool32 shaderUniformTexelBufferArrayNonUniformIndexing) { this->shaderUniformTexelBufferArrayNonUniformIndexing = shaderUniformTexelBufferArrayNonUniformIndexing; return *this; }
-    PhysicalDeviceVulkan12Features& setShaderStorageTexelBufferArrayNonUniformIndexing(Bool32 shaderStorageTexelBufferArrayNonUniformIndexing) { this->shaderStorageTexelBufferArrayNonUniformIndexing = shaderStorageTexelBufferArrayNonUniformIndexing; return *this; }
-    PhysicalDeviceVulkan12Features& setDescriptorBindingUniformBufferUpdateAfterBind(Bool32 descriptorBindingUniformBufferUpdateAfterBind) { this->descriptorBindingUniformBufferUpdateAfterBind = descriptorBindingUniformBufferUpdateAfterBind; return *this; }
-    PhysicalDeviceVulkan12Features& setDescriptorBindingSampledImageUpdateAfterBind(Bool32 descriptorBindingSampledImageUpdateAfterBind) { this->descriptorBindingSampledImageUpdateAfterBind = descriptorBindingSampledImageUpdateAfterBind; return *this; }
-    PhysicalDeviceVulkan12Features& setDescriptorBindingStorageImageUpdateAfterBind(Bool32 descriptorBindingStorageImageUpdateAfterBind) { this->descriptorBindingStorageImageUpdateAfterBind = descriptorBindingStorageImageUpdateAfterBind; return *this; }
-    PhysicalDeviceVulkan12Features& setDescriptorBindingStorageBufferUpdateAfterBind(Bool32 descriptorBindingStorageBufferUpdateAfterBind) { this->descriptorBindingStorageBufferUpdateAfterBind = descriptorBindingStorageBufferUpdateAfterBind; return *this; }
-    PhysicalDeviceVulkan12Features& setDescriptorBindingUniformTexelBufferUpdateAfterBind(Bool32 descriptorBindingUniformTexelBufferUpdateAfterBind) { this->descriptorBindingUniformTexelBufferUpdateAfterBind = descriptorBindingUniformTexelBufferUpdateAfterBind; return *this; }
-    PhysicalDeviceVulkan12Features& setDescriptorBindingStorageTexelBufferUpdateAfterBind(Bool32 descriptorBindingStorageTexelBufferUpdateAfterBind) { this->descriptorBindingStorageTexelBufferUpdateAfterBind = descriptorBindingStorageTexelBufferUpdateAfterBind; return *this; }
-    PhysicalDeviceVulkan12Features& setDescriptorBindingUpdateUnusedWhilePending(Bool32 descriptorBindingUpdateUnusedWhilePending) { this->descriptorBindingUpdateUnusedWhilePending = descriptorBindingUpdateUnusedWhilePending; return *this; }
-    PhysicalDeviceVulkan12Features& setDescriptorBindingPartiallyBound(Bool32 descriptorBindingPartiallyBound) { this->descriptorBindingPartiallyBound = descriptorBindingPartiallyBound; return *this; }
-    PhysicalDeviceVulkan12Features& setDescriptorBindingVariableDescriptorCount(Bool32 descriptorBindingVariableDescriptorCount) { this->descriptorBindingVariableDescriptorCount = descriptorBindingVariableDescriptorCount; return *this; }
-    PhysicalDeviceVulkan12Features& setRuntimeDescriptorArray(Bool32 runtimeDescriptorArray) { this->runtimeDescriptorArray = runtimeDescriptorArray; return *this; }
-    PhysicalDeviceVulkan12Features& setSamplerFilterMinmax(Bool32 samplerFilterMinmax) { this->samplerFilterMinmax = samplerFilterMinmax; return *this; }
-    PhysicalDeviceVulkan12Features& setScalarBlockLayout(Bool32 scalarBlockLayout) { this->scalarBlockLayout = scalarBlockLayout; return *this; }
-    PhysicalDeviceVulkan12Features& setImagelessFramebuffer(Bool32 imagelessFramebuffer) { this->imagelessFramebuffer = imagelessFramebuffer; return *this; }
-    PhysicalDeviceVulkan12Features& setUniformBufferStandardLayout(Bool32 uniformBufferStandardLayout) { this->uniformBufferStandardLayout = uniformBufferStandardLayout; return *this; }
-    PhysicalDeviceVulkan12Features& setShaderSubgroupExtendedTypes(Bool32 shaderSubgroupExtendedTypes) { this->shaderSubgroupExtendedTypes = shaderSubgroupExtendedTypes; return *this; }
-    PhysicalDeviceVulkan12Features& setSeparateDepthStencilLayouts(Bool32 separateDepthStencilLayouts) { this->separateDepthStencilLayouts = separateDepthStencilLayouts; return *this; }
-    PhysicalDeviceVulkan12Features& setHostQueryReset(Bool32 hostQueryReset) { this->hostQueryReset = hostQueryReset; return *this; }
-    PhysicalDeviceVulkan12Features& setTimelineSemaphore(Bool32 timelineSemaphore) { this->timelineSemaphore = timelineSemaphore; return *this; }
-    PhysicalDeviceVulkan12Features& setBufferDeviceAddress(Bool32 bufferDeviceAddress) { this->bufferDeviceAddress = bufferDeviceAddress; return *this; }
-    PhysicalDeviceVulkan12Features& setBufferDeviceAddressCaptureReplay(Bool32 bufferDeviceAddressCaptureReplay) { this->bufferDeviceAddressCaptureReplay = bufferDeviceAddressCaptureReplay; return *this; }
-    PhysicalDeviceVulkan12Features& setBufferDeviceAddressMultiDevice(Bool32 bufferDeviceAddressMultiDevice) { this->bufferDeviceAddressMultiDevice = bufferDeviceAddressMultiDevice; return *this; }
-    PhysicalDeviceVulkan12Features& setVulkanMemoryModel(Bool32 vulkanMemoryModel) { this->vulkanMemoryModel = vulkanMemoryModel; return *this; }
-    PhysicalDeviceVulkan12Features& setVulkanMemoryModelDeviceScope(Bool32 vulkanMemoryModelDeviceScope) { this->vulkanMemoryModelDeviceScope = vulkanMemoryModelDeviceScope; return *this; }
-    PhysicalDeviceVulkan12Features& setVulkanMemoryModelAvailabilityVisibilityChains(Bool32 vulkanMemoryModelAvailabilityVisibilityChains) { this->vulkanMemoryModelAvailabilityVisibilityChains = vulkanMemoryModelAvailabilityVisibilityChains; return *this; }
-    PhysicalDeviceVulkan12Features& setShaderOutputViewportIndex(Bool32 shaderOutputViewportIndex) { this->shaderOutputViewportIndex = shaderOutputViewportIndex; return *this; }
-    PhysicalDeviceVulkan12Features& setShaderOutputLayer(Bool32 shaderOutputLayer) { this->shaderOutputLayer = shaderOutputLayer; return *this; }
-    PhysicalDeviceVulkan12Features& setSubgroupBroadcastDynamicId(Bool32 subgroupBroadcastDynamicId) { this->subgroupBroadcastDynamicId = subgroupBroadcastDynamicId; return *this; }
+    PhysicalDeviceVulkan12Features& setSamplerMirrorClampToEdge(Bool32 samplerMirrorClampToEdge) {this->samplerMirrorClampToEdge = samplerMirrorClampToEdge; return *this; }
+    PhysicalDeviceVulkan12Features& setDrawIndirectCount(Bool32 drawIndirectCount) {this->drawIndirectCount = drawIndirectCount; return *this; }
+    PhysicalDeviceVulkan12Features& setStorageBuffer8BitAccess(Bool32 storageBuffer8BitAccess) {this->storageBuffer8BitAccess = storageBuffer8BitAccess; return *this; }
+    PhysicalDeviceVulkan12Features& setUniformAndStorageBuffer8BitAccess(Bool32 uniformAndStorageBuffer8BitAccess) {this->uniformAndStorageBuffer8BitAccess = uniformAndStorageBuffer8BitAccess; return *this; }
+    PhysicalDeviceVulkan12Features& setStoragePushConstant8(Bool32 storagePushConstant8) {this->storagePushConstant8 = storagePushConstant8; return *this; }
+    PhysicalDeviceVulkan12Features& setShaderBufferInt64Atomics(Bool32 shaderBufferInt64Atomics) {this->shaderBufferInt64Atomics = shaderBufferInt64Atomics; return *this; }
+    PhysicalDeviceVulkan12Features& setShaderSharedInt64Atomics(Bool32 shaderSharedInt64Atomics) {this->shaderSharedInt64Atomics = shaderSharedInt64Atomics; return *this; }
+    PhysicalDeviceVulkan12Features& setShaderFloat16(Bool32 shaderFloat16) {this->shaderFloat16 = shaderFloat16; return *this; }
+    PhysicalDeviceVulkan12Features& setShaderInt8(Bool32 shaderInt8) {this->shaderInt8 = shaderInt8; return *this; }
+    PhysicalDeviceVulkan12Features& setDescriptorIndexing(Bool32 descriptorIndexing) {this->descriptorIndexing = descriptorIndexing; return *this; }
+    PhysicalDeviceVulkan12Features& setShaderInputAttachmentArrayDynamicIndexing(Bool32 shaderInputAttachmentArrayDynamicIndexing) {this->shaderInputAttachmentArrayDynamicIndexing = shaderInputAttachmentArrayDynamicIndexing; return *this; }
+    PhysicalDeviceVulkan12Features& setShaderUniformTexelBufferArrayDynamicIndexing(Bool32 shaderUniformTexelBufferArrayDynamicIndexing) {this->shaderUniformTexelBufferArrayDynamicIndexing = shaderUniformTexelBufferArrayDynamicIndexing; return *this; }
+    PhysicalDeviceVulkan12Features& setShaderStorageTexelBufferArrayDynamicIndexing(Bool32 shaderStorageTexelBufferArrayDynamicIndexing) {this->shaderStorageTexelBufferArrayDynamicIndexing = shaderStorageTexelBufferArrayDynamicIndexing; return *this; }
+    PhysicalDeviceVulkan12Features& setShaderUniformBufferArrayNonUniformIndexing(Bool32 shaderUniformBufferArrayNonUniformIndexing) {this->shaderUniformBufferArrayNonUniformIndexing = shaderUniformBufferArrayNonUniformIndexing; return *this; }
+    PhysicalDeviceVulkan12Features& setShaderSampledImageArrayNonUniformIndexing(Bool32 shaderSampledImageArrayNonUniformIndexing) {this->shaderSampledImageArrayNonUniformIndexing = shaderSampledImageArrayNonUniformIndexing; return *this; }
+    PhysicalDeviceVulkan12Features& setShaderStorageBufferArrayNonUniformIndexing(Bool32 shaderStorageBufferArrayNonUniformIndexing) {this->shaderStorageBufferArrayNonUniformIndexing = shaderStorageBufferArrayNonUniformIndexing; return *this; }
+    PhysicalDeviceVulkan12Features& setShaderStorageImageArrayNonUniformIndexing(Bool32 shaderStorageImageArrayNonUniformIndexing) {this->shaderStorageImageArrayNonUniformIndexing = shaderStorageImageArrayNonUniformIndexing; return *this; }
+    PhysicalDeviceVulkan12Features& setShaderInputAttachmentArrayNonUniformIndexing(Bool32 shaderInputAttachmentArrayNonUniformIndexing) {this->shaderInputAttachmentArrayNonUniformIndexing = shaderInputAttachmentArrayNonUniformIndexing; return *this; }
+    PhysicalDeviceVulkan12Features& setShaderUniformTexelBufferArrayNonUniformIndexing(Bool32 shaderUniformTexelBufferArrayNonUniformIndexing) {this->shaderUniformTexelBufferArrayNonUniformIndexing = shaderUniformTexelBufferArrayNonUniformIndexing; return *this; }
+    PhysicalDeviceVulkan12Features& setShaderStorageTexelBufferArrayNonUniformIndexing(Bool32 shaderStorageTexelBufferArrayNonUniformIndexing) {this->shaderStorageTexelBufferArrayNonUniformIndexing = shaderStorageTexelBufferArrayNonUniformIndexing; return *this; }
+    PhysicalDeviceVulkan12Features& setDescriptorBindingUniformBufferUpdateAfterBind(Bool32 descriptorBindingUniformBufferUpdateAfterBind) {this->descriptorBindingUniformBufferUpdateAfterBind = descriptorBindingUniformBufferUpdateAfterBind; return *this; }
+    PhysicalDeviceVulkan12Features& setDescriptorBindingSampledImageUpdateAfterBind(Bool32 descriptorBindingSampledImageUpdateAfterBind) {this->descriptorBindingSampledImageUpdateAfterBind = descriptorBindingSampledImageUpdateAfterBind; return *this; }
+    PhysicalDeviceVulkan12Features& setDescriptorBindingStorageImageUpdateAfterBind(Bool32 descriptorBindingStorageImageUpdateAfterBind) {this->descriptorBindingStorageImageUpdateAfterBind = descriptorBindingStorageImageUpdateAfterBind; return *this; }
+    PhysicalDeviceVulkan12Features& setDescriptorBindingStorageBufferUpdateAfterBind(Bool32 descriptorBindingStorageBufferUpdateAfterBind) {this->descriptorBindingStorageBufferUpdateAfterBind = descriptorBindingStorageBufferUpdateAfterBind; return *this; }
+    PhysicalDeviceVulkan12Features& setDescriptorBindingUniformTexelBufferUpdateAfterBind(Bool32 descriptorBindingUniformTexelBufferUpdateAfterBind) {this->descriptorBindingUniformTexelBufferUpdateAfterBind = descriptorBindingUniformTexelBufferUpdateAfterBind; return *this; }
+    PhysicalDeviceVulkan12Features& setDescriptorBindingStorageTexelBufferUpdateAfterBind(Bool32 descriptorBindingStorageTexelBufferUpdateAfterBind) {this->descriptorBindingStorageTexelBufferUpdateAfterBind = descriptorBindingStorageTexelBufferUpdateAfterBind; return *this; }
+    PhysicalDeviceVulkan12Features& setDescriptorBindingUpdateUnusedWhilePending(Bool32 descriptorBindingUpdateUnusedWhilePending) {this->descriptorBindingUpdateUnusedWhilePending = descriptorBindingUpdateUnusedWhilePending; return *this; }
+    PhysicalDeviceVulkan12Features& setDescriptorBindingPartiallyBound(Bool32 descriptorBindingPartiallyBound) {this->descriptorBindingPartiallyBound = descriptorBindingPartiallyBound; return *this; }
+    PhysicalDeviceVulkan12Features& setDescriptorBindingVariableDescriptorCount(Bool32 descriptorBindingVariableDescriptorCount) {this->descriptorBindingVariableDescriptorCount = descriptorBindingVariableDescriptorCount; return *this; }
+    PhysicalDeviceVulkan12Features& setRuntimeDescriptorArray(Bool32 runtimeDescriptorArray) {this->runtimeDescriptorArray = runtimeDescriptorArray; return *this; }
+    PhysicalDeviceVulkan12Features& setSamplerFilterMinmax(Bool32 samplerFilterMinmax) {this->samplerFilterMinmax = samplerFilterMinmax; return *this; }
+    PhysicalDeviceVulkan12Features& setScalarBlockLayout(Bool32 scalarBlockLayout) {this->scalarBlockLayout = scalarBlockLayout; return *this; }
+    PhysicalDeviceVulkan12Features& setImagelessFramebuffer(Bool32 imagelessFramebuffer) {this->imagelessFramebuffer = imagelessFramebuffer; return *this; }
+    PhysicalDeviceVulkan12Features& setUniformBufferStandardLayout(Bool32 uniformBufferStandardLayout) {this->uniformBufferStandardLayout = uniformBufferStandardLayout; return *this; }
+    PhysicalDeviceVulkan12Features& setShaderSubgroupExtendedTypes(Bool32 shaderSubgroupExtendedTypes) {this->shaderSubgroupExtendedTypes = shaderSubgroupExtendedTypes; return *this; }
+    PhysicalDeviceVulkan12Features& setSeparateDepthStencilLayouts(Bool32 separateDepthStencilLayouts) {this->separateDepthStencilLayouts = separateDepthStencilLayouts; return *this; }
+    PhysicalDeviceVulkan12Features& setHostQueryReset(Bool32 hostQueryReset) {this->hostQueryReset = hostQueryReset; return *this; }
+    PhysicalDeviceVulkan12Features& setTimelineSemaphore(Bool32 timelineSemaphore) {this->timelineSemaphore = timelineSemaphore; return *this; }
+    PhysicalDeviceVulkan12Features& setBufferDeviceAddress(Bool32 bufferDeviceAddress) {this->bufferDeviceAddress = bufferDeviceAddress; return *this; }
+    PhysicalDeviceVulkan12Features& setBufferDeviceAddressCaptureReplay(Bool32 bufferDeviceAddressCaptureReplay) {this->bufferDeviceAddressCaptureReplay = bufferDeviceAddressCaptureReplay; return *this; }
+    PhysicalDeviceVulkan12Features& setBufferDeviceAddressMultiDevice(Bool32 bufferDeviceAddressMultiDevice) {this->bufferDeviceAddressMultiDevice = bufferDeviceAddressMultiDevice; return *this; }
+    PhysicalDeviceVulkan12Features& setVulkanMemoryModel(Bool32 vulkanMemoryModel) {this->vulkanMemoryModel = vulkanMemoryModel; return *this; }
+    PhysicalDeviceVulkan12Features& setVulkanMemoryModelDeviceScope(Bool32 vulkanMemoryModelDeviceScope) {this->vulkanMemoryModelDeviceScope = vulkanMemoryModelDeviceScope; return *this; }
+    PhysicalDeviceVulkan12Features& setVulkanMemoryModelAvailabilityVisibilityChains(Bool32 vulkanMemoryModelAvailabilityVisibilityChains) {this->vulkanMemoryModelAvailabilityVisibilityChains = vulkanMemoryModelAvailabilityVisibilityChains; return *this; }
+    PhysicalDeviceVulkan12Features& setShaderOutputViewportIndex(Bool32 shaderOutputViewportIndex) {this->shaderOutputViewportIndex = shaderOutputViewportIndex; return *this; }
+    PhysicalDeviceVulkan12Features& setShaderOutputLayer(Bool32 shaderOutputLayer) {this->shaderOutputLayer = shaderOutputLayer; return *this; }
+    PhysicalDeviceVulkan12Features& setSubgroupBroadcastDynamicId(Bool32 subgroupBroadcastDynamicId) {this->subgroupBroadcastDynamicId = subgroupBroadcastDynamicId; return *this; }
 };
 struct PhysicalDeviceVulkan12Properties {
     StructureType sType{StructureType::PhysicalDeviceVulkan12Properties};
@@ -9826,70 +9834,70 @@ struct PhysicalDeviceVulkan12Properties {
     Bool32 filterMinmaxImageComponentMapping{0};
     uint64_t maxTimelineSemaphoreValueDifference{0};
     SampleCountFlags framebufferIntegerColorSampleCounts{};
-    PhysicalDeviceVulkan12Properties& setDriverID(DriverId driverID) { this->driverID = driverID; return *this; }
-    PhysicalDeviceVulkan12Properties& setDriverName(char driverName[MAX_DRIVER_NAME_SIZE]) { for(uint32_t i = 0; i < MAX_DRIVER_NAME_SIZE; i++) this->driverName[i] = driverName[i]; return *this; }
-    PhysicalDeviceVulkan12Properties& setDriverInfo(char driverInfo[MAX_DRIVER_INFO_SIZE]) { for(uint32_t i = 0; i < MAX_DRIVER_INFO_SIZE; i++) this->driverInfo[i] = driverInfo[i]; return *this; }
-    PhysicalDeviceVulkan12Properties& setConformanceVersion(ConformanceVersion conformanceVersion) { this->conformanceVersion = conformanceVersion; return *this; }
-    PhysicalDeviceVulkan12Properties& setDenormBehaviorIndependence(ShaderFloatControlsIndependence denormBehaviorIndependence) { this->denormBehaviorIndependence = denormBehaviorIndependence; return *this; }
-    PhysicalDeviceVulkan12Properties& setRoundingModeIndependence(ShaderFloatControlsIndependence roundingModeIndependence) { this->roundingModeIndependence = roundingModeIndependence; return *this; }
-    PhysicalDeviceVulkan12Properties& setShaderSignedZeroInfNanPreserveFloat16(Bool32 shaderSignedZeroInfNanPreserveFloat16) { this->shaderSignedZeroInfNanPreserveFloat16 = shaderSignedZeroInfNanPreserveFloat16; return *this; }
-    PhysicalDeviceVulkan12Properties& setShaderSignedZeroInfNanPreserveFloat32(Bool32 shaderSignedZeroInfNanPreserveFloat32) { this->shaderSignedZeroInfNanPreserveFloat32 = shaderSignedZeroInfNanPreserveFloat32; return *this; }
-    PhysicalDeviceVulkan12Properties& setShaderSignedZeroInfNanPreserveFloat64(Bool32 shaderSignedZeroInfNanPreserveFloat64) { this->shaderSignedZeroInfNanPreserveFloat64 = shaderSignedZeroInfNanPreserveFloat64; return *this; }
-    PhysicalDeviceVulkan12Properties& setShaderDenormPreserveFloat16(Bool32 shaderDenormPreserveFloat16) { this->shaderDenormPreserveFloat16 = shaderDenormPreserveFloat16; return *this; }
-    PhysicalDeviceVulkan12Properties& setShaderDenormPreserveFloat32(Bool32 shaderDenormPreserveFloat32) { this->shaderDenormPreserveFloat32 = shaderDenormPreserveFloat32; return *this; }
-    PhysicalDeviceVulkan12Properties& setShaderDenormPreserveFloat64(Bool32 shaderDenormPreserveFloat64) { this->shaderDenormPreserveFloat64 = shaderDenormPreserveFloat64; return *this; }
-    PhysicalDeviceVulkan12Properties& setShaderDenormFlushToZeroFloat16(Bool32 shaderDenormFlushToZeroFloat16) { this->shaderDenormFlushToZeroFloat16 = shaderDenormFlushToZeroFloat16; return *this; }
-    PhysicalDeviceVulkan12Properties& setShaderDenormFlushToZeroFloat32(Bool32 shaderDenormFlushToZeroFloat32) { this->shaderDenormFlushToZeroFloat32 = shaderDenormFlushToZeroFloat32; return *this; }
-    PhysicalDeviceVulkan12Properties& setShaderDenormFlushToZeroFloat64(Bool32 shaderDenormFlushToZeroFloat64) { this->shaderDenormFlushToZeroFloat64 = shaderDenormFlushToZeroFloat64; return *this; }
-    PhysicalDeviceVulkan12Properties& setShaderRoundingModeRTEFloat16(Bool32 shaderRoundingModeRTEFloat16) { this->shaderRoundingModeRTEFloat16 = shaderRoundingModeRTEFloat16; return *this; }
-    PhysicalDeviceVulkan12Properties& setShaderRoundingModeRTEFloat32(Bool32 shaderRoundingModeRTEFloat32) { this->shaderRoundingModeRTEFloat32 = shaderRoundingModeRTEFloat32; return *this; }
-    PhysicalDeviceVulkan12Properties& setShaderRoundingModeRTEFloat64(Bool32 shaderRoundingModeRTEFloat64) { this->shaderRoundingModeRTEFloat64 = shaderRoundingModeRTEFloat64; return *this; }
-    PhysicalDeviceVulkan12Properties& setShaderRoundingModeRTZFloat16(Bool32 shaderRoundingModeRTZFloat16) { this->shaderRoundingModeRTZFloat16 = shaderRoundingModeRTZFloat16; return *this; }
-    PhysicalDeviceVulkan12Properties& setShaderRoundingModeRTZFloat32(Bool32 shaderRoundingModeRTZFloat32) { this->shaderRoundingModeRTZFloat32 = shaderRoundingModeRTZFloat32; return *this; }
-    PhysicalDeviceVulkan12Properties& setShaderRoundingModeRTZFloat64(Bool32 shaderRoundingModeRTZFloat64) { this->shaderRoundingModeRTZFloat64 = shaderRoundingModeRTZFloat64; return *this; }
-    PhysicalDeviceVulkan12Properties& setMaxUpdateAfterBindDescriptorsInAllPools(uint32_t maxUpdateAfterBindDescriptorsInAllPools) { this->maxUpdateAfterBindDescriptorsInAllPools = maxUpdateAfterBindDescriptorsInAllPools; return *this; }
-    PhysicalDeviceVulkan12Properties& setShaderUniformBufferArrayNonUniformIndexingNative(Bool32 shaderUniformBufferArrayNonUniformIndexingNative) { this->shaderUniformBufferArrayNonUniformIndexingNative = shaderUniformBufferArrayNonUniformIndexingNative; return *this; }
-    PhysicalDeviceVulkan12Properties& setShaderSampledImageArrayNonUniformIndexingNative(Bool32 shaderSampledImageArrayNonUniformIndexingNative) { this->shaderSampledImageArrayNonUniformIndexingNative = shaderSampledImageArrayNonUniformIndexingNative; return *this; }
-    PhysicalDeviceVulkan12Properties& setShaderStorageBufferArrayNonUniformIndexingNative(Bool32 shaderStorageBufferArrayNonUniformIndexingNative) { this->shaderStorageBufferArrayNonUniformIndexingNative = shaderStorageBufferArrayNonUniformIndexingNative; return *this; }
-    PhysicalDeviceVulkan12Properties& setShaderStorageImageArrayNonUniformIndexingNative(Bool32 shaderStorageImageArrayNonUniformIndexingNative) { this->shaderStorageImageArrayNonUniformIndexingNative = shaderStorageImageArrayNonUniformIndexingNative; return *this; }
-    PhysicalDeviceVulkan12Properties& setShaderInputAttachmentArrayNonUniformIndexingNative(Bool32 shaderInputAttachmentArrayNonUniformIndexingNative) { this->shaderInputAttachmentArrayNonUniformIndexingNative = shaderInputAttachmentArrayNonUniformIndexingNative; return *this; }
-    PhysicalDeviceVulkan12Properties& setRobustBufferAccessUpdateAfterBind(Bool32 robustBufferAccessUpdateAfterBind) { this->robustBufferAccessUpdateAfterBind = robustBufferAccessUpdateAfterBind; return *this; }
-    PhysicalDeviceVulkan12Properties& setQuadDivergentImplicitLod(Bool32 quadDivergentImplicitLod) { this->quadDivergentImplicitLod = quadDivergentImplicitLod; return *this; }
-    PhysicalDeviceVulkan12Properties& setMaxPerStageDescriptorUpdateAfterBindSamplers(uint32_t maxPerStageDescriptorUpdateAfterBindSamplers) { this->maxPerStageDescriptorUpdateAfterBindSamplers = maxPerStageDescriptorUpdateAfterBindSamplers; return *this; }
-    PhysicalDeviceVulkan12Properties& setMaxPerStageDescriptorUpdateAfterBindUniformBuffers(uint32_t maxPerStageDescriptorUpdateAfterBindUniformBuffers) { this->maxPerStageDescriptorUpdateAfterBindUniformBuffers = maxPerStageDescriptorUpdateAfterBindUniformBuffers; return *this; }
-    PhysicalDeviceVulkan12Properties& setMaxPerStageDescriptorUpdateAfterBindStorageBuffers(uint32_t maxPerStageDescriptorUpdateAfterBindStorageBuffers) { this->maxPerStageDescriptorUpdateAfterBindStorageBuffers = maxPerStageDescriptorUpdateAfterBindStorageBuffers; return *this; }
-    PhysicalDeviceVulkan12Properties& setMaxPerStageDescriptorUpdateAfterBindSampledImages(uint32_t maxPerStageDescriptorUpdateAfterBindSampledImages) { this->maxPerStageDescriptorUpdateAfterBindSampledImages = maxPerStageDescriptorUpdateAfterBindSampledImages; return *this; }
-    PhysicalDeviceVulkan12Properties& setMaxPerStageDescriptorUpdateAfterBindStorageImages(uint32_t maxPerStageDescriptorUpdateAfterBindStorageImages) { this->maxPerStageDescriptorUpdateAfterBindStorageImages = maxPerStageDescriptorUpdateAfterBindStorageImages; return *this; }
-    PhysicalDeviceVulkan12Properties& setMaxPerStageDescriptorUpdateAfterBindInputAttachments(uint32_t maxPerStageDescriptorUpdateAfterBindInputAttachments) { this->maxPerStageDescriptorUpdateAfterBindInputAttachments = maxPerStageDescriptorUpdateAfterBindInputAttachments; return *this; }
-    PhysicalDeviceVulkan12Properties& setMaxPerStageUpdateAfterBindResources(uint32_t maxPerStageUpdateAfterBindResources) { this->maxPerStageUpdateAfterBindResources = maxPerStageUpdateAfterBindResources; return *this; }
-    PhysicalDeviceVulkan12Properties& setMaxDescriptorSetUpdateAfterBindSamplers(uint32_t maxDescriptorSetUpdateAfterBindSamplers) { this->maxDescriptorSetUpdateAfterBindSamplers = maxDescriptorSetUpdateAfterBindSamplers; return *this; }
-    PhysicalDeviceVulkan12Properties& setMaxDescriptorSetUpdateAfterBindUniformBuffers(uint32_t maxDescriptorSetUpdateAfterBindUniformBuffers) { this->maxDescriptorSetUpdateAfterBindUniformBuffers = maxDescriptorSetUpdateAfterBindUniformBuffers; return *this; }
-    PhysicalDeviceVulkan12Properties& setMaxDescriptorSetUpdateAfterBindUniformBuffersDynamic(uint32_t maxDescriptorSetUpdateAfterBindUniformBuffersDynamic) { this->maxDescriptorSetUpdateAfterBindUniformBuffersDynamic = maxDescriptorSetUpdateAfterBindUniformBuffersDynamic; return *this; }
-    PhysicalDeviceVulkan12Properties& setMaxDescriptorSetUpdateAfterBindStorageBuffers(uint32_t maxDescriptorSetUpdateAfterBindStorageBuffers) { this->maxDescriptorSetUpdateAfterBindStorageBuffers = maxDescriptorSetUpdateAfterBindStorageBuffers; return *this; }
-    PhysicalDeviceVulkan12Properties& setMaxDescriptorSetUpdateAfterBindStorageBuffersDynamic(uint32_t maxDescriptorSetUpdateAfterBindStorageBuffersDynamic) { this->maxDescriptorSetUpdateAfterBindStorageBuffersDynamic = maxDescriptorSetUpdateAfterBindStorageBuffersDynamic; return *this; }
-    PhysicalDeviceVulkan12Properties& setMaxDescriptorSetUpdateAfterBindSampledImages(uint32_t maxDescriptorSetUpdateAfterBindSampledImages) { this->maxDescriptorSetUpdateAfterBindSampledImages = maxDescriptorSetUpdateAfterBindSampledImages; return *this; }
-    PhysicalDeviceVulkan12Properties& setMaxDescriptorSetUpdateAfterBindStorageImages(uint32_t maxDescriptorSetUpdateAfterBindStorageImages) { this->maxDescriptorSetUpdateAfterBindStorageImages = maxDescriptorSetUpdateAfterBindStorageImages; return *this; }
-    PhysicalDeviceVulkan12Properties& setMaxDescriptorSetUpdateAfterBindInputAttachments(uint32_t maxDescriptorSetUpdateAfterBindInputAttachments) { this->maxDescriptorSetUpdateAfterBindInputAttachments = maxDescriptorSetUpdateAfterBindInputAttachments; return *this; }
-    PhysicalDeviceVulkan12Properties& setSupportedDepthResolveModes(ResolveModeFlags supportedDepthResolveModes) { this->supportedDepthResolveModes = supportedDepthResolveModes; return *this; }
-    PhysicalDeviceVulkan12Properties& setSupportedStencilResolveModes(ResolveModeFlags supportedStencilResolveModes) { this->supportedStencilResolveModes = supportedStencilResolveModes; return *this; }
-    PhysicalDeviceVulkan12Properties& setIndependentResolveNone(Bool32 independentResolveNone) { this->independentResolveNone = independentResolveNone; return *this; }
-    PhysicalDeviceVulkan12Properties& setIndependentResolve(Bool32 independentResolve) { this->independentResolve = independentResolve; return *this; }
-    PhysicalDeviceVulkan12Properties& setFilterMinmaxSingleComponentFormats(Bool32 filterMinmaxSingleComponentFormats) { this->filterMinmaxSingleComponentFormats = filterMinmaxSingleComponentFormats; return *this; }
-    PhysicalDeviceVulkan12Properties& setFilterMinmaxImageComponentMapping(Bool32 filterMinmaxImageComponentMapping) { this->filterMinmaxImageComponentMapping = filterMinmaxImageComponentMapping; return *this; }
-    PhysicalDeviceVulkan12Properties& setMaxTimelineSemaphoreValueDifference(uint64_t maxTimelineSemaphoreValueDifference) { this->maxTimelineSemaphoreValueDifference = maxTimelineSemaphoreValueDifference; return *this; }
-    PhysicalDeviceVulkan12Properties& setFramebufferIntegerColorSampleCounts(SampleCountFlags framebufferIntegerColorSampleCounts) { this->framebufferIntegerColorSampleCounts = framebufferIntegerColorSampleCounts; return *this; }
+    PhysicalDeviceVulkan12Properties& setDriverID(DriverId driverID) {this->driverID = driverID; return *this; }
+    PhysicalDeviceVulkan12Properties& setDriverName(char driverName[MAX_DRIVER_NAME_SIZE]) {for(uint32_t i = 0; i < MAX_DRIVER_NAME_SIZE; i++) this->driverName[i] = driverName[i]; return *this; }
+    PhysicalDeviceVulkan12Properties& setDriverInfo(char driverInfo[MAX_DRIVER_INFO_SIZE]) {for(uint32_t i = 0; i < MAX_DRIVER_INFO_SIZE; i++) this->driverInfo[i] = driverInfo[i]; return *this; }
+    PhysicalDeviceVulkan12Properties& setConformanceVersion(ConformanceVersion conformanceVersion) {this->conformanceVersion = conformanceVersion; return *this; }
+    PhysicalDeviceVulkan12Properties& setDenormBehaviorIndependence(ShaderFloatControlsIndependence denormBehaviorIndependence) {this->denormBehaviorIndependence = denormBehaviorIndependence; return *this; }
+    PhysicalDeviceVulkan12Properties& setRoundingModeIndependence(ShaderFloatControlsIndependence roundingModeIndependence) {this->roundingModeIndependence = roundingModeIndependence; return *this; }
+    PhysicalDeviceVulkan12Properties& setShaderSignedZeroInfNanPreserveFloat16(Bool32 shaderSignedZeroInfNanPreserveFloat16) {this->shaderSignedZeroInfNanPreserveFloat16 = shaderSignedZeroInfNanPreserveFloat16; return *this; }
+    PhysicalDeviceVulkan12Properties& setShaderSignedZeroInfNanPreserveFloat32(Bool32 shaderSignedZeroInfNanPreserveFloat32) {this->shaderSignedZeroInfNanPreserveFloat32 = shaderSignedZeroInfNanPreserveFloat32; return *this; }
+    PhysicalDeviceVulkan12Properties& setShaderSignedZeroInfNanPreserveFloat64(Bool32 shaderSignedZeroInfNanPreserveFloat64) {this->shaderSignedZeroInfNanPreserveFloat64 = shaderSignedZeroInfNanPreserveFloat64; return *this; }
+    PhysicalDeviceVulkan12Properties& setShaderDenormPreserveFloat16(Bool32 shaderDenormPreserveFloat16) {this->shaderDenormPreserveFloat16 = shaderDenormPreserveFloat16; return *this; }
+    PhysicalDeviceVulkan12Properties& setShaderDenormPreserveFloat32(Bool32 shaderDenormPreserveFloat32) {this->shaderDenormPreserveFloat32 = shaderDenormPreserveFloat32; return *this; }
+    PhysicalDeviceVulkan12Properties& setShaderDenormPreserveFloat64(Bool32 shaderDenormPreserveFloat64) {this->shaderDenormPreserveFloat64 = shaderDenormPreserveFloat64; return *this; }
+    PhysicalDeviceVulkan12Properties& setShaderDenormFlushToZeroFloat16(Bool32 shaderDenormFlushToZeroFloat16) {this->shaderDenormFlushToZeroFloat16 = shaderDenormFlushToZeroFloat16; return *this; }
+    PhysicalDeviceVulkan12Properties& setShaderDenormFlushToZeroFloat32(Bool32 shaderDenormFlushToZeroFloat32) {this->shaderDenormFlushToZeroFloat32 = shaderDenormFlushToZeroFloat32; return *this; }
+    PhysicalDeviceVulkan12Properties& setShaderDenormFlushToZeroFloat64(Bool32 shaderDenormFlushToZeroFloat64) {this->shaderDenormFlushToZeroFloat64 = shaderDenormFlushToZeroFloat64; return *this; }
+    PhysicalDeviceVulkan12Properties& setShaderRoundingModeRTEFloat16(Bool32 shaderRoundingModeRTEFloat16) {this->shaderRoundingModeRTEFloat16 = shaderRoundingModeRTEFloat16; return *this; }
+    PhysicalDeviceVulkan12Properties& setShaderRoundingModeRTEFloat32(Bool32 shaderRoundingModeRTEFloat32) {this->shaderRoundingModeRTEFloat32 = shaderRoundingModeRTEFloat32; return *this; }
+    PhysicalDeviceVulkan12Properties& setShaderRoundingModeRTEFloat64(Bool32 shaderRoundingModeRTEFloat64) {this->shaderRoundingModeRTEFloat64 = shaderRoundingModeRTEFloat64; return *this; }
+    PhysicalDeviceVulkan12Properties& setShaderRoundingModeRTZFloat16(Bool32 shaderRoundingModeRTZFloat16) {this->shaderRoundingModeRTZFloat16 = shaderRoundingModeRTZFloat16; return *this; }
+    PhysicalDeviceVulkan12Properties& setShaderRoundingModeRTZFloat32(Bool32 shaderRoundingModeRTZFloat32) {this->shaderRoundingModeRTZFloat32 = shaderRoundingModeRTZFloat32; return *this; }
+    PhysicalDeviceVulkan12Properties& setShaderRoundingModeRTZFloat64(Bool32 shaderRoundingModeRTZFloat64) {this->shaderRoundingModeRTZFloat64 = shaderRoundingModeRTZFloat64; return *this; }
+    PhysicalDeviceVulkan12Properties& setMaxUpdateAfterBindDescriptorsInAllPools(uint32_t maxUpdateAfterBindDescriptorsInAllPools) {this->maxUpdateAfterBindDescriptorsInAllPools = maxUpdateAfterBindDescriptorsInAllPools; return *this; }
+    PhysicalDeviceVulkan12Properties& setShaderUniformBufferArrayNonUniformIndexingNative(Bool32 shaderUniformBufferArrayNonUniformIndexingNative) {this->shaderUniformBufferArrayNonUniformIndexingNative = shaderUniformBufferArrayNonUniformIndexingNative; return *this; }
+    PhysicalDeviceVulkan12Properties& setShaderSampledImageArrayNonUniformIndexingNative(Bool32 shaderSampledImageArrayNonUniformIndexingNative) {this->shaderSampledImageArrayNonUniformIndexingNative = shaderSampledImageArrayNonUniformIndexingNative; return *this; }
+    PhysicalDeviceVulkan12Properties& setShaderStorageBufferArrayNonUniformIndexingNative(Bool32 shaderStorageBufferArrayNonUniformIndexingNative) {this->shaderStorageBufferArrayNonUniformIndexingNative = shaderStorageBufferArrayNonUniformIndexingNative; return *this; }
+    PhysicalDeviceVulkan12Properties& setShaderStorageImageArrayNonUniformIndexingNative(Bool32 shaderStorageImageArrayNonUniformIndexingNative) {this->shaderStorageImageArrayNonUniformIndexingNative = shaderStorageImageArrayNonUniformIndexingNative; return *this; }
+    PhysicalDeviceVulkan12Properties& setShaderInputAttachmentArrayNonUniformIndexingNative(Bool32 shaderInputAttachmentArrayNonUniformIndexingNative) {this->shaderInputAttachmentArrayNonUniformIndexingNative = shaderInputAttachmentArrayNonUniformIndexingNative; return *this; }
+    PhysicalDeviceVulkan12Properties& setRobustBufferAccessUpdateAfterBind(Bool32 robustBufferAccessUpdateAfterBind) {this->robustBufferAccessUpdateAfterBind = robustBufferAccessUpdateAfterBind; return *this; }
+    PhysicalDeviceVulkan12Properties& setQuadDivergentImplicitLod(Bool32 quadDivergentImplicitLod) {this->quadDivergentImplicitLod = quadDivergentImplicitLod; return *this; }
+    PhysicalDeviceVulkan12Properties& setMaxPerStageDescriptorUpdateAfterBindSamplers(uint32_t maxPerStageDescriptorUpdateAfterBindSamplers) {this->maxPerStageDescriptorUpdateAfterBindSamplers = maxPerStageDescriptorUpdateAfterBindSamplers; return *this; }
+    PhysicalDeviceVulkan12Properties& setMaxPerStageDescriptorUpdateAfterBindUniformBuffers(uint32_t maxPerStageDescriptorUpdateAfterBindUniformBuffers) {this->maxPerStageDescriptorUpdateAfterBindUniformBuffers = maxPerStageDescriptorUpdateAfterBindUniformBuffers; return *this; }
+    PhysicalDeviceVulkan12Properties& setMaxPerStageDescriptorUpdateAfterBindStorageBuffers(uint32_t maxPerStageDescriptorUpdateAfterBindStorageBuffers) {this->maxPerStageDescriptorUpdateAfterBindStorageBuffers = maxPerStageDescriptorUpdateAfterBindStorageBuffers; return *this; }
+    PhysicalDeviceVulkan12Properties& setMaxPerStageDescriptorUpdateAfterBindSampledImages(uint32_t maxPerStageDescriptorUpdateAfterBindSampledImages) {this->maxPerStageDescriptorUpdateAfterBindSampledImages = maxPerStageDescriptorUpdateAfterBindSampledImages; return *this; }
+    PhysicalDeviceVulkan12Properties& setMaxPerStageDescriptorUpdateAfterBindStorageImages(uint32_t maxPerStageDescriptorUpdateAfterBindStorageImages) {this->maxPerStageDescriptorUpdateAfterBindStorageImages = maxPerStageDescriptorUpdateAfterBindStorageImages; return *this; }
+    PhysicalDeviceVulkan12Properties& setMaxPerStageDescriptorUpdateAfterBindInputAttachments(uint32_t maxPerStageDescriptorUpdateAfterBindInputAttachments) {this->maxPerStageDescriptorUpdateAfterBindInputAttachments = maxPerStageDescriptorUpdateAfterBindInputAttachments; return *this; }
+    PhysicalDeviceVulkan12Properties& setMaxPerStageUpdateAfterBindResources(uint32_t maxPerStageUpdateAfterBindResources) {this->maxPerStageUpdateAfterBindResources = maxPerStageUpdateAfterBindResources; return *this; }
+    PhysicalDeviceVulkan12Properties& setMaxDescriptorSetUpdateAfterBindSamplers(uint32_t maxDescriptorSetUpdateAfterBindSamplers) {this->maxDescriptorSetUpdateAfterBindSamplers = maxDescriptorSetUpdateAfterBindSamplers; return *this; }
+    PhysicalDeviceVulkan12Properties& setMaxDescriptorSetUpdateAfterBindUniformBuffers(uint32_t maxDescriptorSetUpdateAfterBindUniformBuffers) {this->maxDescriptorSetUpdateAfterBindUniformBuffers = maxDescriptorSetUpdateAfterBindUniformBuffers; return *this; }
+    PhysicalDeviceVulkan12Properties& setMaxDescriptorSetUpdateAfterBindUniformBuffersDynamic(uint32_t maxDescriptorSetUpdateAfterBindUniformBuffersDynamic) {this->maxDescriptorSetUpdateAfterBindUniformBuffersDynamic = maxDescriptorSetUpdateAfterBindUniformBuffersDynamic; return *this; }
+    PhysicalDeviceVulkan12Properties& setMaxDescriptorSetUpdateAfterBindStorageBuffers(uint32_t maxDescriptorSetUpdateAfterBindStorageBuffers) {this->maxDescriptorSetUpdateAfterBindStorageBuffers = maxDescriptorSetUpdateAfterBindStorageBuffers; return *this; }
+    PhysicalDeviceVulkan12Properties& setMaxDescriptorSetUpdateAfterBindStorageBuffersDynamic(uint32_t maxDescriptorSetUpdateAfterBindStorageBuffersDynamic) {this->maxDescriptorSetUpdateAfterBindStorageBuffersDynamic = maxDescriptorSetUpdateAfterBindStorageBuffersDynamic; return *this; }
+    PhysicalDeviceVulkan12Properties& setMaxDescriptorSetUpdateAfterBindSampledImages(uint32_t maxDescriptorSetUpdateAfterBindSampledImages) {this->maxDescriptorSetUpdateAfterBindSampledImages = maxDescriptorSetUpdateAfterBindSampledImages; return *this; }
+    PhysicalDeviceVulkan12Properties& setMaxDescriptorSetUpdateAfterBindStorageImages(uint32_t maxDescriptorSetUpdateAfterBindStorageImages) {this->maxDescriptorSetUpdateAfterBindStorageImages = maxDescriptorSetUpdateAfterBindStorageImages; return *this; }
+    PhysicalDeviceVulkan12Properties& setMaxDescriptorSetUpdateAfterBindInputAttachments(uint32_t maxDescriptorSetUpdateAfterBindInputAttachments) {this->maxDescriptorSetUpdateAfterBindInputAttachments = maxDescriptorSetUpdateAfterBindInputAttachments; return *this; }
+    PhysicalDeviceVulkan12Properties& setSupportedDepthResolveModes(ResolveModeFlags supportedDepthResolveModes) {this->supportedDepthResolveModes = supportedDepthResolveModes; return *this; }
+    PhysicalDeviceVulkan12Properties& setSupportedStencilResolveModes(ResolveModeFlags supportedStencilResolveModes) {this->supportedStencilResolveModes = supportedStencilResolveModes; return *this; }
+    PhysicalDeviceVulkan12Properties& setIndependentResolveNone(Bool32 independentResolveNone) {this->independentResolveNone = independentResolveNone; return *this; }
+    PhysicalDeviceVulkan12Properties& setIndependentResolve(Bool32 independentResolve) {this->independentResolve = independentResolve; return *this; }
+    PhysicalDeviceVulkan12Properties& setFilterMinmaxSingleComponentFormats(Bool32 filterMinmaxSingleComponentFormats) {this->filterMinmaxSingleComponentFormats = filterMinmaxSingleComponentFormats; return *this; }
+    PhysicalDeviceVulkan12Properties& setFilterMinmaxImageComponentMapping(Bool32 filterMinmaxImageComponentMapping) {this->filterMinmaxImageComponentMapping = filterMinmaxImageComponentMapping; return *this; }
+    PhysicalDeviceVulkan12Properties& setMaxTimelineSemaphoreValueDifference(uint64_t maxTimelineSemaphoreValueDifference) {this->maxTimelineSemaphoreValueDifference = maxTimelineSemaphoreValueDifference; return *this; }
+    PhysicalDeviceVulkan12Properties& setFramebufferIntegerColorSampleCounts(SampleCountFlags framebufferIntegerColorSampleCounts) {this->framebufferIntegerColorSampleCounts = framebufferIntegerColorSampleCounts; return *this; }
 };
 struct PipelineCompilerControlCreateInfoAMD {
     StructureType sType{StructureType::PipelineCompilerControlCreateInfoAMD};
     const void* pNext = nullptr;
     PipelineCompilerControlFlagsAMD compilerControlFlags{};
-    PipelineCompilerControlCreateInfoAMD& setCompilerControlFlags(PipelineCompilerControlFlagsAMD compilerControlFlags) { this->compilerControlFlags = compilerControlFlags; return *this; }
+    PipelineCompilerControlCreateInfoAMD& setCompilerControlFlags(PipelineCompilerControlFlagsAMD compilerControlFlags) {this->compilerControlFlags = compilerControlFlags; return *this; }
 };
 struct PhysicalDeviceCoherentMemoryFeaturesAMD {
     StructureType sType{StructureType::PhysicalDeviceCoherentMemoryFeaturesAMD};
     void* pNext = nullptr;
     Bool32 deviceCoherentMemory{0};
-    PhysicalDeviceCoherentMemoryFeaturesAMD& setDeviceCoherentMemory(Bool32 deviceCoherentMemory) { this->deviceCoherentMemory = deviceCoherentMemory; return *this; }
+    PhysicalDeviceCoherentMemoryFeaturesAMD& setDeviceCoherentMemory(Bool32 deviceCoherentMemory) {this->deviceCoherentMemory = deviceCoherentMemory; return *this; }
 };
 struct PhysicalDeviceToolPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceToolPropertiesEXT};
@@ -9899,43 +9907,45 @@ struct PhysicalDeviceToolPropertiesEXT {
     ToolPurposeFlagsEXT purposes{};
     char description[MAX_DESCRIPTION_SIZE];
     char layer[MAX_EXTENSION_NAME_SIZE];
-    PhysicalDeviceToolPropertiesEXT& setName(char name[MAX_EXTENSION_NAME_SIZE]) { for(uint32_t i = 0; i < MAX_EXTENSION_NAME_SIZE; i++) this->name[i] = name[i]; return *this; }
-    PhysicalDeviceToolPropertiesEXT& setVersion(char version[MAX_EXTENSION_NAME_SIZE]) { for(uint32_t i = 0; i < MAX_EXTENSION_NAME_SIZE; i++) this->version[i] = version[i]; return *this; }
-    PhysicalDeviceToolPropertiesEXT& setPurposes(ToolPurposeFlagsEXT purposes) { this->purposes = purposes; return *this; }
-    PhysicalDeviceToolPropertiesEXT& setDescription(char description[MAX_DESCRIPTION_SIZE]) { for(uint32_t i = 0; i < MAX_DESCRIPTION_SIZE; i++) this->description[i] = description[i]; return *this; }
-    PhysicalDeviceToolPropertiesEXT& setLayer(char layer[MAX_EXTENSION_NAME_SIZE]) { for(uint32_t i = 0; i < MAX_EXTENSION_NAME_SIZE; i++) this->layer[i] = layer[i]; return *this; }
+    PhysicalDeviceToolPropertiesEXT& setName(char name[MAX_EXTENSION_NAME_SIZE]) {for(uint32_t i = 0; i < MAX_EXTENSION_NAME_SIZE; i++) this->name[i] = name[i]; return *this; }
+    PhysicalDeviceToolPropertiesEXT& setVersion(char version[MAX_EXTENSION_NAME_SIZE]) {for(uint32_t i = 0; i < MAX_EXTENSION_NAME_SIZE; i++) this->version[i] = version[i]; return *this; }
+    PhysicalDeviceToolPropertiesEXT& setPurposes(ToolPurposeFlagsEXT purposes) {this->purposes = purposes; return *this; }
+    PhysicalDeviceToolPropertiesEXT& setDescription(char description[MAX_DESCRIPTION_SIZE]) {for(uint32_t i = 0; i < MAX_DESCRIPTION_SIZE; i++) this->description[i] = description[i]; return *this; }
+    PhysicalDeviceToolPropertiesEXT& setLayer(char layer[MAX_EXTENSION_NAME_SIZE]) {for(uint32_t i = 0; i < MAX_EXTENSION_NAME_SIZE; i++) this->layer[i] = layer[i]; return *this; }
 };
 struct SamplerCustomBorderColorCreateInfoEXT {
     StructureType sType{StructureType::SamplerCustomBorderColorCreateInfoEXT};
     const void* pNext = nullptr;
     ClearColorValue customBorderColor{};
     Format format{static_cast<Format>(0)};
-    SamplerCustomBorderColorCreateInfoEXT& setCustomBorderColor(ClearColorValue customBorderColor) { this->customBorderColor = customBorderColor; return *this; }
-    SamplerCustomBorderColorCreateInfoEXT& setFormat(Format format) { this->format = format; return *this; }
+    SamplerCustomBorderColorCreateInfoEXT& setCustomBorderColor(ClearColorValue customBorderColor) {this->customBorderColor = customBorderColor; return *this; }
+    SamplerCustomBorderColorCreateInfoEXT& setFormat(Format format) {this->format = format; return *this; }
 };
 struct PhysicalDeviceCustomBorderColorPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceCustomBorderColorPropertiesEXT};
     void* pNext = nullptr;
     uint32_t maxCustomBorderColorSamplers{0};
-    PhysicalDeviceCustomBorderColorPropertiesEXT& setMaxCustomBorderColorSamplers(uint32_t maxCustomBorderColorSamplers) { this->maxCustomBorderColorSamplers = maxCustomBorderColorSamplers; return *this; }
+    PhysicalDeviceCustomBorderColorPropertiesEXT& setMaxCustomBorderColorSamplers(uint32_t maxCustomBorderColorSamplers) {this->maxCustomBorderColorSamplers = maxCustomBorderColorSamplers; return *this; }
 };
 struct PhysicalDeviceCustomBorderColorFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceCustomBorderColorFeaturesEXT};
     void* pNext = nullptr;
     Bool32 customBorderColors{0};
     Bool32 customBorderColorWithoutFormat{0};
-    PhysicalDeviceCustomBorderColorFeaturesEXT& setCustomBorderColors(Bool32 customBorderColors) { this->customBorderColors = customBorderColors; return *this; }
-    PhysicalDeviceCustomBorderColorFeaturesEXT& setCustomBorderColorWithoutFormat(Bool32 customBorderColorWithoutFormat) { this->customBorderColorWithoutFormat = customBorderColorWithoutFormat; return *this; }
+    PhysicalDeviceCustomBorderColorFeaturesEXT& setCustomBorderColors(Bool32 customBorderColors) {this->customBorderColors = customBorderColors; return *this; }
+    PhysicalDeviceCustomBorderColorFeaturesEXT& setCustomBorderColorWithoutFormat(Bool32 customBorderColorWithoutFormat) {this->customBorderColorWithoutFormat = customBorderColorWithoutFormat; return *this; }
 };
 union DeviceOrHostAddressKHR {
     DeviceAddress deviceAddress;
     void* hostAddress;
-    DeviceOrHostAddressKHR& setDeviceAddress(DeviceAddress deviceAddress) { this->deviceAddress = deviceAddress; return *this; }
+    DeviceOrHostAddressKHR& setDeviceAddress(DeviceAddress deviceAddress) {this->deviceAddress = deviceAddress; return *this; }
+    DeviceOrHostAddressKHR& setHostAddress(void* hostAddress) {this->hostAddress = hostAddress; return *this; }
 };
 union DeviceOrHostAddressConstKHR {
     DeviceAddress deviceAddress;
     const void* hostAddress;
-    DeviceOrHostAddressConstKHR& setDeviceAddress(DeviceAddress deviceAddress) { this->deviceAddress = deviceAddress; return *this; }
+    DeviceOrHostAddressConstKHR& setDeviceAddress(DeviceAddress deviceAddress) {this->deviceAddress = deviceAddress; return *this; }
+    DeviceOrHostAddressConstKHR& setHostAddress(const void* hostAddress) {this->hostAddress = hostAddress; return *this; }
 };
 struct AccelerationStructureGeometryTrianglesDataKHR {
     StructureType sType{StructureType::AccelerationStructureGeometryTrianglesDataKHR};
@@ -9947,37 +9957,37 @@ struct AccelerationStructureGeometryTrianglesDataKHR {
     IndexType indexType{static_cast<IndexType>(0)};
     DeviceOrHostAddressConstKHR indexData{};
     DeviceOrHostAddressConstKHR transformData{};
-    AccelerationStructureGeometryTrianglesDataKHR& setVertexFormat(Format vertexFormat) { this->vertexFormat = vertexFormat; return *this; }
-    AccelerationStructureGeometryTrianglesDataKHR& setVertexData(DeviceOrHostAddressConstKHR vertexData) { this->vertexData = vertexData; return *this; }
-    AccelerationStructureGeometryTrianglesDataKHR& setVertexStride(DeviceSize vertexStride) { this->vertexStride = vertexStride; return *this; }
-    AccelerationStructureGeometryTrianglesDataKHR& setMaxVertex(uint32_t maxVertex) { this->maxVertex = maxVertex; return *this; }
-    AccelerationStructureGeometryTrianglesDataKHR& setIndexType(IndexType indexType) { this->indexType = indexType; return *this; }
-    AccelerationStructureGeometryTrianglesDataKHR& setIndexData(DeviceOrHostAddressConstKHR indexData) { this->indexData = indexData; return *this; }
-    AccelerationStructureGeometryTrianglesDataKHR& setTransformData(DeviceOrHostAddressConstKHR transformData) { this->transformData = transformData; return *this; }
+    AccelerationStructureGeometryTrianglesDataKHR& setVertexFormat(Format vertexFormat) {this->vertexFormat = vertexFormat; return *this; }
+    AccelerationStructureGeometryTrianglesDataKHR& setVertexData(DeviceOrHostAddressConstKHR vertexData) {this->vertexData = vertexData; return *this; }
+    AccelerationStructureGeometryTrianglesDataKHR& setVertexStride(DeviceSize vertexStride) {this->vertexStride = vertexStride; return *this; }
+    AccelerationStructureGeometryTrianglesDataKHR& setMaxVertex(uint32_t maxVertex) {this->maxVertex = maxVertex; return *this; }
+    AccelerationStructureGeometryTrianglesDataKHR& setIndexType(IndexType indexType) {this->indexType = indexType; return *this; }
+    AccelerationStructureGeometryTrianglesDataKHR& setIndexData(DeviceOrHostAddressConstKHR indexData) {this->indexData = indexData; return *this; }
+    AccelerationStructureGeometryTrianglesDataKHR& setTransformData(DeviceOrHostAddressConstKHR transformData) {this->transformData = transformData; return *this; }
 };
 struct AccelerationStructureGeometryAabbsDataKHR {
     StructureType sType{StructureType::AccelerationStructureGeometryAabbsDataKHR};
     const void* pNext = nullptr;
     DeviceOrHostAddressConstKHR data{};
     DeviceSize stride{0};
-    AccelerationStructureGeometryAabbsDataKHR& setData(DeviceOrHostAddressConstKHR data) { this->data = data; return *this; }
-    AccelerationStructureGeometryAabbsDataKHR& setStride(DeviceSize stride) { this->stride = stride; return *this; }
+    AccelerationStructureGeometryAabbsDataKHR& setData(DeviceOrHostAddressConstKHR data) {this->data = data; return *this; }
+    AccelerationStructureGeometryAabbsDataKHR& setStride(DeviceSize stride) {this->stride = stride; return *this; }
 };
 struct AccelerationStructureGeometryInstancesDataKHR {
     StructureType sType{StructureType::AccelerationStructureGeometryInstancesDataKHR};
     const void* pNext = nullptr;
     Bool32 arrayOfPointers{0};
     DeviceOrHostAddressConstKHR data{};
-    AccelerationStructureGeometryInstancesDataKHR& setArrayOfPointers(Bool32 arrayOfPointers) { this->arrayOfPointers = arrayOfPointers; return *this; }
-    AccelerationStructureGeometryInstancesDataKHR& setData(DeviceOrHostAddressConstKHR data) { this->data = data; return *this; }
+    AccelerationStructureGeometryInstancesDataKHR& setArrayOfPointers(Bool32 arrayOfPointers) {this->arrayOfPointers = arrayOfPointers; return *this; }
+    AccelerationStructureGeometryInstancesDataKHR& setData(DeviceOrHostAddressConstKHR data) {this->data = data; return *this; }
 };
 union AccelerationStructureGeometryDataKHR {
     AccelerationStructureGeometryTrianglesDataKHR triangles;
     AccelerationStructureGeometryAabbsDataKHR aabbs;
     AccelerationStructureGeometryInstancesDataKHR instances;
-    AccelerationStructureGeometryDataKHR& setTriangles(AccelerationStructureGeometryTrianglesDataKHR triangles) { this->triangles = triangles; return *this; }
-    AccelerationStructureGeometryDataKHR& setAabbs(AccelerationStructureGeometryAabbsDataKHR aabbs) { this->aabbs = aabbs; return *this; }
-    AccelerationStructureGeometryDataKHR& setInstances(AccelerationStructureGeometryInstancesDataKHR instances) { this->instances = instances; return *this; }
+    AccelerationStructureGeometryDataKHR& setTriangles(AccelerationStructureGeometryTrianglesDataKHR triangles) {this->triangles = triangles; return *this; }
+    AccelerationStructureGeometryDataKHR& setAabbs(AccelerationStructureGeometryAabbsDataKHR aabbs) {this->aabbs = aabbs; return *this; }
+    AccelerationStructureGeometryDataKHR& setInstances(AccelerationStructureGeometryInstancesDataKHR instances) {this->instances = instances; return *this; }
 };
 struct AccelerationStructureGeometryKHR {
     StructureType sType{StructureType::AccelerationStructureGeometryKHR};
@@ -9985,9 +9995,9 @@ struct AccelerationStructureGeometryKHR {
     GeometryTypeKHR geometryType{static_cast<GeometryTypeKHR>(0)};
     AccelerationStructureGeometryDataKHR geometry{};
     GeometryFlagsKHR flags{};
-    AccelerationStructureGeometryKHR& setGeometryType(GeometryTypeKHR geometryType) { this->geometryType = geometryType; return *this; }
-    AccelerationStructureGeometryKHR& setGeometry(AccelerationStructureGeometryDataKHR geometry) { this->geometry = geometry; return *this; }
-    AccelerationStructureGeometryKHR& setFlags(GeometryFlagsKHR flags) { this->flags = flags; return *this; }
+    AccelerationStructureGeometryKHR& setGeometryType(GeometryTypeKHR geometryType) {this->geometryType = geometryType; return *this; }
+    AccelerationStructureGeometryKHR& setGeometry(AccelerationStructureGeometryDataKHR geometry) {this->geometry = geometry; return *this; }
+    AccelerationStructureGeometryKHR& setFlags(GeometryFlagsKHR flags) {this->flags = flags; return *this; }
 };
 struct AccelerationStructureBuildGeometryInfoKHR {
     StructureType sType{StructureType::AccelerationStructureBuildGeometryInfoKHR};
@@ -10001,17 +10011,17 @@ struct AccelerationStructureBuildGeometryInfoKHR {
     const AccelerationStructureGeometryKHR* pGeometries = nullptr;
     const AccelerationStructureGeometryKHR* const* ppGeometries = nullptr;
     DeviceOrHostAddressKHR scratchData{};
-    AccelerationStructureBuildGeometryInfoKHR& setType(AccelerationStructureTypeKHR type) { this->type = type; return *this; }
-    AccelerationStructureBuildGeometryInfoKHR& setFlags(BuildAccelerationStructureFlagsKHR flags) { this->flags = flags; return *this; }
-    AccelerationStructureBuildGeometryInfoKHR& setMode(BuildAccelerationStructureModeKHR mode) { this->mode = mode; return *this; }
-    AccelerationStructureBuildGeometryInfoKHR& setSrcAccelerationStructure(AccelerationStructureKHR srcAccelerationStructure) { this->srcAccelerationStructure = srcAccelerationStructure; return *this; }
-    AccelerationStructureBuildGeometryInfoKHR& setDstAccelerationStructure(AccelerationStructureKHR dstAccelerationStructure) { this->dstAccelerationStructure = dstAccelerationStructure; return *this; }
-    AccelerationStructureBuildGeometryInfoKHR& setGeometryCount(uint32_t geometryCount) { this->geometryCount = geometryCount; return *this; }
-    AccelerationStructureBuildGeometryInfoKHR& setPGeometries(const AccelerationStructureGeometryKHR* pGeometries) { this->pGeometries = pGeometries; return *this; }
-    AccelerationStructureBuildGeometryInfoKHR& setGeometries(detail::span<const AccelerationStructureGeometryKHR> Geometries) { this->geometryCount = Geometries.size(); this->pGeometries = Geometries.data();  return *this; }
+    AccelerationStructureBuildGeometryInfoKHR& setType(AccelerationStructureTypeKHR type) {this->type = type; return *this; }
+    AccelerationStructureBuildGeometryInfoKHR& setFlags(BuildAccelerationStructureFlagsKHR flags) {this->flags = flags; return *this; }
+    AccelerationStructureBuildGeometryInfoKHR& setMode(BuildAccelerationStructureModeKHR mode) {this->mode = mode; return *this; }
+    AccelerationStructureBuildGeometryInfoKHR& setSrcAccelerationStructure(AccelerationStructureKHR srcAccelerationStructure) {this->srcAccelerationStructure = srcAccelerationStructure; return *this; }
+    AccelerationStructureBuildGeometryInfoKHR& setDstAccelerationStructure(AccelerationStructureKHR dstAccelerationStructure) {this->dstAccelerationStructure = dstAccelerationStructure; return *this; }
+    AccelerationStructureBuildGeometryInfoKHR& setGeometryCount(uint32_t geometryCount) {this->geometryCount = geometryCount; return *this; }
+    AccelerationStructureBuildGeometryInfoKHR& setPGeometries(const AccelerationStructureGeometryKHR* pGeometries) {this->pGeometries = pGeometries; return *this; }
+    AccelerationStructureBuildGeometryInfoKHR& setPGeometries(detail::span<const AccelerationStructureGeometryKHR> pGeometries) {this->geometryCount = pGeometries.size(); this->pGeometries = pGeometries.data();  return *this; }
     AccelerationStructureBuildGeometryInfoKHR& setPpGeometries(const AccelerationStructureGeometryKHR* const* ppGeometries) {this->ppGeometries = ppGeometries; return *this; }
-    AccelerationStructureBuildGeometryInfoKHR& setpGeometries(detail::span<const AccelerationStructureGeometryKHR*> pGeometries) { this->geometryCount = pGeometries.size(); this->ppGeometries = pGeometries.data();  return *this; }
-    AccelerationStructureBuildGeometryInfoKHR& setScratchData(DeviceOrHostAddressKHR scratchData) { this->scratchData = scratchData; return *this; }
+    AccelerationStructureBuildGeometryInfoKHR& setPpGeometries(detail::span<const AccelerationStructureGeometryKHR*> ppGeometries) {this->geometryCount = ppGeometries.size(); this->ppGeometries = ppGeometries.data();  return *this; }
+    AccelerationStructureBuildGeometryInfoKHR& setScratchData(DeviceOrHostAddressKHR scratchData) {this->scratchData = scratchData; return *this; }
 };
 struct AccelerationStructureBuildRangeInfoKHR {
     uint32_t primitiveCount{0};
@@ -10022,10 +10032,10 @@ struct AccelerationStructureBuildRangeInfoKHR {
         return primitiveCount == value.primitiveCount && primitiveOffset == value.primitiveOffset && firstVertex == value.firstVertex && transformOffset == value.transformOffset 
         ;}
     constexpr bool operator!=(AccelerationStructureBuildRangeInfoKHR const& value) const {return !(*this == value);}
-    AccelerationStructureBuildRangeInfoKHR& setPrimitiveCount(uint32_t primitiveCount) { this->primitiveCount = primitiveCount; return *this; }
-    AccelerationStructureBuildRangeInfoKHR& setPrimitiveOffset(uint32_t primitiveOffset) { this->primitiveOffset = primitiveOffset; return *this; }
-    AccelerationStructureBuildRangeInfoKHR& setFirstVertex(uint32_t firstVertex) { this->firstVertex = firstVertex; return *this; }
-    AccelerationStructureBuildRangeInfoKHR& setTransformOffset(uint32_t transformOffset) { this->transformOffset = transformOffset; return *this; }
+    AccelerationStructureBuildRangeInfoKHR& setPrimitiveCount(uint32_t primitiveCount) {this->primitiveCount = primitiveCount; return *this; }
+    AccelerationStructureBuildRangeInfoKHR& setPrimitiveOffset(uint32_t primitiveOffset) {this->primitiveOffset = primitiveOffset; return *this; }
+    AccelerationStructureBuildRangeInfoKHR& setFirstVertex(uint32_t firstVertex) {this->firstVertex = firstVertex; return *this; }
+    AccelerationStructureBuildRangeInfoKHR& setTransformOffset(uint32_t transformOffset) {this->transformOffset = transformOffset; return *this; }
 };
 struct AccelerationStructureCreateInfoKHR {
     StructureType sType{StructureType::AccelerationStructureCreateInfoKHR};
@@ -10036,12 +10046,12 @@ struct AccelerationStructureCreateInfoKHR {
     DeviceSize size{0};
     AccelerationStructureTypeKHR type{static_cast<AccelerationStructureTypeKHR>(0)};
     DeviceAddress deviceAddress{0};
-    AccelerationStructureCreateInfoKHR& setCreateFlags(AccelerationStructureCreateFlagsKHR createFlags) { this->createFlags = createFlags; return *this; }
-    AccelerationStructureCreateInfoKHR& setBuffer(Buffer buffer) { this->buffer = buffer; return *this; }
-    AccelerationStructureCreateInfoKHR& setOffset(DeviceSize offset) { this->offset = offset; return *this; }
-    AccelerationStructureCreateInfoKHR& setSize(DeviceSize size) { this->size = size; return *this; }
-    AccelerationStructureCreateInfoKHR& setType(AccelerationStructureTypeKHR type) { this->type = type; return *this; }
-    AccelerationStructureCreateInfoKHR& setDeviceAddress(DeviceAddress deviceAddress) { this->deviceAddress = deviceAddress; return *this; }
+    AccelerationStructureCreateInfoKHR& setCreateFlags(AccelerationStructureCreateFlagsKHR createFlags) {this->createFlags = createFlags; return *this; }
+    AccelerationStructureCreateInfoKHR& setBuffer(Buffer buffer) {this->buffer = buffer; return *this; }
+    AccelerationStructureCreateInfoKHR& setOffset(DeviceSize offset) {this->offset = offset; return *this; }
+    AccelerationStructureCreateInfoKHR& setSize(DeviceSize size) {this->size = size; return *this; }
+    AccelerationStructureCreateInfoKHR& setType(AccelerationStructureTypeKHR type) {this->type = type; return *this; }
+    AccelerationStructureCreateInfoKHR& setDeviceAddress(DeviceAddress deviceAddress) {this->deviceAddress = deviceAddress; return *this; }
 };
 struct AabbPositionsKHR {
     float minX{0.f};
@@ -10053,12 +10063,12 @@ struct AabbPositionsKHR {
     constexpr bool operator==(AabbPositionsKHR const& value) const {
         return minX == value.minX && minY == value.minY && minZ == value.minZ && maxX == value.maxX && maxY == value.maxY && maxZ == value.maxZ ;}
     constexpr bool operator!=(AabbPositionsKHR const& value) const {return !(*this == value);}
-    AabbPositionsKHR& setMinX(float minX) { this->minX = minX; return *this; }
-    AabbPositionsKHR& setMinY(float minY) { this->minY = minY; return *this; }
-    AabbPositionsKHR& setMinZ(float minZ) { this->minZ = minZ; return *this; }
-    AabbPositionsKHR& setMaxX(float maxX) { this->maxX = maxX; return *this; }
-    AabbPositionsKHR& setMaxY(float maxY) { this->maxY = maxY; return *this; }
-    AabbPositionsKHR& setMaxZ(float maxZ) { this->maxZ = maxZ; return *this; }
+    AabbPositionsKHR& setMinX(float minX) {this->minX = minX; return *this; }
+    AabbPositionsKHR& setMinY(float minY) {this->minY = minY; return *this; }
+    AabbPositionsKHR& setMinZ(float minZ) {this->minZ = minZ; return *this; }
+    AabbPositionsKHR& setMaxX(float maxX) {this->maxX = maxX; return *this; }
+    AabbPositionsKHR& setMaxY(float maxY) {this->maxY = maxY; return *this; }
+    AabbPositionsKHR& setMaxZ(float maxZ) {this->maxZ = maxZ; return *this; }
 };
 using AabbPositionsNV = AabbPositionsKHR;
 struct TransformMatrixKHR {
@@ -10070,7 +10080,7 @@ struct TransformMatrixKHR {
                 is_equal &= matrix[i][j] == value.matrix[i][j];
         return is_equal;}
     constexpr bool operator!=(TransformMatrixKHR const& value) const {return !(*this == value);}
-    TransformMatrixKHR& setMatrix(float matrix[3][4]) { 
+    TransformMatrixKHR& setMatrix(float matrix[3][4]) {
         for(uint32_t i = 0; i < 3; i++){ for(uint32_t j = 0; j < 4; j++){
         this->matrix[i][j] = matrix[i][j];}} return *this; }
 };
@@ -10086,25 +10096,25 @@ struct AccelerationStructureInstanceKHR {
         return transform == value.transform && instanceCustomIndex == value.instanceCustomIndex && mask == value.mask && instanceShaderBindingTableRecordOffset == value.instanceShaderBindingTableRecordOffset 
         && flags == value.flags && accelerationStructureReference == value.accelerationStructureReference ;}
     constexpr bool operator!=(AccelerationStructureInstanceKHR const& value) const {return !(*this == value);}
-    AccelerationStructureInstanceKHR& setTransform(TransformMatrixKHR transform) { this->transform = transform; return *this; }
-    AccelerationStructureInstanceKHR& setInstanceCustomIndex(uint32_t instanceCustomIndex) { this->instanceCustomIndex = instanceCustomIndex; return *this; }
-    AccelerationStructureInstanceKHR& setMask(uint32_t mask) { this->mask = mask; return *this; }
-    AccelerationStructureInstanceKHR& setInstanceShaderBindingTableRecordOffset(uint32_t instanceShaderBindingTableRecordOffset) { this->instanceShaderBindingTableRecordOffset = instanceShaderBindingTableRecordOffset; return *this; }
-    AccelerationStructureInstanceKHR& setFlags(uint32_t flags) { this->flags = flags; return *this; }
-    AccelerationStructureInstanceKHR& setAccelerationStructureReference(uint64_t accelerationStructureReference) { this->accelerationStructureReference = accelerationStructureReference; return *this; }
+    AccelerationStructureInstanceKHR& setTransform(TransformMatrixKHR transform) {this->transform = transform; return *this; }
+    AccelerationStructureInstanceKHR& setInstanceCustomIndex(uint32_t instanceCustomIndex) {this->instanceCustomIndex = instanceCustomIndex; return *this; }
+    AccelerationStructureInstanceKHR& setMask(uint32_t mask) {this->mask = mask; return *this; }
+    AccelerationStructureInstanceKHR& setInstanceShaderBindingTableRecordOffset(uint32_t instanceShaderBindingTableRecordOffset) {this->instanceShaderBindingTableRecordOffset = instanceShaderBindingTableRecordOffset; return *this; }
+    AccelerationStructureInstanceKHR& setFlags(uint32_t flags) {this->flags = flags; return *this; }
+    AccelerationStructureInstanceKHR& setAccelerationStructureReference(uint64_t accelerationStructureReference) {this->accelerationStructureReference = accelerationStructureReference; return *this; }
 };
 using AccelerationStructureInstanceNV = AccelerationStructureInstanceKHR;
 struct AccelerationStructureDeviceAddressInfoKHR {
     StructureType sType{StructureType::AccelerationStructureDeviceAddressInfoKHR};
     const void* pNext = nullptr;
     AccelerationStructureKHR accelerationStructure{};
-    AccelerationStructureDeviceAddressInfoKHR& setAccelerationStructure(AccelerationStructureKHR accelerationStructure) { this->accelerationStructure = accelerationStructure; return *this; }
+    AccelerationStructureDeviceAddressInfoKHR& setAccelerationStructure(AccelerationStructureKHR accelerationStructure) {this->accelerationStructure = accelerationStructure; return *this; }
 };
 struct AccelerationStructureVersionInfoKHR {
     StructureType sType{StructureType::AccelerationStructureVersionInfoKHR};
     const void* pNext = nullptr;
     const uint8_t* pVersionData = nullptr;
-    AccelerationStructureVersionInfoKHR& setPVersionData(const uint8_t* pVersionData) { this->pVersionData = pVersionData; return *this; }
+    AccelerationStructureVersionInfoKHR& setPVersionData(const uint8_t* pVersionData) {this->pVersionData = pVersionData; return *this; }
 };
 struct CopyAccelerationStructureInfoKHR {
     StructureType sType{StructureType::CopyAccelerationStructureInfoKHR};
@@ -10112,9 +10122,9 @@ struct CopyAccelerationStructureInfoKHR {
     AccelerationStructureKHR src{};
     AccelerationStructureKHR dst{};
     CopyAccelerationStructureModeKHR mode{static_cast<CopyAccelerationStructureModeKHR>(0)};
-    CopyAccelerationStructureInfoKHR& setSrc(AccelerationStructureKHR src) { this->src = src; return *this; }
-    CopyAccelerationStructureInfoKHR& setDst(AccelerationStructureKHR dst) { this->dst = dst; return *this; }
-    CopyAccelerationStructureInfoKHR& setMode(CopyAccelerationStructureModeKHR mode) { this->mode = mode; return *this; }
+    CopyAccelerationStructureInfoKHR& setSrc(AccelerationStructureKHR src) {this->src = src; return *this; }
+    CopyAccelerationStructureInfoKHR& setDst(AccelerationStructureKHR dst) {this->dst = dst; return *this; }
+    CopyAccelerationStructureInfoKHR& setMode(CopyAccelerationStructureModeKHR mode) {this->mode = mode; return *this; }
 };
 struct CopyAccelerationStructureToMemoryInfoKHR {
     StructureType sType{StructureType::CopyAccelerationStructureToMemoryInfoKHR};
@@ -10122,9 +10132,9 @@ struct CopyAccelerationStructureToMemoryInfoKHR {
     AccelerationStructureKHR src{};
     DeviceOrHostAddressKHR dst{};
     CopyAccelerationStructureModeKHR mode{static_cast<CopyAccelerationStructureModeKHR>(0)};
-    CopyAccelerationStructureToMemoryInfoKHR& setSrc(AccelerationStructureKHR src) { this->src = src; return *this; }
-    CopyAccelerationStructureToMemoryInfoKHR& setDst(DeviceOrHostAddressKHR dst) { this->dst = dst; return *this; }
-    CopyAccelerationStructureToMemoryInfoKHR& setMode(CopyAccelerationStructureModeKHR mode) { this->mode = mode; return *this; }
+    CopyAccelerationStructureToMemoryInfoKHR& setSrc(AccelerationStructureKHR src) {this->src = src; return *this; }
+    CopyAccelerationStructureToMemoryInfoKHR& setDst(DeviceOrHostAddressKHR dst) {this->dst = dst; return *this; }
+    CopyAccelerationStructureToMemoryInfoKHR& setMode(CopyAccelerationStructureModeKHR mode) {this->mode = mode; return *this; }
 };
 struct CopyMemoryToAccelerationStructureInfoKHR {
     StructureType sType{StructureType::CopyMemoryToAccelerationStructureInfoKHR};
@@ -10132,53 +10142,53 @@ struct CopyMemoryToAccelerationStructureInfoKHR {
     DeviceOrHostAddressConstKHR src{};
     AccelerationStructureKHR dst{};
     CopyAccelerationStructureModeKHR mode{static_cast<CopyAccelerationStructureModeKHR>(0)};
-    CopyMemoryToAccelerationStructureInfoKHR& setSrc(DeviceOrHostAddressConstKHR src) { this->src = src; return *this; }
-    CopyMemoryToAccelerationStructureInfoKHR& setDst(AccelerationStructureKHR dst) { this->dst = dst; return *this; }
-    CopyMemoryToAccelerationStructureInfoKHR& setMode(CopyAccelerationStructureModeKHR mode) { this->mode = mode; return *this; }
+    CopyMemoryToAccelerationStructureInfoKHR& setSrc(DeviceOrHostAddressConstKHR src) {this->src = src; return *this; }
+    CopyMemoryToAccelerationStructureInfoKHR& setDst(AccelerationStructureKHR dst) {this->dst = dst; return *this; }
+    CopyMemoryToAccelerationStructureInfoKHR& setMode(CopyAccelerationStructureModeKHR mode) {this->mode = mode; return *this; }
 };
 struct PhysicalDeviceExtendedDynamicStateFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceExtendedDynamicStateFeaturesEXT};
     void* pNext = nullptr;
     Bool32 extendedDynamicState{0};
-    PhysicalDeviceExtendedDynamicStateFeaturesEXT& setExtendedDynamicState(Bool32 extendedDynamicState) { this->extendedDynamicState = extendedDynamicState; return *this; }
+    PhysicalDeviceExtendedDynamicStateFeaturesEXT& setExtendedDynamicState(Bool32 extendedDynamicState) {this->extendedDynamicState = extendedDynamicState; return *this; }
 };
 struct RenderPassTransformBeginInfoQCOM {
     StructureType sType{StructureType::RenderPassTransformBeginInfoQCOM};
     void* pNext = nullptr;
     SurfaceTransformFlagBitsKHR transform{static_cast<SurfaceTransformFlagBitsKHR>(0)};
-    RenderPassTransformBeginInfoQCOM& setTransform(SurfaceTransformFlagBitsKHR transform) { this->transform = transform; return *this; }
+    RenderPassTransformBeginInfoQCOM& setTransform(SurfaceTransformFlagBitsKHR transform) {this->transform = transform; return *this; }
 };
 struct CopyCommandTransformInfoQCOM {
     StructureType sType{StructureType::CopyCommandTransformInfoQCOM};
     const void* pNext = nullptr;
     SurfaceTransformFlagBitsKHR transform{static_cast<SurfaceTransformFlagBitsKHR>(0)};
-    CopyCommandTransformInfoQCOM& setTransform(SurfaceTransformFlagBitsKHR transform) { this->transform = transform; return *this; }
+    CopyCommandTransformInfoQCOM& setTransform(SurfaceTransformFlagBitsKHR transform) {this->transform = transform; return *this; }
 };
 struct CommandBufferInheritanceRenderPassTransformInfoQCOM {
     StructureType sType{StructureType::CommandBufferInheritanceRenderPassTransformInfoQCOM};
     void* pNext = nullptr;
     SurfaceTransformFlagBitsKHR transform{static_cast<SurfaceTransformFlagBitsKHR>(0)};
     Rect2D renderArea{};
-    CommandBufferInheritanceRenderPassTransformInfoQCOM& setTransform(SurfaceTransformFlagBitsKHR transform) { this->transform = transform; return *this; }
-    CommandBufferInheritanceRenderPassTransformInfoQCOM& setRenderArea(Rect2D renderArea) { this->renderArea = renderArea; return *this; }
+    CommandBufferInheritanceRenderPassTransformInfoQCOM& setTransform(SurfaceTransformFlagBitsKHR transform) {this->transform = transform; return *this; }
+    CommandBufferInheritanceRenderPassTransformInfoQCOM& setRenderArea(Rect2D renderArea) {this->renderArea = renderArea; return *this; }
 };
 struct PhysicalDeviceDiagnosticsConfigFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceDiagnosticsConfigFeaturesNV};
     void* pNext = nullptr;
     Bool32 diagnosticsConfig{0};
-    PhysicalDeviceDiagnosticsConfigFeaturesNV& setDiagnosticsConfig(Bool32 diagnosticsConfig) { this->diagnosticsConfig = diagnosticsConfig; return *this; }
+    PhysicalDeviceDiagnosticsConfigFeaturesNV& setDiagnosticsConfig(Bool32 diagnosticsConfig) {this->diagnosticsConfig = diagnosticsConfig; return *this; }
 };
 struct DeviceDiagnosticsConfigCreateInfoNV {
     StructureType sType{StructureType::DeviceDiagnosticsConfigCreateInfoNV};
     const void* pNext = nullptr;
     DeviceDiagnosticsConfigFlagsNV flags{};
-    DeviceDiagnosticsConfigCreateInfoNV& setFlags(DeviceDiagnosticsConfigFlagsNV flags) { this->flags = flags; return *this; }
+    DeviceDiagnosticsConfigCreateInfoNV& setFlags(DeviceDiagnosticsConfigFlagsNV flags) {this->flags = flags; return *this; }
 };
 struct PhysicalDeviceZeroInitializeWorkgroupMemoryFeaturesKHR {
     StructureType sType{StructureType::PhysicalDeviceZeroInitializeWorkgroupMemoryFeaturesKHR};
     void* pNext = nullptr;
     Bool32 shaderZeroInitializeWorkgroupMemory{0};
-    PhysicalDeviceZeroInitializeWorkgroupMemoryFeaturesKHR& setShaderZeroInitializeWorkgroupMemory(Bool32 shaderZeroInitializeWorkgroupMemory) { this->shaderZeroInitializeWorkgroupMemory = shaderZeroInitializeWorkgroupMemory; return *this; }
+    PhysicalDeviceZeroInitializeWorkgroupMemoryFeaturesKHR& setShaderZeroInitializeWorkgroupMemory(Bool32 shaderZeroInitializeWorkgroupMemory) {this->shaderZeroInitializeWorkgroupMemory = shaderZeroInitializeWorkgroupMemory; return *this; }
 };
 struct PhysicalDeviceRobustness2FeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceRobustness2FeaturesEXT};
@@ -10186,23 +10196,23 @@ struct PhysicalDeviceRobustness2FeaturesEXT {
     Bool32 robustBufferAccess2{0};
     Bool32 robustImageAccess2{0};
     Bool32 nullDescriptor{0};
-    PhysicalDeviceRobustness2FeaturesEXT& setRobustBufferAccess2(Bool32 robustBufferAccess2) { this->robustBufferAccess2 = robustBufferAccess2; return *this; }
-    PhysicalDeviceRobustness2FeaturesEXT& setRobustImageAccess2(Bool32 robustImageAccess2) { this->robustImageAccess2 = robustImageAccess2; return *this; }
-    PhysicalDeviceRobustness2FeaturesEXT& setNullDescriptor(Bool32 nullDescriptor) { this->nullDescriptor = nullDescriptor; return *this; }
+    PhysicalDeviceRobustness2FeaturesEXT& setRobustBufferAccess2(Bool32 robustBufferAccess2) {this->robustBufferAccess2 = robustBufferAccess2; return *this; }
+    PhysicalDeviceRobustness2FeaturesEXT& setRobustImageAccess2(Bool32 robustImageAccess2) {this->robustImageAccess2 = robustImageAccess2; return *this; }
+    PhysicalDeviceRobustness2FeaturesEXT& setNullDescriptor(Bool32 nullDescriptor) {this->nullDescriptor = nullDescriptor; return *this; }
 };
 struct PhysicalDeviceRobustness2PropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceRobustness2PropertiesEXT};
     void* pNext = nullptr;
     DeviceSize robustStorageBufferAccessSizeAlignment{0};
     DeviceSize robustUniformBufferAccessSizeAlignment{0};
-    PhysicalDeviceRobustness2PropertiesEXT& setRobustStorageBufferAccessSizeAlignment(DeviceSize robustStorageBufferAccessSizeAlignment) { this->robustStorageBufferAccessSizeAlignment = robustStorageBufferAccessSizeAlignment; return *this; }
-    PhysicalDeviceRobustness2PropertiesEXT& setRobustUniformBufferAccessSizeAlignment(DeviceSize robustUniformBufferAccessSizeAlignment) { this->robustUniformBufferAccessSizeAlignment = robustUniformBufferAccessSizeAlignment; return *this; }
+    PhysicalDeviceRobustness2PropertiesEXT& setRobustStorageBufferAccessSizeAlignment(DeviceSize robustStorageBufferAccessSizeAlignment) {this->robustStorageBufferAccessSizeAlignment = robustStorageBufferAccessSizeAlignment; return *this; }
+    PhysicalDeviceRobustness2PropertiesEXT& setRobustUniformBufferAccessSizeAlignment(DeviceSize robustUniformBufferAccessSizeAlignment) {this->robustUniformBufferAccessSizeAlignment = robustUniformBufferAccessSizeAlignment; return *this; }
 };
 struct PhysicalDeviceImageRobustnessFeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceImageRobustnessFeaturesEXT};
     void* pNext = nullptr;
     Bool32 robustImageAccess{0};
-    PhysicalDeviceImageRobustnessFeaturesEXT& setRobustImageAccess(Bool32 robustImageAccess) { this->robustImageAccess = robustImageAccess; return *this; }
+    PhysicalDeviceImageRobustnessFeaturesEXT& setRobustImageAccess(Bool32 robustImageAccess) {this->robustImageAccess = robustImageAccess; return *this; }
 };
 struct PhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR {
     StructureType sType{StructureType::PhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR};
@@ -10211,10 +10221,10 @@ struct PhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR {
     Bool32 workgroupMemoryExplicitLayoutScalarBlockLayout{0};
     Bool32 workgroupMemoryExplicitLayout8BitAccess{0};
     Bool32 workgroupMemoryExplicitLayout16BitAccess{0};
-    PhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR& setWorkgroupMemoryExplicitLayout(Bool32 workgroupMemoryExplicitLayout) { this->workgroupMemoryExplicitLayout = workgroupMemoryExplicitLayout; return *this; }
-    PhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR& setWorkgroupMemoryExplicitLayoutScalarBlockLayout(Bool32 workgroupMemoryExplicitLayoutScalarBlockLayout) { this->workgroupMemoryExplicitLayoutScalarBlockLayout = workgroupMemoryExplicitLayoutScalarBlockLayout; return *this; }
-    PhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR& setWorkgroupMemoryExplicitLayout8BitAccess(Bool32 workgroupMemoryExplicitLayout8BitAccess) { this->workgroupMemoryExplicitLayout8BitAccess = workgroupMemoryExplicitLayout8BitAccess; return *this; }
-    PhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR& setWorkgroupMemoryExplicitLayout16BitAccess(Bool32 workgroupMemoryExplicitLayout16BitAccess) { this->workgroupMemoryExplicitLayout16BitAccess = workgroupMemoryExplicitLayout16BitAccess; return *this; }
+    PhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR& setWorkgroupMemoryExplicitLayout(Bool32 workgroupMemoryExplicitLayout) {this->workgroupMemoryExplicitLayout = workgroupMemoryExplicitLayout; return *this; }
+    PhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR& setWorkgroupMemoryExplicitLayoutScalarBlockLayout(Bool32 workgroupMemoryExplicitLayoutScalarBlockLayout) {this->workgroupMemoryExplicitLayoutScalarBlockLayout = workgroupMemoryExplicitLayoutScalarBlockLayout; return *this; }
+    PhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR& setWorkgroupMemoryExplicitLayout8BitAccess(Bool32 workgroupMemoryExplicitLayout8BitAccess) {this->workgroupMemoryExplicitLayout8BitAccess = workgroupMemoryExplicitLayout8BitAccess; return *this; }
+    PhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR& setWorkgroupMemoryExplicitLayout16BitAccess(Bool32 workgroupMemoryExplicitLayout16BitAccess) {this->workgroupMemoryExplicitLayout16BitAccess = workgroupMemoryExplicitLayout16BitAccess; return *this; }
 };
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 struct PhysicalDevicePortabilitySubsetFeaturesKHR {
@@ -10235,27 +10245,27 @@ struct PhysicalDevicePortabilitySubsetFeaturesKHR {
     Bool32 tessellationPointMode{0};
     Bool32 triangleFans{0};
     Bool32 vertexAttributeAccessBeyondStride{0};
-    PhysicalDevicePortabilitySubsetFeaturesKHR& setConstantAlphaColorBlendFactors(Bool32 constantAlphaColorBlendFactors) { this->constantAlphaColorBlendFactors = constantAlphaColorBlendFactors; return *this; }
-    PhysicalDevicePortabilitySubsetFeaturesKHR& setEvents(Bool32 events) { this->events = events; return *this; }
-    PhysicalDevicePortabilitySubsetFeaturesKHR& setImageViewFormatReinterpretation(Bool32 imageViewFormatReinterpretation) { this->imageViewFormatReinterpretation = imageViewFormatReinterpretation; return *this; }
-    PhysicalDevicePortabilitySubsetFeaturesKHR& setImageViewFormatSwizzle(Bool32 imageViewFormatSwizzle) { this->imageViewFormatSwizzle = imageViewFormatSwizzle; return *this; }
-    PhysicalDevicePortabilitySubsetFeaturesKHR& setImageView2DOn3DImage(Bool32 imageView2DOn3DImage) { this->imageView2DOn3DImage = imageView2DOn3DImage; return *this; }
-    PhysicalDevicePortabilitySubsetFeaturesKHR& setMultisampleArrayImage(Bool32 multisampleArrayImage) { this->multisampleArrayImage = multisampleArrayImage; return *this; }
-    PhysicalDevicePortabilitySubsetFeaturesKHR& setMutableComparisonSamplers(Bool32 mutableComparisonSamplers) { this->mutableComparisonSamplers = mutableComparisonSamplers; return *this; }
-    PhysicalDevicePortabilitySubsetFeaturesKHR& setPointPolygons(Bool32 pointPolygons) { this->pointPolygons = pointPolygons; return *this; }
-    PhysicalDevicePortabilitySubsetFeaturesKHR& setSamplerMipLodBias(Bool32 samplerMipLodBias) { this->samplerMipLodBias = samplerMipLodBias; return *this; }
-    PhysicalDevicePortabilitySubsetFeaturesKHR& setSeparateStencilMaskRef(Bool32 separateStencilMaskRef) { this->separateStencilMaskRef = separateStencilMaskRef; return *this; }
-    PhysicalDevicePortabilitySubsetFeaturesKHR& setShaderSampleRateInterpolationFunctions(Bool32 shaderSampleRateInterpolationFunctions) { this->shaderSampleRateInterpolationFunctions = shaderSampleRateInterpolationFunctions; return *this; }
-    PhysicalDevicePortabilitySubsetFeaturesKHR& setTessellationIsolines(Bool32 tessellationIsolines) { this->tessellationIsolines = tessellationIsolines; return *this; }
-    PhysicalDevicePortabilitySubsetFeaturesKHR& setTessellationPointMode(Bool32 tessellationPointMode) { this->tessellationPointMode = tessellationPointMode; return *this; }
-    PhysicalDevicePortabilitySubsetFeaturesKHR& setTriangleFans(Bool32 triangleFans) { this->triangleFans = triangleFans; return *this; }
-    PhysicalDevicePortabilitySubsetFeaturesKHR& setVertexAttributeAccessBeyondStride(Bool32 vertexAttributeAccessBeyondStride) { this->vertexAttributeAccessBeyondStride = vertexAttributeAccessBeyondStride; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHR& setConstantAlphaColorBlendFactors(Bool32 constantAlphaColorBlendFactors) {this->constantAlphaColorBlendFactors = constantAlphaColorBlendFactors; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHR& setEvents(Bool32 events) {this->events = events; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHR& setImageViewFormatReinterpretation(Bool32 imageViewFormatReinterpretation) {this->imageViewFormatReinterpretation = imageViewFormatReinterpretation; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHR& setImageViewFormatSwizzle(Bool32 imageViewFormatSwizzle) {this->imageViewFormatSwizzle = imageViewFormatSwizzle; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHR& setImageView2DOn3DImage(Bool32 imageView2DOn3DImage) {this->imageView2DOn3DImage = imageView2DOn3DImage; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHR& setMultisampleArrayImage(Bool32 multisampleArrayImage) {this->multisampleArrayImage = multisampleArrayImage; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHR& setMutableComparisonSamplers(Bool32 mutableComparisonSamplers) {this->mutableComparisonSamplers = mutableComparisonSamplers; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHR& setPointPolygons(Bool32 pointPolygons) {this->pointPolygons = pointPolygons; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHR& setSamplerMipLodBias(Bool32 samplerMipLodBias) {this->samplerMipLodBias = samplerMipLodBias; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHR& setSeparateStencilMaskRef(Bool32 separateStencilMaskRef) {this->separateStencilMaskRef = separateStencilMaskRef; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHR& setShaderSampleRateInterpolationFunctions(Bool32 shaderSampleRateInterpolationFunctions) {this->shaderSampleRateInterpolationFunctions = shaderSampleRateInterpolationFunctions; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHR& setTessellationIsolines(Bool32 tessellationIsolines) {this->tessellationIsolines = tessellationIsolines; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHR& setTessellationPointMode(Bool32 tessellationPointMode) {this->tessellationPointMode = tessellationPointMode; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHR& setTriangleFans(Bool32 triangleFans) {this->triangleFans = triangleFans; return *this; }
+    PhysicalDevicePortabilitySubsetFeaturesKHR& setVertexAttributeAccessBeyondStride(Bool32 vertexAttributeAccessBeyondStride) {this->vertexAttributeAccessBeyondStride = vertexAttributeAccessBeyondStride; return *this; }
 };
 struct PhysicalDevicePortabilitySubsetPropertiesKHR {
     StructureType sType{StructureType::PhysicalDevicePortabilitySubsetPropertiesKHR};
     void* pNext = nullptr;
     uint32_t minVertexInputBindingStrideAlignment{0};
-    PhysicalDevicePortabilitySubsetPropertiesKHR& setMinVertexInputBindingStrideAlignment(uint32_t minVertexInputBindingStrideAlignment) { this->minVertexInputBindingStrideAlignment = minVertexInputBindingStrideAlignment; return *this; }
+    PhysicalDevicePortabilitySubsetPropertiesKHR& setMinVertexInputBindingStrideAlignment(uint32_t minVertexInputBindingStrideAlignment) {this->minVertexInputBindingStrideAlignment = minVertexInputBindingStrideAlignment; return *this; }
 };
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 struct PhysicalDevice4444FormatsFeaturesEXT {
@@ -10263,8 +10273,8 @@ struct PhysicalDevice4444FormatsFeaturesEXT {
     void* pNext = nullptr;
     Bool32 formatA4R4G4B4{0};
     Bool32 formatA4B4G4R4{0};
-    PhysicalDevice4444FormatsFeaturesEXT& setFormatA4R4G4B4(Bool32 formatA4R4G4B4) { this->formatA4R4G4B4 = formatA4R4G4B4; return *this; }
-    PhysicalDevice4444FormatsFeaturesEXT& setFormatA4B4G4R4(Bool32 formatA4B4G4R4) { this->formatA4B4G4R4 = formatA4B4G4R4; return *this; }
+    PhysicalDevice4444FormatsFeaturesEXT& setFormatA4R4G4B4(Bool32 formatA4R4G4B4) {this->formatA4R4G4B4 = formatA4R4G4B4; return *this; }
+    PhysicalDevice4444FormatsFeaturesEXT& setFormatA4B4G4R4(Bool32 formatA4B4G4R4) {this->formatA4B4G4R4 = formatA4B4G4R4; return *this; }
 };
 struct BufferCopy2KHR {
     StructureType sType{StructureType::BufferCopy2KHR};
@@ -10272,9 +10282,9 @@ struct BufferCopy2KHR {
     DeviceSize srcOffset{0};
     DeviceSize dstOffset{0};
     DeviceSize size{0};
-    BufferCopy2KHR& setSrcOffset(DeviceSize srcOffset) { this->srcOffset = srcOffset; return *this; }
-    BufferCopy2KHR& setDstOffset(DeviceSize dstOffset) { this->dstOffset = dstOffset; return *this; }
-    BufferCopy2KHR& setSize(DeviceSize size) { this->size = size; return *this; }
+    BufferCopy2KHR& setSrcOffset(DeviceSize srcOffset) {this->srcOffset = srcOffset; return *this; }
+    BufferCopy2KHR& setDstOffset(DeviceSize dstOffset) {this->dstOffset = dstOffset; return *this; }
+    BufferCopy2KHR& setSize(DeviceSize size) {this->size = size; return *this; }
 };
 struct ImageCopy2KHR {
     StructureType sType{StructureType::ImageCopy2KHR};
@@ -10284,11 +10294,11 @@ struct ImageCopy2KHR {
     ImageSubresourceLayers dstSubresource{};
     Offset3D dstOffset{};
     Extent3D extent{};
-    ImageCopy2KHR& setSrcSubresource(ImageSubresourceLayers srcSubresource) { this->srcSubresource = srcSubresource; return *this; }
-    ImageCopy2KHR& setSrcOffset(Offset3D srcOffset) { this->srcOffset = srcOffset; return *this; }
-    ImageCopy2KHR& setDstSubresource(ImageSubresourceLayers dstSubresource) { this->dstSubresource = dstSubresource; return *this; }
-    ImageCopy2KHR& setDstOffset(Offset3D dstOffset) { this->dstOffset = dstOffset; return *this; }
-    ImageCopy2KHR& setExtent(Extent3D extent) { this->extent = extent; return *this; }
+    ImageCopy2KHR& setSrcSubresource(ImageSubresourceLayers srcSubresource) {this->srcSubresource = srcSubresource; return *this; }
+    ImageCopy2KHR& setSrcOffset(Offset3D srcOffset) {this->srcOffset = srcOffset; return *this; }
+    ImageCopy2KHR& setDstSubresource(ImageSubresourceLayers dstSubresource) {this->dstSubresource = dstSubresource; return *this; }
+    ImageCopy2KHR& setDstOffset(Offset3D dstOffset) {this->dstOffset = dstOffset; return *this; }
+    ImageCopy2KHR& setExtent(Extent3D extent) {this->extent = extent; return *this; }
 };
 struct ImageBlit2KHR {
     StructureType sType{StructureType::ImageBlit2KHR};
@@ -10297,10 +10307,10 @@ struct ImageBlit2KHR {
     Offset3D srcOffsets[2];
     ImageSubresourceLayers dstSubresource{};
     Offset3D dstOffsets[2];
-    ImageBlit2KHR& setSrcSubresource(ImageSubresourceLayers srcSubresource) { this->srcSubresource = srcSubresource; return *this; }
-    ImageBlit2KHR& setSrcOffsets(Offset3D srcOffsets[2]) { for(uint32_t i = 0; i < 2; i++) this->srcOffsets[i] = srcOffsets[i]; return *this; }
-    ImageBlit2KHR& setDstSubresource(ImageSubresourceLayers dstSubresource) { this->dstSubresource = dstSubresource; return *this; }
-    ImageBlit2KHR& setDstOffsets(Offset3D dstOffsets[2]) { for(uint32_t i = 0; i < 2; i++) this->dstOffsets[i] = dstOffsets[i]; return *this; }
+    ImageBlit2KHR& setSrcSubresource(ImageSubresourceLayers srcSubresource) {this->srcSubresource = srcSubresource; return *this; }
+    ImageBlit2KHR& setSrcOffsets(Offset3D srcOffsets[2]) {for(uint32_t i = 0; i < 2; i++) this->srcOffsets[i] = srcOffsets[i]; return *this; }
+    ImageBlit2KHR& setDstSubresource(ImageSubresourceLayers dstSubresource) {this->dstSubresource = dstSubresource; return *this; }
+    ImageBlit2KHR& setDstOffsets(Offset3D dstOffsets[2]) {for(uint32_t i = 0; i < 2; i++) this->dstOffsets[i] = dstOffsets[i]; return *this; }
 };
 struct BufferImageCopy2KHR {
     StructureType sType{StructureType::BufferImageCopy2KHR};
@@ -10311,12 +10321,12 @@ struct BufferImageCopy2KHR {
     ImageSubresourceLayers imageSubresource{};
     Offset3D imageOffset{};
     Extent3D imageExtent{};
-    BufferImageCopy2KHR& setBufferOffset(DeviceSize bufferOffset) { this->bufferOffset = bufferOffset; return *this; }
-    BufferImageCopy2KHR& setBufferRowLength(uint32_t bufferRowLength) { this->bufferRowLength = bufferRowLength; return *this; }
-    BufferImageCopy2KHR& setBufferImageHeight(uint32_t bufferImageHeight) { this->bufferImageHeight = bufferImageHeight; return *this; }
-    BufferImageCopy2KHR& setImageSubresource(ImageSubresourceLayers imageSubresource) { this->imageSubresource = imageSubresource; return *this; }
-    BufferImageCopy2KHR& setImageOffset(Offset3D imageOffset) { this->imageOffset = imageOffset; return *this; }
-    BufferImageCopy2KHR& setImageExtent(Extent3D imageExtent) { this->imageExtent = imageExtent; return *this; }
+    BufferImageCopy2KHR& setBufferOffset(DeviceSize bufferOffset) {this->bufferOffset = bufferOffset; return *this; }
+    BufferImageCopy2KHR& setBufferRowLength(uint32_t bufferRowLength) {this->bufferRowLength = bufferRowLength; return *this; }
+    BufferImageCopy2KHR& setBufferImageHeight(uint32_t bufferImageHeight) {this->bufferImageHeight = bufferImageHeight; return *this; }
+    BufferImageCopy2KHR& setImageSubresource(ImageSubresourceLayers imageSubresource) {this->imageSubresource = imageSubresource; return *this; }
+    BufferImageCopy2KHR& setImageOffset(Offset3D imageOffset) {this->imageOffset = imageOffset; return *this; }
+    BufferImageCopy2KHR& setImageExtent(Extent3D imageExtent) {this->imageExtent = imageExtent; return *this; }
 };
 struct ImageResolve2KHR {
     StructureType sType{StructureType::ImageResolve2KHR};
@@ -10326,11 +10336,11 @@ struct ImageResolve2KHR {
     ImageSubresourceLayers dstSubresource{};
     Offset3D dstOffset{};
     Extent3D extent{};
-    ImageResolve2KHR& setSrcSubresource(ImageSubresourceLayers srcSubresource) { this->srcSubresource = srcSubresource; return *this; }
-    ImageResolve2KHR& setSrcOffset(Offset3D srcOffset) { this->srcOffset = srcOffset; return *this; }
-    ImageResolve2KHR& setDstSubresource(ImageSubresourceLayers dstSubresource) { this->dstSubresource = dstSubresource; return *this; }
-    ImageResolve2KHR& setDstOffset(Offset3D dstOffset) { this->dstOffset = dstOffset; return *this; }
-    ImageResolve2KHR& setExtent(Extent3D extent) { this->extent = extent; return *this; }
+    ImageResolve2KHR& setSrcSubresource(ImageSubresourceLayers srcSubresource) {this->srcSubresource = srcSubresource; return *this; }
+    ImageResolve2KHR& setSrcOffset(Offset3D srcOffset) {this->srcOffset = srcOffset; return *this; }
+    ImageResolve2KHR& setDstSubresource(ImageSubresourceLayers dstSubresource) {this->dstSubresource = dstSubresource; return *this; }
+    ImageResolve2KHR& setDstOffset(Offset3D dstOffset) {this->dstOffset = dstOffset; return *this; }
+    ImageResolve2KHR& setExtent(Extent3D extent) {this->extent = extent; return *this; }
 };
 struct CopyBufferInfo2KHR {
     StructureType sType{StructureType::CopyBufferInfo2KHR};
@@ -10339,11 +10349,11 @@ struct CopyBufferInfo2KHR {
     Buffer dstBuffer{};
     uint32_t regionCount{0};
     const BufferCopy2KHR* pRegions = nullptr;
-    CopyBufferInfo2KHR& setSrcBuffer(Buffer srcBuffer) { this->srcBuffer = srcBuffer; return *this; }
-    CopyBufferInfo2KHR& setDstBuffer(Buffer dstBuffer) { this->dstBuffer = dstBuffer; return *this; }
-    CopyBufferInfo2KHR& setRegionCount(uint32_t regionCount) { this->regionCount = regionCount; return *this; }
-    CopyBufferInfo2KHR& setPRegions(const BufferCopy2KHR* pRegions) { this->pRegions = pRegions; return *this; }
-    CopyBufferInfo2KHR& setRegions(detail::span<const BufferCopy2KHR> Regions) { this->regionCount = Regions.size(); this->pRegions = Regions.data();  return *this; }
+    CopyBufferInfo2KHR& setSrcBuffer(Buffer srcBuffer) {this->srcBuffer = srcBuffer; return *this; }
+    CopyBufferInfo2KHR& setDstBuffer(Buffer dstBuffer) {this->dstBuffer = dstBuffer; return *this; }
+    CopyBufferInfo2KHR& setRegionCount(uint32_t regionCount) {this->regionCount = regionCount; return *this; }
+    CopyBufferInfo2KHR& setPRegions(const BufferCopy2KHR* pRegions) {this->pRegions = pRegions; return *this; }
+    CopyBufferInfo2KHR& setPRegions(detail::span<const BufferCopy2KHR> pRegions) {this->regionCount = pRegions.size(); this->pRegions = pRegions.data();  return *this; }
 };
 struct CopyImageInfo2KHR {
     StructureType sType{StructureType::CopyImageInfo2KHR};
@@ -10354,13 +10364,13 @@ struct CopyImageInfo2KHR {
     ImageLayout dstImageLayout{static_cast<ImageLayout>(0)};
     uint32_t regionCount{0};
     const ImageCopy2KHR* pRegions = nullptr;
-    CopyImageInfo2KHR& setSrcImage(Image srcImage) { this->srcImage = srcImage; return *this; }
-    CopyImageInfo2KHR& setSrcImageLayout(ImageLayout srcImageLayout) { this->srcImageLayout = srcImageLayout; return *this; }
-    CopyImageInfo2KHR& setDstImage(Image dstImage) { this->dstImage = dstImage; return *this; }
-    CopyImageInfo2KHR& setDstImageLayout(ImageLayout dstImageLayout) { this->dstImageLayout = dstImageLayout; return *this; }
-    CopyImageInfo2KHR& setRegionCount(uint32_t regionCount) { this->regionCount = regionCount; return *this; }
-    CopyImageInfo2KHR& setPRegions(const ImageCopy2KHR* pRegions) { this->pRegions = pRegions; return *this; }
-    CopyImageInfo2KHR& setRegions(detail::span<const ImageCopy2KHR> Regions) { this->regionCount = Regions.size(); this->pRegions = Regions.data();  return *this; }
+    CopyImageInfo2KHR& setSrcImage(Image srcImage) {this->srcImage = srcImage; return *this; }
+    CopyImageInfo2KHR& setSrcImageLayout(ImageLayout srcImageLayout) {this->srcImageLayout = srcImageLayout; return *this; }
+    CopyImageInfo2KHR& setDstImage(Image dstImage) {this->dstImage = dstImage; return *this; }
+    CopyImageInfo2KHR& setDstImageLayout(ImageLayout dstImageLayout) {this->dstImageLayout = dstImageLayout; return *this; }
+    CopyImageInfo2KHR& setRegionCount(uint32_t regionCount) {this->regionCount = regionCount; return *this; }
+    CopyImageInfo2KHR& setPRegions(const ImageCopy2KHR* pRegions) {this->pRegions = pRegions; return *this; }
+    CopyImageInfo2KHR& setPRegions(detail::span<const ImageCopy2KHR> pRegions) {this->regionCount = pRegions.size(); this->pRegions = pRegions.data();  return *this; }
 };
 struct BlitImageInfo2KHR {
     StructureType sType{StructureType::BlitImageInfo2KHR};
@@ -10372,14 +10382,14 @@ struct BlitImageInfo2KHR {
     uint32_t regionCount{0};
     const ImageBlit2KHR* pRegions = nullptr;
     Filter filter{static_cast<Filter>(0)};
-    BlitImageInfo2KHR& setSrcImage(Image srcImage) { this->srcImage = srcImage; return *this; }
-    BlitImageInfo2KHR& setSrcImageLayout(ImageLayout srcImageLayout) { this->srcImageLayout = srcImageLayout; return *this; }
-    BlitImageInfo2KHR& setDstImage(Image dstImage) { this->dstImage = dstImage; return *this; }
-    BlitImageInfo2KHR& setDstImageLayout(ImageLayout dstImageLayout) { this->dstImageLayout = dstImageLayout; return *this; }
-    BlitImageInfo2KHR& setRegionCount(uint32_t regionCount) { this->regionCount = regionCount; return *this; }
-    BlitImageInfo2KHR& setPRegions(const ImageBlit2KHR* pRegions) { this->pRegions = pRegions; return *this; }
-    BlitImageInfo2KHR& setRegions(detail::span<const ImageBlit2KHR> Regions) { this->regionCount = Regions.size(); this->pRegions = Regions.data();  return *this; }
-    BlitImageInfo2KHR& setFilter(Filter filter) { this->filter = filter; return *this; }
+    BlitImageInfo2KHR& setSrcImage(Image srcImage) {this->srcImage = srcImage; return *this; }
+    BlitImageInfo2KHR& setSrcImageLayout(ImageLayout srcImageLayout) {this->srcImageLayout = srcImageLayout; return *this; }
+    BlitImageInfo2KHR& setDstImage(Image dstImage) {this->dstImage = dstImage; return *this; }
+    BlitImageInfo2KHR& setDstImageLayout(ImageLayout dstImageLayout) {this->dstImageLayout = dstImageLayout; return *this; }
+    BlitImageInfo2KHR& setRegionCount(uint32_t regionCount) {this->regionCount = regionCount; return *this; }
+    BlitImageInfo2KHR& setPRegions(const ImageBlit2KHR* pRegions) {this->pRegions = pRegions; return *this; }
+    BlitImageInfo2KHR& setPRegions(detail::span<const ImageBlit2KHR> pRegions) {this->regionCount = pRegions.size(); this->pRegions = pRegions.data();  return *this; }
+    BlitImageInfo2KHR& setFilter(Filter filter) {this->filter = filter; return *this; }
 };
 struct CopyBufferToImageInfo2KHR {
     StructureType sType{StructureType::CopyBufferToImageInfo2KHR};
@@ -10389,12 +10399,12 @@ struct CopyBufferToImageInfo2KHR {
     ImageLayout dstImageLayout{static_cast<ImageLayout>(0)};
     uint32_t regionCount{0};
     const BufferImageCopy2KHR* pRegions = nullptr;
-    CopyBufferToImageInfo2KHR& setSrcBuffer(Buffer srcBuffer) { this->srcBuffer = srcBuffer; return *this; }
-    CopyBufferToImageInfo2KHR& setDstImage(Image dstImage) { this->dstImage = dstImage; return *this; }
-    CopyBufferToImageInfo2KHR& setDstImageLayout(ImageLayout dstImageLayout) { this->dstImageLayout = dstImageLayout; return *this; }
-    CopyBufferToImageInfo2KHR& setRegionCount(uint32_t regionCount) { this->regionCount = regionCount; return *this; }
-    CopyBufferToImageInfo2KHR& setPRegions(const BufferImageCopy2KHR* pRegions) { this->pRegions = pRegions; return *this; }
-    CopyBufferToImageInfo2KHR& setRegions(detail::span<const BufferImageCopy2KHR> Regions) { this->regionCount = Regions.size(); this->pRegions = Regions.data();  return *this; }
+    CopyBufferToImageInfo2KHR& setSrcBuffer(Buffer srcBuffer) {this->srcBuffer = srcBuffer; return *this; }
+    CopyBufferToImageInfo2KHR& setDstImage(Image dstImage) {this->dstImage = dstImage; return *this; }
+    CopyBufferToImageInfo2KHR& setDstImageLayout(ImageLayout dstImageLayout) {this->dstImageLayout = dstImageLayout; return *this; }
+    CopyBufferToImageInfo2KHR& setRegionCount(uint32_t regionCount) {this->regionCount = regionCount; return *this; }
+    CopyBufferToImageInfo2KHR& setPRegions(const BufferImageCopy2KHR* pRegions) {this->pRegions = pRegions; return *this; }
+    CopyBufferToImageInfo2KHR& setPRegions(detail::span<const BufferImageCopy2KHR> pRegions) {this->regionCount = pRegions.size(); this->pRegions = pRegions.data();  return *this; }
 };
 struct CopyImageToBufferInfo2KHR {
     StructureType sType{StructureType::CopyImageToBufferInfo2KHR};
@@ -10404,12 +10414,12 @@ struct CopyImageToBufferInfo2KHR {
     Buffer dstBuffer{};
     uint32_t regionCount{0};
     const BufferImageCopy2KHR* pRegions = nullptr;
-    CopyImageToBufferInfo2KHR& setSrcImage(Image srcImage) { this->srcImage = srcImage; return *this; }
-    CopyImageToBufferInfo2KHR& setSrcImageLayout(ImageLayout srcImageLayout) { this->srcImageLayout = srcImageLayout; return *this; }
-    CopyImageToBufferInfo2KHR& setDstBuffer(Buffer dstBuffer) { this->dstBuffer = dstBuffer; return *this; }
-    CopyImageToBufferInfo2KHR& setRegionCount(uint32_t regionCount) { this->regionCount = regionCount; return *this; }
-    CopyImageToBufferInfo2KHR& setPRegions(const BufferImageCopy2KHR* pRegions) { this->pRegions = pRegions; return *this; }
-    CopyImageToBufferInfo2KHR& setRegions(detail::span<const BufferImageCopy2KHR> Regions) { this->regionCount = Regions.size(); this->pRegions = Regions.data();  return *this; }
+    CopyImageToBufferInfo2KHR& setSrcImage(Image srcImage) {this->srcImage = srcImage; return *this; }
+    CopyImageToBufferInfo2KHR& setSrcImageLayout(ImageLayout srcImageLayout) {this->srcImageLayout = srcImageLayout; return *this; }
+    CopyImageToBufferInfo2KHR& setDstBuffer(Buffer dstBuffer) {this->dstBuffer = dstBuffer; return *this; }
+    CopyImageToBufferInfo2KHR& setRegionCount(uint32_t regionCount) {this->regionCount = regionCount; return *this; }
+    CopyImageToBufferInfo2KHR& setPRegions(const BufferImageCopy2KHR* pRegions) {this->pRegions = pRegions; return *this; }
+    CopyImageToBufferInfo2KHR& setPRegions(detail::span<const BufferImageCopy2KHR> pRegions) {this->regionCount = pRegions.size(); this->pRegions = pRegions.data();  return *this; }
 };
 struct ResolveImageInfo2KHR {
     StructureType sType{StructureType::ResolveImageInfo2KHR};
@@ -10420,38 +10430,38 @@ struct ResolveImageInfo2KHR {
     ImageLayout dstImageLayout{static_cast<ImageLayout>(0)};
     uint32_t regionCount{0};
     const ImageResolve2KHR* pRegions = nullptr;
-    ResolveImageInfo2KHR& setSrcImage(Image srcImage) { this->srcImage = srcImage; return *this; }
-    ResolveImageInfo2KHR& setSrcImageLayout(ImageLayout srcImageLayout) { this->srcImageLayout = srcImageLayout; return *this; }
-    ResolveImageInfo2KHR& setDstImage(Image dstImage) { this->dstImage = dstImage; return *this; }
-    ResolveImageInfo2KHR& setDstImageLayout(ImageLayout dstImageLayout) { this->dstImageLayout = dstImageLayout; return *this; }
-    ResolveImageInfo2KHR& setRegionCount(uint32_t regionCount) { this->regionCount = regionCount; return *this; }
-    ResolveImageInfo2KHR& setPRegions(const ImageResolve2KHR* pRegions) { this->pRegions = pRegions; return *this; }
-    ResolveImageInfo2KHR& setRegions(detail::span<const ImageResolve2KHR> Regions) { this->regionCount = Regions.size(); this->pRegions = Regions.data();  return *this; }
+    ResolveImageInfo2KHR& setSrcImage(Image srcImage) {this->srcImage = srcImage; return *this; }
+    ResolveImageInfo2KHR& setSrcImageLayout(ImageLayout srcImageLayout) {this->srcImageLayout = srcImageLayout; return *this; }
+    ResolveImageInfo2KHR& setDstImage(Image dstImage) {this->dstImage = dstImage; return *this; }
+    ResolveImageInfo2KHR& setDstImageLayout(ImageLayout dstImageLayout) {this->dstImageLayout = dstImageLayout; return *this; }
+    ResolveImageInfo2KHR& setRegionCount(uint32_t regionCount) {this->regionCount = regionCount; return *this; }
+    ResolveImageInfo2KHR& setPRegions(const ImageResolve2KHR* pRegions) {this->pRegions = pRegions; return *this; }
+    ResolveImageInfo2KHR& setPRegions(detail::span<const ImageResolve2KHR> pRegions) {this->regionCount = pRegions.size(); this->pRegions = pRegions.data();  return *this; }
 };
 struct PhysicalDeviceShaderImageAtomicInt64FeaturesEXT {
     StructureType sType{StructureType::PhysicalDeviceShaderImageAtomicInt64FeaturesEXT};
     void* pNext = nullptr;
     Bool32 shaderImageInt64Atomics{0};
     Bool32 sparseImageInt64Atomics{0};
-    PhysicalDeviceShaderImageAtomicInt64FeaturesEXT& setShaderImageInt64Atomics(Bool32 shaderImageInt64Atomics) { this->shaderImageInt64Atomics = shaderImageInt64Atomics; return *this; }
-    PhysicalDeviceShaderImageAtomicInt64FeaturesEXT& setSparseImageInt64Atomics(Bool32 sparseImageInt64Atomics) { this->sparseImageInt64Atomics = sparseImageInt64Atomics; return *this; }
+    PhysicalDeviceShaderImageAtomicInt64FeaturesEXT& setShaderImageInt64Atomics(Bool32 shaderImageInt64Atomics) {this->shaderImageInt64Atomics = shaderImageInt64Atomics; return *this; }
+    PhysicalDeviceShaderImageAtomicInt64FeaturesEXT& setSparseImageInt64Atomics(Bool32 sparseImageInt64Atomics) {this->sparseImageInt64Atomics = sparseImageInt64Atomics; return *this; }
 };
 struct FragmentShadingRateAttachmentInfoKHR {
     StructureType sType{StructureType::FragmentShadingRateAttachmentInfoKHR};
     const void* pNext = nullptr;
     const AttachmentReference2* pFragmentShadingRateAttachment = nullptr;
     Extent2D shadingRateAttachmentTexelSize{};
-    FragmentShadingRateAttachmentInfoKHR& setPFragmentShadingRateAttachment(const AttachmentReference2* pFragmentShadingRateAttachment) { this->pFragmentShadingRateAttachment = pFragmentShadingRateAttachment; return *this; }
-    FragmentShadingRateAttachmentInfoKHR& setFragmentShadingRateAttachment(AttachmentReference2 const& FragmentShadingRateAttachment) { this->pFragmentShadingRateAttachment = &FragmentShadingRateAttachment; return *this; }
-    FragmentShadingRateAttachmentInfoKHR& setShadingRateAttachmentTexelSize(Extent2D shadingRateAttachmentTexelSize) { this->shadingRateAttachmentTexelSize = shadingRateAttachmentTexelSize; return *this; }
+    FragmentShadingRateAttachmentInfoKHR& setPFragmentShadingRateAttachment(const AttachmentReference2* pFragmentShadingRateAttachment) {this->pFragmentShadingRateAttachment = pFragmentShadingRateAttachment; return *this; }
+    FragmentShadingRateAttachmentInfoKHR& setPFragmentShadingRateAttachment(AttachmentReference2 const& pFragmentShadingRateAttachment) {this->pFragmentShadingRateAttachment = &pFragmentShadingRateAttachment; return *this; }
+    FragmentShadingRateAttachmentInfoKHR& setShadingRateAttachmentTexelSize(Extent2D shadingRateAttachmentTexelSize) {this->shadingRateAttachmentTexelSize = shadingRateAttachmentTexelSize; return *this; }
 };
 struct PipelineFragmentShadingRateStateCreateInfoKHR {
     StructureType sType{StructureType::PipelineFragmentShadingRateStateCreateInfoKHR};
     const void* pNext = nullptr;
     Extent2D fragmentSize{};
     FragmentShadingRateCombinerOpKHR combinerOps[2];
-    PipelineFragmentShadingRateStateCreateInfoKHR& setFragmentSize(Extent2D fragmentSize) { this->fragmentSize = fragmentSize; return *this; }
-    PipelineFragmentShadingRateStateCreateInfoKHR& setCombinerOps(FragmentShadingRateCombinerOpKHR combinerOps[2]) { for(uint32_t i = 0; i < 2; i++) this->combinerOps[i] = combinerOps[i]; return *this; }
+    PipelineFragmentShadingRateStateCreateInfoKHR& setFragmentSize(Extent2D fragmentSize) {this->fragmentSize = fragmentSize; return *this; }
+    PipelineFragmentShadingRateStateCreateInfoKHR& setCombinerOps(FragmentShadingRateCombinerOpKHR combinerOps[2]) {for(uint32_t i = 0; i < 2; i++) this->combinerOps[i] = combinerOps[i]; return *this; }
 };
 struct PhysicalDeviceFragmentShadingRateFeaturesKHR {
     StructureType sType{StructureType::PhysicalDeviceFragmentShadingRateFeaturesKHR};
@@ -10459,9 +10469,9 @@ struct PhysicalDeviceFragmentShadingRateFeaturesKHR {
     Bool32 pipelineFragmentShadingRate{0};
     Bool32 primitiveFragmentShadingRate{0};
     Bool32 attachmentFragmentShadingRate{0};
-    PhysicalDeviceFragmentShadingRateFeaturesKHR& setPipelineFragmentShadingRate(Bool32 pipelineFragmentShadingRate) { this->pipelineFragmentShadingRate = pipelineFragmentShadingRate; return *this; }
-    PhysicalDeviceFragmentShadingRateFeaturesKHR& setPrimitiveFragmentShadingRate(Bool32 primitiveFragmentShadingRate) { this->primitiveFragmentShadingRate = primitiveFragmentShadingRate; return *this; }
-    PhysicalDeviceFragmentShadingRateFeaturesKHR& setAttachmentFragmentShadingRate(Bool32 attachmentFragmentShadingRate) { this->attachmentFragmentShadingRate = attachmentFragmentShadingRate; return *this; }
+    PhysicalDeviceFragmentShadingRateFeaturesKHR& setPipelineFragmentShadingRate(Bool32 pipelineFragmentShadingRate) {this->pipelineFragmentShadingRate = pipelineFragmentShadingRate; return *this; }
+    PhysicalDeviceFragmentShadingRateFeaturesKHR& setPrimitiveFragmentShadingRate(Bool32 primitiveFragmentShadingRate) {this->primitiveFragmentShadingRate = primitiveFragmentShadingRate; return *this; }
+    PhysicalDeviceFragmentShadingRateFeaturesKHR& setAttachmentFragmentShadingRate(Bool32 attachmentFragmentShadingRate) {this->attachmentFragmentShadingRate = attachmentFragmentShadingRate; return *this; }
 };
 struct PhysicalDeviceFragmentShadingRatePropertiesKHR {
     StructureType sType{StructureType::PhysicalDeviceFragmentShadingRatePropertiesKHR};
@@ -10483,37 +10493,37 @@ struct PhysicalDeviceFragmentShadingRatePropertiesKHR {
     Bool32 fragmentShadingRateWithFragmentShaderInterlock{0};
     Bool32 fragmentShadingRateWithCustomSampleLocations{0};
     Bool32 fragmentShadingRateStrictMultiplyCombiner{0};
-    PhysicalDeviceFragmentShadingRatePropertiesKHR& setMinFragmentShadingRateAttachmentTexelSize(Extent2D minFragmentShadingRateAttachmentTexelSize) { this->minFragmentShadingRateAttachmentTexelSize = minFragmentShadingRateAttachmentTexelSize; return *this; }
-    PhysicalDeviceFragmentShadingRatePropertiesKHR& setMaxFragmentShadingRateAttachmentTexelSize(Extent2D maxFragmentShadingRateAttachmentTexelSize) { this->maxFragmentShadingRateAttachmentTexelSize = maxFragmentShadingRateAttachmentTexelSize; return *this; }
-    PhysicalDeviceFragmentShadingRatePropertiesKHR& setMaxFragmentShadingRateAttachmentTexelSizeAspectRatio(uint32_t maxFragmentShadingRateAttachmentTexelSizeAspectRatio) { this->maxFragmentShadingRateAttachmentTexelSizeAspectRatio = maxFragmentShadingRateAttachmentTexelSizeAspectRatio; return *this; }
-    PhysicalDeviceFragmentShadingRatePropertiesKHR& setPrimitiveFragmentShadingRateWithMultipleViewports(Bool32 primitiveFragmentShadingRateWithMultipleViewports) { this->primitiveFragmentShadingRateWithMultipleViewports = primitiveFragmentShadingRateWithMultipleViewports; return *this; }
-    PhysicalDeviceFragmentShadingRatePropertiesKHR& setLayeredShadingRateAttachments(Bool32 layeredShadingRateAttachments) { this->layeredShadingRateAttachments = layeredShadingRateAttachments; return *this; }
-    PhysicalDeviceFragmentShadingRatePropertiesKHR& setFragmentShadingRateNonTrivialCombinerOps(Bool32 fragmentShadingRateNonTrivialCombinerOps) { this->fragmentShadingRateNonTrivialCombinerOps = fragmentShadingRateNonTrivialCombinerOps; return *this; }
-    PhysicalDeviceFragmentShadingRatePropertiesKHR& setMaxFragmentSize(Extent2D maxFragmentSize) { this->maxFragmentSize = maxFragmentSize; return *this; }
-    PhysicalDeviceFragmentShadingRatePropertiesKHR& setMaxFragmentSizeAspectRatio(uint32_t maxFragmentSizeAspectRatio) { this->maxFragmentSizeAspectRatio = maxFragmentSizeAspectRatio; return *this; }
-    PhysicalDeviceFragmentShadingRatePropertiesKHR& setMaxFragmentShadingRateCoverageSamples(uint32_t maxFragmentShadingRateCoverageSamples) { this->maxFragmentShadingRateCoverageSamples = maxFragmentShadingRateCoverageSamples; return *this; }
-    PhysicalDeviceFragmentShadingRatePropertiesKHR& setMaxFragmentShadingRateRasterizationSamples(SampleCountFlagBits maxFragmentShadingRateRasterizationSamples) { this->maxFragmentShadingRateRasterizationSamples = maxFragmentShadingRateRasterizationSamples; return *this; }
-    PhysicalDeviceFragmentShadingRatePropertiesKHR& setFragmentShadingRateWithShaderDepthStencilWrites(Bool32 fragmentShadingRateWithShaderDepthStencilWrites) { this->fragmentShadingRateWithShaderDepthStencilWrites = fragmentShadingRateWithShaderDepthStencilWrites; return *this; }
-    PhysicalDeviceFragmentShadingRatePropertiesKHR& setFragmentShadingRateWithSampleMask(Bool32 fragmentShadingRateWithSampleMask) { this->fragmentShadingRateWithSampleMask = fragmentShadingRateWithSampleMask; return *this; }
-    PhysicalDeviceFragmentShadingRatePropertiesKHR& setFragmentShadingRateWithShaderSampleMask(Bool32 fragmentShadingRateWithShaderSampleMask) { this->fragmentShadingRateWithShaderSampleMask = fragmentShadingRateWithShaderSampleMask; return *this; }
-    PhysicalDeviceFragmentShadingRatePropertiesKHR& setFragmentShadingRateWithConservativeRasterization(Bool32 fragmentShadingRateWithConservativeRasterization) { this->fragmentShadingRateWithConservativeRasterization = fragmentShadingRateWithConservativeRasterization; return *this; }
-    PhysicalDeviceFragmentShadingRatePropertiesKHR& setFragmentShadingRateWithFragmentShaderInterlock(Bool32 fragmentShadingRateWithFragmentShaderInterlock) { this->fragmentShadingRateWithFragmentShaderInterlock = fragmentShadingRateWithFragmentShaderInterlock; return *this; }
-    PhysicalDeviceFragmentShadingRatePropertiesKHR& setFragmentShadingRateWithCustomSampleLocations(Bool32 fragmentShadingRateWithCustomSampleLocations) { this->fragmentShadingRateWithCustomSampleLocations = fragmentShadingRateWithCustomSampleLocations; return *this; }
-    PhysicalDeviceFragmentShadingRatePropertiesKHR& setFragmentShadingRateStrictMultiplyCombiner(Bool32 fragmentShadingRateStrictMultiplyCombiner) { this->fragmentShadingRateStrictMultiplyCombiner = fragmentShadingRateStrictMultiplyCombiner; return *this; }
+    PhysicalDeviceFragmentShadingRatePropertiesKHR& setMinFragmentShadingRateAttachmentTexelSize(Extent2D minFragmentShadingRateAttachmentTexelSize) {this->minFragmentShadingRateAttachmentTexelSize = minFragmentShadingRateAttachmentTexelSize; return *this; }
+    PhysicalDeviceFragmentShadingRatePropertiesKHR& setMaxFragmentShadingRateAttachmentTexelSize(Extent2D maxFragmentShadingRateAttachmentTexelSize) {this->maxFragmentShadingRateAttachmentTexelSize = maxFragmentShadingRateAttachmentTexelSize; return *this; }
+    PhysicalDeviceFragmentShadingRatePropertiesKHR& setMaxFragmentShadingRateAttachmentTexelSizeAspectRatio(uint32_t maxFragmentShadingRateAttachmentTexelSizeAspectRatio) {this->maxFragmentShadingRateAttachmentTexelSizeAspectRatio = maxFragmentShadingRateAttachmentTexelSizeAspectRatio; return *this; }
+    PhysicalDeviceFragmentShadingRatePropertiesKHR& setPrimitiveFragmentShadingRateWithMultipleViewports(Bool32 primitiveFragmentShadingRateWithMultipleViewports) {this->primitiveFragmentShadingRateWithMultipleViewports = primitiveFragmentShadingRateWithMultipleViewports; return *this; }
+    PhysicalDeviceFragmentShadingRatePropertiesKHR& setLayeredShadingRateAttachments(Bool32 layeredShadingRateAttachments) {this->layeredShadingRateAttachments = layeredShadingRateAttachments; return *this; }
+    PhysicalDeviceFragmentShadingRatePropertiesKHR& setFragmentShadingRateNonTrivialCombinerOps(Bool32 fragmentShadingRateNonTrivialCombinerOps) {this->fragmentShadingRateNonTrivialCombinerOps = fragmentShadingRateNonTrivialCombinerOps; return *this; }
+    PhysicalDeviceFragmentShadingRatePropertiesKHR& setMaxFragmentSize(Extent2D maxFragmentSize) {this->maxFragmentSize = maxFragmentSize; return *this; }
+    PhysicalDeviceFragmentShadingRatePropertiesKHR& setMaxFragmentSizeAspectRatio(uint32_t maxFragmentSizeAspectRatio) {this->maxFragmentSizeAspectRatio = maxFragmentSizeAspectRatio; return *this; }
+    PhysicalDeviceFragmentShadingRatePropertiesKHR& setMaxFragmentShadingRateCoverageSamples(uint32_t maxFragmentShadingRateCoverageSamples) {this->maxFragmentShadingRateCoverageSamples = maxFragmentShadingRateCoverageSamples; return *this; }
+    PhysicalDeviceFragmentShadingRatePropertiesKHR& setMaxFragmentShadingRateRasterizationSamples(SampleCountFlagBits maxFragmentShadingRateRasterizationSamples) {this->maxFragmentShadingRateRasterizationSamples = maxFragmentShadingRateRasterizationSamples; return *this; }
+    PhysicalDeviceFragmentShadingRatePropertiesKHR& setFragmentShadingRateWithShaderDepthStencilWrites(Bool32 fragmentShadingRateWithShaderDepthStencilWrites) {this->fragmentShadingRateWithShaderDepthStencilWrites = fragmentShadingRateWithShaderDepthStencilWrites; return *this; }
+    PhysicalDeviceFragmentShadingRatePropertiesKHR& setFragmentShadingRateWithSampleMask(Bool32 fragmentShadingRateWithSampleMask) {this->fragmentShadingRateWithSampleMask = fragmentShadingRateWithSampleMask; return *this; }
+    PhysicalDeviceFragmentShadingRatePropertiesKHR& setFragmentShadingRateWithShaderSampleMask(Bool32 fragmentShadingRateWithShaderSampleMask) {this->fragmentShadingRateWithShaderSampleMask = fragmentShadingRateWithShaderSampleMask; return *this; }
+    PhysicalDeviceFragmentShadingRatePropertiesKHR& setFragmentShadingRateWithConservativeRasterization(Bool32 fragmentShadingRateWithConservativeRasterization) {this->fragmentShadingRateWithConservativeRasterization = fragmentShadingRateWithConservativeRasterization; return *this; }
+    PhysicalDeviceFragmentShadingRatePropertiesKHR& setFragmentShadingRateWithFragmentShaderInterlock(Bool32 fragmentShadingRateWithFragmentShaderInterlock) {this->fragmentShadingRateWithFragmentShaderInterlock = fragmentShadingRateWithFragmentShaderInterlock; return *this; }
+    PhysicalDeviceFragmentShadingRatePropertiesKHR& setFragmentShadingRateWithCustomSampleLocations(Bool32 fragmentShadingRateWithCustomSampleLocations) {this->fragmentShadingRateWithCustomSampleLocations = fragmentShadingRateWithCustomSampleLocations; return *this; }
+    PhysicalDeviceFragmentShadingRatePropertiesKHR& setFragmentShadingRateStrictMultiplyCombiner(Bool32 fragmentShadingRateStrictMultiplyCombiner) {this->fragmentShadingRateStrictMultiplyCombiner = fragmentShadingRateStrictMultiplyCombiner; return *this; }
 };
 struct PhysicalDeviceFragmentShadingRateKHR {
     StructureType sType{StructureType::PhysicalDeviceFragmentShadingRateKHR};
     void* pNext = nullptr;
     SampleCountFlags sampleCounts{};
     Extent2D fragmentSize{};
-    PhysicalDeviceFragmentShadingRateKHR& setSampleCounts(SampleCountFlags sampleCounts) { this->sampleCounts = sampleCounts; return *this; }
-    PhysicalDeviceFragmentShadingRateKHR& setFragmentSize(Extent2D fragmentSize) { this->fragmentSize = fragmentSize; return *this; }
+    PhysicalDeviceFragmentShadingRateKHR& setSampleCounts(SampleCountFlags sampleCounts) {this->sampleCounts = sampleCounts; return *this; }
+    PhysicalDeviceFragmentShadingRateKHR& setFragmentSize(Extent2D fragmentSize) {this->fragmentSize = fragmentSize; return *this; }
 };
 struct PhysicalDeviceShaderTerminateInvocationFeaturesKHR {
     StructureType sType{StructureType::PhysicalDeviceShaderTerminateInvocationFeaturesKHR};
     void* pNext = nullptr;
     Bool32 shaderTerminateInvocation{0};
-    PhysicalDeviceShaderTerminateInvocationFeaturesKHR& setShaderTerminateInvocation(Bool32 shaderTerminateInvocation) { this->shaderTerminateInvocation = shaderTerminateInvocation; return *this; }
+    PhysicalDeviceShaderTerminateInvocationFeaturesKHR& setShaderTerminateInvocation(Bool32 shaderTerminateInvocation) {this->shaderTerminateInvocation = shaderTerminateInvocation; return *this; }
 };
 struct PhysicalDeviceFragmentShadingRateEnumsFeaturesNV {
     StructureType sType{StructureType::PhysicalDeviceFragmentShadingRateEnumsFeaturesNV};
@@ -10521,15 +10531,15 @@ struct PhysicalDeviceFragmentShadingRateEnumsFeaturesNV {
     Bool32 fragmentShadingRateEnums{0};
     Bool32 supersampleFragmentShadingRates{0};
     Bool32 noInvocationFragmentShadingRates{0};
-    PhysicalDeviceFragmentShadingRateEnumsFeaturesNV& setFragmentShadingRateEnums(Bool32 fragmentShadingRateEnums) { this->fragmentShadingRateEnums = fragmentShadingRateEnums; return *this; }
-    PhysicalDeviceFragmentShadingRateEnumsFeaturesNV& setSupersampleFragmentShadingRates(Bool32 supersampleFragmentShadingRates) { this->supersampleFragmentShadingRates = supersampleFragmentShadingRates; return *this; }
-    PhysicalDeviceFragmentShadingRateEnumsFeaturesNV& setNoInvocationFragmentShadingRates(Bool32 noInvocationFragmentShadingRates) { this->noInvocationFragmentShadingRates = noInvocationFragmentShadingRates; return *this; }
+    PhysicalDeviceFragmentShadingRateEnumsFeaturesNV& setFragmentShadingRateEnums(Bool32 fragmentShadingRateEnums) {this->fragmentShadingRateEnums = fragmentShadingRateEnums; return *this; }
+    PhysicalDeviceFragmentShadingRateEnumsFeaturesNV& setSupersampleFragmentShadingRates(Bool32 supersampleFragmentShadingRates) {this->supersampleFragmentShadingRates = supersampleFragmentShadingRates; return *this; }
+    PhysicalDeviceFragmentShadingRateEnumsFeaturesNV& setNoInvocationFragmentShadingRates(Bool32 noInvocationFragmentShadingRates) {this->noInvocationFragmentShadingRates = noInvocationFragmentShadingRates; return *this; }
 };
 struct PhysicalDeviceFragmentShadingRateEnumsPropertiesNV {
     StructureType sType{StructureType::PhysicalDeviceFragmentShadingRateEnumsPropertiesNV};
     void* pNext = nullptr;
     SampleCountFlagBits maxFragmentShadingRateInvocationCount{static_cast<SampleCountFlagBits>(0)};
-    PhysicalDeviceFragmentShadingRateEnumsPropertiesNV& setMaxFragmentShadingRateInvocationCount(SampleCountFlagBits maxFragmentShadingRateInvocationCount) { this->maxFragmentShadingRateInvocationCount = maxFragmentShadingRateInvocationCount; return *this; }
+    PhysicalDeviceFragmentShadingRateEnumsPropertiesNV& setMaxFragmentShadingRateInvocationCount(SampleCountFlagBits maxFragmentShadingRateInvocationCount) {this->maxFragmentShadingRateInvocationCount = maxFragmentShadingRateInvocationCount; return *this; }
 };
 struct PipelineFragmentShadingRateEnumStateCreateInfoNV {
     StructureType sType{StructureType::PipelineFragmentShadingRateEnumStateCreateInfoNV};
@@ -10537,9 +10547,9 @@ struct PipelineFragmentShadingRateEnumStateCreateInfoNV {
     FragmentShadingRateTypeNV shadingRateType{static_cast<FragmentShadingRateTypeNV>(0)};
     FragmentShadingRateNV shadingRate{static_cast<FragmentShadingRateNV>(0)};
     FragmentShadingRateCombinerOpKHR combinerOps[2];
-    PipelineFragmentShadingRateEnumStateCreateInfoNV& setShadingRateType(FragmentShadingRateTypeNV shadingRateType) { this->shadingRateType = shadingRateType; return *this; }
-    PipelineFragmentShadingRateEnumStateCreateInfoNV& setShadingRate(FragmentShadingRateNV shadingRate) { this->shadingRate = shadingRate; return *this; }
-    PipelineFragmentShadingRateEnumStateCreateInfoNV& setCombinerOps(FragmentShadingRateCombinerOpKHR combinerOps[2]) { for(uint32_t i = 0; i < 2; i++) this->combinerOps[i] = combinerOps[i]; return *this; }
+    PipelineFragmentShadingRateEnumStateCreateInfoNV& setShadingRateType(FragmentShadingRateTypeNV shadingRateType) {this->shadingRateType = shadingRateType; return *this; }
+    PipelineFragmentShadingRateEnumStateCreateInfoNV& setShadingRate(FragmentShadingRateNV shadingRate) {this->shadingRate = shadingRate; return *this; }
+    PipelineFragmentShadingRateEnumStateCreateInfoNV& setCombinerOps(FragmentShadingRateCombinerOpKHR combinerOps[2]) {for(uint32_t i = 0; i < 2; i++) this->combinerOps[i] = combinerOps[i]; return *this; }
 };
 struct AccelerationStructureBuildSizesInfoKHR {
     StructureType sType{StructureType::AccelerationStructureBuildSizesInfoKHR};
@@ -10547,31 +10557,31 @@ struct AccelerationStructureBuildSizesInfoKHR {
     DeviceSize accelerationStructureSize{0};
     DeviceSize updateScratchSize{0};
     DeviceSize buildScratchSize{0};
-    AccelerationStructureBuildSizesInfoKHR& setAccelerationStructureSize(DeviceSize accelerationStructureSize) { this->accelerationStructureSize = accelerationStructureSize; return *this; }
-    AccelerationStructureBuildSizesInfoKHR& setUpdateScratchSize(DeviceSize updateScratchSize) { this->updateScratchSize = updateScratchSize; return *this; }
-    AccelerationStructureBuildSizesInfoKHR& setBuildScratchSize(DeviceSize buildScratchSize) { this->buildScratchSize = buildScratchSize; return *this; }
+    AccelerationStructureBuildSizesInfoKHR& setAccelerationStructureSize(DeviceSize accelerationStructureSize) {this->accelerationStructureSize = accelerationStructureSize; return *this; }
+    AccelerationStructureBuildSizesInfoKHR& setUpdateScratchSize(DeviceSize updateScratchSize) {this->updateScratchSize = updateScratchSize; return *this; }
+    AccelerationStructureBuildSizesInfoKHR& setBuildScratchSize(DeviceSize buildScratchSize) {this->buildScratchSize = buildScratchSize; return *this; }
 };
 struct PhysicalDeviceMutableDescriptorTypeFeaturesVALVE {
     StructureType sType{StructureType::PhysicalDeviceMutableDescriptorTypeFeaturesVALVE};
     void* pNext = nullptr;
     Bool32 mutableDescriptorType{0};
-    PhysicalDeviceMutableDescriptorTypeFeaturesVALVE& setMutableDescriptorType(Bool32 mutableDescriptorType) { this->mutableDescriptorType = mutableDescriptorType; return *this; }
+    PhysicalDeviceMutableDescriptorTypeFeaturesVALVE& setMutableDescriptorType(Bool32 mutableDescriptorType) {this->mutableDescriptorType = mutableDescriptorType; return *this; }
 };
 struct MutableDescriptorTypeListVALVE {
     uint32_t descriptorTypeCount{0};
     const DescriptorType* pDescriptorTypes = nullptr;
-    MutableDescriptorTypeListVALVE& setDescriptorTypeCount(uint32_t descriptorTypeCount) { this->descriptorTypeCount = descriptorTypeCount; return *this; }
-    MutableDescriptorTypeListVALVE& setPDescriptorTypes(const DescriptorType* pDescriptorTypes) { this->pDescriptorTypes = pDescriptorTypes; return *this; }
-    MutableDescriptorTypeListVALVE& setDescriptorTypes(detail::span<const DescriptorType> DescriptorTypes) { this->descriptorTypeCount = DescriptorTypes.size(); this->pDescriptorTypes = DescriptorTypes.data();  return *this; }
+    MutableDescriptorTypeListVALVE& setDescriptorTypeCount(uint32_t descriptorTypeCount) {this->descriptorTypeCount = descriptorTypeCount; return *this; }
+    MutableDescriptorTypeListVALVE& setPDescriptorTypes(const DescriptorType* pDescriptorTypes) {this->pDescriptorTypes = pDescriptorTypes; return *this; }
+    MutableDescriptorTypeListVALVE& setPDescriptorTypes(detail::span<const DescriptorType> pDescriptorTypes) {this->descriptorTypeCount = pDescriptorTypes.size(); this->pDescriptorTypes = pDescriptorTypes.data();  return *this; }
 };
 struct MutableDescriptorTypeCreateInfoVALVE {
     StructureType sType{StructureType::MutableDescriptorTypeCreateInfoVALVE};
     const void* pNext = nullptr;
     uint32_t mutableDescriptorTypeListCount{0};
     const MutableDescriptorTypeListVALVE* pMutableDescriptorTypeLists = nullptr;
-    MutableDescriptorTypeCreateInfoVALVE& setMutableDescriptorTypeListCount(uint32_t mutableDescriptorTypeListCount) { this->mutableDescriptorTypeListCount = mutableDescriptorTypeListCount; return *this; }
-    MutableDescriptorTypeCreateInfoVALVE& setPMutableDescriptorTypeLists(const MutableDescriptorTypeListVALVE* pMutableDescriptorTypeLists) { this->pMutableDescriptorTypeLists = pMutableDescriptorTypeLists; return *this; }
-    MutableDescriptorTypeCreateInfoVALVE& setMutableDescriptorTypeLists(detail::span<const MutableDescriptorTypeListVALVE> MutableDescriptorTypeLists) { this->mutableDescriptorTypeListCount = MutableDescriptorTypeLists.size(); this->pMutableDescriptorTypeLists = MutableDescriptorTypeLists.data();  return *this; }
+    MutableDescriptorTypeCreateInfoVALVE& setMutableDescriptorTypeListCount(uint32_t mutableDescriptorTypeListCount) {this->mutableDescriptorTypeListCount = mutableDescriptorTypeListCount; return *this; }
+    MutableDescriptorTypeCreateInfoVALVE& setPMutableDescriptorTypeLists(const MutableDescriptorTypeListVALVE* pMutableDescriptorTypeLists) {this->pMutableDescriptorTypeLists = pMutableDescriptorTypeLists; return *this; }
+    MutableDescriptorTypeCreateInfoVALVE& setPMutableDescriptorTypeLists(detail::span<const MutableDescriptorTypeListVALVE> pMutableDescriptorTypeLists) {this->mutableDescriptorTypeListCount = pMutableDescriptorTypeLists.size(); this->pMutableDescriptorTypeLists = pMutableDescriptorTypeLists.data();  return *this; }
 };
 namespace detail {
 using PFN_CreateInstance = Result (*) (const InstanceCreateInfo* pCreateInfo, const AllocationCallbacks* pAllocator, Instance* pInstance);

@@ -42,7 +42,10 @@ def MorphVkEnumName(name, enum_name_len):
         n_part = n_part[:-1]
     if n_part[-1].upper() in vendor_abbreviations:
         n_part[-1] = n_part[-1].upper()
-    return ''.join(n_part)
+    out = ''.join(n_part)
+    if out[0].isnumeric():
+        out = 'e' + out
+    return out
 
 def PrintConsecutivePlatforms(file, in_list, function_name, *args, **kwargs):
     prev_platform = None
@@ -164,10 +167,7 @@ class Enum:
         else:
             file.write(f"enum class {self.name[2:]} : {self.underlying_type} {{\n")
             for name, value in self.values.items():
-                out_name = MorphVkEnumName(name, self.enum_name_len)
-                if out_name[0].isnumeric():
-                    out_name = f'e{out_name}'
-                file.write(f'    {out_name} = {str(value)},\n')
+                file.write(f'    {MorphVkEnumName(name, self.enum_name_len)} = {str(value)},\n')
             file.write('};\n')
             
     def print_basic(self, file):
@@ -185,11 +185,21 @@ class Enum:
         file.write(f'inline const char * to_string({self.name[2:]} val) {{\n')
         file.write(f'    switch(val) {{\n')
         for name in self.values.keys():
-            out_name = MorphVkEnumName(name, self.enum_name_len)
-            if out_name[0].isnumeric():
-                out_name = f'e{out_name}'
-            file.write(f'        case({self.name[2:]}::{out_name}): return \"{out_name}\";\n')
+            modified_name = MorphVkEnumName(name, self.enum_name_len)
+            file.write(f'        case({self.name[2:]}::{modified_name}): return \"{modified_name}\";\n')
         file.write('        default: return "UNKNOWN";\n    }\n}\n')
+
+    def print_basic_string_forward_def(self, file):
+        if self.alias is None:
+            file.write(f'const char * to_string({self.name} val);\n')
+
+    def print_basic_string_impl(self, file):
+        if self.alias is None:
+            file.write(f'const char * to_string({self.name} val) {{\n')
+            file.write(f'    switch(val) {{\n')
+            for name in self.values.keys():
+                file.write(f'        case({self.name}::{name}): return \"{name}\";\n')
+            file.write('        default: return "UNKNOWN";\n    }\n}\n')
 
     def print_c_interop(self, file):
         if self.alias is None:
@@ -225,10 +235,8 @@ class Bitmask:
             elif elem.get('alias') is not None:
                 if elem.get('name') == "VK_STENCIL_FRONT_AND_BACK":
                     continue #ugly special case
-                out_name = MorphVkEnumName(elem.get("alias"), self.bitmask_name_len)
-                if out_name[0].isnumeric():
-                    out_name = f'e{out_name}'
-                value = out_name
+                value = elem.get("alias")
+                MorphVkEnumName(elem.get("alias"), self.bitmask_name_len)
             self.values[value] = elem.get('name')
 
     def fill_ext_bitmasks(self, bitmask_ext_dict):
@@ -245,10 +253,11 @@ class Bitmask:
         else:
             file.write(f'enum class {self.name[2:]}: {self.underlying_type} {{\n')
             for bitpos, name in self.values.items():
-                out_name = MorphVkEnumName(name, self.bitmask_name_len)
-                if out_name[0].isnumeric():
-                    out_name = f'e{out_name}'
-                file.write(f"    {out_name} = {bitpos},\n")
+                file.write(f'    {MorphVkEnumName(name, self.bitmask_name_len)} = ')
+                if all(c.isnumeric() for c in bitpos) or '0x' in bitpos :
+                    file.write(f'{bitpos},\n')
+                else:
+                    file.write(f'{MorphVkEnumName(bitpos, self.bitmask_name_len)},\n')
             file.write('};\n')
 
     def print_basic(self, file):
@@ -256,14 +265,8 @@ class Bitmask:
             file.write(f'using {self.name} = {self.alias};\n')
         else:
             file.write(f'enum class {self.name}: {self.underlying_type} {{\n')
-            for elem in self.node:
-                value = elem.get('value')
-                name = elem.get('name')
-                if elem.get('bitpos') is not None:
-                    value = str(1 << int(elem.get('bitpos')))
-                if elem.get("alias") is not None:
-                    value = elem.get("alias")
-                file.write(f"    {name} = {value},\n")
+            for bitpos, name in self.values.items():
+                file.write(f"    {name} = {bitpos},\n")
             file.write('};\n')
             
     def print_string(self, file):
@@ -273,10 +276,8 @@ class Bitmask:
             for bitpos, name in self.values.items():
                 if not RepresentsIntOrHex(bitpos):
                     continue
-                out_name = MorphVkEnumName(name, self.bitmask_name_len)
-                if out_name[0].isnumeric():
-                    out_name = f'e{out_name}'
-                file.write(f'        case({self.name[2:]}::{out_name}): return \"{out_name}\";\n')
+                modified_name = MorphVkEnumName(name, self.bitmask_name_len)
+                file.write(f'        case({self.name[2:]}::{modified_name}): return \"{modified_name}\";\n')
 
             file.write('        default: return "UNKNOWN";\n    }\n}\n')
             file.write(f'inline std::string to_string({self.flags_name[2:]} flag){{\n')
@@ -285,11 +286,33 @@ class Bitmask:
             for bitpos, name in self.values.items():
                 if not RepresentsIntOrHex(bitpos):
                     continue
-                out_name = MorphVkEnumName(name, self.bitmask_name_len)
-                if out_name[0].isnumeric():
-                    out_name = f'e{out_name}'
-                file.write(f'    if (flag & {self.name[2:]}::{out_name}) out += \"{out_name} | \";\n')
+                modified_name = MorphVkEnumName(name, self.bitmask_name_len)
+                file.write(f'    if (flag & {self.name[2:]}::{modified_name}) out += \"{modified_name} | \";\n')
                 
+            file.write(f'    return out.substr(0, out.size() - 3);\n}}\n')
+
+    def print_basic_string_forward_def(self, file):
+        if self.alias is None:
+            file.write(f'const char * to_string({self.name} val);\n')
+            file.write(f'std::string to_string({self.flags_name} flag);\n')
+
+
+    def print_basic_string_impl(self, file):
+        if self.alias is None:
+            file.write(f'const char * to_string({self.name} val) {{\n')
+            file.write('    switch(val) {\n')
+            for bitpos, name in self.values.items():
+                if not RepresentsIntOrHex(bitpos):
+                    continue
+                file.write(f'        case({self.name}::{name}): return \"{name}\";\n')
+            file.write('        default: return "UNKNOWN";\n    }\n}\n')
+            file.write(f'std::string to_string({self.flags_name} flag){{\n')
+            file.write(f'    if (flag.flags == 0) return \"None\";\n')
+            file.write(f'    std::string out;\n')
+            for bitpos, name in self.values.items():
+                if not RepresentsIntOrHex(bitpos):
+                    continue
+                file.write(f'    if (flag & {self.name}::{name}) out += \"{name} | \";\n')
             file.write(f'    return out.substr(0, out.size() - 3);\n}}\n')
 
     def print_c_interop(self, file):
@@ -324,6 +347,12 @@ class EmptyBitmask:
         file.write(f'inline std::string to_string({self.flags_name[2:]} flag){{\n')
         file.write(f'    if (flag.flags == 0) return \"None\";\n')
         file.write(f'    return "Unknown";\n}}\n')
+
+    def print_basic_string_forward_def(self, file):
+        pass
+
+    def print_basic_string_impl(self, file):
+        pass
 
     def print_c_interop(self, file):
         pass
@@ -496,10 +525,7 @@ class Variable:
         if self.base_type in default_values:
             self.default_value = default_values[self.base_type]
         if self.name == 'sType' and self.sType_value is not None:
-            out_name = MorphVkEnumName(self.sType_value, 3)
-            if out_name[0].isnumeric():
-                out_name = f'e{out_name}'
-            self.default_value = f'StructureType::{out_name}'
+            self.default_value = f'StructureType::{MorphVkEnumName(self.sType_value, 3)}'
 
         self.is_handle = self.base_type in handles
 
@@ -751,38 +777,39 @@ class Structure:
                 elif member.value_category in ['sType']:
                     continue
                 elif member.value_category == 'pNext':
-                    pass
-                elif member.value_category in ['value', 'len_param', 'string']:
-                    file.write(f'    {self.name[2:]}& set{MakeBuilderName(member.name)}({member.get_parameter_decl(use_references=False)}) {{ ')
+                    continue
+
+                # all categories begin with the same line    
+                file.write(f'    {self.name[2:]}& set{MakeBuilderName(member.name)}({member.get_parameter_decl(use_references=False)}) {{')
+                if member.value_category in ['value', 'len_param', 'string']:
                     file.write(f'this->{member.name} = {member.name}; return *this; }}\n')
                 elif member.value_category in ['single_ptr', 'optional_ptr']:
-                    file.write(f'    {self.name[2:]}& set{MakeBuilderName(member.name)}({member.get_parameter_decl(use_references=False)}) {{ ')
                     file.write(f'this->{member.name} = {member.name}; return *this; }}\n')
-                    file.write(f'    {self.name[2:]}& set{member.name[1:]}({member.base_type_modified} {member.const}& {member.name[1:]}) {{ ')
-                    file.write(f'this->{member.name} = &{member.name[1:]}; return *this; }}\n')
+                    file.write(f'    {self.name[2:]}& set{MakeBuilderName(member.name)}({member.base_type_modified} {member.const}& {member.name}) {{')
+                    file.write(f'this->{member.name} = &{member.name}; return *this; }}\n')
                 elif member.value_category == 'vector':
-                    file.write(f'    {self.name[2:]}& set{MakeBuilderName(member.name)}({member.get_parameter_decl(use_references=False)}) {{ ')
                     file.write(f'this->{member.name} = {member.name}; return *this; }}\n')
-                    file.write(f'    {self.name[2:]}& set{member.name[1:]}(detail::span<{member.get_span_type()}> {member.name[1:]}) {{ ')
-                    file.write(f'this->{member.length_ref} = {member.name[1:]}.size(); this->{member.name} = {member.name[1:]}.data();  return *this; }}\n')
+                    file.write(f'    {self.name[2:]}& set{MakeBuilderName(member.name)}(detail::span<{member.get_span_type()}> {member.name}) {{')
+                    file.write(f'this->{member.length_ref} = {member.name}.size(); this->{member.name} = {member.name}.data();  return *this; }}\n')
                 elif member.value_category == 'vector_of_vector':
-                    file.write(f'    {self.name[2:]}& set{MakeBuilderName(member.name)}({member.get_parameter_decl(use_references=False)}) {{')
                     file.write(f'this->{member.name} = {member.name}; return *this; }}\n')
-                    file.write(f'    {self.name[2:]}& set{member.name[1:]}(detail::span<{member.get_span_type()}> {member.name[1:]}) {{ ')
-                    file.write(f'this->{member.length_ref} = {member.name[1:]}.size(); this->{member.name} = {member.name[1:]}.data();  return *this; }}\n')
+                    file.write(f'    {self.name[2:]}& set{MakeBuilderName(member.name)}(detail::span<{member.get_span_type()}> {member.name}) {{')
+                    file.write(f'this->{member.length_ref} = {member.name}.size(); this->{member.name} = {member.name}.data();  return *this; }}\n')
                 elif member.value_category == 'array':
-                    file.write(f'    {self.name[2:]}& set{MakeBuilderName(member.name)}({member.get_parameter_decl(use_references=False)}) {{ ')
                     if len(member.array_lengths) == 1:
                         file.write(f'for(uint32_t i = 0; i < {member.array_lengths[0]}; i++) this->{member.name}[i] = {member.name}[i]; return *this; }}\n')
                     if len(member.array_lengths) == 2:
                         file.write(f'\n        for(uint32_t i = 0; i < {member.array_lengths[0]}; i++){{ for(uint32_t j = 0; j < {member.array_lengths[1]}; j++){{\n')
                         file.write(f'        this->{member.name}[i][j] = {member.name}[i][j];}}}} return *this; }}\n')
                 elif member.value_category == 'vector_of_string':
-                    file.write(f'    {self.name[2:]}& set{MakeBuilderName(member.name)}({member.get_parameter_decl(use_references=False)}) {{')
                     file.write(f'this->{member.name} = {member.name}; return *this; }}\n')
                     file.write(f'    {self.name[2:]}& set{member.name[1:]}(detail::span<{member.get_span_type()}> {member.name[1:]}) {{ ')
                     file.write(f'this->{member.length_ref} = {member.name[1:]}.size(); this->{member.name} = {member.name[1:]}.data();  return *this; }}\n')
-                
+                elif member.value_category == 'user_ptr':
+                    file.write(f'this->{member.name} = {member.name}; return *this; }}\n')
+                else: #should never see this
+                    file.write(f'}}\n')
+                    print("HALT! Who goes there?", self.name, member.name, member.value_category)
             file.write('};\n')
 
     def print_basic(self, file):
@@ -798,7 +825,7 @@ class Structure:
                     file.write(f'    {member.get_raw_xml()}')
                 if member.name == 'sType' and member.sType_value is not None:
                     file.write(f' = VkStructureType::{member.sType_value};\n')
-                elif should_init:
+                elif should_init and member.bitfield is None:
                     file.write('{};\n')
                 else:
                     file.write(';\n')
@@ -909,14 +936,18 @@ class Function:
         file.write(f'    pfn_{self.name[2:]} = ')
         file.write(f'reinterpret_cast<detail::{self.pfn_type}>({gpa_name}({gpa_val},\"{self.name}\"));\n')
 
-    def print_extern_decl(self, file):
+    def print_extern_decl(self, file, parent_dispatch_type):
+        if parent_dispatch_type == 'instance' and self.name == 'vkGetInstanceProcAddr':
+            return #halt duplicate vkGetInstanceProcAddr's being defined
         file.write(f'extern PFN_{self.name} {self.name};\n')
 
-    def print_function_def(self, file):
+    def print_function_def(self, file, parent_dispatch_type):
+        if parent_dispatch_type == 'instance' and self.name == 'vkGetInstanceProcAddr':
+            return #halt duplicate vkGetInstanceProcAddr's being defined
         file.write(f'PFN_{self.name} {self.name};\n')
 
     def print_init_global_functions(self, file, dispatch_name):
-        file.write(f'    pfn_{self.name} = reinterpret_cast<PFN_{self.name}>(vkGet{dispatch_name}ProcAddr({dispatch_name}, \"{self.name}\"));\n')
+        file.write(f'    {self.name} = reinterpret_cast<PFN_{self.name}>(vkGet{dispatch_name}ProcAddr({dispatch_name}, \"{self.name}\"));\n')
         
     def print_init_dispatch_table(self, file, dispatch_name):
         file.write(f'    table.{self.name} = reinterpret_cast<PFN_{self.name}>(vkGet{dispatch_name}ProcAddr({dispatch_name}, \"{self.name}\"));\n')
@@ -1286,10 +1317,10 @@ class DispatchTable:
         file.write('};\n')
 
     def print_extern_decl(self, file):
-        PrintConsecutivePlatforms(file, self.functions.values(), 'print_extern_decl')
+        PrintConsecutivePlatforms(file, self.functions.values(), 'print_extern_decl', self.dispatch_type)
 
     def print_function_def(self, file):
-        PrintConsecutivePlatforms(file, self.functions.values(), 'print_function_def')
+        PrintConsecutivePlatforms(file, self.functions.values(), 'print_function_def', self.dispatch_type)
         
     def print_init_global_functions(self, file):
         file.write(f'void vkInitialize{self.name}Functions (Vk{self.name} {self.name}) {{\n')
@@ -1559,7 +1590,7 @@ def print_c_interop(bindings):
 def print_basic_bindings(bindings):
     with open(f'include/vulkan/vulkan.h', 'w') as vulkan_core:
         vulkan_core.write(license_header)
-        vulkan_core.write('#pragma once\n// clang-format off\n')
+        vulkan_core.write('// clang-format off\n#pragma once\n#include <stdint.h>\n#include "vk_platform.h"\n')
         for macro in bindings.macro_defines:
             vulkan_core.write(f'{macro.get_text()}\n\n')
         PrintConsecutivePlatforms(vulkan_core, api_constants.values(), 'print_basic')
@@ -1588,16 +1619,11 @@ def print_basic_bindings(bindings):
 
     with open(f'include/vulkan/vulkan.cpp', 'w') as vulkan_impl:
         vulkan_impl.write(license_header)
-        vulkan_impl.write('#include "vulkan.h"\n// clang-format off\n')
+        vulkan_impl.write('// clang-format off\n#include "vulkan.h"\n')
         vulkan_impl.write(vulkan_simple_cpp_definition)
-        vulkan_impl.write('''#ifdef __GNUC__
-#if defined(VK_SIMPLE_USE_DEFAULT_VISIBILITY)
-#	pragma GCC visibility push(default)
-#else
-#	pragma GCC visibility push(hidden)
-#endif
-#endif
-''')
+        vulkan_impl.write('#ifdef __GNUC__\n#if defined(VK_SIMPLE_USE_DEFAULT_VISIBILITY)\n')
+        vulkan_impl.write('#	pragma GCC visibility push(default)\n#else\n')
+        vulkan_impl.write('#	pragma GCC visibility push(hidden)\n#endif\n#endif\n')
         for dispatch_table in bindings.dispatch_tables:
             if dispatch_table.name == 'Global':
                 dispatch_table.print_function_def(vulkan_impl)
@@ -1607,14 +1633,22 @@ def print_basic_bindings(bindings):
             elif dispatch_table.name == 'Device':
                 dispatch_table.print_init_global_functions(vulkan_impl)
                 dispatch_table.print_init_dispatch_table(vulkan_impl)
-        vulkan_impl.write('''
-#ifdef __GNUC__
-#	pragma GCC visibility pop
-#endif
-''')
+        vulkan_impl.write('#ifdef __GNUC__\n#	pragma GCC visibility pop\n#endif\n')
         vulkan_impl.write('\n// clang-format on\n')
 
+    with open(f'include/vulkan/vulkan_string.h', 'w') as vulkan_string:
+        vulkan_string.write(license_header)
+        vulkan_string.write('// clang-format off\n#pragma once\n#include "vulkan.h"\n#include <string>\n')
+        PrintConsecutivePlatforms(vulkan_string, bindings.enum_dict.values(), 'print_basic_string_forward_def')
+        PrintConsecutivePlatforms(vulkan_string, bindings.bitmask_dict.values(), 'print_basic_string_forward_def')
+        vulkan_string.write('\n// clang-format on\n')
 
+    with open(f'include/vulkan/vulkan_string.cpp', 'w') as vulkan_string_impl:
+        vulkan_string_impl.write(license_header)
+        vulkan_string_impl.write('// clang-format off\n#include "vulkan_string.h"\n')
+        PrintConsecutivePlatforms(vulkan_string_impl, bindings.enum_dict.values(), 'print_basic_string_impl')
+        PrintConsecutivePlatforms(vulkan_string_impl, bindings.bitmask_dict.values(), 'print_basic_string_impl')
+        vulkan_string_impl.write('\n// clang-format on\n')
 
 def main():
     tree = xml.etree.ElementTree.parse('registry/vk.xml')

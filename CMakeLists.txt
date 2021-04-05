@@ -104,11 +104,14 @@ if (NOT WIN32)
     target_link_libraries(vk-module-cpp PUBLIC ${CMAKE_DL_LIBS})
 endif()
 
-add_library(vulkan-simple-cpp STATIC ${CMAKE_SOURCE_DIR}/include/vulkan/vulkan.h)
+add_library(vulkan-simple-cpp STATIC 
+    ${CMAKE_SOURCE_DIR}/include/vulkan/vulkan.h 
+    ${CMAKE_SOURCE_DIR}/include/vulkan/vulkan.cpp 
+    ${CMAKE_SOURCE_DIR}/include/vulkan/vulkan_string.h 
+    ${CMAKE_SOURCE_DIR}/include/vulkan/vulkan_string.cpp)
 target_include_directories(vulkan-simple-cpp PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(vulkan-simple-cpp PUBLIC vk-module-compiler-options)
 target_compile_features(vulkan-simple-cpp PUBLIC cxx_std_11)
-target_compile_options(vulkan-simple-cpp PRIVATE VULKAN_SIMPLE_CPP_IMPLEMENTATION)
 set_target_properties(vulkan-simple-cpp PROPERTIES CXX_STANDARD 11)
 set_target_properties(vulkan-simple-cpp PROPERTIES LINKER_LANGUAGE CXX)
 

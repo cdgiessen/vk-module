@@ -71,8 +71,8 @@ For further details about why these are a problem and how I address them, look a
 * Does not support platform specific WSI related functions. An application must use SDL, GLFW, or equivalent library to create a VkSurfaceKHR
 * `Expected<T>` is a homebrew solution and making error handling enjoyable in vulkan is tough. May change this later on
 * Dependence on many standard libraries. No plan to remove or change this. Creating replacements for those standard library features just adds possible places for subtle bugs while introduction friction. (Ie, some say this is an issue, but I see the costs outweighing the benefits)
+* pNext chains have no helper code. Need to write the StructuredChain replacement.
 * API is big, fat, and wide. Very likely there are inconsistencies and errors lurking in the shadows.
-
 
 ## History
 
@@ -86,4 +86,3 @@ The discussion in various online chat groups led me to believe there may be a wa
 With that in mind, Work began on this project in April 2020. Over the spring and summer, the `generator.py` script was written to parse `vk.xml` and generate the `vk-module` bindings. It was a great learning project as it involved exploring python in detail and the xml document.
 
 As the project currently stands (April 2021), I didn't know how wrong I was. Firstly, modules are still experimental or very recently released in C++20 compilers. Suffice to say, they aren't ready for primetime. Secondly, `vulkan.hpp`'s problems are SIGNIFICANTLY more complicated than I could of imagined. There are many concerns the developers must balance: performance, safety, implementation complexity, interface simplicity, interoperability with the C API, then finding out just how little room there is to work with. Not to mention the moving target that is `vk.xml` which changes and breaks previous assumptions about what the bindings API design space is. This isn't to say these challenges aren't insurmountable, but is incredibly difficult to find a balance that doesn't leave me defeated in some aspect.
-
