@@ -18,7 +18,7 @@
 
 
 #if defined(_WIN32)
-    using HINSTANCE = struct HINSTANCE__ * HINSTANCE;
+    using HINSTANCE = struct HINSTANCE__ *;
     #if defined( _WIN64 )
     using FARPROC = int64_t( __stdcall * )();
     #else
@@ -88,7 +88,7 @@ void vkCloseLoaderLibrary(){
         vkGetInstanceProcAddr = VK_NULL_HANDLE;
     }
 }
-#ifdef __GNUC__
+#if defined(__GNUC__)
 #if defined(VK_SIMPLE_USE_DEFAULT_VISIBILITY)
 #	pragma GCC visibility push(default)
 #else
@@ -829,13 +829,19 @@ void vkInitializeDeviceDispatchTable (VkDevice Device, VkDeviceDispatchTable & t
     table.vkGetShaderInfoAMD = reinterpret_cast<PFN_vkGetShaderInfoAMD>(vkGetDeviceProcAddr(Device, "vkGetShaderInfoAMD"));
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     table.vkGetMemoryWin32HandleNV = reinterpret_cast<PFN_vkGetMemoryWin32HandleNV>(vkGetDeviceProcAddr(Device, "vkGetMemoryWin32HandleNV"));
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
     table.vkGetMemoryWin32HandleKHR = reinterpret_cast<PFN_vkGetMemoryWin32HandleKHR>(vkGetDeviceProcAddr(Device, "vkGetMemoryWin32HandleKHR"));
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
     table.vkGetMemoryWin32HandlePropertiesKHR = reinterpret_cast<PFN_vkGetMemoryWin32HandlePropertiesKHR>(vkGetDeviceProcAddr(Device, "vkGetMemoryWin32HandlePropertiesKHR"));
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
     table.vkGetMemoryFdKHR = reinterpret_cast<PFN_vkGetMemoryFdKHR>(vkGetDeviceProcAddr(Device, "vkGetMemoryFdKHR"));
     table.vkGetMemoryFdPropertiesKHR = reinterpret_cast<PFN_vkGetMemoryFdPropertiesKHR>(vkGetDeviceProcAddr(Device, "vkGetMemoryFdPropertiesKHR"));
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     table.vkGetSemaphoreWin32HandleKHR = reinterpret_cast<PFN_vkGetSemaphoreWin32HandleKHR>(vkGetDeviceProcAddr(Device, "vkGetSemaphoreWin32HandleKHR"));
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
     table.vkImportSemaphoreWin32HandleKHR = reinterpret_cast<PFN_vkImportSemaphoreWin32HandleKHR>(vkGetDeviceProcAddr(Device, "vkImportSemaphoreWin32HandleKHR"));
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
     table.vkGetSemaphoreFdKHR = reinterpret_cast<PFN_vkGetSemaphoreFdKHR>(vkGetDeviceProcAddr(Device, "vkGetSemaphoreFdKHR"));
@@ -856,6 +862,8 @@ void vkInitializeDeviceDispatchTable (VkDevice Device, VkDeviceDispatchTable & t
     table.vkGetSwapchainStatusKHR = reinterpret_cast<PFN_vkGetSwapchainStatusKHR>(vkGetDeviceProcAddr(Device, "vkGetSwapchainStatusKHR"));
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     table.vkGetFenceWin32HandleKHR = reinterpret_cast<PFN_vkGetFenceWin32HandleKHR>(vkGetDeviceProcAddr(Device, "vkGetFenceWin32HandleKHR"));
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
     table.vkImportFenceWin32HandleKHR = reinterpret_cast<PFN_vkImportFenceWin32HandleKHR>(vkGetDeviceProcAddr(Device, "vkImportFenceWin32HandleKHR"));
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
     table.vkGetFenceFdKHR = reinterpret_cast<PFN_vkGetFenceFdKHR>(vkGetDeviceProcAddr(Device, "vkGetFenceFdKHR"));
@@ -872,6 +880,8 @@ void vkInitializeDeviceDispatchTable (VkDevice Device, VkDeviceDispatchTable & t
     table.vkCmdInsertDebugUtilsLabelEXT = reinterpret_cast<PFN_vkCmdInsertDebugUtilsLabelEXT>(vkGetDeviceProcAddr(Device, "vkCmdInsertDebugUtilsLabelEXT"));
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
     table.vkGetAndroidHardwareBufferPropertiesANDROID = reinterpret_cast<PFN_vkGetAndroidHardwareBufferPropertiesANDROID>(vkGetDeviceProcAddr(Device, "vkGetAndroidHardwareBufferPropertiesANDROID"));
+#endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
     table.vkGetMemoryAndroidHardwareBufferANDROID = reinterpret_cast<PFN_vkGetMemoryAndroidHardwareBufferANDROID>(vkGetDeviceProcAddr(Device, "vkGetMemoryAndroidHardwareBufferANDROID"));
 #endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
     table.vkCmdSetSampleLocationsEXT = reinterpret_cast<PFN_vkCmdSetSampleLocationsEXT>(vkGetDeviceProcAddr(Device, "vkCmdSetSampleLocationsEXT"));
@@ -939,7 +949,11 @@ void vkInitializeDeviceDispatchTable (VkDevice Device, VkDeviceDispatchTable & t
     table.vkCmdSetFragmentShadingRateKHR = reinterpret_cast<PFN_vkCmdSetFragmentShadingRateKHR>(vkGetDeviceProcAddr(Device, "vkCmdSetFragmentShadingRateKHR"));
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     table.vkAcquireFullScreenExclusiveModeEXT = reinterpret_cast<PFN_vkAcquireFullScreenExclusiveModeEXT>(vkGetDeviceProcAddr(Device, "vkAcquireFullScreenExclusiveModeEXT"));
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
     table.vkReleaseFullScreenExclusiveModeEXT = reinterpret_cast<PFN_vkReleaseFullScreenExclusiveModeEXT>(vkGetDeviceProcAddr(Device, "vkReleaseFullScreenExclusiveModeEXT"));
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
     table.vkGetDeviceGroupSurfacePresentModes2EXT = reinterpret_cast<PFN_vkGetDeviceGroupSurfacePresentModes2EXT>(vkGetDeviceProcAddr(Device, "vkGetDeviceGroupSurfacePresentModes2EXT"));
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
     table.vkCmdSetLineStippleEXT = reinterpret_cast<PFN_vkCmdSetLineStippleEXT>(vkGetDeviceProcAddr(Device, "vkCmdSetLineStippleEXT"));
@@ -981,7 +995,7 @@ void vkInitializeDeviceDispatchTable (VkDevice Device, VkDeviceDispatchTable & t
     table.vkCmdCopyImageToBuffer2KHR = reinterpret_cast<PFN_vkCmdCopyImageToBuffer2KHR>(vkGetDeviceProcAddr(Device, "vkCmdCopyImageToBuffer2KHR"));
     table.vkCmdResolveImage2KHR = reinterpret_cast<PFN_vkCmdResolveImage2KHR>(vkGetDeviceProcAddr(Device, "vkCmdResolveImage2KHR"));
 };
-#ifdef __GNUC__
+#if defined(__GNUC__)
 #	pragma GCC visibility pop
 #endif
 

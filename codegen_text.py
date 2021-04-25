@@ -44,7 +44,7 @@ vk_module_file_header = '''
 #include "vk_platform.h"
 
 // Compatability with compilers that don't support __has_feature
-#ifndef __has_feature
+#if !defined(__has_feature)
 #define __has_feature(x) 0
 #endif
 
@@ -55,7 +55,7 @@ vk_module_file_header = '''
 #define VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
 #endif
 
-#ifndef __has_feature
+#if !defined(__has_feature)
 #undef __has_feature
 #endif
 
@@ -496,6 +496,37 @@ private:
 
 '''
 
+vulkan_simple_cpp_platform_headers = '''
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+#include <zircon/types.h>
+#endif
+
+#if defined(VK_USE_PLATFORM_WAYLAND_KHR)
+#include <wayland-client.h>
+#endif
+
+#if defined(VK_USE_PLATFORM_XCB_KHR)
+#include <xcb/xcb.h>
+#endif
+
+#if defined(VK_USE_PLATFORM_XLIB_KHR)
+#include <X11/Xlib.h>
+#endif
+
+#if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
+#include <directfb.h>
+#endif
+
+#if defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT)
+#include <X11/Xlib.h>
+#include <X11/extensions/Xrandr.h>
+#endif
+
+#if defined(VK_USE_PLATFORM_GGP)
+#include <ggp_c/vulkan_types.h>
+#endif
+'''
+
 vulkan_simple_cpp_forward_declaration = '''
 // This function finds the Vulkan-Loader (vulkan-1.dll, libvulkan.so, libvulkan.dylib, etc) on a system, loads it,
 // and loads the follwing functions: 
@@ -563,7 +594,7 @@ void vkInitializeGlobalDeviceFunctions(VkDevice device, VkDeviceDispatchTable& t
 vulkan_simple_cpp_definition = '''
 
 #if defined(_WIN32)
-    using HINSTANCE = struct HINSTANCE__ * HINSTANCE;
+    using HINSTANCE = struct HINSTANCE__ *;
     #if defined( _WIN64 )
     using FARPROC = int64_t( __stdcall * )();
     #else

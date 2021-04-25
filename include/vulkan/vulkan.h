@@ -17,6 +17,35 @@
 #pragma once
 #include <stdint.h>
 #include "vk_platform.h"
+
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+#include <zircon/types.h>
+#endif
+
+#if defined(VK_USE_PLATFORM_WAYLAND_KHR)
+#include <wayland-client.h>
+#endif
+
+#if defined(VK_USE_PLATFORM_XCB_KHR)
+#include <xcb/xcb.h>
+#endif
+
+#if defined(VK_USE_PLATFORM_XLIB_KHR)
+#include <X11/Xlib.h>
+#endif
+
+#if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
+#include <directfb.h>
+#endif
+
+#if defined(VK_USE_PLATFORM_XLIB_XRANDR_EXT)
+#include <X11/Xlib.h>
+#include <X11/extensions/Xrandr.h>
+#endif
+
+#if defined(VK_USE_PLATFORM_GGP)
+#include <ggp_c/vulkan_types.h>
+#endif
 #define VK_MAKE_VERSION(major, minor, patch) \
     ((((uint32_t)(major)) << 22) | (((uint32_t)(minor)) << 12) | ((uint32_t)(patch)))
 
@@ -8181,14 +8210,30 @@ struct VkDeviceDispatchTable {
     PFN_vkGetShaderInfoAMD vkGetShaderInfoAMD = nullptr;
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     PFN_vkGetMemoryWin32HandleNV vkGetMemoryWin32HandleNV = nullptr;
+#else
+    void* z_padding_vkGetMemoryWin32HandleNV = nullptr;
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
     PFN_vkGetMemoryWin32HandleKHR vkGetMemoryWin32HandleKHR = nullptr;
+#else
+    void* z_padding_vkGetMemoryWin32HandleKHR = nullptr;
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
     PFN_vkGetMemoryWin32HandlePropertiesKHR vkGetMemoryWin32HandlePropertiesKHR = nullptr;
+#else
+    void* z_padding_vkGetMemoryWin32HandlePropertiesKHR = nullptr;
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
     PFN_vkGetMemoryFdKHR vkGetMemoryFdKHR = nullptr;
     PFN_vkGetMemoryFdPropertiesKHR vkGetMemoryFdPropertiesKHR = nullptr;
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     PFN_vkGetSemaphoreWin32HandleKHR vkGetSemaphoreWin32HandleKHR = nullptr;
+#else
+    void* z_padding_vkGetSemaphoreWin32HandleKHR = nullptr;
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
     PFN_vkImportSemaphoreWin32HandleKHR vkImportSemaphoreWin32HandleKHR = nullptr;
+#else
+    void* z_padding_vkImportSemaphoreWin32HandleKHR = nullptr;
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
     PFN_vkGetSemaphoreFdKHR vkGetSemaphoreFdKHR = nullptr;
     PFN_vkImportSemaphoreFdKHR vkImportSemaphoreFdKHR = nullptr;
@@ -8208,7 +8253,13 @@ struct VkDeviceDispatchTable {
     PFN_vkGetSwapchainStatusKHR vkGetSwapchainStatusKHR = nullptr;
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     PFN_vkGetFenceWin32HandleKHR vkGetFenceWin32HandleKHR = nullptr;
+#else
+    void* z_padding_vkGetFenceWin32HandleKHR = nullptr;
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
     PFN_vkImportFenceWin32HandleKHR vkImportFenceWin32HandleKHR = nullptr;
+#else
+    void* z_padding_vkImportFenceWin32HandleKHR = nullptr;
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
     PFN_vkGetFenceFdKHR vkGetFenceFdKHR = nullptr;
     PFN_vkImportFenceFdKHR vkImportFenceFdKHR = nullptr;
@@ -8224,7 +8275,13 @@ struct VkDeviceDispatchTable {
     PFN_vkCmdInsertDebugUtilsLabelEXT vkCmdInsertDebugUtilsLabelEXT = nullptr;
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
     PFN_vkGetAndroidHardwareBufferPropertiesANDROID vkGetAndroidHardwareBufferPropertiesANDROID = nullptr;
+#else
+    void* z_padding_vkGetAndroidHardwareBufferPropertiesANDROID = nullptr;
+#endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
     PFN_vkGetMemoryAndroidHardwareBufferANDROID vkGetMemoryAndroidHardwareBufferANDROID = nullptr;
+#else
+    void* z_padding_vkGetMemoryAndroidHardwareBufferANDROID = nullptr;
 #endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
     PFN_vkCmdSetSampleLocationsEXT vkCmdSetSampleLocationsEXT = nullptr;
     PFN_vkDestroyAccelerationStructureKHR vkDestroyAccelerationStructureKHR = nullptr;
@@ -8291,8 +8348,18 @@ struct VkDeviceDispatchTable {
     PFN_vkCmdSetFragmentShadingRateKHR vkCmdSetFragmentShadingRateKHR = nullptr;
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     PFN_vkAcquireFullScreenExclusiveModeEXT vkAcquireFullScreenExclusiveModeEXT = nullptr;
+#else
+    void* z_padding_vkAcquireFullScreenExclusiveModeEXT = nullptr;
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
     PFN_vkReleaseFullScreenExclusiveModeEXT vkReleaseFullScreenExclusiveModeEXT = nullptr;
+#else
+    void* z_padding_vkReleaseFullScreenExclusiveModeEXT = nullptr;
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
     PFN_vkGetDeviceGroupSurfacePresentModes2EXT vkGetDeviceGroupSurfacePresentModes2EXT = nullptr;
+#else
+    void* z_padding_vkGetDeviceGroupSurfacePresentModes2EXT = nullptr;
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
     PFN_vkCmdSetLineStippleEXT vkCmdSetLineStippleEXT = nullptr;
     PFN_vkCmdSetCullModeEXT vkCmdSetCullModeEXT = nullptr;

@@ -93,15 +93,13 @@ target_compile_options(vk-platform-defines INTERFACE
         $<$<BUILD_WSI_WAYLAND_SUPPORT>:-DVK_USE_PLATFORM_WAYLAND_KHR>>
     )
 
-add_library(vk-module-cpp STATIC ${CMAKE_SOURCE_DIR}/module/vk_module.h)
-target_include_directories(vk-module-cpp PUBLIC ${CMAKE_SOURCE_DIR}/module)
-target_link_libraries(vk-module-cpp PUBLIC vk-module-compiler-options)
-target_compile_features(vk-module-cpp PUBLIC cxx_std_20)
-set_target_properties(vk-module-cpp PROPERTIES CXX_STANDARD 20)
-set_target_properties(vk-module-cpp PROPERTIES LINKER_LANGUAGE CXX)
+add_library(vk-module-cpp INTERFACE)
+target_include_directories(vk-module-cpp INTERFACE ${CMAKE_SOURCE_DIR}/module)
+target_link_libraries(vk-module-cpp INTERFACE vk-module-compiler-options)
+target_compile_features(vk-module-cpp INTERFACE cxx_std_20)
 
 if (NOT WIN32)
-    target_link_libraries(vk-module-cpp PUBLIC ${CMAKE_DL_LIBS})
+    target_link_libraries(vk-module-cpp INTERFACE ${CMAKE_DL_LIBS})
 endif()
 
 add_library(vulkan-simple-cpp STATIC 

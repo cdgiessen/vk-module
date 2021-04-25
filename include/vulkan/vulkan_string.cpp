@@ -15,6 +15,7 @@
  */
 // clang-format off
 #include "vulkan_string.h"
+#define UNUSED_VARIABLE(x) (void)(x)
 const char * to_string(VkAttachmentLoadOp val) {
     switch(val) {
         case(VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_LOAD): return "VK_ATTACHMENT_LOAD_OP_LOAD";
@@ -2894,16 +2895,8 @@ std::string to_string(VkIndirectStateFlagsNV flag){
     if (flag & VkIndirectStateFlagBitsNV::VK_INDIRECT_STATE_FLAG_FRONTFACE_BIT_NV) out += "VK_INDIRECT_STATE_FLAG_FRONTFACE_BIT_NV | ";
     return out.substr(0, out.size() - 3);
 }
-const char * to_string(VkPrivateDataSlotCreateFlagBitsEXT val) {
-    switch(val) {
-        default: return "UNKNOWN";
-    }
-}
-std::string to_string(VkPrivateDataSlotCreateFlagsEXT flag){
-    if (flag.flags == 0) return "None";
-    std::string out;
-    return out.substr(0, out.size() - 3);
-}
+const char * to_string(VkPrivateDataSlotCreateFlagBitsEXT val) { UNUSED_VARIABLE(val); return "UNKNOWN"; }
+inline std::string to_string(VkPrivateDataSlotCreateFlagsEXT flag){ UNUSED_VARIABLE(flag); return "UNKNOWN"; }
 const char * to_string(VkDescriptorSetLayoutCreateFlagBits val) {
     switch(val) {
         case(VkDescriptorSetLayoutCreateFlagBits::VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR): return "VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR";
@@ -3362,46 +3355,14 @@ std::string to_string(VkPerformanceCounterDescriptionFlagsKHR flag){
     if (flag & VkPerformanceCounterDescriptionFlagBitsKHR::VK_PERFORMANCE_COUNTER_DESCRIPTION_CONCURRENTLY_IMPACTED_BIT_KHR) out += "VK_PERFORMANCE_COUNTER_DESCRIPTION_CONCURRENTLY_IMPACTED_BIT_KHR | ";
     return out.substr(0, out.size() - 3);
 }
-const char * to_string(VkAcquireProfilingLockFlagBitsKHR val) {
-    switch(val) {
-        default: return "UNKNOWN";
-    }
-}
-std::string to_string(VkAcquireProfilingLockFlagsKHR flag){
-    if (flag.flags == 0) return "None";
-    std::string out;
-    return out.substr(0, out.size() - 3);
-}
-const char * to_string(VkShaderCorePropertiesFlagBitsAMD val) {
-    switch(val) {
-        default: return "UNKNOWN";
-    }
-}
-std::string to_string(VkShaderCorePropertiesFlagsAMD flag){
-    if (flag.flags == 0) return "None";
-    std::string out;
-    return out.substr(0, out.size() - 3);
-}
-const char * to_string(VkShaderModuleCreateFlagBits val) {
-    switch(val) {
-        default: return "UNKNOWN";
-    }
-}
-std::string to_string(VkShaderModuleCreateFlags flag){
-    if (flag.flags == 0) return "None";
-    std::string out;
-    return out.substr(0, out.size() - 3);
-}
-const char * to_string(VkPipelineCompilerControlFlagBitsAMD val) {
-    switch(val) {
-        default: return "UNKNOWN";
-    }
-}
-std::string to_string(VkPipelineCompilerControlFlagsAMD flag){
-    if (flag.flags == 0) return "None";
-    std::string out;
-    return out.substr(0, out.size() - 3);
-}
+const char * to_string(VkAcquireProfilingLockFlagBitsKHR val) { UNUSED_VARIABLE(val); return "UNKNOWN"; }
+inline std::string to_string(VkAcquireProfilingLockFlagsKHR flag){ UNUSED_VARIABLE(flag); return "UNKNOWN"; }
+const char * to_string(VkShaderCorePropertiesFlagBitsAMD val) { UNUSED_VARIABLE(val); return "UNKNOWN"; }
+inline std::string to_string(VkShaderCorePropertiesFlagsAMD flag){ UNUSED_VARIABLE(flag); return "UNKNOWN"; }
+const char * to_string(VkShaderModuleCreateFlagBits val) { UNUSED_VARIABLE(val); return "UNKNOWN"; }
+inline std::string to_string(VkShaderModuleCreateFlags flag){ UNUSED_VARIABLE(flag); return "UNKNOWN"; }
+const char * to_string(VkPipelineCompilerControlFlagBitsAMD val) { UNUSED_VARIABLE(val); return "UNKNOWN"; }
+inline std::string to_string(VkPipelineCompilerControlFlagsAMD flag){ UNUSED_VARIABLE(flag); return "UNKNOWN"; }
 const char * to_string(VkToolPurposeFlagBitsEXT val) {
     switch(val) {
         case(VkToolPurposeFlagBitsEXT::VK_TOOL_PURPOSE_VALIDATION_BIT_EXT): return "VK_TOOL_PURPOSE_VALIDATION_BIT_EXT";
