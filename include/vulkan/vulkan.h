@@ -13,14 +13,19 @@
  * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
+// clang-format off
+#ifndef SIMPLE_VULKAN_H_
 #ifdef VULKAN_H_
 #error "Must include these bindings first, not official C vulkan headers (vulkan.h)"
 #endif
+#endif
 #ifndef VULKAN_H_
 #define VULKAN_H_ 1
-// clang-format off
+#define SIMPLE_VULKAN_H_ 1
 #include <stdint.h>
 #include "vk_platform.h"
+
 
 #if defined(VK_USE_PLATFORM_FUCHSIA)
 #include <zircon/types.h>

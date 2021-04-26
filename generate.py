@@ -1619,9 +1619,7 @@ def print_c_interop(bindings):
 def print_basic_bindings(bindings):
     with open(f'include/vulkan/vulkan.h', 'w') as vulkan_core:
         vulkan_core.write(license_header)
-        vulkan_core.write('#ifdef VULKAN_H_\n#error "Must include these bindings first, not official C vulkan headers (vulkan.h)"\n#endif\n')
-        vulkan_core.write('#ifndef VULKAN_H_\n#define VULKAN_H_ 1\n')
-        vulkan_core.write('// clang-format off\n#include <stdint.h>\n#include "vk_platform.h"\n')
+        vulkan_core.write(vulkan_simple_cpp_header_guard + '\n')
         vulkan_core.write(vulkan_simple_cpp_platform_headers + '\n')
         for macro in bindings.macro_defines:
             vulkan_core.write(f'{macro.get_text()}\n\n')

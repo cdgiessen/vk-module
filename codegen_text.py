@@ -496,6 +496,20 @@ private:
 
 '''
 
+vulkan_simple_cpp_header_guard = '''
+// clang-format off
+#ifndef SIMPLE_VULKAN_H_
+#ifdef VULKAN_H_
+#error "Must include these bindings first, not official C vulkan headers (vulkan.h)"
+#endif
+#endif
+#ifndef VULKAN_H_
+#define VULKAN_H_ 1
+#define SIMPLE_VULKAN_H_ 1
+#include <stdint.h>
+#include "vk_platform.h"
+'''
+
 vulkan_simple_cpp_platform_headers = '''
 #if defined(VK_USE_PLATFORM_FUCHSIA)
 #include <zircon/types.h>
