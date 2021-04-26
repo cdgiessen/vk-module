@@ -176,8 +176,10 @@ class Enum:
         else:
             file.write(f"enum class {self.name} : {self.underlying_type} {{\n")
             for name, value in self.values.items():
-                file.write(f'    {name} = {str(value)},\n')
+                file.write(f'    {MorphVkEnumName(name, self.enum_name_len)} = {str(value)},\n')
             file.write('};\n')
+            for name, value in self.values.items():
+                file.write(f'const {self.name} {name} = {self.name}::{MorphVkEnumName(name, self.enum_name_len)};\n')
 
     def print_string(self, file):
         if self.alias is not None:
@@ -204,7 +206,8 @@ class Enum:
             file.write(f'const char * to_string({self.name} val) {{\n')
             file.write(f'    switch(val) {{\n')
             for name in self.values.keys():
-                file.write(f'        case({self.name}::{name}): return \"{name}\";\n')
+                modified_name = MorphVkEnumName(name, self.enum_name_len)
+                file.write(f'        case({self.name}::{modified_name}): return \"{modified_name}\";\n')
             file.write('        default: return "UNKNOWN";\n    }\n}\n')
 
     def print_c_interop(self, file):
@@ -272,8 +275,14 @@ class Bitmask:
         else:
             file.write(f'enum class {self.name}: {self.underlying_type} {{\n')
             for bitpos, name in self.values.items():
-                file.write(f"    {name} = {bitpos},\n")
+                file.write(f'    {MorphVkEnumName(name, self.bitmask_name_len)} = ')
+                if all(c.isnumeric() for c in bitpos) or '0x' in bitpos :
+                    file.write(f'{bitpos},\n')
+                else:
+                    file.write(f'{MorphVkEnumName(bitpos, self.bitmask_name_len)},\n')
             file.write('};\n')
+            for name in self.values.values():
+                file.write(f'const {self.name} {name} = {self.name}::{MorphVkEnumName(name, self.bitmask_name_len)};\n')
             
     def print_string(self, file):
         if self.alias is None:
@@ -318,7 +327,8 @@ class Bitmask:
             for bitpos, name in self.values.items():
                 if not RepresentsIntOrHex(bitpos):
                     continue
-                file.write(f'        case({self.name}::{name}): return \"{name}\";\n')
+                modified_name = MorphVkEnumName(name, self.bitmask_name_len)
+                file.write(f'        case({self.name}::{modified_name}): return \"{modified_name}\";\n')
             file.write('        default: return "UNKNOWN";\n    }\n}\n')
             file.write(f'std::string to_string({self.flags_name} flag){{\n')
             file.write(f'    if (flag.flags == 0) return \"None\";\n')
@@ -326,7 +336,8 @@ class Bitmask:
             for bitpos, name in self.values.items():
                 if not RepresentsIntOrHex(bitpos):
                     continue
-                file.write(f'    if (flag & {self.name}::{name}) out += \"{name} | \";\n')
+                modified_name = MorphVkEnumName(name, self.bitmask_name_len)
+                file.write(f'    if (flag & {self.name}::{modified_name}) out += \"{modified_name} | \";\n')
             file.write(f'    return out.substr(0, out.size() - 3);\n}}\n')
 
     def print_c_interop(self, file):
@@ -538,6 +549,8 @@ class Variable:
             self.default_value = default_values[self.base_type]
         if self.name == 'sType' and self.sType_value is not None:
             self.default_value = f'StructureType::{MorphVkEnumName(self.sType_value, 3)}'
+        if self.name == 'sType' and self.sType_value is not None:
+            self.base_default_value = f'VkStructureType::{MorphVkEnumName(self.sType_value, 3)}'
 
         self.is_handle = self.base_type in handles
 
@@ -832,7 +845,7 @@ class Structure:
                 else:
                     file.write(f'    {member.get_raw_xml()}')
                 if member.name == 'sType' and member.sType_value is not None:
-                    file.write(f' = VkStructureType::{member.sType_value};\n')
+                    file.write(f' = {member.base_default_value};\n')
                 elif should_init and member.bitfield is None:
                     file.write('{};\n')
                 else:
@@ -1606,8 +1619,10 @@ def print_c_interop(bindings):
 def print_basic_bindings(bindings):
     with open(f'include/vulkan/vulkan.h', 'w') as vulkan_core:
         vulkan_core.write(license_header)
-        vulkan_core.write('// clang-format off\n#pragma once\n#include <stdint.h>\n#include "vk_platform.h"\n')
-        vulkan_core.write(vulkan_simple_cpp_platform_headers)
+        vulkan_core.write('#ifdef VULKAN_H_\n#error "Must include these bindings first, not official C vulkan headers (vulkan.h)"\n#endif\n')
+        vulkan_core.write('#ifndef VULKAN_H_\n#define VULKAN_H_ 1\n')
+        vulkan_core.write('// clang-format off\n#include <stdint.h>\n#include "vk_platform.h"\n')
+        vulkan_core.write(vulkan_simple_cpp_platform_headers + '\n')
         for macro in bindings.macro_defines:
             vulkan_core.write(f'{macro.get_text()}\n\n')
         PrintConsecutivePlatforms(vulkan_core, api_constants.values(), 'print_basic')
@@ -1632,7 +1647,7 @@ def print_basic_bindings(bindings):
         vulkan_core.write('#include "vulkan.cpp"\n')
         vulkan_core.write('#endif //defined(VULKAN_CPP_IMPLEMENTATION)\n')
 
-        vulkan_core.write('\n// clang-format on\n')
+        vulkan_core.write('\n// clang-format on\n#endif // VULKAN_H_\n')
 
     with open(f'include/vulkan/vulkan.cpp', 'w') as vulkan_impl:
         vulkan_impl.write(license_header)

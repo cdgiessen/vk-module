@@ -39,12 +39,12 @@ if (VK_MODULE_GENERATE_SOURCE)
         add_subdirectory(${vulkan_headers_SOURCE_DIR} ${vulkan_headers_BINARY_DIR})
     endif()
     add_custom_target(copy_source ALL
-        COMMAND ${CMAKE_COMMAND} -E copy ${vulkan_headers_SOURCE_DIR}/registry/vk.xml ${CMAKE_SOURCE_DIR}/registry/vk.xml
-        COMMAND ${CMAKE_COMMAND} -E copy ${vulkan_headers_SOURCE_DIR}/include/vulkan/vk_platform.h ${CMAKE_SOURCE_DIR}/include/vulkan/vk_platform.h
-        COMMAND ${CMAKE_COMMAND} -E copy ${vulkan_headers_SOURCE_DIR}/include/vulkan/vk_platform.h ${CMAKE_SOURCE_DIR}/module/vk_platform.h)
+        COMMAND ${CMAKE_COMMAND} -E copy ${vulkan_headers_SOURCE_DIR}/registry/vk.xml ${CMAKE_CURRENT_LIST_DIR}/registry/vk.xml
+        COMMAND ${CMAKE_COMMAND} -E copy ${vulkan_headers_SOURCE_DIR}/include/vulkan/vk_platform.h ${CMAKE_CURRENT_LIST_DIR}/include/vulkan/vk_platform.h
+        COMMAND ${CMAKE_COMMAND} -E copy ${vulkan_headers_SOURCE_DIR}/include/vulkan/vk_platform.h ${CMAKE_CURRENT_LIST_DIR}/module/vk_platform.h)
     add_custom_target(generate_source
-        COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_SOURCE_DIR}/generate.py
-        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+        COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/generate.py
+        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
     add_dependencies(generate_source copy_source)
         
 endif()
@@ -94,7 +94,7 @@ target_compile_options(vk-platform-defines INTERFACE
     )
 
 add_library(vk-module-cpp INTERFACE)
-target_include_directories(vk-module-cpp INTERFACE ${CMAKE_SOURCE_DIR}/module)
+target_include_directories(vk-module-cpp INTERFACE ${CMAKE_CURRENT_LIST_DIR}/module)
 target_link_libraries(vk-module-cpp INTERFACE vk-module-compiler-options)
 target_compile_features(vk-module-cpp INTERFACE cxx_std_20)
 
@@ -103,11 +103,11 @@ if (NOT WIN32)
 endif()
 
 add_library(vulkan-simple-cpp STATIC 
-    ${CMAKE_SOURCE_DIR}/include/vulkan/vulkan.h 
-    ${CMAKE_SOURCE_DIR}/include/vulkan/vulkan.cpp 
-    ${CMAKE_SOURCE_DIR}/include/vulkan/vulkan_string.h 
-    ${CMAKE_SOURCE_DIR}/include/vulkan/vulkan_string.cpp)
-target_include_directories(vulkan-simple-cpp PUBLIC ${CMAKE_SOURCE_DIR}/include)
+    ${CMAKE_CURRENT_LIST_DIR}/include/vulkan/vulkan.h 
+    ${CMAKE_CURRENT_LIST_DIR}/include/vulkan/vulkan.cpp 
+    ${CMAKE_CURRENT_LIST_DIR}/include/vulkan/vulkan_string.h 
+    ${CMAKE_CURRENT_LIST_DIR}/include/vulkan/vulkan_string.cpp)
+target_include_directories(vulkan-simple-cpp PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
 target_link_libraries(vulkan-simple-cpp PUBLIC vk-module-compiler-options)
 target_compile_features(vulkan-simple-cpp PUBLIC cxx_std_11)
 set_target_properties(vulkan-simple-cpp PROPERTIES CXX_STANDARD 11)

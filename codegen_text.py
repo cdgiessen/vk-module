@@ -540,8 +540,8 @@ vulkan_simple_cpp_forward_declaration = '''
 // This function must be called before all other vulkan calls! 
 //
 // Return Codes:
-// VK_SUCCESS -- Successful initialization & loading of functions
-// VK_ERROR_INITIALIZATION_FAILED -- failure [unable to find Vulkan-Loader]
+// VkResult::Success -- Successful initialization & loading of functions
+// VkResult::ErrorInitializationFailed -- failure [unable to find Vulkan-Loader]
 // 
 // Optional Parameter:
 // PFN_vkGetInstanceProcAddr pfn_vkGetInstanceProcAddr = VK_NULL_HANDLE
@@ -635,7 +635,7 @@ VkResult vkInitializeLoaderLibrary(PFN_vkGetInstanceProcAddr pfn_vkGetInstancePr
     if(pfn_vkGetInstanceProcAddr != VK_NULL_HANDLE){
         vkGetInstanceProcAddr = pfn_vkGetInstanceProcAddr;
         LoadGlobalFunctions();
-        return VkResult::VK_SUCCESS;
+        return VkResult::Success;
     }
 
 #if defined(__linux__)
@@ -646,11 +646,11 @@ VkResult vkInitializeLoaderLibrary(PFN_vkGetInstanceProcAddr pfn_vkGetInstancePr
 #elif defined(_WIN32)
     library = ::LoadLibraryA("vulkan-1.dll");
 #endif
-    if (library == 0) return VkResult::VK_ERROR_INITIALIZATION_FAILED;
+    if (library == 0) return VkResult::ErrorInitializationFailed;
     LoadGetInstanceProcAddr();
     LoadGlobalFunctions();
-    if (vkGetInstanceProcAddr == nullptr) return VkResult::VK_ERROR_INITIALIZATION_FAILED;
-    return VkResult::VK_SUCCESS;
+    if (vkGetInstanceProcAddr == nullptr) return VkResult::ErrorInitializationFailed;
+    return VkResult::Success;
 }
 
 void vkCloseLoaderLibrary(){
