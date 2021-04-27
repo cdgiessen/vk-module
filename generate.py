@@ -1632,6 +1632,7 @@ def print_basic_bindings(bindings):
         [ handle.print_vk_handle(vulkan_core) for handle in bindings.handles.values() ]
         vulkan_core.write('struct VkDebugUtilsMessengerCallbackDataEXT;\n')
         vulkan_core.write('struct VkDeviceMemoryReportCallbackDataEXT;\n')
+        vulkan_core.write(begin_extern_c)
         PrintConsecutivePlatforms(vulkan_core, bindings.func_pointers, 'print_basic')
         PrintConsecutivePlatforms(vulkan_core, bindings.structures, 'print_basic')
         PrintConsecutivePlatforms(vulkan_core, bindings.functions, 'print_basic_pfn_func_decl')
@@ -1639,18 +1640,13 @@ def print_basic_bindings(bindings):
         for dispatch_table in bindings.dispatch_tables:
             if dispatch_table.name in ['Device']:
                 dispatch_table.print_dispatch_table(vulkan_core)
-        vulkan_core.write(vulkan_simple_cpp_forward_declaration)
-
-        vulkan_core.write('#if defined(VULKAN_CPP_IMPLEMENTATION)\n')
-        vulkan_core.write('#include "vulkan.cpp"\n')
-        vulkan_core.write('#endif //defined(VULKAN_CPP_IMPLEMENTATION)\n')
-
-        vulkan_core.write('\n// clang-format on\n#endif // VULKAN_H_\n')
+        vulkan_core.write(vulkan_simple_cpp_footer)
 
     with open(f'include/vulkan/vulkan.cpp', 'w') as vulkan_impl:
         vulkan_impl.write(license_header)
         vulkan_impl.write('// clang-format off\n#include "vulkan.h"\n')
         vulkan_impl.write(vulkan_simple_cpp_definition)
+        vulkan_impl.write(begin_extern_c)
         vulkan_impl.write('#if defined(__GNUC__)\n#if defined(VK_SIMPLE_USE_DEFAULT_VISIBILITY)\n')
         vulkan_impl.write('#	pragma GCC visibility push(default)\n#else\n')
         vulkan_impl.write('#	pragma GCC visibility push(hidden)\n#endif\n#endif\n')
@@ -1661,9 +1657,11 @@ def print_basic_bindings(bindings):
                 dispatch_table.print_function_def(vulkan_impl)
                 dispatch_table.print_init_global_functions(vulkan_impl)
             elif dispatch_table.name == 'Device':
+                dispatch_table.print_function_def(vulkan_impl)
                 dispatch_table.print_init_global_functions(vulkan_impl)
                 dispatch_table.print_init_dispatch_table(vulkan_impl)
         vulkan_impl.write('#if defined(__GNUC__)\n#	pragma GCC visibility pop\n#endif\n')
+        vulkan_impl.write(end_extern_c)
         vulkan_impl.write('\n// clang-format on\n')
 
     with open(f'include/vulkan/vulkan_string.h', 'w') as vulkan_string:

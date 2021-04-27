@@ -23,7 +23,26 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/glfw/glfw
     GIT_TAG        3.3.2
 )
-FetchContent_MakeAvailable(glfw_repo)
+FetchContent_Declare(
+    vma_repo
+    GIT_REPOSITORY https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator
+    GIT_TAG        59ec0809a7176ce6b9fa3d6341b477102ac3d3aa
+)
+FetchContent_Declare(
+    vk_bootstrap
+    GIT_REPOSITORY https://github.com/charles-lunarg/vk-bootstrap
+    GIT_TAG        511cac8db4f9d9d5eda95a6e16af74e0731f5f32
+)
+FetchContent_MakeAvailable(glfw_repo vk_bootstrap)
+
+# target_include_directories(glfw BEFORE PUBLIC $<TARGET_PROPERTY:vulkan-simple-cpp,INCLUDE_DIRECTORIES>)
+
+FetchContent_GetProperties(vma_repo)
+if(NOT vma_repoPOPULATED)
+    FetchContent_Populate(vma_repo)
+    add_library(VulkanMemoryAllocator INTERFACE)
+    target_include_directories(VulkanMemoryAllocator INTERFACE ${vma_repo_SOURCE_DIR}/include)
+endif()
 
 find_package(Vulkan REQUIRED)
 
@@ -38,11 +57,20 @@ target_link_libraries(vk-module-triangle-header
     vk-module-cpp
     vk-module-compiler-options )
 
+add_executable(vk-simple-triangle simple_triangle.cpp)
+target_link_libraries(vk-simple-triangle
+    PRIVATE
+    vulkan-simple-cpp
+    glfw
+    VulkanMemoryAllocator
+    vk-module-compiler-options)
+
 add_custom_target(copy-shader-files ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/sample/shaders ${CMAKE_CURRENT_BINARY_DIR}
-    DEPENDS vk-module-triangle-header)
+    DEPENDS vk-module-triangle-header vk-simple-triangle)
 
 if (SET_COMPILE_TIME_TRACE)
-target_compile_options(basic_sample_usage PUBLIC -ftime-trace)
-target_compile_options(vk-module-triangle-header PUBLIC -ftime-trace)
+    target_compile_options(basic_sample_usage PUBLIC -ftime-trace)
+    target_compile_options(vk-module-triangle-header PUBLIC -ftime-trace)
+    target_compile_options(vk-simple-triangle PUBLIC -ftime-trace)
 endif(SET_COMPILE_TIME_TRACE)

@@ -506,8 +506,21 @@ vulkan_simple_cpp_header_guard = '''
 #ifndef VULKAN_H_
 #define VULKAN_H_ 1
 #define SIMPLE_VULKAN_H_ 1
+
+#define VK_VERSION_1_0 1
+#define VK_VERSION_1_1 1
+#define VK_VERSION_1_2 1
 #include <stdint.h>
 #include "vk_platform.h"
+'''
+
+vulkan_simple_cpp_footer = '''
+#if defined(VULKAN_CPP_IMPLEMENTATION)
+#include "vulkan.cpp"
+#endif //defined(VULKAN_CPP_IMPLEMENTATION)
+
+#endif // VULKAN_H_
+// clang-format on
 '''
 
 vulkan_simple_cpp_platform_headers = '''
@@ -541,7 +554,7 @@ vulkan_simple_cpp_platform_headers = '''
 #endif
 '''
 
-vulkan_simple_cpp_forward_declaration = '''
+vulkan_simple_cpp_footer  = '''
 // This function finds the Vulkan-Loader (vulkan-1.dll, libvulkan.so, libvulkan.dylib, etc) on a system, loads it,
 // and loads the follwing functions: 
 //  * vkGetInstanceProcAddr
@@ -600,9 +613,18 @@ void vkInitializeGlobalDeviceFunctions(VkDevice device);
 // The VkDevice handle which the application has created. Must not be VK_NULL_HANDLE
 //  * VkDeviceDispatchTable& table
 // The table in which holds all loaded device function pointers.
-void vkInitializeGlobalDeviceFunctions(VkDevice device, VkDeviceDispatchTable& table);
+void vkInitializeDeviceDispatchTable(VkDevice device, VkDeviceDispatchTable& table);
 
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
+#if defined(VULKAN_CPP_IMPLEMENTATION)
+#include "vulkan.cpp"
+#endif //defined(VULKAN_CPP_IMPLEMENTATION)
+
+#endif // VULKAN_H_
+// clang-format on
 '''
 
 vulkan_simple_cpp_definition = '''
@@ -678,4 +700,16 @@ void vkCloseLoaderLibrary(){
         vkGetInstanceProcAddr = VK_NULL_HANDLE;
     }
 }
+'''
+
+begin_extern_c = '''
+#ifdef __cplusplus
+extern "C" {
+#endif
+'''
+
+end_extern_c = '''
+#ifdef __cplusplus
+} // extern "C"
+#endif
 '''

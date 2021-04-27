@@ -23,6 +23,10 @@
 #ifndef VULKAN_H_
 #define VULKAN_H_ 1
 #define SIMPLE_VULKAN_H_ 1
+
+#define VK_VERSION_1_0 1
+#define VK_VERSION_1_1 1
+#define VK_VERSION_1_2 1
 #include <stdint.h>
 #include "vk_platform.h"
 
@@ -4325,6 +4329,10 @@ VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDebugReportCallbackEXT)
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDebugUtilsMessengerEXT)
 struct VkDebugUtilsMessengerCallbackDataEXT;
 struct VkDeviceMemoryReportCallbackDataEXT;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 typedef void (VKAPI_PTR * PFN_vkInternalAllocationNotification )(
      void *                                       pUserData,
      size_t                                       size,
@@ -10215,12 +10223,15 @@ void vkInitializeGlobalDeviceFunctions(VkDevice device);
 // The VkDevice handle which the application has created. Must not be VK_NULL_HANDLE
 //  * VkDeviceDispatchTable& table
 // The table in which holds all loaded device function pointers.
-void vkInitializeGlobalDeviceFunctions(VkDevice device, VkDeviceDispatchTable& table);
+void vkInitializeDeviceDispatchTable(VkDevice device, VkDeviceDispatchTable& table);
 
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #if defined(VULKAN_CPP_IMPLEMENTATION)
 #include "vulkan.cpp"
 #endif //defined(VULKAN_CPP_IMPLEMENTATION)
 
-// clang-format on
 #endif // VULKAN_H_
+// clang-format on

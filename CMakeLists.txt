@@ -107,7 +107,7 @@ add_library(vulkan-simple-cpp STATIC
     ${CMAKE_CURRENT_LIST_DIR}/include/vulkan/vulkan.cpp 
     ${CMAKE_CURRENT_LIST_DIR}/include/vulkan/vulkan_string.h 
     ${CMAKE_CURRENT_LIST_DIR}/include/vulkan/vulkan_string.cpp)
-target_include_directories(vulkan-simple-cpp PUBLIC BEFORE ${CMAKE_CURRENT_LIST_DIR}/include)
+target_include_directories(vulkan-simple-cpp BEFORE PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
 target_link_libraries(vulkan-simple-cpp PUBLIC vk-module-compiler-options)
 target_compile_features(vulkan-simple-cpp PUBLIC cxx_std_11)
 set_target_properties(vulkan-simple-cpp PROPERTIES CXX_STANDARD 11)
