@@ -1,13 +1,13 @@
 /*
  * Copyright 2021 Charles Giessen (cdgiessen@gmail.com)
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
  * (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge,
  * publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do
  * so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
  * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
@@ -25,6 +25,7 @@
 #include <tuple>
 #include <type_traits>
 #include <utility>
+#include <vector>
 #include "vk_platform.h"
 
 // Compatability with compilers that don't support __has_feature
@@ -3130,29 +3131,29 @@ public:
     // requires std::data(Range const&)
     // requires std::size(Range const&)
     template <typename Range>
-    explicit span(Range const& range) noexcept : 
+    explicit span(Range const& range) noexcept :
         _data{std::data(range)}, _count{std::size(range)} {}
-    
+
     template< std::size_t N >
-    span(std::array<T, N>& arr ) noexcept : 
+    span(std::array<T, N>& arr ) noexcept :
         _data{std::data(arr)}, _count{std::size(arr)} {}
 
     template< std::size_t N >
-    span(std::array<T, N> const& arr ) noexcept : 
+    span(std::array<T, N> const& arr ) noexcept :
         _data{std::data(arr)}, _count{std::size(arr)} {}
-    
-    span( std::initializer_list<T>& data ) noexcept : 
+
+    span( std::initializer_list<T>& data ) noexcept :
         _data{data.begin()}, _count{static_cast<uint32_t>(data.size())} {}
 
-    span( std::initializer_list<T> const& data ) noexcept : 
-        _data{data.begin()}, _count{static_cast<uint32_t>(data.size())} {}
-
-    template <typename A = T, typename std::enable_if<std::is_const<A>::value, int>::type = 0>
-    span( std::initializer_list<typename std::remove_const<T>::type> const& data ) noexcept : 
+    span( std::initializer_list<T> const& data ) noexcept :
         _data{data.begin()}, _count{static_cast<uint32_t>(data.size())} {}
 
     template <typename A = T, typename std::enable_if<std::is_const<A>::value, int>::type = 0>
-    span( std::initializer_list<typename std::remove_const<T>::type> & data ) noexcept : 
+    span( std::initializer_list<typename std::remove_const<T>::type> const& data ) noexcept :
+        _data{data.begin()}, _count{static_cast<uint32_t>(data.size())} {}
+
+    template <typename A = T, typename std::enable_if<std::is_const<A>::value, int>::type = 0>
+    span( std::initializer_list<typename std::remove_const<T>::type> & data ) noexcept :
         _data{data.begin()}, _count{static_cast<uint32_t>(data.size())} {}
 
     [[nodiscard]] uint32_t size() noexcept { return _count; }
@@ -3192,8 +3193,8 @@ public:
     unique_handle& operator=(unique_handle const& other) = delete;
 
     unique_handle(unique_handle&& other) noexcept
-        : dispatch_handle{other.dispatch_handle}, 
-          handle{std::exchange(other.handle, nullptr)}, 
+        : dispatch_handle{other.dispatch_handle},
+          handle{std::exchange(other.handle, nullptr)},
           deleter{other.deleter} { }
     unique_handle& operator=(unique_handle&& other) noexcept
     {
@@ -3201,7 +3202,7 @@ public:
         {
             reset();
             dispatch_handle = other.dispatch_handle;
-            handle = std::exchange(other.handle, {}); 
+            handle = std::exchange(other.handle, {});
             deleter = other.deleter;
         }
         return *this;
@@ -11097,7 +11098,7 @@ class DynamicLibrary {
     explicit DynamicLibrary([[maybe_unused]] LoadAtConstruction load) noexcept {
         init();
     }
-    explicit DynamicLibrary(PFN_vkGetInstanceProcAddr pfn_vkGetInstanceProcAddr) noexcept : 
+    explicit DynamicLibrary(PFN_vkGetInstanceProcAddr pfn_vkGetInstanceProcAddr) noexcept :
         get_instance_proc_addr(pfn_vkGetInstanceProcAddr) { }
     ~DynamicLibrary() noexcept {
         close();
@@ -11112,7 +11113,7 @@ class DynamicLibrary {
         if (this != &other)
         {
             close();
-            library = other.library; 
+            library = other.library;
             get_instance_proc_addr = other.get_instance_proc_addr;
             other.get_instance_proc_addr = 0;
             other.library = 0;
@@ -11159,7 +11160,7 @@ class DynamicLibrary {
     }
 
 private:
-    
+
     template <typename T>
     void Load(T &func_dest, const char *func_name) {
 #if defined(__linux__) || defined(__APPLE__)
@@ -11176,7 +11177,7 @@ private:
 #endif
 
     PFN_vkGetInstanceProcAddr get_instance_proc_addr = nullptr;
-    
+
 };
 
 
@@ -11201,30 +11202,30 @@ struct GlobalFunctions {
     return pfn_GetInstanceProcAddr(instance,
         Name.data());
 }
-[[nodiscard]] expected<detail::fixed_vector<ExtensionProperties>> EnumerateInstanceExtensionProperties(const char* pLayerName = nullptr) const {
+[[nodiscard]] expected<std::vector<ExtensionProperties>> EnumerateInstanceExtensionProperties(const char* pLayerName = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPropertyCount = 0;
         Result result = pfn_EnumerateInstanceExtensionProperties(pLayerName,
         &pPropertyCount,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<ExtensionProperties>{}, result);
-    detail::fixed_vector<ExtensionProperties> pProperties{pPropertyCount};
+    if (result < Result::Success) return expected(std::vector<ExtensionProperties>{}, result);
+    std::vector<ExtensionProperties> pProperties{pPropertyCount};
     result = pfn_EnumerateInstanceExtensionProperties(pLayerName,
         &pPropertyCount,
         pProperties.data());
-    if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+    if (pPropertyCount < pProperties.size()) pProperties.resize(pPropertyCount);
     return expected(std::move(pProperties), result);
 }
-[[nodiscard]] expected<detail::fixed_vector<LayerProperties>> EnumerateInstanceLayerProperties() const {
+[[nodiscard]] expected<std::vector<LayerProperties>> EnumerateInstanceLayerProperties() const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPropertyCount = 0;
         Result result = pfn_EnumerateInstanceLayerProperties(&pPropertyCount,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<LayerProperties>{}, result);
-    detail::fixed_vector<LayerProperties> pProperties{pPropertyCount};
+    if (result < Result::Success) return expected(std::vector<LayerProperties>{}, result);
+    std::vector<LayerProperties> pProperties{pPropertyCount};
     result = pfn_EnumerateInstanceLayerProperties(&pPropertyCount,
         pProperties.data());
-    if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+    if (pPropertyCount < pProperties.size()) pProperties.resize(pPropertyCount);
     return expected(std::move(pProperties), result);
 }
 [[nodiscard]] expected<uint32_t> EnumerateInstanceVersion() const {
@@ -11364,18 +11365,18 @@ void DestroyInstance(const AllocationCallbacks* pAllocator = nullptr) const {
     pfn_DestroyInstance(instance,
         pAllocator);
 }
-[[nodiscard]] expected<detail::fixed_vector<PhysicalDevice>> EnumeratePhysicalDevices() const {
+[[nodiscard]] expected<std::vector<PhysicalDevice>> EnumeratePhysicalDevices() const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPhysicalDeviceCount = 0;
         Result result = pfn_EnumeratePhysicalDevices(instance,
         &pPhysicalDeviceCount,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<PhysicalDevice>{}, result);
-    detail::fixed_vector<PhysicalDevice> pPhysicalDevices{pPhysicalDeviceCount};
+    if (result < Result::Success) return expected(std::vector<PhysicalDevice>{}, result);
+    std::vector<PhysicalDevice> pPhysicalDevices{pPhysicalDeviceCount};
     result = pfn_EnumeratePhysicalDevices(instance,
         &pPhysicalDeviceCount,
         pPhysicalDevices.data());
-    if (pPhysicalDeviceCount < pPhysicalDevices.size()) pPhysicalDevices.shrink(pPhysicalDeviceCount);
+    if (pPhysicalDeviceCount < pPhysicalDevices.size()) pPhysicalDevices.resize(pPhysicalDeviceCount);
     return expected(std::move(pPhysicalDevices), result);
 }
 [[nodiscard]] PFN_VoidFunction GetDeviceProcAddr(Device device, 
@@ -11396,17 +11397,17 @@ void DestroyInstance(const AllocationCallbacks* pAllocator = nullptr) const {
         &pProperties);
     return pProperties;
 }
-[[nodiscard]] detail::fixed_vector<QueueFamilyProperties> GetPhysicalDeviceQueueFamilyProperties(PhysicalDevice physicalDevice) const {
+[[nodiscard]] std::vector<QueueFamilyProperties> GetPhysicalDeviceQueueFamilyProperties(PhysicalDevice physicalDevice) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pQueueFamilyPropertyCount = 0;
     pfn_GetPhysicalDeviceQueueFamilyProperties(physicalDevice,
         &pQueueFamilyPropertyCount,
         nullptr);
-    detail::fixed_vector<QueueFamilyProperties> pQueueFamilyProperties{pQueueFamilyPropertyCount};
+    std::vector<QueueFamilyProperties> pQueueFamilyProperties{pQueueFamilyPropertyCount};
 pfn_GetPhysicalDeviceQueueFamilyProperties(physicalDevice,
         &pQueueFamilyPropertyCount,
         pQueueFamilyProperties.data());
-    if (pQueueFamilyPropertyCount < pQueueFamilyProperties.size()) pQueueFamilyProperties.shrink(pQueueFamilyPropertyCount);
+    if (pQueueFamilyPropertyCount < pQueueFamilyProperties.size()) pQueueFamilyProperties.resize(pQueueFamilyPropertyCount);
     return pQueueFamilyProperties;
 }
 [[nodiscard]] PhysicalDeviceMemoryProperties GetPhysicalDeviceMemoryProperties(PhysicalDevice physicalDevice) const {
@@ -11460,7 +11461,7 @@ pfn_GetPhysicalDeviceQueueFamilyProperties(physicalDevice,
         &pDevice);
     return expected<Device>(pDevice, result);
 }
-[[nodiscard]] expected<detail::fixed_vector<ExtensionProperties>> EnumerateDeviceExtensionProperties(PhysicalDevice physicalDevice, 
+[[nodiscard]] expected<std::vector<ExtensionProperties>> EnumerateDeviceExtensionProperties(PhysicalDevice physicalDevice, 
     const char* pLayerName = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPropertyCount = 0;
@@ -11468,16 +11469,16 @@ pfn_GetPhysicalDeviceQueueFamilyProperties(physicalDevice,
         pLayerName,
         &pPropertyCount,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<ExtensionProperties>{}, result);
-    detail::fixed_vector<ExtensionProperties> pProperties{pPropertyCount};
+    if (result < Result::Success) return expected(std::vector<ExtensionProperties>{}, result);
+    std::vector<ExtensionProperties> pProperties{pPropertyCount};
     result = pfn_EnumerateDeviceExtensionProperties(physicalDevice,
         pLayerName,
         &pPropertyCount,
         pProperties.data());
-    if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+    if (pPropertyCount < pProperties.size()) pProperties.resize(pPropertyCount);
     return expected(std::move(pProperties), result);
 }
-[[nodiscard]] detail::fixed_vector<SparseImageFormatProperties> GetPhysicalDeviceSparseImageFormatProperties(PhysicalDevice physicalDevice, 
+[[nodiscard]] std::vector<SparseImageFormatProperties> GetPhysicalDeviceSparseImageFormatProperties(PhysicalDevice physicalDevice, 
     Format format, 
     ImageType type, 
     SampleCountFlagBits samples, 
@@ -11493,7 +11494,7 @@ pfn_GetPhysicalDeviceQueueFamilyProperties(physicalDevice,
         tiling,
         &pPropertyCount,
         nullptr);
-    detail::fixed_vector<SparseImageFormatProperties> pProperties{pPropertyCount};
+    std::vector<SparseImageFormatProperties> pProperties{pPropertyCount};
 pfn_GetPhysicalDeviceSparseImageFormatProperties(physicalDevice,
         format,
         type,
@@ -11502,21 +11503,21 @@ pfn_GetPhysicalDeviceSparseImageFormatProperties(physicalDevice,
         tiling,
         &pPropertyCount,
         pProperties.data());
-    if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+    if (pPropertyCount < pProperties.size()) pProperties.resize(pPropertyCount);
     return pProperties;
 }
-[[nodiscard]] expected<detail::fixed_vector<PhysicalDeviceGroupProperties>> EnumeratePhysicalDeviceGroups() const {
+[[nodiscard]] expected<std::vector<PhysicalDeviceGroupProperties>> EnumeratePhysicalDeviceGroups() const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPhysicalDeviceGroupCount = 0;
         Result result = pfn_EnumeratePhysicalDeviceGroups(instance,
         &pPhysicalDeviceGroupCount,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<PhysicalDeviceGroupProperties>{}, result);
-    detail::fixed_vector<PhysicalDeviceGroupProperties> pPhysicalDeviceGroupProperties{pPhysicalDeviceGroupCount};
+    if (result < Result::Success) return expected(std::vector<PhysicalDeviceGroupProperties>{}, result);
+    std::vector<PhysicalDeviceGroupProperties> pPhysicalDeviceGroupProperties{pPhysicalDeviceGroupCount};
     result = pfn_EnumeratePhysicalDeviceGroups(instance,
         &pPhysicalDeviceGroupCount,
         pPhysicalDeviceGroupProperties.data());
-    if (pPhysicalDeviceGroupCount < pPhysicalDeviceGroupProperties.size()) pPhysicalDeviceGroupProperties.shrink(pPhysicalDeviceGroupCount);
+    if (pPhysicalDeviceGroupCount < pPhysicalDeviceGroupProperties.size()) pPhysicalDeviceGroupProperties.resize(pPhysicalDeviceGroupCount);
     return expected(std::move(pPhysicalDeviceGroupProperties), result);
 }
 [[nodiscard]] PhysicalDeviceFeatures2 GetPhysicalDeviceFeatures2(PhysicalDevice physicalDevice) const {
@@ -11551,17 +11552,17 @@ pfn_GetPhysicalDeviceSparseImageFormatProperties(physicalDevice,
         &pImageFormatProperties);
     return expected<ImageFormatProperties2>(pImageFormatProperties, result);
 }
-[[nodiscard]] detail::fixed_vector<QueueFamilyProperties2> GetPhysicalDeviceQueueFamilyProperties2(PhysicalDevice physicalDevice) const {
+[[nodiscard]] std::vector<QueueFamilyProperties2> GetPhysicalDeviceQueueFamilyProperties2(PhysicalDevice physicalDevice) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pQueueFamilyPropertyCount = 0;
     pfn_GetPhysicalDeviceQueueFamilyProperties2(physicalDevice,
         &pQueueFamilyPropertyCount,
         nullptr);
-    detail::fixed_vector<QueueFamilyProperties2> pQueueFamilyProperties{pQueueFamilyPropertyCount};
+    std::vector<QueueFamilyProperties2> pQueueFamilyProperties{pQueueFamilyPropertyCount};
 pfn_GetPhysicalDeviceQueueFamilyProperties2(physicalDevice,
         &pQueueFamilyPropertyCount,
         pQueueFamilyProperties.data());
-    if (pQueueFamilyPropertyCount < pQueueFamilyProperties.size()) pQueueFamilyProperties.shrink(pQueueFamilyPropertyCount);
+    if (pQueueFamilyPropertyCount < pQueueFamilyProperties.size()) pQueueFamilyProperties.resize(pQueueFamilyPropertyCount);
     return pQueueFamilyProperties;
 }
 [[nodiscard]] PhysicalDeviceMemoryProperties2 GetPhysicalDeviceMemoryProperties2(PhysicalDevice physicalDevice) const {
@@ -11571,7 +11572,7 @@ pfn_GetPhysicalDeviceQueueFamilyProperties2(physicalDevice,
         &pMemoryProperties);
     return pMemoryProperties;
 }
-[[nodiscard]] detail::fixed_vector<SparseImageFormatProperties2> GetPhysicalDeviceSparseImageFormatProperties2(PhysicalDevice physicalDevice, 
+[[nodiscard]] std::vector<SparseImageFormatProperties2> GetPhysicalDeviceSparseImageFormatProperties2(PhysicalDevice physicalDevice, 
     const PhysicalDeviceSparseImageFormatInfo2&  pFormatInfo) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPropertyCount = 0;
@@ -11579,12 +11580,12 @@ pfn_GetPhysicalDeviceQueueFamilyProperties2(physicalDevice,
         &pFormatInfo,
         &pPropertyCount,
         nullptr);
-    detail::fixed_vector<SparseImageFormatProperties2> pProperties{pPropertyCount};
+    std::vector<SparseImageFormatProperties2> pProperties{pPropertyCount};
 pfn_GetPhysicalDeviceSparseImageFormatProperties2(physicalDevice,
         &pFormatInfo,
         &pPropertyCount,
         pProperties.data());
-    if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+    if (pPropertyCount < pProperties.size()) pProperties.resize(pPropertyCount);
     return pProperties;
 }
 [[nodiscard]] ExternalBufferProperties GetPhysicalDeviceExternalBufferProperties(PhysicalDevice physicalDevice, 
@@ -11641,7 +11642,7 @@ void DestroySurfaceKHR(SurfaceKHR surface = {},
         &pSurfaceCapabilities);
     return expected<SurfaceCapabilitiesKHR>(pSurfaceCapabilities, result);
 }
-[[nodiscard]] expected<detail::fixed_vector<SurfaceFormatKHR>> GetPhysicalDeviceSurfaceFormatsKHR(PhysicalDevice physicalDevice, 
+[[nodiscard]] expected<std::vector<SurfaceFormatKHR>> GetPhysicalDeviceSurfaceFormatsKHR(PhysicalDevice physicalDevice, 
     SurfaceKHR surface) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pSurfaceFormatCount = 0;
@@ -11649,16 +11650,16 @@ void DestroySurfaceKHR(SurfaceKHR surface = {},
         surface,
         &pSurfaceFormatCount,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<SurfaceFormatKHR>{}, result);
-    detail::fixed_vector<SurfaceFormatKHR> pSurfaceFormats{pSurfaceFormatCount};
+    if (result < Result::Success) return expected(std::vector<SurfaceFormatKHR>{}, result);
+    std::vector<SurfaceFormatKHR> pSurfaceFormats{pSurfaceFormatCount};
     result = pfn_GetPhysicalDeviceSurfaceFormatsKHR(physicalDevice,
         surface,
         &pSurfaceFormatCount,
         pSurfaceFormats.data());
-    if (pSurfaceFormatCount < pSurfaceFormats.size()) pSurfaceFormats.shrink(pSurfaceFormatCount);
+    if (pSurfaceFormatCount < pSurfaceFormats.size()) pSurfaceFormats.resize(pSurfaceFormatCount);
     return expected(std::move(pSurfaceFormats), result);
 }
-[[nodiscard]] expected<detail::fixed_vector<PresentModeKHR>> GetPhysicalDeviceSurfacePresentModesKHR(PhysicalDevice physicalDevice, 
+[[nodiscard]] expected<std::vector<PresentModeKHR>> GetPhysicalDeviceSurfacePresentModesKHR(PhysicalDevice physicalDevice, 
     SurfaceKHR surface) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPresentModeCount = 0;
@@ -11666,16 +11667,16 @@ void DestroySurfaceKHR(SurfaceKHR surface = {},
         surface,
         &pPresentModeCount,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<PresentModeKHR>{}, result);
-    detail::fixed_vector<PresentModeKHR> pPresentModes{pPresentModeCount};
+    if (result < Result::Success) return expected(std::vector<PresentModeKHR>{}, result);
+    std::vector<PresentModeKHR> pPresentModes{pPresentModeCount};
     result = pfn_GetPhysicalDeviceSurfacePresentModesKHR(physicalDevice,
         surface,
         &pPresentModeCount,
         pPresentModes.data());
-    if (pPresentModeCount < pPresentModes.size()) pPresentModes.shrink(pPresentModeCount);
+    if (pPresentModeCount < pPresentModes.size()) pPresentModes.resize(pPresentModeCount);
     return expected(std::move(pPresentModes), result);
 }
-[[nodiscard]] expected<detail::fixed_vector<Rect2D>> GetPhysicalDevicePresentRectanglesKHR(PhysicalDevice physicalDevice, 
+[[nodiscard]] expected<std::vector<Rect2D>> GetPhysicalDevicePresentRectanglesKHR(PhysicalDevice physicalDevice, 
     SurfaceKHR surface) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pRectCount = 0;
@@ -11683,44 +11684,44 @@ void DestroySurfaceKHR(SurfaceKHR surface = {},
         surface,
         &pRectCount,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<Rect2D>{}, result);
-    detail::fixed_vector<Rect2D> pRects{pRectCount};
+    if (result < Result::Success) return expected(std::vector<Rect2D>{}, result);
+    std::vector<Rect2D> pRects{pRectCount};
     result = pfn_GetPhysicalDevicePresentRectanglesKHR(physicalDevice,
         surface,
         &pRectCount,
         pRects.data());
-    if (pRectCount < pRects.size()) pRects.shrink(pRectCount);
+    if (pRectCount < pRects.size()) pRects.resize(pRectCount);
     return expected(std::move(pRects), result);
 }
-[[nodiscard]] expected<detail::fixed_vector<DisplayPropertiesKHR>> GetPhysicalDeviceDisplayPropertiesKHR(PhysicalDevice physicalDevice) const {
+[[nodiscard]] expected<std::vector<DisplayPropertiesKHR>> GetPhysicalDeviceDisplayPropertiesKHR(PhysicalDevice physicalDevice) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPropertyCount = 0;
         Result result = pfn_GetPhysicalDeviceDisplayPropertiesKHR(physicalDevice,
         &pPropertyCount,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<DisplayPropertiesKHR>{}, result);
-    detail::fixed_vector<DisplayPropertiesKHR> pProperties{pPropertyCount};
+    if (result < Result::Success) return expected(std::vector<DisplayPropertiesKHR>{}, result);
+    std::vector<DisplayPropertiesKHR> pProperties{pPropertyCount};
     result = pfn_GetPhysicalDeviceDisplayPropertiesKHR(physicalDevice,
         &pPropertyCount,
         pProperties.data());
-    if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+    if (pPropertyCount < pProperties.size()) pProperties.resize(pPropertyCount);
     return expected(std::move(pProperties), result);
 }
-[[nodiscard]] expected<detail::fixed_vector<DisplayPlanePropertiesKHR>> GetPhysicalDeviceDisplayPlanePropertiesKHR(PhysicalDevice physicalDevice) const {
+[[nodiscard]] expected<std::vector<DisplayPlanePropertiesKHR>> GetPhysicalDeviceDisplayPlanePropertiesKHR(PhysicalDevice physicalDevice) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPropertyCount = 0;
         Result result = pfn_GetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice,
         &pPropertyCount,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<DisplayPlanePropertiesKHR>{}, result);
-    detail::fixed_vector<DisplayPlanePropertiesKHR> pProperties{pPropertyCount};
+    if (result < Result::Success) return expected(std::vector<DisplayPlanePropertiesKHR>{}, result);
+    std::vector<DisplayPlanePropertiesKHR> pProperties{pPropertyCount};
     result = pfn_GetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice,
         &pPropertyCount,
         pProperties.data());
-    if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+    if (pPropertyCount < pProperties.size()) pProperties.resize(pPropertyCount);
     return expected(std::move(pProperties), result);
 }
-[[nodiscard]] expected<detail::fixed_vector<DisplayKHR>> GetDisplayPlaneSupportedDisplaysKHR(PhysicalDevice physicalDevice, 
+[[nodiscard]] expected<std::vector<DisplayKHR>> GetDisplayPlaneSupportedDisplaysKHR(PhysicalDevice physicalDevice, 
     uint32_t planeIndex) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pDisplayCount = 0;
@@ -11728,16 +11729,16 @@ void DestroySurfaceKHR(SurfaceKHR surface = {},
         planeIndex,
         &pDisplayCount,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<DisplayKHR>{}, result);
-    detail::fixed_vector<DisplayKHR> pDisplays{pDisplayCount};
+    if (result < Result::Success) return expected(std::vector<DisplayKHR>{}, result);
+    std::vector<DisplayKHR> pDisplays{pDisplayCount};
     result = pfn_GetDisplayPlaneSupportedDisplaysKHR(physicalDevice,
         planeIndex,
         &pDisplayCount,
         pDisplays.data());
-    if (pDisplayCount < pDisplays.size()) pDisplays.shrink(pDisplayCount);
+    if (pDisplayCount < pDisplays.size()) pDisplays.resize(pDisplayCount);
     return expected(std::move(pDisplays), result);
 }
-[[nodiscard]] expected<detail::fixed_vector<DisplayModePropertiesKHR>> GetDisplayModePropertiesKHR(PhysicalDevice physicalDevice, 
+[[nodiscard]] expected<std::vector<DisplayModePropertiesKHR>> GetDisplayModePropertiesKHR(PhysicalDevice physicalDevice, 
     DisplayKHR display) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPropertyCount = 0;
@@ -11745,13 +11746,13 @@ void DestroySurfaceKHR(SurfaceKHR surface = {},
         display,
         &pPropertyCount,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<DisplayModePropertiesKHR>{}, result);
-    detail::fixed_vector<DisplayModePropertiesKHR> pProperties{pPropertyCount};
+    if (result < Result::Success) return expected(std::vector<DisplayModePropertiesKHR>{}, result);
+    std::vector<DisplayModePropertiesKHR> pProperties{pPropertyCount};
     result = pfn_GetDisplayModePropertiesKHR(physicalDevice,
         display,
         &pPropertyCount,
         pProperties.data());
-    if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+    if (pPropertyCount < pProperties.size()) pProperties.resize(pPropertyCount);
     return expected(std::move(pProperties), result);
 }
 [[nodiscard]] expected<DisplayModeKHR> CreateDisplayModeKHR(PhysicalDevice physicalDevice, 
@@ -12026,7 +12027,7 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
         &pSurfaceCapabilities);
     return expected<SurfaceCapabilities2KHR>(pSurfaceCapabilities, result);
 }
-[[nodiscard]] expected<detail::fixed_vector<SurfaceFormat2KHR>> GetPhysicalDeviceSurfaceFormats2KHR(PhysicalDevice physicalDevice, 
+[[nodiscard]] expected<std::vector<SurfaceFormat2KHR>> GetPhysicalDeviceSurfaceFormats2KHR(PhysicalDevice physicalDevice, 
     const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pSurfaceFormatCount = 0;
@@ -12034,44 +12035,44 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
         &pSurfaceInfo,
         &pSurfaceFormatCount,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<SurfaceFormat2KHR>{}, result);
-    detail::fixed_vector<SurfaceFormat2KHR> pSurfaceFormats{pSurfaceFormatCount};
+    if (result < Result::Success) return expected(std::vector<SurfaceFormat2KHR>{}, result);
+    std::vector<SurfaceFormat2KHR> pSurfaceFormats{pSurfaceFormatCount};
     result = pfn_GetPhysicalDeviceSurfaceFormats2KHR(physicalDevice,
         &pSurfaceInfo,
         &pSurfaceFormatCount,
         pSurfaceFormats.data());
-    if (pSurfaceFormatCount < pSurfaceFormats.size()) pSurfaceFormats.shrink(pSurfaceFormatCount);
+    if (pSurfaceFormatCount < pSurfaceFormats.size()) pSurfaceFormats.resize(pSurfaceFormatCount);
     return expected(std::move(pSurfaceFormats), result);
 }
-[[nodiscard]] expected<detail::fixed_vector<DisplayProperties2KHR>> GetPhysicalDeviceDisplayProperties2KHR(PhysicalDevice physicalDevice) const {
+[[nodiscard]] expected<std::vector<DisplayProperties2KHR>> GetPhysicalDeviceDisplayProperties2KHR(PhysicalDevice physicalDevice) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPropertyCount = 0;
         Result result = pfn_GetPhysicalDeviceDisplayProperties2KHR(physicalDevice,
         &pPropertyCount,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<DisplayProperties2KHR>{}, result);
-    detail::fixed_vector<DisplayProperties2KHR> pProperties{pPropertyCount};
+    if (result < Result::Success) return expected(std::vector<DisplayProperties2KHR>{}, result);
+    std::vector<DisplayProperties2KHR> pProperties{pPropertyCount};
     result = pfn_GetPhysicalDeviceDisplayProperties2KHR(physicalDevice,
         &pPropertyCount,
         pProperties.data());
-    if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+    if (pPropertyCount < pProperties.size()) pProperties.resize(pPropertyCount);
     return expected(std::move(pProperties), result);
 }
-[[nodiscard]] expected<detail::fixed_vector<DisplayPlaneProperties2KHR>> GetPhysicalDeviceDisplayPlaneProperties2KHR(PhysicalDevice physicalDevice) const {
+[[nodiscard]] expected<std::vector<DisplayPlaneProperties2KHR>> GetPhysicalDeviceDisplayPlaneProperties2KHR(PhysicalDevice physicalDevice) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPropertyCount = 0;
         Result result = pfn_GetPhysicalDeviceDisplayPlaneProperties2KHR(physicalDevice,
         &pPropertyCount,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<DisplayPlaneProperties2KHR>{}, result);
-    detail::fixed_vector<DisplayPlaneProperties2KHR> pProperties{pPropertyCount};
+    if (result < Result::Success) return expected(std::vector<DisplayPlaneProperties2KHR>{}, result);
+    std::vector<DisplayPlaneProperties2KHR> pProperties{pPropertyCount};
     result = pfn_GetPhysicalDeviceDisplayPlaneProperties2KHR(physicalDevice,
         &pPropertyCount,
         pProperties.data());
-    if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+    if (pPropertyCount < pProperties.size()) pProperties.resize(pPropertyCount);
     return expected(std::move(pProperties), result);
 }
-[[nodiscard]] expected<detail::fixed_vector<DisplayModeProperties2KHR>> GetDisplayModeProperties2KHR(PhysicalDevice physicalDevice, 
+[[nodiscard]] expected<std::vector<DisplayModeProperties2KHR>> GetDisplayModeProperties2KHR(PhysicalDevice physicalDevice, 
     DisplayKHR display) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPropertyCount = 0;
@@ -12079,13 +12080,13 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
         display,
         &pPropertyCount,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<DisplayModeProperties2KHR>{}, result);
-    detail::fixed_vector<DisplayModeProperties2KHR> pProperties{pPropertyCount};
+    if (result < Result::Success) return expected(std::vector<DisplayModeProperties2KHR>{}, result);
+    std::vector<DisplayModeProperties2KHR> pProperties{pPropertyCount};
     result = pfn_GetDisplayModeProperties2KHR(physicalDevice,
         display,
         &pPropertyCount,
         pProperties.data());
-    if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+    if (pPropertyCount < pProperties.size()) pProperties.resize(pPropertyCount);
     return expected(std::move(pProperties), result);
 }
 [[nodiscard]] expected<DisplayPlaneCapabilities2KHR> GetDisplayPlaneCapabilities2KHR(PhysicalDevice physicalDevice, 
@@ -12156,18 +12157,18 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
         &pMultisampleProperties);
     return pMultisampleProperties;
 }
-[[nodiscard]] expected<detail::fixed_vector<TimeDomainEXT>> GetPhysicalDeviceCalibrateableTimeDomainsEXT(PhysicalDevice physicalDevice) const {
+[[nodiscard]] expected<std::vector<TimeDomainEXT>> GetPhysicalDeviceCalibrateableTimeDomainsEXT(PhysicalDevice physicalDevice) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pTimeDomainCount = 0;
         Result result = pfn_GetPhysicalDeviceCalibrateableTimeDomainsEXT(physicalDevice,
         &pTimeDomainCount,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<TimeDomainEXT>{}, result);
-    detail::fixed_vector<TimeDomainEXT> pTimeDomains{pTimeDomainCount};
+    if (result < Result::Success) return expected(std::vector<TimeDomainEXT>{}, result);
+    std::vector<TimeDomainEXT> pTimeDomains{pTimeDomainCount};
     result = pfn_GetPhysicalDeviceCalibrateableTimeDomainsEXT(physicalDevice,
         &pTimeDomainCount,
         pTimeDomains.data());
-    if (pTimeDomainCount < pTimeDomains.size()) pTimeDomains.shrink(pTimeDomainCount);
+    if (pTimeDomainCount < pTimeDomains.size()) pTimeDomains.resize(pTimeDomainCount);
     return expected(std::move(pTimeDomains), result);
 }
 #if defined(VK_USE_PLATFORM_FUCHSIA)
@@ -12194,64 +12195,64 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
     return expected<SurfaceKHR>(pSurface, result);
 }
 #endif // defined(VK_USE_PLATFORM_METAL_EXT)
-[[nodiscard]] expected<detail::fixed_vector<PhysicalDeviceFragmentShadingRateKHR>> GetPhysicalDeviceFragmentShadingRatesKHR(PhysicalDevice physicalDevice) const {
+[[nodiscard]] expected<std::vector<PhysicalDeviceFragmentShadingRateKHR>> GetPhysicalDeviceFragmentShadingRatesKHR(PhysicalDevice physicalDevice) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pFragmentShadingRateCount = 0;
         Result result = pfn_GetPhysicalDeviceFragmentShadingRatesKHR(physicalDevice,
         &pFragmentShadingRateCount,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<PhysicalDeviceFragmentShadingRateKHR>{}, result);
-    detail::fixed_vector<PhysicalDeviceFragmentShadingRateKHR> pFragmentShadingRates{pFragmentShadingRateCount};
+    if (result < Result::Success) return expected(std::vector<PhysicalDeviceFragmentShadingRateKHR>{}, result);
+    std::vector<PhysicalDeviceFragmentShadingRateKHR> pFragmentShadingRates{pFragmentShadingRateCount};
     result = pfn_GetPhysicalDeviceFragmentShadingRatesKHR(physicalDevice,
         &pFragmentShadingRateCount,
         pFragmentShadingRates.data());
-    if (pFragmentShadingRateCount < pFragmentShadingRates.size()) pFragmentShadingRates.shrink(pFragmentShadingRateCount);
+    if (pFragmentShadingRateCount < pFragmentShadingRates.size()) pFragmentShadingRates.resize(pFragmentShadingRateCount);
     return expected(std::move(pFragmentShadingRates), result);
 }
-[[nodiscard]] expected<detail::fixed_vector<PhysicalDeviceToolPropertiesEXT>> GetPhysicalDeviceToolPropertiesEXT(PhysicalDevice physicalDevice) const {
+[[nodiscard]] expected<std::vector<PhysicalDeviceToolPropertiesEXT>> GetPhysicalDeviceToolPropertiesEXT(PhysicalDevice physicalDevice) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pToolCount = 0;
         Result result = pfn_GetPhysicalDeviceToolPropertiesEXT(physicalDevice,
         &pToolCount,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<PhysicalDeviceToolPropertiesEXT>{}, result);
-    detail::fixed_vector<PhysicalDeviceToolPropertiesEXT> pToolProperties{pToolCount};
+    if (result < Result::Success) return expected(std::vector<PhysicalDeviceToolPropertiesEXT>{}, result);
+    std::vector<PhysicalDeviceToolPropertiesEXT> pToolProperties{pToolCount};
     result = pfn_GetPhysicalDeviceToolPropertiesEXT(physicalDevice,
         &pToolCount,
         pToolProperties.data());
-    if (pToolCount < pToolProperties.size()) pToolProperties.shrink(pToolCount);
+    if (pToolCount < pToolProperties.size()) pToolProperties.resize(pToolCount);
     return expected(std::move(pToolProperties), result);
 }
-[[nodiscard]] expected<detail::fixed_vector<CooperativeMatrixPropertiesNV>> GetPhysicalDeviceCooperativeMatrixPropertiesNV(PhysicalDevice physicalDevice) const {
+[[nodiscard]] expected<std::vector<CooperativeMatrixPropertiesNV>> GetPhysicalDeviceCooperativeMatrixPropertiesNV(PhysicalDevice physicalDevice) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPropertyCount = 0;
         Result result = pfn_GetPhysicalDeviceCooperativeMatrixPropertiesNV(physicalDevice,
         &pPropertyCount,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<CooperativeMatrixPropertiesNV>{}, result);
-    detail::fixed_vector<CooperativeMatrixPropertiesNV> pProperties{pPropertyCount};
+    if (result < Result::Success) return expected(std::vector<CooperativeMatrixPropertiesNV>{}, result);
+    std::vector<CooperativeMatrixPropertiesNV> pProperties{pPropertyCount};
     result = pfn_GetPhysicalDeviceCooperativeMatrixPropertiesNV(physicalDevice,
         &pPropertyCount,
         pProperties.data());
-    if (pPropertyCount < pProperties.size()) pProperties.shrink(pPropertyCount);
+    if (pPropertyCount < pProperties.size()) pProperties.resize(pPropertyCount);
     return expected(std::move(pProperties), result);
 }
-[[nodiscard]] expected<detail::fixed_vector<FramebufferMixedSamplesCombinationNV>> GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(PhysicalDevice physicalDevice) const {
+[[nodiscard]] expected<std::vector<FramebufferMixedSamplesCombinationNV>> GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(PhysicalDevice physicalDevice) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pCombinationCount = 0;
         Result result = pfn_GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(physicalDevice,
         &pCombinationCount,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<FramebufferMixedSamplesCombinationNV>{}, result);
-    detail::fixed_vector<FramebufferMixedSamplesCombinationNV> pCombinations{pCombinationCount};
+    if (result < Result::Success) return expected(std::vector<FramebufferMixedSamplesCombinationNV>{}, result);
+    std::vector<FramebufferMixedSamplesCombinationNV> pCombinations{pCombinationCount};
     result = pfn_GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(physicalDevice,
         &pCombinationCount,
         pCombinations.data());
-    if (pCombinationCount < pCombinations.size()) pCombinations.shrink(pCombinationCount);
+    if (pCombinationCount < pCombinations.size()) pCombinations.resize(pCombinationCount);
     return expected(std::move(pCombinations), result);
 }
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
-[[nodiscard]] expected<detail::fixed_vector<PresentModeKHR>> GetPhysicalDeviceSurfacePresentModes2EXT(PhysicalDevice physicalDevice, 
+[[nodiscard]] expected<std::vector<PresentModeKHR>> GetPhysicalDeviceSurfacePresentModes2EXT(PhysicalDevice physicalDevice, 
     const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPresentModeCount = 0;
@@ -12259,13 +12260,13 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
         &pSurfaceInfo,
         &pPresentModeCount,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<PresentModeKHR>{}, result);
-    detail::fixed_vector<PresentModeKHR> pPresentModes{pPresentModeCount};
+    if (result < Result::Success) return expected(std::vector<PresentModeKHR>{}, result);
+    std::vector<PresentModeKHR> pPresentModes{pPresentModeCount};
     result = pfn_GetPhysicalDeviceSurfacePresentModes2EXT(physicalDevice,
         &pSurfaceInfo,
         &pPresentModeCount,
         pPresentModes.data());
-    if (pPresentModeCount < pPresentModes.size()) pPresentModes.shrink(pPresentModeCount);
+    if (pPresentModeCount < pPresentModes.size()) pPresentModes.resize(pPresentModeCount);
     return expected(std::move(pPresentModes), result);
 }
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
@@ -12888,19 +12889,19 @@ void UnmapMemory(DeviceMemory memory) const {
         memory,
         memoryOffset);
 }
-[[nodiscard]] detail::fixed_vector<SparseImageMemoryRequirements> GetImageSparseMemoryRequirements(Image image) const {
+[[nodiscard]] std::vector<SparseImageMemoryRequirements> GetImageSparseMemoryRequirements(Image image) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pSparseMemoryRequirementCount = 0;
     pfn_GetImageSparseMemoryRequirements(device,
         image,
         &pSparseMemoryRequirementCount,
         nullptr);
-    detail::fixed_vector<SparseImageMemoryRequirements> pSparseMemoryRequirements{pSparseMemoryRequirementCount};
+    std::vector<SparseImageMemoryRequirements> pSparseMemoryRequirements{pSparseMemoryRequirementCount};
 pfn_GetImageSparseMemoryRequirements(device,
         image,
         &pSparseMemoryRequirementCount,
         pSparseMemoryRequirements.data());
-    if (pSparseMemoryRequirementCount < pSparseMemoryRequirements.size()) pSparseMemoryRequirements.shrink(pSparseMemoryRequirementCount);
+    if (pSparseMemoryRequirementCount < pSparseMemoryRequirements.size()) pSparseMemoryRequirements.resize(pSparseMemoryRequirementCount);
     return pSparseMemoryRequirements;
 }
 [[nodiscard]] Result QueueBindSparse(Queue queue, 
@@ -13148,20 +13149,20 @@ void DestroyPipelineCache(PipelineCache pipelineCache = {},
         pipelineCache,
         pAllocator);
 }
-[[nodiscard]] expected<detail::fixed_vector<void*>> GetPipelineCacheData(PipelineCache pipelineCache) const {
+[[nodiscard]] expected<std::vector<void*>> GetPipelineCacheData(PipelineCache pipelineCache) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     size_t pDataSize = 0;
         Result result = pfn_GetPipelineCacheData(device,
         pipelineCache,
         &pDataSize,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<void*>{}, result);
-    detail::fixed_vector<void*> pData{pDataSize};
+    if (result < Result::Success) return expected(std::vector<void*>{}, result);
+    std::vector<void*> pData{pDataSize};
     result = pfn_GetPipelineCacheData(device,
         pipelineCache,
         &pDataSize,
         pData.data());
-    if (pDataSize < pData.size()) pData.shrink(pDataSize);
+    if (pDataSize < pData.size()) pData.resize(pDataSize);
     return expected(std::move(pData), result);
 }
 [[nodiscard]] Result MergePipelineCaches(PipelineCache dstCache, 
@@ -13173,33 +13174,33 @@ void DestroyPipelineCache(PipelineCache pipelineCache = {},
         srcCacheCount,
         SrcCaches.data());
 }
-[[nodiscard]] expected<detail::fixed_vector<Pipeline>> CreateGraphicsPipelines(PipelineCache pipelineCache, 
+[[nodiscard]] expected<std::vector<Pipeline>> CreateGraphicsPipelines(PipelineCache pipelineCache, 
     detail::span<const GraphicsPipelineCreateInfo> CreateInfos, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t createInfoCount = CreateInfos.size();
-    detail::fixed_vector<Pipeline> pPipelines{createInfoCount};
+    std::vector<Pipeline> pPipelines{createInfoCount};
     Result result = pfn_CreateGraphicsPipelines(device,
         pipelineCache,
         createInfoCount,
         CreateInfos.data(),
         pAllocator,
         pPipelines.data());
-    return expected<detail::fixed_vector<Pipeline>>(std::move(pPipelines), result);
+    return expected<std::vector<Pipeline>>(std::move(pPipelines), result);
 }
-[[nodiscard]] expected<detail::fixed_vector<Pipeline>> CreateComputePipelines(PipelineCache pipelineCache, 
+[[nodiscard]] expected<std::vector<Pipeline>> CreateComputePipelines(PipelineCache pipelineCache, 
     detail::span<const ComputePipelineCreateInfo> CreateInfos, 
     const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t createInfoCount = CreateInfos.size();
-    detail::fixed_vector<Pipeline> pPipelines{createInfoCount};
+    std::vector<Pipeline> pPipelines{createInfoCount};
     Result result = pfn_CreateComputePipelines(device,
         pipelineCache,
         createInfoCount,
         CreateInfos.data(),
         pAllocator,
         pPipelines.data());
-    return expected<detail::fixed_vector<Pipeline>>(std::move(pPipelines), result);
+    return expected<std::vector<Pipeline>>(std::move(pPipelines), result);
 }
 void DestroyPipeline(Pipeline pipeline = {}, 
     const AllocationCallbacks* pAllocator = nullptr) const {
@@ -13283,13 +13284,13 @@ void DestroyDescriptorPool(DescriptorPool descriptorPool = {},
         descriptorPool,
         flags);
 }
-[[nodiscard]] expected<detail::fixed_vector<DescriptorSet>> AllocateDescriptorSets(const DescriptorSetAllocateInfo&  pAllocateInfo) const {
+[[nodiscard]] expected<std::vector<DescriptorSet>> AllocateDescriptorSets(const DescriptorSetAllocateInfo&  pAllocateInfo) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
-    detail::fixed_vector<DescriptorSet> pDescriptorSets{pAllocateInfo.descriptorSetCount};
+    std::vector<DescriptorSet> pDescriptorSets{pAllocateInfo.descriptorSetCount};
     Result result = pfn_AllocateDescriptorSets(device,
         &pAllocateInfo,
         pDescriptorSets.data());
-    return expected<detail::fixed_vector<DescriptorSet>>(std::move(pDescriptorSets), result);
+    return expected<std::vector<DescriptorSet>>(std::move(pDescriptorSets), result);
 }
 [[nodiscard]] Result FreeDescriptorSets(DescriptorPool descriptorPool, 
     detail::span<const DescriptorSet> DescriptorSets) const {
@@ -13377,13 +13378,13 @@ void DestroyCommandPool(CommandPool commandPool = {},
         commandPool,
         flags);
 }
-[[nodiscard]] expected<detail::fixed_vector<CommandBuffer>> AllocateCommandBuffers(const CommandBufferAllocateInfo&  pAllocateInfo) const {
+[[nodiscard]] expected<std::vector<CommandBuffer>> AllocateCommandBuffers(const CommandBufferAllocateInfo&  pAllocateInfo) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
-    detail::fixed_vector<CommandBuffer> pCommandBuffers{pAllocateInfo.commandBufferCount};
+    std::vector<CommandBuffer> pCommandBuffers{pAllocateInfo.commandBufferCount};
     Result result = pfn_AllocateCommandBuffers(device,
         &pAllocateInfo,
         pCommandBuffers.data());
-    return expected<detail::fixed_vector<CommandBuffer>>(std::move(pCommandBuffers), result);
+    return expected<std::vector<CommandBuffer>>(std::move(pCommandBuffers), result);
 }
 void FreeCommandBuffers(CommandPool commandPool, 
     detail::span<const CommandBuffer> CommandBuffers) const {
@@ -13976,19 +13977,19 @@ void CmdDispatchBase(CommandBuffer commandBuffer,
         &pMemoryRequirements);
     return pMemoryRequirements;
 }
-[[nodiscard]] detail::fixed_vector<SparseImageMemoryRequirements2> GetImageSparseMemoryRequirements2(const ImageSparseMemoryRequirementsInfo2&  pInfo) const {
+[[nodiscard]] std::vector<SparseImageMemoryRequirements2> GetImageSparseMemoryRequirements2(const ImageSparseMemoryRequirementsInfo2&  pInfo) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pSparseMemoryRequirementCount = 0;
     pfn_GetImageSparseMemoryRequirements2(device,
         &pInfo,
         &pSparseMemoryRequirementCount,
         nullptr);
-    detail::fixed_vector<SparseImageMemoryRequirements2> pSparseMemoryRequirements{pSparseMemoryRequirementCount};
+    std::vector<SparseImageMemoryRequirements2> pSparseMemoryRequirements{pSparseMemoryRequirementCount};
 pfn_GetImageSparseMemoryRequirements2(device,
         &pInfo,
         &pSparseMemoryRequirementCount,
         pSparseMemoryRequirements.data());
-    if (pSparseMemoryRequirementCount < pSparseMemoryRequirements.size()) pSparseMemoryRequirements.shrink(pSparseMemoryRequirementCount);
+    if (pSparseMemoryRequirementCount < pSparseMemoryRequirements.size()) pSparseMemoryRequirements.resize(pSparseMemoryRequirementCount);
     return pSparseMemoryRequirements;
 }
 void TrimCommandPool(CommandPool commandPool, 
@@ -14182,20 +14183,20 @@ void DestroySwapchainKHR(SwapchainKHR swapchain = {},
         swapchain,
         pAllocator);
 }
-[[nodiscard]] expected<detail::fixed_vector<Image>> GetSwapchainImagesKHR(SwapchainKHR swapchain) const {
+[[nodiscard]] expected<std::vector<Image>> GetSwapchainImagesKHR(SwapchainKHR swapchain) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pSwapchainImageCount = 0;
         Result result = pfn_GetSwapchainImagesKHR(device,
         swapchain,
         &pSwapchainImageCount,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<Image>{}, result);
-    detail::fixed_vector<Image> pSwapchainImages{pSwapchainImageCount};
+    if (result < Result::Success) return expected(std::vector<Image>{}, result);
+    std::vector<Image> pSwapchainImages{pSwapchainImageCount};
     result = pfn_GetSwapchainImagesKHR(device,
         swapchain,
         &pSwapchainImageCount,
         pSwapchainImages.data());
-    if (pSwapchainImageCount < pSwapchainImages.size()) pSwapchainImages.shrink(pSwapchainImageCount);
+    if (pSwapchainImageCount < pSwapchainImages.size()) pSwapchainImages.resize(pSwapchainImageCount);
     return expected(std::move(pSwapchainImages), result);
 }
 [[nodiscard]] expected<uint32_t> AcquireNextImageKHR(SwapchainKHR swapchain, 
@@ -14367,7 +14368,7 @@ void CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer,
         &pProperties);
     return expected<ImageViewAddressPropertiesNVX>(pProperties, result);
 }
-[[nodiscard]] expected<detail::fixed_vector<void*>> GetShaderInfoAMD(Pipeline pipeline, 
+[[nodiscard]] expected<std::vector<void*>> GetShaderInfoAMD(Pipeline pipeline, 
     ShaderStageFlagBits shaderStage, 
     ShaderInfoTypeAMD infoType) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
@@ -14378,15 +14379,15 @@ void CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer,
         infoType,
         &pInfoSize,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<void*>{}, result);
-    detail::fixed_vector<void*> pInfo{pInfoSize};
+    if (result < Result::Success) return expected(std::vector<void*>{}, result);
+    std::vector<void*> pInfo{pInfoSize};
     result = pfn_GetShaderInfoAMD(device,
         pipeline,
         shaderStage,
         infoType,
         &pInfoSize,
         pInfo.data());
-    if (pInfoSize < pInfo.size()) pInfo.shrink(pInfoSize);
+    if (pInfoSize < pInfo.size()) pInfo.resize(pInfoSize);
     return expected(std::move(pInfo), result);
 }
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
@@ -14558,20 +14559,20 @@ void CmdSetViewportWScalingNV(CommandBuffer commandBuffer,
         &pDisplayTimingProperties);
     return expected<RefreshCycleDurationGOOGLE>(pDisplayTimingProperties, result);
 }
-[[nodiscard]] expected<detail::fixed_vector<PastPresentationTimingGOOGLE>> GetPastPresentationTimingGOOGLE(SwapchainKHR swapchain) const {
+[[nodiscard]] expected<std::vector<PastPresentationTimingGOOGLE>> GetPastPresentationTimingGOOGLE(SwapchainKHR swapchain) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pPresentationTimingCount = 0;
         Result result = pfn_GetPastPresentationTimingGOOGLE(device,
         swapchain,
         &pPresentationTimingCount,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<PastPresentationTimingGOOGLE>{}, result);
-    detail::fixed_vector<PastPresentationTimingGOOGLE> pPresentationTimings{pPresentationTimingCount};
+    if (result < Result::Success) return expected(std::vector<PastPresentationTimingGOOGLE>{}, result);
+    std::vector<PastPresentationTimingGOOGLE> pPresentationTimings{pPresentationTimingCount};
     result = pfn_GetPastPresentationTimingGOOGLE(device,
         swapchain,
         &pPresentationTimingCount,
         pPresentationTimings.data());
-    if (pPresentationTimingCount < pPresentationTimings.size()) pPresentationTimings.shrink(pPresentationTimingCount);
+    if (pPresentationTimingCount < pPresentationTimings.size()) pPresentationTimings.resize(pPresentationTimingCount);
     return expected(std::move(pPresentationTimings), result);
 }
 void CmdSetDiscardRectangleEXT(CommandBuffer commandBuffer, 
@@ -14959,20 +14960,20 @@ void DestroyValidationCacheEXT(ValidationCacheEXT validationCache = {},
         validationCache,
         pAllocator);
 }
-[[nodiscard]] expected<detail::fixed_vector<void*>> GetValidationCacheDataEXT(ValidationCacheEXT validationCache) const {
+[[nodiscard]] expected<std::vector<void*>> GetValidationCacheDataEXT(ValidationCacheEXT validationCache) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     size_t pDataSize = 0;
         Result result = pfn_GetValidationCacheDataEXT(device,
         validationCache,
         &pDataSize,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<void*>{}, result);
-    detail::fixed_vector<void*> pData{pDataSize};
+    if (result < Result::Success) return expected(std::vector<void*>{}, result);
+    std::vector<void*> pData{pDataSize};
     result = pfn_GetValidationCacheDataEXT(device,
         validationCache,
         &pDataSize,
         pData.data());
-    if (pDataSize < pData.size()) pData.shrink(pDataSize);
+    if (pDataSize < pData.size()) pData.resize(pDataSize);
     return expected(std::move(pData), result);
 }
 [[nodiscard]] Result MergeValidationCachesEXT(ValidationCacheEXT dstCache, 
@@ -15235,17 +15236,17 @@ void CmdSetCheckpointNV(CommandBuffer commandBuffer,
     pfn_CmdSetCheckpointNV(commandBuffer,
         pCheckpointMarker);
 }
-[[nodiscard]] detail::fixed_vector<CheckpointDataNV> GetQueueCheckpointDataNV(Queue queue) const {
+[[nodiscard]] std::vector<CheckpointDataNV> GetQueueCheckpointDataNV(Queue queue) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pCheckpointDataCount = 0;
     pfn_GetQueueCheckpointDataNV(queue,
         &pCheckpointDataCount,
         nullptr);
-    detail::fixed_vector<CheckpointDataNV> pCheckpointData{pCheckpointDataCount};
+    std::vector<CheckpointDataNV> pCheckpointData{pCheckpointDataCount};
 pfn_GetQueueCheckpointDataNV(queue,
         &pCheckpointDataCount,
         pCheckpointData.data());
-    if (pCheckpointDataCount < pCheckpointData.size()) pCheckpointData.shrink(pCheckpointDataCount);
+    if (pCheckpointDataCount < pCheckpointData.size()) pCheckpointData.resize(pCheckpointDataCount);
     return pCheckpointData;
 }
 [[nodiscard]] Result InitializePerformanceApiINTEL(const InitializePerformanceApiInfoINTEL&  pInitializeInfo) const {
@@ -15469,52 +15470,52 @@ void DestroyDeferredOperationKHR(DeferredOperationKHR operation = {},
     return pfn_DeferredOperationJoinKHR(device,
         operation);
 }
-[[nodiscard]] expected<detail::fixed_vector<PipelineExecutablePropertiesKHR>> GetPipelineExecutablePropertiesKHR(const PipelineInfoKHR&  pPipelineInfo) const {
+[[nodiscard]] expected<std::vector<PipelineExecutablePropertiesKHR>> GetPipelineExecutablePropertiesKHR(const PipelineInfoKHR&  pPipelineInfo) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pExecutableCount = 0;
         Result result = pfn_GetPipelineExecutablePropertiesKHR(device,
         &pPipelineInfo,
         &pExecutableCount,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<PipelineExecutablePropertiesKHR>{}, result);
-    detail::fixed_vector<PipelineExecutablePropertiesKHR> pProperties{pExecutableCount};
+    if (result < Result::Success) return expected(std::vector<PipelineExecutablePropertiesKHR>{}, result);
+    std::vector<PipelineExecutablePropertiesKHR> pProperties{pExecutableCount};
     result = pfn_GetPipelineExecutablePropertiesKHR(device,
         &pPipelineInfo,
         &pExecutableCount,
         pProperties.data());
-    if (pExecutableCount < pProperties.size()) pProperties.shrink(pExecutableCount);
+    if (pExecutableCount < pProperties.size()) pProperties.resize(pExecutableCount);
     return expected(std::move(pProperties), result);
 }
-[[nodiscard]] expected<detail::fixed_vector<PipelineExecutableStatisticKHR>> GetPipelineExecutableStatisticsKHR(const PipelineExecutableInfoKHR&  pExecutableInfo) const {
+[[nodiscard]] expected<std::vector<PipelineExecutableStatisticKHR>> GetPipelineExecutableStatisticsKHR(const PipelineExecutableInfoKHR&  pExecutableInfo) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pStatisticCount = 0;
         Result result = pfn_GetPipelineExecutableStatisticsKHR(device,
         &pExecutableInfo,
         &pStatisticCount,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<PipelineExecutableStatisticKHR>{}, result);
-    detail::fixed_vector<PipelineExecutableStatisticKHR> pStatistics{pStatisticCount};
+    if (result < Result::Success) return expected(std::vector<PipelineExecutableStatisticKHR>{}, result);
+    std::vector<PipelineExecutableStatisticKHR> pStatistics{pStatisticCount};
     result = pfn_GetPipelineExecutableStatisticsKHR(device,
         &pExecutableInfo,
         &pStatisticCount,
         pStatistics.data());
-    if (pStatisticCount < pStatistics.size()) pStatistics.shrink(pStatisticCount);
+    if (pStatisticCount < pStatistics.size()) pStatistics.resize(pStatisticCount);
     return expected(std::move(pStatistics), result);
 }
-[[nodiscard]] expected<detail::fixed_vector<PipelineExecutableInternalRepresentationKHR>> GetPipelineExecutableInternalRepresentationsKHR(const PipelineExecutableInfoKHR&  pExecutableInfo) const {
+[[nodiscard]] expected<std::vector<PipelineExecutableInternalRepresentationKHR>> GetPipelineExecutableInternalRepresentationsKHR(const PipelineExecutableInfoKHR&  pExecutableInfo) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     uint32_t pInternalRepresentationCount = 0;
         Result result = pfn_GetPipelineExecutableInternalRepresentationsKHR(device,
         &pExecutableInfo,
         &pInternalRepresentationCount,
         nullptr);
-    if (result < Result::Success) return expected(detail::fixed_vector<PipelineExecutableInternalRepresentationKHR>{}, result);
-    detail::fixed_vector<PipelineExecutableInternalRepresentationKHR> pInternalRepresentations{pInternalRepresentationCount};
+    if (result < Result::Success) return expected(std::vector<PipelineExecutableInternalRepresentationKHR>{}, result);
+    std::vector<PipelineExecutableInternalRepresentationKHR> pInternalRepresentations{pInternalRepresentationCount};
     result = pfn_GetPipelineExecutableInternalRepresentationsKHR(device,
         &pExecutableInfo,
         &pInternalRepresentationCount,
         pInternalRepresentations.data());
-    if (pInternalRepresentationCount < pInternalRepresentations.size()) pInternalRepresentations.shrink(pInternalRepresentationCount);
+    if (pInternalRepresentationCount < pInternalRepresentations.size()) pInternalRepresentations.resize(pInternalRepresentationCount);
     return expected(std::move(pInternalRepresentations), result);
 }
 void CmdExecuteGeneratedCommandsNV(CommandBuffer commandBuffer, 
@@ -15988,7 +15989,7 @@ explicit DeviceFunctions(InstanceFunctions const& instance_functions, Device dev
     PhysicalDeviceFunctions(InstanceFunctions const& instance_functions, PhysicalDevice const physicaldevice) noexcept:
     instance_functions{&instance_functions}, physicaldevice{physicaldevice} {}[[nodiscard]] PhysicalDeviceProperties GetProperties() const {
     return instance_functions->GetPhysicalDeviceProperties(physicaldevice); }
-[[nodiscard]] detail::fixed_vector<QueueFamilyProperties> GetQueueFamilyProperties() const {
+[[nodiscard]] std::vector<QueueFamilyProperties> GetQueueFamilyProperties() const {
     return instance_functions->GetPhysicalDeviceQueueFamilyProperties(physicaldevice); }
 [[nodiscard]] PhysicalDeviceMemoryProperties GetMemoryProperties() const {
     return instance_functions->GetPhysicalDeviceMemoryProperties(physicaldevice); }
@@ -16000,17 +16001,17 @@ explicit DeviceFunctions(InstanceFunctions const& instance_functions, Device dev
     return instance_functions->GetPhysicalDeviceImageFormatProperties(physicaldevice, format, type, tiling, usage, flags); }
 [[nodiscard]] expected<Device> CreateDevice(const DeviceCreateInfo&  pCreateInfo, const AllocationCallbacks* pAllocator = nullptr) const {
     return instance_functions->CreateDevice(physicaldevice, pCreateInfo, pAllocator); }
-[[nodiscard]] expected<detail::fixed_vector<ExtensionProperties>> EnumerateDeviceExtensionProperties(const char* pLayerName = nullptr) const {
+[[nodiscard]] expected<std::vector<ExtensionProperties>> EnumerateDeviceExtensionProperties(const char* pLayerName = nullptr) const {
     return instance_functions->EnumerateDeviceExtensionProperties(physicaldevice, pLayerName); }
-[[nodiscard]] detail::fixed_vector<SparseImageFormatProperties> GetSparseImageFormatProperties(Format format, ImageType type, SampleCountFlagBits samples, ImageUsageFlags usage, ImageTiling tiling) const {
+[[nodiscard]] std::vector<SparseImageFormatProperties> GetSparseImageFormatProperties(Format format, ImageType type, SampleCountFlagBits samples, ImageUsageFlags usage, ImageTiling tiling) const {
     return instance_functions->GetPhysicalDeviceSparseImageFormatProperties(physicaldevice, format, type, samples, usage, tiling); }
-[[nodiscard]] expected<detail::fixed_vector<DisplayPropertiesKHR>> GetDisplayPropertiesKHR() const {
+[[nodiscard]] expected<std::vector<DisplayPropertiesKHR>> GetDisplayPropertiesKHR() const {
     return instance_functions->GetPhysicalDeviceDisplayPropertiesKHR(physicaldevice); }
-[[nodiscard]] expected<detail::fixed_vector<DisplayPlanePropertiesKHR>> GetDisplayPlanePropertiesKHR() const {
+[[nodiscard]] expected<std::vector<DisplayPlanePropertiesKHR>> GetDisplayPlanePropertiesKHR() const {
     return instance_functions->GetPhysicalDeviceDisplayPlanePropertiesKHR(physicaldevice); }
-[[nodiscard]] expected<detail::fixed_vector<DisplayKHR>> GetDisplayPlaneSupportedDisplaysKHR(uint32_t planeIndex) const {
+[[nodiscard]] expected<std::vector<DisplayKHR>> GetDisplayPlaneSupportedDisplaysKHR(uint32_t planeIndex) const {
     return instance_functions->GetDisplayPlaneSupportedDisplaysKHR(physicaldevice, planeIndex); }
-[[nodiscard]] expected<detail::fixed_vector<DisplayModePropertiesKHR>> GetDisplayModePropertiesKHR(DisplayKHR display) const {
+[[nodiscard]] expected<std::vector<DisplayModePropertiesKHR>> GetDisplayModePropertiesKHR(DisplayKHR display) const {
     return instance_functions->GetDisplayModePropertiesKHR(physicaldevice, display); }
 [[nodiscard]] expected<DisplayModeKHR> CreateDisplayModeKHR(DisplayKHR display, const DisplayModeCreateInfoKHR&  pCreateInfo, const AllocationCallbacks* pAllocator = nullptr) const {
     return instance_functions->CreateDisplayModeKHR(physicaldevice, display, pCreateInfo, pAllocator); }
@@ -16020,9 +16021,9 @@ explicit DeviceFunctions(InstanceFunctions const& instance_functions, Device dev
     return instance_functions->GetPhysicalDeviceSurfaceSupportKHR(physicaldevice, queueFamilyIndex, surface); }
 [[nodiscard]] expected<SurfaceCapabilitiesKHR> GetSurfaceCapabilitiesKHR(SurfaceKHR surface) const {
     return instance_functions->GetPhysicalDeviceSurfaceCapabilitiesKHR(physicaldevice, surface); }
-[[nodiscard]] expected<detail::fixed_vector<SurfaceFormatKHR>> GetSurfaceFormatsKHR(SurfaceKHR surface) const {
+[[nodiscard]] expected<std::vector<SurfaceFormatKHR>> GetSurfaceFormatsKHR(SurfaceKHR surface) const {
     return instance_functions->GetPhysicalDeviceSurfaceFormatsKHR(physicaldevice, surface); }
-[[nodiscard]] expected<detail::fixed_vector<PresentModeKHR>> GetSurfacePresentModesKHR(SurfaceKHR surface) const {
+[[nodiscard]] expected<std::vector<PresentModeKHR>> GetSurfacePresentModesKHR(SurfaceKHR surface) const {
     return instance_functions->GetPhysicalDeviceSurfacePresentModesKHR(physicaldevice, surface); }
 #if defined(VK_USE_PLATFORM_WAYLAND_KHR)
 [[nodiscard]] expected<wl_display> GetWaylandPresentationSupportKHR(uint32_t queueFamilyIndex) const {
@@ -16054,11 +16055,11 @@ explicit DeviceFunctions(InstanceFunctions const& instance_functions, Device dev
     return instance_functions->GetPhysicalDeviceFormatProperties2(physicaldevice, format); }
 [[nodiscard]] expected<ImageFormatProperties2> GetImageFormatProperties2(const PhysicalDeviceImageFormatInfo2&  pImageFormatInfo) const {
     return instance_functions->GetPhysicalDeviceImageFormatProperties2(physicaldevice, pImageFormatInfo); }
-[[nodiscard]] detail::fixed_vector<QueueFamilyProperties2> GetQueueFamilyProperties2() const {
+[[nodiscard]] std::vector<QueueFamilyProperties2> GetQueueFamilyProperties2() const {
     return instance_functions->GetPhysicalDeviceQueueFamilyProperties2(physicaldevice); }
 [[nodiscard]] PhysicalDeviceMemoryProperties2 GetMemoryProperties2() const {
     return instance_functions->GetPhysicalDeviceMemoryProperties2(physicaldevice); }
-[[nodiscard]] detail::fixed_vector<SparseImageFormatProperties2> GetSparseImageFormatProperties2(const PhysicalDeviceSparseImageFormatInfo2&  pFormatInfo) const {
+[[nodiscard]] std::vector<SparseImageFormatProperties2> GetSparseImageFormatProperties2(const PhysicalDeviceSparseImageFormatInfo2&  pFormatInfo) const {
     return instance_functions->GetPhysicalDeviceSparseImageFormatProperties2(physicaldevice, pFormatInfo); }
 [[nodiscard]] ExternalBufferProperties GetExternalBufferProperties(const PhysicalDeviceExternalBufferInfo&  pExternalBufferInfo) const {
     return instance_functions->GetPhysicalDeviceExternalBufferProperties(physicaldevice, pExternalBufferInfo); }
@@ -16082,39 +16083,39 @@ explicit DeviceFunctions(InstanceFunctions const& instance_functions, Device dev
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] expected<SurfaceCapabilities2EXT> GetSurfaceCapabilities2EXT(SurfaceKHR surface) const {
     return instance_functions->GetPhysicalDeviceSurfaceCapabilities2EXT(physicaldevice, surface); }
-[[nodiscard]] expected<detail::fixed_vector<Rect2D>> GetPresentRectanglesKHR(SurfaceKHR surface) const {
+[[nodiscard]] expected<std::vector<Rect2D>> GetPresentRectanglesKHR(SurfaceKHR surface) const {
     return instance_functions->GetPhysicalDevicePresentRectanglesKHR(physicaldevice, surface); }
 [[nodiscard]] MultisamplePropertiesEXT GetMultisamplePropertiesEXT(SampleCountFlagBits samples) const {
     return instance_functions->GetPhysicalDeviceMultisamplePropertiesEXT(physicaldevice, samples); }
 [[nodiscard]] expected<SurfaceCapabilities2KHR> GetSurfaceCapabilities2KHR(const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) const {
     return instance_functions->GetPhysicalDeviceSurfaceCapabilities2KHR(physicaldevice, pSurfaceInfo); }
-[[nodiscard]] expected<detail::fixed_vector<SurfaceFormat2KHR>> GetSurfaceFormats2KHR(const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) const {
+[[nodiscard]] expected<std::vector<SurfaceFormat2KHR>> GetSurfaceFormats2KHR(const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) const {
     return instance_functions->GetPhysicalDeviceSurfaceFormats2KHR(physicaldevice, pSurfaceInfo); }
-[[nodiscard]] expected<detail::fixed_vector<DisplayProperties2KHR>> GetDisplayProperties2KHR() const {
+[[nodiscard]] expected<std::vector<DisplayProperties2KHR>> GetDisplayProperties2KHR() const {
     return instance_functions->GetPhysicalDeviceDisplayProperties2KHR(physicaldevice); }
-[[nodiscard]] expected<detail::fixed_vector<DisplayPlaneProperties2KHR>> GetDisplayPlaneProperties2KHR() const {
+[[nodiscard]] expected<std::vector<DisplayPlaneProperties2KHR>> GetDisplayPlaneProperties2KHR() const {
     return instance_functions->GetPhysicalDeviceDisplayPlaneProperties2KHR(physicaldevice); }
-[[nodiscard]] expected<detail::fixed_vector<DisplayModeProperties2KHR>> GetDisplayModeProperties2KHR(DisplayKHR display) const {
+[[nodiscard]] expected<std::vector<DisplayModeProperties2KHR>> GetDisplayModeProperties2KHR(DisplayKHR display) const {
     return instance_functions->GetDisplayModeProperties2KHR(physicaldevice, display); }
 [[nodiscard]] expected<DisplayPlaneCapabilities2KHR> GetDisplayPlaneCapabilities2KHR(const DisplayPlaneInfo2KHR&  pDisplayPlaneInfo) const {
     return instance_functions->GetDisplayPlaneCapabilities2KHR(physicaldevice, pDisplayPlaneInfo); }
-[[nodiscard]] expected<detail::fixed_vector<TimeDomainEXT>> GetCalibrateableTimeDomainsEXT() const {
+[[nodiscard]] expected<std::vector<TimeDomainEXT>> GetCalibrateableTimeDomainsEXT() const {
     return instance_functions->GetPhysicalDeviceCalibrateableTimeDomainsEXT(physicaldevice); }
-[[nodiscard]] expected<detail::fixed_vector<CooperativeMatrixPropertiesNV>> GetCooperativeMatrixPropertiesNV() const {
+[[nodiscard]] expected<std::vector<CooperativeMatrixPropertiesNV>> GetCooperativeMatrixPropertiesNV() const {
     return instance_functions->GetPhysicalDeviceCooperativeMatrixPropertiesNV(physicaldevice); }
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
-[[nodiscard]] expected<detail::fixed_vector<PresentModeKHR>> GetSurfacePresentModes2EXT(const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) const {
+[[nodiscard]] expected<std::vector<PresentModeKHR>> GetSurfacePresentModes2EXT(const PhysicalDeviceSurfaceInfo2KHR&  pSurfaceInfo) const {
     return instance_functions->GetPhysicalDeviceSurfacePresentModes2EXT(physicaldevice, pSurfaceInfo); }
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 [[nodiscard]] Result EnumerateQueueFamilyPerformanceQueryCountersKHR(uint32_t queueFamilyIndex, uint32_t&  pCounterCount, PerformanceCounterKHR* pCounters = nullptr, PerformanceCounterDescriptionKHR* pCounterDescriptions = nullptr) const {
     return instance_functions->EnumeratePhysicalDeviceQueueFamilyPerformanceQueryCountersKHR(physicaldevice, queueFamilyIndex, pCounterCount, pCounters, pCounterDescriptions); }
 [[nodiscard]] uint32_t GetQueueFamilyPerformanceQueryPassesKHR(const QueryPoolPerformanceCreateInfoKHR&  pPerformanceQueryCreateInfo) const {
     return instance_functions->GetPhysicalDeviceQueueFamilyPerformanceQueryPassesKHR(physicaldevice, pPerformanceQueryCreateInfo); }
-[[nodiscard]] expected<detail::fixed_vector<FramebufferMixedSamplesCombinationNV>> GetSupportedFramebufferMixedSamplesCombinationsNV() const {
+[[nodiscard]] expected<std::vector<FramebufferMixedSamplesCombinationNV>> GetSupportedFramebufferMixedSamplesCombinationsNV() const {
     return instance_functions->GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(physicaldevice); }
-[[nodiscard]] expected<detail::fixed_vector<PhysicalDeviceToolPropertiesEXT>> GetToolPropertiesEXT() const {
+[[nodiscard]] expected<std::vector<PhysicalDeviceToolPropertiesEXT>> GetToolPropertiesEXT() const {
     return instance_functions->GetPhysicalDeviceToolPropertiesEXT(physicaldevice); }
-[[nodiscard]] expected<detail::fixed_vector<PhysicalDeviceFragmentShadingRateKHR>> GetFragmentShadingRatesKHR() const {
+[[nodiscard]] expected<std::vector<PhysicalDeviceFragmentShadingRateKHR>> GetFragmentShadingRatesKHR() const {
     return instance_functions->GetPhysicalDeviceFragmentShadingRatesKHR(physicaldevice); }
 };
     struct QueueFunctions {
@@ -16136,7 +16137,7 @@ void EndDebugUtilsLabelEXT() const {
     device_functions->QueueEndDebugUtilsLabelEXT(queue); }
 void InsertDebugUtilsLabelEXT(const DebugUtilsLabelEXT&  pLabelInfo) const {
     device_functions->QueueInsertDebugUtilsLabelEXT(queue, pLabelInfo); }
-[[nodiscard]] detail::fixed_vector<CheckpointDataNV> GetCheckpointDataNV() const {
+[[nodiscard]] std::vector<CheckpointDataNV> GetCheckpointDataNV() const {
     return device_functions->GetQueueCheckpointDataNV(queue); }
 [[nodiscard]] Result SetPerformanceConfigurationINTEL(PerformanceConfigurationINTEL configuration) const {
     return device_functions->QueueSetPerformanceConfigurationINTEL(queue, configuration); }

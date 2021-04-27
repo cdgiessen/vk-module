@@ -14,14 +14,14 @@
 
 license_header = '''/*
  * Copyright 2021 Charles Giessen (cdgiessen@gmail.com)
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
  * (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge,
  * publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do
  * so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
  * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
@@ -41,6 +41,7 @@ vk_module_file_header = '''
 #include <tuple>
 #include <type_traits>
 #include <utility>
+#include <vector>
 #include "vk_platform.h"
 
 // Compatability with compilers that don't support __has_feature
@@ -225,29 +226,29 @@ public:
     // requires std::data(Range const&)
     // requires std::size(Range const&)
     template <typename Range>
-    explicit span(Range const& range) noexcept : 
+    explicit span(Range const& range) noexcept :
         _data{std::data(range)}, _count{std::size(range)} {}
-    
+
     template< std::size_t N >
-    span(std::array<T, N>& arr ) noexcept : 
+    span(std::array<T, N>& arr ) noexcept :
         _data{std::data(arr)}, _count{std::size(arr)} {}
 
     template< std::size_t N >
-    span(std::array<T, N> const& arr ) noexcept : 
+    span(std::array<T, N> const& arr ) noexcept :
         _data{std::data(arr)}, _count{std::size(arr)} {}
-    
-    span( std::initializer_list<T>& data ) noexcept : 
+
+    span( std::initializer_list<T>& data ) noexcept :
         _data{data.begin()}, _count{static_cast<uint32_t>(data.size())} {}
 
-    span( std::initializer_list<T> const& data ) noexcept : 
-        _data{data.begin()}, _count{static_cast<uint32_t>(data.size())} {}
-
-    template <typename A = T, typename std::enable_if<std::is_const<A>::value, int>::type = 0>
-    span( std::initializer_list<typename std::remove_const<T>::type> const& data ) noexcept : 
+    span( std::initializer_list<T> const& data ) noexcept :
         _data{data.begin()}, _count{static_cast<uint32_t>(data.size())} {}
 
     template <typename A = T, typename std::enable_if<std::is_const<A>::value, int>::type = 0>
-    span( std::initializer_list<typename std::remove_const<T>::type> & data ) noexcept : 
+    span( std::initializer_list<typename std::remove_const<T>::type> const& data ) noexcept :
+        _data{data.begin()}, _count{static_cast<uint32_t>(data.size())} {}
+
+    template <typename A = T, typename std::enable_if<std::is_const<A>::value, int>::type = 0>
+    span( std::initializer_list<typename std::remove_const<T>::type> & data ) noexcept :
         _data{data.begin()}, _count{static_cast<uint32_t>(data.size())} {}
 
     [[nodiscard]] uint32_t size() noexcept { return _count; }
@@ -287,8 +288,8 @@ public:
     unique_handle& operator=(unique_handle const& other) = delete;
 
     unique_handle(unique_handle&& other) noexcept
-        : dispatch_handle{other.dispatch_handle}, 
-          handle{std::exchange(other.handle, nullptr)}, 
+        : dispatch_handle{other.dispatch_handle},
+          handle{std::exchange(other.handle, nullptr)},
           deleter{other.deleter} { }
     unique_handle& operator=(unique_handle&& other) noexcept
     {
@@ -296,7 +297,7 @@ public:
         {
             reset();
             dispatch_handle = other.dispatch_handle;
-            handle = std::exchange(other.handle, {}); 
+            handle = std::exchange(other.handle, {});
             deleter = other.deleter;
         }
         return *this;
@@ -412,7 +413,7 @@ class DynamicLibrary {
     explicit DynamicLibrary([[maybe_unused]] LoadAtConstruction load) noexcept {
         init();
     }
-    explicit DynamicLibrary(PFN_vkGetInstanceProcAddr pfn_vkGetInstanceProcAddr) noexcept : 
+    explicit DynamicLibrary(PFN_vkGetInstanceProcAddr pfn_vkGetInstanceProcAddr) noexcept :
         get_instance_proc_addr(pfn_vkGetInstanceProcAddr) { }
     ~DynamicLibrary() noexcept {
         close();
@@ -427,7 +428,7 @@ class DynamicLibrary {
         if (this != &other)
         {
             close();
-            library = other.library; 
+            library = other.library;
             get_instance_proc_addr = other.get_instance_proc_addr;
             other.get_instance_proc_addr = 0;
             other.library = 0;
@@ -474,7 +475,7 @@ class DynamicLibrary {
     }
 
 private:
-    
+
     template <typename T>
     void Load(T &func_dest, const char *func_name) {
 #if defined(__linux__) || defined(__APPLE__)
@@ -491,7 +492,7 @@ private:
 #endif
 
     PFN_vkGetInstanceProcAddr get_instance_proc_addr = nullptr;
-    
+
 };
 
 '''
@@ -556,26 +557,26 @@ vulkan_simple_cpp_platform_headers = '''
 
 vulkan_simple_cpp_footer  = '''
 // This function finds the Vulkan-Loader (vulkan-1.dll, libvulkan.so, libvulkan.dylib, etc) on a system, loads it,
-// and loads the follwing functions: 
+// and loads the follwing functions:
 //  * vkGetInstanceProcAddr
 //  * vkCreateInstance
 //  * vkEnumerateInstanceExtensionProperties
 //  * vkEnumerateInstanceLayerProperties
 //  * vkEnumerateInstanceVersion
-// 
+//
 // Note:
-// This function must be called before all other vulkan calls! 
+// This function must be called before all other vulkan calls!
 //
 // Return Codes:
 // VkResult::Success -- Successful initialization & loading of functions
 // VkResult::ErrorInitializationFailed -- failure [unable to find Vulkan-Loader]
-// 
+//
 // Optional Parameter:
 // PFN_vkGetInstanceProcAddr pfn_vkGetInstanceProcAddr = VK_NULL_HANDLE
 VkResult vkInitializeLoaderLibrary(PFN_vkGetInstanceProcAddr pfn_vkGetInstanceProcAddr = VK_NULL_HANDLE);
 
 // Close the Vulkan-Loader and assigns VK_NULL_HANDLE to vkGetInstanceProcAddr
-// 
+//
 // Note:
 // After this function is called, no further vulkan calls can be made, except for `vkInitializeLoaderLibrary()`
 void vkCloseLoaderLibrary();
@@ -584,7 +585,7 @@ void vkCloseLoaderLibrary();
 // (all functions which take a VkInstance or VkPhysicalDevice as the first parameter)
 //
 // Note: This must only be called after the application has created a valid VkInstance with vkCreateInstance
-// 
+//
 // Parameter:
 // VkInstance instance
 // The VkInstance handle which the application has created. Must not be VK_NULL_HANDLE
@@ -592,11 +593,11 @@ void vkInitializeInstanceFunctions(VkInstance instance);
 
 // Loads device functions into the global function pointers
 //
-// Notes: 
-//  * This function must not be used for any application which creates multiple VkDevices. 
+// Notes:
+//  * This function must not be used for any application which creates multiple VkDevices.
 //    Instead, the application should use a VkDeviceDispatchTable per device created.
 //  * This must only be called after the application has created a valid VkDevice with vkCreateDevice
-// 
+//
 // Parameter:
 // VkDevice device
 // The VkDevice handle which the application has created. Must not be VK_NULL_HANDLE
@@ -604,10 +605,10 @@ void vkInitializeGlobalDeviceFunctions(VkDevice device);
 
 // Loads device functions into the provided VkDeviceDispatchTable
 //
-// Notes: 
-//  * 
+// Notes:
+//  *
 //  * This must only be called after the application has created a valid VkDevice with vkCreateDevice
-// 
+//
 // Parameters:
 //  * VkDevice device
 // The VkDevice handle which the application has created. Must not be VK_NULL_HANDLE

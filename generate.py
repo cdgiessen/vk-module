@@ -97,7 +97,7 @@ class ApiConstant:
             file.write(f'constexpr {self.type} {self.name} = {self.alias};\n')
         elif self.value is not None:
             file.write(f'constexpr {self.type} {self.name} = {self.value};\n')
-        
+
 class BaseType:
     def __init__(self, node):
         self.name = node.find('name').text
@@ -130,7 +130,7 @@ class MacroDefine:
         text += '\n'
         if should_print:
             file.write(text)
-    
+
     def get_text(self):
         return self.text
 
@@ -143,7 +143,7 @@ class Enum:
         self.alias = node.get('alias')
         if self.alias is not None:
             return
-        
+
         self.enum_name_len = len(re.findall('[A-Z][^A-Z]+', self.name))
         if self.name == 'VkResult':
             self.enum_name_len = 1
@@ -152,15 +152,15 @@ class Enum:
         for elem in node:
             if elem.get('name') is not None and elem.get('value') is not None:
                 self.values[elem.get('name')] = elem.get('value')
-                
+
     def fill_ext_enums(self, enum_ext_list):
         for ext_enum in enum_ext_list:
             self.values[ext_enum.name] = ext_enum.value
-    
+
     def check_platform(self, platform, ext_types):
         if self.name in ext_types:
             self.platform = platform
-   
+
     def print_base(self, file):
         if self.alias is not None:
             file.write(f'using {self.name[2:]} = {self.alias[2:]};\n')
@@ -169,7 +169,7 @@ class Enum:
             for name, value in self.values.items():
                 file.write(f'    {MorphVkEnumName(name, self.enum_name_len)} = {str(value)},\n')
             file.write('};\n')
-            
+
     def print_basic(self, file):
         if self.alias is not None:
             file.write(f'using {self.name} = {self.alias};\n')
@@ -216,7 +216,7 @@ class Enum:
             file.write(f'constexpr {self.name[2:]} from_c({self.name} value) {{ return static_cast<{self.name[2:]}>(value);}}\n')
 
 def RepresentsIntOrHex(s):
-    try: 
+    try:
         int(s)
         int(s, 16)
         return True
@@ -283,7 +283,7 @@ class Bitmask:
             file.write('};\n')
             for name in self.values.values():
                 file.write(f'const {self.name} {name} = {self.name}::{MorphVkEnumName(name, self.bitmask_name_len)};\n')
-            
+
     def print_string(self, file):
         if self.alias is None:
             if len(self.values) == 0:
@@ -307,7 +307,7 @@ class Bitmask:
                     continue
                 modified_name = MorphVkEnumName(name, self.bitmask_name_len)
                 file.write(f'    if (flag & {self.name[2:]}::{modified_name}) out += \"{modified_name} | \";\n')
-                
+
             file.write(f'    return out.substr(0, out.size() - 3);\n}}\n')
 
     def print_basic_string_forward_def(self, file):
@@ -351,10 +351,10 @@ class EmptyBitmask:
         self.flags_name = self.name.replace('Bits', 's')
         self.underlying_type = 'uint32_t'
         self.platform = None
-    
+
     def fill_ext_bitmasks(self, bitmask_ext_dict):
         pass
-    
+
     def check_platform(self, platform, ext_types):
         if self.name in ext_types or self.flags_name in ext_types:
             self.platform = platform
@@ -422,14 +422,14 @@ class Handle:
         self.name = None
         if node.find('name') is not None:
             self.name = node.find('name').text
-            self.dispatchable = node.find('type').text == 'VK_DEFINE_HANDLE' #else is a nondispatchable handle 
+            self.dispatchable = node.find('type').text == 'VK_DEFINE_HANDLE' #else is a nondispatchable handle
             self.dispatchable_text = node.find('type').text
             self.parent = node.get('parent')
         self.alias = node.get('alias')
         if self.alias is not None:
             self.name = node.get('name')
         self.platform = None
-        
+
     def check_platform(self, platform, ext_types):
         if self.name in ext_types:
             self.platform = platform
@@ -456,7 +456,7 @@ class {self.name[2:]} {{
     bool operator!() {{ return handle == 0; }}
 }};
 ''')
-    
+
     def print_static_asserts(self, file):
         if self.alias is None:
             if self.dispatchable:
@@ -489,7 +489,7 @@ class Variable:
         self.is_equatable = True
         self.bitfield = None
         self.is_ref_eligible = False
-           
+
         self.base_type = node.find('type').text
         self.base_type_modified = TrimVkFromAll(self.base_type)
         # special case cause of bitfields
@@ -577,13 +577,13 @@ class Variable:
             self.value_category = 'optional_ptr'
         elif len(self.array_lengths) > 0 and self.len_attrib is None:
             self.value_category = 'array'
-        elif self.len_attrib == 'null-terminated':        
+        elif self.len_attrib == 'null-terminated':
             self.value_category = 'string'
         elif self.len_attrib is not None and self.len_attrib.find(',null-terminated') != -1:
             self.value_category = 'vector_of_string'
             self.len_attrib = self.len_attrib[0: self.len_attrib.find(',')]
         # 'len_param' category set by parent object (struct/function)
-        # this is because a Variable doesn't know if other variables use it    
+        # this is because a Variable doesn't know if other variables use it
 
     def is_ptr(self):
         return self.pointer_type != 'none'
@@ -769,12 +769,12 @@ class Structure:
         for member in self.members:
             if member.len_attrib is not None and member.len_attrib in self.vector_members:
                 member.length_ref = member.len_attrib
-        
+
         self.is_trivial = True
         for member in self.members:
             if member.value_category != 'value':
                 self.is_trivial = False
-    
+
     def check_platform(self, platform, ext_types):
         if self.name in ext_types or (self.alias is not None and self.alias in ext_types):
             self.platform = platform
@@ -794,13 +794,13 @@ class Structure:
             for member in self.members:
                 if self.name == 'VkDeviceCreateInfo' and member.name in ['ppEnabledLayerNames', 'enabledLayerCount']:
                     continue #deprecated
-                
+
                 elif member.value_category in ['sType']:
                     continue
                 elif member.value_category == 'pNext':
                     continue
 
-                # all categories begin with the same line    
+                # all categories begin with the same line
                 file.write(f'    {self.name[2:]}& set{MakeBuilderName(member.name)}({member.get_parameter_decl(use_references=False, append_to_name="_")}) {{')
                 if member.value_category in ['value', 'len_param', 'string']:
                     file.write(f'this->{member.name} = {member.name}_; return *this; }}\n')
@@ -877,7 +877,7 @@ class Function:
         self.dispatch_type = None
         if len(self.parameters) > 0:
             self.free_function = self.parameters[0].base_type not in dispatchable_handles
-            
+
             if self.name == 'vkGetInstanceProcAddr' or self.free_function:
                 self.dispatch_type = 'global'
             elif self.name == 'vkGetDeviceProcAddr' or self.parameters[0].base_type in ['VkInstance', 'VkPhysicalDevice']:
@@ -888,7 +888,7 @@ class Function:
         self.dispatch_handle = None
         if len(self.parameters) > 0 and self.parameters[0].base_type in dispatchable_handles:
             self.dispatch_handle = self.parameters[0].base_type
-        
+
         self.span_params = get_function_len_attrib_names(self.parameters)
         for param in self.parameters:
             if param.name in self.span_params:
@@ -897,7 +897,7 @@ class Function:
         self.function_category = 'basic'
         self.full_return_type = None
         self.modified_param_list = self.parameters
-        
+
         if len(self.parameters) > 0 and self.parameters[-1].is_ptr() \
             and not self.parameters[-1].is_const and self.parameters[-1].len_attrib is None:
             self.function_category = 'single_query'
@@ -917,14 +917,14 @@ class Function:
             self.query_name = self.parameters[-1].name
             self.count_name = self.parameters[-1].len_attrib.replace('->', '.')
             if self.return_type != 'void':
-                self.full_return_type = f'expected<detail::fixed_vector<{self.query_type}>>'
-                self.return_statement = f'return expected<detail::fixed_vector<{self.query_type}>>(std::move({self.query_name}), result);\n'
+                self.full_return_type = f'expected<std::vector<{self.query_type}>>'
+                self.return_statement = f'return expected<std::vector<{self.query_type}>>(std::move({self.query_name}), result);\n'
             else:
-                self.full_return_type = f'detail::fixed_vector<{self.query_type}>'
-                self.return_statement = f'return detail::fixed_vector<{self.query_type}>;\n'
+                self.full_return_type = f'std::vector<{self.query_type}>'
+                self.return_statement = f'return std::vector<{self.query_type}>;\n'
         elif len(self.parameters) > 1 and self.parameters[-1].is_ptr() and not self.parameters[-1].is_const and self.parameters[-1].len_attrib is not None:
             if self.parameters[-2].optional is not None and self.parameters[-2].optional == 'false,true':
-                self.function_category = 'enumeration' 
+                self.function_category = 'enumeration'
                 self.modified_param_list = self.parameters[:-2]
                 self.query_type = self.parameters[-1].get_type_decl(downgrade_ptr_type=self.parameters[-1].base_type != 'void')
                 self.base_query_type =self.parameters[-1].get_type_decl()
@@ -932,12 +932,12 @@ class Function:
                 self.count_type = self.parameters[-2].base_type
                 self.count_name = self.parameters[-2].name
                 if self.return_type != 'void':
-                    self.full_return_type = f'expected<detail::fixed_vector<{self.query_type}>>'
+                    self.full_return_type = f'expected<std::vector<{self.query_type}>>'
                     self.return_statement = f'return expected(std::move({self.query_name}), result);\n'
                 else: # void
-                    self.full_return_type = f'detail::fixed_vector<{self.query_type}>'
+                    self.full_return_type = f'std::vector<{self.query_type}>'
                     self.return_statement = f'return {self.query_name};\n'
-        
+
         #autogen doesn't handle these functions
         if self.name in ['vkGetRayTracingShaderGroupHandlesKHR', 'vkGetAccelerationStructureHandleNV','vkGetRayTracingCaptureReplayShaderGroupHandlesKHR']:
             self.function_category = 'basic'
@@ -946,10 +946,10 @@ class Function:
     def check_platform(self, platform, ext_functions):
         if self.name in ext_functions:
             self.platform = platform
-    
+
     def print_pfn_variable_decl(self, file):
         file.write(f'    detail::{self.pfn_type} {self.pfn_name} = nullptr;\n')
-    
+
     def print_get_pfn_statement(self, file, gpa_name, gpa_val):
         file.write(f'    pfn_{self.name[2:]} = ')
         file.write(f'reinterpret_cast<detail::{self.pfn_type}>({gpa_name}({gpa_val},\"{self.name}\"));\n')
@@ -966,10 +966,10 @@ class Function:
 
     def print_init_global_functions(self, file, dispatch_name):
         file.write(f'    {self.name} = reinterpret_cast<PFN_{self.name}>(vkGet{dispatch_name}ProcAddr({dispatch_name}, \"{self.name}\"));\n')
-        
+
     def print_init_dispatch_table(self, file, dispatch_name):
         file.write(f'    table.{self.name} = reinterpret_cast<PFN_{self.name}>(vkGet{dispatch_name}ProcAddr({dispatch_name}, \"{self.name}\"));\n')
-        
+
     def print_pfn_func_decl(self, file):
         if self.alias is not None:
             file.write(f'using {self.pfn_type} = PFN_{TrimVkFromType(self.alias)};\n')
@@ -977,7 +977,7 @@ class Function:
         file.write(f'using {self.pfn_type} = {TrimVkFromAll(self.return_type)} (*) (')
         for param in self.parameters:
             if param != self.parameters[0]:
-                file.write(', ')                
+                file.write(', ')
             file.write(f'{param.get_parameter_decl(use_references=False)}')
         file.write(");\n")
 
@@ -988,7 +988,7 @@ class Function:
         file.write(f'using PFN_{self.name} = {self.return_type} (*) (')
         for param in self.parameters:
             if param != self.parameters[0]:
-                file.write(', ')                
+                file.write(', ')
             file.write(f'{param.get_raw_xml()}')
         file.write(");\n")
 
@@ -999,7 +999,7 @@ class Function:
                 if print_function_name.find(str_from) != -1:
                     print_function_name = print_function_name.replace(str_from, '')
         return_type = ''
-        if self.return_type != 'void' or self.full_return_type != None: 
+        if self.return_type != 'void' or self.full_return_type != None:
             return_type += '[[nodiscard]] '
 
         if full_return_type is not None:
@@ -1020,14 +1020,14 @@ class Function:
         for param in parameter_list:
             index = index + 1
             if param != parameter_list[0]:
-                if param.name not in self.span_params: 
+                if param.name not in self.span_params:
                     if should_print_comma:
                         file.write(', ')
                         if break_between:
                             file.write(f'\n    ')
-                
-            if param.name in self.span_params: 
-                continue            
+
+            if param.name in self.span_params:
+                continue
             elif param.len_attrib is not None and param.len_attrib in self.span_params:
                 file.write(f'detail::span<{param.get_span_type()}> {param.name[1:]}')
             else:
@@ -1047,7 +1047,7 @@ class Function:
 
     def print_c_api_call(self, file, dispatch_handle = None, dispatch_handle_name = None, pfn_source=None, last_arg=None, init_result=None):
         if self.return_type != 'void':
-            if init_result == 'init_result': 
+            if init_result == 'init_result':
                 file.write(f'    Result result = ')
             elif init_result == 'assign_result':
                 file.write(f'    result = ')
@@ -1066,7 +1066,7 @@ class Function:
 
             param_name = f'{param.name}'
             if param.len_attrib in self.span_params:
-                param_name = f'{param_name[1:]}.data()' 
+                param_name = f'{param_name[1:]}.data()'
             # the last argument
             if last_arg is not None and param == self.parameters[-1]:
                 file.write(last_arg)
@@ -1115,17 +1115,17 @@ class Function:
             self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, pfn_source, init_result='init_result')
             file.write(f'    {self.return_statement}')
         elif self.function_category == 'multi_query':
-            file.write(f'    detail::fixed_vector<{self.query_type}> {self.query_name}{{{self.count_name}}};\n')
+            file.write(f'    std::vector<{self.query_type}> {self.query_name}{{{self.count_name}}};\n')
             self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, pfn_source, last_arg=f'{self.query_name}.data()', init_result='init_result')
             file.write(f'    {self.return_statement}')
         elif self.function_category == 'enumeration':
             file.write(f'    {self.count_type} {self.count_name} = 0;\n    ')
             self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, pfn_source, 'nullptr', init_result='init_result')
             if self.return_type != 'void':
-                file.write(f'    if (result < Result::Success) return expected(detail::fixed_vector<{self.query_type}>{{}}, result);\n')
-            file.write(f'    detail::fixed_vector<{self.query_type}> {self.query_name}{{{self.count_name}}};\n')
+                file.write(f'    if (result < Result::Success) return expected(std::vector<{self.query_type}>{{}}, result);\n')
+            file.write(f'    std::vector<{self.query_type}> {self.query_name}{{{self.count_name}}};\n')
             self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, pfn_source, last_arg=f'{self.query_name}.data()',init_result='assign_result')
-            file.write(f'    if ({self.count_name} < {self.query_name}.size()) {self.query_name}.shrink({self.count_name});\n')
+            file.write(f'    if ({self.count_name} < {self.query_name}.size()) {self.query_name}.resize({self.count_name});\n')
             file.write(f'    {self.return_statement}')
 
         file.write(f'}}\n')
@@ -1145,7 +1145,7 @@ class Function:
 
         self.print_name(file, replace_list)
         file.write('(')
-       
+
         self.print_parameters(file, self.modified_param_list[1:], break_between=False)
         file.write(') const {\n')
         file.write(f'    ')
@@ -1163,7 +1163,7 @@ class Function:
                     file.write(f', {param.name[1:]}')
                     continue
                 file.write(f', {param.name}')
-        
+
         file.write(f');')
         if self.return_type == 'void' and make_void_return_this is not None:
             file.write(f'\n    return *this;')
@@ -1208,7 +1208,7 @@ def EnumExtValue(ext_num, offset, direction):
 
 def AppendToDictOfLists(dict, key, val):
     if key not in dict:
-        dict[key] = [] 
+        dict[key] = []
     dict[key].append(val)
 
 class Requires:
@@ -1220,7 +1220,7 @@ class Requires:
         self.types = set()
         self.commands = set()
         self.functions = []
-       
+
         for e_type in node.findall('type'):
             self.types.add(e_type.get('name'))
         for command in node.findall('command'):
@@ -1257,7 +1257,7 @@ class Requires:
 
     def fill_bitmasks(self, bitmask_dict):
         [bitmask_dict[key].fill_ext_bitmasks(self.bitmask_dict[key]) for key in self.bitmask_dict.keys()]
-    
+
     def check_platform(self, platform, enum_dict, flags_dict, bitmask_dict, structures, functions):
         [enum.check_platform(platform, self.types) for enum in enum_dict.values()]
         [flag.check_platform(platform, self.types) for flag in flags_dict.values()]
@@ -1287,13 +1287,13 @@ class VulkanFeatureLevel:
         for require in node.findall('require'):
             self.requires.append(Requires(require))
 
-class DispatchTable:   
+class DispatchTable:
     def __init__(self, name, dispatch_type, ext_or_feature_list):
         self.name = name
         self.dispatch_type = dispatch_type
         self.functions = {}
         for ext_or_feature in ext_or_feature_list:
-            for require in ext_or_feature.requires: 
+            for require in ext_or_feature.requires:
                 for function in require.functions:
                     if function.dispatch_type == dispatch_type or dispatch_type == 'instance' and function.name == 'vkGetInstanceProcAddr':
                         self.functions[function.name] = function
@@ -1303,7 +1303,7 @@ class DispatchTable:
         self.dispatch_handle = f'Vk{self.dispatch_type.title()}' if self.dispatch_type != 'global' else None
         self.gpa_val = f'{self.dispatch_type}' if self.dispatch_type != 'global' else 'nullptr'
 
-    def print_definition(self, file):                
+    def print_definition(self, file):
         file.write(f'struct {self.name}Functions {{\n')
         #function pointers
         if self.dispatch_type != 'global':
@@ -1313,9 +1313,9 @@ class DispatchTable:
         #functions
         PrintConsecutivePlatforms(file, self.functions.values(), "print_function", dispatch_handle=self.dispatch_handle\
             ,dispatch_handle_name=self.dispatch_type)
-             
+
         #constructor
-        file.write(f'{self.name}Functions() noexcept {{}}\n')   
+        file.write(f'{self.name}Functions() noexcept {{}}\n')
         if self.dispatch_type == 'global':
             file.write(f'explicit {self.name}Functions(DynamicLibrary const& library) noexcept {{\n')
             file.write(f'    detail::{self.gpa_type} {self.gpa_name} = reinterpret_cast<detail::PFN_GetInstanceProcAddr>(library.get());\n')
@@ -1339,12 +1339,12 @@ class DispatchTable:
 
     def print_function_def(self, file):
         PrintConsecutivePlatforms(file, self.functions.values(), 'print_function_def', self.dispatch_type)
-        
+
     def print_init_global_functions(self, file):
         file.write(f'void vkInitialize{self.name}Functions (Vk{self.name} {self.name}) {{\n')
         PrintConsecutivePlatforms(file, self.functions.values(), 'print_init_global_functions', self.name)
         file.write('};\n')
-        
+
     def print_dispatch_table(self, file):
         file.write(f'struct Vk{self.name}DispatchTable {{\n')
         for function in self.functions.values():
@@ -1374,7 +1374,7 @@ class DispatchableHandleDispatchTable:
         self.dispatch_type = dispatch_type
         self.replace_list = replace_list
         self.functions = []
-    
+
         for function in functions:
             if function.dispatch_handle == name:
                 self.functions.append(function)
@@ -1395,7 +1395,7 @@ class DispatchableHandleDispatchTable:
         PrintConsecutivePlatforms(file, self.functions, "print_forwarding_function", dispatch_handle=self.name, dispatch_handle_name=self.var_name, replace_list=self.replace_list, \
                 pfn_source=self.functions_name, make_void_return_this=command_buffer_return_type)
         file.write('};\n')
-            
+
 class BindingGenerator:
     def __init__(self, root):
 
@@ -1416,7 +1416,7 @@ class BindingGenerator:
         self.ext_list = []
         self.dispatch_tables = []
         self.dispatchable_handle_tables = []
-        
+
         for platform in root.find('platforms'):
             self.platforms[platform.get('name')] = platform.get('protect')
 
@@ -1512,7 +1512,7 @@ class BindingGenerator:
                 new_ext = Extension(ext, self.platforms)
                 if new_ext.supported == 'vulkan':
                     for require in new_ext.requires:
-                        require.check_platform(new_ext.platform, self.enum_dict, self.flags_dict, self.bitmask_dict, 
+                        require.check_platform(new_ext.platform, self.enum_dict, self.flags_dict, self.bitmask_dict,
                             self.structures, self.functions)
                         require.fill_enums(self.enum_dict)
                         require.fill_bitmasks(self.bitmask_dict)
@@ -1526,7 +1526,7 @@ class BindingGenerator:
                             if req_type in self.bitmask_dict:
                                 self.bitmask_dict.pop(req_type)
                             if req_type in self.flags_dict:
-                                self.flags_dict.pop(req_type) 
+                                self.flags_dict.pop(req_type)
                             for structure in self.structures:
                                 if structure.name == req_type:
                                     self.structures.remove(structure)
@@ -1541,7 +1541,7 @@ class BindingGenerator:
                 require.fill_bitmasks(self.bitmask_dict)
                 require.fill_functions(self.functions)
             self.vk_feature_levels.append(feat_level)
-        
+
         features_and_extensions = self.vk_feature_levels
         features_and_extensions.extend(self.ext_list)
 
@@ -1552,7 +1552,7 @@ class BindingGenerator:
         self.dispatchable_handle_tables.append(DispatchableHandleDispatchTable('VkPhysicalDevice', 'instance',['PhysicalDevice'], self.functions))
         self.dispatchable_handle_tables.append(DispatchableHandleDispatchTable('VkQueue', 'device',['Queue'], self.functions))
         self.dispatchable_handle_tables.append(DispatchableHandleDispatchTable('VkCommandBuffer', 'device',['Cmd', 'CommandBuffer'], self.functions))
-  
+
 
 def print_bindings(bindings):
     with open(f'module/vk_module.h', 'w') as vkm:
@@ -1568,11 +1568,11 @@ def print_bindings(bindings):
         vkm.write('} //namespace vk\n')
         [ handle.print_vk_handle(vkm) for handle in bindings.handles.values() ]
         vkm.write('namespace vk {\n')
-        
+
         PrintConsecutivePlatforms(vkm, bindings.handles.values(), 'print_base')
         vkm.write(custom_data_structures + '\n')
 
-        #function pointers, structs, and functions 
+        #function pointers, structs, and functions
         vkm.write('struct DebugUtilsMessengerCallbackDataEXT;\n')
         vkm.write('struct DeviceMemoryReportCallbackDataEXT;\n')
         PrintConsecutivePlatforms(vkm, bindings.func_pointers, 'print_base')
@@ -1636,7 +1636,7 @@ def print_basic_bindings(bindings):
         PrintConsecutivePlatforms(vulkan_core, bindings.func_pointers, 'print_basic')
         PrintConsecutivePlatforms(vulkan_core, bindings.structures, 'print_basic')
         PrintConsecutivePlatforms(vulkan_core, bindings.functions, 'print_basic_pfn_func_decl')
-        [ table.print_extern_decl(vulkan_core) for table in bindings.dispatch_tables ] 
+        [ table.print_extern_decl(vulkan_core) for table in bindings.dispatch_tables ]
         for dispatch_table in bindings.dispatch_tables:
             if dispatch_table.name in ['Device']:
                 dispatch_table.print_dispatch_table(vulkan_core)

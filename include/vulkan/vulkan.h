@@ -1,13 +1,13 @@
 /*
  * Copyright 2021 Charles Giessen (cdgiessen@gmail.com)
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
  * (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge,
  * publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do
  * so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
  * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
@@ -10166,26 +10166,26 @@ struct VkDeviceDispatchTable {
 };
 
 // This function finds the Vulkan-Loader (vulkan-1.dll, libvulkan.so, libvulkan.dylib, etc) on a system, loads it,
-// and loads the follwing functions: 
+// and loads the follwing functions:
 //  * vkGetInstanceProcAddr
 //  * vkCreateInstance
 //  * vkEnumerateInstanceExtensionProperties
 //  * vkEnumerateInstanceLayerProperties
 //  * vkEnumerateInstanceVersion
-// 
+//
 // Note:
-// This function must be called before all other vulkan calls! 
+// This function must be called before all other vulkan calls!
 //
 // Return Codes:
 // VkResult::Success -- Successful initialization & loading of functions
 // VkResult::ErrorInitializationFailed -- failure [unable to find Vulkan-Loader]
-// 
+//
 // Optional Parameter:
 // PFN_vkGetInstanceProcAddr pfn_vkGetInstanceProcAddr = VK_NULL_HANDLE
 VkResult vkInitializeLoaderLibrary(PFN_vkGetInstanceProcAddr pfn_vkGetInstanceProcAddr = VK_NULL_HANDLE);
 
 // Close the Vulkan-Loader and assigns VK_NULL_HANDLE to vkGetInstanceProcAddr
-// 
+//
 // Note:
 // After this function is called, no further vulkan calls can be made, except for `vkInitializeLoaderLibrary()`
 void vkCloseLoaderLibrary();
@@ -10194,7 +10194,7 @@ void vkCloseLoaderLibrary();
 // (all functions which take a VkInstance or VkPhysicalDevice as the first parameter)
 //
 // Note: This must only be called after the application has created a valid VkInstance with vkCreateInstance
-// 
+//
 // Parameter:
 // VkInstance instance
 // The VkInstance handle which the application has created. Must not be VK_NULL_HANDLE
@@ -10202,11 +10202,11 @@ void vkInitializeInstanceFunctions(VkInstance instance);
 
 // Loads device functions into the global function pointers
 //
-// Notes: 
-//  * This function must not be used for any application which creates multiple VkDevices. 
+// Notes:
+//  * This function must not be used for any application which creates multiple VkDevices.
 //    Instead, the application should use a VkDeviceDispatchTable per device created.
 //  * This must only be called after the application has created a valid VkDevice with vkCreateDevice
-// 
+//
 // Parameter:
 // VkDevice device
 // The VkDevice handle which the application has created. Must not be VK_NULL_HANDLE
@@ -10214,10 +10214,10 @@ void vkInitializeGlobalDeviceFunctions(VkDevice device);
 
 // Loads device functions into the provided VkDeviceDispatchTable
 //
-// Notes: 
-//  * 
+// Notes:
+//  *
 //  * This must only be called after the application has created a valid VkDevice with vkCreateDevice
-// 
+//
 // Parameters:
 //  * VkDevice device
 // The VkDevice handle which the application has created. Must not be VK_NULL_HANDLE

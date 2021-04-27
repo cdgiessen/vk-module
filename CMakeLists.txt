@@ -46,7 +46,7 @@ if (VK_MODULE_GENERATE_SOURC OR VK_MODULE_SAMPLES OR VK_MODULE_TESTS)
         COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/generate.py
         WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
     add_dependencies(generate_source copy_source)
-        
+
 endif()
 
 
@@ -102,12 +102,13 @@ if (NOT WIN32)
     target_link_libraries(vk-module-cpp INTERFACE ${CMAKE_DL_LIBS})
 endif()
 
-add_library(vulkan-simple-cpp STATIC 
-    ${CMAKE_CURRENT_LIST_DIR}/include/vulkan/vulkan.h 
-    ${CMAKE_CURRENT_LIST_DIR}/include/vulkan/vulkan.cpp 
-    ${CMAKE_CURRENT_LIST_DIR}/include/vulkan/vulkan_string.h 
+add_library(vulkan-simple-cpp STATIC
+    ${CMAKE_CURRENT_LIST_DIR}/include/vulkan/vulkan.h
+    ${CMAKE_CURRENT_LIST_DIR}/include/vulkan/vulkan.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/include/vulkan/vulkan_string.h
     ${CMAKE_CURRENT_LIST_DIR}/include/vulkan/vulkan_string.cpp)
 target_include_directories(vulkan-simple-cpp BEFORE PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include)
+target_include_directories(vulkan-simple-cpp PRIVATE ${CMAKE_CURRENT_LIST_DIR}/include/vulkan)
 target_link_libraries(vulkan-simple-cpp PUBLIC vk-module-compiler-options)
 target_compile_features(vulkan-simple-cpp PUBLIC cxx_std_11)
 set_target_properties(vulkan-simple-cpp PROPERTIES CXX_STANDARD 11)
@@ -118,7 +119,7 @@ if (NOT WIN32)
 endif()
 
 if (SET_COMPILE_TIME_TRACE)
-target_compile_options(vk-module-cpp PUBLIC -ftime-trace)
+target_compile_options(vk-module-cpp INTERFACE -ftime-trace)
 target_compile_options(vulkan-simple-cpp PUBLIC -ftime-trace)
 endif(SET_COMPILE_TIME_TRACE)
 

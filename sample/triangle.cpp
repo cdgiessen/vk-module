@@ -362,15 +362,14 @@ void create_command_buffers(DeviceContext& device)
     check_res(cmd_pool_ret, "Failed to create command pool");
 
     device.cmd_pool = cmd_pool_ret.value();
-    auto [cmds, cmd_ret] = device.functions.AllocateCommandBuffers(
+    auto cmd_ret = device.functions.AllocateCommandBuffers(
       { .commandPool = device.cmd_pool, .level = vk::CommandBufferLevel::Primary, .commandBufferCount = device.image_count });
     check_res(cmd_ret, "Failed to create command buffers");
-    device.cmd_buffers = std::vector<vk::CommandBuffer>(cmds.begin(), cmds.end());
+    device.cmd_buffers = std::move(cmd_ret.value());
 
     for (uint32_t i = 0; i < device.cmd_buffers.size(); i++) {
         vk::CommandBufferFunctions funcs(device.functions, device.cmd_buffers[i]);
-        cmd_ret = funcs.Begin({});
-        check_res(cmd_ret, "Failed to begin command buffer");
+        check_res(funcs.Begin({}), "Failed to begin command buffer");
 
         vk::Viewport viewport = { 0.f, 0.f, static_cast<float>(width), static_cast<float>(height), 0.f, 1.f };
         vk::Rect2D scissor = { .offset = { 0, 0 }, .extent = { width, height } };
@@ -386,8 +385,7 @@ void create_command_buffers(DeviceContext& device)
           .SetScissor(0, vk::Rect2D{ .offset = { 0, 0 }, .extent = { width, height } })
           .Draw(3, 1, 0, 0)
           .EndRenderPass();
-        cmd_ret = funcs.End();
-        check_res(cmd_ret, "Failed to end command buffer");
+        check_res(funcs.End(), "Failed to end command buffer");
     }
 }
 
