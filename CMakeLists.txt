@@ -24,7 +24,7 @@ if (VK_MODULE_TESTS)
 option(SET_COMPILE_TIME_TRACE "enable clang's -ftime-trace " OFF)
 endif(VK_MODULE_TESTS)
 
-if (VK_MODULE_GENERATE_SOURCE)
+if (VK_MODULE_GENERATE_SOURC OR VK_MODULE_SAMPLES OR VK_MODULE_TESTS)
     find_package(PythonInterp 3 QUIET)
 
     include(FetchContent)
@@ -114,7 +114,7 @@ set_target_properties(vulkan-simple-cpp PROPERTIES CXX_STANDARD 11)
 set_target_properties(vulkan-simple-cpp PROPERTIES LINKER_LANGUAGE CXX)
 
 if (NOT WIN32)
-    target_link_libraries(vk-module-cpp PUBLIC ${CMAKE_DL_LIBS})
+    target_link_libraries(vulkan-simple-cpp PUBLIC ${CMAKE_DL_LIBS})
 endif()
 
 if (SET_COMPILE_TIME_TRACE)

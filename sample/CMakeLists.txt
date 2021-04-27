@@ -35,8 +35,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(glfw_repo vk_bootstrap)
 
-# target_include_directories(glfw BEFORE PUBLIC $<TARGET_PROPERTY:vulkan-simple-cpp,INCLUDE_DIRECTORIES>)
-
 FetchContent_GetProperties(vma_repo)
 if(NOT vma_repoPOPULATED)
     FetchContent_Populate(vma_repo)

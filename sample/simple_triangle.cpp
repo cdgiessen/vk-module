@@ -18,6 +18,7 @@
 #include "vulkan/vulkan_string.h"
 
 #include <assert.h>
+#include <cstring>
 #include <array>
 #include <vector>
 #include <string>
