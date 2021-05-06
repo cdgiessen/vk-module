@@ -452,6 +452,7 @@ class {self.name[2:]} {{
     {self.name[2:]}([[maybe_unused]] std::nullptr_t none) noexcept {{}}
     explicit {self.name[2:]}({self.name} handle) noexcept : handle(handle){{}}
     {self.name} get() {{ return handle; }}
+    bool valid() {{ return handle != 0; }}
     explicit operator bool() const {{return handle != 0;}};
     bool operator!() {{ return handle == 0; }}
 }};

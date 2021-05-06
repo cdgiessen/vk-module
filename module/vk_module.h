@@ -2554,6 +2554,7 @@ class Instance {
     Instance([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit Instance(VkInstance handle) noexcept : handle(handle){}
     VkInstance get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2565,6 +2566,7 @@ class PhysicalDevice {
     PhysicalDevice([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit PhysicalDevice(VkPhysicalDevice handle) noexcept : handle(handle){}
     VkPhysicalDevice get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2576,6 +2578,7 @@ class Device {
     Device([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit Device(VkDevice handle) noexcept : handle(handle){}
     VkDevice get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2587,6 +2590,7 @@ class Queue {
     Queue([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit Queue(VkQueue handle) noexcept : handle(handle){}
     VkQueue get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2598,6 +2602,7 @@ class CommandBuffer {
     CommandBuffer([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit CommandBuffer(VkCommandBuffer handle) noexcept : handle(handle){}
     VkCommandBuffer get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2609,6 +2614,7 @@ class DeviceMemory {
     DeviceMemory([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit DeviceMemory(VkDeviceMemory handle) noexcept : handle(handle){}
     VkDeviceMemory get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2620,6 +2626,7 @@ class CommandPool {
     CommandPool([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit CommandPool(VkCommandPool handle) noexcept : handle(handle){}
     VkCommandPool get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2631,6 +2638,7 @@ class Buffer {
     Buffer([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit Buffer(VkBuffer handle) noexcept : handle(handle){}
     VkBuffer get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2642,6 +2650,7 @@ class BufferView {
     BufferView([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit BufferView(VkBufferView handle) noexcept : handle(handle){}
     VkBufferView get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2653,6 +2662,7 @@ class Image {
     Image([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit Image(VkImage handle) noexcept : handle(handle){}
     VkImage get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2664,6 +2674,7 @@ class ImageView {
     ImageView([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit ImageView(VkImageView handle) noexcept : handle(handle){}
     VkImageView get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2675,6 +2686,7 @@ class ShaderModule {
     ShaderModule([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit ShaderModule(VkShaderModule handle) noexcept : handle(handle){}
     VkShaderModule get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2686,6 +2698,7 @@ class Pipeline {
     Pipeline([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit Pipeline(VkPipeline handle) noexcept : handle(handle){}
     VkPipeline get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2697,6 +2710,7 @@ class PipelineLayout {
     PipelineLayout([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit PipelineLayout(VkPipelineLayout handle) noexcept : handle(handle){}
     VkPipelineLayout get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2708,6 +2722,7 @@ class Sampler {
     Sampler([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit Sampler(VkSampler handle) noexcept : handle(handle){}
     VkSampler get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2719,6 +2734,7 @@ class DescriptorSet {
     DescriptorSet([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit DescriptorSet(VkDescriptorSet handle) noexcept : handle(handle){}
     VkDescriptorSet get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2730,6 +2746,7 @@ class DescriptorSetLayout {
     DescriptorSetLayout([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit DescriptorSetLayout(VkDescriptorSetLayout handle) noexcept : handle(handle){}
     VkDescriptorSetLayout get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2741,6 +2758,7 @@ class DescriptorPool {
     DescriptorPool([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit DescriptorPool(VkDescriptorPool handle) noexcept : handle(handle){}
     VkDescriptorPool get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2752,6 +2770,7 @@ class Fence {
     Fence([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit Fence(VkFence handle) noexcept : handle(handle){}
     VkFence get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2763,6 +2782,7 @@ class Semaphore {
     Semaphore([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit Semaphore(VkSemaphore handle) noexcept : handle(handle){}
     VkSemaphore get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2774,6 +2794,7 @@ class Event {
     Event([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit Event(VkEvent handle) noexcept : handle(handle){}
     VkEvent get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2785,6 +2806,7 @@ class QueryPool {
     QueryPool([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit QueryPool(VkQueryPool handle) noexcept : handle(handle){}
     VkQueryPool get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2796,6 +2818,7 @@ class Framebuffer {
     Framebuffer([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit Framebuffer(VkFramebuffer handle) noexcept : handle(handle){}
     VkFramebuffer get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2807,6 +2830,7 @@ class RenderPass {
     RenderPass([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit RenderPass(VkRenderPass handle) noexcept : handle(handle){}
     VkRenderPass get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2818,6 +2842,7 @@ class PipelineCache {
     PipelineCache([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit PipelineCache(VkPipelineCache handle) noexcept : handle(handle){}
     VkPipelineCache get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2829,6 +2854,7 @@ class IndirectCommandsLayoutNV {
     IndirectCommandsLayoutNV([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit IndirectCommandsLayoutNV(VkIndirectCommandsLayoutNV handle) noexcept : handle(handle){}
     VkIndirectCommandsLayoutNV get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2840,6 +2866,7 @@ class DescriptorUpdateTemplate {
     DescriptorUpdateTemplate([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit DescriptorUpdateTemplate(VkDescriptorUpdateTemplate handle) noexcept : handle(handle){}
     VkDescriptorUpdateTemplate get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2852,6 +2879,7 @@ class SamplerYcbcrConversion {
     SamplerYcbcrConversion([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit SamplerYcbcrConversion(VkSamplerYcbcrConversion handle) noexcept : handle(handle){}
     VkSamplerYcbcrConversion get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2864,6 +2892,7 @@ class ValidationCacheEXT {
     ValidationCacheEXT([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit ValidationCacheEXT(VkValidationCacheEXT handle) noexcept : handle(handle){}
     VkValidationCacheEXT get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2875,6 +2904,7 @@ class AccelerationStructureKHR {
     AccelerationStructureKHR([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit AccelerationStructureKHR(VkAccelerationStructureKHR handle) noexcept : handle(handle){}
     VkAccelerationStructureKHR get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2886,6 +2916,7 @@ class AccelerationStructureNV {
     AccelerationStructureNV([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit AccelerationStructureNV(VkAccelerationStructureNV handle) noexcept : handle(handle){}
     VkAccelerationStructureNV get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2897,6 +2928,7 @@ class PerformanceConfigurationINTEL {
     PerformanceConfigurationINTEL([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit PerformanceConfigurationINTEL(VkPerformanceConfigurationINTEL handle) noexcept : handle(handle){}
     VkPerformanceConfigurationINTEL get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2908,6 +2940,7 @@ class DeferredOperationKHR {
     DeferredOperationKHR([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit DeferredOperationKHR(VkDeferredOperationKHR handle) noexcept : handle(handle){}
     VkDeferredOperationKHR get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2919,6 +2952,7 @@ class PrivateDataSlotEXT {
     PrivateDataSlotEXT([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit PrivateDataSlotEXT(VkPrivateDataSlotEXT handle) noexcept : handle(handle){}
     VkPrivateDataSlotEXT get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2930,6 +2964,7 @@ class DisplayKHR {
     DisplayKHR([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit DisplayKHR(VkDisplayKHR handle) noexcept : handle(handle){}
     VkDisplayKHR get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2941,6 +2976,7 @@ class DisplayModeKHR {
     DisplayModeKHR([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit DisplayModeKHR(VkDisplayModeKHR handle) noexcept : handle(handle){}
     VkDisplayModeKHR get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2952,6 +2988,7 @@ class SurfaceKHR {
     SurfaceKHR([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit SurfaceKHR(VkSurfaceKHR handle) noexcept : handle(handle){}
     VkSurfaceKHR get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2963,6 +3000,7 @@ class SwapchainKHR {
     SwapchainKHR([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit SwapchainKHR(VkSwapchainKHR handle) noexcept : handle(handle){}
     VkSwapchainKHR get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2974,6 +3012,7 @@ class DebugReportCallbackEXT {
     DebugReportCallbackEXT([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit DebugReportCallbackEXT(VkDebugReportCallbackEXT handle) noexcept : handle(handle){}
     VkDebugReportCallbackEXT get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
@@ -2985,81 +3024,10 @@ class DebugUtilsMessengerEXT {
     DebugUtilsMessengerEXT([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit DebugUtilsMessengerEXT(VkDebugUtilsMessengerEXT handle) noexcept : handle(handle){}
     VkDebugUtilsMessengerEXT get() { return handle; }
+    bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
 };
-
-namespace detail {
-/* Array data structure where the length is determined at construction time.
- * Cannot resize, add, or delete elements from.
- * Used for returning a collection from the Vulkan API
- * Does not throw any exceptions
- */
-template<typename T>
-struct fixed_vector
-{
-    explicit fixed_vector() noexcept {}
-    explicit fixed_vector(size_t count) noexcept
-    {
-        _count = count;
-        _data = new (std::nothrow) T[count];
-        for (size_t i = 0; i < count; i++)
-            _data[i] = T(); // some vulkan structs have default values, so must be initialized
-    }
-    ~fixed_vector() noexcept { delete[] _data; }
-    fixed_vector(fixed_vector const& value) noexcept
-    {
-        common_copy_impl(value);
-    }
-    fixed_vector& operator=(fixed_vector const& value) noexcept
-    {
-        if (this != &value) {
-            common_copy_impl(value);
-        }
-        return *this;
-    }
-    fixed_vector(fixed_vector&& other) noexcept
-      : _count(std::exchange(other._count, 0))
-      , _data(std::exchange(other._data, nullptr))
-    {}
-    fixed_vector& operator=(fixed_vector&& other) noexcept
-    {
-        if (this != &other) {
-            delete _data;
-            _count = std::exchange(other._count, 0);
-            _data = std::exchange(other._data, nullptr);
-        }
-        return *this;
-    }
-
-    [[nodiscard]] size_t size() noexcept { return _count; }
-    [[nodiscard]] size_t size() const noexcept { return _count; }
-    [[nodiscard]] bool empty() noexcept { return _count == 0; }
-    [[nodiscard]] bool empty() const noexcept { return _count == 0; }
-    [[nodiscard]] T* data() noexcept { return _data; }
-    [[nodiscard]] const T* data() const noexcept { return _data; }
-    void shrink(size_t count) noexcept { if (count < _count) _count = count;}
-
-    [[nodiscard]] T& operator[](size_t count) & noexcept { return _data[count]; }
-    [[nodiscard]] T const& operator[](size_t count) const& noexcept { return _data[count]; }
-
-    [[nodiscard]] const T* begin() const noexcept { return _data + 0; }
-    [[nodiscard]] T* begin() noexcept { return _data + 0; }
-    [[nodiscard]] const T* end() const noexcept { return _data + _count; }
-    [[nodiscard]] T* end() noexcept { return _data + _count; }
-
-  private:
-    size_t _count = 0;
-    T* _data = nullptr;
-
-    void common_copy_impl(fixed_vector const& value) {
-        _count = value._count;
-        _data = new (std::nothrow) T[value.count];
-        for (size_t i = 0; i < value.count; i++)
-            _data[i] = value[i];
-    }
-};
-} // namespace detail
 
 /* Return type for Vulkan Module API functions which return a value or values
  * Holds a T value or a vk::Result for indicating the error
