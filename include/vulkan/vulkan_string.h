@@ -116,6 +116,9 @@ const char * to_string(VkDriverId val);
 const char * to_string(VkShadingRatePaletteEntryNV val);
 const char * to_string(VkCoarseSampleOrderTypeNV val);
 const char * to_string(VkPipelineExecutableStatisticFormatKHR val);
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+const char * to_string(VkQueryResultStatusKHR val);
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 const char * to_string(VkPipelineCacheCreateFlagBits val);
 std::string to_string(VkPipelineCacheCreateFlags flag);
 const char * to_string(VkQueueFlagBits val);
@@ -276,6 +279,48 @@ const char * to_string(VkPipelineCompilerControlFlagBitsAMD val);
 std::string to_string(VkPipelineCompilerControlFlagsAMD flag);
 const char * to_string(VkToolPurposeFlagBitsEXT val);
 std::string to_string(VkToolPurposeFlagsEXT flag);
+const char * to_string(VkAccessFlagBits2KHR val);
+std::string to_string(VkAccessFlags2KHR flag);
+const char * to_string(VkPipelineStageFlagBits2KHR val);
+std::string to_string(VkPipelineStageFlags2KHR flag);
+const char * to_string(VkSubmitFlagBitsKHR val);
+std::string to_string(VkSubmitFlagsKHR flag);
+const char * to_string(VkEventCreateFlagBits val);
+std::string to_string(VkEventCreateFlags flag);
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+const char * to_string(VkVideoCodecOperationFlagBitsKHR val);
+std::string to_string(VkVideoCodecOperationFlagsKHR flag);
+const char * to_string(VkVideoChromaSubsamplingFlagBitsKHR val);
+std::string to_string(VkVideoChromaSubsamplingFlagsKHR flag);
+const char * to_string(VkVideoComponentBitDepthFlagBitsKHR val);
+std::string to_string(VkVideoComponentBitDepthFlagsKHR flag);
+const char * to_string(VkVideoCapabilitiesFlagBitsKHR val);
+std::string to_string(VkVideoCapabilitiesFlagsKHR flag);
+const char * to_string(VkVideoSessionCreateFlagBitsKHR val);
+std::string to_string(VkVideoSessionCreateFlagsKHR flag);
+const char * to_string(VkVideoCodingQualityPresetFlagBitsKHR val);
+std::string to_string(VkVideoCodingQualityPresetFlagsKHR flag);
+const char * to_string(VkVideoDecodeH264FieldLayoutFlagBitsEXT val);
+std::string to_string(VkVideoDecodeH264FieldLayoutFlagsEXT flag);
+const char * to_string(VkVideoCodingControlFlagBitsKHR val);
+std::string to_string(VkVideoCodingControlFlagsKHR flag);
+const char * to_string(VkVideoDecodeFlagBitsKHR val);
+std::string to_string(VkVideoDecodeFlagsKHR flag);
+const char * to_string(VkVideoEncodeFlagBitsKHR val);
+std::string to_string(VkVideoEncodeFlagsKHR flag);
+const char * to_string(VkVideoEncodeRateControlFlagBitsKHR val);
+std::string to_string(VkVideoEncodeRateControlFlagsKHR flag);
+const char * to_string(VkVideoEncodeRateControlModeFlagBitsKHR val);
+std::string to_string(VkVideoEncodeRateControlModeFlagsKHR flag);
+const char * to_string(VkVideoEncodeH264CapabilitiesFlagBitsEXT val);
+std::string to_string(VkVideoEncodeH264CapabilitiesFlagsEXT flag);
+const char * to_string(VkVideoEncodeH264InputModeFlagBitsEXT val);
+std::string to_string(VkVideoEncodeH264InputModeFlagsEXT flag);
+const char * to_string(VkVideoEncodeH264OutputModeFlagBitsEXT val);
+std::string to_string(VkVideoEncodeH264OutputModeFlagsEXT flag);
+const char * to_string(VkVideoEncodeH264CreateFlagBitsEXT val);
+std::string to_string(VkVideoEncodeH264CreateFlagsEXT flag);
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 #endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
 #if defined(VK_USE_PLATFORM_VI_NN)
@@ -300,5 +345,9 @@ std::string to_string(VkToolPurposeFlagsEXT flag);
 #endif // defined(VK_USE_PLATFORM_FUCHSIA)
 #if defined(VK_USE_PLATFORM_GGP)
 #endif // defined(VK_USE_PLATFORM_GGP)
+#if defined(VK_USE_PLATFORM_SCREEN_QNX)
+#endif // defined(VK_USE_PLATFORM_SCREEN_QNX)
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 
 // clang-format on

@@ -65,35 +65,36 @@ constexpr uint32_t make_vk_version(uint32_t major, uint32_t minor, uint32_t patc
         #define VK_DEFINE_NON_DISPATCHABLE_HANDLE(object) typedef uint64_t object;
 #endif
 #endif
-constexpr auto MAX_PHYSICAL_DEVICE_NAME_SIZE = 256;
-constexpr auto UUID_SIZE = 16;
-constexpr auto LUID_SIZE = 8;
+constexpr uint32_t MAX_PHYSICAL_DEVICE_NAME_SIZE = 256;
+constexpr uint32_t UUID_SIZE = 16;
+constexpr uint32_t LUID_SIZE = 8;
 constexpr auto LUID_SIZE_KHR = LUID_SIZE;
-constexpr auto MAX_EXTENSION_NAME_SIZE = 256;
-constexpr auto MAX_DESCRIPTION_SIZE = 256;
-constexpr auto MAX_MEMORY_TYPES = 32;
-constexpr auto MAX_MEMORY_HEAPS = 16;
-constexpr auto LOD_CLAMP_NONE = 1000.0f;
-constexpr auto REMAINING_MIP_LEVELS = (~0U);
-constexpr auto REMAINING_ARRAY_LAYERS = (~0U);
-constexpr auto WHOLE_SIZE = (~0ULL);
-constexpr auto ATTACHMENT_UNUSED = (~0U);
-constexpr auto QUEUE_FAMILY_IGNORED = (~0U);
-constexpr auto QUEUE_FAMILY_EXTERNAL = (~0U-1);
+constexpr uint32_t MAX_EXTENSION_NAME_SIZE = 256;
+constexpr uint32_t MAX_DESCRIPTION_SIZE = 256;
+constexpr uint32_t MAX_MEMORY_TYPES = 32;
+constexpr uint32_t MAX_MEMORY_HEAPS = 16;
+constexpr float LOD_CLAMP_NONE = 1000.0F;
+constexpr uint32_t REMAINING_MIP_LEVELS = (~0U);
+constexpr uint32_t REMAINING_ARRAY_LAYERS = (~0U);
+constexpr uint64_t WHOLE_SIZE = (~0ULL);
+constexpr uint32_t ATTACHMENT_UNUSED = (~0U);
+constexpr uint32_t QUEUE_FAMILY_IGNORED = (~0U);
+constexpr uint32_t QUEUE_FAMILY_EXTERNAL = (~1U);
 constexpr auto QUEUE_FAMILY_EXTERNAL_KHR = QUEUE_FAMILY_EXTERNAL;
-constexpr auto QUEUE_FAMILY_FOREIGN_EXT = (~0U-2);
-constexpr auto SUBPASS_EXTERNAL = (~0U);
-constexpr auto MAX_DEVICE_GROUP_SIZE = 32;
+constexpr uint32_t QUEUE_FAMILY_FOREIGN_EXT = (~2U);
+constexpr uint32_t SUBPASS_EXTERNAL = (~0U);
+constexpr uint32_t MAX_DEVICE_GROUP_SIZE = 32;
 constexpr auto MAX_DEVICE_GROUP_SIZE_KHR = MAX_DEVICE_GROUP_SIZE;
-constexpr auto MAX_DRIVER_NAME_SIZE = 256;
+constexpr uint32_t MAX_DRIVER_NAME_SIZE = 256;
 constexpr auto MAX_DRIVER_NAME_SIZE_KHR = MAX_DRIVER_NAME_SIZE;
-constexpr auto MAX_DRIVER_INFO_SIZE = 256;
+constexpr uint32_t MAX_DRIVER_INFO_SIZE = 256;
 constexpr auto MAX_DRIVER_INFO_SIZE_KHR = MAX_DRIVER_INFO_SIZE;
-constexpr auto SHADER_UNUSED_KHR = (~0U);
+constexpr uint32_t SHADER_UNUSED_KHR = (~0U);
 constexpr auto SHADER_UNUSED_NV = SHADER_UNUSED_KHR;
 using SampleMask = uint32_t;
 using Bool32 = uint32_t;
 using Flags = uint32_t;
+using Flags64 = uint64_t;
 using DeviceSize = uint64_t;
 using DeviceAddress = uint64_t;
 enum class AttachmentLoadOp : uint32_t {
@@ -264,6 +265,13 @@ enum class DynamicState : uint32_t {
     DepthBoundsTestEnableEXT = 1000267009,
     StencilTestEnableEXT = 1000267010,
     StencilOpEXT = 1000267011,
+    VertexInputEXT = 1000352000,
+    PatchControlPointsEXT = 1000377000,
+    RasterizerDiscardEnableEXT = 1000377001,
+    DepthBiasEnableEXT = 1000377002,
+    LogicOpEXT = 1000377003,
+    PrimitiveRestartEnableEXT = 1000377004,
+    ColorWriteEnableEXT = 1000381000,
 };
 enum class PolygonMode : uint32_t {
     Fill = 0,
@@ -479,6 +487,10 @@ enum class Format : uint32_t {
     Astc10X10SfloatBlockEXT = 1000066011,
     Astc12X10SfloatBlockEXT = 1000066012,
     Astc12X12SfloatBlockEXT = 1000066013,
+    G8B8R82Plane444UnormEXT = 1000330000,
+    G10X6B10X6R10X62Plane444Unorm3Pack16EXT = 1000330001,
+    G12X4B12X4R12X42Plane444Unorm3Pack16EXT = 1000330002,
+    G16B16R162Plane444UnormEXT = 1000330003,
     A4R4G4B4UnormPack16EXT = 1000340000,
     A4B4G4R4UnormPack16EXT = 1000340001,
     G8B8G8R8422Unorm = 1000156000,
@@ -531,9 +543,17 @@ enum class ImageLayout : uint32_t {
     TransferDstOptimal = 7,
     Preinitialized = 8,
     PresentSrcKHR = 1000001002,
+    VideoDecodeDstKHR = 1000024000,
+    VideoDecodeSrcKHR = 1000024001,
+    VideoDecodeDpbKHR = 1000024002,
+    VideoEncodeDstKHR = 1000299000,
+    VideoEncodeSrcKHR = 1000299001,
+    VideoEncodeDpbKHR = 1000299002,
     SharedPresentKHR = 1000111000,
     ShadingRateOptimalNV = 1000164003,
     FragmentDensityMapOptimalEXT = 1000218000,
+    ReadOnlyOptimalKHR = 1000314000,
+    AttachmentOptimalKHR = 1000314001,
     DepthReadOnlyStencilAttachmentOptimal = 1000117000,
     DepthAttachmentStencilReadOnlyOptimal = 1000117001,
     DepthAttachmentOptimal = 1000241000,
@@ -617,6 +637,8 @@ enum class QueryType : uint32_t {
     Occlusion = 0,
     PipelineStatistics = 1,
     Timestamp = 2,
+    ResultStatusOnlyKHR = 1000023000,
+    VideoEncodeBitstreamBufferRangeKHR = 1000299000,
     TransformFeedbackStreamEXT = 1000028004,
     PerformanceQueryKHR = 1000116000,
     AccelerationStructureCompactedSizeKHR = 1000150000,
@@ -749,6 +771,25 @@ enum class StructureType : uint32_t {
     DebugMarkerObjectNameInfoEXT = 1000022000,
     DebugMarkerObjectTagInfoEXT = 1000022001,
     DebugMarkerMarkerInfoEXT = 1000022002,
+    VideoProfileKHR = 1000023000,
+    VideoCapabilitiesKHR = 1000023001,
+    VideoPictureResourceKHR = 1000023002,
+    VideoGetMemoryPropertiesKHR = 1000023003,
+    VideoBindMemoryKHR = 1000023004,
+    VideoSessionCreateInfoKHR = 1000023005,
+    VideoSessionParametersCreateInfoKHR = 1000023006,
+    VideoSessionParametersUpdateInfoKHR = 1000023007,
+    VideoBeginCodingInfoKHR = 1000023008,
+    VideoEndCodingInfoKHR = 1000023009,
+    VideoCodingControlInfoKHR = 1000023010,
+    VideoReferenceSlotKHR = 1000023011,
+    VideoQueueFamilyProperties2KHR = 1000023012,
+    VideoProfilesKHR = 1000023013,
+    PhysicalDeviceVideoFormatInfoKHR = 1000023014,
+    VideoFormatPropertiesKHR = 1000023015,
+    VideoDecodeInfoKHR = 1000024000,
+    VideoEncodeInfoKHR = 1000299000,
+    VideoEncodeRateControlInfoKHR = 1000299001,
     DedicatedAllocationImageCreateInfoNV = 1000026000,
     DedicatedAllocationBufferCreateInfoNV = 1000026001,
     DedicatedAllocationMemoryAllocateInfoNV = 1000026002,
@@ -757,6 +798,23 @@ enum class StructureType : uint32_t {
     PipelineRasterizationStateStreamCreateInfoEXT = 1000028002,
     ImageViewHandleInfoNVX = 1000030000,
     ImageViewAddressPropertiesNVX = 1000030001,
+    VideoEncodeH264CapabilitiesEXT = 1000038000,
+    VideoEncodeH264SessionCreateInfoEXT = 1000038001,
+    VideoEncodeH264SessionParametersCreateInfoEXT = 1000038002,
+    VideoEncodeH264SessionParametersAddInfoEXT = 1000038003,
+    VideoEncodeH264VclFrameInfoEXT = 1000038004,
+    VideoEncodeH264DpbSlotInfoEXT = 1000038005,
+    VideoEncodeH264NaluSliceEXT = 1000038006,
+    VideoEncodeH264EmitPictureParametersEXT = 1000038007,
+    VideoEncodeH264ProfileEXT = 1000038008,
+    VideoDecodeH264CapabilitiesEXT = 1000040000,
+    VideoDecodeH264SessionCreateInfoEXT = 1000040001,
+    VideoDecodeH264PictureInfoEXT = 1000040002,
+    VideoDecodeH264MvcEXT = 1000040003,
+    VideoDecodeH264ProfileEXT = 1000040004,
+    VideoDecodeH264SessionParametersCreateInfoEXT = 1000040005,
+    VideoDecodeH264SessionParametersAddInfoEXT = 1000040006,
+    VideoDecodeH264DpbSlotInfoEXT = 1000040007,
     TextureLodGatherFormatPropertiesAMD = 1000041000,
     StreamDescriptorSurfaceCreateInfoGGP = 1000049000,
     PhysicalDeviceCornerSampledImageFeaturesNV = 1000050000,
@@ -912,6 +970,13 @@ enum class StructureType : uint32_t {
     PipelineCompilerControlCreateInfoAMD = 1000183000,
     CalibratedTimestampInfoEXT = 1000184000,
     PhysicalDeviceShaderCorePropertiesAMD = 1000185000,
+    VideoDecodeH265CapabilitiesEXT = 1000187000,
+    VideoDecodeH265SessionCreateInfoEXT = 1000187001,
+    VideoDecodeH265SessionParametersCreateInfoEXT = 1000187002,
+    VideoDecodeH265SessionParametersAddInfoEXT = 1000187003,
+    VideoDecodeH265ProfileEXT = 1000187004,
+    VideoDecodeH265PictureInfoEXT = 1000187005,
+    VideoDecodeH265DpbSlotInfoEXT = 1000187006,
     DeviceMemoryOverallocationCreateInfoAMD = 1000189000,
     PhysicalDeviceVertexAttributeDivisorPropertiesEXT = 1000190000,
     PipelineVertexInputDivisorStateCreateInfoEXT = 1000190001,
@@ -996,6 +1061,8 @@ enum class StructureType : uint32_t {
     GeneratedCommandsInfoNV = 1000277005,
     GeneratedCommandsMemoryRequirementsInfoNV = 1000277006,
     PhysicalDeviceDeviceGeneratedCommandsFeaturesNV = 1000277007,
+    PhysicalDeviceInheritedViewportScissorFeaturesNV = 1000278000,
+    CommandBufferInheritanceViewportScissorInfoNV = 1000278001,
     PhysicalDeviceTexelBufferAlignmentFeaturesEXT = 1000281000,
     PhysicalDeviceTexelBufferAlignmentPropertiesEXT = 1000281001,
     CommandBufferInheritanceRenderPassTransformInfoQCOM = 1000282000,
@@ -1015,10 +1082,21 @@ enum class StructureType : uint32_t {
     PhysicalDevicePipelineCreationCacheControlFeaturesEXT = 1000297000,
     PhysicalDeviceDiagnosticsConfigFeaturesNV = 1000300000,
     DeviceDiagnosticsConfigCreateInfoNV = 1000300001,
+    MemoryBarrier2KHR = 1000314000,
+    BufferMemoryBarrier2KHR = 1000314001,
+    ImageMemoryBarrier2KHR = 1000314002,
+    DependencyInfoKHR = 1000314003,
+    SubmitInfo2KHR = 1000314004,
+    SemaphoreSubmitInfoKHR = 1000314005,
+    CommandBufferSubmitInfoKHR = 1000314006,
+    PhysicalDeviceSynchronization2FeaturesKHR = 1000314007,
+    QueueFamilyCheckpointProperties2NV = 1000314008,
+    CheckpointData2NV = 1000314009,
     PhysicalDeviceZeroInitializeWorkgroupMemoryFeaturesKHR = 1000325000,
     PhysicalDeviceFragmentShadingRateEnumsPropertiesNV = 1000326000,
     PhysicalDeviceFragmentShadingRateEnumsFeaturesNV = 1000326001,
     PipelineFragmentShadingRateEnumStateCreateInfoNV = 1000326002,
+    PhysicalDeviceYcbcr2Plane444FormatsFeaturesEXT = 1000330000,
     PhysicalDeviceFragmentDensityMap2FeaturesEXT = 1000332000,
     PhysicalDeviceFragmentDensityMap2PropertiesEXT = 1000332001,
     CopyCommandTransformInfoQCOM = 1000333000,
@@ -1039,6 +1117,18 @@ enum class StructureType : uint32_t {
     DirectfbSurfaceCreateInfoEXT = 1000346000,
     PhysicalDeviceMutableDescriptorTypeFeaturesVALVE = 1000351000,
     MutableDescriptorTypeCreateInfoVALVE = 1000351002,
+    PhysicalDeviceVertexInputDynamicStateFeaturesEXT = 1000352000,
+    VertexInputBindingDescription2EXT = 1000352001,
+    VertexInputAttributeDescription2EXT = 1000352002,
+    ImportMemoryZirconHandleInfoFUCHSIA = 1000364000,
+    MemoryZirconHandlePropertiesFUCHSIA = 1000364001,
+    MemoryGetZirconHandleInfoFUCHSIA = 1000364002,
+    ImportSemaphoreZirconHandleInfoFUCHSIA = 1000365000,
+    SemaphoreGetZirconHandleInfoFUCHSIA = 1000365001,
+    PhysicalDeviceExtendedDynamicState2FeaturesEXT = 1000377000,
+    ScreenSurfaceCreateInfoQNX = 1000378000,
+    PhysicalDeviceColorWriteEnableFeaturesEXT = 1000381000,
+    PipelineColorWriteCreateInfoEXT = 1000381001,
     PhysicalDeviceSubgroupProperties = 1000094000,
     BindBufferMemoryInfo = 1000157000,
     BindImageMemoryInfo = 1000157001,
@@ -1217,6 +1307,8 @@ enum class ObjectType : uint32_t {
     DisplayKHR = 1000002000,
     DisplayModeKHR = 1000002001,
     DebugReportCallbackEXT = 1000011000,
+    VideoSessionKHR = 1000023000,
+    VideoSessionParametersKHR = 1000023001,
     DebugUtilsMessengerEXT = 1000128000,
     AccelerationStructureKHR = 1000150000,
     ValidationCacheEXT = 1000160000,
@@ -1630,6 +1722,7 @@ enum class DriverId : uint32_t {
     BroadcomProprietary = 12,
     MesaLlvmpipe = 13,
     Moltenvk = 14,
+    CoreaviProprietary = 15,
 };
 using DriverIdKHR = DriverId;
 enum class ShadingRatePaletteEntryNV : uint32_t {
@@ -1658,6 +1751,13 @@ enum class PipelineExecutableStatisticFormatKHR : uint32_t {
     Uint64KHR = 2,
     Float64KHR = 3,
 };
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+enum class QueryResultStatusKHR : uint32_t {
+    ErrorKHR = -1,
+    NotReadyKHR = 0,
+    CompleteKHR = 1,
+};
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 enum class PipelineCacheCreateFlagBits: uint32_t {
     ExternallySynchronizedBitEXT = 1,
 };
@@ -1666,6 +1766,8 @@ enum class QueueFlagBits: uint32_t {
     Compute = 2,
     Transfer = 4,
     SparseBinding = 8,
+    VideoDecodeBitKHR = 32,
+    VideoEncodeBitKHR = 64,
     Protected = 16,
 };
 enum class CullModeFlagBits: uint32_t {
@@ -1695,7 +1797,7 @@ enum class MemoryHeapFlagBits: uint32_t {
     MultiInstance = 2,
 };
 enum class AccessFlagBits: uint32_t {
-    IndirectCommandRead = 1,
+    NoneKHR = 1,
     IndexRead = 2,
     VertexAttributeRead = 4,
     UniformRead = 8,
@@ -1734,6 +1836,10 @@ enum class BufferUsageFlagBits: uint32_t {
     IndexBuffer = 64,
     VertexBuffer = 128,
     IndirectBuffer = 256,
+    VideoDecodeSrcBitKHR = 8192,
+    VideoDecodeDstBitKHR = 16384,
+    VideoEncodeDstBitKHR = 32768,
+    VideoEncodeSrcBitKHR = 65536,
     TransformFeedbackBufferBitEXT = 2048,
     TransformFeedbackCounterBufferBitEXT = 4096,
     ConditionalRenderingBitEXT = 512,
@@ -1776,6 +1882,12 @@ enum class ImageUsageFlagBits: uint32_t {
     DepthStencilAttachment = 32,
     TransientAttachment = 64,
     InputAttachment = 128,
+    VideoDecodeDstBitKHR = 1024,
+    VideoDecodeSrcBitKHR = 2048,
+    VideoDecodeDpbBitKHR = 4096,
+    VideoEncodeDstBitKHR = 8192,
+    VideoEncodeSrcBitKHR = 16384,
+    VideoEncodeDpbBitKHR = 32768,
     ShadingRateImageBitNV = 256,
     FragmentDensityMapBitEXT = 512,
 };
@@ -1853,6 +1965,10 @@ enum class FormatFeatureFlagBits: uint32_t {
     BlitDst = 2048,
     SampledImageFilterLinear = 4096,
     SampledImageFilterCubicBitIMG = 8192,
+    VideoDecodeOutputBitKHR = 33554432,
+    VideoDecodeDpbBitKHR = 67108864,
+    VideoEncodeInputBitKHR = 134217728,
+    VideoEncodeDpbBitKHR = 268435456,
     AccelerationStructureVertexBufferBitKHR = 536870912,
     FragmentDensityMapBitEXT = 16777216,
     FragmentShadingRateAttachmentBitKHR = 1073741824,
@@ -1875,6 +1991,7 @@ enum class QueryResultFlagBits: uint32_t {
     Wait = 2,
     WithAvailability = 4,
     Partial = 8,
+    WithStatusBitKHR = 16,
 };
 enum class CommandBufferUsageFlagBits: uint32_t {
     OneTimeSubmit = 1,
@@ -1916,7 +2033,7 @@ enum class SparseMemoryBindFlagBits: uint32_t {
     Metadata = 1,
 };
 enum class PipelineStageFlagBits: uint32_t {
-    TopOfPipe = 1,
+    NoneKHR = 1,
     DrawIndirect = 2,
     VertexInput = 4,
     VertexShader = 8,
@@ -2063,6 +2180,7 @@ enum class ExternalMemoryHandleTypeFlagBits: uint32_t {
     AndroidHardwareBufferBitANDROID = 1024,
     HostAllocationBitEXT = 128,
     HostMappedForeignMemoryBitEXT = 256,
+    ZirconVmoBitFUCHSIA = 2048,
 };
 enum class ExternalMemoryFeatureFlagBits: uint32_t {
     DedicatedOnly = 1,
@@ -2076,6 +2194,7 @@ enum class ExternalSemaphoreHandleTypeFlagBits: uint32_t {
     D3D12Fence = 8,
     D3D11Fence = D3D12Fence,
     SyncFd = 16,
+    ZirconEventBitFUCHSIA = 128,
 };
 enum class ExternalSemaphoreFeatureFlagBits: uint32_t {
     Exportable = 1,
@@ -2212,6 +2331,177 @@ enum class ToolPurposeFlagBitsEXT: uint32_t {
     DebugReportingBitEXT = 32,
     DebugMarkersBitEXT = 64,
 };
+enum class AccessFlagBits2KHR: uint64_t {
+    e2NoneKHR = 0,
+    e2IndirectCommandReadBitKHR = 1,
+    e2IndexReadBitKHR = 2,
+    e2VertexAttributeReadBitKHR = 4,
+    e2UniformReadBitKHR = 8,
+    e2InputAttachmentReadBitKHR = 16,
+    e2ShaderReadBitKHR = 32,
+    e2ShaderWriteBitKHR = 64,
+    e2ColorAttachmentReadBitKHR = 128,
+    e2ColorAttachmentWriteBitKHR = 256,
+    e2DepthStencilAttachmentReadBitKHR = 512,
+    e2DepthStencilAttachmentWriteBitKHR = 1024,
+    e2TransferReadBitKHR = 2048,
+    e2TransferWriteBitKHR = 4096,
+    e2HostReadBitKHR = 8192,
+    e2HostWriteBitKHR = 16384,
+    e2MemoryReadBitKHR = 32768,
+    e2MemoryWriteBitKHR = 65536,
+    e2ShaderSampledReadBitKHR = 4294967296,
+    e2ShaderStorageReadBitKHR = 8589934592,
+    e2ShaderStorageWriteBitKHR = 17179869184,
+    e2VideoDecodeReadBitKHR = 34359738368,
+    e2VideoDecodeWriteBitKHR = 68719476736,
+    e2VideoEncodeReadBitKHR = 137438953472,
+    e2VideoEncodeWriteBitKHR = 274877906944,
+    e2TransformFeedbackWriteBitEXT = 33554432,
+    e2TransformFeedbackCounterReadBitEXT = 67108864,
+    e2TransformFeedbackCounterWriteBitEXT = 134217728,
+    e2ConditionalRenderingReadBitEXT = 1048576,
+    e2CommandPreprocessReadBitNV = 131072,
+    e2CommandPreprocessWriteBitNV = 262144,
+    e2FragmentShadingRateAttachmentReadBitKHR = 8388608,
+    e2AccelerationStructureReadBitKHR = 2097152,
+    e2AccelerationStructureWriteBitKHR = 4194304,
+    e2FragmentDensityMapReadBitEXT = 16777216,
+    e2ColorAttachmentReadNoncoherentBitEXT = 524288,
+};
+enum class PipelineStageFlagBits2KHR: uint64_t {
+    e2NoneKHR = 0,
+    e2TopOfPipeBitKHR = 1,
+    e2DrawIndirectBitKHR = 2,
+    e2VertexInputBitKHR = 4,
+    e2VertexShaderBitKHR = 8,
+    e2TessellationControlShaderBitKHR = 16,
+    e2TessellationEvaluationShaderBitKHR = 32,
+    e2GeometryShaderBitKHR = 64,
+    e2FragmentShaderBitKHR = 128,
+    e2EarlyFragmentTestsBitKHR = 256,
+    e2LateFragmentTestsBitKHR = 512,
+    e2ColorAttachmentOutputBitKHR = 1024,
+    e2ComputeShaderBitKHR = 2048,
+    e2AllTransferBitKHR = 4096,
+    e2TransferBitKHR = e2AllTransferBitKHR,
+    e2BottomOfPipeBitKHR = 8192,
+    e2HostBitKHR = 16384,
+    e2AllGraphicsBitKHR = 32768,
+    e2AllCommandsBitKHR = 65536,
+    e2CopyBitKHR = 4294967296,
+    e2ResolveBitKHR = 8589934592,
+    e2BlitBitKHR = 17179869184,
+    e2ClearBitKHR = 34359738368,
+    e2IndexInputBitKHR = 68719476736,
+    e2VertexAttributeInputBitKHR = 137438953472,
+    e2PreRasterizationShadersBitKHR = 274877906944,
+    e2VideoDecodeBitKHR = 67108864,
+    e2VideoEncodeBitKHR = 134217728,
+    e2TransformFeedbackBitEXT = 16777216,
+    e2ConditionalRenderingBitEXT = 262144,
+    e2CommandPreprocessBitNV = 131072,
+    e2FragmentShadingRateAttachmentBitKHR = 4194304,
+    e2AccelerationStructureBuildBitKHR = 33554432,
+    e2RayTracingShaderBitKHR = 2097152,
+    e2FragmentDensityProcessBitEXT = 8388608,
+    e2TaskShaderBitNV = 524288,
+    e2MeshShaderBitNV = 1048576,
+};
+enum class SubmitFlagBitsKHR: uint32_t {
+    ProtectedBitKHR = 1,
+};
+enum class EventCreateFlagBits: uint32_t {
+    DeviceOnlyBitKHR = 1,
+};
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+enum class VideoCodecOperationFlagBitsKHR: uint32_t {
+    InvalidBitKHR = 0,
+    EncodeH264BitEXT = 65536,
+    DecodeH264BitEXT = 1,
+    DecodeH265BitEXT = 2,
+};
+enum class VideoChromaSubsamplingFlagBitsKHR: uint32_t {
+    InvalidBitKHR = 0,
+    MonochromeBitKHR = 1,
+    e420BitKHR = 2,
+    e422BitKHR = 4,
+    e444BitKHR = 8,
+};
+enum class VideoComponentBitDepthFlagBitsKHR: uint32_t {
+    InvalidKHR = 0,
+    e8BitKHR = 1,
+    e10BitKHR = 4,
+    e12BitKHR = 16,
+};
+enum class VideoCapabilitiesFlagBitsKHR: uint32_t {
+    ProtectedContentBitKHR = 1,
+    SeparateReferenceImagesBitKHR = 2,
+};
+enum class VideoSessionCreateFlagBitsKHR: uint32_t {
+    DefaultKHR = 0,
+    ProtectedContentBitKHR = 1,
+};
+enum class VideoCodingQualityPresetFlagBitsKHR: uint32_t {
+    DefaultBitKHR = 0,
+    NormalBitKHR = 1,
+    PowerBitKHR = 2,
+    QualityBitKHR = 4,
+};
+enum class VideoDecodeH264FieldLayoutFlagBitsEXT: uint32_t {
+    OnlyEXT = 0,
+    LineInterlacedPlaneBitEXT = 1,
+    SeparateInterlacedPlaneBitEXT = 2,
+};
+enum class VideoCodingControlFlagBitsKHR: uint32_t {
+    DefaultKHR = 0,
+    ResetBitKHR = 1,
+};
+enum class VideoDecodeFlagBitsKHR: uint32_t {
+    DefaultKHR = 0,
+    Reserved0BitKHR = 1,
+};
+enum class VideoEncodeFlagBitsKHR: uint32_t {
+    DefaultKHR = 0,
+    Reserved0BitKHR = 1,
+};
+enum class VideoEncodeRateControlFlagBitsKHR: uint32_t {
+    DefaultKHR = 0,
+    ResetBitKHR = 1,
+};
+enum class VideoEncodeRateControlModeFlagBitsKHR: uint32_t {
+    NoneBitKHR = 0,
+    CbrBitKHR = 1,
+    VbrBitKHR = 2,
+};
+enum class VideoEncodeH264CapabilitiesFlagBitsEXT: uint32_t {
+    CabacBitEXT = 1,
+    CavlcBitEXT = 2,
+    WeightedBiPredImplicitBitEXT = 4,
+    Transform8X8BitEXT = 8,
+    ChromaQpOffsetBitEXT = 16,
+    SecondChromaQpOffsetBitEXT = 32,
+    DeblockingFilterDisabledBitEXT = 64,
+    DeblockingFilterEnabledBitEXT = 128,
+    DeblockingFilterPartialBitEXT = 256,
+    MultipleSlicePerFrameBitEXT = 512,
+    EvenlyDistributedSliceSizeBitEXT = 1024,
+};
+enum class VideoEncodeH264InputModeFlagBitsEXT: uint32_t {
+    FrameBitEXT = 1,
+    SliceBitEXT = 2,
+    NonVclBitEXT = 4,
+};
+enum class VideoEncodeH264OutputModeFlagBitsEXT: uint32_t {
+    FrameBitEXT = 1,
+    SliceBitEXT = 2,
+    NonVclBitEXT = 4,
+};
+enum class VideoEncodeH264CreateFlagBitsEXT: uint32_t {
+    DefaultEXT = 0,
+    Reserved0BitEXT = 1,
+};
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 enum class QueryPoolCreateFlagBits: uint32_t { };
 enum class PipelineLayoutCreateFlagBits: uint32_t { };
 enum class PipelineDepthStencilStateCreateFlagBits: uint32_t { };
@@ -2227,7 +2517,6 @@ enum class BufferViewCreateFlagBits: uint32_t { };
 enum class InstanceCreateFlagBits: uint32_t { };
 enum class DeviceCreateFlagBits: uint32_t { };
 enum class SemaphoreCreateFlagBits: uint32_t { };
-enum class EventCreateFlagBits: uint32_t { };
 enum class MemoryMapFlagBits: uint32_t { };
 enum class DescriptorPoolResetFlagBits: uint32_t { };
 enum class DescriptorUpdateTemplateCreateFlagBits: uint32_t { };
@@ -2270,6 +2559,9 @@ enum class ImagePipeSurfaceCreateFlagBitsFUCHSIA: uint32_t { };
 enum class StreamDescriptorSurfaceCreateFlagBitsGGP: uint32_t { };
 #endif // defined(VK_USE_PLATFORM_GGP)
 enum class HeadlessSurfaceCreateFlagBitsEXT: uint32_t { };
+#if defined(VK_USE_PLATFORM_SCREEN_QNX)
+enum class ScreenSurfaceCreateFlagBitsQNX: uint32_t { };
+#endif // defined(VK_USE_PLATFORM_SCREEN_QNX)
 enum class CommandPoolTrimFlagBits: uint32_t { };
 enum class PipelineViewportSwizzleStateCreateFlagBitsNV: uint32_t { };
 enum class PipelineDiscardRectangleStateCreateFlagBitsEXT: uint32_t { };
@@ -2283,6 +2575,12 @@ enum class DeviceMemoryReportFlagBitsEXT: uint32_t { };
 enum class PipelineRasterizationConservativeStateCreateFlagBitsEXT: uint32_t { };
 enum class PipelineRasterizationStateStreamCreateFlagBitsEXT: uint32_t { };
 enum class PipelineRasterizationDepthClipStateCreateFlagBitsEXT: uint32_t { };
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+enum class VideoBeginCodingFlagBitsKHR: uint32_t { };
+enum class VideoEndCodingFlagBitsKHR: uint32_t { };
+enum class VideoDecodeH264CreateFlagBitsEXT: uint32_t { };
+enum class VideoDecodeH265CreateFlagBitsEXT: uint32_t { };
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 
 #define DECLARE_ENUM_FLAG_OPERATORS(FLAG_TYPE, FLAG_BITS, BASE_TYPE)                       \
                                                                                            \
@@ -2412,6 +2710,8 @@ using SemaphoreWaitFlagsKHR = SemaphoreWaitFlags;
 DECLARE_ENUM_FLAG_OPERATORS(PipelineCompilerControlFlagsAMD, PipelineCompilerControlFlagBitsAMD, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(ShaderCorePropertiesFlagsAMD, ShaderCorePropertiesFlagBitsAMD, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(DeviceDiagnosticsConfigFlagsNV, DeviceDiagnosticsConfigFlagBitsNV, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(AccessFlags2KHR, AccessFlagBits2KHR, uint64_t)
+DECLARE_ENUM_FLAG_OPERATORS(PipelineStageFlags2KHR, PipelineStageFlagBits2KHR, uint64_t)
 DECLARE_ENUM_FLAG_OPERATORS(CompositeAlphaFlagsKHR, CompositeAlphaFlagBitsKHR, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(DisplayPlaneAlphaFlagsKHR, DisplayPlaneAlphaFlagBitsKHR, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(SurfaceTransformFlagsKHR, SurfaceTransformFlagBitsKHR, uint32_t)
@@ -2455,6 +2755,9 @@ DECLARE_ENUM_FLAG_OPERATORS(ImagePipeSurfaceCreateFlagsFUCHSIA, ImagePipeSurface
 DECLARE_ENUM_FLAG_OPERATORS(StreamDescriptorSurfaceCreateFlagsGGP, StreamDescriptorSurfaceCreateFlagBitsGGP, uint32_t)
 #endif // defined(VK_USE_PLATFORM_GGP)
 DECLARE_ENUM_FLAG_OPERATORS(HeadlessSurfaceCreateFlagsEXT, HeadlessSurfaceCreateFlagBitsEXT, uint32_t)
+#if defined(VK_USE_PLATFORM_SCREEN_QNX)
+DECLARE_ENUM_FLAG_OPERATORS(ScreenSurfaceCreateFlagsQNX, ScreenSurfaceCreateFlagBitsQNX, uint32_t)
+#endif // defined(VK_USE_PLATFORM_SCREEN_QNX)
 DECLARE_ENUM_FLAG_OPERATORS(PeerMemoryFeatureFlags, PeerMemoryFeatureFlagBits, uint32_t)
 using PeerMemoryFeatureFlagsKHR = PeerMemoryFeatureFlags;
 DECLARE_ENUM_FLAG_OPERATORS(MemoryAllocateFlags, MemoryAllocateFlagBits, uint32_t)
@@ -2502,6 +2805,29 @@ using ResolveModeFlagsKHR = ResolveModeFlags;
 DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationStateStreamCreateFlagsEXT, PipelineRasterizationStateStreamCreateFlagBitsEXT, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationDepthClipStateCreateFlagsEXT, PipelineRasterizationDepthClipStateCreateFlagBitsEXT, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(ToolPurposeFlagsEXT, ToolPurposeFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(SubmitFlagsKHR, SubmitFlagBitsKHR, uint32_t)
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+DECLARE_ENUM_FLAG_OPERATORS(VideoCodecOperationFlagsKHR, VideoCodecOperationFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(VideoCapabilitiesFlagsKHR, VideoCapabilitiesFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(VideoSessionCreateFlagsKHR, VideoSessionCreateFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(VideoBeginCodingFlagsKHR, VideoBeginCodingFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(VideoEndCodingFlagsKHR, VideoEndCodingFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(VideoCodingQualityPresetFlagsKHR, VideoCodingQualityPresetFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(VideoCodingControlFlagsKHR, VideoCodingControlFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(VideoDecodeFlagsKHR, VideoDecodeFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(VideoDecodeH264FieldLayoutFlagsEXT, VideoDecodeH264FieldLayoutFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(VideoDecodeH264CreateFlagsEXT, VideoDecodeH264CreateFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(VideoDecodeH265CreateFlagsEXT, VideoDecodeH265CreateFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(VideoEncodeFlagsKHR, VideoEncodeFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(VideoEncodeRateControlFlagsKHR, VideoEncodeRateControlFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(VideoEncodeRateControlModeFlagsKHR, VideoEncodeRateControlModeFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(VideoChromaSubsamplingFlagsKHR, VideoChromaSubsamplingFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(VideoComponentBitDepthFlagsKHR, VideoComponentBitDepthFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(VideoEncodeH264CapabilitiesFlagsEXT, VideoEncodeH264CapabilitiesFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(VideoEncodeH264InputModeFlagsEXT, VideoEncodeH264InputModeFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(VideoEncodeH264OutputModeFlagsEXT, VideoEncodeH264OutputModeFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(VideoEncodeH264CreateFlagsEXT, VideoEncodeH264CreateFlagBitsEXT, uint32_t)
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 } //namespace vk
 VK_DEFINE_HANDLE(VkInstance)
 VK_DEFINE_HANDLE(VkPhysicalDevice)
@@ -2545,6 +2871,8 @@ VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkSurfaceKHR)
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkSwapchainKHR)
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDebugReportCallbackEXT)
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDebugUtilsMessengerEXT)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkVideoSessionKHR)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkVideoSessionParametersKHR)
 namespace vk {
 
 class Instance {
@@ -3024,6 +3352,30 @@ class DebugUtilsMessengerEXT {
     DebugUtilsMessengerEXT([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit DebugUtilsMessengerEXT(VkDebugUtilsMessengerEXT handle) noexcept : handle(handle){}
     VkDebugUtilsMessengerEXT get() { return handle; }
+    bool valid() { return handle != 0; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
+};
+
+class VideoSessionKHR {
+    VkVideoSessionKHR handle = 0;
+    public:
+    VideoSessionKHR() = default;
+    VideoSessionKHR([[maybe_unused]] std::nullptr_t none) noexcept {}
+    explicit VideoSessionKHR(VkVideoSessionKHR handle) noexcept : handle(handle){}
+    VkVideoSessionKHR get() { return handle; }
+    bool valid() { return handle != 0; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
+};
+
+class VideoSessionParametersKHR {
+    VkVideoSessionParametersKHR handle = 0;
+    public:
+    VideoSessionParametersKHR() = default;
+    VideoSessionParametersKHR([[maybe_unused]] std::nullptr_t none) noexcept {}
+    explicit VideoSessionParametersKHR(VkVideoSessionParametersKHR handle) noexcept : handle(handle){}
+    VkVideoSessionParametersKHR get() { return handle; }
     bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
@@ -5453,6 +5805,20 @@ struct StreamDescriptorSurfaceCreateInfoGGP {
     StreamDescriptorSurfaceCreateInfoGGP& setStreamDescriptor(GgpStreamDescriptor streamDescriptor_) {this->streamDescriptor = streamDescriptor_; return *this; }
 };
 #endif // defined(VK_USE_PLATFORM_GGP)
+#if defined(VK_USE_PLATFORM_SCREEN_QNX)
+struct ScreenSurfaceCreateInfoQNX {
+    StructureType sType{StructureType::ScreenSurfaceCreateInfoQNX};
+    const void* pNext = nullptr;
+    ScreenSurfaceCreateFlagsQNX flags{};
+    _screen_context* context = nullptr;
+    _screen_window* window = nullptr;
+    ScreenSurfaceCreateInfoQNX& setFlags(ScreenSurfaceCreateFlagsQNX flags_) {this->flags = flags_; return *this; }
+    ScreenSurfaceCreateInfoQNX& setContext(_screen_context* context_) {this->context = context_; return *this; }
+    ScreenSurfaceCreateInfoQNX& setContext(_screen_context & context_) {this->context = &context_; return *this; }
+    ScreenSurfaceCreateInfoQNX& setWindow(_screen_window* window_) {this->window = window_; return *this; }
+    ScreenSurfaceCreateInfoQNX& setWindow(_screen_window & window_) {this->window = &window_; return *this; }
+};
+#endif // defined(VK_USE_PLATFORM_SCREEN_QNX)
 struct SurfaceFormatKHR {
     Format format{static_cast<Format>(0)};
     ColorSpaceKHR colorSpace{static_cast<ColorSpaceKHR>(0)};
@@ -6142,6 +6508,32 @@ struct ExportMemoryWin32HandleInfoKHR {
     ExportMemoryWin32HandleInfoKHR& setDwAccess(DWORD dwAccess_) {this->dwAccess = dwAccess_; return *this; }
     ExportMemoryWin32HandleInfoKHR& setName(LPCWSTR name_) {this->name = name_; return *this; }
 };
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+struct ImportMemoryZirconHandleInfoFUCHSIA {
+    StructureType sType{StructureType::ImportMemoryZirconHandleInfoFUCHSIA};
+    const void* pNext = nullptr;
+    ExternalMemoryHandleTypeFlagBits handleType{static_cast<ExternalMemoryHandleTypeFlagBits>(0)};
+    zx_handle_t handle{};
+    ImportMemoryZirconHandleInfoFUCHSIA& setHandleType(ExternalMemoryHandleTypeFlagBits handleType_) {this->handleType = handleType_; return *this; }
+    ImportMemoryZirconHandleInfoFUCHSIA& setHandle(zx_handle_t handle_) {this->handle = handle_; return *this; }
+};
+struct MemoryZirconHandlePropertiesFUCHSIA {
+    StructureType sType{StructureType::MemoryZirconHandlePropertiesFUCHSIA};
+    void* pNext = nullptr;
+    uint32_t memoryTypeBits{0};
+    MemoryZirconHandlePropertiesFUCHSIA& setMemoryTypeBits(uint32_t memoryTypeBits_) {this->memoryTypeBits = memoryTypeBits_; return *this; }
+};
+struct MemoryGetZirconHandleInfoFUCHSIA {
+    StructureType sType{StructureType::MemoryGetZirconHandleInfoFUCHSIA};
+    const void* pNext = nullptr;
+    DeviceMemory memory{};
+    ExternalMemoryHandleTypeFlagBits handleType{static_cast<ExternalMemoryHandleTypeFlagBits>(0)};
+    MemoryGetZirconHandleInfoFUCHSIA& setMemory(DeviceMemory memory_) {this->memory = memory_; return *this; }
+    MemoryGetZirconHandleInfoFUCHSIA& setHandleType(ExternalMemoryHandleTypeFlagBits handleType_) {this->handleType = handleType_; return *this; }
+};
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
 struct MemoryWin32HandlePropertiesKHR {
     StructureType sType{StructureType::MemoryWin32HandlePropertiesKHR};
     void* pNext = nullptr;
@@ -6298,6 +6690,28 @@ struct SemaphoreGetFdInfoKHR {
     SemaphoreGetFdInfoKHR& setSemaphore(Semaphore semaphore_) {this->semaphore = semaphore_; return *this; }
     SemaphoreGetFdInfoKHR& setHandleType(ExternalSemaphoreHandleTypeFlagBits handleType_) {this->handleType = handleType_; return *this; }
 };
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+struct ImportSemaphoreZirconHandleInfoFUCHSIA {
+    StructureType sType{StructureType::ImportSemaphoreZirconHandleInfoFUCHSIA};
+    const void* pNext = nullptr;
+    Semaphore semaphore{};
+    SemaphoreImportFlags flags{};
+    ExternalSemaphoreHandleTypeFlagBits handleType{static_cast<ExternalSemaphoreHandleTypeFlagBits>(0)};
+    zx_handle_t zirconHandle{};
+    ImportSemaphoreZirconHandleInfoFUCHSIA& setSemaphore(Semaphore semaphore_) {this->semaphore = semaphore_; return *this; }
+    ImportSemaphoreZirconHandleInfoFUCHSIA& setFlags(SemaphoreImportFlags flags_) {this->flags = flags_; return *this; }
+    ImportSemaphoreZirconHandleInfoFUCHSIA& setHandleType(ExternalSemaphoreHandleTypeFlagBits handleType_) {this->handleType = handleType_; return *this; }
+    ImportSemaphoreZirconHandleInfoFUCHSIA& setZirconHandle(zx_handle_t zirconHandle_) {this->zirconHandle = zirconHandle_; return *this; }
+};
+struct SemaphoreGetZirconHandleInfoFUCHSIA {
+    StructureType sType{StructureType::SemaphoreGetZirconHandleInfoFUCHSIA};
+    const void* pNext = nullptr;
+    Semaphore semaphore{};
+    ExternalSemaphoreHandleTypeFlagBits handleType{static_cast<ExternalSemaphoreHandleTypeFlagBits>(0)};
+    SemaphoreGetZirconHandleInfoFUCHSIA& setSemaphore(Semaphore semaphore_) {this->semaphore = semaphore_; return *this; }
+    SemaphoreGetZirconHandleInfoFUCHSIA& setHandleType(ExternalSemaphoreHandleTypeFlagBits handleType_) {this->handleType = handleType_; return *this; }
+};
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
 struct PhysicalDeviceExternalFenceInfo {
     StructureType sType{StructureType::PhysicalDeviceExternalFenceInfo};
     const void* pNext = nullptr;
@@ -10121,6 +10535,16 @@ struct PhysicalDeviceExtendedDynamicStateFeaturesEXT {
     Bool32 extendedDynamicState{0};
     PhysicalDeviceExtendedDynamicStateFeaturesEXT& setExtendedDynamicState(Bool32 extendedDynamicState_) {this->extendedDynamicState = extendedDynamicState_; return *this; }
 };
+struct PhysicalDeviceExtendedDynamicState2FeaturesEXT {
+    StructureType sType{StructureType::PhysicalDeviceExtendedDynamicState2FeaturesEXT};
+    void* pNext = nullptr;
+    Bool32 extendedDynamicState2{0};
+    Bool32 extendedDynamicState2LogicOp{0};
+    Bool32 extendedDynamicState2PatchControlPoints{0};
+    PhysicalDeviceExtendedDynamicState2FeaturesEXT& setExtendedDynamicState2(Bool32 extendedDynamicState2_) {this->extendedDynamicState2 = extendedDynamicState2_; return *this; }
+    PhysicalDeviceExtendedDynamicState2FeaturesEXT& setExtendedDynamicState2LogicOp(Bool32 extendedDynamicState2LogicOp_) {this->extendedDynamicState2LogicOp = extendedDynamicState2LogicOp_; return *this; }
+    PhysicalDeviceExtendedDynamicState2FeaturesEXT& setExtendedDynamicState2PatchControlPoints(Bool32 extendedDynamicState2PatchControlPoints_) {this->extendedDynamicState2PatchControlPoints = extendedDynamicState2PatchControlPoints_; return *this; }
+};
 struct RenderPassTransformBeginInfoQCOM {
     StructureType sType{StructureType::RenderPassTransformBeginInfoQCOM};
     void* pNext = nullptr;
@@ -10552,6 +10976,736 @@ struct MutableDescriptorTypeCreateInfoVALVE {
     MutableDescriptorTypeCreateInfoVALVE& setPMutableDescriptorTypeLists(const MutableDescriptorTypeListVALVE* pMutableDescriptorTypeLists_) {this->pMutableDescriptorTypeLists = pMutableDescriptorTypeLists_; return *this; }
     MutableDescriptorTypeCreateInfoVALVE& setPMutableDescriptorTypeLists(detail::span<const MutableDescriptorTypeListVALVE> pMutableDescriptorTypeLists_) {this->mutableDescriptorTypeListCount = pMutableDescriptorTypeLists_.size(); this->pMutableDescriptorTypeLists = pMutableDescriptorTypeLists_.data();  return *this; }
 };
+struct PhysicalDeviceVertexInputDynamicStateFeaturesEXT {
+    StructureType sType{StructureType::PhysicalDeviceVertexInputDynamicStateFeaturesEXT};
+    void* pNext = nullptr;
+    Bool32 vertexInputDynamicState{0};
+    PhysicalDeviceVertexInputDynamicStateFeaturesEXT& setVertexInputDynamicState(Bool32 vertexInputDynamicState_) {this->vertexInputDynamicState = vertexInputDynamicState_; return *this; }
+};
+struct VertexInputBindingDescription2EXT {
+    StructureType sType{StructureType::VertexInputBindingDescription2EXT};
+    void* pNext = nullptr;
+    uint32_t binding{0};
+    uint32_t stride{0};
+    VertexInputRate inputRate{static_cast<VertexInputRate>(0)};
+    uint32_t divisor{0};
+    VertexInputBindingDescription2EXT& setBinding(uint32_t binding_) {this->binding = binding_; return *this; }
+    VertexInputBindingDescription2EXT& setStride(uint32_t stride_) {this->stride = stride_; return *this; }
+    VertexInputBindingDescription2EXT& setInputRate(VertexInputRate inputRate_) {this->inputRate = inputRate_; return *this; }
+    VertexInputBindingDescription2EXT& setDivisor(uint32_t divisor_) {this->divisor = divisor_; return *this; }
+};
+struct VertexInputAttributeDescription2EXT {
+    StructureType sType{StructureType::VertexInputAttributeDescription2EXT};
+    void* pNext = nullptr;
+    uint32_t location{0};
+    uint32_t binding{0};
+    Format format{static_cast<Format>(0)};
+    uint32_t offset{0};
+    VertexInputAttributeDescription2EXT& setLocation(uint32_t location_) {this->location = location_; return *this; }
+    VertexInputAttributeDescription2EXT& setBinding(uint32_t binding_) {this->binding = binding_; return *this; }
+    VertexInputAttributeDescription2EXT& setFormat(Format format_) {this->format = format_; return *this; }
+    VertexInputAttributeDescription2EXT& setOffset(uint32_t offset_) {this->offset = offset_; return *this; }
+};
+struct PhysicalDeviceColorWriteEnableFeaturesEXT {
+    StructureType sType{StructureType::PhysicalDeviceColorWriteEnableFeaturesEXT};
+    void* pNext = nullptr;
+    Bool32 colorWriteEnable{0};
+    PhysicalDeviceColorWriteEnableFeaturesEXT& setColorWriteEnable(Bool32 colorWriteEnable_) {this->colorWriteEnable = colorWriteEnable_; return *this; }
+};
+struct PipelineColorWriteCreateInfoEXT {
+    StructureType sType{StructureType::PipelineColorWriteCreateInfoEXT};
+    const void* pNext = nullptr;
+    uint32_t attachmentCount{0};
+    const Bool32* pColorWriteEnables = nullptr;
+    PipelineColorWriteCreateInfoEXT& setAttachmentCount(uint32_t attachmentCount_) {this->attachmentCount = attachmentCount_; return *this; }
+    PipelineColorWriteCreateInfoEXT& setPColorWriteEnables(const Bool32* pColorWriteEnables_) {this->pColorWriteEnables = pColorWriteEnables_; return *this; }
+    PipelineColorWriteCreateInfoEXT& setPColorWriteEnables(detail::span<const Bool32> pColorWriteEnables_) {this->attachmentCount = pColorWriteEnables_.size(); this->pColorWriteEnables = pColorWriteEnables_.data();  return *this; }
+};
+struct MemoryBarrier2KHR {
+    StructureType sType{StructureType::MemoryBarrier2KHR};
+    const void* pNext = nullptr;
+    PipelineStageFlags2KHR srcStageMask{};
+    AccessFlags2KHR srcAccessMask{};
+    PipelineStageFlags2KHR dstStageMask{};
+    AccessFlags2KHR dstAccessMask{};
+    MemoryBarrier2KHR& setSrcStageMask(PipelineStageFlags2KHR srcStageMask_) {this->srcStageMask = srcStageMask_; return *this; }
+    MemoryBarrier2KHR& setSrcAccessMask(AccessFlags2KHR srcAccessMask_) {this->srcAccessMask = srcAccessMask_; return *this; }
+    MemoryBarrier2KHR& setDstStageMask(PipelineStageFlags2KHR dstStageMask_) {this->dstStageMask = dstStageMask_; return *this; }
+    MemoryBarrier2KHR& setDstAccessMask(AccessFlags2KHR dstAccessMask_) {this->dstAccessMask = dstAccessMask_; return *this; }
+};
+struct ImageMemoryBarrier2KHR {
+    StructureType sType{StructureType::ImageMemoryBarrier2KHR};
+    const void* pNext = nullptr;
+    PipelineStageFlags2KHR srcStageMask{};
+    AccessFlags2KHR srcAccessMask{};
+    PipelineStageFlags2KHR dstStageMask{};
+    AccessFlags2KHR dstAccessMask{};
+    ImageLayout oldLayout{static_cast<ImageLayout>(0)};
+    ImageLayout newLayout{static_cast<ImageLayout>(0)};
+    uint32_t srcQueueFamilyIndex{0};
+    uint32_t dstQueueFamilyIndex{0};
+    Image image{};
+    ImageSubresourceRange subresourceRange{};
+    ImageMemoryBarrier2KHR& setSrcStageMask(PipelineStageFlags2KHR srcStageMask_) {this->srcStageMask = srcStageMask_; return *this; }
+    ImageMemoryBarrier2KHR& setSrcAccessMask(AccessFlags2KHR srcAccessMask_) {this->srcAccessMask = srcAccessMask_; return *this; }
+    ImageMemoryBarrier2KHR& setDstStageMask(PipelineStageFlags2KHR dstStageMask_) {this->dstStageMask = dstStageMask_; return *this; }
+    ImageMemoryBarrier2KHR& setDstAccessMask(AccessFlags2KHR dstAccessMask_) {this->dstAccessMask = dstAccessMask_; return *this; }
+    ImageMemoryBarrier2KHR& setOldLayout(ImageLayout oldLayout_) {this->oldLayout = oldLayout_; return *this; }
+    ImageMemoryBarrier2KHR& setNewLayout(ImageLayout newLayout_) {this->newLayout = newLayout_; return *this; }
+    ImageMemoryBarrier2KHR& setSrcQueueFamilyIndex(uint32_t srcQueueFamilyIndex_) {this->srcQueueFamilyIndex = srcQueueFamilyIndex_; return *this; }
+    ImageMemoryBarrier2KHR& setDstQueueFamilyIndex(uint32_t dstQueueFamilyIndex_) {this->dstQueueFamilyIndex = dstQueueFamilyIndex_; return *this; }
+    ImageMemoryBarrier2KHR& setImage(Image image_) {this->image = image_; return *this; }
+    ImageMemoryBarrier2KHR& setSubresourceRange(ImageSubresourceRange subresourceRange_) {this->subresourceRange = subresourceRange_; return *this; }
+};
+struct BufferMemoryBarrier2KHR {
+    StructureType sType{StructureType::BufferMemoryBarrier2KHR};
+    const void* pNext = nullptr;
+    PipelineStageFlags2KHR srcStageMask{};
+    AccessFlags2KHR srcAccessMask{};
+    PipelineStageFlags2KHR dstStageMask{};
+    AccessFlags2KHR dstAccessMask{};
+    uint32_t srcQueueFamilyIndex{0};
+    uint32_t dstQueueFamilyIndex{0};
+    Buffer buffer{};
+    DeviceSize offset{0};
+    DeviceSize size{0};
+    BufferMemoryBarrier2KHR& setSrcStageMask(PipelineStageFlags2KHR srcStageMask_) {this->srcStageMask = srcStageMask_; return *this; }
+    BufferMemoryBarrier2KHR& setSrcAccessMask(AccessFlags2KHR srcAccessMask_) {this->srcAccessMask = srcAccessMask_; return *this; }
+    BufferMemoryBarrier2KHR& setDstStageMask(PipelineStageFlags2KHR dstStageMask_) {this->dstStageMask = dstStageMask_; return *this; }
+    BufferMemoryBarrier2KHR& setDstAccessMask(AccessFlags2KHR dstAccessMask_) {this->dstAccessMask = dstAccessMask_; return *this; }
+    BufferMemoryBarrier2KHR& setSrcQueueFamilyIndex(uint32_t srcQueueFamilyIndex_) {this->srcQueueFamilyIndex = srcQueueFamilyIndex_; return *this; }
+    BufferMemoryBarrier2KHR& setDstQueueFamilyIndex(uint32_t dstQueueFamilyIndex_) {this->dstQueueFamilyIndex = dstQueueFamilyIndex_; return *this; }
+    BufferMemoryBarrier2KHR& setBuffer(Buffer buffer_) {this->buffer = buffer_; return *this; }
+    BufferMemoryBarrier2KHR& setOffset(DeviceSize offset_) {this->offset = offset_; return *this; }
+    BufferMemoryBarrier2KHR& setSize(DeviceSize size_) {this->size = size_; return *this; }
+};
+struct DependencyInfoKHR {
+    StructureType sType{StructureType::DependencyInfoKHR};
+    const void* pNext = nullptr;
+    DependencyFlags dependencyFlags{};
+    uint32_t memoryBarrierCount{0};
+    const MemoryBarrier2KHR* pMemoryBarriers = nullptr;
+    uint32_t bufferMemoryBarrierCount{0};
+    const BufferMemoryBarrier2KHR* pBufferMemoryBarriers = nullptr;
+    uint32_t imageMemoryBarrierCount{0};
+    const ImageMemoryBarrier2KHR* pImageMemoryBarriers = nullptr;
+    DependencyInfoKHR& setDependencyFlags(DependencyFlags dependencyFlags_) {this->dependencyFlags = dependencyFlags_; return *this; }
+    DependencyInfoKHR& setMemoryBarrierCount(uint32_t memoryBarrierCount_) {this->memoryBarrierCount = memoryBarrierCount_; return *this; }
+    DependencyInfoKHR& setPMemoryBarriers(const MemoryBarrier2KHR* pMemoryBarriers_) {this->pMemoryBarriers = pMemoryBarriers_; return *this; }
+    DependencyInfoKHR& setPMemoryBarriers(detail::span<const MemoryBarrier2KHR> pMemoryBarriers_) {this->memoryBarrierCount = pMemoryBarriers_.size(); this->pMemoryBarriers = pMemoryBarriers_.data();  return *this; }
+    DependencyInfoKHR& setBufferMemoryBarrierCount(uint32_t bufferMemoryBarrierCount_) {this->bufferMemoryBarrierCount = bufferMemoryBarrierCount_; return *this; }
+    DependencyInfoKHR& setPBufferMemoryBarriers(const BufferMemoryBarrier2KHR* pBufferMemoryBarriers_) {this->pBufferMemoryBarriers = pBufferMemoryBarriers_; return *this; }
+    DependencyInfoKHR& setPBufferMemoryBarriers(detail::span<const BufferMemoryBarrier2KHR> pBufferMemoryBarriers_) {this->bufferMemoryBarrierCount = pBufferMemoryBarriers_.size(); this->pBufferMemoryBarriers = pBufferMemoryBarriers_.data();  return *this; }
+    DependencyInfoKHR& setImageMemoryBarrierCount(uint32_t imageMemoryBarrierCount_) {this->imageMemoryBarrierCount = imageMemoryBarrierCount_; return *this; }
+    DependencyInfoKHR& setPImageMemoryBarriers(const ImageMemoryBarrier2KHR* pImageMemoryBarriers_) {this->pImageMemoryBarriers = pImageMemoryBarriers_; return *this; }
+    DependencyInfoKHR& setPImageMemoryBarriers(detail::span<const ImageMemoryBarrier2KHR> pImageMemoryBarriers_) {this->imageMemoryBarrierCount = pImageMemoryBarriers_.size(); this->pImageMemoryBarriers = pImageMemoryBarriers_.data();  return *this; }
+};
+struct SemaphoreSubmitInfoKHR {
+    StructureType sType{StructureType::SemaphoreSubmitInfoKHR};
+    const void* pNext = nullptr;
+    Semaphore semaphore{};
+    uint64_t value{0};
+    PipelineStageFlags2KHR stageMask{};
+    uint32_t deviceIndex{0};
+    SemaphoreSubmitInfoKHR& setSemaphore(Semaphore semaphore_) {this->semaphore = semaphore_; return *this; }
+    SemaphoreSubmitInfoKHR& setValue(uint64_t value_) {this->value = value_; return *this; }
+    SemaphoreSubmitInfoKHR& setStageMask(PipelineStageFlags2KHR stageMask_) {this->stageMask = stageMask_; return *this; }
+    SemaphoreSubmitInfoKHR& setDeviceIndex(uint32_t deviceIndex_) {this->deviceIndex = deviceIndex_; return *this; }
+};
+struct CommandBufferSubmitInfoKHR {
+    StructureType sType{StructureType::CommandBufferSubmitInfoKHR};
+    const void* pNext = nullptr;
+    CommandBuffer commandBuffer{};
+    uint32_t deviceMask{0};
+    CommandBufferSubmitInfoKHR& setCommandBuffer(CommandBuffer commandBuffer_) {this->commandBuffer = commandBuffer_; return *this; }
+    CommandBufferSubmitInfoKHR& setDeviceMask(uint32_t deviceMask_) {this->deviceMask = deviceMask_; return *this; }
+};
+struct SubmitInfo2KHR {
+    StructureType sType{StructureType::SubmitInfo2KHR};
+    const void* pNext = nullptr;
+    SubmitFlagsKHR flags{};
+    uint32_t waitSemaphoreInfoCount{0};
+    const SemaphoreSubmitInfoKHR* pWaitSemaphoreInfos = nullptr;
+    uint32_t commandBufferInfoCount{0};
+    const CommandBufferSubmitInfoKHR* pCommandBufferInfos = nullptr;
+    uint32_t signalSemaphoreInfoCount{0};
+    const SemaphoreSubmitInfoKHR* pSignalSemaphoreInfos = nullptr;
+    SubmitInfo2KHR& setFlags(SubmitFlagsKHR flags_) {this->flags = flags_; return *this; }
+    SubmitInfo2KHR& setWaitSemaphoreInfoCount(uint32_t waitSemaphoreInfoCount_) {this->waitSemaphoreInfoCount = waitSemaphoreInfoCount_; return *this; }
+    SubmitInfo2KHR& setPWaitSemaphoreInfos(const SemaphoreSubmitInfoKHR* pWaitSemaphoreInfos_) {this->pWaitSemaphoreInfos = pWaitSemaphoreInfos_; return *this; }
+    SubmitInfo2KHR& setPWaitSemaphoreInfos(detail::span<const SemaphoreSubmitInfoKHR> pWaitSemaphoreInfos_) {this->waitSemaphoreInfoCount = pWaitSemaphoreInfos_.size(); this->pWaitSemaphoreInfos = pWaitSemaphoreInfos_.data();  return *this; }
+    SubmitInfo2KHR& setCommandBufferInfoCount(uint32_t commandBufferInfoCount_) {this->commandBufferInfoCount = commandBufferInfoCount_; return *this; }
+    SubmitInfo2KHR& setPCommandBufferInfos(const CommandBufferSubmitInfoKHR* pCommandBufferInfos_) {this->pCommandBufferInfos = pCommandBufferInfos_; return *this; }
+    SubmitInfo2KHR& setPCommandBufferInfos(detail::span<const CommandBufferSubmitInfoKHR> pCommandBufferInfos_) {this->commandBufferInfoCount = pCommandBufferInfos_.size(); this->pCommandBufferInfos = pCommandBufferInfos_.data();  return *this; }
+    SubmitInfo2KHR& setSignalSemaphoreInfoCount(uint32_t signalSemaphoreInfoCount_) {this->signalSemaphoreInfoCount = signalSemaphoreInfoCount_; return *this; }
+    SubmitInfo2KHR& setPSignalSemaphoreInfos(const SemaphoreSubmitInfoKHR* pSignalSemaphoreInfos_) {this->pSignalSemaphoreInfos = pSignalSemaphoreInfos_; return *this; }
+    SubmitInfo2KHR& setPSignalSemaphoreInfos(detail::span<const SemaphoreSubmitInfoKHR> pSignalSemaphoreInfos_) {this->signalSemaphoreInfoCount = pSignalSemaphoreInfos_.size(); this->pSignalSemaphoreInfos = pSignalSemaphoreInfos_.data();  return *this; }
+};
+struct QueueFamilyCheckpointProperties2NV {
+    StructureType sType{StructureType::QueueFamilyCheckpointProperties2NV};
+    void* pNext = nullptr;
+    PipelineStageFlags2KHR checkpointExecutionStageMask{};
+    QueueFamilyCheckpointProperties2NV& setCheckpointExecutionStageMask(PipelineStageFlags2KHR checkpointExecutionStageMask_) {this->checkpointExecutionStageMask = checkpointExecutionStageMask_; return *this; }
+};
+struct CheckpointData2NV {
+    StructureType sType{StructureType::CheckpointData2NV};
+    void* pNext = nullptr;
+    PipelineStageFlags2KHR stage{};
+    void* pCheckpointMarker = nullptr;
+    CheckpointData2NV& setStage(PipelineStageFlags2KHR stage_) {this->stage = stage_; return *this; }
+    CheckpointData2NV& setPCheckpointMarker(void* pCheckpointMarker_) {this->pCheckpointMarker = pCheckpointMarker_; return *this; }
+};
+struct PhysicalDeviceSynchronization2FeaturesKHR {
+    StructureType sType{StructureType::PhysicalDeviceSynchronization2FeaturesKHR};
+    void* pNext = nullptr;
+    Bool32 synchronization2{0};
+    PhysicalDeviceSynchronization2FeaturesKHR& setSynchronization2(Bool32 synchronization2_) {this->synchronization2 = synchronization2_; return *this; }
+};
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+struct VideoQueueFamilyProperties2KHR {
+    StructureType sType{StructureType::VideoQueueFamilyProperties2KHR};
+    void* pNext = nullptr;
+    VideoCodecOperationFlagsKHR videoCodecOperations{};
+    VideoQueueFamilyProperties2KHR& setVideoCodecOperations(VideoCodecOperationFlagsKHR videoCodecOperations_) {this->videoCodecOperations = videoCodecOperations_; return *this; }
+};
+struct VideoProfileKHR {
+    StructureType sType{StructureType::VideoProfileKHR};
+    void* pNext = nullptr;
+    VideoCodecOperationFlagBitsKHR videoCodecOperation{static_cast<VideoCodecOperationFlagBitsKHR>(0)};
+    VideoChromaSubsamplingFlagsKHR chromaSubsampling{};
+    VideoComponentBitDepthFlagsKHR lumaBitDepth{};
+    VideoComponentBitDepthFlagsKHR chromaBitDepth{};
+    VideoProfileKHR& setVideoCodecOperation(VideoCodecOperationFlagBitsKHR videoCodecOperation_) {this->videoCodecOperation = videoCodecOperation_; return *this; }
+    VideoProfileKHR& setChromaSubsampling(VideoChromaSubsamplingFlagsKHR chromaSubsampling_) {this->chromaSubsampling = chromaSubsampling_; return *this; }
+    VideoProfileKHR& setLumaBitDepth(VideoComponentBitDepthFlagsKHR lumaBitDepth_) {this->lumaBitDepth = lumaBitDepth_; return *this; }
+    VideoProfileKHR& setChromaBitDepth(VideoComponentBitDepthFlagsKHR chromaBitDepth_) {this->chromaBitDepth = chromaBitDepth_; return *this; }
+};
+struct VideoProfilesKHR {
+    StructureType sType{StructureType::VideoProfilesKHR};
+    void* pNext = nullptr;
+    uint32_t profileCount{0};
+    const VideoProfileKHR* pProfiles = nullptr;
+    VideoProfilesKHR& setProfileCount(uint32_t profileCount_) {this->profileCount = profileCount_; return *this; }
+    VideoProfilesKHR& setPProfiles(const VideoProfileKHR* pProfiles_) {this->pProfiles = pProfiles_; return *this; }
+    VideoProfilesKHR& setPProfiles(VideoProfileKHR const& pProfiles_) {this->pProfiles = &pProfiles_; return *this; }
+};
+struct PhysicalDeviceVideoFormatInfoKHR {
+    StructureType sType{StructureType::PhysicalDeviceVideoFormatInfoKHR};
+    const void* pNext = nullptr;
+    ImageUsageFlags imageUsage{};
+    const VideoProfilesKHR* pVideoProfiles = nullptr;
+    PhysicalDeviceVideoFormatInfoKHR& setImageUsage(ImageUsageFlags imageUsage_) {this->imageUsage = imageUsage_; return *this; }
+    PhysicalDeviceVideoFormatInfoKHR& setPVideoProfiles(const VideoProfilesKHR* pVideoProfiles_) {this->pVideoProfiles = pVideoProfiles_; return *this; }
+    PhysicalDeviceVideoFormatInfoKHR& setPVideoProfiles(VideoProfilesKHR const& pVideoProfiles_) {this->pVideoProfiles = &pVideoProfiles_; return *this; }
+};
+struct VideoFormatPropertiesKHR {
+    StructureType sType{StructureType::VideoFormatPropertiesKHR};
+    void* pNext = nullptr;
+    Format format{static_cast<Format>(0)};
+    VideoFormatPropertiesKHR& setFormat(Format format_) {this->format = format_; return *this; }
+};
+struct VideoCapabilitiesKHR {
+    StructureType sType{StructureType::VideoCapabilitiesKHR};
+    void* pNext = nullptr;
+    VideoCapabilitiesFlagsKHR capabilityFlags{};
+    DeviceSize minBitstreamBufferOffsetAlignment{0};
+    DeviceSize minBitstreamBufferSizeAlignment{0};
+    Extent2D videoPictureExtentGranularity{};
+    Extent2D minExtent{};
+    Extent2D maxExtent{};
+    uint32_t maxReferencePicturesSlotsCount{0};
+    uint32_t maxReferencePicturesActiveCount{0};
+    VideoCapabilitiesKHR& setCapabilityFlags(VideoCapabilitiesFlagsKHR capabilityFlags_) {this->capabilityFlags = capabilityFlags_; return *this; }
+    VideoCapabilitiesKHR& setMinBitstreamBufferOffsetAlignment(DeviceSize minBitstreamBufferOffsetAlignment_) {this->minBitstreamBufferOffsetAlignment = minBitstreamBufferOffsetAlignment_; return *this; }
+    VideoCapabilitiesKHR& setMinBitstreamBufferSizeAlignment(DeviceSize minBitstreamBufferSizeAlignment_) {this->minBitstreamBufferSizeAlignment = minBitstreamBufferSizeAlignment_; return *this; }
+    VideoCapabilitiesKHR& setVideoPictureExtentGranularity(Extent2D videoPictureExtentGranularity_) {this->videoPictureExtentGranularity = videoPictureExtentGranularity_; return *this; }
+    VideoCapabilitiesKHR& setMinExtent(Extent2D minExtent_) {this->minExtent = minExtent_; return *this; }
+    VideoCapabilitiesKHR& setMaxExtent(Extent2D maxExtent_) {this->maxExtent = maxExtent_; return *this; }
+    VideoCapabilitiesKHR& setMaxReferencePicturesSlotsCount(uint32_t maxReferencePicturesSlotsCount_) {this->maxReferencePicturesSlotsCount = maxReferencePicturesSlotsCount_; return *this; }
+    VideoCapabilitiesKHR& setMaxReferencePicturesActiveCount(uint32_t maxReferencePicturesActiveCount_) {this->maxReferencePicturesActiveCount = maxReferencePicturesActiveCount_; return *this; }
+};
+struct VideoGetMemoryPropertiesKHR {
+    StructureType sType{StructureType::VideoGetMemoryPropertiesKHR};
+    const void* pNext = nullptr;
+    uint32_t memoryBindIndex{0};
+    MemoryRequirements2* pMemoryRequirements = nullptr;
+    VideoGetMemoryPropertiesKHR& setMemoryBindIndex(uint32_t memoryBindIndex_) {this->memoryBindIndex = memoryBindIndex_; return *this; }
+    VideoGetMemoryPropertiesKHR& setPMemoryRequirements(MemoryRequirements2* pMemoryRequirements_) {this->pMemoryRequirements = pMemoryRequirements_; return *this; }
+    VideoGetMemoryPropertiesKHR& setPMemoryRequirements(MemoryRequirements2 & pMemoryRequirements_) {this->pMemoryRequirements = &pMemoryRequirements_; return *this; }
+};
+struct VideoBindMemoryKHR {
+    StructureType sType{StructureType::VideoBindMemoryKHR};
+    const void* pNext = nullptr;
+    uint32_t memoryBindIndex{0};
+    DeviceMemory memory{};
+    DeviceSize memoryOffset{0};
+    DeviceSize memorySize{0};
+    VideoBindMemoryKHR& setMemoryBindIndex(uint32_t memoryBindIndex_) {this->memoryBindIndex = memoryBindIndex_; return *this; }
+    VideoBindMemoryKHR& setMemory(DeviceMemory memory_) {this->memory = memory_; return *this; }
+    VideoBindMemoryKHR& setMemoryOffset(DeviceSize memoryOffset_) {this->memoryOffset = memoryOffset_; return *this; }
+    VideoBindMemoryKHR& setMemorySize(DeviceSize memorySize_) {this->memorySize = memorySize_; return *this; }
+};
+struct VideoPictureResourceKHR {
+    StructureType sType{StructureType::VideoPictureResourceKHR};
+    const void* pNext = nullptr;
+    Offset2D codedOffset{};
+    Extent2D codedExtent{};
+    uint32_t baseArrayLayer{0};
+    ImageView imageViewBinding{};
+    VideoPictureResourceKHR& setCodedOffset(Offset2D codedOffset_) {this->codedOffset = codedOffset_; return *this; }
+    VideoPictureResourceKHR& setCodedExtent(Extent2D codedExtent_) {this->codedExtent = codedExtent_; return *this; }
+    VideoPictureResourceKHR& setBaseArrayLayer(uint32_t baseArrayLayer_) {this->baseArrayLayer = baseArrayLayer_; return *this; }
+    VideoPictureResourceKHR& setImageViewBinding(ImageView imageViewBinding_) {this->imageViewBinding = imageViewBinding_; return *this; }
+};
+struct VideoReferenceSlotKHR {
+    StructureType sType{StructureType::VideoReferenceSlotKHR};
+    const void* pNext = nullptr;
+    int8_t slotIndex{};
+    const VideoPictureResourceKHR* pPictureResource = nullptr;
+    VideoReferenceSlotKHR& setSlotIndex(int8_t slotIndex_) {this->slotIndex = slotIndex_; return *this; }
+    VideoReferenceSlotKHR& setPPictureResource(const VideoPictureResourceKHR* pPictureResource_) {this->pPictureResource = pPictureResource_; return *this; }
+    VideoReferenceSlotKHR& setPPictureResource(VideoPictureResourceKHR const& pPictureResource_) {this->pPictureResource = &pPictureResource_; return *this; }
+};
+struct VideoDecodeInfoKHR {
+    StructureType sType{StructureType::VideoDecodeInfoKHR};
+    const void* pNext = nullptr;
+    VideoDecodeFlagsKHR flags{};
+    Offset2D codedOffset{};
+    Extent2D codedExtent{};
+    Buffer srcBuffer{};
+    DeviceSize srcBufferOffset{0};
+    DeviceSize srcBufferRange{0};
+    VideoPictureResourceKHR dstPictureResource{};
+    const VideoReferenceSlotKHR* pSetupReferenceSlot = nullptr;
+    uint32_t referenceSlotCount{0};
+    const VideoReferenceSlotKHR* pReferenceSlots = nullptr;
+    VideoDecodeInfoKHR& setFlags(VideoDecodeFlagsKHR flags_) {this->flags = flags_; return *this; }
+    VideoDecodeInfoKHR& setCodedOffset(Offset2D codedOffset_) {this->codedOffset = codedOffset_; return *this; }
+    VideoDecodeInfoKHR& setCodedExtent(Extent2D codedExtent_) {this->codedExtent = codedExtent_; return *this; }
+    VideoDecodeInfoKHR& setSrcBuffer(Buffer srcBuffer_) {this->srcBuffer = srcBuffer_; return *this; }
+    VideoDecodeInfoKHR& setSrcBufferOffset(DeviceSize srcBufferOffset_) {this->srcBufferOffset = srcBufferOffset_; return *this; }
+    VideoDecodeInfoKHR& setSrcBufferRange(DeviceSize srcBufferRange_) {this->srcBufferRange = srcBufferRange_; return *this; }
+    VideoDecodeInfoKHR& setDstPictureResource(VideoPictureResourceKHR dstPictureResource_) {this->dstPictureResource = dstPictureResource_; return *this; }
+    VideoDecodeInfoKHR& setPSetupReferenceSlot(const VideoReferenceSlotKHR* pSetupReferenceSlot_) {this->pSetupReferenceSlot = pSetupReferenceSlot_; return *this; }
+    VideoDecodeInfoKHR& setPSetupReferenceSlot(VideoReferenceSlotKHR const& pSetupReferenceSlot_) {this->pSetupReferenceSlot = &pSetupReferenceSlot_; return *this; }
+    VideoDecodeInfoKHR& setReferenceSlotCount(uint32_t referenceSlotCount_) {this->referenceSlotCount = referenceSlotCount_; return *this; }
+    VideoDecodeInfoKHR& setPReferenceSlots(const VideoReferenceSlotKHR* pReferenceSlots_) {this->pReferenceSlots = pReferenceSlots_; return *this; }
+    VideoDecodeInfoKHR& setPReferenceSlots(detail::span<const VideoReferenceSlotKHR> pReferenceSlots_) {this->referenceSlotCount = pReferenceSlots_.size(); this->pReferenceSlots = pReferenceSlots_.data();  return *this; }
+};
+struct VideoDecodeH264ProfileEXT {
+    StructureType sType{StructureType::VideoDecodeH264ProfileEXT};
+    const void* pNext = nullptr;
+    StdVideoH264ProfileIdc stdProfileIdc{};
+    VideoDecodeH264FieldLayoutFlagsEXT fieldLayout{};
+    VideoDecodeH264ProfileEXT& setStdProfileIdc(StdVideoH264ProfileIdc stdProfileIdc_) {this->stdProfileIdc = stdProfileIdc_; return *this; }
+    VideoDecodeH264ProfileEXT& setFieldLayout(VideoDecodeH264FieldLayoutFlagsEXT fieldLayout_) {this->fieldLayout = fieldLayout_; return *this; }
+};
+struct VideoDecodeH264CapabilitiesEXT {
+    StructureType sType{StructureType::VideoDecodeH264CapabilitiesEXT};
+    void* pNext = nullptr;
+    uint32_t maxLevel{0};
+    Offset2D fieldOffsetGranularity{};
+    ExtensionProperties stdExtensionVersion{};
+    VideoDecodeH264CapabilitiesEXT& setMaxLevel(uint32_t maxLevel_) {this->maxLevel = maxLevel_; return *this; }
+    VideoDecodeH264CapabilitiesEXT& setFieldOffsetGranularity(Offset2D fieldOffsetGranularity_) {this->fieldOffsetGranularity = fieldOffsetGranularity_; return *this; }
+    VideoDecodeH264CapabilitiesEXT& setStdExtensionVersion(ExtensionProperties stdExtensionVersion_) {this->stdExtensionVersion = stdExtensionVersion_; return *this; }
+};
+struct VideoDecodeH264SessionCreateInfoEXT {
+    StructureType sType{StructureType::VideoDecodeH264SessionCreateInfoEXT};
+    const void* pNext = nullptr;
+    VideoDecodeH264CreateFlagsEXT flags{};
+    const ExtensionProperties* pStdExtensionVersion = nullptr;
+    VideoDecodeH264SessionCreateInfoEXT& setFlags(VideoDecodeH264CreateFlagsEXT flags_) {this->flags = flags_; return *this; }
+    VideoDecodeH264SessionCreateInfoEXT& setPStdExtensionVersion(const ExtensionProperties* pStdExtensionVersion_) {this->pStdExtensionVersion = pStdExtensionVersion_; return *this; }
+    VideoDecodeH264SessionCreateInfoEXT& setPStdExtensionVersion(ExtensionProperties const& pStdExtensionVersion_) {this->pStdExtensionVersion = &pStdExtensionVersion_; return *this; }
+};
+struct VideoDecodeH264SessionParametersAddInfoEXT {
+    StructureType sType{StructureType::VideoDecodeH264SessionParametersAddInfoEXT};
+    const void* pNext = nullptr;
+    uint32_t spsStdCount{0};
+    const StdVideoH264SequenceParameterSet* pSpsStd = nullptr;
+    uint32_t ppsStdCount{0};
+    const StdVideoH264PictureParameterSet* pPpsStd = nullptr;
+    VideoDecodeH264SessionParametersAddInfoEXT& setSpsStdCount(uint32_t spsStdCount_) {this->spsStdCount = spsStdCount_; return *this; }
+    VideoDecodeH264SessionParametersAddInfoEXT& setPSpsStd(const StdVideoH264SequenceParameterSet* pSpsStd_) {this->pSpsStd = pSpsStd_; return *this; }
+    VideoDecodeH264SessionParametersAddInfoEXT& setPSpsStd(detail::span<const StdVideoH264SequenceParameterSet> pSpsStd_) {this->spsStdCount = pSpsStd_.size(); this->pSpsStd = pSpsStd_.data();  return *this; }
+    VideoDecodeH264SessionParametersAddInfoEXT& setPpsStdCount(uint32_t ppsStdCount_) {this->ppsStdCount = ppsStdCount_; return *this; }
+    VideoDecodeH264SessionParametersAddInfoEXT& setPPpsStd(const StdVideoH264PictureParameterSet* pPpsStd_) {this->pPpsStd = pPpsStd_; return *this; }
+    VideoDecodeH264SessionParametersAddInfoEXT& setPPpsStd(detail::span<const StdVideoH264PictureParameterSet> pPpsStd_) {this->ppsStdCount = pPpsStd_.size(); this->pPpsStd = pPpsStd_.data();  return *this; }
+};
+struct VideoDecodeH264SessionParametersCreateInfoEXT {
+    StructureType sType{StructureType::VideoDecodeH264SessionParametersCreateInfoEXT};
+    const void* pNext = nullptr;
+    uint32_t maxSpsStdCount{0};
+    uint32_t maxPpsStdCount{0};
+    const VideoDecodeH264SessionParametersAddInfoEXT* pParametersAddInfo = nullptr;
+    VideoDecodeH264SessionParametersCreateInfoEXT& setMaxSpsStdCount(uint32_t maxSpsStdCount_) {this->maxSpsStdCount = maxSpsStdCount_; return *this; }
+    VideoDecodeH264SessionParametersCreateInfoEXT& setMaxPpsStdCount(uint32_t maxPpsStdCount_) {this->maxPpsStdCount = maxPpsStdCount_; return *this; }
+    VideoDecodeH264SessionParametersCreateInfoEXT& setPParametersAddInfo(const VideoDecodeH264SessionParametersAddInfoEXT* pParametersAddInfo_) {this->pParametersAddInfo = pParametersAddInfo_; return *this; }
+    VideoDecodeH264SessionParametersCreateInfoEXT& setPParametersAddInfo(VideoDecodeH264SessionParametersAddInfoEXT const& pParametersAddInfo_) {this->pParametersAddInfo = &pParametersAddInfo_; return *this; }
+};
+struct VideoDecodeH264PictureInfoEXT {
+    StructureType sType{StructureType::VideoDecodeH264PictureInfoEXT};
+    const void* pNext = nullptr;
+    const StdVideoDecodeH264PictureInfo* pStdPictureInfo = nullptr;
+    uint32_t slicesCount{0};
+    const uint32_t* pSlicesDataOffsets = nullptr;
+    VideoDecodeH264PictureInfoEXT& setPStdPictureInfo(const StdVideoDecodeH264PictureInfo* pStdPictureInfo_) {this->pStdPictureInfo = pStdPictureInfo_; return *this; }
+    VideoDecodeH264PictureInfoEXT& setPStdPictureInfo(StdVideoDecodeH264PictureInfo const& pStdPictureInfo_) {this->pStdPictureInfo = &pStdPictureInfo_; return *this; }
+    VideoDecodeH264PictureInfoEXT& setSlicesCount(uint32_t slicesCount_) {this->slicesCount = slicesCount_; return *this; }
+    VideoDecodeH264PictureInfoEXT& setPSlicesDataOffsets(const uint32_t* pSlicesDataOffsets_) {this->pSlicesDataOffsets = pSlicesDataOffsets_; return *this; }
+    VideoDecodeH264PictureInfoEXT& setPSlicesDataOffsets(detail::span<const uint32_t> pSlicesDataOffsets_) {this->slicesCount = pSlicesDataOffsets_.size(); this->pSlicesDataOffsets = pSlicesDataOffsets_.data();  return *this; }
+};
+struct VideoDecodeH264DpbSlotInfoEXT {
+    StructureType sType{StructureType::VideoDecodeH264DpbSlotInfoEXT};
+    const void* pNext = nullptr;
+    const StdVideoDecodeH264ReferenceInfo* pStdReferenceInfo = nullptr;
+    VideoDecodeH264DpbSlotInfoEXT& setPStdReferenceInfo(const StdVideoDecodeH264ReferenceInfo* pStdReferenceInfo_) {this->pStdReferenceInfo = pStdReferenceInfo_; return *this; }
+    VideoDecodeH264DpbSlotInfoEXT& setPStdReferenceInfo(StdVideoDecodeH264ReferenceInfo const& pStdReferenceInfo_) {this->pStdReferenceInfo = &pStdReferenceInfo_; return *this; }
+};
+struct VideoDecodeH264MvcEXT {
+    StructureType sType{StructureType::VideoDecodeH264MvcEXT};
+    const void* pNext = nullptr;
+    const StdVideoDecodeH264Mvc* pStdMvc = nullptr;
+    VideoDecodeH264MvcEXT& setPStdMvc(const StdVideoDecodeH264Mvc* pStdMvc_) {this->pStdMvc = pStdMvc_; return *this; }
+    VideoDecodeH264MvcEXT& setPStdMvc(StdVideoDecodeH264Mvc const& pStdMvc_) {this->pStdMvc = &pStdMvc_; return *this; }
+};
+struct VideoDecodeH265ProfileEXT {
+    StructureType sType{StructureType::VideoDecodeH265ProfileEXT};
+    const void* pNext = nullptr;
+    StdVideoH265ProfileIdc stdProfileIdc{};
+    VideoDecodeH265ProfileEXT& setStdProfileIdc(StdVideoH265ProfileIdc stdProfileIdc_) {this->stdProfileIdc = stdProfileIdc_; return *this; }
+};
+struct VideoDecodeH265CapabilitiesEXT {
+    StructureType sType{StructureType::VideoDecodeH265CapabilitiesEXT};
+    void* pNext = nullptr;
+    uint32_t maxLevel{0};
+    ExtensionProperties stdExtensionVersion{};
+    VideoDecodeH265CapabilitiesEXT& setMaxLevel(uint32_t maxLevel_) {this->maxLevel = maxLevel_; return *this; }
+    VideoDecodeH265CapabilitiesEXT& setStdExtensionVersion(ExtensionProperties stdExtensionVersion_) {this->stdExtensionVersion = stdExtensionVersion_; return *this; }
+};
+struct VideoDecodeH265SessionCreateInfoEXT {
+    StructureType sType{StructureType::VideoDecodeH265SessionCreateInfoEXT};
+    const void* pNext = nullptr;
+    VideoDecodeH265CreateFlagsEXT flags{};
+    const ExtensionProperties* pStdExtensionVersion = nullptr;
+    VideoDecodeH265SessionCreateInfoEXT& setFlags(VideoDecodeH265CreateFlagsEXT flags_) {this->flags = flags_; return *this; }
+    VideoDecodeH265SessionCreateInfoEXT& setPStdExtensionVersion(const ExtensionProperties* pStdExtensionVersion_) {this->pStdExtensionVersion = pStdExtensionVersion_; return *this; }
+    VideoDecodeH265SessionCreateInfoEXT& setPStdExtensionVersion(ExtensionProperties const& pStdExtensionVersion_) {this->pStdExtensionVersion = &pStdExtensionVersion_; return *this; }
+};
+struct VideoDecodeH265SessionParametersAddInfoEXT {
+    StructureType sType{StructureType::VideoDecodeH265SessionParametersAddInfoEXT};
+    const void* pNext = nullptr;
+    uint32_t spsStdCount{0};
+    const StdVideoH265SequenceParameterSet* pSpsStd = nullptr;
+    uint32_t ppsStdCount{0};
+    const StdVideoH265PictureParameterSet* pPpsStd = nullptr;
+    VideoDecodeH265SessionParametersAddInfoEXT& setSpsStdCount(uint32_t spsStdCount_) {this->spsStdCount = spsStdCount_; return *this; }
+    VideoDecodeH265SessionParametersAddInfoEXT& setPSpsStd(const StdVideoH265SequenceParameterSet* pSpsStd_) {this->pSpsStd = pSpsStd_; return *this; }
+    VideoDecodeH265SessionParametersAddInfoEXT& setPSpsStd(detail::span<const StdVideoH265SequenceParameterSet> pSpsStd_) {this->spsStdCount = pSpsStd_.size(); this->pSpsStd = pSpsStd_.data();  return *this; }
+    VideoDecodeH265SessionParametersAddInfoEXT& setPpsStdCount(uint32_t ppsStdCount_) {this->ppsStdCount = ppsStdCount_; return *this; }
+    VideoDecodeH265SessionParametersAddInfoEXT& setPPpsStd(const StdVideoH265PictureParameterSet* pPpsStd_) {this->pPpsStd = pPpsStd_; return *this; }
+    VideoDecodeH265SessionParametersAddInfoEXT& setPPpsStd(detail::span<const StdVideoH265PictureParameterSet> pPpsStd_) {this->ppsStdCount = pPpsStd_.size(); this->pPpsStd = pPpsStd_.data();  return *this; }
+};
+struct VideoDecodeH265SessionParametersCreateInfoEXT {
+    StructureType sType{StructureType::VideoDecodeH265SessionParametersCreateInfoEXT};
+    const void* pNext = nullptr;
+    uint32_t maxSpsStdCount{0};
+    uint32_t maxPpsStdCount{0};
+    const VideoDecodeH265SessionParametersAddInfoEXT* pParametersAddInfo = nullptr;
+    VideoDecodeH265SessionParametersCreateInfoEXT& setMaxSpsStdCount(uint32_t maxSpsStdCount_) {this->maxSpsStdCount = maxSpsStdCount_; return *this; }
+    VideoDecodeH265SessionParametersCreateInfoEXT& setMaxPpsStdCount(uint32_t maxPpsStdCount_) {this->maxPpsStdCount = maxPpsStdCount_; return *this; }
+    VideoDecodeH265SessionParametersCreateInfoEXT& setPParametersAddInfo(const VideoDecodeH265SessionParametersAddInfoEXT* pParametersAddInfo_) {this->pParametersAddInfo = pParametersAddInfo_; return *this; }
+    VideoDecodeH265SessionParametersCreateInfoEXT& setPParametersAddInfo(VideoDecodeH265SessionParametersAddInfoEXT const& pParametersAddInfo_) {this->pParametersAddInfo = &pParametersAddInfo_; return *this; }
+};
+struct VideoDecodeH265PictureInfoEXT {
+    StructureType sType{StructureType::VideoDecodeH265PictureInfoEXT};
+    const void* pNext = nullptr;
+    StdVideoDecodeH265PictureInfo* pStdPictureInfo = nullptr;
+    uint32_t slicesCount{0};
+    const uint32_t* pSlicesDataOffsets = nullptr;
+    VideoDecodeH265PictureInfoEXT& setPStdPictureInfo(StdVideoDecodeH265PictureInfo* pStdPictureInfo_) {this->pStdPictureInfo = pStdPictureInfo_; return *this; }
+    VideoDecodeH265PictureInfoEXT& setPStdPictureInfo(StdVideoDecodeH265PictureInfo & pStdPictureInfo_) {this->pStdPictureInfo = &pStdPictureInfo_; return *this; }
+    VideoDecodeH265PictureInfoEXT& setSlicesCount(uint32_t slicesCount_) {this->slicesCount = slicesCount_; return *this; }
+    VideoDecodeH265PictureInfoEXT& setPSlicesDataOffsets(const uint32_t* pSlicesDataOffsets_) {this->pSlicesDataOffsets = pSlicesDataOffsets_; return *this; }
+    VideoDecodeH265PictureInfoEXT& setPSlicesDataOffsets(detail::span<const uint32_t> pSlicesDataOffsets_) {this->slicesCount = pSlicesDataOffsets_.size(); this->pSlicesDataOffsets = pSlicesDataOffsets_.data();  return *this; }
+};
+struct VideoDecodeH265DpbSlotInfoEXT {
+    StructureType sType{StructureType::VideoDecodeH265DpbSlotInfoEXT};
+    const void* pNext = nullptr;
+    const StdVideoDecodeH265ReferenceInfo* pStdReferenceInfo = nullptr;
+    VideoDecodeH265DpbSlotInfoEXT& setPStdReferenceInfo(const StdVideoDecodeH265ReferenceInfo* pStdReferenceInfo_) {this->pStdReferenceInfo = pStdReferenceInfo_; return *this; }
+    VideoDecodeH265DpbSlotInfoEXT& setPStdReferenceInfo(StdVideoDecodeH265ReferenceInfo const& pStdReferenceInfo_) {this->pStdReferenceInfo = &pStdReferenceInfo_; return *this; }
+};
+struct VideoSessionCreateInfoKHR {
+    StructureType sType{StructureType::VideoSessionCreateInfoKHR};
+    const void* pNext = nullptr;
+    uint32_t queueFamilyIndex{0};
+    VideoSessionCreateFlagsKHR flags{};
+    const VideoProfileKHR* pVideoProfile = nullptr;
+    Format pictureFormat{static_cast<Format>(0)};
+    Extent2D maxCodedExtent{};
+    Format referencePicturesFormat{static_cast<Format>(0)};
+    uint32_t maxReferencePicturesSlotsCount{0};
+    uint32_t maxReferencePicturesActiveCount{0};
+    VideoSessionCreateInfoKHR& setQueueFamilyIndex(uint32_t queueFamilyIndex_) {this->queueFamilyIndex = queueFamilyIndex_; return *this; }
+    VideoSessionCreateInfoKHR& setFlags(VideoSessionCreateFlagsKHR flags_) {this->flags = flags_; return *this; }
+    VideoSessionCreateInfoKHR& setPVideoProfile(const VideoProfileKHR* pVideoProfile_) {this->pVideoProfile = pVideoProfile_; return *this; }
+    VideoSessionCreateInfoKHR& setPVideoProfile(VideoProfileKHR const& pVideoProfile_) {this->pVideoProfile = &pVideoProfile_; return *this; }
+    VideoSessionCreateInfoKHR& setPictureFormat(Format pictureFormat_) {this->pictureFormat = pictureFormat_; return *this; }
+    VideoSessionCreateInfoKHR& setMaxCodedExtent(Extent2D maxCodedExtent_) {this->maxCodedExtent = maxCodedExtent_; return *this; }
+    VideoSessionCreateInfoKHR& setReferencePicturesFormat(Format referencePicturesFormat_) {this->referencePicturesFormat = referencePicturesFormat_; return *this; }
+    VideoSessionCreateInfoKHR& setMaxReferencePicturesSlotsCount(uint32_t maxReferencePicturesSlotsCount_) {this->maxReferencePicturesSlotsCount = maxReferencePicturesSlotsCount_; return *this; }
+    VideoSessionCreateInfoKHR& setMaxReferencePicturesActiveCount(uint32_t maxReferencePicturesActiveCount_) {this->maxReferencePicturesActiveCount = maxReferencePicturesActiveCount_; return *this; }
+};
+struct VideoSessionParametersCreateInfoKHR {
+    StructureType sType{StructureType::VideoSessionParametersCreateInfoKHR};
+    const void* pNext = nullptr;
+    VideoSessionParametersKHR videoSessionParametersTemplate{};
+    VideoSessionKHR videoSession{};
+    VideoSessionParametersCreateInfoKHR& setVideoSessionParametersTemplate(VideoSessionParametersKHR videoSessionParametersTemplate_) {this->videoSessionParametersTemplate = videoSessionParametersTemplate_; return *this; }
+    VideoSessionParametersCreateInfoKHR& setVideoSession(VideoSessionKHR videoSession_) {this->videoSession = videoSession_; return *this; }
+};
+struct VideoSessionParametersUpdateInfoKHR {
+    StructureType sType{StructureType::VideoSessionParametersUpdateInfoKHR};
+    const void* pNext = nullptr;
+    uint32_t updateSequenceCount{0};
+    VideoSessionParametersUpdateInfoKHR& setUpdateSequenceCount(uint32_t updateSequenceCount_) {this->updateSequenceCount = updateSequenceCount_; return *this; }
+};
+struct VideoBeginCodingInfoKHR {
+    StructureType sType{StructureType::VideoBeginCodingInfoKHR};
+    const void* pNext = nullptr;
+    VideoBeginCodingFlagsKHR flags{};
+    VideoCodingQualityPresetFlagsKHR codecQualityPreset{};
+    VideoSessionKHR videoSession{};
+    VideoSessionParametersKHR videoSessionParameters{};
+    uint32_t referenceSlotCount{0};
+    const VideoReferenceSlotKHR* pReferenceSlots = nullptr;
+    VideoBeginCodingInfoKHR& setFlags(VideoBeginCodingFlagsKHR flags_) {this->flags = flags_; return *this; }
+    VideoBeginCodingInfoKHR& setCodecQualityPreset(VideoCodingQualityPresetFlagsKHR codecQualityPreset_) {this->codecQualityPreset = codecQualityPreset_; return *this; }
+    VideoBeginCodingInfoKHR& setVideoSession(VideoSessionKHR videoSession_) {this->videoSession = videoSession_; return *this; }
+    VideoBeginCodingInfoKHR& setVideoSessionParameters(VideoSessionParametersKHR videoSessionParameters_) {this->videoSessionParameters = videoSessionParameters_; return *this; }
+    VideoBeginCodingInfoKHR& setReferenceSlotCount(uint32_t referenceSlotCount_) {this->referenceSlotCount = referenceSlotCount_; return *this; }
+    VideoBeginCodingInfoKHR& setPReferenceSlots(const VideoReferenceSlotKHR* pReferenceSlots_) {this->pReferenceSlots = pReferenceSlots_; return *this; }
+    VideoBeginCodingInfoKHR& setPReferenceSlots(detail::span<const VideoReferenceSlotKHR> pReferenceSlots_) {this->referenceSlotCount = pReferenceSlots_.size(); this->pReferenceSlots = pReferenceSlots_.data();  return *this; }
+};
+struct VideoEndCodingInfoKHR {
+    StructureType sType{StructureType::VideoEndCodingInfoKHR};
+    const void* pNext = nullptr;
+    VideoEndCodingFlagsKHR flags{};
+    VideoEndCodingInfoKHR& setFlags(VideoEndCodingFlagsKHR flags_) {this->flags = flags_; return *this; }
+};
+struct VideoCodingControlInfoKHR {
+    StructureType sType{StructureType::VideoCodingControlInfoKHR};
+    const void* pNext = nullptr;
+    VideoCodingControlFlagsKHR flags{};
+    VideoCodingControlInfoKHR& setFlags(VideoCodingControlFlagsKHR flags_) {this->flags = flags_; return *this; }
+};
+struct VideoEncodeInfoKHR {
+    StructureType sType{StructureType::VideoEncodeInfoKHR};
+    const void* pNext = nullptr;
+    VideoEncodeFlagsKHR flags{};
+    uint32_t qualityLevel{0};
+    Extent2D codedExtent{};
+    Buffer dstBitstreamBuffer{};
+    DeviceSize dstBitstreamBufferOffset{0};
+    DeviceSize dstBitstreamBufferMaxRange{0};
+    VideoPictureResourceKHR srcPictureResource{};
+    const VideoReferenceSlotKHR* pSetupReferenceSlot = nullptr;
+    uint32_t referenceSlotCount{0};
+    const VideoReferenceSlotKHR* pReferenceSlots = nullptr;
+    VideoEncodeInfoKHR& setFlags(VideoEncodeFlagsKHR flags_) {this->flags = flags_; return *this; }
+    VideoEncodeInfoKHR& setQualityLevel(uint32_t qualityLevel_) {this->qualityLevel = qualityLevel_; return *this; }
+    VideoEncodeInfoKHR& setCodedExtent(Extent2D codedExtent_) {this->codedExtent = codedExtent_; return *this; }
+    VideoEncodeInfoKHR& setDstBitstreamBuffer(Buffer dstBitstreamBuffer_) {this->dstBitstreamBuffer = dstBitstreamBuffer_; return *this; }
+    VideoEncodeInfoKHR& setDstBitstreamBufferOffset(DeviceSize dstBitstreamBufferOffset_) {this->dstBitstreamBufferOffset = dstBitstreamBufferOffset_; return *this; }
+    VideoEncodeInfoKHR& setDstBitstreamBufferMaxRange(DeviceSize dstBitstreamBufferMaxRange_) {this->dstBitstreamBufferMaxRange = dstBitstreamBufferMaxRange_; return *this; }
+    VideoEncodeInfoKHR& setSrcPictureResource(VideoPictureResourceKHR srcPictureResource_) {this->srcPictureResource = srcPictureResource_; return *this; }
+    VideoEncodeInfoKHR& setPSetupReferenceSlot(const VideoReferenceSlotKHR* pSetupReferenceSlot_) {this->pSetupReferenceSlot = pSetupReferenceSlot_; return *this; }
+    VideoEncodeInfoKHR& setPSetupReferenceSlot(VideoReferenceSlotKHR const& pSetupReferenceSlot_) {this->pSetupReferenceSlot = &pSetupReferenceSlot_; return *this; }
+    VideoEncodeInfoKHR& setReferenceSlotCount(uint32_t referenceSlotCount_) {this->referenceSlotCount = referenceSlotCount_; return *this; }
+    VideoEncodeInfoKHR& setPReferenceSlots(const VideoReferenceSlotKHR* pReferenceSlots_) {this->pReferenceSlots = pReferenceSlots_; return *this; }
+    VideoEncodeInfoKHR& setPReferenceSlots(detail::span<const VideoReferenceSlotKHR> pReferenceSlots_) {this->referenceSlotCount = pReferenceSlots_.size(); this->pReferenceSlots = pReferenceSlots_.data();  return *this; }
+};
+struct VideoEncodeRateControlInfoKHR {
+    StructureType sType{StructureType::VideoEncodeRateControlInfoKHR};
+    const void* pNext = nullptr;
+    VideoEncodeRateControlFlagsKHR flags{};
+    VideoEncodeRateControlModeFlagBitsKHR rateControlMode{static_cast<VideoEncodeRateControlModeFlagBitsKHR>(0)};
+    uint32_t averageBitrate{0};
+    uint16_t peakToAverageBitrateRatio{0};
+    uint16_t frameRateNumerator{0};
+    uint16_t frameRateDenominator{0};
+    uint32_t virtualBufferSizeInMs{0};
+    VideoEncodeRateControlInfoKHR& setFlags(VideoEncodeRateControlFlagsKHR flags_) {this->flags = flags_; return *this; }
+    VideoEncodeRateControlInfoKHR& setRateControlMode(VideoEncodeRateControlModeFlagBitsKHR rateControlMode_) {this->rateControlMode = rateControlMode_; return *this; }
+    VideoEncodeRateControlInfoKHR& setAverageBitrate(uint32_t averageBitrate_) {this->averageBitrate = averageBitrate_; return *this; }
+    VideoEncodeRateControlInfoKHR& setPeakToAverageBitrateRatio(uint16_t peakToAverageBitrateRatio_) {this->peakToAverageBitrateRatio = peakToAverageBitrateRatio_; return *this; }
+    VideoEncodeRateControlInfoKHR& setFrameRateNumerator(uint16_t frameRateNumerator_) {this->frameRateNumerator = frameRateNumerator_; return *this; }
+    VideoEncodeRateControlInfoKHR& setFrameRateDenominator(uint16_t frameRateDenominator_) {this->frameRateDenominator = frameRateDenominator_; return *this; }
+    VideoEncodeRateControlInfoKHR& setVirtualBufferSizeInMs(uint32_t virtualBufferSizeInMs_) {this->virtualBufferSizeInMs = virtualBufferSizeInMs_; return *this; }
+};
+struct VideoEncodeH264CapabilitiesEXT {
+    StructureType sType{StructureType::VideoEncodeH264CapabilitiesEXT};
+    const void* pNext = nullptr;
+    VideoEncodeH264CapabilitiesFlagsEXT flags{};
+    VideoEncodeH264InputModeFlagsEXT inputModeFlags{};
+    VideoEncodeH264OutputModeFlagsEXT outputModeFlags{};
+    Extent2D minPictureSizeInMbs{};
+    Extent2D maxPictureSizeInMbs{};
+    Extent2D inputImageDataAlignment{};
+    uint8_t maxNumL0ReferenceForP{0};
+    uint8_t maxNumL0ReferenceForB{0};
+    uint8_t maxNumL1Reference{0};
+    uint8_t qualityLevelCount{0};
+    ExtensionProperties stdExtensionVersion{};
+    VideoEncodeH264CapabilitiesEXT& setFlags(VideoEncodeH264CapabilitiesFlagsEXT flags_) {this->flags = flags_; return *this; }
+    VideoEncodeH264CapabilitiesEXT& setInputModeFlags(VideoEncodeH264InputModeFlagsEXT inputModeFlags_) {this->inputModeFlags = inputModeFlags_; return *this; }
+    VideoEncodeH264CapabilitiesEXT& setOutputModeFlags(VideoEncodeH264OutputModeFlagsEXT outputModeFlags_) {this->outputModeFlags = outputModeFlags_; return *this; }
+    VideoEncodeH264CapabilitiesEXT& setMinPictureSizeInMbs(Extent2D minPictureSizeInMbs_) {this->minPictureSizeInMbs = minPictureSizeInMbs_; return *this; }
+    VideoEncodeH264CapabilitiesEXT& setMaxPictureSizeInMbs(Extent2D maxPictureSizeInMbs_) {this->maxPictureSizeInMbs = maxPictureSizeInMbs_; return *this; }
+    VideoEncodeH264CapabilitiesEXT& setInputImageDataAlignment(Extent2D inputImageDataAlignment_) {this->inputImageDataAlignment = inputImageDataAlignment_; return *this; }
+    VideoEncodeH264CapabilitiesEXT& setMaxNumL0ReferenceForP(uint8_t maxNumL0ReferenceForP_) {this->maxNumL0ReferenceForP = maxNumL0ReferenceForP_; return *this; }
+    VideoEncodeH264CapabilitiesEXT& setMaxNumL0ReferenceForB(uint8_t maxNumL0ReferenceForB_) {this->maxNumL0ReferenceForB = maxNumL0ReferenceForB_; return *this; }
+    VideoEncodeH264CapabilitiesEXT& setMaxNumL1Reference(uint8_t maxNumL1Reference_) {this->maxNumL1Reference = maxNumL1Reference_; return *this; }
+    VideoEncodeH264CapabilitiesEXT& setQualityLevelCount(uint8_t qualityLevelCount_) {this->qualityLevelCount = qualityLevelCount_; return *this; }
+    VideoEncodeH264CapabilitiesEXT& setStdExtensionVersion(ExtensionProperties stdExtensionVersion_) {this->stdExtensionVersion = stdExtensionVersion_; return *this; }
+};
+struct VideoEncodeH264SessionCreateInfoEXT {
+    StructureType sType{StructureType::VideoEncodeH264SessionCreateInfoEXT};
+    const void* pNext = nullptr;
+    VideoEncodeH264CreateFlagsEXT flags{};
+    Extent2D maxPictureSizeInMbs{};
+    const ExtensionProperties* pStdExtensionVersion = nullptr;
+    VideoEncodeH264SessionCreateInfoEXT& setFlags(VideoEncodeH264CreateFlagsEXT flags_) {this->flags = flags_; return *this; }
+    VideoEncodeH264SessionCreateInfoEXT& setMaxPictureSizeInMbs(Extent2D maxPictureSizeInMbs_) {this->maxPictureSizeInMbs = maxPictureSizeInMbs_; return *this; }
+    VideoEncodeH264SessionCreateInfoEXT& setPStdExtensionVersion(const ExtensionProperties* pStdExtensionVersion_) {this->pStdExtensionVersion = pStdExtensionVersion_; return *this; }
+    VideoEncodeH264SessionCreateInfoEXT& setPStdExtensionVersion(ExtensionProperties const& pStdExtensionVersion_) {this->pStdExtensionVersion = &pStdExtensionVersion_; return *this; }
+};
+struct VideoEncodeH264SessionParametersAddInfoEXT {
+    StructureType sType{StructureType::VideoEncodeH264SessionParametersAddInfoEXT};
+    const void* pNext = nullptr;
+    uint32_t spsStdCount{0};
+    const StdVideoH264SequenceParameterSet* pSpsStd = nullptr;
+    uint32_t ppsStdCount{0};
+    const StdVideoH264PictureParameterSet* pPpsStd = nullptr;
+    VideoEncodeH264SessionParametersAddInfoEXT& setSpsStdCount(uint32_t spsStdCount_) {this->spsStdCount = spsStdCount_; return *this; }
+    VideoEncodeH264SessionParametersAddInfoEXT& setPSpsStd(const StdVideoH264SequenceParameterSet* pSpsStd_) {this->pSpsStd = pSpsStd_; return *this; }
+    VideoEncodeH264SessionParametersAddInfoEXT& setPSpsStd(detail::span<const StdVideoH264SequenceParameterSet> pSpsStd_) {this->spsStdCount = pSpsStd_.size(); this->pSpsStd = pSpsStd_.data();  return *this; }
+    VideoEncodeH264SessionParametersAddInfoEXT& setPpsStdCount(uint32_t ppsStdCount_) {this->ppsStdCount = ppsStdCount_; return *this; }
+    VideoEncodeH264SessionParametersAddInfoEXT& setPPpsStd(const StdVideoH264PictureParameterSet* pPpsStd_) {this->pPpsStd = pPpsStd_; return *this; }
+    VideoEncodeH264SessionParametersAddInfoEXT& setPPpsStd(detail::span<const StdVideoH264PictureParameterSet> pPpsStd_) {this->ppsStdCount = pPpsStd_.size(); this->pPpsStd = pPpsStd_.data();  return *this; }
+};
+struct VideoEncodeH264SessionParametersCreateInfoEXT {
+    StructureType sType{StructureType::VideoEncodeH264SessionParametersCreateInfoEXT};
+    const void* pNext = nullptr;
+    uint32_t maxSpsStdCount{0};
+    uint32_t maxPpsStdCount{0};
+    const VideoEncodeH264SessionParametersAddInfoEXT* pParametersAddInfo = nullptr;
+    VideoEncodeH264SessionParametersCreateInfoEXT& setMaxSpsStdCount(uint32_t maxSpsStdCount_) {this->maxSpsStdCount = maxSpsStdCount_; return *this; }
+    VideoEncodeH264SessionParametersCreateInfoEXT& setMaxPpsStdCount(uint32_t maxPpsStdCount_) {this->maxPpsStdCount = maxPpsStdCount_; return *this; }
+    VideoEncodeH264SessionParametersCreateInfoEXT& setPParametersAddInfo(const VideoEncodeH264SessionParametersAddInfoEXT* pParametersAddInfo_) {this->pParametersAddInfo = pParametersAddInfo_; return *this; }
+    VideoEncodeH264SessionParametersCreateInfoEXT& setPParametersAddInfo(VideoEncodeH264SessionParametersAddInfoEXT const& pParametersAddInfo_) {this->pParametersAddInfo = &pParametersAddInfo_; return *this; }
+};
+struct VideoEncodeH264DpbSlotInfoEXT {
+    StructureType sType{StructureType::VideoEncodeH264DpbSlotInfoEXT};
+    const void* pNext = nullptr;
+    int8_t slotIndex{};
+    const StdVideoEncodeH264PictureInfo* pStdPictureInfo = nullptr;
+    VideoEncodeH264DpbSlotInfoEXT& setSlotIndex(int8_t slotIndex_) {this->slotIndex = slotIndex_; return *this; }
+    VideoEncodeH264DpbSlotInfoEXT& setPStdPictureInfo(const StdVideoEncodeH264PictureInfo* pStdPictureInfo_) {this->pStdPictureInfo = pStdPictureInfo_; return *this; }
+    VideoEncodeH264DpbSlotInfoEXT& setPStdPictureInfo(StdVideoEncodeH264PictureInfo const& pStdPictureInfo_) {this->pStdPictureInfo = &pStdPictureInfo_; return *this; }
+};
+struct VideoEncodeH264NaluSliceEXT {
+    StructureType sType{StructureType::VideoEncodeH264NaluSliceEXT};
+    const void* pNext = nullptr;
+    const StdVideoEncodeH264SliceHeader* pSliceHeaderStd = nullptr;
+    uint32_t mbCount{0};
+    uint8_t refFinalList0EntryCount{0};
+    const VideoEncodeH264DpbSlotInfoEXT* pRefFinalList0Entries = nullptr;
+    uint8_t refFinalList1EntryCount{0};
+    const VideoEncodeH264DpbSlotInfoEXT* pRefFinalList1Entries = nullptr;
+    uint32_t precedingNaluBytes{0};
+    uint8_t minQp{0};
+    uint8_t maxQp{0};
+    VideoEncodeH264NaluSliceEXT& setPSliceHeaderStd(const StdVideoEncodeH264SliceHeader* pSliceHeaderStd_) {this->pSliceHeaderStd = pSliceHeaderStd_; return *this; }
+    VideoEncodeH264NaluSliceEXT& setPSliceHeaderStd(StdVideoEncodeH264SliceHeader const& pSliceHeaderStd_) {this->pSliceHeaderStd = &pSliceHeaderStd_; return *this; }
+    VideoEncodeH264NaluSliceEXT& setMbCount(uint32_t mbCount_) {this->mbCount = mbCount_; return *this; }
+    VideoEncodeH264NaluSliceEXT& setRefFinalList0EntryCount(uint8_t refFinalList0EntryCount_) {this->refFinalList0EntryCount = refFinalList0EntryCount_; return *this; }
+    VideoEncodeH264NaluSliceEXT& setPRefFinalList0Entries(const VideoEncodeH264DpbSlotInfoEXT* pRefFinalList0Entries_) {this->pRefFinalList0Entries = pRefFinalList0Entries_; return *this; }
+    VideoEncodeH264NaluSliceEXT& setPRefFinalList0Entries(detail::span<const VideoEncodeH264DpbSlotInfoEXT> pRefFinalList0Entries_) {this->refFinalList0EntryCount = pRefFinalList0Entries_.size(); this->pRefFinalList0Entries = pRefFinalList0Entries_.data();  return *this; }
+    VideoEncodeH264NaluSliceEXT& setRefFinalList1EntryCount(uint8_t refFinalList1EntryCount_) {this->refFinalList1EntryCount = refFinalList1EntryCount_; return *this; }
+    VideoEncodeH264NaluSliceEXT& setPRefFinalList1Entries(const VideoEncodeH264DpbSlotInfoEXT* pRefFinalList1Entries_) {this->pRefFinalList1Entries = pRefFinalList1Entries_; return *this; }
+    VideoEncodeH264NaluSliceEXT& setPRefFinalList1Entries(detail::span<const VideoEncodeH264DpbSlotInfoEXT> pRefFinalList1Entries_) {this->refFinalList1EntryCount = pRefFinalList1Entries_.size(); this->pRefFinalList1Entries = pRefFinalList1Entries_.data();  return *this; }
+    VideoEncodeH264NaluSliceEXT& setPrecedingNaluBytes(uint32_t precedingNaluBytes_) {this->precedingNaluBytes = precedingNaluBytes_; return *this; }
+    VideoEncodeH264NaluSliceEXT& setMinQp(uint8_t minQp_) {this->minQp = minQp_; return *this; }
+    VideoEncodeH264NaluSliceEXT& setMaxQp(uint8_t maxQp_) {this->maxQp = maxQp_; return *this; }
+};
+struct VideoEncodeH264VclFrameInfoEXT {
+    StructureType sType{StructureType::VideoEncodeH264VclFrameInfoEXT};
+    const void* pNext = nullptr;
+    uint8_t refDefaultFinalList0EntryCount{0};
+    const VideoEncodeH264DpbSlotInfoEXT* pRefDefaultFinalList0Entries = nullptr;
+    uint8_t refDefaultFinalList1EntryCount{0};
+    const VideoEncodeH264DpbSlotInfoEXT* pRefDefaultFinalList1Entries = nullptr;
+    uint32_t naluSliceEntryCount{0};
+    const VideoEncodeH264NaluSliceEXT* pNaluSliceEntries = nullptr;
+    const VideoEncodeH264DpbSlotInfoEXT* pCurrentPictureInfo = nullptr;
+    VideoEncodeH264VclFrameInfoEXT& setRefDefaultFinalList0EntryCount(uint8_t refDefaultFinalList0EntryCount_) {this->refDefaultFinalList0EntryCount = refDefaultFinalList0EntryCount_; return *this; }
+    VideoEncodeH264VclFrameInfoEXT& setPRefDefaultFinalList0Entries(const VideoEncodeH264DpbSlotInfoEXT* pRefDefaultFinalList0Entries_) {this->pRefDefaultFinalList0Entries = pRefDefaultFinalList0Entries_; return *this; }
+    VideoEncodeH264VclFrameInfoEXT& setPRefDefaultFinalList0Entries(detail::span<const VideoEncodeH264DpbSlotInfoEXT> pRefDefaultFinalList0Entries_) {this->refDefaultFinalList0EntryCount = pRefDefaultFinalList0Entries_.size(); this->pRefDefaultFinalList0Entries = pRefDefaultFinalList0Entries_.data();  return *this; }
+    VideoEncodeH264VclFrameInfoEXT& setRefDefaultFinalList1EntryCount(uint8_t refDefaultFinalList1EntryCount_) {this->refDefaultFinalList1EntryCount = refDefaultFinalList1EntryCount_; return *this; }
+    VideoEncodeH264VclFrameInfoEXT& setPRefDefaultFinalList1Entries(const VideoEncodeH264DpbSlotInfoEXT* pRefDefaultFinalList1Entries_) {this->pRefDefaultFinalList1Entries = pRefDefaultFinalList1Entries_; return *this; }
+    VideoEncodeH264VclFrameInfoEXT& setPRefDefaultFinalList1Entries(detail::span<const VideoEncodeH264DpbSlotInfoEXT> pRefDefaultFinalList1Entries_) {this->refDefaultFinalList1EntryCount = pRefDefaultFinalList1Entries_.size(); this->pRefDefaultFinalList1Entries = pRefDefaultFinalList1Entries_.data();  return *this; }
+    VideoEncodeH264VclFrameInfoEXT& setNaluSliceEntryCount(uint32_t naluSliceEntryCount_) {this->naluSliceEntryCount = naluSliceEntryCount_; return *this; }
+    VideoEncodeH264VclFrameInfoEXT& setPNaluSliceEntries(const VideoEncodeH264NaluSliceEXT* pNaluSliceEntries_) {this->pNaluSliceEntries = pNaluSliceEntries_; return *this; }
+    VideoEncodeH264VclFrameInfoEXT& setPNaluSliceEntries(detail::span<const VideoEncodeH264NaluSliceEXT> pNaluSliceEntries_) {this->naluSliceEntryCount = pNaluSliceEntries_.size(); this->pNaluSliceEntries = pNaluSliceEntries_.data();  return *this; }
+    VideoEncodeH264VclFrameInfoEXT& setPCurrentPictureInfo(const VideoEncodeH264DpbSlotInfoEXT* pCurrentPictureInfo_) {this->pCurrentPictureInfo = pCurrentPictureInfo_; return *this; }
+    VideoEncodeH264VclFrameInfoEXT& setPCurrentPictureInfo(VideoEncodeH264DpbSlotInfoEXT const& pCurrentPictureInfo_) {this->pCurrentPictureInfo = &pCurrentPictureInfo_; return *this; }
+};
+struct VideoEncodeH264EmitPictureParametersEXT {
+    StructureType sType{StructureType::VideoEncodeH264EmitPictureParametersEXT};
+    const void* pNext = nullptr;
+    uint8_t spsId{0};
+    Bool32 emitSpsEnable{0};
+    uint32_t ppsIdEntryCount{0};
+    const uint8_t* ppsIdEntries = nullptr;
+    VideoEncodeH264EmitPictureParametersEXT& setSpsId(uint8_t spsId_) {this->spsId = spsId_; return *this; }
+    VideoEncodeH264EmitPictureParametersEXT& setEmitSpsEnable(Bool32 emitSpsEnable_) {this->emitSpsEnable = emitSpsEnable_; return *this; }
+    VideoEncodeH264EmitPictureParametersEXT& setPpsIdEntryCount(uint32_t ppsIdEntryCount_) {this->ppsIdEntryCount = ppsIdEntryCount_; return *this; }
+    VideoEncodeH264EmitPictureParametersEXT& setPpsIdEntries(const uint8_t* ppsIdEntries_) {this->ppsIdEntries = ppsIdEntries_; return *this; }
+    VideoEncodeH264EmitPictureParametersEXT& setPpsIdEntries(detail::span<const uint8_t> ppsIdEntries_) {this->ppsIdEntryCount = ppsIdEntries_.size(); this->ppsIdEntries = ppsIdEntries_.data();  return *this; }
+};
+struct VideoEncodeH264ProfileEXT {
+    StructureType sType{StructureType::VideoEncodeH264ProfileEXT};
+    const void* pNext = nullptr;
+    StdVideoH264ProfileIdc stdProfileIdc{};
+    VideoEncodeH264ProfileEXT& setStdProfileIdc(StdVideoH264ProfileIdc stdProfileIdc_) {this->stdProfileIdc = stdProfileIdc_; return *this; }
+};
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
+struct PhysicalDeviceInheritedViewportScissorFeaturesNV {
+    StructureType sType{StructureType::PhysicalDeviceInheritedViewportScissorFeaturesNV};
+    void* pNext = nullptr;
+    Bool32 inheritedViewportScissor2D{0};
+    PhysicalDeviceInheritedViewportScissorFeaturesNV& setInheritedViewportScissor2D(Bool32 inheritedViewportScissor2D_) {this->inheritedViewportScissor2D = inheritedViewportScissor2D_; return *this; }
+};
+struct CommandBufferInheritanceViewportScissorInfoNV {
+    StructureType sType{StructureType::CommandBufferInheritanceViewportScissorInfoNV};
+    const void* pNext = nullptr;
+    Bool32 viewportScissor2D{0};
+    uint32_t viewportDepthCount{0};
+    const Viewport* pViewportDepths = nullptr;
+    CommandBufferInheritanceViewportScissorInfoNV& setViewportScissor2D(Bool32 viewportScissor2D_) {this->viewportScissor2D = viewportScissor2D_; return *this; }
+    CommandBufferInheritanceViewportScissorInfoNV& setViewportDepthCount(uint32_t viewportDepthCount_) {this->viewportDepthCount = viewportDepthCount_; return *this; }
+    CommandBufferInheritanceViewportScissorInfoNV& setPViewportDepths(const Viewport* pViewportDepths_) {this->pViewportDepths = pViewportDepths_; return *this; }
+    CommandBufferInheritanceViewportScissorInfoNV& setPViewportDepths(Viewport const& pViewportDepths_) {this->pViewportDepths = &pViewportDepths_; return *this; }
+};
+struct PhysicalDeviceYcbcr2Plane444FormatsFeaturesEXT {
+    StructureType sType{StructureType::PhysicalDeviceYcbcr2Plane444FormatsFeaturesEXT};
+    void* pNext = nullptr;
+    Bool32 ycbcr2plane444Formats{0};
+    PhysicalDeviceYcbcr2Plane444FormatsFeaturesEXT& setYcbcr2plane444Formats(Bool32 ycbcr2plane444Formats_) {this->ycbcr2plane444Formats = ycbcr2plane444Formats_; return *this; }
+};
 namespace detail {
 using PFN_CreateInstance = Result (*) (const InstanceCreateInfo* pCreateInfo, const AllocationCallbacks* pAllocator, Instance* pInstance);
 using PFN_DestroyInstance = void (*) (Instance instance, const AllocationCallbacks* pAllocator);
@@ -10744,6 +11898,10 @@ using PFN_CreateImagePipeSurfaceFUCHSIA = Result (*) (Instance instance, const I
 #if defined(VK_USE_PLATFORM_GGP)
 using PFN_CreateStreamDescriptorSurfaceGGP = Result (*) (Instance instance, const StreamDescriptorSurfaceCreateInfoGGP* pCreateInfo, const AllocationCallbacks* pAllocator, SurfaceKHR* pSurface);
 #endif // defined(VK_USE_PLATFORM_GGP)
+#if defined(VK_USE_PLATFORM_SCREEN_QNX)
+using PFN_CreateScreenSurfaceQNX = Result (*) (Instance instance, const ScreenSurfaceCreateInfoQNX* pCreateInfo, const AllocationCallbacks* pAllocator, SurfaceKHR* pSurface);
+using PFN_GetPhysicalDeviceScreenPresentationSupportQNX = Bool32 (*) (PhysicalDevice physicalDevice, uint32_t queueFamilyIndex, _screen_window* window);
+#endif // defined(VK_USE_PLATFORM_SCREEN_QNX)
 using PFN_CreateDebugReportCallbackEXT = Result (*) (Instance instance, const DebugReportCallbackCreateInfoEXT* pCreateInfo, const AllocationCallbacks* pAllocator, DebugReportCallbackEXT* pCallback);
 using PFN_DestroyDebugReportCallbackEXT = void (*) (Instance instance, DebugReportCallbackEXT callback, const AllocationCallbacks* pAllocator);
 using PFN_DebugReportMessageEXT = void (*) (Instance instance, DebugReportFlagsEXT flags, DebugReportObjectTypeEXT objectType, uint64_t object, size_t location, int32_t messageCode, const char* pLayerPrefix, const char* pMessage);
@@ -10787,6 +11945,10 @@ using PFN_GetMemoryWin32HandlePropertiesKHR = Result (*) (Device device, Externa
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 using PFN_GetMemoryFdKHR = Result (*) (Device device, const MemoryGetFdInfoKHR* pGetFdInfo, int* pFd);
 using PFN_GetMemoryFdPropertiesKHR = Result (*) (Device device, ExternalMemoryHandleTypeFlagBits handleType, int fd, MemoryFdPropertiesKHR* pMemoryFdProperties);
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+using PFN_GetMemoryZirconHandleFUCHSIA = Result (*) (Device device, const MemoryGetZirconHandleInfoFUCHSIA* pGetZirconHandleInfo, zx_handle_t* pZirconHandle);
+using PFN_GetMemoryZirconHandlePropertiesFUCHSIA = Result (*) (Device device, ExternalMemoryHandleTypeFlagBits handleType, zx_handle_t zirconHandle, MemoryZirconHandlePropertiesFUCHSIA* pMemoryZirconHandleProperties);
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
 using PFN_GetPhysicalDeviceExternalSemaphoreProperties = void (*) (PhysicalDevice physicalDevice, const PhysicalDeviceExternalSemaphoreInfo* pExternalSemaphoreInfo, ExternalSemaphoreProperties* pExternalSemaphoreProperties);
 using PFN_GetPhysicalDeviceExternalSemaphorePropertiesKHR = PFN_GetPhysicalDeviceExternalSemaphoreProperties;
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
@@ -10795,6 +11957,10 @@ using PFN_ImportSemaphoreWin32HandleKHR = Result (*) (Device device, const Impor
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 using PFN_GetSemaphoreFdKHR = Result (*) (Device device, const SemaphoreGetFdInfoKHR* pGetFdInfo, int* pFd);
 using PFN_ImportSemaphoreFdKHR = Result (*) (Device device, const ImportSemaphoreFdInfoKHR* pImportSemaphoreFdInfo);
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+using PFN_GetSemaphoreZirconHandleFUCHSIA = Result (*) (Device device, const SemaphoreGetZirconHandleInfoFUCHSIA* pGetZirconHandleInfo, zx_handle_t* pZirconHandle);
+using PFN_ImportSemaphoreZirconHandleFUCHSIA = Result (*) (Device device, const ImportSemaphoreZirconHandleInfoFUCHSIA* pImportSemaphoreZirconHandleInfo);
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
 using PFN_GetPhysicalDeviceExternalFenceProperties = void (*) (PhysicalDevice physicalDevice, const PhysicalDeviceExternalFenceInfo* pExternalFenceInfo, ExternalFenceProperties* pExternalFenceProperties);
 using PFN_GetPhysicalDeviceExternalFencePropertiesKHR = PFN_GetPhysicalDeviceExternalFenceProperties;
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
@@ -11024,6 +12190,11 @@ using PFN_CmdSetDepthCompareOpEXT = void (*) (CommandBuffer commandBuffer, Compa
 using PFN_CmdSetDepthBoundsTestEnableEXT = void (*) (CommandBuffer commandBuffer, Bool32 depthBoundsTestEnable);
 using PFN_CmdSetStencilTestEnableEXT = void (*) (CommandBuffer commandBuffer, Bool32 stencilTestEnable);
 using PFN_CmdSetStencilOpEXT = void (*) (CommandBuffer commandBuffer, StencilFaceFlags faceMask, StencilOp failOp, StencilOp passOp, StencilOp depthFailOp, CompareOp compareOp);
+using PFN_CmdSetPatchControlPointsEXT = void (*) (CommandBuffer commandBuffer, uint32_t patchControlPoints);
+using PFN_CmdSetRasterizerDiscardEnableEXT = void (*) (CommandBuffer commandBuffer, Bool32 rasterizerDiscardEnable);
+using PFN_CmdSetDepthBiasEnableEXT = void (*) (CommandBuffer commandBuffer, Bool32 depthBiasEnable);
+using PFN_CmdSetLogicOpEXT = void (*) (CommandBuffer commandBuffer, LogicOp logicOp);
+using PFN_CmdSetPrimitiveRestartEnableEXT = void (*) (CommandBuffer commandBuffer, Bool32 primitiveRestartEnable);
 using PFN_CreatePrivateDataSlotEXT = Result (*) (Device device, const PrivateDataSlotCreateInfoEXT* pCreateInfo, const AllocationCallbacks* pAllocator, PrivateDataSlotEXT* pPrivateDataSlot);
 using PFN_DestroyPrivateDataSlotEXT = void (*) (Device device, PrivateDataSlotEXT privateDataSlot, const AllocationCallbacks* pAllocator);
 using PFN_SetPrivateDataEXT = Result (*) (Device device, ObjectType objectType, uint64_t objectHandle, PrivateDataSlotEXT privateDataSlot, uint64_t data);
@@ -11038,6 +12209,32 @@ using PFN_CmdSetFragmentShadingRateKHR = void (*) (CommandBuffer commandBuffer, 
 using PFN_GetPhysicalDeviceFragmentShadingRatesKHR = Result (*) (PhysicalDevice physicalDevice, uint32_t* pFragmentShadingRateCount, PhysicalDeviceFragmentShadingRateKHR* pFragmentShadingRates);
 using PFN_CmdSetFragmentShadingRateEnumNV = void (*) (CommandBuffer commandBuffer, FragmentShadingRateNV shadingRate, const FragmentShadingRateCombinerOpKHR combinerOps[2]);
 using PFN_GetAccelerationStructureBuildSizesKHR = void (*) (Device device, AccelerationStructureBuildTypeKHR buildType, const AccelerationStructureBuildGeometryInfoKHR* pBuildInfo, const uint32_t* pMaxPrimitiveCounts, AccelerationStructureBuildSizesInfoKHR* pSizeInfo);
+using PFN_CmdSetVertexInputEXT = void (*) (CommandBuffer commandBuffer, uint32_t vertexBindingDescriptionCount, const VertexInputBindingDescription2EXT* pVertexBindingDescriptions, uint32_t vertexAttributeDescriptionCount, const VertexInputAttributeDescription2EXT* pVertexAttributeDescriptions);
+using PFN_CmdSetColorWriteEnableEXT = void (*) (CommandBuffer commandBuffer, uint32_t attachmentCount, const Bool32* pColorWriteEnables);
+using PFN_CmdSetEvent2KHR = void (*) (CommandBuffer commandBuffer, Event event, const DependencyInfoKHR* pDependencyInfo);
+using PFN_CmdResetEvent2KHR = void (*) (CommandBuffer commandBuffer, Event event, PipelineStageFlags2KHR stageMask);
+using PFN_CmdWaitEvents2KHR = void (*) (CommandBuffer commandBuffer, uint32_t eventCount, const Event* pEvents, const DependencyInfoKHR* pDependencyInfos);
+using PFN_CmdPipelineBarrier2KHR = void (*) (CommandBuffer commandBuffer, const DependencyInfoKHR* pDependencyInfo);
+using PFN_QueueSubmit2KHR = Result (*) (Queue queue, uint32_t submitCount, const SubmitInfo2KHR* pSubmits, Fence fence);
+using PFN_CmdWriteTimestamp2KHR = void (*) (CommandBuffer commandBuffer, PipelineStageFlags2KHR stage, QueryPool queryPool, uint32_t query);
+using PFN_CmdWriteBufferMarker2AMD = void (*) (CommandBuffer commandBuffer, PipelineStageFlags2KHR stage, Buffer dstBuffer, DeviceSize dstOffset, uint32_t marker);
+using PFN_GetQueueCheckpointData2NV = void (*) (Queue queue, uint32_t* pCheckpointDataCount, CheckpointData2NV* pCheckpointData);
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+using PFN_GetPhysicalDeviceVideoCapabilitiesKHR = Result (*) (PhysicalDevice physicalDevice, const VideoProfileKHR* pVideoProfile, VideoCapabilitiesKHR* pCapabilities);
+using PFN_GetPhysicalDeviceVideoFormatPropertiesKHR = Result (*) (PhysicalDevice physicalDevice, const PhysicalDeviceVideoFormatInfoKHR* pVideoFormatInfo, uint32_t* pVideoFormatPropertyCount, VideoFormatPropertiesKHR* pVideoFormatProperties);
+using PFN_CreateVideoSessionKHR = Result (*) (Device device, const VideoSessionCreateInfoKHR* pCreateInfo, const AllocationCallbacks* pAllocator, VideoSessionKHR* pVideoSession);
+using PFN_DestroyVideoSessionKHR = void (*) (Device device, VideoSessionKHR videoSession, const AllocationCallbacks* pAllocator);
+using PFN_CreateVideoSessionParametersKHR = Result (*) (Device device, const VideoSessionParametersCreateInfoKHR* pCreateInfo, const AllocationCallbacks* pAllocator, VideoSessionParametersKHR* pVideoSessionParameters);
+using PFN_UpdateVideoSessionParametersKHR = Result (*) (Device device, VideoSessionParametersKHR videoSessionParameters, const VideoSessionParametersUpdateInfoKHR* pUpdateInfo);
+using PFN_DestroyVideoSessionParametersKHR = void (*) (Device device, VideoSessionParametersKHR videoSessionParameters, const AllocationCallbacks* pAllocator);
+using PFN_GetVideoSessionMemoryRequirementsKHR = Result (*) (Device device, VideoSessionKHR videoSession, uint32_t* pVideoSessionMemoryRequirementsCount, VideoGetMemoryPropertiesKHR* pVideoSessionMemoryRequirements);
+using PFN_BindVideoSessionMemoryKHR = Result (*) (Device device, VideoSessionKHR videoSession, uint32_t videoSessionBindMemoryCount, const VideoBindMemoryKHR* pVideoSessionBindMemories);
+using PFN_CmdDecodeVideoKHR = void (*) (CommandBuffer commandBuffer, const VideoDecodeInfoKHR* pFrameInfo);
+using PFN_CmdBeginVideoCodingKHR = void (*) (CommandBuffer commandBuffer, const VideoBeginCodingInfoKHR* pBeginInfo);
+using PFN_CmdControlVideoCodingKHR = void (*) (CommandBuffer commandBuffer, const VideoCodingControlInfoKHR* pCodingControlInfo);
+using PFN_CmdEndVideoCodingKHR = void (*) (CommandBuffer commandBuffer, const VideoEndCodingInfoKHR* pEndCodingInfo);
+using PFN_CmdEncodeVideoKHR = void (*) (CommandBuffer commandBuffer, const VideoEncodeInfoKHR* pEncodeInfo);
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 } //namespace detail
 
 } // namespace vk
@@ -11274,6 +12471,10 @@ struct InstanceFunctions {
     detail::PFN_CreateDebugReportCallbackEXT pfn_CreateDebugReportCallbackEXT = nullptr;
     detail::PFN_DestroyDebugReportCallbackEXT pfn_DestroyDebugReportCallbackEXT = nullptr;
     detail::PFN_DebugReportMessageEXT pfn_DebugReportMessageEXT = nullptr;
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    detail::PFN_GetPhysicalDeviceVideoCapabilitiesKHR pfn_GetPhysicalDeviceVideoCapabilitiesKHR = nullptr;
+    detail::PFN_GetPhysicalDeviceVideoFormatPropertiesKHR pfn_GetPhysicalDeviceVideoFormatPropertiesKHR = nullptr;
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 #if defined(VK_USE_PLATFORM_GGP)
     detail::PFN_CreateStreamDescriptorSurfaceGGP pfn_CreateStreamDescriptorSurfaceGGP = nullptr;
 #endif // defined(VK_USE_PLATFORM_GGP)
@@ -11328,6 +12529,10 @@ struct InstanceFunctions {
     detail::PFN_CreateDirectFBSurfaceEXT pfn_CreateDirectFBSurfaceEXT = nullptr;
     detail::PFN_GetPhysicalDeviceDirectFBPresentationSupportEXT pfn_GetPhysicalDeviceDirectFBPresentationSupportEXT = nullptr;
 #endif // defined(VK_USE_PLATFORM_DIRECTFB_EXT)
+#if defined(VK_USE_PLATFORM_SCREEN_QNX)
+    detail::PFN_CreateScreenSurfaceQNX pfn_CreateScreenSurfaceQNX = nullptr;
+    detail::PFN_GetPhysicalDeviceScreenPresentationSupportQNX pfn_GetPhysicalDeviceScreenPresentationSupportQNX = nullptr;
+#endif // defined(VK_USE_PLATFORM_SCREEN_QNX)
 void DestroyInstance(const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyInstance(instance,
@@ -11886,6 +13091,27 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
         LayerPrefix.data(),
         Message.data());
 }
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+[[nodiscard]] expected<VideoCapabilitiesKHR> GetPhysicalDeviceVideoCapabilitiesKHR(PhysicalDevice physicalDevice, 
+    const VideoProfileKHR&  pVideoProfile) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    VideoCapabilitiesKHR pCapabilities;
+        Result result = pfn_GetPhysicalDeviceVideoCapabilitiesKHR(physicalDevice,
+        &pVideoProfile,
+        &pCapabilities);
+    return expected<VideoCapabilitiesKHR>(pCapabilities, result);
+}
+[[nodiscard]] Result GetPhysicalDeviceVideoFormatPropertiesKHR(PhysicalDevice physicalDevice, 
+    const PhysicalDeviceVideoFormatInfoKHR&  pVideoFormatInfo, 
+    uint32_t&  pVideoFormatPropertyCount, 
+    VideoFormatPropertiesKHR* pVideoFormatProperties = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    return pfn_GetPhysicalDeviceVideoFormatPropertiesKHR(physicalDevice,
+        &pVideoFormatInfo,
+        &pVideoFormatPropertyCount,
+        pVideoFormatProperties);
+}
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 #if defined(VK_USE_PLATFORM_GGP)
 [[nodiscard]] expected<SurfaceKHR> CreateStreamDescriptorSurfaceGGP(const StreamDescriptorSurfaceCreateInfoGGP&  pCreateInfo, 
     const AllocationCallbacks* pAllocator = nullptr) const {
@@ -12286,6 +13512,27 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
     return expected<IDirectFB>(dfb, result);
 }
 #endif // defined(VK_USE_PLATFORM_DIRECTFB_EXT)
+#if defined(VK_USE_PLATFORM_SCREEN_QNX)
+[[nodiscard]] expected<SurfaceKHR> CreateScreenSurfaceQNX(const ScreenSurfaceCreateInfoQNX&  pCreateInfo, 
+    const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    SurfaceKHR pSurface;
+        Result result = pfn_CreateScreenSurfaceQNX(instance,
+        &pCreateInfo,
+        pAllocator,
+        &pSurface);
+    return expected<SurfaceKHR>(pSurface, result);
+}
+[[nodiscard]] expected<_screen_window> GetPhysicalDeviceScreenPresentationSupportQNX(PhysicalDevice physicalDevice, 
+    uint32_t queueFamilyIndex) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    _screen_window window;
+        Result result = pfn_GetPhysicalDeviceScreenPresentationSupportQNX(physicalDevice,
+        queueFamilyIndex,
+        &window);
+    return expected<_screen_window>(window, result);
+}
+#endif // defined(VK_USE_PLATFORM_SCREEN_QNX)
 InstanceFunctions() noexcept {}
 explicit InstanceFunctions(GlobalFunctions const& global_functions, Instance instance) noexcept 
     :instance(instance) { 
@@ -12349,6 +13596,10 @@ explicit InstanceFunctions(GlobalFunctions const& global_functions, Instance ins
     pfn_CreateDebugReportCallbackEXT = reinterpret_cast<detail::PFN_CreateDebugReportCallbackEXT>(get_instance_proc_addr(instance,"vkCreateDebugReportCallbackEXT"));
     pfn_DestroyDebugReportCallbackEXT = reinterpret_cast<detail::PFN_DestroyDebugReportCallbackEXT>(get_instance_proc_addr(instance,"vkDestroyDebugReportCallbackEXT"));
     pfn_DebugReportMessageEXT = reinterpret_cast<detail::PFN_DebugReportMessageEXT>(get_instance_proc_addr(instance,"vkDebugReportMessageEXT"));
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_GetPhysicalDeviceVideoCapabilitiesKHR = reinterpret_cast<detail::PFN_GetPhysicalDeviceVideoCapabilitiesKHR>(get_instance_proc_addr(instance,"vkGetPhysicalDeviceVideoCapabilitiesKHR"));
+    pfn_GetPhysicalDeviceVideoFormatPropertiesKHR = reinterpret_cast<detail::PFN_GetPhysicalDeviceVideoFormatPropertiesKHR>(get_instance_proc_addr(instance,"vkGetPhysicalDeviceVideoFormatPropertiesKHR"));
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 #if defined(VK_USE_PLATFORM_GGP)
     pfn_CreateStreamDescriptorSurfaceGGP = reinterpret_cast<detail::PFN_CreateStreamDescriptorSurfaceGGP>(get_instance_proc_addr(instance,"vkCreateStreamDescriptorSurfaceGGP"));
 #endif // defined(VK_USE_PLATFORM_GGP)
@@ -12403,6 +13654,10 @@ explicit InstanceFunctions(GlobalFunctions const& global_functions, Instance ins
     pfn_CreateDirectFBSurfaceEXT = reinterpret_cast<detail::PFN_CreateDirectFBSurfaceEXT>(get_instance_proc_addr(instance,"vkCreateDirectFBSurfaceEXT"));
     pfn_GetPhysicalDeviceDirectFBPresentationSupportEXT = reinterpret_cast<detail::PFN_GetPhysicalDeviceDirectFBPresentationSupportEXT>(get_instance_proc_addr(instance,"vkGetPhysicalDeviceDirectFBPresentationSupportEXT"));
 #endif // defined(VK_USE_PLATFORM_DIRECTFB_EXT)
+#if defined(VK_USE_PLATFORM_SCREEN_QNX)
+    pfn_CreateScreenSurfaceQNX = reinterpret_cast<detail::PFN_CreateScreenSurfaceQNX>(get_instance_proc_addr(instance,"vkCreateScreenSurfaceQNX"));
+    pfn_GetPhysicalDeviceScreenPresentationSupportQNX = reinterpret_cast<detail::PFN_GetPhysicalDeviceScreenPresentationSupportQNX>(get_instance_proc_addr(instance,"vkGetPhysicalDeviceScreenPresentationSupportQNX"));
+#endif // defined(VK_USE_PLATFORM_SCREEN_QNX)
 }
 };
 struct DeviceFunctions {
@@ -12570,6 +13825,20 @@ struct DeviceFunctions {
     detail::PFN_CmdDebugMarkerBeginEXT pfn_CmdDebugMarkerBeginEXT = nullptr;
     detail::PFN_CmdDebugMarkerEndEXT pfn_CmdDebugMarkerEndEXT = nullptr;
     detail::PFN_CmdDebugMarkerInsertEXT pfn_CmdDebugMarkerInsertEXT = nullptr;
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    detail::PFN_CreateVideoSessionKHR pfn_CreateVideoSessionKHR = nullptr;
+    detail::PFN_DestroyVideoSessionKHR pfn_DestroyVideoSessionKHR = nullptr;
+    detail::PFN_CreateVideoSessionParametersKHR pfn_CreateVideoSessionParametersKHR = nullptr;
+    detail::PFN_UpdateVideoSessionParametersKHR pfn_UpdateVideoSessionParametersKHR = nullptr;
+    detail::PFN_DestroyVideoSessionParametersKHR pfn_DestroyVideoSessionParametersKHR = nullptr;
+    detail::PFN_GetVideoSessionMemoryRequirementsKHR pfn_GetVideoSessionMemoryRequirementsKHR = nullptr;
+    detail::PFN_BindVideoSessionMemoryKHR pfn_BindVideoSessionMemoryKHR = nullptr;
+    detail::PFN_CmdBeginVideoCodingKHR pfn_CmdBeginVideoCodingKHR = nullptr;
+    detail::PFN_CmdControlVideoCodingKHR pfn_CmdControlVideoCodingKHR = nullptr;
+    detail::PFN_CmdEndVideoCodingKHR pfn_CmdEndVideoCodingKHR = nullptr;
+    detail::PFN_CmdDecodeVideoKHR pfn_CmdDecodeVideoKHR = nullptr;
+    detail::PFN_CmdEncodeVideoKHR pfn_CmdEncodeVideoKHR = nullptr;
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
     detail::PFN_CmdBindTransformFeedbackBuffersEXT pfn_CmdBindTransformFeedbackBuffersEXT = nullptr;
     detail::PFN_CmdBeginTransformFeedbackEXT pfn_CmdBeginTransformFeedbackEXT = nullptr;
     detail::PFN_CmdEndTransformFeedbackEXT pfn_CmdEndTransformFeedbackEXT = nullptr;
@@ -12725,6 +13994,14 @@ struct DeviceFunctions {
     detail::PFN_DestroyPrivateDataSlotEXT pfn_DestroyPrivateDataSlotEXT = nullptr;
     detail::PFN_SetPrivateDataEXT pfn_SetPrivateDataEXT = nullptr;
     detail::PFN_GetPrivateDataEXT pfn_GetPrivateDataEXT = nullptr;
+    detail::PFN_CmdSetEvent2KHR pfn_CmdSetEvent2KHR = nullptr;
+    detail::PFN_CmdResetEvent2KHR pfn_CmdResetEvent2KHR = nullptr;
+    detail::PFN_CmdWaitEvents2KHR pfn_CmdWaitEvents2KHR = nullptr;
+    detail::PFN_CmdPipelineBarrier2KHR pfn_CmdPipelineBarrier2KHR = nullptr;
+    detail::PFN_QueueSubmit2KHR pfn_QueueSubmit2KHR = nullptr;
+    detail::PFN_CmdWriteTimestamp2KHR pfn_CmdWriteTimestamp2KHR = nullptr;
+    detail::PFN_CmdWriteBufferMarker2AMD pfn_CmdWriteBufferMarker2AMD = nullptr;
+    detail::PFN_GetQueueCheckpointData2NV pfn_GetQueueCheckpointData2NV = nullptr;
     detail::PFN_CmdSetFragmentShadingRateEnumNV pfn_CmdSetFragmentShadingRateEnumNV = nullptr;
     detail::PFN_CmdCopyBuffer2KHR pfn_CmdCopyBuffer2KHR = nullptr;
     detail::PFN_CmdCopyImage2KHR pfn_CmdCopyImage2KHR = nullptr;
@@ -12732,6 +14009,19 @@ struct DeviceFunctions {
     detail::PFN_CmdCopyBufferToImage2KHR pfn_CmdCopyBufferToImage2KHR = nullptr;
     detail::PFN_CmdCopyImageToBuffer2KHR pfn_CmdCopyImageToBuffer2KHR = nullptr;
     detail::PFN_CmdResolveImage2KHR pfn_CmdResolveImage2KHR = nullptr;
+    detail::PFN_CmdSetVertexInputEXT pfn_CmdSetVertexInputEXT = nullptr;
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+    detail::PFN_GetMemoryZirconHandleFUCHSIA pfn_GetMemoryZirconHandleFUCHSIA = nullptr;
+    detail::PFN_GetMemoryZirconHandlePropertiesFUCHSIA pfn_GetMemoryZirconHandlePropertiesFUCHSIA = nullptr;
+    detail::PFN_GetSemaphoreZirconHandleFUCHSIA pfn_GetSemaphoreZirconHandleFUCHSIA = nullptr;
+    detail::PFN_ImportSemaphoreZirconHandleFUCHSIA pfn_ImportSemaphoreZirconHandleFUCHSIA = nullptr;
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
+    detail::PFN_CmdSetPatchControlPointsEXT pfn_CmdSetPatchControlPointsEXT = nullptr;
+    detail::PFN_CmdSetRasterizerDiscardEnableEXT pfn_CmdSetRasterizerDiscardEnableEXT = nullptr;
+    detail::PFN_CmdSetDepthBiasEnableEXT pfn_CmdSetDepthBiasEnableEXT = nullptr;
+    detail::PFN_CmdSetLogicOpEXT pfn_CmdSetLogicOpEXT = nullptr;
+    detail::PFN_CmdSetPrimitiveRestartEnableEXT pfn_CmdSetPrimitiveRestartEnableEXT = nullptr;
+    detail::PFN_CmdSetColorWriteEnableEXT pfn_CmdSetColorWriteEnableEXT = nullptr;
 void DestroyDevice(const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyDevice(device,
@@ -14247,6 +15537,97 @@ void CmdDebugMarkerInsertEXT(CommandBuffer commandBuffer,
     pfn_CmdDebugMarkerInsertEXT(commandBuffer,
         &pMarkerInfo);
 }
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+[[nodiscard]] expected<VideoSessionKHR> CreateVideoSessionKHR(const VideoSessionCreateInfoKHR&  pCreateInfo, 
+    const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    VideoSessionKHR pVideoSession;
+        Result result = pfn_CreateVideoSessionKHR(device,
+        &pCreateInfo,
+        pAllocator,
+        &pVideoSession);
+    return expected<VideoSessionKHR>(pVideoSession, result);
+}
+void DestroyVideoSessionKHR(VideoSessionKHR videoSession, 
+    const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    pfn_DestroyVideoSessionKHR(device,
+        videoSession,
+        pAllocator);
+}
+[[nodiscard]] expected<VideoSessionParametersKHR> CreateVideoSessionParametersKHR(const VideoSessionParametersCreateInfoKHR&  pCreateInfo, 
+    const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    VideoSessionParametersKHR pVideoSessionParameters;
+        Result result = pfn_CreateVideoSessionParametersKHR(device,
+        &pCreateInfo,
+        pAllocator,
+        &pVideoSessionParameters);
+    return expected<VideoSessionParametersKHR>(pVideoSessionParameters, result);
+}
+[[nodiscard]] Result UpdateVideoSessionParametersKHR(VideoSessionParametersKHR videoSessionParameters, 
+    const VideoSessionParametersUpdateInfoKHR&  pUpdateInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    return pfn_UpdateVideoSessionParametersKHR(device,
+        videoSessionParameters,
+        &pUpdateInfo);
+}
+void DestroyVideoSessionParametersKHR(VideoSessionParametersKHR videoSessionParameters, 
+    const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    pfn_DestroyVideoSessionParametersKHR(device,
+        videoSessionParameters,
+        pAllocator);
+}
+[[nodiscard]] Result GetVideoSessionMemoryRequirementsKHR(VideoSessionKHR videoSession, 
+    uint32_t&  pVideoSessionMemoryRequirementsCount, 
+    VideoGetMemoryPropertiesKHR* pVideoSessionMemoryRequirements = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    return pfn_GetVideoSessionMemoryRequirementsKHR(device,
+        videoSession,
+        &pVideoSessionMemoryRequirementsCount,
+        pVideoSessionMemoryRequirements);
+}
+[[nodiscard]] Result BindVideoSessionMemoryKHR(VideoSessionKHR videoSession, 
+    detail::span<const VideoBindMemoryKHR> VideoSessionBindMemories) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    uint32_t videoSessionBindMemoryCount = VideoSessionBindMemories.size();
+    return pfn_BindVideoSessionMemoryKHR(device,
+        videoSession,
+        videoSessionBindMemoryCount,
+        VideoSessionBindMemories.data());
+}
+void CmdBeginVideoCodingKHR(CommandBuffer commandBuffer, 
+    const VideoBeginCodingInfoKHR&  pBeginInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    pfn_CmdBeginVideoCodingKHR(commandBuffer,
+        &pBeginInfo);
+}
+void CmdControlVideoCodingKHR(CommandBuffer commandBuffer, 
+    const VideoCodingControlInfoKHR&  pCodingControlInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    pfn_CmdControlVideoCodingKHR(commandBuffer,
+        &pCodingControlInfo);
+}
+void CmdEndVideoCodingKHR(CommandBuffer commandBuffer, 
+    const VideoEndCodingInfoKHR&  pEndCodingInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    pfn_CmdEndVideoCodingKHR(commandBuffer,
+        &pEndCodingInfo);
+}
+void CmdDecodeVideoKHR(CommandBuffer commandBuffer, 
+    const VideoDecodeInfoKHR&  pFrameInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    pfn_CmdDecodeVideoKHR(commandBuffer,
+        &pFrameInfo);
+}
+void CmdEncodeVideoKHR(CommandBuffer commandBuffer, 
+    const VideoEncodeInfoKHR&  pEncodeInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    pfn_CmdEncodeVideoKHR(commandBuffer,
+        &pEncodeInfo);
+}
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 void CmdBindTransformFeedbackBuffersEXT(CommandBuffer commandBuffer, 
     uint32_t firstBinding, 
     detail::span<const Buffer> Buffers, 
@@ -15575,6 +16956,83 @@ void DestroyPrivateDataSlotEXT(PrivateDataSlotEXT privateDataSlot = {},
         &pData);
     return pData;
 }
+void CmdSetEvent2KHR(CommandBuffer commandBuffer, 
+    Event event, 
+    const DependencyInfoKHR&  pDependencyInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    pfn_CmdSetEvent2KHR(commandBuffer,
+        event,
+        &pDependencyInfo);
+}
+void CmdResetEvent2KHR(CommandBuffer commandBuffer, 
+    Event event, 
+    PipelineStageFlags2KHR stageMask) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    pfn_CmdResetEvent2KHR(commandBuffer,
+        event,
+        stageMask);
+}
+void CmdWaitEvents2KHR(CommandBuffer commandBuffer, 
+    detail::span<const Event> Events, 
+    detail::span<const DependencyInfoKHR> DependencyInfos) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    uint32_t eventCount = Events.size();
+    pfn_CmdWaitEvents2KHR(commandBuffer,
+        eventCount,
+        Events.data(),
+        DependencyInfos.data());
+}
+void CmdPipelineBarrier2KHR(CommandBuffer commandBuffer, 
+    const DependencyInfoKHR&  pDependencyInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    pfn_CmdPipelineBarrier2KHR(commandBuffer,
+        &pDependencyInfo);
+}
+[[nodiscard]] Result QueueSubmit2KHR(Queue queue, 
+    detail::span<const SubmitInfo2KHR> Submits, 
+    Fence fence = {}) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    uint32_t submitCount = Submits.size();
+    return pfn_QueueSubmit2KHR(queue,
+        submitCount,
+        Submits.data(),
+        fence);
+}
+void CmdWriteTimestamp2KHR(CommandBuffer commandBuffer, 
+    PipelineStageFlags2KHR stage, 
+    QueryPool queryPool, 
+    uint32_t query) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    pfn_CmdWriteTimestamp2KHR(commandBuffer,
+        stage,
+        queryPool,
+        query);
+}
+void CmdWriteBufferMarker2AMD(CommandBuffer commandBuffer, 
+    PipelineStageFlags2KHR stage, 
+    Buffer dstBuffer, 
+    DeviceSize dstOffset, 
+    uint32_t marker) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    pfn_CmdWriteBufferMarker2AMD(commandBuffer,
+        stage,
+        dstBuffer,
+        dstOffset,
+        marker);
+}
+[[nodiscard]] std::vector<CheckpointData2NV> GetQueueCheckpointData2NV(Queue queue) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    uint32_t pCheckpointDataCount = 0;
+    pfn_GetQueueCheckpointData2NV(queue,
+        &pCheckpointDataCount,
+        nullptr);
+    std::vector<CheckpointData2NV> pCheckpointData{pCheckpointDataCount};
+pfn_GetQueueCheckpointData2NV(queue,
+        &pCheckpointDataCount,
+        pCheckpointData.data());
+    if (pCheckpointDataCount < pCheckpointData.size()) pCheckpointData.resize(pCheckpointDataCount);
+    return pCheckpointData;
+}
 void CmdSetFragmentShadingRateEnumNV(CommandBuffer commandBuffer, 
     FragmentShadingRateNV shadingRate, 
     const FragmentShadingRateCombinerOpKHR combinerOps[2]) const {
@@ -15618,6 +17076,89 @@ void CmdResolveImage2KHR(CommandBuffer commandBuffer,
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_CmdResolveImage2KHR(commandBuffer,
         &pResolveImageInfo);
+}
+void CmdSetVertexInputEXT(CommandBuffer commandBuffer, 
+    detail::span<const VertexInputBindingDescription2EXT> VertexBindingDescriptions, 
+    detail::span<const VertexInputAttributeDescription2EXT> VertexAttributeDescriptions) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    uint32_t vertexBindingDescriptionCount = VertexBindingDescriptions.size();
+    uint32_t vertexAttributeDescriptionCount = VertexAttributeDescriptions.size();
+    pfn_CmdSetVertexInputEXT(commandBuffer,
+        vertexBindingDescriptionCount,
+        VertexBindingDescriptions.data(),
+        vertexAttributeDescriptionCount,
+        VertexAttributeDescriptions.data());
+}
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+[[nodiscard]] expected<zx_handle_t> GetMemoryZirconHandleFUCHSIA(const MemoryGetZirconHandleInfoFUCHSIA&  pGetZirconHandleInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    zx_handle_t pZirconHandle;
+        Result result = pfn_GetMemoryZirconHandleFUCHSIA(device,
+        &pGetZirconHandleInfo,
+        &pZirconHandle);
+    return expected<zx_handle_t>(pZirconHandle, result);
+}
+[[nodiscard]] expected<MemoryZirconHandlePropertiesFUCHSIA> GetMemoryZirconHandlePropertiesFUCHSIA(ExternalMemoryHandleTypeFlagBits handleType, 
+    zx_handle_t zirconHandle) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    MemoryZirconHandlePropertiesFUCHSIA pMemoryZirconHandleProperties;
+        Result result = pfn_GetMemoryZirconHandlePropertiesFUCHSIA(device,
+        handleType,
+        zirconHandle,
+        &pMemoryZirconHandleProperties);
+    return expected<MemoryZirconHandlePropertiesFUCHSIA>(pMemoryZirconHandleProperties, result);
+}
+[[nodiscard]] expected<zx_handle_t> GetSemaphoreZirconHandleFUCHSIA(const SemaphoreGetZirconHandleInfoFUCHSIA&  pGetZirconHandleInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    zx_handle_t pZirconHandle;
+        Result result = pfn_GetSemaphoreZirconHandleFUCHSIA(device,
+        &pGetZirconHandleInfo,
+        &pZirconHandle);
+    return expected<zx_handle_t>(pZirconHandle, result);
+}
+[[nodiscard]] Result ImportSemaphoreZirconHandleFUCHSIA(const ImportSemaphoreZirconHandleInfoFUCHSIA&  pImportSemaphoreZirconHandleInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    return pfn_ImportSemaphoreZirconHandleFUCHSIA(device,
+        &pImportSemaphoreZirconHandleInfo);
+}
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
+void CmdSetPatchControlPointsEXT(CommandBuffer commandBuffer, 
+    uint32_t patchControlPoints) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    pfn_CmdSetPatchControlPointsEXT(commandBuffer,
+        patchControlPoints);
+}
+void CmdSetRasterizerDiscardEnableEXT(CommandBuffer commandBuffer, 
+    Bool32 rasterizerDiscardEnable) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    pfn_CmdSetRasterizerDiscardEnableEXT(commandBuffer,
+        rasterizerDiscardEnable);
+}
+void CmdSetDepthBiasEnableEXT(CommandBuffer commandBuffer, 
+    Bool32 depthBiasEnable) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    pfn_CmdSetDepthBiasEnableEXT(commandBuffer,
+        depthBiasEnable);
+}
+void CmdSetLogicOpEXT(CommandBuffer commandBuffer, 
+    LogicOp logicOp) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    pfn_CmdSetLogicOpEXT(commandBuffer,
+        logicOp);
+}
+void CmdSetPrimitiveRestartEnableEXT(CommandBuffer commandBuffer, 
+    Bool32 primitiveRestartEnable) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    pfn_CmdSetPrimitiveRestartEnableEXT(commandBuffer,
+        primitiveRestartEnable);
+}
+void CmdSetColorWriteEnableEXT(CommandBuffer commandBuffer, 
+    detail::span<const Bool32> ColorWriteEnables) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    uint32_t attachmentCount = ColorWriteEnables.size();
+    pfn_CmdSetColorWriteEnableEXT(commandBuffer,
+        attachmentCount,
+        ColorWriteEnables.data());
 }
 DeviceFunctions() noexcept {}
 explicit DeviceFunctions(InstanceFunctions const& instance_functions, Device device) noexcept 
@@ -15786,6 +17327,20 @@ explicit DeviceFunctions(InstanceFunctions const& instance_functions, Device dev
     pfn_CmdDebugMarkerBeginEXT = reinterpret_cast<detail::PFN_CmdDebugMarkerBeginEXT>(get_device_proc_addr(device,"vkCmdDebugMarkerBeginEXT"));
     pfn_CmdDebugMarkerEndEXT = reinterpret_cast<detail::PFN_CmdDebugMarkerEndEXT>(get_device_proc_addr(device,"vkCmdDebugMarkerEndEXT"));
     pfn_CmdDebugMarkerInsertEXT = reinterpret_cast<detail::PFN_CmdDebugMarkerInsertEXT>(get_device_proc_addr(device,"vkCmdDebugMarkerInsertEXT"));
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    pfn_CreateVideoSessionKHR = reinterpret_cast<detail::PFN_CreateVideoSessionKHR>(get_device_proc_addr(device,"vkCreateVideoSessionKHR"));
+    pfn_DestroyVideoSessionKHR = reinterpret_cast<detail::PFN_DestroyVideoSessionKHR>(get_device_proc_addr(device,"vkDestroyVideoSessionKHR"));
+    pfn_CreateVideoSessionParametersKHR = reinterpret_cast<detail::PFN_CreateVideoSessionParametersKHR>(get_device_proc_addr(device,"vkCreateVideoSessionParametersKHR"));
+    pfn_UpdateVideoSessionParametersKHR = reinterpret_cast<detail::PFN_UpdateVideoSessionParametersKHR>(get_device_proc_addr(device,"vkUpdateVideoSessionParametersKHR"));
+    pfn_DestroyVideoSessionParametersKHR = reinterpret_cast<detail::PFN_DestroyVideoSessionParametersKHR>(get_device_proc_addr(device,"vkDestroyVideoSessionParametersKHR"));
+    pfn_GetVideoSessionMemoryRequirementsKHR = reinterpret_cast<detail::PFN_GetVideoSessionMemoryRequirementsKHR>(get_device_proc_addr(device,"vkGetVideoSessionMemoryRequirementsKHR"));
+    pfn_BindVideoSessionMemoryKHR = reinterpret_cast<detail::PFN_BindVideoSessionMemoryKHR>(get_device_proc_addr(device,"vkBindVideoSessionMemoryKHR"));
+    pfn_CmdBeginVideoCodingKHR = reinterpret_cast<detail::PFN_CmdBeginVideoCodingKHR>(get_device_proc_addr(device,"vkCmdBeginVideoCodingKHR"));
+    pfn_CmdControlVideoCodingKHR = reinterpret_cast<detail::PFN_CmdControlVideoCodingKHR>(get_device_proc_addr(device,"vkCmdControlVideoCodingKHR"));
+    pfn_CmdEndVideoCodingKHR = reinterpret_cast<detail::PFN_CmdEndVideoCodingKHR>(get_device_proc_addr(device,"vkCmdEndVideoCodingKHR"));
+    pfn_CmdDecodeVideoKHR = reinterpret_cast<detail::PFN_CmdDecodeVideoKHR>(get_device_proc_addr(device,"vkCmdDecodeVideoKHR"));
+    pfn_CmdEncodeVideoKHR = reinterpret_cast<detail::PFN_CmdEncodeVideoKHR>(get_device_proc_addr(device,"vkCmdEncodeVideoKHR"));
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
     pfn_CmdBindTransformFeedbackBuffersEXT = reinterpret_cast<detail::PFN_CmdBindTransformFeedbackBuffersEXT>(get_device_proc_addr(device,"vkCmdBindTransformFeedbackBuffersEXT"));
     pfn_CmdBeginTransformFeedbackEXT = reinterpret_cast<detail::PFN_CmdBeginTransformFeedbackEXT>(get_device_proc_addr(device,"vkCmdBeginTransformFeedbackEXT"));
     pfn_CmdEndTransformFeedbackEXT = reinterpret_cast<detail::PFN_CmdEndTransformFeedbackEXT>(get_device_proc_addr(device,"vkCmdEndTransformFeedbackEXT"));
@@ -15941,6 +17496,14 @@ explicit DeviceFunctions(InstanceFunctions const& instance_functions, Device dev
     pfn_DestroyPrivateDataSlotEXT = reinterpret_cast<detail::PFN_DestroyPrivateDataSlotEXT>(get_device_proc_addr(device,"vkDestroyPrivateDataSlotEXT"));
     pfn_SetPrivateDataEXT = reinterpret_cast<detail::PFN_SetPrivateDataEXT>(get_device_proc_addr(device,"vkSetPrivateDataEXT"));
     pfn_GetPrivateDataEXT = reinterpret_cast<detail::PFN_GetPrivateDataEXT>(get_device_proc_addr(device,"vkGetPrivateDataEXT"));
+    pfn_CmdSetEvent2KHR = reinterpret_cast<detail::PFN_CmdSetEvent2KHR>(get_device_proc_addr(device,"vkCmdSetEvent2KHR"));
+    pfn_CmdResetEvent2KHR = reinterpret_cast<detail::PFN_CmdResetEvent2KHR>(get_device_proc_addr(device,"vkCmdResetEvent2KHR"));
+    pfn_CmdWaitEvents2KHR = reinterpret_cast<detail::PFN_CmdWaitEvents2KHR>(get_device_proc_addr(device,"vkCmdWaitEvents2KHR"));
+    pfn_CmdPipelineBarrier2KHR = reinterpret_cast<detail::PFN_CmdPipelineBarrier2KHR>(get_device_proc_addr(device,"vkCmdPipelineBarrier2KHR"));
+    pfn_QueueSubmit2KHR = reinterpret_cast<detail::PFN_QueueSubmit2KHR>(get_device_proc_addr(device,"vkQueueSubmit2KHR"));
+    pfn_CmdWriteTimestamp2KHR = reinterpret_cast<detail::PFN_CmdWriteTimestamp2KHR>(get_device_proc_addr(device,"vkCmdWriteTimestamp2KHR"));
+    pfn_CmdWriteBufferMarker2AMD = reinterpret_cast<detail::PFN_CmdWriteBufferMarker2AMD>(get_device_proc_addr(device,"vkCmdWriteBufferMarker2AMD"));
+    pfn_GetQueueCheckpointData2NV = reinterpret_cast<detail::PFN_GetQueueCheckpointData2NV>(get_device_proc_addr(device,"vkGetQueueCheckpointData2NV"));
     pfn_CmdSetFragmentShadingRateEnumNV = reinterpret_cast<detail::PFN_CmdSetFragmentShadingRateEnumNV>(get_device_proc_addr(device,"vkCmdSetFragmentShadingRateEnumNV"));
     pfn_CmdCopyBuffer2KHR = reinterpret_cast<detail::PFN_CmdCopyBuffer2KHR>(get_device_proc_addr(device,"vkCmdCopyBuffer2KHR"));
     pfn_CmdCopyImage2KHR = reinterpret_cast<detail::PFN_CmdCopyImage2KHR>(get_device_proc_addr(device,"vkCmdCopyImage2KHR"));
@@ -15948,6 +17511,19 @@ explicit DeviceFunctions(InstanceFunctions const& instance_functions, Device dev
     pfn_CmdCopyBufferToImage2KHR = reinterpret_cast<detail::PFN_CmdCopyBufferToImage2KHR>(get_device_proc_addr(device,"vkCmdCopyBufferToImage2KHR"));
     pfn_CmdCopyImageToBuffer2KHR = reinterpret_cast<detail::PFN_CmdCopyImageToBuffer2KHR>(get_device_proc_addr(device,"vkCmdCopyImageToBuffer2KHR"));
     pfn_CmdResolveImage2KHR = reinterpret_cast<detail::PFN_CmdResolveImage2KHR>(get_device_proc_addr(device,"vkCmdResolveImage2KHR"));
+    pfn_CmdSetVertexInputEXT = reinterpret_cast<detail::PFN_CmdSetVertexInputEXT>(get_device_proc_addr(device,"vkCmdSetVertexInputEXT"));
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+    pfn_GetMemoryZirconHandleFUCHSIA = reinterpret_cast<detail::PFN_GetMemoryZirconHandleFUCHSIA>(get_device_proc_addr(device,"vkGetMemoryZirconHandleFUCHSIA"));
+    pfn_GetMemoryZirconHandlePropertiesFUCHSIA = reinterpret_cast<detail::PFN_GetMemoryZirconHandlePropertiesFUCHSIA>(get_device_proc_addr(device,"vkGetMemoryZirconHandlePropertiesFUCHSIA"));
+    pfn_GetSemaphoreZirconHandleFUCHSIA = reinterpret_cast<detail::PFN_GetSemaphoreZirconHandleFUCHSIA>(get_device_proc_addr(device,"vkGetSemaphoreZirconHandleFUCHSIA"));
+    pfn_ImportSemaphoreZirconHandleFUCHSIA = reinterpret_cast<detail::PFN_ImportSemaphoreZirconHandleFUCHSIA>(get_device_proc_addr(device,"vkImportSemaphoreZirconHandleFUCHSIA"));
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
+    pfn_CmdSetPatchControlPointsEXT = reinterpret_cast<detail::PFN_CmdSetPatchControlPointsEXT>(get_device_proc_addr(device,"vkCmdSetPatchControlPointsEXT"));
+    pfn_CmdSetRasterizerDiscardEnableEXT = reinterpret_cast<detail::PFN_CmdSetRasterizerDiscardEnableEXT>(get_device_proc_addr(device,"vkCmdSetRasterizerDiscardEnableEXT"));
+    pfn_CmdSetDepthBiasEnableEXT = reinterpret_cast<detail::PFN_CmdSetDepthBiasEnableEXT>(get_device_proc_addr(device,"vkCmdSetDepthBiasEnableEXT"));
+    pfn_CmdSetLogicOpEXT = reinterpret_cast<detail::PFN_CmdSetLogicOpEXT>(get_device_proc_addr(device,"vkCmdSetLogicOpEXT"));
+    pfn_CmdSetPrimitiveRestartEnableEXT = reinterpret_cast<detail::PFN_CmdSetPrimitiveRestartEnableEXT>(get_device_proc_addr(device,"vkCmdSetPrimitiveRestartEnableEXT"));
+    pfn_CmdSetColorWriteEnableEXT = reinterpret_cast<detail::PFN_CmdSetColorWriteEnableEXT>(get_device_proc_addr(device,"vkCmdSetColorWriteEnableEXT"));
 }
 };
     struct PhysicalDeviceFunctions {
@@ -16013,6 +17589,10 @@ explicit DeviceFunctions(InstanceFunctions const& instance_functions, Device dev
 [[nodiscard]] expected<IDirectFB> GetDirectFBPresentationSupportEXT(uint32_t queueFamilyIndex) const {
     return instance_functions->GetPhysicalDeviceDirectFBPresentationSupportEXT(physicaldevice, queueFamilyIndex); }
 #endif // defined(VK_USE_PLATFORM_DIRECTFB_EXT)
+#if defined(VK_USE_PLATFORM_SCREEN_QNX)
+[[nodiscard]] expected<_screen_window> GetScreenPresentationSupportQNX(uint32_t queueFamilyIndex) const {
+    return instance_functions->GetPhysicalDeviceScreenPresentationSupportQNX(physicaldevice, queueFamilyIndex); }
+#endif // defined(VK_USE_PLATFORM_SCREEN_QNX)
 [[nodiscard]] expected<ExternalImageFormatPropertiesNV> GetExternalImageFormatPropertiesNV(Format format, ImageType type, ImageTiling tiling, ImageUsageFlags usage, ImageCreateFlags flags = {}, ExternalMemoryHandleTypeFlagsNV externalHandleType = {}) const {
     return instance_functions->GetPhysicalDeviceExternalImageFormatPropertiesNV(physicaldevice, format, type, tiling, usage, flags, externalHandleType); }
 [[nodiscard]] PhysicalDeviceFeatures2 GetFeatures2() const {
@@ -16085,6 +17665,12 @@ explicit DeviceFunctions(InstanceFunctions const& instance_functions, Device dev
     return instance_functions->GetPhysicalDeviceToolPropertiesEXT(physicaldevice); }
 [[nodiscard]] expected<std::vector<PhysicalDeviceFragmentShadingRateKHR>> GetFragmentShadingRatesKHR() const {
     return instance_functions->GetPhysicalDeviceFragmentShadingRatesKHR(physicaldevice); }
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+[[nodiscard]] expected<VideoCapabilitiesKHR> GetVideoCapabilitiesKHR(const VideoProfileKHR&  pVideoProfile) const {
+    return instance_functions->GetPhysicalDeviceVideoCapabilitiesKHR(physicaldevice, pVideoProfile); }
+[[nodiscard]] Result GetVideoFormatPropertiesKHR(const PhysicalDeviceVideoFormatInfoKHR&  pVideoFormatInfo, uint32_t&  pVideoFormatPropertyCount, VideoFormatPropertiesKHR* pVideoFormatProperties = nullptr) const {
+    return instance_functions->GetPhysicalDeviceVideoFormatPropertiesKHR(physicaldevice, pVideoFormatInfo, pVideoFormatPropertyCount, pVideoFormatProperties); }
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 };
     struct QueueFunctions {
     DeviceFunctions const* device_functions;
@@ -16109,6 +17695,10 @@ void InsertDebugUtilsLabelEXT(const DebugUtilsLabelEXT&  pLabelInfo) const {
     return device_functions->GetQueueCheckpointDataNV(queue); }
 [[nodiscard]] Result SetPerformanceConfigurationINTEL(PerformanceConfigurationINTEL configuration) const {
     return device_functions->QueueSetPerformanceConfigurationINTEL(queue, configuration); }
+[[nodiscard]] Result Submit2KHR(detail::span<const SubmitInfo2KHR> Submits, Fence fence = {}) const {
+    return device_functions->QueueSubmit2KHR(queue, Submits, fence); }
+[[nodiscard]] std::vector<CheckpointData2NV> GetCheckpointData2NV() const {
+    return device_functions->GetQueueCheckpointData2NV(queue); }
 };
     struct CommandBufferFunctions {
     DeviceFunctions const* device_functions;
@@ -16451,6 +18041,21 @@ CommandBufferFunctions const& SetStencilTestEnableEXT(Bool32 stencilTestEnable) 
 CommandBufferFunctions const& SetStencilOpEXT(StencilFaceFlags faceMask, StencilOp failOp, StencilOp passOp, StencilOp depthFailOp, CompareOp compareOp) const {
     device_functions->CmdSetStencilOpEXT(commandbuffer, faceMask, failOp, passOp, depthFailOp, compareOp);
     return *this; }
+CommandBufferFunctions const& SetPatchControlPointsEXT(uint32_t patchControlPoints) const {
+    device_functions->CmdSetPatchControlPointsEXT(commandbuffer, patchControlPoints);
+    return *this; }
+CommandBufferFunctions const& SetRasterizerDiscardEnableEXT(Bool32 rasterizerDiscardEnable) const {
+    device_functions->CmdSetRasterizerDiscardEnableEXT(commandbuffer, rasterizerDiscardEnable);
+    return *this; }
+CommandBufferFunctions const& SetDepthBiasEnableEXT(Bool32 depthBiasEnable) const {
+    device_functions->CmdSetDepthBiasEnableEXT(commandbuffer, depthBiasEnable);
+    return *this; }
+CommandBufferFunctions const& SetLogicOpEXT(LogicOp logicOp) const {
+    device_functions->CmdSetLogicOpEXT(commandbuffer, logicOp);
+    return *this; }
+CommandBufferFunctions const& SetPrimitiveRestartEnableEXT(Bool32 primitiveRestartEnable) const {
+    device_functions->CmdSetPrimitiveRestartEnableEXT(commandbuffer, primitiveRestartEnable);
+    return *this; }
 CommandBufferFunctions const& CopyBuffer2KHR(const CopyBufferInfo2KHR&  pCopyBufferInfo) const {
     device_functions->CmdCopyBuffer2KHR(commandbuffer, pCopyBufferInfo);
     return *this; }
@@ -16475,6 +18080,47 @@ CommandBufferFunctions const& SetFragmentShadingRateKHR(const Extent2D&  pFragme
 CommandBufferFunctions const& SetFragmentShadingRateEnumNV(FragmentShadingRateNV shadingRate, const FragmentShadingRateCombinerOpKHR combinerOps[2]) const {
     device_functions->CmdSetFragmentShadingRateEnumNV(commandbuffer, shadingRate, combinerOps);
     return *this; }
+CommandBufferFunctions const& SetVertexInputEXT(detail::span<const VertexInputBindingDescription2EXT> VertexBindingDescriptions, detail::span<const VertexInputAttributeDescription2EXT> VertexAttributeDescriptions) const {
+    device_functions->CmdSetVertexInputEXT(commandbuffer, VertexBindingDescriptions, VertexAttributeDescriptions);
+    return *this; }
+CommandBufferFunctions const& SetColorWriteEnableEXT(detail::span<const Bool32> ColorWriteEnables) const {
+    device_functions->CmdSetColorWriteEnableEXT(commandbuffer, ColorWriteEnables);
+    return *this; }
+CommandBufferFunctions const& SetEvent2KHR(Event event, const DependencyInfoKHR&  pDependencyInfo) const {
+    device_functions->CmdSetEvent2KHR(commandbuffer, event, pDependencyInfo);
+    return *this; }
+CommandBufferFunctions const& ResetEvent2KHR(Event event, PipelineStageFlags2KHR stageMask) const {
+    device_functions->CmdResetEvent2KHR(commandbuffer, event, stageMask);
+    return *this; }
+CommandBufferFunctions const& WaitEvents2KHR(detail::span<const Event> Events, detail::span<const DependencyInfoKHR> DependencyInfos) const {
+    device_functions->CmdWaitEvents2KHR(commandbuffer, Events, DependencyInfos);
+    return *this; }
+CommandBufferFunctions const& PipelineBarrier2KHR(const DependencyInfoKHR&  pDependencyInfo) const {
+    device_functions->CmdPipelineBarrier2KHR(commandbuffer, pDependencyInfo);
+    return *this; }
+CommandBufferFunctions const& WriteTimestamp2KHR(PipelineStageFlags2KHR stage, QueryPool queryPool, uint32_t query) const {
+    device_functions->CmdWriteTimestamp2KHR(commandbuffer, stage, queryPool, query);
+    return *this; }
+CommandBufferFunctions const& WriteBufferMarker2AMD(PipelineStageFlags2KHR stage, Buffer dstBuffer, DeviceSize dstOffset, uint32_t marker) const {
+    device_functions->CmdWriteBufferMarker2AMD(commandbuffer, stage, dstBuffer, dstOffset, marker);
+    return *this; }
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+CommandBufferFunctions const& DecodeVideoKHR(const VideoDecodeInfoKHR&  pFrameInfo) const {
+    device_functions->CmdDecodeVideoKHR(commandbuffer, pFrameInfo);
+    return *this; }
+CommandBufferFunctions const& BeginVideoCodingKHR(const VideoBeginCodingInfoKHR&  pBeginInfo) const {
+    device_functions->CmdBeginVideoCodingKHR(commandbuffer, pBeginInfo);
+    return *this; }
+CommandBufferFunctions const& ControlVideoCodingKHR(const VideoCodingControlInfoKHR&  pCodingControlInfo) const {
+    device_functions->CmdControlVideoCodingKHR(commandbuffer, pCodingControlInfo);
+    return *this; }
+CommandBufferFunctions const& EndVideoCodingKHR(const VideoEndCodingInfoKHR&  pEndCodingInfo) const {
+    device_functions->CmdEndVideoCodingKHR(commandbuffer, pEndCodingInfo);
+    return *this; }
+CommandBufferFunctions const& EncodeVideoKHR(const VideoEncodeInfoKHR&  pEncodeInfo) const {
+    device_functions->CmdEncodeVideoKHR(commandbuffer, pEncodeInfo);
+    return *this; }
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 };
 #if defined(_MSC_VER)
 #pragma warning( push )
@@ -16679,6 +18325,13 @@ inline const char * to_string(DynamicState val) {
         case(DynamicState::DepthBoundsTestEnableEXT): return "DepthBoundsTestEnableEXT";
         case(DynamicState::StencilTestEnableEXT): return "StencilTestEnableEXT";
         case(DynamicState::StencilOpEXT): return "StencilOpEXT";
+        case(DynamicState::VertexInputEXT): return "VertexInputEXT";
+        case(DynamicState::PatchControlPointsEXT): return "PatchControlPointsEXT";
+        case(DynamicState::RasterizerDiscardEnableEXT): return "RasterizerDiscardEnableEXT";
+        case(DynamicState::DepthBiasEnableEXT): return "DepthBiasEnableEXT";
+        case(DynamicState::LogicOpEXT): return "LogicOpEXT";
+        case(DynamicState::PrimitiveRestartEnableEXT): return "PrimitiveRestartEnableEXT";
+        case(DynamicState::ColorWriteEnableEXT): return "ColorWriteEnableEXT";
         default: return "UNKNOWN";
     }
 }
@@ -16900,6 +18553,10 @@ inline const char * to_string(Format val) {
         case(Format::Astc10X10SfloatBlockEXT): return "Astc10X10SfloatBlockEXT";
         case(Format::Astc12X10SfloatBlockEXT): return "Astc12X10SfloatBlockEXT";
         case(Format::Astc12X12SfloatBlockEXT): return "Astc12X12SfloatBlockEXT";
+        case(Format::G8B8R82Plane444UnormEXT): return "G8B8R82Plane444UnormEXT";
+        case(Format::G10X6B10X6R10X62Plane444Unorm3Pack16EXT): return "G10X6B10X6R10X62Plane444Unorm3Pack16EXT";
+        case(Format::G12X4B12X4R12X42Plane444Unorm3Pack16EXT): return "G12X4B12X4R12X42Plane444Unorm3Pack16EXT";
+        case(Format::G16B16R162Plane444UnormEXT): return "G16B16R162Plane444UnormEXT";
         case(Format::A4R4G4B4UnormPack16EXT): return "A4R4G4B4UnormPack16EXT";
         case(Format::A4B4G4R4UnormPack16EXT): return "A4B4G4R4UnormPack16EXT";
         case(Format::G8B8G8R8422Unorm): return "G8B8G8R8422Unorm";
@@ -16958,9 +18615,17 @@ inline const char * to_string(ImageLayout val) {
         case(ImageLayout::TransferDstOptimal): return "TransferDstOptimal";
         case(ImageLayout::Preinitialized): return "Preinitialized";
         case(ImageLayout::PresentSrcKHR): return "PresentSrcKHR";
+        case(ImageLayout::VideoDecodeDstKHR): return "VideoDecodeDstKHR";
+        case(ImageLayout::VideoDecodeSrcKHR): return "VideoDecodeSrcKHR";
+        case(ImageLayout::VideoDecodeDpbKHR): return "VideoDecodeDpbKHR";
+        case(ImageLayout::VideoEncodeDstKHR): return "VideoEncodeDstKHR";
+        case(ImageLayout::VideoEncodeSrcKHR): return "VideoEncodeSrcKHR";
+        case(ImageLayout::VideoEncodeDpbKHR): return "VideoEncodeDpbKHR";
         case(ImageLayout::SharedPresentKHR): return "SharedPresentKHR";
         case(ImageLayout::ShadingRateOptimalNV): return "ShadingRateOptimalNV";
         case(ImageLayout::FragmentDensityMapOptimalEXT): return "FragmentDensityMapOptimalEXT";
+        case(ImageLayout::ReadOnlyOptimalKHR): return "ReadOnlyOptimalKHR";
+        case(ImageLayout::AttachmentOptimalKHR): return "AttachmentOptimalKHR";
         case(ImageLayout::DepthReadOnlyStencilAttachmentOptimal): return "DepthReadOnlyStencilAttachmentOptimal";
         case(ImageLayout::DepthAttachmentStencilReadOnlyOptimal): return "DepthAttachmentStencilReadOnlyOptimal";
         case(ImageLayout::DepthAttachmentOptimal): return "DepthAttachmentOptimal";
@@ -17074,6 +18739,8 @@ inline const char * to_string(QueryType val) {
         case(QueryType::Occlusion): return "Occlusion";
         case(QueryType::PipelineStatistics): return "PipelineStatistics";
         case(QueryType::Timestamp): return "Timestamp";
+        case(QueryType::ResultStatusOnlyKHR): return "ResultStatusOnlyKHR";
+        case(QueryType::VideoEncodeBitstreamBufferRangeKHR): return "VideoEncodeBitstreamBufferRangeKHR";
         case(QueryType::TransformFeedbackStreamEXT): return "TransformFeedbackStreamEXT";
         case(QueryType::PerformanceQueryKHR): return "PerformanceQueryKHR";
         case(QueryType::AccelerationStructureCompactedSizeKHR): return "AccelerationStructureCompactedSizeKHR";
@@ -17218,6 +18885,25 @@ inline const char * to_string(StructureType val) {
         case(StructureType::DebugMarkerObjectNameInfoEXT): return "DebugMarkerObjectNameInfoEXT";
         case(StructureType::DebugMarkerObjectTagInfoEXT): return "DebugMarkerObjectTagInfoEXT";
         case(StructureType::DebugMarkerMarkerInfoEXT): return "DebugMarkerMarkerInfoEXT";
+        case(StructureType::VideoProfileKHR): return "VideoProfileKHR";
+        case(StructureType::VideoCapabilitiesKHR): return "VideoCapabilitiesKHR";
+        case(StructureType::VideoPictureResourceKHR): return "VideoPictureResourceKHR";
+        case(StructureType::VideoGetMemoryPropertiesKHR): return "VideoGetMemoryPropertiesKHR";
+        case(StructureType::VideoBindMemoryKHR): return "VideoBindMemoryKHR";
+        case(StructureType::VideoSessionCreateInfoKHR): return "VideoSessionCreateInfoKHR";
+        case(StructureType::VideoSessionParametersCreateInfoKHR): return "VideoSessionParametersCreateInfoKHR";
+        case(StructureType::VideoSessionParametersUpdateInfoKHR): return "VideoSessionParametersUpdateInfoKHR";
+        case(StructureType::VideoBeginCodingInfoKHR): return "VideoBeginCodingInfoKHR";
+        case(StructureType::VideoEndCodingInfoKHR): return "VideoEndCodingInfoKHR";
+        case(StructureType::VideoCodingControlInfoKHR): return "VideoCodingControlInfoKHR";
+        case(StructureType::VideoReferenceSlotKHR): return "VideoReferenceSlotKHR";
+        case(StructureType::VideoQueueFamilyProperties2KHR): return "VideoQueueFamilyProperties2KHR";
+        case(StructureType::VideoProfilesKHR): return "VideoProfilesKHR";
+        case(StructureType::PhysicalDeviceVideoFormatInfoKHR): return "PhysicalDeviceVideoFormatInfoKHR";
+        case(StructureType::VideoFormatPropertiesKHR): return "VideoFormatPropertiesKHR";
+        case(StructureType::VideoDecodeInfoKHR): return "VideoDecodeInfoKHR";
+        case(StructureType::VideoEncodeInfoKHR): return "VideoEncodeInfoKHR";
+        case(StructureType::VideoEncodeRateControlInfoKHR): return "VideoEncodeRateControlInfoKHR";
         case(StructureType::DedicatedAllocationImageCreateInfoNV): return "DedicatedAllocationImageCreateInfoNV";
         case(StructureType::DedicatedAllocationBufferCreateInfoNV): return "DedicatedAllocationBufferCreateInfoNV";
         case(StructureType::DedicatedAllocationMemoryAllocateInfoNV): return "DedicatedAllocationMemoryAllocateInfoNV";
@@ -17226,6 +18912,23 @@ inline const char * to_string(StructureType val) {
         case(StructureType::PipelineRasterizationStateStreamCreateInfoEXT): return "PipelineRasterizationStateStreamCreateInfoEXT";
         case(StructureType::ImageViewHandleInfoNVX): return "ImageViewHandleInfoNVX";
         case(StructureType::ImageViewAddressPropertiesNVX): return "ImageViewAddressPropertiesNVX";
+        case(StructureType::VideoEncodeH264CapabilitiesEXT): return "VideoEncodeH264CapabilitiesEXT";
+        case(StructureType::VideoEncodeH264SessionCreateInfoEXT): return "VideoEncodeH264SessionCreateInfoEXT";
+        case(StructureType::VideoEncodeH264SessionParametersCreateInfoEXT): return "VideoEncodeH264SessionParametersCreateInfoEXT";
+        case(StructureType::VideoEncodeH264SessionParametersAddInfoEXT): return "VideoEncodeH264SessionParametersAddInfoEXT";
+        case(StructureType::VideoEncodeH264VclFrameInfoEXT): return "VideoEncodeH264VclFrameInfoEXT";
+        case(StructureType::VideoEncodeH264DpbSlotInfoEXT): return "VideoEncodeH264DpbSlotInfoEXT";
+        case(StructureType::VideoEncodeH264NaluSliceEXT): return "VideoEncodeH264NaluSliceEXT";
+        case(StructureType::VideoEncodeH264EmitPictureParametersEXT): return "VideoEncodeH264EmitPictureParametersEXT";
+        case(StructureType::VideoEncodeH264ProfileEXT): return "VideoEncodeH264ProfileEXT";
+        case(StructureType::VideoDecodeH264CapabilitiesEXT): return "VideoDecodeH264CapabilitiesEXT";
+        case(StructureType::VideoDecodeH264SessionCreateInfoEXT): return "VideoDecodeH264SessionCreateInfoEXT";
+        case(StructureType::VideoDecodeH264PictureInfoEXT): return "VideoDecodeH264PictureInfoEXT";
+        case(StructureType::VideoDecodeH264MvcEXT): return "VideoDecodeH264MvcEXT";
+        case(StructureType::VideoDecodeH264ProfileEXT): return "VideoDecodeH264ProfileEXT";
+        case(StructureType::VideoDecodeH264SessionParametersCreateInfoEXT): return "VideoDecodeH264SessionParametersCreateInfoEXT";
+        case(StructureType::VideoDecodeH264SessionParametersAddInfoEXT): return "VideoDecodeH264SessionParametersAddInfoEXT";
+        case(StructureType::VideoDecodeH264DpbSlotInfoEXT): return "VideoDecodeH264DpbSlotInfoEXT";
         case(StructureType::TextureLodGatherFormatPropertiesAMD): return "TextureLodGatherFormatPropertiesAMD";
         case(StructureType::StreamDescriptorSurfaceCreateInfoGGP): return "StreamDescriptorSurfaceCreateInfoGGP";
         case(StructureType::PhysicalDeviceCornerSampledImageFeaturesNV): return "PhysicalDeviceCornerSampledImageFeaturesNV";
@@ -17381,6 +19084,13 @@ inline const char * to_string(StructureType val) {
         case(StructureType::PipelineCompilerControlCreateInfoAMD): return "PipelineCompilerControlCreateInfoAMD";
         case(StructureType::CalibratedTimestampInfoEXT): return "CalibratedTimestampInfoEXT";
         case(StructureType::PhysicalDeviceShaderCorePropertiesAMD): return "PhysicalDeviceShaderCorePropertiesAMD";
+        case(StructureType::VideoDecodeH265CapabilitiesEXT): return "VideoDecodeH265CapabilitiesEXT";
+        case(StructureType::VideoDecodeH265SessionCreateInfoEXT): return "VideoDecodeH265SessionCreateInfoEXT";
+        case(StructureType::VideoDecodeH265SessionParametersCreateInfoEXT): return "VideoDecodeH265SessionParametersCreateInfoEXT";
+        case(StructureType::VideoDecodeH265SessionParametersAddInfoEXT): return "VideoDecodeH265SessionParametersAddInfoEXT";
+        case(StructureType::VideoDecodeH265ProfileEXT): return "VideoDecodeH265ProfileEXT";
+        case(StructureType::VideoDecodeH265PictureInfoEXT): return "VideoDecodeH265PictureInfoEXT";
+        case(StructureType::VideoDecodeH265DpbSlotInfoEXT): return "VideoDecodeH265DpbSlotInfoEXT";
         case(StructureType::DeviceMemoryOverallocationCreateInfoAMD): return "DeviceMemoryOverallocationCreateInfoAMD";
         case(StructureType::PhysicalDeviceVertexAttributeDivisorPropertiesEXT): return "PhysicalDeviceVertexAttributeDivisorPropertiesEXT";
         case(StructureType::PipelineVertexInputDivisorStateCreateInfoEXT): return "PipelineVertexInputDivisorStateCreateInfoEXT";
@@ -17465,6 +19175,8 @@ inline const char * to_string(StructureType val) {
         case(StructureType::GeneratedCommandsInfoNV): return "GeneratedCommandsInfoNV";
         case(StructureType::GeneratedCommandsMemoryRequirementsInfoNV): return "GeneratedCommandsMemoryRequirementsInfoNV";
         case(StructureType::PhysicalDeviceDeviceGeneratedCommandsFeaturesNV): return "PhysicalDeviceDeviceGeneratedCommandsFeaturesNV";
+        case(StructureType::PhysicalDeviceInheritedViewportScissorFeaturesNV): return "PhysicalDeviceInheritedViewportScissorFeaturesNV";
+        case(StructureType::CommandBufferInheritanceViewportScissorInfoNV): return "CommandBufferInheritanceViewportScissorInfoNV";
         case(StructureType::PhysicalDeviceTexelBufferAlignmentFeaturesEXT): return "PhysicalDeviceTexelBufferAlignmentFeaturesEXT";
         case(StructureType::PhysicalDeviceTexelBufferAlignmentPropertiesEXT): return "PhysicalDeviceTexelBufferAlignmentPropertiesEXT";
         case(StructureType::CommandBufferInheritanceRenderPassTransformInfoQCOM): return "CommandBufferInheritanceRenderPassTransformInfoQCOM";
@@ -17484,10 +19196,21 @@ inline const char * to_string(StructureType val) {
         case(StructureType::PhysicalDevicePipelineCreationCacheControlFeaturesEXT): return "PhysicalDevicePipelineCreationCacheControlFeaturesEXT";
         case(StructureType::PhysicalDeviceDiagnosticsConfigFeaturesNV): return "PhysicalDeviceDiagnosticsConfigFeaturesNV";
         case(StructureType::DeviceDiagnosticsConfigCreateInfoNV): return "DeviceDiagnosticsConfigCreateInfoNV";
+        case(StructureType::MemoryBarrier2KHR): return "MemoryBarrier2KHR";
+        case(StructureType::BufferMemoryBarrier2KHR): return "BufferMemoryBarrier2KHR";
+        case(StructureType::ImageMemoryBarrier2KHR): return "ImageMemoryBarrier2KHR";
+        case(StructureType::DependencyInfoKHR): return "DependencyInfoKHR";
+        case(StructureType::SubmitInfo2KHR): return "SubmitInfo2KHR";
+        case(StructureType::SemaphoreSubmitInfoKHR): return "SemaphoreSubmitInfoKHR";
+        case(StructureType::CommandBufferSubmitInfoKHR): return "CommandBufferSubmitInfoKHR";
+        case(StructureType::PhysicalDeviceSynchronization2FeaturesKHR): return "PhysicalDeviceSynchronization2FeaturesKHR";
+        case(StructureType::QueueFamilyCheckpointProperties2NV): return "QueueFamilyCheckpointProperties2NV";
+        case(StructureType::CheckpointData2NV): return "CheckpointData2NV";
         case(StructureType::PhysicalDeviceZeroInitializeWorkgroupMemoryFeaturesKHR): return "PhysicalDeviceZeroInitializeWorkgroupMemoryFeaturesKHR";
         case(StructureType::PhysicalDeviceFragmentShadingRateEnumsPropertiesNV): return "PhysicalDeviceFragmentShadingRateEnumsPropertiesNV";
         case(StructureType::PhysicalDeviceFragmentShadingRateEnumsFeaturesNV): return "PhysicalDeviceFragmentShadingRateEnumsFeaturesNV";
         case(StructureType::PipelineFragmentShadingRateEnumStateCreateInfoNV): return "PipelineFragmentShadingRateEnumStateCreateInfoNV";
+        case(StructureType::PhysicalDeviceYcbcr2Plane444FormatsFeaturesEXT): return "PhysicalDeviceYcbcr2Plane444FormatsFeaturesEXT";
         case(StructureType::PhysicalDeviceFragmentDensityMap2FeaturesEXT): return "PhysicalDeviceFragmentDensityMap2FeaturesEXT";
         case(StructureType::PhysicalDeviceFragmentDensityMap2PropertiesEXT): return "PhysicalDeviceFragmentDensityMap2PropertiesEXT";
         case(StructureType::CopyCommandTransformInfoQCOM): return "CopyCommandTransformInfoQCOM";
@@ -17508,6 +19231,18 @@ inline const char * to_string(StructureType val) {
         case(StructureType::DirectfbSurfaceCreateInfoEXT): return "DirectfbSurfaceCreateInfoEXT";
         case(StructureType::PhysicalDeviceMutableDescriptorTypeFeaturesVALVE): return "PhysicalDeviceMutableDescriptorTypeFeaturesVALVE";
         case(StructureType::MutableDescriptorTypeCreateInfoVALVE): return "MutableDescriptorTypeCreateInfoVALVE";
+        case(StructureType::PhysicalDeviceVertexInputDynamicStateFeaturesEXT): return "PhysicalDeviceVertexInputDynamicStateFeaturesEXT";
+        case(StructureType::VertexInputBindingDescription2EXT): return "VertexInputBindingDescription2EXT";
+        case(StructureType::VertexInputAttributeDescription2EXT): return "VertexInputAttributeDescription2EXT";
+        case(StructureType::ImportMemoryZirconHandleInfoFUCHSIA): return "ImportMemoryZirconHandleInfoFUCHSIA";
+        case(StructureType::MemoryZirconHandlePropertiesFUCHSIA): return "MemoryZirconHandlePropertiesFUCHSIA";
+        case(StructureType::MemoryGetZirconHandleInfoFUCHSIA): return "MemoryGetZirconHandleInfoFUCHSIA";
+        case(StructureType::ImportSemaphoreZirconHandleInfoFUCHSIA): return "ImportSemaphoreZirconHandleInfoFUCHSIA";
+        case(StructureType::SemaphoreGetZirconHandleInfoFUCHSIA): return "SemaphoreGetZirconHandleInfoFUCHSIA";
+        case(StructureType::PhysicalDeviceExtendedDynamicState2FeaturesEXT): return "PhysicalDeviceExtendedDynamicState2FeaturesEXT";
+        case(StructureType::ScreenSurfaceCreateInfoQNX): return "ScreenSurfaceCreateInfoQNX";
+        case(StructureType::PhysicalDeviceColorWriteEnableFeaturesEXT): return "PhysicalDeviceColorWriteEnableFeaturesEXT";
+        case(StructureType::PipelineColorWriteCreateInfoEXT): return "PipelineColorWriteCreateInfoEXT";
         case(StructureType::PhysicalDeviceSubgroupProperties): return "PhysicalDeviceSubgroupProperties";
         case(StructureType::BindBufferMemoryInfo): return "BindBufferMemoryInfo";
         case(StructureType::BindImageMemoryInfo): return "BindImageMemoryInfo";
@@ -17707,6 +19442,8 @@ inline const char * to_string(ObjectType val) {
         case(ObjectType::DisplayKHR): return "DisplayKHR";
         case(ObjectType::DisplayModeKHR): return "DisplayModeKHR";
         case(ObjectType::DebugReportCallbackEXT): return "DebugReportCallbackEXT";
+        case(ObjectType::VideoSessionKHR): return "VideoSessionKHR";
+        case(ObjectType::VideoSessionParametersKHR): return "VideoSessionParametersKHR";
         case(ObjectType::DebugUtilsMessengerEXT): return "DebugUtilsMessengerEXT";
         case(ObjectType::AccelerationStructureKHR): return "AccelerationStructureKHR";
         case(ObjectType::ValidationCacheEXT): return "ValidationCacheEXT";
@@ -18281,6 +20018,7 @@ inline const char * to_string(DriverId val) {
         case(DriverId::BroadcomProprietary): return "BroadcomProprietary";
         case(DriverId::MesaLlvmpipe): return "MesaLlvmpipe";
         case(DriverId::Moltenvk): return "Moltenvk";
+        case(DriverId::CoreaviProprietary): return "CoreaviProprietary";
         default: return "UNKNOWN";
     }
 }
@@ -18319,6 +20057,16 @@ inline const char * to_string(PipelineExecutableStatisticFormatKHR val) {
         default: return "UNKNOWN";
     }
 }
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+inline const char * to_string(QueryResultStatusKHR val) {
+    switch(val) {
+        case(QueryResultStatusKHR::ErrorKHR): return "ErrorKHR";
+        case(QueryResultStatusKHR::NotReadyKHR): return "NotReadyKHR";
+        case(QueryResultStatusKHR::CompleteKHR): return "CompleteKHR";
+        default: return "UNKNOWN";
+    }
+}
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 inline const char * to_string(PipelineCacheCreateFlagBits val) {
     switch(val) {
         case(PipelineCacheCreateFlagBits::ExternallySynchronizedBitEXT): return "ExternallySynchronizedBitEXT";
@@ -18337,6 +20085,8 @@ inline const char * to_string(QueueFlagBits val) {
         case(QueueFlagBits::Compute): return "Compute";
         case(QueueFlagBits::Transfer): return "Transfer";
         case(QueueFlagBits::SparseBinding): return "SparseBinding";
+        case(QueueFlagBits::VideoDecodeBitKHR): return "VideoDecodeBitKHR";
+        case(QueueFlagBits::VideoEncodeBitKHR): return "VideoEncodeBitKHR";
         case(QueueFlagBits::Protected): return "Protected";
         default: return "UNKNOWN";
     }
@@ -18348,6 +20098,8 @@ inline std::string to_string(QueueFlags flag){
     if (flag & QueueFlagBits::Compute) out += "Compute | ";
     if (flag & QueueFlagBits::Transfer) out += "Transfer | ";
     if (flag & QueueFlagBits::SparseBinding) out += "SparseBinding | ";
+    if (flag & QueueFlagBits::VideoDecodeBitKHR) out += "VideoDecodeBitKHR | ";
+    if (flag & QueueFlagBits::VideoEncodeBitKHR) out += "VideoEncodeBitKHR | ";
     if (flag & QueueFlagBits::Protected) out += "Protected | ";
     return out.substr(0, out.size() - 3);
 }
@@ -18433,7 +20185,7 @@ inline std::string to_string(MemoryHeapFlags flag){
 }
 inline const char * to_string(AccessFlagBits val) {
     switch(val) {
-        case(AccessFlagBits::IndirectCommandRead): return "IndirectCommandRead";
+        case(AccessFlagBits::NoneKHR): return "NoneKHR";
         case(AccessFlagBits::IndexRead): return "IndexRead";
         case(AccessFlagBits::VertexAttributeRead): return "VertexAttributeRead";
         case(AccessFlagBits::UniformRead): return "UniformRead";
@@ -18467,7 +20219,7 @@ inline const char * to_string(AccessFlagBits val) {
 inline std::string to_string(AccessFlags flag){
     if (flag.flags == 0) return "None";
     std::string out;
-    if (flag & AccessFlagBits::IndirectCommandRead) out += "IndirectCommandRead | ";
+    if (flag & AccessFlagBits::NoneKHR) out += "NoneKHR | ";
     if (flag & AccessFlagBits::IndexRead) out += "IndexRead | ";
     if (flag & AccessFlagBits::VertexAttributeRead) out += "VertexAttributeRead | ";
     if (flag & AccessFlagBits::UniformRead) out += "UniformRead | ";
@@ -18508,6 +20260,10 @@ inline const char * to_string(BufferUsageFlagBits val) {
         case(BufferUsageFlagBits::IndexBuffer): return "IndexBuffer";
         case(BufferUsageFlagBits::VertexBuffer): return "VertexBuffer";
         case(BufferUsageFlagBits::IndirectBuffer): return "IndirectBuffer";
+        case(BufferUsageFlagBits::VideoDecodeSrcBitKHR): return "VideoDecodeSrcBitKHR";
+        case(BufferUsageFlagBits::VideoDecodeDstBitKHR): return "VideoDecodeDstBitKHR";
+        case(BufferUsageFlagBits::VideoEncodeDstBitKHR): return "VideoEncodeDstBitKHR";
+        case(BufferUsageFlagBits::VideoEncodeSrcBitKHR): return "VideoEncodeSrcBitKHR";
         case(BufferUsageFlagBits::TransformFeedbackBufferBitEXT): return "TransformFeedbackBufferBitEXT";
         case(BufferUsageFlagBits::TransformFeedbackCounterBufferBitEXT): return "TransformFeedbackCounterBufferBitEXT";
         case(BufferUsageFlagBits::ConditionalRenderingBitEXT): return "ConditionalRenderingBitEXT";
@@ -18530,6 +20286,10 @@ inline std::string to_string(BufferUsageFlags flag){
     if (flag & BufferUsageFlagBits::IndexBuffer) out += "IndexBuffer | ";
     if (flag & BufferUsageFlagBits::VertexBuffer) out += "VertexBuffer | ";
     if (flag & BufferUsageFlagBits::IndirectBuffer) out += "IndirectBuffer | ";
+    if (flag & BufferUsageFlagBits::VideoDecodeSrcBitKHR) out += "VideoDecodeSrcBitKHR | ";
+    if (flag & BufferUsageFlagBits::VideoDecodeDstBitKHR) out += "VideoDecodeDstBitKHR | ";
+    if (flag & BufferUsageFlagBits::VideoEncodeDstBitKHR) out += "VideoEncodeDstBitKHR | ";
+    if (flag & BufferUsageFlagBits::VideoEncodeSrcBitKHR) out += "VideoEncodeSrcBitKHR | ";
     if (flag & BufferUsageFlagBits::TransformFeedbackBufferBitEXT) out += "TransformFeedbackBufferBitEXT | ";
     if (flag & BufferUsageFlagBits::TransformFeedbackCounterBufferBitEXT) out += "TransformFeedbackCounterBufferBitEXT | ";
     if (flag & BufferUsageFlagBits::ConditionalRenderingBitEXT) out += "ConditionalRenderingBitEXT | ";
@@ -18607,6 +20367,12 @@ inline const char * to_string(ImageUsageFlagBits val) {
         case(ImageUsageFlagBits::DepthStencilAttachment): return "DepthStencilAttachment";
         case(ImageUsageFlagBits::TransientAttachment): return "TransientAttachment";
         case(ImageUsageFlagBits::InputAttachment): return "InputAttachment";
+        case(ImageUsageFlagBits::VideoDecodeDstBitKHR): return "VideoDecodeDstBitKHR";
+        case(ImageUsageFlagBits::VideoDecodeSrcBitKHR): return "VideoDecodeSrcBitKHR";
+        case(ImageUsageFlagBits::VideoDecodeDpbBitKHR): return "VideoDecodeDpbBitKHR";
+        case(ImageUsageFlagBits::VideoEncodeDstBitKHR): return "VideoEncodeDstBitKHR";
+        case(ImageUsageFlagBits::VideoEncodeSrcBitKHR): return "VideoEncodeSrcBitKHR";
+        case(ImageUsageFlagBits::VideoEncodeDpbBitKHR): return "VideoEncodeDpbBitKHR";
         case(ImageUsageFlagBits::ShadingRateImageBitNV): return "ShadingRateImageBitNV";
         case(ImageUsageFlagBits::FragmentDensityMapBitEXT): return "FragmentDensityMapBitEXT";
         default: return "UNKNOWN";
@@ -18623,6 +20389,12 @@ inline std::string to_string(ImageUsageFlags flag){
     if (flag & ImageUsageFlagBits::DepthStencilAttachment) out += "DepthStencilAttachment | ";
     if (flag & ImageUsageFlagBits::TransientAttachment) out += "TransientAttachment | ";
     if (flag & ImageUsageFlagBits::InputAttachment) out += "InputAttachment | ";
+    if (flag & ImageUsageFlagBits::VideoDecodeDstBitKHR) out += "VideoDecodeDstBitKHR | ";
+    if (flag & ImageUsageFlagBits::VideoDecodeSrcBitKHR) out += "VideoDecodeSrcBitKHR | ";
+    if (flag & ImageUsageFlagBits::VideoDecodeDpbBitKHR) out += "VideoDecodeDpbBitKHR | ";
+    if (flag & ImageUsageFlagBits::VideoEncodeDstBitKHR) out += "VideoEncodeDstBitKHR | ";
+    if (flag & ImageUsageFlagBits::VideoEncodeSrcBitKHR) out += "VideoEncodeSrcBitKHR | ";
+    if (flag & ImageUsageFlagBits::VideoEncodeDpbBitKHR) out += "VideoEncodeDpbBitKHR | ";
     if (flag & ImageUsageFlagBits::ShadingRateImageBitNV) out += "ShadingRateImageBitNV | ";
     if (flag & ImageUsageFlagBits::FragmentDensityMapBitEXT) out += "FragmentDensityMapBitEXT | ";
     return out.substr(0, out.size() - 3);
@@ -18803,6 +20575,10 @@ inline const char * to_string(FormatFeatureFlagBits val) {
         case(FormatFeatureFlagBits::BlitDst): return "BlitDst";
         case(FormatFeatureFlagBits::SampledImageFilterLinear): return "SampledImageFilterLinear";
         case(FormatFeatureFlagBits::SampledImageFilterCubicBitIMG): return "SampledImageFilterCubicBitIMG";
+        case(FormatFeatureFlagBits::VideoDecodeOutputBitKHR): return "VideoDecodeOutputBitKHR";
+        case(FormatFeatureFlagBits::VideoDecodeDpbBitKHR): return "VideoDecodeDpbBitKHR";
+        case(FormatFeatureFlagBits::VideoEncodeInputBitKHR): return "VideoEncodeInputBitKHR";
+        case(FormatFeatureFlagBits::VideoEncodeDpbBitKHR): return "VideoEncodeDpbBitKHR";
         case(FormatFeatureFlagBits::AccelerationStructureVertexBufferBitKHR): return "AccelerationStructureVertexBufferBitKHR";
         case(FormatFeatureFlagBits::FragmentDensityMapBitEXT): return "FragmentDensityMapBitEXT";
         case(FormatFeatureFlagBits::FragmentShadingRateAttachmentBitKHR): return "FragmentShadingRateAttachmentBitKHR";
@@ -18836,6 +20612,10 @@ inline std::string to_string(FormatFeatureFlags flag){
     if (flag & FormatFeatureFlagBits::BlitDst) out += "BlitDst | ";
     if (flag & FormatFeatureFlagBits::SampledImageFilterLinear) out += "SampledImageFilterLinear | ";
     if (flag & FormatFeatureFlagBits::SampledImageFilterCubicBitIMG) out += "SampledImageFilterCubicBitIMG | ";
+    if (flag & FormatFeatureFlagBits::VideoDecodeOutputBitKHR) out += "VideoDecodeOutputBitKHR | ";
+    if (flag & FormatFeatureFlagBits::VideoDecodeDpbBitKHR) out += "VideoDecodeDpbBitKHR | ";
+    if (flag & FormatFeatureFlagBits::VideoEncodeInputBitKHR) out += "VideoEncodeInputBitKHR | ";
+    if (flag & FormatFeatureFlagBits::VideoEncodeDpbBitKHR) out += "VideoEncodeDpbBitKHR | ";
     if (flag & FormatFeatureFlagBits::AccelerationStructureVertexBufferBitKHR) out += "AccelerationStructureVertexBufferBitKHR | ";
     if (flag & FormatFeatureFlagBits::FragmentDensityMapBitEXT) out += "FragmentDensityMapBitEXT | ";
     if (flag & FormatFeatureFlagBits::FragmentShadingRateAttachmentBitKHR) out += "FragmentShadingRateAttachmentBitKHR | ";
@@ -18869,6 +20649,7 @@ inline const char * to_string(QueryResultFlagBits val) {
         case(QueryResultFlagBits::Wait): return "Wait";
         case(QueryResultFlagBits::WithAvailability): return "WithAvailability";
         case(QueryResultFlagBits::Partial): return "Partial";
+        case(QueryResultFlagBits::WithStatusBitKHR): return "WithStatusBitKHR";
         default: return "UNKNOWN";
     }
 }
@@ -18879,6 +20660,7 @@ inline std::string to_string(QueryResultFlags flag){
     if (flag & QueryResultFlagBits::Wait) out += "Wait | ";
     if (flag & QueryResultFlagBits::WithAvailability) out += "WithAvailability | ";
     if (flag & QueryResultFlagBits::Partial) out += "Partial | ";
+    if (flag & QueryResultFlagBits::WithStatusBitKHR) out += "WithStatusBitKHR | ";
     return out.substr(0, out.size() - 3);
 }
 inline const char * to_string(CommandBufferUsageFlagBits val) {
@@ -18991,7 +20773,7 @@ inline std::string to_string(SparseMemoryBindFlags flag){
 }
 inline const char * to_string(PipelineStageFlagBits val) {
     switch(val) {
-        case(PipelineStageFlagBits::TopOfPipe): return "TopOfPipe";
+        case(PipelineStageFlagBits::NoneKHR): return "NoneKHR";
         case(PipelineStageFlagBits::DrawIndirect): return "DrawIndirect";
         case(PipelineStageFlagBits::VertexInput): return "VertexInput";
         case(PipelineStageFlagBits::VertexShader): return "VertexShader";
@@ -19023,7 +20805,7 @@ inline const char * to_string(PipelineStageFlagBits val) {
 inline std::string to_string(PipelineStageFlags flag){
     if (flag.flags == 0) return "None";
     std::string out;
-    if (flag & PipelineStageFlagBits::TopOfPipe) out += "TopOfPipe | ";
+    if (flag & PipelineStageFlagBits::NoneKHR) out += "NoneKHR | ";
     if (flag & PipelineStageFlagBits::DrawIndirect) out += "DrawIndirect | ";
     if (flag & PipelineStageFlagBits::VertexInput) out += "VertexInput | ";
     if (flag & PipelineStageFlagBits::VertexShader) out += "VertexShader | ";
@@ -19390,6 +21172,7 @@ inline const char * to_string(ExternalMemoryHandleTypeFlagBits val) {
         case(ExternalMemoryHandleTypeFlagBits::AndroidHardwareBufferBitANDROID): return "AndroidHardwareBufferBitANDROID";
         case(ExternalMemoryHandleTypeFlagBits::HostAllocationBitEXT): return "HostAllocationBitEXT";
         case(ExternalMemoryHandleTypeFlagBits::HostMappedForeignMemoryBitEXT): return "HostMappedForeignMemoryBitEXT";
+        case(ExternalMemoryHandleTypeFlagBits::ZirconVmoBitFUCHSIA): return "ZirconVmoBitFUCHSIA";
         default: return "UNKNOWN";
     }
 }
@@ -19407,6 +21190,7 @@ inline std::string to_string(ExternalMemoryHandleTypeFlags flag){
     if (flag & ExternalMemoryHandleTypeFlagBits::AndroidHardwareBufferBitANDROID) out += "AndroidHardwareBufferBitANDROID | ";
     if (flag & ExternalMemoryHandleTypeFlagBits::HostAllocationBitEXT) out += "HostAllocationBitEXT | ";
     if (flag & ExternalMemoryHandleTypeFlagBits::HostMappedForeignMemoryBitEXT) out += "HostMappedForeignMemoryBitEXT | ";
+    if (flag & ExternalMemoryHandleTypeFlagBits::ZirconVmoBitFUCHSIA) out += "ZirconVmoBitFUCHSIA | ";
     return out.substr(0, out.size() - 3);
 }
 inline const char * to_string(ExternalMemoryFeatureFlagBits val) {
@@ -19432,6 +21216,7 @@ inline const char * to_string(ExternalSemaphoreHandleTypeFlagBits val) {
         case(ExternalSemaphoreHandleTypeFlagBits::OpaqueWin32Kmt): return "OpaqueWin32Kmt";
         case(ExternalSemaphoreHandleTypeFlagBits::D3D12Fence): return "D3D12Fence";
         case(ExternalSemaphoreHandleTypeFlagBits::SyncFd): return "SyncFd";
+        case(ExternalSemaphoreHandleTypeFlagBits::ZirconEventBitFUCHSIA): return "ZirconEventBitFUCHSIA";
         default: return "UNKNOWN";
     }
 }
@@ -19443,6 +21228,7 @@ inline std::string to_string(ExternalSemaphoreHandleTypeFlags flag){
     if (flag & ExternalSemaphoreHandleTypeFlagBits::OpaqueWin32Kmt) out += "OpaqueWin32Kmt | ";
     if (flag & ExternalSemaphoreHandleTypeFlagBits::D3D12Fence) out += "D3D12Fence | ";
     if (flag & ExternalSemaphoreHandleTypeFlagBits::SyncFd) out += "SyncFd | ";
+    if (flag & ExternalSemaphoreHandleTypeFlagBits::ZirconEventBitFUCHSIA) out += "ZirconEventBitFUCHSIA | ";
     return out.substr(0, out.size() - 3);
 }
 inline const char * to_string(ExternalSemaphoreFeatureFlagBits val) {
@@ -19851,6 +21637,464 @@ inline std::string to_string(ToolPurposeFlagsEXT flag){
     if (flag & ToolPurposeFlagBitsEXT::DebugMarkersBitEXT) out += "DebugMarkersBitEXT | ";
     return out.substr(0, out.size() - 3);
 }
+inline const char * to_string(AccessFlagBits2KHR val) {
+    switch(val) {
+        case(AccessFlagBits2KHR::e2NoneKHR): return "e2NoneKHR";
+        case(AccessFlagBits2KHR::e2IndirectCommandReadBitKHR): return "e2IndirectCommandReadBitKHR";
+        case(AccessFlagBits2KHR::e2IndexReadBitKHR): return "e2IndexReadBitKHR";
+        case(AccessFlagBits2KHR::e2VertexAttributeReadBitKHR): return "e2VertexAttributeReadBitKHR";
+        case(AccessFlagBits2KHR::e2UniformReadBitKHR): return "e2UniformReadBitKHR";
+        case(AccessFlagBits2KHR::e2InputAttachmentReadBitKHR): return "e2InputAttachmentReadBitKHR";
+        case(AccessFlagBits2KHR::e2ShaderReadBitKHR): return "e2ShaderReadBitKHR";
+        case(AccessFlagBits2KHR::e2ShaderWriteBitKHR): return "e2ShaderWriteBitKHR";
+        case(AccessFlagBits2KHR::e2ColorAttachmentReadBitKHR): return "e2ColorAttachmentReadBitKHR";
+        case(AccessFlagBits2KHR::e2ColorAttachmentWriteBitKHR): return "e2ColorAttachmentWriteBitKHR";
+        case(AccessFlagBits2KHR::e2DepthStencilAttachmentReadBitKHR): return "e2DepthStencilAttachmentReadBitKHR";
+        case(AccessFlagBits2KHR::e2DepthStencilAttachmentWriteBitKHR): return "e2DepthStencilAttachmentWriteBitKHR";
+        case(AccessFlagBits2KHR::e2TransferReadBitKHR): return "e2TransferReadBitKHR";
+        case(AccessFlagBits2KHR::e2TransferWriteBitKHR): return "e2TransferWriteBitKHR";
+        case(AccessFlagBits2KHR::e2HostReadBitKHR): return "e2HostReadBitKHR";
+        case(AccessFlagBits2KHR::e2HostWriteBitKHR): return "e2HostWriteBitKHR";
+        case(AccessFlagBits2KHR::e2MemoryReadBitKHR): return "e2MemoryReadBitKHR";
+        case(AccessFlagBits2KHR::e2MemoryWriteBitKHR): return "e2MemoryWriteBitKHR";
+        case(AccessFlagBits2KHR::e2ShaderSampledReadBitKHR): return "e2ShaderSampledReadBitKHR";
+        case(AccessFlagBits2KHR::e2ShaderStorageReadBitKHR): return "e2ShaderStorageReadBitKHR";
+        case(AccessFlagBits2KHR::e2ShaderStorageWriteBitKHR): return "e2ShaderStorageWriteBitKHR";
+        case(AccessFlagBits2KHR::e2VideoDecodeReadBitKHR): return "e2VideoDecodeReadBitKHR";
+        case(AccessFlagBits2KHR::e2VideoDecodeWriteBitKHR): return "e2VideoDecodeWriteBitKHR";
+        case(AccessFlagBits2KHR::e2VideoEncodeReadBitKHR): return "e2VideoEncodeReadBitKHR";
+        case(AccessFlagBits2KHR::e2VideoEncodeWriteBitKHR): return "e2VideoEncodeWriteBitKHR";
+        case(AccessFlagBits2KHR::e2TransformFeedbackWriteBitEXT): return "e2TransformFeedbackWriteBitEXT";
+        case(AccessFlagBits2KHR::e2TransformFeedbackCounterReadBitEXT): return "e2TransformFeedbackCounterReadBitEXT";
+        case(AccessFlagBits2KHR::e2TransformFeedbackCounterWriteBitEXT): return "e2TransformFeedbackCounterWriteBitEXT";
+        case(AccessFlagBits2KHR::e2ConditionalRenderingReadBitEXT): return "e2ConditionalRenderingReadBitEXT";
+        case(AccessFlagBits2KHR::e2CommandPreprocessReadBitNV): return "e2CommandPreprocessReadBitNV";
+        case(AccessFlagBits2KHR::e2CommandPreprocessWriteBitNV): return "e2CommandPreprocessWriteBitNV";
+        case(AccessFlagBits2KHR::e2FragmentShadingRateAttachmentReadBitKHR): return "e2FragmentShadingRateAttachmentReadBitKHR";
+        case(AccessFlagBits2KHR::e2AccelerationStructureReadBitKHR): return "e2AccelerationStructureReadBitKHR";
+        case(AccessFlagBits2KHR::e2AccelerationStructureWriteBitKHR): return "e2AccelerationStructureWriteBitKHR";
+        case(AccessFlagBits2KHR::e2FragmentDensityMapReadBitEXT): return "e2FragmentDensityMapReadBitEXT";
+        case(AccessFlagBits2KHR::e2ColorAttachmentReadNoncoherentBitEXT): return "e2ColorAttachmentReadNoncoherentBitEXT";
+        default: return "UNKNOWN";
+    }
+}
+inline std::string to_string(AccessFlags2KHR flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & AccessFlagBits2KHR::e2NoneKHR) out += "e2NoneKHR | ";
+    if (flag & AccessFlagBits2KHR::e2IndirectCommandReadBitKHR) out += "e2IndirectCommandReadBitKHR | ";
+    if (flag & AccessFlagBits2KHR::e2IndexReadBitKHR) out += "e2IndexReadBitKHR | ";
+    if (flag & AccessFlagBits2KHR::e2VertexAttributeReadBitKHR) out += "e2VertexAttributeReadBitKHR | ";
+    if (flag & AccessFlagBits2KHR::e2UniformReadBitKHR) out += "e2UniformReadBitKHR | ";
+    if (flag & AccessFlagBits2KHR::e2InputAttachmentReadBitKHR) out += "e2InputAttachmentReadBitKHR | ";
+    if (flag & AccessFlagBits2KHR::e2ShaderReadBitKHR) out += "e2ShaderReadBitKHR | ";
+    if (flag & AccessFlagBits2KHR::e2ShaderWriteBitKHR) out += "e2ShaderWriteBitKHR | ";
+    if (flag & AccessFlagBits2KHR::e2ColorAttachmentReadBitKHR) out += "e2ColorAttachmentReadBitKHR | ";
+    if (flag & AccessFlagBits2KHR::e2ColorAttachmentWriteBitKHR) out += "e2ColorAttachmentWriteBitKHR | ";
+    if (flag & AccessFlagBits2KHR::e2DepthStencilAttachmentReadBitKHR) out += "e2DepthStencilAttachmentReadBitKHR | ";
+    if (flag & AccessFlagBits2KHR::e2DepthStencilAttachmentWriteBitKHR) out += "e2DepthStencilAttachmentWriteBitKHR | ";
+    if (flag & AccessFlagBits2KHR::e2TransferReadBitKHR) out += "e2TransferReadBitKHR | ";
+    if (flag & AccessFlagBits2KHR::e2TransferWriteBitKHR) out += "e2TransferWriteBitKHR | ";
+    if (flag & AccessFlagBits2KHR::e2HostReadBitKHR) out += "e2HostReadBitKHR | ";
+    if (flag & AccessFlagBits2KHR::e2HostWriteBitKHR) out += "e2HostWriteBitKHR | ";
+    if (flag & AccessFlagBits2KHR::e2MemoryReadBitKHR) out += "e2MemoryReadBitKHR | ";
+    if (flag & AccessFlagBits2KHR::e2MemoryWriteBitKHR) out += "e2MemoryWriteBitKHR | ";
+    if (flag & AccessFlagBits2KHR::e2ShaderSampledReadBitKHR) out += "e2ShaderSampledReadBitKHR | ";
+    if (flag & AccessFlagBits2KHR::e2ShaderStorageReadBitKHR) out += "e2ShaderStorageReadBitKHR | ";
+    if (flag & AccessFlagBits2KHR::e2ShaderStorageWriteBitKHR) out += "e2ShaderStorageWriteBitKHR | ";
+    if (flag & AccessFlagBits2KHR::e2VideoDecodeReadBitKHR) out += "e2VideoDecodeReadBitKHR | ";
+    if (flag & AccessFlagBits2KHR::e2VideoDecodeWriteBitKHR) out += "e2VideoDecodeWriteBitKHR | ";
+    if (flag & AccessFlagBits2KHR::e2VideoEncodeReadBitKHR) out += "e2VideoEncodeReadBitKHR | ";
+    if (flag & AccessFlagBits2KHR::e2VideoEncodeWriteBitKHR) out += "e2VideoEncodeWriteBitKHR | ";
+    if (flag & AccessFlagBits2KHR::e2TransformFeedbackWriteBitEXT) out += "e2TransformFeedbackWriteBitEXT | ";
+    if (flag & AccessFlagBits2KHR::e2TransformFeedbackCounterReadBitEXT) out += "e2TransformFeedbackCounterReadBitEXT | ";
+    if (flag & AccessFlagBits2KHR::e2TransformFeedbackCounterWriteBitEXT) out += "e2TransformFeedbackCounterWriteBitEXT | ";
+    if (flag & AccessFlagBits2KHR::e2ConditionalRenderingReadBitEXT) out += "e2ConditionalRenderingReadBitEXT | ";
+    if (flag & AccessFlagBits2KHR::e2CommandPreprocessReadBitNV) out += "e2CommandPreprocessReadBitNV | ";
+    if (flag & AccessFlagBits2KHR::e2CommandPreprocessWriteBitNV) out += "e2CommandPreprocessWriteBitNV | ";
+    if (flag & AccessFlagBits2KHR::e2FragmentShadingRateAttachmentReadBitKHR) out += "e2FragmentShadingRateAttachmentReadBitKHR | ";
+    if (flag & AccessFlagBits2KHR::e2AccelerationStructureReadBitKHR) out += "e2AccelerationStructureReadBitKHR | ";
+    if (flag & AccessFlagBits2KHR::e2AccelerationStructureWriteBitKHR) out += "e2AccelerationStructureWriteBitKHR | ";
+    if (flag & AccessFlagBits2KHR::e2FragmentDensityMapReadBitEXT) out += "e2FragmentDensityMapReadBitEXT | ";
+    if (flag & AccessFlagBits2KHR::e2ColorAttachmentReadNoncoherentBitEXT) out += "e2ColorAttachmentReadNoncoherentBitEXT | ";
+    return out.substr(0, out.size() - 3);
+}
+inline const char * to_string(PipelineStageFlagBits2KHR val) {
+    switch(val) {
+        case(PipelineStageFlagBits2KHR::e2NoneKHR): return "e2NoneKHR";
+        case(PipelineStageFlagBits2KHR::e2TopOfPipeBitKHR): return "e2TopOfPipeBitKHR";
+        case(PipelineStageFlagBits2KHR::e2DrawIndirectBitKHR): return "e2DrawIndirectBitKHR";
+        case(PipelineStageFlagBits2KHR::e2VertexInputBitKHR): return "e2VertexInputBitKHR";
+        case(PipelineStageFlagBits2KHR::e2VertexShaderBitKHR): return "e2VertexShaderBitKHR";
+        case(PipelineStageFlagBits2KHR::e2TessellationControlShaderBitKHR): return "e2TessellationControlShaderBitKHR";
+        case(PipelineStageFlagBits2KHR::e2TessellationEvaluationShaderBitKHR): return "e2TessellationEvaluationShaderBitKHR";
+        case(PipelineStageFlagBits2KHR::e2GeometryShaderBitKHR): return "e2GeometryShaderBitKHR";
+        case(PipelineStageFlagBits2KHR::e2FragmentShaderBitKHR): return "e2FragmentShaderBitKHR";
+        case(PipelineStageFlagBits2KHR::e2EarlyFragmentTestsBitKHR): return "e2EarlyFragmentTestsBitKHR";
+        case(PipelineStageFlagBits2KHR::e2LateFragmentTestsBitKHR): return "e2LateFragmentTestsBitKHR";
+        case(PipelineStageFlagBits2KHR::e2ColorAttachmentOutputBitKHR): return "e2ColorAttachmentOutputBitKHR";
+        case(PipelineStageFlagBits2KHR::e2ComputeShaderBitKHR): return "e2ComputeShaderBitKHR";
+        case(PipelineStageFlagBits2KHR::e2AllTransferBitKHR): return "e2AllTransferBitKHR";
+        case(PipelineStageFlagBits2KHR::e2BottomOfPipeBitKHR): return "e2BottomOfPipeBitKHR";
+        case(PipelineStageFlagBits2KHR::e2HostBitKHR): return "e2HostBitKHR";
+        case(PipelineStageFlagBits2KHR::e2AllGraphicsBitKHR): return "e2AllGraphicsBitKHR";
+        case(PipelineStageFlagBits2KHR::e2AllCommandsBitKHR): return "e2AllCommandsBitKHR";
+        case(PipelineStageFlagBits2KHR::e2CopyBitKHR): return "e2CopyBitKHR";
+        case(PipelineStageFlagBits2KHR::e2ResolveBitKHR): return "e2ResolveBitKHR";
+        case(PipelineStageFlagBits2KHR::e2BlitBitKHR): return "e2BlitBitKHR";
+        case(PipelineStageFlagBits2KHR::e2ClearBitKHR): return "e2ClearBitKHR";
+        case(PipelineStageFlagBits2KHR::e2IndexInputBitKHR): return "e2IndexInputBitKHR";
+        case(PipelineStageFlagBits2KHR::e2VertexAttributeInputBitKHR): return "e2VertexAttributeInputBitKHR";
+        case(PipelineStageFlagBits2KHR::e2PreRasterizationShadersBitKHR): return "e2PreRasterizationShadersBitKHR";
+        case(PipelineStageFlagBits2KHR::e2VideoDecodeBitKHR): return "e2VideoDecodeBitKHR";
+        case(PipelineStageFlagBits2KHR::e2VideoEncodeBitKHR): return "e2VideoEncodeBitKHR";
+        case(PipelineStageFlagBits2KHR::e2TransformFeedbackBitEXT): return "e2TransformFeedbackBitEXT";
+        case(PipelineStageFlagBits2KHR::e2ConditionalRenderingBitEXT): return "e2ConditionalRenderingBitEXT";
+        case(PipelineStageFlagBits2KHR::e2CommandPreprocessBitNV): return "e2CommandPreprocessBitNV";
+        case(PipelineStageFlagBits2KHR::e2FragmentShadingRateAttachmentBitKHR): return "e2FragmentShadingRateAttachmentBitKHR";
+        case(PipelineStageFlagBits2KHR::e2AccelerationStructureBuildBitKHR): return "e2AccelerationStructureBuildBitKHR";
+        case(PipelineStageFlagBits2KHR::e2RayTracingShaderBitKHR): return "e2RayTracingShaderBitKHR";
+        case(PipelineStageFlagBits2KHR::e2FragmentDensityProcessBitEXT): return "e2FragmentDensityProcessBitEXT";
+        case(PipelineStageFlagBits2KHR::e2TaskShaderBitNV): return "e2TaskShaderBitNV";
+        case(PipelineStageFlagBits2KHR::e2MeshShaderBitNV): return "e2MeshShaderBitNV";
+        default: return "UNKNOWN";
+    }
+}
+inline std::string to_string(PipelineStageFlags2KHR flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & PipelineStageFlagBits2KHR::e2NoneKHR) out += "e2NoneKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2TopOfPipeBitKHR) out += "e2TopOfPipeBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2DrawIndirectBitKHR) out += "e2DrawIndirectBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2VertexInputBitKHR) out += "e2VertexInputBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2VertexShaderBitKHR) out += "e2VertexShaderBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2TessellationControlShaderBitKHR) out += "e2TessellationControlShaderBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2TessellationEvaluationShaderBitKHR) out += "e2TessellationEvaluationShaderBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2GeometryShaderBitKHR) out += "e2GeometryShaderBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2FragmentShaderBitKHR) out += "e2FragmentShaderBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2EarlyFragmentTestsBitKHR) out += "e2EarlyFragmentTestsBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2LateFragmentTestsBitKHR) out += "e2LateFragmentTestsBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2ColorAttachmentOutputBitKHR) out += "e2ColorAttachmentOutputBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2ComputeShaderBitKHR) out += "e2ComputeShaderBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2AllTransferBitKHR) out += "e2AllTransferBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2BottomOfPipeBitKHR) out += "e2BottomOfPipeBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2HostBitKHR) out += "e2HostBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2AllGraphicsBitKHR) out += "e2AllGraphicsBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2AllCommandsBitKHR) out += "e2AllCommandsBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2CopyBitKHR) out += "e2CopyBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2ResolveBitKHR) out += "e2ResolveBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2BlitBitKHR) out += "e2BlitBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2ClearBitKHR) out += "e2ClearBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2IndexInputBitKHR) out += "e2IndexInputBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2VertexAttributeInputBitKHR) out += "e2VertexAttributeInputBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2PreRasterizationShadersBitKHR) out += "e2PreRasterizationShadersBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2VideoDecodeBitKHR) out += "e2VideoDecodeBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2VideoEncodeBitKHR) out += "e2VideoEncodeBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2TransformFeedbackBitEXT) out += "e2TransformFeedbackBitEXT | ";
+    if (flag & PipelineStageFlagBits2KHR::e2ConditionalRenderingBitEXT) out += "e2ConditionalRenderingBitEXT | ";
+    if (flag & PipelineStageFlagBits2KHR::e2CommandPreprocessBitNV) out += "e2CommandPreprocessBitNV | ";
+    if (flag & PipelineStageFlagBits2KHR::e2FragmentShadingRateAttachmentBitKHR) out += "e2FragmentShadingRateAttachmentBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2AccelerationStructureBuildBitKHR) out += "e2AccelerationStructureBuildBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2RayTracingShaderBitKHR) out += "e2RayTracingShaderBitKHR | ";
+    if (flag & PipelineStageFlagBits2KHR::e2FragmentDensityProcessBitEXT) out += "e2FragmentDensityProcessBitEXT | ";
+    if (flag & PipelineStageFlagBits2KHR::e2TaskShaderBitNV) out += "e2TaskShaderBitNV | ";
+    if (flag & PipelineStageFlagBits2KHR::e2MeshShaderBitNV) out += "e2MeshShaderBitNV | ";
+    return out.substr(0, out.size() - 3);
+}
+inline const char * to_string(SubmitFlagBitsKHR val) {
+    switch(val) {
+        case(SubmitFlagBitsKHR::ProtectedBitKHR): return "ProtectedBitKHR";
+        default: return "UNKNOWN";
+    }
+}
+inline std::string to_string(SubmitFlagsKHR flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & SubmitFlagBitsKHR::ProtectedBitKHR) out += "ProtectedBitKHR | ";
+    return out.substr(0, out.size() - 3);
+}
+inline const char * to_string(EventCreateFlagBits val) {
+    switch(val) {
+        case(EventCreateFlagBits::DeviceOnlyBitKHR): return "DeviceOnlyBitKHR";
+        default: return "UNKNOWN";
+    }
+}
+inline std::string to_string(EventCreateFlags flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & EventCreateFlagBits::DeviceOnlyBitKHR) out += "DeviceOnlyBitKHR | ";
+    return out.substr(0, out.size() - 3);
+}
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+inline const char * to_string(VideoCodecOperationFlagBitsKHR val) {
+    switch(val) {
+        case(VideoCodecOperationFlagBitsKHR::InvalidBitKHR): return "InvalidBitKHR";
+        case(VideoCodecOperationFlagBitsKHR::EncodeH264BitEXT): return "EncodeH264BitEXT";
+        case(VideoCodecOperationFlagBitsKHR::DecodeH264BitEXT): return "DecodeH264BitEXT";
+        case(VideoCodecOperationFlagBitsKHR::DecodeH265BitEXT): return "DecodeH265BitEXT";
+        default: return "UNKNOWN";
+    }
+}
+inline std::string to_string(VideoCodecOperationFlagsKHR flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VideoCodecOperationFlagBitsKHR::InvalidBitKHR) out += "InvalidBitKHR | ";
+    if (flag & VideoCodecOperationFlagBitsKHR::EncodeH264BitEXT) out += "EncodeH264BitEXT | ";
+    if (flag & VideoCodecOperationFlagBitsKHR::DecodeH264BitEXT) out += "DecodeH264BitEXT | ";
+    if (flag & VideoCodecOperationFlagBitsKHR::DecodeH265BitEXT) out += "DecodeH265BitEXT | ";
+    return out.substr(0, out.size() - 3);
+}
+inline const char * to_string(VideoChromaSubsamplingFlagBitsKHR val) {
+    switch(val) {
+        case(VideoChromaSubsamplingFlagBitsKHR::InvalidBitKHR): return "InvalidBitKHR";
+        case(VideoChromaSubsamplingFlagBitsKHR::MonochromeBitKHR): return "MonochromeBitKHR";
+        case(VideoChromaSubsamplingFlagBitsKHR::e420BitKHR): return "e420BitKHR";
+        case(VideoChromaSubsamplingFlagBitsKHR::e422BitKHR): return "e422BitKHR";
+        case(VideoChromaSubsamplingFlagBitsKHR::e444BitKHR): return "e444BitKHR";
+        default: return "UNKNOWN";
+    }
+}
+inline std::string to_string(VideoChromaSubsamplingFlagsKHR flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VideoChromaSubsamplingFlagBitsKHR::InvalidBitKHR) out += "InvalidBitKHR | ";
+    if (flag & VideoChromaSubsamplingFlagBitsKHR::MonochromeBitKHR) out += "MonochromeBitKHR | ";
+    if (flag & VideoChromaSubsamplingFlagBitsKHR::e420BitKHR) out += "e420BitKHR | ";
+    if (flag & VideoChromaSubsamplingFlagBitsKHR::e422BitKHR) out += "e422BitKHR | ";
+    if (flag & VideoChromaSubsamplingFlagBitsKHR::e444BitKHR) out += "e444BitKHR | ";
+    return out.substr(0, out.size() - 3);
+}
+inline const char * to_string(VideoComponentBitDepthFlagBitsKHR val) {
+    switch(val) {
+        case(VideoComponentBitDepthFlagBitsKHR::InvalidKHR): return "InvalidKHR";
+        case(VideoComponentBitDepthFlagBitsKHR::e8BitKHR): return "e8BitKHR";
+        case(VideoComponentBitDepthFlagBitsKHR::e10BitKHR): return "e10BitKHR";
+        case(VideoComponentBitDepthFlagBitsKHR::e12BitKHR): return "e12BitKHR";
+        default: return "UNKNOWN";
+    }
+}
+inline std::string to_string(VideoComponentBitDepthFlagsKHR flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VideoComponentBitDepthFlagBitsKHR::InvalidKHR) out += "InvalidKHR | ";
+    if (flag & VideoComponentBitDepthFlagBitsKHR::e8BitKHR) out += "e8BitKHR | ";
+    if (flag & VideoComponentBitDepthFlagBitsKHR::e10BitKHR) out += "e10BitKHR | ";
+    if (flag & VideoComponentBitDepthFlagBitsKHR::e12BitKHR) out += "e12BitKHR | ";
+    return out.substr(0, out.size() - 3);
+}
+inline const char * to_string(VideoCapabilitiesFlagBitsKHR val) {
+    switch(val) {
+        case(VideoCapabilitiesFlagBitsKHR::ProtectedContentBitKHR): return "ProtectedContentBitKHR";
+        case(VideoCapabilitiesFlagBitsKHR::SeparateReferenceImagesBitKHR): return "SeparateReferenceImagesBitKHR";
+        default: return "UNKNOWN";
+    }
+}
+inline std::string to_string(VideoCapabilitiesFlagsKHR flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VideoCapabilitiesFlagBitsKHR::ProtectedContentBitKHR) out += "ProtectedContentBitKHR | ";
+    if (flag & VideoCapabilitiesFlagBitsKHR::SeparateReferenceImagesBitKHR) out += "SeparateReferenceImagesBitKHR | ";
+    return out.substr(0, out.size() - 3);
+}
+inline const char * to_string(VideoSessionCreateFlagBitsKHR val) {
+    switch(val) {
+        case(VideoSessionCreateFlagBitsKHR::DefaultKHR): return "DefaultKHR";
+        case(VideoSessionCreateFlagBitsKHR::ProtectedContentBitKHR): return "ProtectedContentBitKHR";
+        default: return "UNKNOWN";
+    }
+}
+inline std::string to_string(VideoSessionCreateFlagsKHR flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VideoSessionCreateFlagBitsKHR::DefaultKHR) out += "DefaultKHR | ";
+    if (flag & VideoSessionCreateFlagBitsKHR::ProtectedContentBitKHR) out += "ProtectedContentBitKHR | ";
+    return out.substr(0, out.size() - 3);
+}
+inline const char * to_string(VideoCodingQualityPresetFlagBitsKHR val) {
+    switch(val) {
+        case(VideoCodingQualityPresetFlagBitsKHR::DefaultBitKHR): return "DefaultBitKHR";
+        case(VideoCodingQualityPresetFlagBitsKHR::NormalBitKHR): return "NormalBitKHR";
+        case(VideoCodingQualityPresetFlagBitsKHR::PowerBitKHR): return "PowerBitKHR";
+        case(VideoCodingQualityPresetFlagBitsKHR::QualityBitKHR): return "QualityBitKHR";
+        default: return "UNKNOWN";
+    }
+}
+inline std::string to_string(VideoCodingQualityPresetFlagsKHR flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VideoCodingQualityPresetFlagBitsKHR::DefaultBitKHR) out += "DefaultBitKHR | ";
+    if (flag & VideoCodingQualityPresetFlagBitsKHR::NormalBitKHR) out += "NormalBitKHR | ";
+    if (flag & VideoCodingQualityPresetFlagBitsKHR::PowerBitKHR) out += "PowerBitKHR | ";
+    if (flag & VideoCodingQualityPresetFlagBitsKHR::QualityBitKHR) out += "QualityBitKHR | ";
+    return out.substr(0, out.size() - 3);
+}
+inline const char * to_string(VideoDecodeH264FieldLayoutFlagBitsEXT val) {
+    switch(val) {
+        case(VideoDecodeH264FieldLayoutFlagBitsEXT::OnlyEXT): return "OnlyEXT";
+        case(VideoDecodeH264FieldLayoutFlagBitsEXT::LineInterlacedPlaneBitEXT): return "LineInterlacedPlaneBitEXT";
+        case(VideoDecodeH264FieldLayoutFlagBitsEXT::SeparateInterlacedPlaneBitEXT): return "SeparateInterlacedPlaneBitEXT";
+        default: return "UNKNOWN";
+    }
+}
+inline std::string to_string(VideoDecodeH264FieldLayoutFlagsEXT flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VideoDecodeH264FieldLayoutFlagBitsEXT::OnlyEXT) out += "OnlyEXT | ";
+    if (flag & VideoDecodeH264FieldLayoutFlagBitsEXT::LineInterlacedPlaneBitEXT) out += "LineInterlacedPlaneBitEXT | ";
+    if (flag & VideoDecodeH264FieldLayoutFlagBitsEXT::SeparateInterlacedPlaneBitEXT) out += "SeparateInterlacedPlaneBitEXT | ";
+    return out.substr(0, out.size() - 3);
+}
+inline const char * to_string(VideoCodingControlFlagBitsKHR val) {
+    switch(val) {
+        case(VideoCodingControlFlagBitsKHR::DefaultKHR): return "DefaultKHR";
+        case(VideoCodingControlFlagBitsKHR::ResetBitKHR): return "ResetBitKHR";
+        default: return "UNKNOWN";
+    }
+}
+inline std::string to_string(VideoCodingControlFlagsKHR flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VideoCodingControlFlagBitsKHR::DefaultKHR) out += "DefaultKHR | ";
+    if (flag & VideoCodingControlFlagBitsKHR::ResetBitKHR) out += "ResetBitKHR | ";
+    return out.substr(0, out.size() - 3);
+}
+inline const char * to_string(VideoDecodeFlagBitsKHR val) {
+    switch(val) {
+        case(VideoDecodeFlagBitsKHR::DefaultKHR): return "DefaultKHR";
+        case(VideoDecodeFlagBitsKHR::Reserved0BitKHR): return "Reserved0BitKHR";
+        default: return "UNKNOWN";
+    }
+}
+inline std::string to_string(VideoDecodeFlagsKHR flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VideoDecodeFlagBitsKHR::DefaultKHR) out += "DefaultKHR | ";
+    if (flag & VideoDecodeFlagBitsKHR::Reserved0BitKHR) out += "Reserved0BitKHR | ";
+    return out.substr(0, out.size() - 3);
+}
+inline const char * to_string(VideoEncodeFlagBitsKHR val) {
+    switch(val) {
+        case(VideoEncodeFlagBitsKHR::DefaultKHR): return "DefaultKHR";
+        case(VideoEncodeFlagBitsKHR::Reserved0BitKHR): return "Reserved0BitKHR";
+        default: return "UNKNOWN";
+    }
+}
+inline std::string to_string(VideoEncodeFlagsKHR flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VideoEncodeFlagBitsKHR::DefaultKHR) out += "DefaultKHR | ";
+    if (flag & VideoEncodeFlagBitsKHR::Reserved0BitKHR) out += "Reserved0BitKHR | ";
+    return out.substr(0, out.size() - 3);
+}
+inline const char * to_string(VideoEncodeRateControlFlagBitsKHR val) {
+    switch(val) {
+        case(VideoEncodeRateControlFlagBitsKHR::DefaultKHR): return "DefaultKHR";
+        case(VideoEncodeRateControlFlagBitsKHR::ResetBitKHR): return "ResetBitKHR";
+        default: return "UNKNOWN";
+    }
+}
+inline std::string to_string(VideoEncodeRateControlFlagsKHR flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VideoEncodeRateControlFlagBitsKHR::DefaultKHR) out += "DefaultKHR | ";
+    if (flag & VideoEncodeRateControlFlagBitsKHR::ResetBitKHR) out += "ResetBitKHR | ";
+    return out.substr(0, out.size() - 3);
+}
+inline const char * to_string(VideoEncodeRateControlModeFlagBitsKHR val) {
+    switch(val) {
+        case(VideoEncodeRateControlModeFlagBitsKHR::NoneBitKHR): return "NoneBitKHR";
+        case(VideoEncodeRateControlModeFlagBitsKHR::CbrBitKHR): return "CbrBitKHR";
+        case(VideoEncodeRateControlModeFlagBitsKHR::VbrBitKHR): return "VbrBitKHR";
+        default: return "UNKNOWN";
+    }
+}
+inline std::string to_string(VideoEncodeRateControlModeFlagsKHR flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VideoEncodeRateControlModeFlagBitsKHR::NoneBitKHR) out += "NoneBitKHR | ";
+    if (flag & VideoEncodeRateControlModeFlagBitsKHR::CbrBitKHR) out += "CbrBitKHR | ";
+    if (flag & VideoEncodeRateControlModeFlagBitsKHR::VbrBitKHR) out += "VbrBitKHR | ";
+    return out.substr(0, out.size() - 3);
+}
+inline const char * to_string(VideoEncodeH264CapabilitiesFlagBitsEXT val) {
+    switch(val) {
+        case(VideoEncodeH264CapabilitiesFlagBitsEXT::CabacBitEXT): return "CabacBitEXT";
+        case(VideoEncodeH264CapabilitiesFlagBitsEXT::CavlcBitEXT): return "CavlcBitEXT";
+        case(VideoEncodeH264CapabilitiesFlagBitsEXT::WeightedBiPredImplicitBitEXT): return "WeightedBiPredImplicitBitEXT";
+        case(VideoEncodeH264CapabilitiesFlagBitsEXT::Transform8X8BitEXT): return "Transform8X8BitEXT";
+        case(VideoEncodeH264CapabilitiesFlagBitsEXT::ChromaQpOffsetBitEXT): return "ChromaQpOffsetBitEXT";
+        case(VideoEncodeH264CapabilitiesFlagBitsEXT::SecondChromaQpOffsetBitEXT): return "SecondChromaQpOffsetBitEXT";
+        case(VideoEncodeH264CapabilitiesFlagBitsEXT::DeblockingFilterDisabledBitEXT): return "DeblockingFilterDisabledBitEXT";
+        case(VideoEncodeH264CapabilitiesFlagBitsEXT::DeblockingFilterEnabledBitEXT): return "DeblockingFilterEnabledBitEXT";
+        case(VideoEncodeH264CapabilitiesFlagBitsEXT::DeblockingFilterPartialBitEXT): return "DeblockingFilterPartialBitEXT";
+        case(VideoEncodeH264CapabilitiesFlagBitsEXT::MultipleSlicePerFrameBitEXT): return "MultipleSlicePerFrameBitEXT";
+        case(VideoEncodeH264CapabilitiesFlagBitsEXT::EvenlyDistributedSliceSizeBitEXT): return "EvenlyDistributedSliceSizeBitEXT";
+        default: return "UNKNOWN";
+    }
+}
+inline std::string to_string(VideoEncodeH264CapabilitiesFlagsEXT flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VideoEncodeH264CapabilitiesFlagBitsEXT::CabacBitEXT) out += "CabacBitEXT | ";
+    if (flag & VideoEncodeH264CapabilitiesFlagBitsEXT::CavlcBitEXT) out += "CavlcBitEXT | ";
+    if (flag & VideoEncodeH264CapabilitiesFlagBitsEXT::WeightedBiPredImplicitBitEXT) out += "WeightedBiPredImplicitBitEXT | ";
+    if (flag & VideoEncodeH264CapabilitiesFlagBitsEXT::Transform8X8BitEXT) out += "Transform8X8BitEXT | ";
+    if (flag & VideoEncodeH264CapabilitiesFlagBitsEXT::ChromaQpOffsetBitEXT) out += "ChromaQpOffsetBitEXT | ";
+    if (flag & VideoEncodeH264CapabilitiesFlagBitsEXT::SecondChromaQpOffsetBitEXT) out += "SecondChromaQpOffsetBitEXT | ";
+    if (flag & VideoEncodeH264CapabilitiesFlagBitsEXT::DeblockingFilterDisabledBitEXT) out += "DeblockingFilterDisabledBitEXT | ";
+    if (flag & VideoEncodeH264CapabilitiesFlagBitsEXT::DeblockingFilterEnabledBitEXT) out += "DeblockingFilterEnabledBitEXT | ";
+    if (flag & VideoEncodeH264CapabilitiesFlagBitsEXT::DeblockingFilterPartialBitEXT) out += "DeblockingFilterPartialBitEXT | ";
+    if (flag & VideoEncodeH264CapabilitiesFlagBitsEXT::MultipleSlicePerFrameBitEXT) out += "MultipleSlicePerFrameBitEXT | ";
+    if (flag & VideoEncodeH264CapabilitiesFlagBitsEXT::EvenlyDistributedSliceSizeBitEXT) out += "EvenlyDistributedSliceSizeBitEXT | ";
+    return out.substr(0, out.size() - 3);
+}
+inline const char * to_string(VideoEncodeH264InputModeFlagBitsEXT val) {
+    switch(val) {
+        case(VideoEncodeH264InputModeFlagBitsEXT::FrameBitEXT): return "FrameBitEXT";
+        case(VideoEncodeH264InputModeFlagBitsEXT::SliceBitEXT): return "SliceBitEXT";
+        case(VideoEncodeH264InputModeFlagBitsEXT::NonVclBitEXT): return "NonVclBitEXT";
+        default: return "UNKNOWN";
+    }
+}
+inline std::string to_string(VideoEncodeH264InputModeFlagsEXT flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VideoEncodeH264InputModeFlagBitsEXT::FrameBitEXT) out += "FrameBitEXT | ";
+    if (flag & VideoEncodeH264InputModeFlagBitsEXT::SliceBitEXT) out += "SliceBitEXT | ";
+    if (flag & VideoEncodeH264InputModeFlagBitsEXT::NonVclBitEXT) out += "NonVclBitEXT | ";
+    return out.substr(0, out.size() - 3);
+}
+inline const char * to_string(VideoEncodeH264OutputModeFlagBitsEXT val) {
+    switch(val) {
+        case(VideoEncodeH264OutputModeFlagBitsEXT::FrameBitEXT): return "FrameBitEXT";
+        case(VideoEncodeH264OutputModeFlagBitsEXT::SliceBitEXT): return "SliceBitEXT";
+        case(VideoEncodeH264OutputModeFlagBitsEXT::NonVclBitEXT): return "NonVclBitEXT";
+        default: return "UNKNOWN";
+    }
+}
+inline std::string to_string(VideoEncodeH264OutputModeFlagsEXT flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VideoEncodeH264OutputModeFlagBitsEXT::FrameBitEXT) out += "FrameBitEXT | ";
+    if (flag & VideoEncodeH264OutputModeFlagBitsEXT::SliceBitEXT) out += "SliceBitEXT | ";
+    if (flag & VideoEncodeH264OutputModeFlagBitsEXT::NonVclBitEXT) out += "NonVclBitEXT | ";
+    return out.substr(0, out.size() - 3);
+}
+inline const char * to_string(VideoEncodeH264CreateFlagBitsEXT val) {
+    switch(val) {
+        case(VideoEncodeH264CreateFlagBitsEXT::DefaultEXT): return "DefaultEXT";
+        case(VideoEncodeH264CreateFlagBitsEXT::Reserved0BitEXT): return "Reserved0BitEXT";
+        default: return "UNKNOWN";
+    }
+}
+inline std::string to_string(VideoEncodeH264CreateFlagsEXT flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VideoEncodeH264CreateFlagBitsEXT::DefaultEXT) out += "DefaultEXT | ";
+    if (flag & VideoEncodeH264CreateFlagBitsEXT::Reserved0BitEXT) out += "Reserved0BitEXT | ";
+    return out.substr(0, out.size() - 3);
+}
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 inline const char * to_string([[maybe_unused]] QueryPoolCreateFlagBits val) { return "Unknown"; } 
 inline std::string to_string(QueryPoolCreateFlags flag){
     if (flag.flags == 0) return "None";
@@ -19923,11 +22167,6 @@ inline std::string to_string(DeviceCreateFlags flag){
 }
 inline const char * to_string([[maybe_unused]] SemaphoreCreateFlagBits val) { return "Unknown"; } 
 inline std::string to_string(SemaphoreCreateFlags flag){
-    if (flag.flags == 0) return "None";
-    return "Unknown";
-}
-inline const char * to_string([[maybe_unused]] EventCreateFlagBits val) { return "Unknown"; } 
-inline std::string to_string(EventCreateFlags flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
 }
@@ -20045,6 +22284,13 @@ inline std::string to_string(HeadlessSurfaceCreateFlagsEXT flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
 }
+#if defined(VK_USE_PLATFORM_SCREEN_QNX)
+inline const char * to_string([[maybe_unused]] ScreenSurfaceCreateFlagBitsQNX val) { return "Unknown"; } 
+inline std::string to_string(ScreenSurfaceCreateFlagsQNX flag){
+    if (flag.flags == 0) return "None";
+    return "Unknown";
+}
+#endif // defined(VK_USE_PLATFORM_SCREEN_QNX)
 inline const char * to_string([[maybe_unused]] CommandPoolTrimFlagBits val) { return "Unknown"; } 
 inline std::string to_string(CommandPoolTrimFlags flag){
     if (flag.flags == 0) return "None";
@@ -20110,6 +22356,28 @@ inline std::string to_string(PipelineRasterizationDepthClipStateCreateFlagsEXT f
     if (flag.flags == 0) return "None";
     return "Unknown";
 }
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+inline const char * to_string([[maybe_unused]] VideoBeginCodingFlagBitsKHR val) { return "Unknown"; } 
+inline std::string to_string(VideoBeginCodingFlagsKHR flag){
+    if (flag.flags == 0) return "None";
+    return "Unknown";
+}
+inline const char * to_string([[maybe_unused]] VideoEndCodingFlagBitsKHR val) { return "Unknown"; } 
+inline std::string to_string(VideoEndCodingFlagsKHR flag){
+    if (flag.flags == 0) return "None";
+    return "Unknown";
+}
+inline const char * to_string([[maybe_unused]] VideoDecodeH264CreateFlagBitsEXT val) { return "Unknown"; } 
+inline std::string to_string(VideoDecodeH264CreateFlagsEXT flag){
+    if (flag.flags == 0) return "None";
+    return "Unknown";
+}
+inline const char * to_string([[maybe_unused]] VideoDecodeH265CreateFlagBitsEXT val) { return "Unknown"; } 
+inline std::string to_string(VideoDecodeH265CreateFlagsEXT flag){
+    if (flag.flags == 0) return "None";
+    return "Unknown";
+}
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 #if defined(_MSC_VER)
 #pragma warning( pop )
 #endif // defined(_MSC_VER)

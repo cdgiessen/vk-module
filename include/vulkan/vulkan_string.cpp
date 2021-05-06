@@ -215,6 +215,13 @@ const char * to_string(VkDynamicState val) {
         case(VkDynamicState::DepthBoundsTestEnableEXT): return "DepthBoundsTestEnableEXT";
         case(VkDynamicState::StencilTestEnableEXT): return "StencilTestEnableEXT";
         case(VkDynamicState::StencilOpEXT): return "StencilOpEXT";
+        case(VkDynamicState::VertexInputEXT): return "VertexInputEXT";
+        case(VkDynamicState::PatchControlPointsEXT): return "PatchControlPointsEXT";
+        case(VkDynamicState::RasterizerDiscardEnableEXT): return "RasterizerDiscardEnableEXT";
+        case(VkDynamicState::DepthBiasEnableEXT): return "DepthBiasEnableEXT";
+        case(VkDynamicState::LogicOpEXT): return "LogicOpEXT";
+        case(VkDynamicState::PrimitiveRestartEnableEXT): return "PrimitiveRestartEnableEXT";
+        case(VkDynamicState::ColorWriteEnableEXT): return "ColorWriteEnableEXT";
         default: return "UNKNOWN";
     }
 }
@@ -436,6 +443,10 @@ const char * to_string(VkFormat val) {
         case(VkFormat::Astc10X10SfloatBlockEXT): return "Astc10X10SfloatBlockEXT";
         case(VkFormat::Astc12X10SfloatBlockEXT): return "Astc12X10SfloatBlockEXT";
         case(VkFormat::Astc12X12SfloatBlockEXT): return "Astc12X12SfloatBlockEXT";
+        case(VkFormat::G8B8R82Plane444UnormEXT): return "G8B8R82Plane444UnormEXT";
+        case(VkFormat::G10X6B10X6R10X62Plane444Unorm3Pack16EXT): return "G10X6B10X6R10X62Plane444Unorm3Pack16EXT";
+        case(VkFormat::G12X4B12X4R12X42Plane444Unorm3Pack16EXT): return "G12X4B12X4R12X42Plane444Unorm3Pack16EXT";
+        case(VkFormat::G16B16R162Plane444UnormEXT): return "G16B16R162Plane444UnormEXT";
         case(VkFormat::A4R4G4B4UnormPack16EXT): return "A4R4G4B4UnormPack16EXT";
         case(VkFormat::A4B4G4R4UnormPack16EXT): return "A4B4G4R4UnormPack16EXT";
         case(VkFormat::G8B8G8R8422Unorm): return "G8B8G8R8422Unorm";
@@ -494,9 +505,17 @@ const char * to_string(VkImageLayout val) {
         case(VkImageLayout::TransferDstOptimal): return "TransferDstOptimal";
         case(VkImageLayout::Preinitialized): return "Preinitialized";
         case(VkImageLayout::PresentSrcKHR): return "PresentSrcKHR";
+        case(VkImageLayout::VideoDecodeDstKHR): return "VideoDecodeDstKHR";
+        case(VkImageLayout::VideoDecodeSrcKHR): return "VideoDecodeSrcKHR";
+        case(VkImageLayout::VideoDecodeDpbKHR): return "VideoDecodeDpbKHR";
+        case(VkImageLayout::VideoEncodeDstKHR): return "VideoEncodeDstKHR";
+        case(VkImageLayout::VideoEncodeSrcKHR): return "VideoEncodeSrcKHR";
+        case(VkImageLayout::VideoEncodeDpbKHR): return "VideoEncodeDpbKHR";
         case(VkImageLayout::SharedPresentKHR): return "SharedPresentKHR";
         case(VkImageLayout::ShadingRateOptimalNV): return "ShadingRateOptimalNV";
         case(VkImageLayout::FragmentDensityMapOptimalEXT): return "FragmentDensityMapOptimalEXT";
+        case(VkImageLayout::ReadOnlyOptimalKHR): return "ReadOnlyOptimalKHR";
+        case(VkImageLayout::AttachmentOptimalKHR): return "AttachmentOptimalKHR";
         case(VkImageLayout::DepthReadOnlyStencilAttachmentOptimal): return "DepthReadOnlyStencilAttachmentOptimal";
         case(VkImageLayout::DepthAttachmentStencilReadOnlyOptimal): return "DepthAttachmentStencilReadOnlyOptimal";
         case(VkImageLayout::DepthAttachmentOptimal): return "DepthAttachmentOptimal";
@@ -610,6 +629,8 @@ const char * to_string(VkQueryType val) {
         case(VkQueryType::Occlusion): return "Occlusion";
         case(VkQueryType::PipelineStatistics): return "PipelineStatistics";
         case(VkQueryType::Timestamp): return "Timestamp";
+        case(VkQueryType::ResultStatusOnlyKHR): return "ResultStatusOnlyKHR";
+        case(VkQueryType::VideoEncodeBitstreamBufferRangeKHR): return "VideoEncodeBitstreamBufferRangeKHR";
         case(VkQueryType::TransformFeedbackStreamEXT): return "TransformFeedbackStreamEXT";
         case(VkQueryType::PerformanceQueryKHR): return "PerformanceQueryKHR";
         case(VkQueryType::AccelerationStructureCompactedSizeKHR): return "AccelerationStructureCompactedSizeKHR";
@@ -754,6 +775,25 @@ const char * to_string(VkStructureType val) {
         case(VkStructureType::DebugMarkerObjectNameInfoEXT): return "DebugMarkerObjectNameInfoEXT";
         case(VkStructureType::DebugMarkerObjectTagInfoEXT): return "DebugMarkerObjectTagInfoEXT";
         case(VkStructureType::DebugMarkerMarkerInfoEXT): return "DebugMarkerMarkerInfoEXT";
+        case(VkStructureType::VideoProfileKHR): return "VideoProfileKHR";
+        case(VkStructureType::VideoCapabilitiesKHR): return "VideoCapabilitiesKHR";
+        case(VkStructureType::VideoPictureResourceKHR): return "VideoPictureResourceKHR";
+        case(VkStructureType::VideoGetMemoryPropertiesKHR): return "VideoGetMemoryPropertiesKHR";
+        case(VkStructureType::VideoBindMemoryKHR): return "VideoBindMemoryKHR";
+        case(VkStructureType::VideoSessionCreateInfoKHR): return "VideoSessionCreateInfoKHR";
+        case(VkStructureType::VideoSessionParametersCreateInfoKHR): return "VideoSessionParametersCreateInfoKHR";
+        case(VkStructureType::VideoSessionParametersUpdateInfoKHR): return "VideoSessionParametersUpdateInfoKHR";
+        case(VkStructureType::VideoBeginCodingInfoKHR): return "VideoBeginCodingInfoKHR";
+        case(VkStructureType::VideoEndCodingInfoKHR): return "VideoEndCodingInfoKHR";
+        case(VkStructureType::VideoCodingControlInfoKHR): return "VideoCodingControlInfoKHR";
+        case(VkStructureType::VideoReferenceSlotKHR): return "VideoReferenceSlotKHR";
+        case(VkStructureType::VideoQueueFamilyProperties2KHR): return "VideoQueueFamilyProperties2KHR";
+        case(VkStructureType::VideoProfilesKHR): return "VideoProfilesKHR";
+        case(VkStructureType::PhysicalDeviceVideoFormatInfoKHR): return "PhysicalDeviceVideoFormatInfoKHR";
+        case(VkStructureType::VideoFormatPropertiesKHR): return "VideoFormatPropertiesKHR";
+        case(VkStructureType::VideoDecodeInfoKHR): return "VideoDecodeInfoKHR";
+        case(VkStructureType::VideoEncodeInfoKHR): return "VideoEncodeInfoKHR";
+        case(VkStructureType::VideoEncodeRateControlInfoKHR): return "VideoEncodeRateControlInfoKHR";
         case(VkStructureType::DedicatedAllocationImageCreateInfoNV): return "DedicatedAllocationImageCreateInfoNV";
         case(VkStructureType::DedicatedAllocationBufferCreateInfoNV): return "DedicatedAllocationBufferCreateInfoNV";
         case(VkStructureType::DedicatedAllocationMemoryAllocateInfoNV): return "DedicatedAllocationMemoryAllocateInfoNV";
@@ -762,6 +802,23 @@ const char * to_string(VkStructureType val) {
         case(VkStructureType::PipelineRasterizationStateStreamCreateInfoEXT): return "PipelineRasterizationStateStreamCreateInfoEXT";
         case(VkStructureType::ImageViewHandleInfoNVX): return "ImageViewHandleInfoNVX";
         case(VkStructureType::ImageViewAddressPropertiesNVX): return "ImageViewAddressPropertiesNVX";
+        case(VkStructureType::VideoEncodeH264CapabilitiesEXT): return "VideoEncodeH264CapabilitiesEXT";
+        case(VkStructureType::VideoEncodeH264SessionCreateInfoEXT): return "VideoEncodeH264SessionCreateInfoEXT";
+        case(VkStructureType::VideoEncodeH264SessionParametersCreateInfoEXT): return "VideoEncodeH264SessionParametersCreateInfoEXT";
+        case(VkStructureType::VideoEncodeH264SessionParametersAddInfoEXT): return "VideoEncodeH264SessionParametersAddInfoEXT";
+        case(VkStructureType::VideoEncodeH264VclFrameInfoEXT): return "VideoEncodeH264VclFrameInfoEXT";
+        case(VkStructureType::VideoEncodeH264DpbSlotInfoEXT): return "VideoEncodeH264DpbSlotInfoEXT";
+        case(VkStructureType::VideoEncodeH264NaluSliceEXT): return "VideoEncodeH264NaluSliceEXT";
+        case(VkStructureType::VideoEncodeH264EmitPictureParametersEXT): return "VideoEncodeH264EmitPictureParametersEXT";
+        case(VkStructureType::VideoEncodeH264ProfileEXT): return "VideoEncodeH264ProfileEXT";
+        case(VkStructureType::VideoDecodeH264CapabilitiesEXT): return "VideoDecodeH264CapabilitiesEXT";
+        case(VkStructureType::VideoDecodeH264SessionCreateInfoEXT): return "VideoDecodeH264SessionCreateInfoEXT";
+        case(VkStructureType::VideoDecodeH264PictureInfoEXT): return "VideoDecodeH264PictureInfoEXT";
+        case(VkStructureType::VideoDecodeH264MvcEXT): return "VideoDecodeH264MvcEXT";
+        case(VkStructureType::VideoDecodeH264ProfileEXT): return "VideoDecodeH264ProfileEXT";
+        case(VkStructureType::VideoDecodeH264SessionParametersCreateInfoEXT): return "VideoDecodeH264SessionParametersCreateInfoEXT";
+        case(VkStructureType::VideoDecodeH264SessionParametersAddInfoEXT): return "VideoDecodeH264SessionParametersAddInfoEXT";
+        case(VkStructureType::VideoDecodeH264DpbSlotInfoEXT): return "VideoDecodeH264DpbSlotInfoEXT";
         case(VkStructureType::TextureLodGatherFormatPropertiesAMD): return "TextureLodGatherFormatPropertiesAMD";
         case(VkStructureType::StreamDescriptorSurfaceCreateInfoGGP): return "StreamDescriptorSurfaceCreateInfoGGP";
         case(VkStructureType::PhysicalDeviceCornerSampledImageFeaturesNV): return "PhysicalDeviceCornerSampledImageFeaturesNV";
@@ -917,6 +974,13 @@ const char * to_string(VkStructureType val) {
         case(VkStructureType::PipelineCompilerControlCreateInfoAMD): return "PipelineCompilerControlCreateInfoAMD";
         case(VkStructureType::CalibratedTimestampInfoEXT): return "CalibratedTimestampInfoEXT";
         case(VkStructureType::PhysicalDeviceShaderCorePropertiesAMD): return "PhysicalDeviceShaderCorePropertiesAMD";
+        case(VkStructureType::VideoDecodeH265CapabilitiesEXT): return "VideoDecodeH265CapabilitiesEXT";
+        case(VkStructureType::VideoDecodeH265SessionCreateInfoEXT): return "VideoDecodeH265SessionCreateInfoEXT";
+        case(VkStructureType::VideoDecodeH265SessionParametersCreateInfoEXT): return "VideoDecodeH265SessionParametersCreateInfoEXT";
+        case(VkStructureType::VideoDecodeH265SessionParametersAddInfoEXT): return "VideoDecodeH265SessionParametersAddInfoEXT";
+        case(VkStructureType::VideoDecodeH265ProfileEXT): return "VideoDecodeH265ProfileEXT";
+        case(VkStructureType::VideoDecodeH265PictureInfoEXT): return "VideoDecodeH265PictureInfoEXT";
+        case(VkStructureType::VideoDecodeH265DpbSlotInfoEXT): return "VideoDecodeH265DpbSlotInfoEXT";
         case(VkStructureType::DeviceMemoryOverallocationCreateInfoAMD): return "DeviceMemoryOverallocationCreateInfoAMD";
         case(VkStructureType::PhysicalDeviceVertexAttributeDivisorPropertiesEXT): return "PhysicalDeviceVertexAttributeDivisorPropertiesEXT";
         case(VkStructureType::PipelineVertexInputDivisorStateCreateInfoEXT): return "PipelineVertexInputDivisorStateCreateInfoEXT";
@@ -1001,6 +1065,8 @@ const char * to_string(VkStructureType val) {
         case(VkStructureType::GeneratedCommandsInfoNV): return "GeneratedCommandsInfoNV";
         case(VkStructureType::GeneratedCommandsMemoryRequirementsInfoNV): return "GeneratedCommandsMemoryRequirementsInfoNV";
         case(VkStructureType::PhysicalDeviceDeviceGeneratedCommandsFeaturesNV): return "PhysicalDeviceDeviceGeneratedCommandsFeaturesNV";
+        case(VkStructureType::PhysicalDeviceInheritedViewportScissorFeaturesNV): return "PhysicalDeviceInheritedViewportScissorFeaturesNV";
+        case(VkStructureType::CommandBufferInheritanceViewportScissorInfoNV): return "CommandBufferInheritanceViewportScissorInfoNV";
         case(VkStructureType::PhysicalDeviceTexelBufferAlignmentFeaturesEXT): return "PhysicalDeviceTexelBufferAlignmentFeaturesEXT";
         case(VkStructureType::PhysicalDeviceTexelBufferAlignmentPropertiesEXT): return "PhysicalDeviceTexelBufferAlignmentPropertiesEXT";
         case(VkStructureType::CommandBufferInheritanceRenderPassTransformInfoQCOM): return "CommandBufferInheritanceRenderPassTransformInfoQCOM";
@@ -1020,10 +1086,21 @@ const char * to_string(VkStructureType val) {
         case(VkStructureType::PhysicalDevicePipelineCreationCacheControlFeaturesEXT): return "PhysicalDevicePipelineCreationCacheControlFeaturesEXT";
         case(VkStructureType::PhysicalDeviceDiagnosticsConfigFeaturesNV): return "PhysicalDeviceDiagnosticsConfigFeaturesNV";
         case(VkStructureType::DeviceDiagnosticsConfigCreateInfoNV): return "DeviceDiagnosticsConfigCreateInfoNV";
+        case(VkStructureType::MemoryBarrier2KHR): return "MemoryBarrier2KHR";
+        case(VkStructureType::BufferMemoryBarrier2KHR): return "BufferMemoryBarrier2KHR";
+        case(VkStructureType::ImageMemoryBarrier2KHR): return "ImageMemoryBarrier2KHR";
+        case(VkStructureType::DependencyInfoKHR): return "DependencyInfoKHR";
+        case(VkStructureType::SubmitInfo2KHR): return "SubmitInfo2KHR";
+        case(VkStructureType::SemaphoreSubmitInfoKHR): return "SemaphoreSubmitInfoKHR";
+        case(VkStructureType::CommandBufferSubmitInfoKHR): return "CommandBufferSubmitInfoKHR";
+        case(VkStructureType::PhysicalDeviceSynchronization2FeaturesKHR): return "PhysicalDeviceSynchronization2FeaturesKHR";
+        case(VkStructureType::QueueFamilyCheckpointProperties2NV): return "QueueFamilyCheckpointProperties2NV";
+        case(VkStructureType::CheckpointData2NV): return "CheckpointData2NV";
         case(VkStructureType::PhysicalDeviceZeroInitializeWorkgroupMemoryFeaturesKHR): return "PhysicalDeviceZeroInitializeWorkgroupMemoryFeaturesKHR";
         case(VkStructureType::PhysicalDeviceFragmentShadingRateEnumsPropertiesNV): return "PhysicalDeviceFragmentShadingRateEnumsPropertiesNV";
         case(VkStructureType::PhysicalDeviceFragmentShadingRateEnumsFeaturesNV): return "PhysicalDeviceFragmentShadingRateEnumsFeaturesNV";
         case(VkStructureType::PipelineFragmentShadingRateEnumStateCreateInfoNV): return "PipelineFragmentShadingRateEnumStateCreateInfoNV";
+        case(VkStructureType::PhysicalDeviceYcbcr2Plane444FormatsFeaturesEXT): return "PhysicalDeviceYcbcr2Plane444FormatsFeaturesEXT";
         case(VkStructureType::PhysicalDeviceFragmentDensityMap2FeaturesEXT): return "PhysicalDeviceFragmentDensityMap2FeaturesEXT";
         case(VkStructureType::PhysicalDeviceFragmentDensityMap2PropertiesEXT): return "PhysicalDeviceFragmentDensityMap2PropertiesEXT";
         case(VkStructureType::CopyCommandTransformInfoQCOM): return "CopyCommandTransformInfoQCOM";
@@ -1044,6 +1121,18 @@ const char * to_string(VkStructureType val) {
         case(VkStructureType::DirectfbSurfaceCreateInfoEXT): return "DirectfbSurfaceCreateInfoEXT";
         case(VkStructureType::PhysicalDeviceMutableDescriptorTypeFeaturesVALVE): return "PhysicalDeviceMutableDescriptorTypeFeaturesVALVE";
         case(VkStructureType::MutableDescriptorTypeCreateInfoVALVE): return "MutableDescriptorTypeCreateInfoVALVE";
+        case(VkStructureType::PhysicalDeviceVertexInputDynamicStateFeaturesEXT): return "PhysicalDeviceVertexInputDynamicStateFeaturesEXT";
+        case(VkStructureType::VertexInputBindingDescription2EXT): return "VertexInputBindingDescription2EXT";
+        case(VkStructureType::VertexInputAttributeDescription2EXT): return "VertexInputAttributeDescription2EXT";
+        case(VkStructureType::ImportMemoryZirconHandleInfoFUCHSIA): return "ImportMemoryZirconHandleInfoFUCHSIA";
+        case(VkStructureType::MemoryZirconHandlePropertiesFUCHSIA): return "MemoryZirconHandlePropertiesFUCHSIA";
+        case(VkStructureType::MemoryGetZirconHandleInfoFUCHSIA): return "MemoryGetZirconHandleInfoFUCHSIA";
+        case(VkStructureType::ImportSemaphoreZirconHandleInfoFUCHSIA): return "ImportSemaphoreZirconHandleInfoFUCHSIA";
+        case(VkStructureType::SemaphoreGetZirconHandleInfoFUCHSIA): return "SemaphoreGetZirconHandleInfoFUCHSIA";
+        case(VkStructureType::PhysicalDeviceExtendedDynamicState2FeaturesEXT): return "PhysicalDeviceExtendedDynamicState2FeaturesEXT";
+        case(VkStructureType::ScreenSurfaceCreateInfoQNX): return "ScreenSurfaceCreateInfoQNX";
+        case(VkStructureType::PhysicalDeviceColorWriteEnableFeaturesEXT): return "PhysicalDeviceColorWriteEnableFeaturesEXT";
+        case(VkStructureType::PipelineColorWriteCreateInfoEXT): return "PipelineColorWriteCreateInfoEXT";
         case(VkStructureType::PhysicalDeviceSubgroupProperties): return "PhysicalDeviceSubgroupProperties";
         case(VkStructureType::BindBufferMemoryInfo): return "BindBufferMemoryInfo";
         case(VkStructureType::BindImageMemoryInfo): return "BindImageMemoryInfo";
@@ -1243,6 +1332,8 @@ const char * to_string(VkObjectType val) {
         case(VkObjectType::DisplayKHR): return "DisplayKHR";
         case(VkObjectType::DisplayModeKHR): return "DisplayModeKHR";
         case(VkObjectType::DebugReportCallbackEXT): return "DebugReportCallbackEXT";
+        case(VkObjectType::VideoSessionKHR): return "VideoSessionKHR";
+        case(VkObjectType::VideoSessionParametersKHR): return "VideoSessionParametersKHR";
         case(VkObjectType::DebugUtilsMessengerEXT): return "DebugUtilsMessengerEXT";
         case(VkObjectType::AccelerationStructureKHR): return "AccelerationStructureKHR";
         case(VkObjectType::ValidationCacheEXT): return "ValidationCacheEXT";
@@ -1817,6 +1908,7 @@ const char * to_string(VkDriverId val) {
         case(VkDriverId::BroadcomProprietary): return "BroadcomProprietary";
         case(VkDriverId::MesaLlvmpipe): return "MesaLlvmpipe";
         case(VkDriverId::Moltenvk): return "Moltenvk";
+        case(VkDriverId::CoreaviProprietary): return "CoreaviProprietary";
         default: return "UNKNOWN";
     }
 }
@@ -1855,6 +1947,16 @@ const char * to_string(VkPipelineExecutableStatisticFormatKHR val) {
         default: return "UNKNOWN";
     }
 }
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+const char * to_string(VkQueryResultStatusKHR val) {
+    switch(val) {
+        case(VkQueryResultStatusKHR::ErrorKHR): return "ErrorKHR";
+        case(VkQueryResultStatusKHR::NotReadyKHR): return "NotReadyKHR";
+        case(VkQueryResultStatusKHR::CompleteKHR): return "CompleteKHR";
+        default: return "UNKNOWN";
+    }
+}
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 const char * to_string(VkPipelineCacheCreateFlagBits val) {
     switch(val) {
         case(VkPipelineCacheCreateFlagBits::ExternallySynchronizedBitEXT): return "ExternallySynchronizedBitEXT";
@@ -1873,6 +1975,8 @@ const char * to_string(VkQueueFlagBits val) {
         case(VkQueueFlagBits::Compute): return "Compute";
         case(VkQueueFlagBits::Transfer): return "Transfer";
         case(VkQueueFlagBits::SparseBinding): return "SparseBinding";
+        case(VkQueueFlagBits::VideoDecodeBitKHR): return "VideoDecodeBitKHR";
+        case(VkQueueFlagBits::VideoEncodeBitKHR): return "VideoEncodeBitKHR";
         case(VkQueueFlagBits::Protected): return "Protected";
         default: return "UNKNOWN";
     }
@@ -1884,6 +1988,8 @@ std::string to_string(VkQueueFlags flag){
     if (flag & VkQueueFlagBits::Compute) out += "Compute | ";
     if (flag & VkQueueFlagBits::Transfer) out += "Transfer | ";
     if (flag & VkQueueFlagBits::SparseBinding) out += "SparseBinding | ";
+    if (flag & VkQueueFlagBits::VideoDecodeBitKHR) out += "VideoDecodeBitKHR | ";
+    if (flag & VkQueueFlagBits::VideoEncodeBitKHR) out += "VideoEncodeBitKHR | ";
     if (flag & VkQueueFlagBits::Protected) out += "Protected | ";
     return out.substr(0, out.size() - 3);
 }
@@ -1969,7 +2075,7 @@ std::string to_string(VkMemoryHeapFlags flag){
 }
 const char * to_string(VkAccessFlagBits val) {
     switch(val) {
-        case(VkAccessFlagBits::IndirectCommandRead): return "IndirectCommandRead";
+        case(VkAccessFlagBits::NoneKHR): return "NoneKHR";
         case(VkAccessFlagBits::IndexRead): return "IndexRead";
         case(VkAccessFlagBits::VertexAttributeRead): return "VertexAttributeRead";
         case(VkAccessFlagBits::UniformRead): return "UniformRead";
@@ -2003,7 +2109,7 @@ const char * to_string(VkAccessFlagBits val) {
 std::string to_string(VkAccessFlags flag){
     if (flag.flags == 0) return "None";
     std::string out;
-    if (flag & VkAccessFlagBits::IndirectCommandRead) out += "IndirectCommandRead | ";
+    if (flag & VkAccessFlagBits::NoneKHR) out += "NoneKHR | ";
     if (flag & VkAccessFlagBits::IndexRead) out += "IndexRead | ";
     if (flag & VkAccessFlagBits::VertexAttributeRead) out += "VertexAttributeRead | ";
     if (flag & VkAccessFlagBits::UniformRead) out += "UniformRead | ";
@@ -2044,6 +2150,10 @@ const char * to_string(VkBufferUsageFlagBits val) {
         case(VkBufferUsageFlagBits::IndexBuffer): return "IndexBuffer";
         case(VkBufferUsageFlagBits::VertexBuffer): return "VertexBuffer";
         case(VkBufferUsageFlagBits::IndirectBuffer): return "IndirectBuffer";
+        case(VkBufferUsageFlagBits::VideoDecodeSrcBitKHR): return "VideoDecodeSrcBitKHR";
+        case(VkBufferUsageFlagBits::VideoDecodeDstBitKHR): return "VideoDecodeDstBitKHR";
+        case(VkBufferUsageFlagBits::VideoEncodeDstBitKHR): return "VideoEncodeDstBitKHR";
+        case(VkBufferUsageFlagBits::VideoEncodeSrcBitKHR): return "VideoEncodeSrcBitKHR";
         case(VkBufferUsageFlagBits::TransformFeedbackBufferBitEXT): return "TransformFeedbackBufferBitEXT";
         case(VkBufferUsageFlagBits::TransformFeedbackCounterBufferBitEXT): return "TransformFeedbackCounterBufferBitEXT";
         case(VkBufferUsageFlagBits::ConditionalRenderingBitEXT): return "ConditionalRenderingBitEXT";
@@ -2066,6 +2176,10 @@ std::string to_string(VkBufferUsageFlags flag){
     if (flag & VkBufferUsageFlagBits::IndexBuffer) out += "IndexBuffer | ";
     if (flag & VkBufferUsageFlagBits::VertexBuffer) out += "VertexBuffer | ";
     if (flag & VkBufferUsageFlagBits::IndirectBuffer) out += "IndirectBuffer | ";
+    if (flag & VkBufferUsageFlagBits::VideoDecodeSrcBitKHR) out += "VideoDecodeSrcBitKHR | ";
+    if (flag & VkBufferUsageFlagBits::VideoDecodeDstBitKHR) out += "VideoDecodeDstBitKHR | ";
+    if (flag & VkBufferUsageFlagBits::VideoEncodeDstBitKHR) out += "VideoEncodeDstBitKHR | ";
+    if (flag & VkBufferUsageFlagBits::VideoEncodeSrcBitKHR) out += "VideoEncodeSrcBitKHR | ";
     if (flag & VkBufferUsageFlagBits::TransformFeedbackBufferBitEXT) out += "TransformFeedbackBufferBitEXT | ";
     if (flag & VkBufferUsageFlagBits::TransformFeedbackCounterBufferBitEXT) out += "TransformFeedbackCounterBufferBitEXT | ";
     if (flag & VkBufferUsageFlagBits::ConditionalRenderingBitEXT) out += "ConditionalRenderingBitEXT | ";
@@ -2143,6 +2257,12 @@ const char * to_string(VkImageUsageFlagBits val) {
         case(VkImageUsageFlagBits::DepthStencilAttachment): return "DepthStencilAttachment";
         case(VkImageUsageFlagBits::TransientAttachment): return "TransientAttachment";
         case(VkImageUsageFlagBits::InputAttachment): return "InputAttachment";
+        case(VkImageUsageFlagBits::VideoDecodeDstBitKHR): return "VideoDecodeDstBitKHR";
+        case(VkImageUsageFlagBits::VideoDecodeSrcBitKHR): return "VideoDecodeSrcBitKHR";
+        case(VkImageUsageFlagBits::VideoDecodeDpbBitKHR): return "VideoDecodeDpbBitKHR";
+        case(VkImageUsageFlagBits::VideoEncodeDstBitKHR): return "VideoEncodeDstBitKHR";
+        case(VkImageUsageFlagBits::VideoEncodeSrcBitKHR): return "VideoEncodeSrcBitKHR";
+        case(VkImageUsageFlagBits::VideoEncodeDpbBitKHR): return "VideoEncodeDpbBitKHR";
         case(VkImageUsageFlagBits::ShadingRateImageBitNV): return "ShadingRateImageBitNV";
         case(VkImageUsageFlagBits::FragmentDensityMapBitEXT): return "FragmentDensityMapBitEXT";
         default: return "UNKNOWN";
@@ -2159,6 +2279,12 @@ std::string to_string(VkImageUsageFlags flag){
     if (flag & VkImageUsageFlagBits::DepthStencilAttachment) out += "DepthStencilAttachment | ";
     if (flag & VkImageUsageFlagBits::TransientAttachment) out += "TransientAttachment | ";
     if (flag & VkImageUsageFlagBits::InputAttachment) out += "InputAttachment | ";
+    if (flag & VkImageUsageFlagBits::VideoDecodeDstBitKHR) out += "VideoDecodeDstBitKHR | ";
+    if (flag & VkImageUsageFlagBits::VideoDecodeSrcBitKHR) out += "VideoDecodeSrcBitKHR | ";
+    if (flag & VkImageUsageFlagBits::VideoDecodeDpbBitKHR) out += "VideoDecodeDpbBitKHR | ";
+    if (flag & VkImageUsageFlagBits::VideoEncodeDstBitKHR) out += "VideoEncodeDstBitKHR | ";
+    if (flag & VkImageUsageFlagBits::VideoEncodeSrcBitKHR) out += "VideoEncodeSrcBitKHR | ";
+    if (flag & VkImageUsageFlagBits::VideoEncodeDpbBitKHR) out += "VideoEncodeDpbBitKHR | ";
     if (flag & VkImageUsageFlagBits::ShadingRateImageBitNV) out += "ShadingRateImageBitNV | ";
     if (flag & VkImageUsageFlagBits::FragmentDensityMapBitEXT) out += "FragmentDensityMapBitEXT | ";
     return out.substr(0, out.size() - 3);
@@ -2339,6 +2465,10 @@ const char * to_string(VkFormatFeatureFlagBits val) {
         case(VkFormatFeatureFlagBits::BlitDst): return "BlitDst";
         case(VkFormatFeatureFlagBits::SampledImageFilterLinear): return "SampledImageFilterLinear";
         case(VkFormatFeatureFlagBits::SampledImageFilterCubicBitIMG): return "SampledImageFilterCubicBitIMG";
+        case(VkFormatFeatureFlagBits::VideoDecodeOutputBitKHR): return "VideoDecodeOutputBitKHR";
+        case(VkFormatFeatureFlagBits::VideoDecodeDpbBitKHR): return "VideoDecodeDpbBitKHR";
+        case(VkFormatFeatureFlagBits::VideoEncodeInputBitKHR): return "VideoEncodeInputBitKHR";
+        case(VkFormatFeatureFlagBits::VideoEncodeDpbBitKHR): return "VideoEncodeDpbBitKHR";
         case(VkFormatFeatureFlagBits::AccelerationStructureVertexBufferBitKHR): return "AccelerationStructureVertexBufferBitKHR";
         case(VkFormatFeatureFlagBits::FragmentDensityMapBitEXT): return "FragmentDensityMapBitEXT";
         case(VkFormatFeatureFlagBits::FragmentShadingRateAttachmentBitKHR): return "FragmentShadingRateAttachmentBitKHR";
@@ -2372,6 +2502,10 @@ std::string to_string(VkFormatFeatureFlags flag){
     if (flag & VkFormatFeatureFlagBits::BlitDst) out += "BlitDst | ";
     if (flag & VkFormatFeatureFlagBits::SampledImageFilterLinear) out += "SampledImageFilterLinear | ";
     if (flag & VkFormatFeatureFlagBits::SampledImageFilterCubicBitIMG) out += "SampledImageFilterCubicBitIMG | ";
+    if (flag & VkFormatFeatureFlagBits::VideoDecodeOutputBitKHR) out += "VideoDecodeOutputBitKHR | ";
+    if (flag & VkFormatFeatureFlagBits::VideoDecodeDpbBitKHR) out += "VideoDecodeDpbBitKHR | ";
+    if (flag & VkFormatFeatureFlagBits::VideoEncodeInputBitKHR) out += "VideoEncodeInputBitKHR | ";
+    if (flag & VkFormatFeatureFlagBits::VideoEncodeDpbBitKHR) out += "VideoEncodeDpbBitKHR | ";
     if (flag & VkFormatFeatureFlagBits::AccelerationStructureVertexBufferBitKHR) out += "AccelerationStructureVertexBufferBitKHR | ";
     if (flag & VkFormatFeatureFlagBits::FragmentDensityMapBitEXT) out += "FragmentDensityMapBitEXT | ";
     if (flag & VkFormatFeatureFlagBits::FragmentShadingRateAttachmentBitKHR) out += "FragmentShadingRateAttachmentBitKHR | ";
@@ -2405,6 +2539,7 @@ const char * to_string(VkQueryResultFlagBits val) {
         case(VkQueryResultFlagBits::Wait): return "Wait";
         case(VkQueryResultFlagBits::WithAvailability): return "WithAvailability";
         case(VkQueryResultFlagBits::Partial): return "Partial";
+        case(VkQueryResultFlagBits::WithStatusBitKHR): return "WithStatusBitKHR";
         default: return "UNKNOWN";
     }
 }
@@ -2415,6 +2550,7 @@ std::string to_string(VkQueryResultFlags flag){
     if (flag & VkQueryResultFlagBits::Wait) out += "Wait | ";
     if (flag & VkQueryResultFlagBits::WithAvailability) out += "WithAvailability | ";
     if (flag & VkQueryResultFlagBits::Partial) out += "Partial | ";
+    if (flag & VkQueryResultFlagBits::WithStatusBitKHR) out += "WithStatusBitKHR | ";
     return out.substr(0, out.size() - 3);
 }
 const char * to_string(VkCommandBufferUsageFlagBits val) {
@@ -2527,7 +2663,7 @@ std::string to_string(VkSparseMemoryBindFlags flag){
 }
 const char * to_string(VkPipelineStageFlagBits val) {
     switch(val) {
-        case(VkPipelineStageFlagBits::TopOfPipe): return "TopOfPipe";
+        case(VkPipelineStageFlagBits::NoneKHR): return "NoneKHR";
         case(VkPipelineStageFlagBits::DrawIndirect): return "DrawIndirect";
         case(VkPipelineStageFlagBits::VertexInput): return "VertexInput";
         case(VkPipelineStageFlagBits::VertexShader): return "VertexShader";
@@ -2559,7 +2695,7 @@ const char * to_string(VkPipelineStageFlagBits val) {
 std::string to_string(VkPipelineStageFlags flag){
     if (flag.flags == 0) return "None";
     std::string out;
-    if (flag & VkPipelineStageFlagBits::TopOfPipe) out += "TopOfPipe | ";
+    if (flag & VkPipelineStageFlagBits::NoneKHR) out += "NoneKHR | ";
     if (flag & VkPipelineStageFlagBits::DrawIndirect) out += "DrawIndirect | ";
     if (flag & VkPipelineStageFlagBits::VertexInput) out += "VertexInput | ";
     if (flag & VkPipelineStageFlagBits::VertexShader) out += "VertexShader | ";
@@ -2926,6 +3062,7 @@ const char * to_string(VkExternalMemoryHandleTypeFlagBits val) {
         case(VkExternalMemoryHandleTypeFlagBits::AndroidHardwareBufferBitANDROID): return "AndroidHardwareBufferBitANDROID";
         case(VkExternalMemoryHandleTypeFlagBits::HostAllocationBitEXT): return "HostAllocationBitEXT";
         case(VkExternalMemoryHandleTypeFlagBits::HostMappedForeignMemoryBitEXT): return "HostMappedForeignMemoryBitEXT";
+        case(VkExternalMemoryHandleTypeFlagBits::ZirconVmoBitFUCHSIA): return "ZirconVmoBitFUCHSIA";
         default: return "UNKNOWN";
     }
 }
@@ -2943,6 +3080,7 @@ std::string to_string(VkExternalMemoryHandleTypeFlags flag){
     if (flag & VkExternalMemoryHandleTypeFlagBits::AndroidHardwareBufferBitANDROID) out += "AndroidHardwareBufferBitANDROID | ";
     if (flag & VkExternalMemoryHandleTypeFlagBits::HostAllocationBitEXT) out += "HostAllocationBitEXT | ";
     if (flag & VkExternalMemoryHandleTypeFlagBits::HostMappedForeignMemoryBitEXT) out += "HostMappedForeignMemoryBitEXT | ";
+    if (flag & VkExternalMemoryHandleTypeFlagBits::ZirconVmoBitFUCHSIA) out += "ZirconVmoBitFUCHSIA | ";
     return out.substr(0, out.size() - 3);
 }
 const char * to_string(VkExternalMemoryFeatureFlagBits val) {
@@ -2968,6 +3106,7 @@ const char * to_string(VkExternalSemaphoreHandleTypeFlagBits val) {
         case(VkExternalSemaphoreHandleTypeFlagBits::OpaqueWin32Kmt): return "OpaqueWin32Kmt";
         case(VkExternalSemaphoreHandleTypeFlagBits::D3D12Fence): return "D3D12Fence";
         case(VkExternalSemaphoreHandleTypeFlagBits::SyncFd): return "SyncFd";
+        case(VkExternalSemaphoreHandleTypeFlagBits::ZirconEventBitFUCHSIA): return "ZirconEventBitFUCHSIA";
         default: return "UNKNOWN";
     }
 }
@@ -2979,6 +3118,7 @@ std::string to_string(VkExternalSemaphoreHandleTypeFlags flag){
     if (flag & VkExternalSemaphoreHandleTypeFlagBits::OpaqueWin32Kmt) out += "OpaqueWin32Kmt | ";
     if (flag & VkExternalSemaphoreHandleTypeFlagBits::D3D12Fence) out += "D3D12Fence | ";
     if (flag & VkExternalSemaphoreHandleTypeFlagBits::SyncFd) out += "SyncFd | ";
+    if (flag & VkExternalSemaphoreHandleTypeFlagBits::ZirconEventBitFUCHSIA) out += "ZirconEventBitFUCHSIA | ";
     return out.substr(0, out.size() - 3);
 }
 const char * to_string(VkExternalSemaphoreFeatureFlagBits val) {
@@ -3387,6 +3527,464 @@ std::string to_string(VkToolPurposeFlagsEXT flag){
     if (flag & VkToolPurposeFlagBitsEXT::DebugMarkersBitEXT) out += "DebugMarkersBitEXT | ";
     return out.substr(0, out.size() - 3);
 }
+const char * to_string(VkAccessFlagBits2KHR val) {
+    switch(val) {
+        case(VkAccessFlagBits2KHR::e2NoneKHR): return "e2NoneKHR";
+        case(VkAccessFlagBits2KHR::e2IndirectCommandReadBitKHR): return "e2IndirectCommandReadBitKHR";
+        case(VkAccessFlagBits2KHR::e2IndexReadBitKHR): return "e2IndexReadBitKHR";
+        case(VkAccessFlagBits2KHR::e2VertexAttributeReadBitKHR): return "e2VertexAttributeReadBitKHR";
+        case(VkAccessFlagBits2KHR::e2UniformReadBitKHR): return "e2UniformReadBitKHR";
+        case(VkAccessFlagBits2KHR::e2InputAttachmentReadBitKHR): return "e2InputAttachmentReadBitKHR";
+        case(VkAccessFlagBits2KHR::e2ShaderReadBitKHR): return "e2ShaderReadBitKHR";
+        case(VkAccessFlagBits2KHR::e2ShaderWriteBitKHR): return "e2ShaderWriteBitKHR";
+        case(VkAccessFlagBits2KHR::e2ColorAttachmentReadBitKHR): return "e2ColorAttachmentReadBitKHR";
+        case(VkAccessFlagBits2KHR::e2ColorAttachmentWriteBitKHR): return "e2ColorAttachmentWriteBitKHR";
+        case(VkAccessFlagBits2KHR::e2DepthStencilAttachmentReadBitKHR): return "e2DepthStencilAttachmentReadBitKHR";
+        case(VkAccessFlagBits2KHR::e2DepthStencilAttachmentWriteBitKHR): return "e2DepthStencilAttachmentWriteBitKHR";
+        case(VkAccessFlagBits2KHR::e2TransferReadBitKHR): return "e2TransferReadBitKHR";
+        case(VkAccessFlagBits2KHR::e2TransferWriteBitKHR): return "e2TransferWriteBitKHR";
+        case(VkAccessFlagBits2KHR::e2HostReadBitKHR): return "e2HostReadBitKHR";
+        case(VkAccessFlagBits2KHR::e2HostWriteBitKHR): return "e2HostWriteBitKHR";
+        case(VkAccessFlagBits2KHR::e2MemoryReadBitKHR): return "e2MemoryReadBitKHR";
+        case(VkAccessFlagBits2KHR::e2MemoryWriteBitKHR): return "e2MemoryWriteBitKHR";
+        case(VkAccessFlagBits2KHR::e2ShaderSampledReadBitKHR): return "e2ShaderSampledReadBitKHR";
+        case(VkAccessFlagBits2KHR::e2ShaderStorageReadBitKHR): return "e2ShaderStorageReadBitKHR";
+        case(VkAccessFlagBits2KHR::e2ShaderStorageWriteBitKHR): return "e2ShaderStorageWriteBitKHR";
+        case(VkAccessFlagBits2KHR::e2VideoDecodeReadBitKHR): return "e2VideoDecodeReadBitKHR";
+        case(VkAccessFlagBits2KHR::e2VideoDecodeWriteBitKHR): return "e2VideoDecodeWriteBitKHR";
+        case(VkAccessFlagBits2KHR::e2VideoEncodeReadBitKHR): return "e2VideoEncodeReadBitKHR";
+        case(VkAccessFlagBits2KHR::e2VideoEncodeWriteBitKHR): return "e2VideoEncodeWriteBitKHR";
+        case(VkAccessFlagBits2KHR::e2TransformFeedbackWriteBitEXT): return "e2TransformFeedbackWriteBitEXT";
+        case(VkAccessFlagBits2KHR::e2TransformFeedbackCounterReadBitEXT): return "e2TransformFeedbackCounterReadBitEXT";
+        case(VkAccessFlagBits2KHR::e2TransformFeedbackCounterWriteBitEXT): return "e2TransformFeedbackCounterWriteBitEXT";
+        case(VkAccessFlagBits2KHR::e2ConditionalRenderingReadBitEXT): return "e2ConditionalRenderingReadBitEXT";
+        case(VkAccessFlagBits2KHR::e2CommandPreprocessReadBitNV): return "e2CommandPreprocessReadBitNV";
+        case(VkAccessFlagBits2KHR::e2CommandPreprocessWriteBitNV): return "e2CommandPreprocessWriteBitNV";
+        case(VkAccessFlagBits2KHR::e2FragmentShadingRateAttachmentReadBitKHR): return "e2FragmentShadingRateAttachmentReadBitKHR";
+        case(VkAccessFlagBits2KHR::e2AccelerationStructureReadBitKHR): return "e2AccelerationStructureReadBitKHR";
+        case(VkAccessFlagBits2KHR::e2AccelerationStructureWriteBitKHR): return "e2AccelerationStructureWriteBitKHR";
+        case(VkAccessFlagBits2KHR::e2FragmentDensityMapReadBitEXT): return "e2FragmentDensityMapReadBitEXT";
+        case(VkAccessFlagBits2KHR::e2ColorAttachmentReadNoncoherentBitEXT): return "e2ColorAttachmentReadNoncoherentBitEXT";
+        default: return "UNKNOWN";
+    }
+}
+std::string to_string(VkAccessFlags2KHR flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VkAccessFlagBits2KHR::e2NoneKHR) out += "e2NoneKHR | ";
+    if (flag & VkAccessFlagBits2KHR::e2IndirectCommandReadBitKHR) out += "e2IndirectCommandReadBitKHR | ";
+    if (flag & VkAccessFlagBits2KHR::e2IndexReadBitKHR) out += "e2IndexReadBitKHR | ";
+    if (flag & VkAccessFlagBits2KHR::e2VertexAttributeReadBitKHR) out += "e2VertexAttributeReadBitKHR | ";
+    if (flag & VkAccessFlagBits2KHR::e2UniformReadBitKHR) out += "e2UniformReadBitKHR | ";
+    if (flag & VkAccessFlagBits2KHR::e2InputAttachmentReadBitKHR) out += "e2InputAttachmentReadBitKHR | ";
+    if (flag & VkAccessFlagBits2KHR::e2ShaderReadBitKHR) out += "e2ShaderReadBitKHR | ";
+    if (flag & VkAccessFlagBits2KHR::e2ShaderWriteBitKHR) out += "e2ShaderWriteBitKHR | ";
+    if (flag & VkAccessFlagBits2KHR::e2ColorAttachmentReadBitKHR) out += "e2ColorAttachmentReadBitKHR | ";
+    if (flag & VkAccessFlagBits2KHR::e2ColorAttachmentWriteBitKHR) out += "e2ColorAttachmentWriteBitKHR | ";
+    if (flag & VkAccessFlagBits2KHR::e2DepthStencilAttachmentReadBitKHR) out += "e2DepthStencilAttachmentReadBitKHR | ";
+    if (flag & VkAccessFlagBits2KHR::e2DepthStencilAttachmentWriteBitKHR) out += "e2DepthStencilAttachmentWriteBitKHR | ";
+    if (flag & VkAccessFlagBits2KHR::e2TransferReadBitKHR) out += "e2TransferReadBitKHR | ";
+    if (flag & VkAccessFlagBits2KHR::e2TransferWriteBitKHR) out += "e2TransferWriteBitKHR | ";
+    if (flag & VkAccessFlagBits2KHR::e2HostReadBitKHR) out += "e2HostReadBitKHR | ";
+    if (flag & VkAccessFlagBits2KHR::e2HostWriteBitKHR) out += "e2HostWriteBitKHR | ";
+    if (flag & VkAccessFlagBits2KHR::e2MemoryReadBitKHR) out += "e2MemoryReadBitKHR | ";
+    if (flag & VkAccessFlagBits2KHR::e2MemoryWriteBitKHR) out += "e2MemoryWriteBitKHR | ";
+    if (flag & VkAccessFlagBits2KHR::e2ShaderSampledReadBitKHR) out += "e2ShaderSampledReadBitKHR | ";
+    if (flag & VkAccessFlagBits2KHR::e2ShaderStorageReadBitKHR) out += "e2ShaderStorageReadBitKHR | ";
+    if (flag & VkAccessFlagBits2KHR::e2ShaderStorageWriteBitKHR) out += "e2ShaderStorageWriteBitKHR | ";
+    if (flag & VkAccessFlagBits2KHR::e2VideoDecodeReadBitKHR) out += "e2VideoDecodeReadBitKHR | ";
+    if (flag & VkAccessFlagBits2KHR::e2VideoDecodeWriteBitKHR) out += "e2VideoDecodeWriteBitKHR | ";
+    if (flag & VkAccessFlagBits2KHR::e2VideoEncodeReadBitKHR) out += "e2VideoEncodeReadBitKHR | ";
+    if (flag & VkAccessFlagBits2KHR::e2VideoEncodeWriteBitKHR) out += "e2VideoEncodeWriteBitKHR | ";
+    if (flag & VkAccessFlagBits2KHR::e2TransformFeedbackWriteBitEXT) out += "e2TransformFeedbackWriteBitEXT | ";
+    if (flag & VkAccessFlagBits2KHR::e2TransformFeedbackCounterReadBitEXT) out += "e2TransformFeedbackCounterReadBitEXT | ";
+    if (flag & VkAccessFlagBits2KHR::e2TransformFeedbackCounterWriteBitEXT) out += "e2TransformFeedbackCounterWriteBitEXT | ";
+    if (flag & VkAccessFlagBits2KHR::e2ConditionalRenderingReadBitEXT) out += "e2ConditionalRenderingReadBitEXT | ";
+    if (flag & VkAccessFlagBits2KHR::e2CommandPreprocessReadBitNV) out += "e2CommandPreprocessReadBitNV | ";
+    if (flag & VkAccessFlagBits2KHR::e2CommandPreprocessWriteBitNV) out += "e2CommandPreprocessWriteBitNV | ";
+    if (flag & VkAccessFlagBits2KHR::e2FragmentShadingRateAttachmentReadBitKHR) out += "e2FragmentShadingRateAttachmentReadBitKHR | ";
+    if (flag & VkAccessFlagBits2KHR::e2AccelerationStructureReadBitKHR) out += "e2AccelerationStructureReadBitKHR | ";
+    if (flag & VkAccessFlagBits2KHR::e2AccelerationStructureWriteBitKHR) out += "e2AccelerationStructureWriteBitKHR | ";
+    if (flag & VkAccessFlagBits2KHR::e2FragmentDensityMapReadBitEXT) out += "e2FragmentDensityMapReadBitEXT | ";
+    if (flag & VkAccessFlagBits2KHR::e2ColorAttachmentReadNoncoherentBitEXT) out += "e2ColorAttachmentReadNoncoherentBitEXT | ";
+    return out.substr(0, out.size() - 3);
+}
+const char * to_string(VkPipelineStageFlagBits2KHR val) {
+    switch(val) {
+        case(VkPipelineStageFlagBits2KHR::e2NoneKHR): return "e2NoneKHR";
+        case(VkPipelineStageFlagBits2KHR::e2TopOfPipeBitKHR): return "e2TopOfPipeBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2DrawIndirectBitKHR): return "e2DrawIndirectBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2VertexInputBitKHR): return "e2VertexInputBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2VertexShaderBitKHR): return "e2VertexShaderBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2TessellationControlShaderBitKHR): return "e2TessellationControlShaderBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2TessellationEvaluationShaderBitKHR): return "e2TessellationEvaluationShaderBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2GeometryShaderBitKHR): return "e2GeometryShaderBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2FragmentShaderBitKHR): return "e2FragmentShaderBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2EarlyFragmentTestsBitKHR): return "e2EarlyFragmentTestsBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2LateFragmentTestsBitKHR): return "e2LateFragmentTestsBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2ColorAttachmentOutputBitKHR): return "e2ColorAttachmentOutputBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2ComputeShaderBitKHR): return "e2ComputeShaderBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2AllTransferBitKHR): return "e2AllTransferBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2BottomOfPipeBitKHR): return "e2BottomOfPipeBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2HostBitKHR): return "e2HostBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2AllGraphicsBitKHR): return "e2AllGraphicsBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2AllCommandsBitKHR): return "e2AllCommandsBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2CopyBitKHR): return "e2CopyBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2ResolveBitKHR): return "e2ResolveBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2BlitBitKHR): return "e2BlitBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2ClearBitKHR): return "e2ClearBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2IndexInputBitKHR): return "e2IndexInputBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2VertexAttributeInputBitKHR): return "e2VertexAttributeInputBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2PreRasterizationShadersBitKHR): return "e2PreRasterizationShadersBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2VideoDecodeBitKHR): return "e2VideoDecodeBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2VideoEncodeBitKHR): return "e2VideoEncodeBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2TransformFeedbackBitEXT): return "e2TransformFeedbackBitEXT";
+        case(VkPipelineStageFlagBits2KHR::e2ConditionalRenderingBitEXT): return "e2ConditionalRenderingBitEXT";
+        case(VkPipelineStageFlagBits2KHR::e2CommandPreprocessBitNV): return "e2CommandPreprocessBitNV";
+        case(VkPipelineStageFlagBits2KHR::e2FragmentShadingRateAttachmentBitKHR): return "e2FragmentShadingRateAttachmentBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2AccelerationStructureBuildBitKHR): return "e2AccelerationStructureBuildBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2RayTracingShaderBitKHR): return "e2RayTracingShaderBitKHR";
+        case(VkPipelineStageFlagBits2KHR::e2FragmentDensityProcessBitEXT): return "e2FragmentDensityProcessBitEXT";
+        case(VkPipelineStageFlagBits2KHR::e2TaskShaderBitNV): return "e2TaskShaderBitNV";
+        case(VkPipelineStageFlagBits2KHR::e2MeshShaderBitNV): return "e2MeshShaderBitNV";
+        default: return "UNKNOWN";
+    }
+}
+std::string to_string(VkPipelineStageFlags2KHR flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VkPipelineStageFlagBits2KHR::e2NoneKHR) out += "e2NoneKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2TopOfPipeBitKHR) out += "e2TopOfPipeBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2DrawIndirectBitKHR) out += "e2DrawIndirectBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2VertexInputBitKHR) out += "e2VertexInputBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2VertexShaderBitKHR) out += "e2VertexShaderBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2TessellationControlShaderBitKHR) out += "e2TessellationControlShaderBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2TessellationEvaluationShaderBitKHR) out += "e2TessellationEvaluationShaderBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2GeometryShaderBitKHR) out += "e2GeometryShaderBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2FragmentShaderBitKHR) out += "e2FragmentShaderBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2EarlyFragmentTestsBitKHR) out += "e2EarlyFragmentTestsBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2LateFragmentTestsBitKHR) out += "e2LateFragmentTestsBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2ColorAttachmentOutputBitKHR) out += "e2ColorAttachmentOutputBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2ComputeShaderBitKHR) out += "e2ComputeShaderBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2AllTransferBitKHR) out += "e2AllTransferBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2BottomOfPipeBitKHR) out += "e2BottomOfPipeBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2HostBitKHR) out += "e2HostBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2AllGraphicsBitKHR) out += "e2AllGraphicsBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2AllCommandsBitKHR) out += "e2AllCommandsBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2CopyBitKHR) out += "e2CopyBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2ResolveBitKHR) out += "e2ResolveBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2BlitBitKHR) out += "e2BlitBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2ClearBitKHR) out += "e2ClearBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2IndexInputBitKHR) out += "e2IndexInputBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2VertexAttributeInputBitKHR) out += "e2VertexAttributeInputBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2PreRasterizationShadersBitKHR) out += "e2PreRasterizationShadersBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2VideoDecodeBitKHR) out += "e2VideoDecodeBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2VideoEncodeBitKHR) out += "e2VideoEncodeBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2TransformFeedbackBitEXT) out += "e2TransformFeedbackBitEXT | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2ConditionalRenderingBitEXT) out += "e2ConditionalRenderingBitEXT | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2CommandPreprocessBitNV) out += "e2CommandPreprocessBitNV | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2FragmentShadingRateAttachmentBitKHR) out += "e2FragmentShadingRateAttachmentBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2AccelerationStructureBuildBitKHR) out += "e2AccelerationStructureBuildBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2RayTracingShaderBitKHR) out += "e2RayTracingShaderBitKHR | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2FragmentDensityProcessBitEXT) out += "e2FragmentDensityProcessBitEXT | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2TaskShaderBitNV) out += "e2TaskShaderBitNV | ";
+    if (flag & VkPipelineStageFlagBits2KHR::e2MeshShaderBitNV) out += "e2MeshShaderBitNV | ";
+    return out.substr(0, out.size() - 3);
+}
+const char * to_string(VkSubmitFlagBitsKHR val) {
+    switch(val) {
+        case(VkSubmitFlagBitsKHR::ProtectedBitKHR): return "ProtectedBitKHR";
+        default: return "UNKNOWN";
+    }
+}
+std::string to_string(VkSubmitFlagsKHR flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VkSubmitFlagBitsKHR::ProtectedBitKHR) out += "ProtectedBitKHR | ";
+    return out.substr(0, out.size() - 3);
+}
+const char * to_string(VkEventCreateFlagBits val) {
+    switch(val) {
+        case(VkEventCreateFlagBits::DeviceOnlyBitKHR): return "DeviceOnlyBitKHR";
+        default: return "UNKNOWN";
+    }
+}
+std::string to_string(VkEventCreateFlags flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VkEventCreateFlagBits::DeviceOnlyBitKHR) out += "DeviceOnlyBitKHR | ";
+    return out.substr(0, out.size() - 3);
+}
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+const char * to_string(VkVideoCodecOperationFlagBitsKHR val) {
+    switch(val) {
+        case(VkVideoCodecOperationFlagBitsKHR::InvalidBitKHR): return "InvalidBitKHR";
+        case(VkVideoCodecOperationFlagBitsKHR::EncodeH264BitEXT): return "EncodeH264BitEXT";
+        case(VkVideoCodecOperationFlagBitsKHR::DecodeH264BitEXT): return "DecodeH264BitEXT";
+        case(VkVideoCodecOperationFlagBitsKHR::DecodeH265BitEXT): return "DecodeH265BitEXT";
+        default: return "UNKNOWN";
+    }
+}
+std::string to_string(VkVideoCodecOperationFlagsKHR flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VkVideoCodecOperationFlagBitsKHR::InvalidBitKHR) out += "InvalidBitKHR | ";
+    if (flag & VkVideoCodecOperationFlagBitsKHR::EncodeH264BitEXT) out += "EncodeH264BitEXT | ";
+    if (flag & VkVideoCodecOperationFlagBitsKHR::DecodeH264BitEXT) out += "DecodeH264BitEXT | ";
+    if (flag & VkVideoCodecOperationFlagBitsKHR::DecodeH265BitEXT) out += "DecodeH265BitEXT | ";
+    return out.substr(0, out.size() - 3);
+}
+const char * to_string(VkVideoChromaSubsamplingFlagBitsKHR val) {
+    switch(val) {
+        case(VkVideoChromaSubsamplingFlagBitsKHR::InvalidBitKHR): return "InvalidBitKHR";
+        case(VkVideoChromaSubsamplingFlagBitsKHR::MonochromeBitKHR): return "MonochromeBitKHR";
+        case(VkVideoChromaSubsamplingFlagBitsKHR::e420BitKHR): return "e420BitKHR";
+        case(VkVideoChromaSubsamplingFlagBitsKHR::e422BitKHR): return "e422BitKHR";
+        case(VkVideoChromaSubsamplingFlagBitsKHR::e444BitKHR): return "e444BitKHR";
+        default: return "UNKNOWN";
+    }
+}
+std::string to_string(VkVideoChromaSubsamplingFlagsKHR flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VkVideoChromaSubsamplingFlagBitsKHR::InvalidBitKHR) out += "InvalidBitKHR | ";
+    if (flag & VkVideoChromaSubsamplingFlagBitsKHR::MonochromeBitKHR) out += "MonochromeBitKHR | ";
+    if (flag & VkVideoChromaSubsamplingFlagBitsKHR::e420BitKHR) out += "e420BitKHR | ";
+    if (flag & VkVideoChromaSubsamplingFlagBitsKHR::e422BitKHR) out += "e422BitKHR | ";
+    if (flag & VkVideoChromaSubsamplingFlagBitsKHR::e444BitKHR) out += "e444BitKHR | ";
+    return out.substr(0, out.size() - 3);
+}
+const char * to_string(VkVideoComponentBitDepthFlagBitsKHR val) {
+    switch(val) {
+        case(VkVideoComponentBitDepthFlagBitsKHR::InvalidKHR): return "InvalidKHR";
+        case(VkVideoComponentBitDepthFlagBitsKHR::e8BitKHR): return "e8BitKHR";
+        case(VkVideoComponentBitDepthFlagBitsKHR::e10BitKHR): return "e10BitKHR";
+        case(VkVideoComponentBitDepthFlagBitsKHR::e12BitKHR): return "e12BitKHR";
+        default: return "UNKNOWN";
+    }
+}
+std::string to_string(VkVideoComponentBitDepthFlagsKHR flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VkVideoComponentBitDepthFlagBitsKHR::InvalidKHR) out += "InvalidKHR | ";
+    if (flag & VkVideoComponentBitDepthFlagBitsKHR::e8BitKHR) out += "e8BitKHR | ";
+    if (flag & VkVideoComponentBitDepthFlagBitsKHR::e10BitKHR) out += "e10BitKHR | ";
+    if (flag & VkVideoComponentBitDepthFlagBitsKHR::e12BitKHR) out += "e12BitKHR | ";
+    return out.substr(0, out.size() - 3);
+}
+const char * to_string(VkVideoCapabilitiesFlagBitsKHR val) {
+    switch(val) {
+        case(VkVideoCapabilitiesFlagBitsKHR::ProtectedContentBitKHR): return "ProtectedContentBitKHR";
+        case(VkVideoCapabilitiesFlagBitsKHR::SeparateReferenceImagesBitKHR): return "SeparateReferenceImagesBitKHR";
+        default: return "UNKNOWN";
+    }
+}
+std::string to_string(VkVideoCapabilitiesFlagsKHR flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VkVideoCapabilitiesFlagBitsKHR::ProtectedContentBitKHR) out += "ProtectedContentBitKHR | ";
+    if (flag & VkVideoCapabilitiesFlagBitsKHR::SeparateReferenceImagesBitKHR) out += "SeparateReferenceImagesBitKHR | ";
+    return out.substr(0, out.size() - 3);
+}
+const char * to_string(VkVideoSessionCreateFlagBitsKHR val) {
+    switch(val) {
+        case(VkVideoSessionCreateFlagBitsKHR::DefaultKHR): return "DefaultKHR";
+        case(VkVideoSessionCreateFlagBitsKHR::ProtectedContentBitKHR): return "ProtectedContentBitKHR";
+        default: return "UNKNOWN";
+    }
+}
+std::string to_string(VkVideoSessionCreateFlagsKHR flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VkVideoSessionCreateFlagBitsKHR::DefaultKHR) out += "DefaultKHR | ";
+    if (flag & VkVideoSessionCreateFlagBitsKHR::ProtectedContentBitKHR) out += "ProtectedContentBitKHR | ";
+    return out.substr(0, out.size() - 3);
+}
+const char * to_string(VkVideoCodingQualityPresetFlagBitsKHR val) {
+    switch(val) {
+        case(VkVideoCodingQualityPresetFlagBitsKHR::DefaultBitKHR): return "DefaultBitKHR";
+        case(VkVideoCodingQualityPresetFlagBitsKHR::NormalBitKHR): return "NormalBitKHR";
+        case(VkVideoCodingQualityPresetFlagBitsKHR::PowerBitKHR): return "PowerBitKHR";
+        case(VkVideoCodingQualityPresetFlagBitsKHR::QualityBitKHR): return "QualityBitKHR";
+        default: return "UNKNOWN";
+    }
+}
+std::string to_string(VkVideoCodingQualityPresetFlagsKHR flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VkVideoCodingQualityPresetFlagBitsKHR::DefaultBitKHR) out += "DefaultBitKHR | ";
+    if (flag & VkVideoCodingQualityPresetFlagBitsKHR::NormalBitKHR) out += "NormalBitKHR | ";
+    if (flag & VkVideoCodingQualityPresetFlagBitsKHR::PowerBitKHR) out += "PowerBitKHR | ";
+    if (flag & VkVideoCodingQualityPresetFlagBitsKHR::QualityBitKHR) out += "QualityBitKHR | ";
+    return out.substr(0, out.size() - 3);
+}
+const char * to_string(VkVideoDecodeH264FieldLayoutFlagBitsEXT val) {
+    switch(val) {
+        case(VkVideoDecodeH264FieldLayoutFlagBitsEXT::OnlyEXT): return "OnlyEXT";
+        case(VkVideoDecodeH264FieldLayoutFlagBitsEXT::LineInterlacedPlaneBitEXT): return "LineInterlacedPlaneBitEXT";
+        case(VkVideoDecodeH264FieldLayoutFlagBitsEXT::SeparateInterlacedPlaneBitEXT): return "SeparateInterlacedPlaneBitEXT";
+        default: return "UNKNOWN";
+    }
+}
+std::string to_string(VkVideoDecodeH264FieldLayoutFlagsEXT flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VkVideoDecodeH264FieldLayoutFlagBitsEXT::OnlyEXT) out += "OnlyEXT | ";
+    if (flag & VkVideoDecodeH264FieldLayoutFlagBitsEXT::LineInterlacedPlaneBitEXT) out += "LineInterlacedPlaneBitEXT | ";
+    if (flag & VkVideoDecodeH264FieldLayoutFlagBitsEXT::SeparateInterlacedPlaneBitEXT) out += "SeparateInterlacedPlaneBitEXT | ";
+    return out.substr(0, out.size() - 3);
+}
+const char * to_string(VkVideoCodingControlFlagBitsKHR val) {
+    switch(val) {
+        case(VkVideoCodingControlFlagBitsKHR::DefaultKHR): return "DefaultKHR";
+        case(VkVideoCodingControlFlagBitsKHR::ResetBitKHR): return "ResetBitKHR";
+        default: return "UNKNOWN";
+    }
+}
+std::string to_string(VkVideoCodingControlFlagsKHR flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VkVideoCodingControlFlagBitsKHR::DefaultKHR) out += "DefaultKHR | ";
+    if (flag & VkVideoCodingControlFlagBitsKHR::ResetBitKHR) out += "ResetBitKHR | ";
+    return out.substr(0, out.size() - 3);
+}
+const char * to_string(VkVideoDecodeFlagBitsKHR val) {
+    switch(val) {
+        case(VkVideoDecodeFlagBitsKHR::DefaultKHR): return "DefaultKHR";
+        case(VkVideoDecodeFlagBitsKHR::Reserved0BitKHR): return "Reserved0BitKHR";
+        default: return "UNKNOWN";
+    }
+}
+std::string to_string(VkVideoDecodeFlagsKHR flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VkVideoDecodeFlagBitsKHR::DefaultKHR) out += "DefaultKHR | ";
+    if (flag & VkVideoDecodeFlagBitsKHR::Reserved0BitKHR) out += "Reserved0BitKHR | ";
+    return out.substr(0, out.size() - 3);
+}
+const char * to_string(VkVideoEncodeFlagBitsKHR val) {
+    switch(val) {
+        case(VkVideoEncodeFlagBitsKHR::DefaultKHR): return "DefaultKHR";
+        case(VkVideoEncodeFlagBitsKHR::Reserved0BitKHR): return "Reserved0BitKHR";
+        default: return "UNKNOWN";
+    }
+}
+std::string to_string(VkVideoEncodeFlagsKHR flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VkVideoEncodeFlagBitsKHR::DefaultKHR) out += "DefaultKHR | ";
+    if (flag & VkVideoEncodeFlagBitsKHR::Reserved0BitKHR) out += "Reserved0BitKHR | ";
+    return out.substr(0, out.size() - 3);
+}
+const char * to_string(VkVideoEncodeRateControlFlagBitsKHR val) {
+    switch(val) {
+        case(VkVideoEncodeRateControlFlagBitsKHR::DefaultKHR): return "DefaultKHR";
+        case(VkVideoEncodeRateControlFlagBitsKHR::ResetBitKHR): return "ResetBitKHR";
+        default: return "UNKNOWN";
+    }
+}
+std::string to_string(VkVideoEncodeRateControlFlagsKHR flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VkVideoEncodeRateControlFlagBitsKHR::DefaultKHR) out += "DefaultKHR | ";
+    if (flag & VkVideoEncodeRateControlFlagBitsKHR::ResetBitKHR) out += "ResetBitKHR | ";
+    return out.substr(0, out.size() - 3);
+}
+const char * to_string(VkVideoEncodeRateControlModeFlagBitsKHR val) {
+    switch(val) {
+        case(VkVideoEncodeRateControlModeFlagBitsKHR::NoneBitKHR): return "NoneBitKHR";
+        case(VkVideoEncodeRateControlModeFlagBitsKHR::CbrBitKHR): return "CbrBitKHR";
+        case(VkVideoEncodeRateControlModeFlagBitsKHR::VbrBitKHR): return "VbrBitKHR";
+        default: return "UNKNOWN";
+    }
+}
+std::string to_string(VkVideoEncodeRateControlModeFlagsKHR flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VkVideoEncodeRateControlModeFlagBitsKHR::NoneBitKHR) out += "NoneBitKHR | ";
+    if (flag & VkVideoEncodeRateControlModeFlagBitsKHR::CbrBitKHR) out += "CbrBitKHR | ";
+    if (flag & VkVideoEncodeRateControlModeFlagBitsKHR::VbrBitKHR) out += "VbrBitKHR | ";
+    return out.substr(0, out.size() - 3);
+}
+const char * to_string(VkVideoEncodeH264CapabilitiesFlagBitsEXT val) {
+    switch(val) {
+        case(VkVideoEncodeH264CapabilitiesFlagBitsEXT::CabacBitEXT): return "CabacBitEXT";
+        case(VkVideoEncodeH264CapabilitiesFlagBitsEXT::CavlcBitEXT): return "CavlcBitEXT";
+        case(VkVideoEncodeH264CapabilitiesFlagBitsEXT::WeightedBiPredImplicitBitEXT): return "WeightedBiPredImplicitBitEXT";
+        case(VkVideoEncodeH264CapabilitiesFlagBitsEXT::Transform8X8BitEXT): return "Transform8X8BitEXT";
+        case(VkVideoEncodeH264CapabilitiesFlagBitsEXT::ChromaQpOffsetBitEXT): return "ChromaQpOffsetBitEXT";
+        case(VkVideoEncodeH264CapabilitiesFlagBitsEXT::SecondChromaQpOffsetBitEXT): return "SecondChromaQpOffsetBitEXT";
+        case(VkVideoEncodeH264CapabilitiesFlagBitsEXT::DeblockingFilterDisabledBitEXT): return "DeblockingFilterDisabledBitEXT";
+        case(VkVideoEncodeH264CapabilitiesFlagBitsEXT::DeblockingFilterEnabledBitEXT): return "DeblockingFilterEnabledBitEXT";
+        case(VkVideoEncodeH264CapabilitiesFlagBitsEXT::DeblockingFilterPartialBitEXT): return "DeblockingFilterPartialBitEXT";
+        case(VkVideoEncodeH264CapabilitiesFlagBitsEXT::MultipleSlicePerFrameBitEXT): return "MultipleSlicePerFrameBitEXT";
+        case(VkVideoEncodeH264CapabilitiesFlagBitsEXT::EvenlyDistributedSliceSizeBitEXT): return "EvenlyDistributedSliceSizeBitEXT";
+        default: return "UNKNOWN";
+    }
+}
+std::string to_string(VkVideoEncodeH264CapabilitiesFlagsEXT flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VkVideoEncodeH264CapabilitiesFlagBitsEXT::CabacBitEXT) out += "CabacBitEXT | ";
+    if (flag & VkVideoEncodeH264CapabilitiesFlagBitsEXT::CavlcBitEXT) out += "CavlcBitEXT | ";
+    if (flag & VkVideoEncodeH264CapabilitiesFlagBitsEXT::WeightedBiPredImplicitBitEXT) out += "WeightedBiPredImplicitBitEXT | ";
+    if (flag & VkVideoEncodeH264CapabilitiesFlagBitsEXT::Transform8X8BitEXT) out += "Transform8X8BitEXT | ";
+    if (flag & VkVideoEncodeH264CapabilitiesFlagBitsEXT::ChromaQpOffsetBitEXT) out += "ChromaQpOffsetBitEXT | ";
+    if (flag & VkVideoEncodeH264CapabilitiesFlagBitsEXT::SecondChromaQpOffsetBitEXT) out += "SecondChromaQpOffsetBitEXT | ";
+    if (flag & VkVideoEncodeH264CapabilitiesFlagBitsEXT::DeblockingFilterDisabledBitEXT) out += "DeblockingFilterDisabledBitEXT | ";
+    if (flag & VkVideoEncodeH264CapabilitiesFlagBitsEXT::DeblockingFilterEnabledBitEXT) out += "DeblockingFilterEnabledBitEXT | ";
+    if (flag & VkVideoEncodeH264CapabilitiesFlagBitsEXT::DeblockingFilterPartialBitEXT) out += "DeblockingFilterPartialBitEXT | ";
+    if (flag & VkVideoEncodeH264CapabilitiesFlagBitsEXT::MultipleSlicePerFrameBitEXT) out += "MultipleSlicePerFrameBitEXT | ";
+    if (flag & VkVideoEncodeH264CapabilitiesFlagBitsEXT::EvenlyDistributedSliceSizeBitEXT) out += "EvenlyDistributedSliceSizeBitEXT | ";
+    return out.substr(0, out.size() - 3);
+}
+const char * to_string(VkVideoEncodeH264InputModeFlagBitsEXT val) {
+    switch(val) {
+        case(VkVideoEncodeH264InputModeFlagBitsEXT::FrameBitEXT): return "FrameBitEXT";
+        case(VkVideoEncodeH264InputModeFlagBitsEXT::SliceBitEXT): return "SliceBitEXT";
+        case(VkVideoEncodeH264InputModeFlagBitsEXT::NonVclBitEXT): return "NonVclBitEXT";
+        default: return "UNKNOWN";
+    }
+}
+std::string to_string(VkVideoEncodeH264InputModeFlagsEXT flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VkVideoEncodeH264InputModeFlagBitsEXT::FrameBitEXT) out += "FrameBitEXT | ";
+    if (flag & VkVideoEncodeH264InputModeFlagBitsEXT::SliceBitEXT) out += "SliceBitEXT | ";
+    if (flag & VkVideoEncodeH264InputModeFlagBitsEXT::NonVclBitEXT) out += "NonVclBitEXT | ";
+    return out.substr(0, out.size() - 3);
+}
+const char * to_string(VkVideoEncodeH264OutputModeFlagBitsEXT val) {
+    switch(val) {
+        case(VkVideoEncodeH264OutputModeFlagBitsEXT::FrameBitEXT): return "FrameBitEXT";
+        case(VkVideoEncodeH264OutputModeFlagBitsEXT::SliceBitEXT): return "SliceBitEXT";
+        case(VkVideoEncodeH264OutputModeFlagBitsEXT::NonVclBitEXT): return "NonVclBitEXT";
+        default: return "UNKNOWN";
+    }
+}
+std::string to_string(VkVideoEncodeH264OutputModeFlagsEXT flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VkVideoEncodeH264OutputModeFlagBitsEXT::FrameBitEXT) out += "FrameBitEXT | ";
+    if (flag & VkVideoEncodeH264OutputModeFlagBitsEXT::SliceBitEXT) out += "SliceBitEXT | ";
+    if (flag & VkVideoEncodeH264OutputModeFlagBitsEXT::NonVclBitEXT) out += "NonVclBitEXT | ";
+    return out.substr(0, out.size() - 3);
+}
+const char * to_string(VkVideoEncodeH264CreateFlagBitsEXT val) {
+    switch(val) {
+        case(VkVideoEncodeH264CreateFlagBitsEXT::DefaultEXT): return "DefaultEXT";
+        case(VkVideoEncodeH264CreateFlagBitsEXT::Reserved0BitEXT): return "Reserved0BitEXT";
+        default: return "UNKNOWN";
+    }
+}
+std::string to_string(VkVideoEncodeH264CreateFlagsEXT flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & VkVideoEncodeH264CreateFlagBitsEXT::DefaultEXT) out += "DefaultEXT | ";
+    if (flag & VkVideoEncodeH264CreateFlagBitsEXT::Reserved0BitEXT) out += "Reserved0BitEXT | ";
+    return out.substr(0, out.size() - 3);
+}
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 #endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
 #if defined(VK_USE_PLATFORM_VI_NN)
@@ -3411,5 +4009,9 @@ std::string to_string(VkToolPurposeFlagsEXT flag){
 #endif // defined(VK_USE_PLATFORM_FUCHSIA)
 #if defined(VK_USE_PLATFORM_GGP)
 #endif // defined(VK_USE_PLATFORM_GGP)
+#if defined(VK_USE_PLATFORM_SCREEN_QNX)
+#endif // defined(VK_USE_PLATFORM_SCREEN_QNX)
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 
 // clang-format on

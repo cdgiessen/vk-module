@@ -84,5 +84,7 @@
     <enum name="VK_BASE_NAME_FIELD_NAME" extends="VkBaseEnumType" bitpos="num" />
     <!--alias bitmask-->
     <enum alias="VK_BASE_NAME_FIELD_NAME_ALIAS" name="VK_BASE_NAME_FIELD_NAME" extends="VkBaseEnumType" />
+    <!--because screw you, enums can now contain hardcoded values (but only 0!)-->
+    <enum value="0" extends="VkBaseEnumType" name="VK_BASE_NAME_FIELD_NAME"/>
 </extension>
 </extensions>

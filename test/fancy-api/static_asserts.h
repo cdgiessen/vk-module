@@ -286,6 +286,10 @@ static_assert( std::is_standard_layout<vk::ImagePipeSurfaceCreateInfoFUCHSIA>::v
 static_assert( sizeof(vk::StreamDescriptorSurfaceCreateInfoGGP) == sizeof(VkStreamDescriptorSurfaceCreateInfoGGP), "Must maintain size between types" );
 static_assert( std::is_standard_layout<vk::StreamDescriptorSurfaceCreateInfoGGP>::value, "Must be a standard layout type" );
 #endif // defined(VK_USE_PLATFORM_GGP)
+#if defined(VK_USE_PLATFORM_SCREEN_QNX)
+static_assert( sizeof(vk::ScreenSurfaceCreateInfoQNX) == sizeof(VkScreenSurfaceCreateInfoQNX), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::ScreenSurfaceCreateInfoQNX>::value, "Must be a standard layout type" );
+#endif // defined(VK_USE_PLATFORM_SCREEN_QNX)
 static_assert( sizeof(vk::SurfaceFormatKHR) == sizeof(VkSurfaceFormatKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<vk::SurfaceFormatKHR>::value, "Must be a standard layout type" );
 static_assert( sizeof(vk::SwapchainCreateInfoKHR) == sizeof(VkSwapchainCreateInfoKHR), "Must maintain size between types" );
@@ -459,6 +463,16 @@ static_assert( sizeof(vk::ImportMemoryWin32HandleInfoKHR) == sizeof(VkImportMemo
 static_assert( std::is_standard_layout<vk::ImportMemoryWin32HandleInfoKHR>::value, "Must be a standard layout type" );
 static_assert( sizeof(vk::ExportMemoryWin32HandleInfoKHR) == sizeof(VkExportMemoryWin32HandleInfoKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<vk::ExportMemoryWin32HandleInfoKHR>::value, "Must be a standard layout type" );
+#endif // defined(VK_USE_PLATFORM_WIN32_KHR)
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+static_assert( sizeof(vk::ImportMemoryZirconHandleInfoFUCHSIA) == sizeof(VkImportMemoryZirconHandleInfoFUCHSIA), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::ImportMemoryZirconHandleInfoFUCHSIA>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::MemoryZirconHandlePropertiesFUCHSIA) == sizeof(VkMemoryZirconHandlePropertiesFUCHSIA), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::MemoryZirconHandlePropertiesFUCHSIA>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::MemoryGetZirconHandleInfoFUCHSIA) == sizeof(VkMemoryGetZirconHandleInfoFUCHSIA), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::MemoryGetZirconHandleInfoFUCHSIA>::value, "Must be a standard layout type" );
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
 static_assert( sizeof(vk::MemoryWin32HandlePropertiesKHR) == sizeof(VkMemoryWin32HandlePropertiesKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<vk::MemoryWin32HandlePropertiesKHR>::value, "Must be a standard layout type" );
 static_assert( sizeof(vk::MemoryGetWin32HandleInfoKHR) == sizeof(VkMemoryGetWin32HandleInfoKHR), "Must maintain size between types" );
@@ -500,6 +514,12 @@ static_assert( sizeof(vk::ImportSemaphoreFdInfoKHR) == sizeof(VkImportSemaphoreF
 static_assert( std::is_standard_layout<vk::ImportSemaphoreFdInfoKHR>::value, "Must be a standard layout type" );
 static_assert( sizeof(vk::SemaphoreGetFdInfoKHR) == sizeof(VkSemaphoreGetFdInfoKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<vk::SemaphoreGetFdInfoKHR>::value, "Must be a standard layout type" );
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+static_assert( sizeof(vk::ImportSemaphoreZirconHandleInfoFUCHSIA) == sizeof(VkImportSemaphoreZirconHandleInfoFUCHSIA), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::ImportSemaphoreZirconHandleInfoFUCHSIA>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::SemaphoreGetZirconHandleInfoFUCHSIA) == sizeof(VkSemaphoreGetZirconHandleInfoFUCHSIA), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::SemaphoreGetZirconHandleInfoFUCHSIA>::value, "Must be a standard layout type" );
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
 static_assert( sizeof(vk::PhysicalDeviceExternalFenceInfo) == sizeof(VkPhysicalDeviceExternalFenceInfo), "Must maintain size between types" );
 static_assert( std::is_standard_layout<vk::PhysicalDeviceExternalFenceInfo>::value, "Must be a standard layout type" );
 static_assert( sizeof(vk::PhysicalDeviceExternalFenceInfoKHR) == sizeof(VkPhysicalDeviceExternalFenceInfoKHR), "Must maintain size between types" );
@@ -1380,6 +1400,8 @@ static_assert( sizeof(vk::CopyMemoryToAccelerationStructureInfoKHR) == sizeof(Vk
 static_assert( std::is_standard_layout<vk::CopyMemoryToAccelerationStructureInfoKHR>::value, "Must be a standard layout type" );
 static_assert( sizeof(vk::PhysicalDeviceExtendedDynamicStateFeaturesEXT) == sizeof(VkPhysicalDeviceExtendedDynamicStateFeaturesEXT), "Must maintain size between types" );
 static_assert( std::is_standard_layout<vk::PhysicalDeviceExtendedDynamicStateFeaturesEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::PhysicalDeviceExtendedDynamicState2FeaturesEXT) == sizeof(VkPhysicalDeviceExtendedDynamicState2FeaturesEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::PhysicalDeviceExtendedDynamicState2FeaturesEXT>::value, "Must be a standard layout type" );
 static_assert( sizeof(vk::RenderPassTransformBeginInfoQCOM) == sizeof(VkRenderPassTransformBeginInfoQCOM), "Must maintain size between types" );
 static_assert( std::is_standard_layout<vk::RenderPassTransformBeginInfoQCOM>::value, "Must be a standard layout type" );
 static_assert( sizeof(vk::CopyCommandTransformInfoQCOM) == sizeof(VkCopyCommandTransformInfoQCOM), "Must maintain size between types" );
@@ -1458,6 +1480,130 @@ static_assert( sizeof(vk::MutableDescriptorTypeListVALVE) == sizeof(VkMutableDes
 static_assert( std::is_standard_layout<vk::MutableDescriptorTypeListVALVE>::value, "Must be a standard layout type" );
 static_assert( sizeof(vk::MutableDescriptorTypeCreateInfoVALVE) == sizeof(VkMutableDescriptorTypeCreateInfoVALVE), "Must maintain size between types" );
 static_assert( std::is_standard_layout<vk::MutableDescriptorTypeCreateInfoVALVE>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::PhysicalDeviceVertexInputDynamicStateFeaturesEXT) == sizeof(VkPhysicalDeviceVertexInputDynamicStateFeaturesEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::PhysicalDeviceVertexInputDynamicStateFeaturesEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VertexInputBindingDescription2EXT) == sizeof(VkVertexInputBindingDescription2EXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VertexInputBindingDescription2EXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VertexInputAttributeDescription2EXT) == sizeof(VkVertexInputAttributeDescription2EXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VertexInputAttributeDescription2EXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::PhysicalDeviceColorWriteEnableFeaturesEXT) == sizeof(VkPhysicalDeviceColorWriteEnableFeaturesEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::PhysicalDeviceColorWriteEnableFeaturesEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::PipelineColorWriteCreateInfoEXT) == sizeof(VkPipelineColorWriteCreateInfoEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::PipelineColorWriteCreateInfoEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::MemoryBarrier2KHR) == sizeof(VkMemoryBarrier2KHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::MemoryBarrier2KHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::ImageMemoryBarrier2KHR) == sizeof(VkImageMemoryBarrier2KHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::ImageMemoryBarrier2KHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::BufferMemoryBarrier2KHR) == sizeof(VkBufferMemoryBarrier2KHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::BufferMemoryBarrier2KHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::DependencyInfoKHR) == sizeof(VkDependencyInfoKHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::DependencyInfoKHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::SemaphoreSubmitInfoKHR) == sizeof(VkSemaphoreSubmitInfoKHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::SemaphoreSubmitInfoKHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::CommandBufferSubmitInfoKHR) == sizeof(VkCommandBufferSubmitInfoKHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::CommandBufferSubmitInfoKHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::SubmitInfo2KHR) == sizeof(VkSubmitInfo2KHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::SubmitInfo2KHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::QueueFamilyCheckpointProperties2NV) == sizeof(VkQueueFamilyCheckpointProperties2NV), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::QueueFamilyCheckpointProperties2NV>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::CheckpointData2NV) == sizeof(VkCheckpointData2NV), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::CheckpointData2NV>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::PhysicalDeviceSynchronization2FeaturesKHR) == sizeof(VkPhysicalDeviceSynchronization2FeaturesKHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::PhysicalDeviceSynchronization2FeaturesKHR>::value, "Must be a standard layout type" );
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+static_assert( sizeof(vk::VideoQueueFamilyProperties2KHR) == sizeof(VkVideoQueueFamilyProperties2KHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoQueueFamilyProperties2KHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoProfileKHR) == sizeof(VkVideoProfileKHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoProfileKHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoProfilesKHR) == sizeof(VkVideoProfilesKHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoProfilesKHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::PhysicalDeviceVideoFormatInfoKHR) == sizeof(VkPhysicalDeviceVideoFormatInfoKHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::PhysicalDeviceVideoFormatInfoKHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoFormatPropertiesKHR) == sizeof(VkVideoFormatPropertiesKHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoFormatPropertiesKHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoCapabilitiesKHR) == sizeof(VkVideoCapabilitiesKHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoCapabilitiesKHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoGetMemoryPropertiesKHR) == sizeof(VkVideoGetMemoryPropertiesKHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoGetMemoryPropertiesKHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoBindMemoryKHR) == sizeof(VkVideoBindMemoryKHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoBindMemoryKHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoPictureResourceKHR) == sizeof(VkVideoPictureResourceKHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoPictureResourceKHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoReferenceSlotKHR) == sizeof(VkVideoReferenceSlotKHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoReferenceSlotKHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoDecodeInfoKHR) == sizeof(VkVideoDecodeInfoKHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoDecodeInfoKHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoDecodeH264ProfileEXT) == sizeof(VkVideoDecodeH264ProfileEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoDecodeH264ProfileEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoDecodeH264CapabilitiesEXT) == sizeof(VkVideoDecodeH264CapabilitiesEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoDecodeH264CapabilitiesEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoDecodeH264SessionCreateInfoEXT) == sizeof(VkVideoDecodeH264SessionCreateInfoEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoDecodeH264SessionCreateInfoEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoDecodeH264SessionParametersAddInfoEXT) == sizeof(VkVideoDecodeH264SessionParametersAddInfoEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoDecodeH264SessionParametersAddInfoEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoDecodeH264SessionParametersCreateInfoEXT) == sizeof(VkVideoDecodeH264SessionParametersCreateInfoEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoDecodeH264SessionParametersCreateInfoEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoDecodeH264PictureInfoEXT) == sizeof(VkVideoDecodeH264PictureInfoEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoDecodeH264PictureInfoEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoDecodeH264DpbSlotInfoEXT) == sizeof(VkVideoDecodeH264DpbSlotInfoEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoDecodeH264DpbSlotInfoEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoDecodeH264MvcEXT) == sizeof(VkVideoDecodeH264MvcEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoDecodeH264MvcEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoDecodeH265ProfileEXT) == sizeof(VkVideoDecodeH265ProfileEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoDecodeH265ProfileEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoDecodeH265CapabilitiesEXT) == sizeof(VkVideoDecodeH265CapabilitiesEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoDecodeH265CapabilitiesEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoDecodeH265SessionCreateInfoEXT) == sizeof(VkVideoDecodeH265SessionCreateInfoEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoDecodeH265SessionCreateInfoEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoDecodeH265SessionParametersAddInfoEXT) == sizeof(VkVideoDecodeH265SessionParametersAddInfoEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoDecodeH265SessionParametersAddInfoEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoDecodeH265SessionParametersCreateInfoEXT) == sizeof(VkVideoDecodeH265SessionParametersCreateInfoEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoDecodeH265SessionParametersCreateInfoEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoDecodeH265PictureInfoEXT) == sizeof(VkVideoDecodeH265PictureInfoEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoDecodeH265PictureInfoEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoDecodeH265DpbSlotInfoEXT) == sizeof(VkVideoDecodeH265DpbSlotInfoEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoDecodeH265DpbSlotInfoEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoSessionCreateInfoKHR) == sizeof(VkVideoSessionCreateInfoKHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoSessionCreateInfoKHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoSessionParametersCreateInfoKHR) == sizeof(VkVideoSessionParametersCreateInfoKHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoSessionParametersCreateInfoKHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoSessionParametersUpdateInfoKHR) == sizeof(VkVideoSessionParametersUpdateInfoKHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoSessionParametersUpdateInfoKHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoBeginCodingInfoKHR) == sizeof(VkVideoBeginCodingInfoKHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoBeginCodingInfoKHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoEndCodingInfoKHR) == sizeof(VkVideoEndCodingInfoKHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoEndCodingInfoKHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoCodingControlInfoKHR) == sizeof(VkVideoCodingControlInfoKHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoCodingControlInfoKHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoEncodeInfoKHR) == sizeof(VkVideoEncodeInfoKHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoEncodeInfoKHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoEncodeRateControlInfoKHR) == sizeof(VkVideoEncodeRateControlInfoKHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoEncodeRateControlInfoKHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoEncodeH264CapabilitiesEXT) == sizeof(VkVideoEncodeH264CapabilitiesEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoEncodeH264CapabilitiesEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoEncodeH264SessionCreateInfoEXT) == sizeof(VkVideoEncodeH264SessionCreateInfoEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoEncodeH264SessionCreateInfoEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoEncodeH264SessionParametersAddInfoEXT) == sizeof(VkVideoEncodeH264SessionParametersAddInfoEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoEncodeH264SessionParametersAddInfoEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoEncodeH264SessionParametersCreateInfoEXT) == sizeof(VkVideoEncodeH264SessionParametersCreateInfoEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoEncodeH264SessionParametersCreateInfoEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoEncodeH264DpbSlotInfoEXT) == sizeof(VkVideoEncodeH264DpbSlotInfoEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoEncodeH264DpbSlotInfoEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoEncodeH264NaluSliceEXT) == sizeof(VkVideoEncodeH264NaluSliceEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoEncodeH264NaluSliceEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoEncodeH264VclFrameInfoEXT) == sizeof(VkVideoEncodeH264VclFrameInfoEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoEncodeH264VclFrameInfoEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoEncodeH264EmitPictureParametersEXT) == sizeof(VkVideoEncodeH264EmitPictureParametersEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoEncodeH264EmitPictureParametersEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::VideoEncodeH264ProfileEXT) == sizeof(VkVideoEncodeH264ProfileEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::VideoEncodeH264ProfileEXT>::value, "Must be a standard layout type" );
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
+static_assert( sizeof(vk::PhysicalDeviceInheritedViewportScissorFeaturesNV) == sizeof(VkPhysicalDeviceInheritedViewportScissorFeaturesNV), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::PhysicalDeviceInheritedViewportScissorFeaturesNV>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::CommandBufferInheritanceViewportScissorInfoNV) == sizeof(VkCommandBufferInheritanceViewportScissorInfoNV), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::CommandBufferInheritanceViewportScissorInfoNV>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::PhysicalDeviceYcbcr2Plane444FormatsFeaturesEXT) == sizeof(VkPhysicalDeviceYcbcr2Plane444FormatsFeaturesEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::PhysicalDeviceYcbcr2Plane444FormatsFeaturesEXT>::value, "Must be a standard layout type" );
 static_assert( sizeof(vk::Instance) == sizeof(VkInstance),"Must maintain size between handles");
 static_assert( sizeof(vk::PhysicalDevice) == sizeof(VkPhysicalDevice),"Must maintain size between handles");
 static_assert( sizeof(vk::Device) == sizeof(VkDevice),"Must maintain size between handles");
@@ -1498,4 +1644,6 @@ static_assert( sizeof(vk::SurfaceKHR) == sizeof(VkSurfaceKHR),"Must maintain siz
 static_assert( sizeof(vk::SwapchainKHR) == sizeof(VkSwapchainKHR),"Must maintain size between handles");
 static_assert( sizeof(vk::DebugReportCallbackEXT) == sizeof(VkDebugReportCallbackEXT),"Must maintain size between handles");
 static_assert( sizeof(vk::DebugUtilsMessengerEXT) == sizeof(VkDebugUtilsMessengerEXT),"Must maintain size between handles");
+static_assert( sizeof(vk::VideoSessionKHR) == sizeof(VkVideoSessionKHR),"Must maintain size between handles");
+static_assert( sizeof(vk::VideoSessionParametersKHR) == sizeof(VkVideoSessionParametersKHR),"Must maintain size between handles");
 // clang-format on

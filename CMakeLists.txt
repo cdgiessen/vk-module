@@ -12,7 +12,7 @@
 # FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 project(vulkan-module CXX)
 
 option(VK_MODULE_GENERATE_SOURCE "Get dependencies necessary for generating the bindings" off)
@@ -31,7 +31,7 @@ if (VK_MODULE_GENERATE_SOURC OR VK_MODULE_SAMPLES OR VK_MODULE_TESTS)
     FetchContent_Declare(
         vulkan_headers
         GIT_REPOSITORY https://github.com/KhronosGroup/Vulkan-Headers
-        GIT_TAG        v1.2.169
+        GIT_TAG        v1.2.176
     )
     FetchContent_GetProperties(vulkan-headers)
     if(NOT vulkan_headers_POPULATED)

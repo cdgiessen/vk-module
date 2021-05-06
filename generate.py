@@ -211,7 +211,7 @@ class Enum:
             file.write('        default: return "UNKNOWN";\n    }\n}\n')
 
     def print_c_interop(self, file):
-        if self.alias is None:
+        if self.alias is None and self.underlying_type == 'uint32_t':
             file.write(f'constexpr {self.name} to_c({self.name[2:]} value) {{ return static_cast<{self.name}>(value);}}\n')
             file.write(f'constexpr {self.name[2:]} from_c({self.name} value) {{ return static_cast<{self.name[2:]}>(value);}}\n')
 
@@ -341,7 +341,7 @@ class Bitmask:
             file.write(f'    return out.substr(0, out.size() - 3);\n}}\n')
 
     def print_c_interop(self, file):
-        if self.alias is None:
+        if self.alias is None and self.underlying_type == 'uint32_t':
             file.write(f'constexpr {self.name} to_c({self.name[2:]} value) {{ return static_cast<{self.name}>(value);}}\n')
             file.write(f'constexpr {self.name[2:]} from_c({self.name} value) {{ return static_cast<{self.name[2:]}>(value);}}\n')
 
@@ -385,11 +385,12 @@ class Flags:
         if node.find('name') is not None:
             self.name = node.find('name').text
             self.alias = None
+            self.underlying_type = 'uint64_t' if node.find('type').text == 'VkFlags64' else 'uint32_t'
         else:
             self.name = node.get('name')
             self.alias = node.get('alias')
+            self.underlying_type = None
 
-        self.underlying_type = 'uint32_t'
         self.flags_name = self.name.replace('Flags', 'FlagBits')
         self.requires = node.get('requires')
         self.need_empty = False
@@ -414,7 +415,7 @@ class Flags:
             file.write(f'using {self.name} = {self.alias};\n')
 
     def print_c_interop(self, file):
-        if self.alias is None:
+        if self.alias is None and self.underlying_type == 'uint32_t':
             file.write(f'constexpr {self.name} to_c({self.name[2:]} value) {{ return static_cast<{self.name}>(value);}}\n')
 
 class Handle:
@@ -1241,7 +1242,10 @@ class Requires:
                 offset = int(offset)
 
             if value is not None:  # core enums
-                AppendToDictOfLists(self.enum_dict, extends, ExtEnum(name, value))
+                if value == '0':
+                    AppendToDictOfLists(self.bitmask_dict, extends, ExtBitmask(name, 0))
+                else:
+                    AppendToDictOfLists(self.enum_dict, extends, ExtEnum(name, value))
             elif offset is not None:
                 if extnumber is None and ext_num is not None:
                     extnumber = ext_num
@@ -1249,12 +1253,13 @@ class Requires:
                 AppendToDictOfLists(self.enum_dict, extends, ExtEnum(name, enum_value))
             elif bitpos is not None:
                 AppendToDictOfLists(self.bitmask_dict, extends, ExtBitmask(name, int(bitpos)))
-
+            
     def fill_functions(self, functions):
         self.functions.extend([function for function in functions if function.name in self.commands])
 
     def fill_enums(self, enum_dict):
-        [enum_dict[key].fill_ext_enums(self.enum_dict[key]) for key in self.enum_dict.keys()]
+        for key in self.enum_dict.keys():
+            enum_dict[key].fill_ext_enums(self.enum_dict[key])
 
     def fill_bitmasks(self, bitmask_dict):
         [bitmask_dict[key].fill_ext_bitmasks(self.bitmask_dict[key]) for key in self.bitmask_dict.keys()]
