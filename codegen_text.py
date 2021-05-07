@@ -31,7 +31,8 @@ license_header = '''/*
 
 vk_module_file_header = '''
 // clang-format off
-#pragma once
+module;
+
 #include <stdint.h>
 #include <cstddef>
 #include <array>
@@ -94,7 +95,10 @@ vk_module_file_header = '''
 #define VULKAN_CUSTOM_ASSERT assert
 #endif
 
-namespace vk {
+export module vulkan_module;
+
+export namespace vk {
+
 constexpr uint32_t make_vk_version(uint32_t major, uint32_t minor, uint32_t patch) {
     return major << 22 | minor << 12 | patch;
 }
@@ -164,14 +168,14 @@ private:
 
 } //namespace vk
 
-namespace std {
+export namespace std {
     template<typename T>
     struct tuple_size<vk::expected<T>>: std::integral_constant<size_t, 2> {};
     template<typename T> struct tuple_element<0, vk::expected<T>> { using type = T; };
     template<typename T> struct tuple_element<1, vk::expected<T>> { using type = vk::Result; };
 }
 
-namespace vk {
+export namespace vk {
 namespace detail {
 template<typename T>
 class span {
@@ -360,7 +364,7 @@ vulkan_library_text = '''
 #endif
 using PFN_vkVoidFunction = void (VKAPI_PTR *)(void);
 using PFN_vkGetInstanceProcAddr = PFN_vkVoidFunction (VKAPI_PTR *)(VkInstance instance, const char* pName);
-namespace vk {
+export namespace vk {
 class DynamicLibrary {
     public:
     // Used to enable RAII vk::DynamicLibrary behavior

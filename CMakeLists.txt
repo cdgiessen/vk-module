@@ -15,14 +15,19 @@
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 project(vulkan-module CXX)
 
+option(VK_MODULE_ENABLE_MODULE "Actually enable the module, as its still experimental" off)
 option(VK_MODULE_GENERATE_SOURCE "Get dependencies necessary for generating the bindings" off)
 option(VK_MODULE_SAMPLES "Build samples for the bindings, will download glfw" off)
 option(VK_MODULE_TESTS "Build tests for the bindings, will download catch2" off)
 option(VK_MODULE_ENABLE_ADDRESS_SANITIZER "Enable Address Sanitizer. Mainly for developers only" off)
+option(VK_MODULE_COMPILE_TIME_TRACE "enable clang's -ftime-trace " OFF)
 
-if (VK_MODULE_TESTS)
-option(SET_COMPILE_TIME_TRACE "enable clang's -ftime-trace " OFF)
-endif(VK_MODULE_TESTS)
+if(VK_MODULE_ENABLE_MODULE)
+    include(cmake/CXXModules.cmake)
+    endif()
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 
 if (VK_MODULE_GENERATE_SOURC OR VK_MODULE_SAMPLES OR VK_MODULE_TESTS)
     find_package(PythonInterp 3 QUIET)
@@ -93,13 +98,14 @@ target_compile_options(vk-platform-defines INTERFACE
         $<$<BUILD_WSI_WAYLAND_SUPPORT>:-DVK_USE_PLATFORM_WAYLAND_KHR>>
     )
 
-add_library(vk-module-cpp INTERFACE)
-target_include_directories(vk-module-cpp INTERFACE ${CMAKE_CURRENT_LIST_DIR}/module)
-target_link_libraries(vk-module-cpp INTERFACE vk-module-compiler-options)
-target_compile_features(vk-module-cpp INTERFACE cxx_std_20)
+add_module_library(vulkan-module module/vulkan_module.ixx)
+target_link_libraries(vulkan-module PUBLIC vk-module-compiler-options)
+set_target_properties(vulkan-module PROPERTIES CXX_STANDARD 20)
+target_compile_features(vulkan-module PUBLIC cxx_std_20)
+target_compile_options(vulkan-module PUBLIC /std:c++latest)
 
 if (NOT WIN32)
-    target_link_libraries(vk-module-cpp INTERFACE ${CMAKE_DL_LIBS})
+    target_link_libraries(vulkan-module PUBLIC ${CMAKE_DL_LIBS})
 endif()
 
 add_library(vulkan-simple-cpp STATIC
@@ -119,15 +125,14 @@ if (NOT WIN32)
 endif()
 
 if (SET_COMPILE_TIME_TRACE)
-target_compile_options(vk-module-cpp INTERFACE -ftime-trace)
-target_compile_options(vulkan-simple-cpp PUBLIC -ftime-trace)
+    target_compile_options(vulkan-module PUBLIC -ftime-trace)
+    target_compile_options(vulkan-simple-cpp PUBLIC -ftime-trace)
 endif(SET_COMPILE_TIME_TRACE)
 
 if (VK_MODULE_SAMPLES)
     add_subdirectory(sample)
 endif(VK_MODULE_SAMPLES)
 
-if (VK_MODULE_TESTS)
-    add_subdirectory(test)
-endif (VK_MODULE_TESTS)
-
+# if (VK_MODULE_TESTS)
+#     add_subdirectory(test)
+# endif (VK_MODULE_TESTS)

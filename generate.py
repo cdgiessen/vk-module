@@ -1125,9 +1125,9 @@ class Function:
             self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, pfn_source, 'nullptr', init_result='init_result')
             if self.return_type != 'void':
                 file.write(f'    if (result < Result::Success) return expected(std::vector<{self.query_type}>{{}}, result);\n')
-            file.write(f'    std::vector<{self.query_type}> {self.query_name}{{{self.count_name}}};\n')
+            file.write(f'    std::vector<{self.query_type}> {self.query_name}({self.count_name});\n')
             self.print_c_api_call(file, dispatch_handle, dispatch_handle_name, pfn_source, last_arg=f'{self.query_name}.data()',init_result='assign_result')
-            file.write(f'    if ({self.count_name} < {self.query_name}.size()) {self.query_name}.resize({self.count_name});\n')
+            #file.write(f'    if ({self.count_name} < {self.query_name}.size()) {self.query_name}.resize({self.count_name});\n')
             file.write(f'    {self.return_statement}')
 
         file.write(f'}}\n')
@@ -1561,7 +1561,7 @@ class BindingGenerator:
 
 
 def print_bindings(bindings):
-    with open(f'module/vk_module.h', 'w') as vkm:
+    with open(f'module/vulkan_module.ixx', 'w') as vkm:
         vkm.write(license_header)
         vkm.write(vk_module_file_header)
         #basic definitions
@@ -1573,7 +1573,7 @@ def print_bindings(bindings):
         PrintConsecutivePlatforms(vkm, bindings.flags_dict.values(), 'print_base')
         vkm.write('} //namespace vk\n')
         [ handle.print_vk_handle(vkm) for handle in bindings.handles.values() ]
-        vkm.write('namespace vk {\n')
+        vkm.write('export namespace vk {\n')
 
         PrintConsecutivePlatforms(vkm, bindings.handles.values(), 'print_base')
         vkm.write(custom_data_structures + '\n')

@@ -14,14 +14,15 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "vk_module.h"
-#include "vk_module_interop.h"
+import vulkan_module;
 
 #include <array>
 #include <vector>
 #include <string>
 #include <iostream>
 #include <fstream>
+
+#include <assert.h>
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -119,7 +120,7 @@ void create_renderer_context(RendererContext& context)
 {
     check_res(context.library.init(), "Failed to init vulkan library");
 
-    context.window = create_window_glfw("Sample Triangle", false);
+    context.window = create_window_glfw("Vulkan Module Triangle", false);
     check_res(context.window != nullptr, "Failed to create glfw window");
 
     vk::GlobalFunctions global_functions = vk::GlobalFunctions(context.library);
@@ -151,9 +152,9 @@ void create_renderer_context(RendererContext& context)
     context.physical_device_functions = vk::PhysicalDeviceFunctions(context.instance_functions, context.physical_device);
 
     // needed to make the validation layers shut up
-    auto [surface_supported, support_ret] = context.physical_device_functions.GetSurfaceSupportKHR(0, context.surface);
-    check_res(support_ret, "Failed to query surface support");
-    check_res(surface_supported, "Surface doesn't support present");
+    auto surface_ret = context.physical_device_functions.GetSurfaceSupportKHR(0, context.surface);
+    check_res(surface_ret.has_value(), "Failed to query surface support");
+    check_res(surface_ret.value(), "Surface doesn't support present");
 }
 
 void create_device_context(RendererContext& context)

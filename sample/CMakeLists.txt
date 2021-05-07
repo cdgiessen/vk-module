@@ -44,16 +44,18 @@ endif()
 
 find_package(Vulkan REQUIRED)
 
-add_executable(basic_sample_usage basic.cpp)
-target_link_libraries(basic_sample_usage vk-module-cpp)
+# add_executable(basic_sample_usage basic.cpp)
+# target_link_libraries(basic_sample_usage vk-module-cpp)
 
-add_executable(vk-module-triangle-header triangle.cpp)
-target_link_libraries(vk-module-triangle-header
-    PRIVATE
+add_module_executable(module-triangle module_triangle.cpp)
+target_link_module_libraries(module-triangle vulkan-module)
+target_link_libraries(module-triangle
     Vulkan::Headers
     glfw
-    vk-module-cpp
-    vk-module-compiler-options )
+    vk-module-compiler-options)
+set_target_properties(module-triangle PROPERTIES CXX_STANDARD 20)
+target_compile_features(module-triangle PUBLIC cxx_std_20)
+target_compile_options(module-triangle PUBLIC /std:c++latest)
 
 add_executable(vk-simple-triangle simple_triangle.cpp)
 target_link_libraries(vk-simple-triangle
@@ -65,10 +67,10 @@ target_link_libraries(vk-simple-triangle
 
 add_custom_target(copy-shader-files ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/sample/shaders ${CMAKE_CURRENT_BINARY_DIR}
-    DEPENDS vk-module-triangle-header vk-simple-triangle)
+    DEPENDS module-triangle vk-simple-triangle)
 
 if (SET_COMPILE_TIME_TRACE)
     target_compile_options(basic_sample_usage PUBLIC -ftime-trace)
-    target_compile_options(vk-module-triangle-header PUBLIC -ftime-trace)
+    target_compile_options(module-triangle PUBLIC -ftime-trace)
     target_compile_options(vk-simple-triangle PUBLIC -ftime-trace)
 endif(SET_COMPILE_TIME_TRACE)

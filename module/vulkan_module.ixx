@@ -15,7 +15,8 @@
  */
 
 // clang-format off
-#pragma once
+module;
+
 #include <stdint.h>
 #include <cstddef>
 #include <array>
@@ -78,7 +79,10 @@
 #define VULKAN_CUSTOM_ASSERT assert
 #endif
 
-namespace vk {
+export module vulkan_module;
+
+export namespace vk {
+
 constexpr uint32_t make_vk_version(uint32_t major, uint32_t minor, uint32_t patch) {
     return major << 22 | minor << 12 | patch;
 }
@@ -2902,7 +2906,7 @@ VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDebugReportCallbackEXT)
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDebugUtilsMessengerEXT)
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkVideoSessionKHR)
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkVideoSessionParametersKHR)
-namespace vk {
+export namespace vk {
 
 class Instance {
     VkInstance handle = 0;
@@ -3461,14 +3465,14 @@ private:
 
 } //namespace vk
 
-namespace std {
+export namespace std {
     template<typename T>
     struct tuple_size<vk::expected<T>>: std::integral_constant<size_t, 2> {};
     template<typename T> struct tuple_element<0, vk::expected<T>> { using type = T; };
     template<typename T> struct tuple_element<1, vk::expected<T>> { using type = vk::Result; };
 }
 
-namespace vk {
+export namespace vk {
 namespace detail {
 template<typename T>
 class span {
@@ -12282,7 +12286,7 @@ using PFN_CmdEncodeVideoKHR = void (*) (CommandBuffer commandBuffer, const Video
 #endif
 using PFN_vkVoidFunction = void (VKAPI_PTR *)(void);
 using PFN_vkGetInstanceProcAddr = PFN_vkVoidFunction (VKAPI_PTR *)(VkInstance instance, const char* pName);
-namespace vk {
+export namespace vk {
 class DynamicLibrary {
     public:
     // Used to enable RAII vk::DynamicLibrary behavior
@@ -12403,11 +12407,10 @@ struct GlobalFunctions {
         &pPropertyCount,
         nullptr);
     if (result < Result::Success) return expected(std::vector<ExtensionProperties>{}, result);
-    std::vector<ExtensionProperties> pProperties{pPropertyCount};
+    std::vector<ExtensionProperties> pProperties(pPropertyCount);
     result = pfn_EnumerateInstanceExtensionProperties(pLayerName,
         &pPropertyCount,
         pProperties.data());
-    if (pPropertyCount < pProperties.size()) pProperties.resize(pPropertyCount);
     return expected(std::move(pProperties), result);
 }
 [[nodiscard]] expected<std::vector<LayerProperties>> EnumerateInstanceLayerProperties() const {
@@ -12416,10 +12419,9 @@ struct GlobalFunctions {
         Result result = pfn_EnumerateInstanceLayerProperties(&pPropertyCount,
         nullptr);
     if (result < Result::Success) return expected(std::vector<LayerProperties>{}, result);
-    std::vector<LayerProperties> pProperties{pPropertyCount};
+    std::vector<LayerProperties> pProperties(pPropertyCount);
     result = pfn_EnumerateInstanceLayerProperties(&pPropertyCount,
         pProperties.data());
-    if (pPropertyCount < pProperties.size()) pProperties.resize(pPropertyCount);
     return expected(std::move(pProperties), result);
 }
 [[nodiscard]] expected<uint32_t> EnumerateInstanceVersion() const {
@@ -12574,11 +12576,10 @@ void DestroyInstance(const AllocationCallbacks* pAllocator = nullptr) const {
         &pPhysicalDeviceCount,
         nullptr);
     if (result < Result::Success) return expected(std::vector<PhysicalDevice>{}, result);
-    std::vector<PhysicalDevice> pPhysicalDevices{pPhysicalDeviceCount};
+    std::vector<PhysicalDevice> pPhysicalDevices(pPhysicalDeviceCount);
     result = pfn_EnumeratePhysicalDevices(instance,
         &pPhysicalDeviceCount,
         pPhysicalDevices.data());
-    if (pPhysicalDeviceCount < pPhysicalDevices.size()) pPhysicalDevices.resize(pPhysicalDeviceCount);
     return expected(std::move(pPhysicalDevices), result);
 }
 [[nodiscard]] PFN_VoidFunction GetDeviceProcAddr(Device device, 
@@ -12605,11 +12606,10 @@ void DestroyInstance(const AllocationCallbacks* pAllocator = nullptr) const {
     pfn_GetPhysicalDeviceQueueFamilyProperties(physicalDevice,
         &pQueueFamilyPropertyCount,
         nullptr);
-    std::vector<QueueFamilyProperties> pQueueFamilyProperties{pQueueFamilyPropertyCount};
+    std::vector<QueueFamilyProperties> pQueueFamilyProperties(pQueueFamilyPropertyCount);
 pfn_GetPhysicalDeviceQueueFamilyProperties(physicalDevice,
         &pQueueFamilyPropertyCount,
         pQueueFamilyProperties.data());
-    if (pQueueFamilyPropertyCount < pQueueFamilyProperties.size()) pQueueFamilyProperties.resize(pQueueFamilyPropertyCount);
     return pQueueFamilyProperties;
 }
 [[nodiscard]] PhysicalDeviceMemoryProperties GetPhysicalDeviceMemoryProperties(PhysicalDevice physicalDevice) const {
@@ -12672,12 +12672,11 @@ pfn_GetPhysicalDeviceQueueFamilyProperties(physicalDevice,
         &pPropertyCount,
         nullptr);
     if (result < Result::Success) return expected(std::vector<ExtensionProperties>{}, result);
-    std::vector<ExtensionProperties> pProperties{pPropertyCount};
+    std::vector<ExtensionProperties> pProperties(pPropertyCount);
     result = pfn_EnumerateDeviceExtensionProperties(physicalDevice,
         pLayerName,
         &pPropertyCount,
         pProperties.data());
-    if (pPropertyCount < pProperties.size()) pProperties.resize(pPropertyCount);
     return expected(std::move(pProperties), result);
 }
 [[nodiscard]] std::vector<SparseImageFormatProperties> GetPhysicalDeviceSparseImageFormatProperties(PhysicalDevice physicalDevice, 
@@ -12696,7 +12695,7 @@ pfn_GetPhysicalDeviceQueueFamilyProperties(physicalDevice,
         tiling,
         &pPropertyCount,
         nullptr);
-    std::vector<SparseImageFormatProperties> pProperties{pPropertyCount};
+    std::vector<SparseImageFormatProperties> pProperties(pPropertyCount);
 pfn_GetPhysicalDeviceSparseImageFormatProperties(physicalDevice,
         format,
         type,
@@ -12705,7 +12704,6 @@ pfn_GetPhysicalDeviceSparseImageFormatProperties(physicalDevice,
         tiling,
         &pPropertyCount,
         pProperties.data());
-    if (pPropertyCount < pProperties.size()) pProperties.resize(pPropertyCount);
     return pProperties;
 }
 [[nodiscard]] expected<std::vector<PhysicalDeviceGroupProperties>> EnumeratePhysicalDeviceGroups() const {
@@ -12715,11 +12713,10 @@ pfn_GetPhysicalDeviceSparseImageFormatProperties(physicalDevice,
         &pPhysicalDeviceGroupCount,
         nullptr);
     if (result < Result::Success) return expected(std::vector<PhysicalDeviceGroupProperties>{}, result);
-    std::vector<PhysicalDeviceGroupProperties> pPhysicalDeviceGroupProperties{pPhysicalDeviceGroupCount};
+    std::vector<PhysicalDeviceGroupProperties> pPhysicalDeviceGroupProperties(pPhysicalDeviceGroupCount);
     result = pfn_EnumeratePhysicalDeviceGroups(instance,
         &pPhysicalDeviceGroupCount,
         pPhysicalDeviceGroupProperties.data());
-    if (pPhysicalDeviceGroupCount < pPhysicalDeviceGroupProperties.size()) pPhysicalDeviceGroupProperties.resize(pPhysicalDeviceGroupCount);
     return expected(std::move(pPhysicalDeviceGroupProperties), result);
 }
 [[nodiscard]] PhysicalDeviceFeatures2 GetPhysicalDeviceFeatures2(PhysicalDevice physicalDevice) const {
@@ -12760,11 +12757,10 @@ pfn_GetPhysicalDeviceSparseImageFormatProperties(physicalDevice,
     pfn_GetPhysicalDeviceQueueFamilyProperties2(physicalDevice,
         &pQueueFamilyPropertyCount,
         nullptr);
-    std::vector<QueueFamilyProperties2> pQueueFamilyProperties{pQueueFamilyPropertyCount};
+    std::vector<QueueFamilyProperties2> pQueueFamilyProperties(pQueueFamilyPropertyCount);
 pfn_GetPhysicalDeviceQueueFamilyProperties2(physicalDevice,
         &pQueueFamilyPropertyCount,
         pQueueFamilyProperties.data());
-    if (pQueueFamilyPropertyCount < pQueueFamilyProperties.size()) pQueueFamilyProperties.resize(pQueueFamilyPropertyCount);
     return pQueueFamilyProperties;
 }
 [[nodiscard]] PhysicalDeviceMemoryProperties2 GetPhysicalDeviceMemoryProperties2(PhysicalDevice physicalDevice) const {
@@ -12782,12 +12778,11 @@ pfn_GetPhysicalDeviceQueueFamilyProperties2(physicalDevice,
         &pFormatInfo,
         &pPropertyCount,
         nullptr);
-    std::vector<SparseImageFormatProperties2> pProperties{pPropertyCount};
+    std::vector<SparseImageFormatProperties2> pProperties(pPropertyCount);
 pfn_GetPhysicalDeviceSparseImageFormatProperties2(physicalDevice,
         &pFormatInfo,
         &pPropertyCount,
         pProperties.data());
-    if (pPropertyCount < pProperties.size()) pProperties.resize(pPropertyCount);
     return pProperties;
 }
 [[nodiscard]] ExternalBufferProperties GetPhysicalDeviceExternalBufferProperties(PhysicalDevice physicalDevice, 
@@ -12853,12 +12848,11 @@ void DestroySurfaceKHR(SurfaceKHR surface = {},
         &pSurfaceFormatCount,
         nullptr);
     if (result < Result::Success) return expected(std::vector<SurfaceFormatKHR>{}, result);
-    std::vector<SurfaceFormatKHR> pSurfaceFormats{pSurfaceFormatCount};
+    std::vector<SurfaceFormatKHR> pSurfaceFormats(pSurfaceFormatCount);
     result = pfn_GetPhysicalDeviceSurfaceFormatsKHR(physicalDevice,
         surface,
         &pSurfaceFormatCount,
         pSurfaceFormats.data());
-    if (pSurfaceFormatCount < pSurfaceFormats.size()) pSurfaceFormats.resize(pSurfaceFormatCount);
     return expected(std::move(pSurfaceFormats), result);
 }
 [[nodiscard]] expected<std::vector<PresentModeKHR>> GetPhysicalDeviceSurfacePresentModesKHR(PhysicalDevice physicalDevice, 
@@ -12870,12 +12864,11 @@ void DestroySurfaceKHR(SurfaceKHR surface = {},
         &pPresentModeCount,
         nullptr);
     if (result < Result::Success) return expected(std::vector<PresentModeKHR>{}, result);
-    std::vector<PresentModeKHR> pPresentModes{pPresentModeCount};
+    std::vector<PresentModeKHR> pPresentModes(pPresentModeCount);
     result = pfn_GetPhysicalDeviceSurfacePresentModesKHR(physicalDevice,
         surface,
         &pPresentModeCount,
         pPresentModes.data());
-    if (pPresentModeCount < pPresentModes.size()) pPresentModes.resize(pPresentModeCount);
     return expected(std::move(pPresentModes), result);
 }
 [[nodiscard]] expected<std::vector<Rect2D>> GetPhysicalDevicePresentRectanglesKHR(PhysicalDevice physicalDevice, 
@@ -12887,12 +12880,11 @@ void DestroySurfaceKHR(SurfaceKHR surface = {},
         &pRectCount,
         nullptr);
     if (result < Result::Success) return expected(std::vector<Rect2D>{}, result);
-    std::vector<Rect2D> pRects{pRectCount};
+    std::vector<Rect2D> pRects(pRectCount);
     result = pfn_GetPhysicalDevicePresentRectanglesKHR(physicalDevice,
         surface,
         &pRectCount,
         pRects.data());
-    if (pRectCount < pRects.size()) pRects.resize(pRectCount);
     return expected(std::move(pRects), result);
 }
 [[nodiscard]] expected<std::vector<DisplayPropertiesKHR>> GetPhysicalDeviceDisplayPropertiesKHR(PhysicalDevice physicalDevice) const {
@@ -12902,11 +12894,10 @@ void DestroySurfaceKHR(SurfaceKHR surface = {},
         &pPropertyCount,
         nullptr);
     if (result < Result::Success) return expected(std::vector<DisplayPropertiesKHR>{}, result);
-    std::vector<DisplayPropertiesKHR> pProperties{pPropertyCount};
+    std::vector<DisplayPropertiesKHR> pProperties(pPropertyCount);
     result = pfn_GetPhysicalDeviceDisplayPropertiesKHR(physicalDevice,
         &pPropertyCount,
         pProperties.data());
-    if (pPropertyCount < pProperties.size()) pProperties.resize(pPropertyCount);
     return expected(std::move(pProperties), result);
 }
 [[nodiscard]] expected<std::vector<DisplayPlanePropertiesKHR>> GetPhysicalDeviceDisplayPlanePropertiesKHR(PhysicalDevice physicalDevice) const {
@@ -12916,11 +12907,10 @@ void DestroySurfaceKHR(SurfaceKHR surface = {},
         &pPropertyCount,
         nullptr);
     if (result < Result::Success) return expected(std::vector<DisplayPlanePropertiesKHR>{}, result);
-    std::vector<DisplayPlanePropertiesKHR> pProperties{pPropertyCount};
+    std::vector<DisplayPlanePropertiesKHR> pProperties(pPropertyCount);
     result = pfn_GetPhysicalDeviceDisplayPlanePropertiesKHR(physicalDevice,
         &pPropertyCount,
         pProperties.data());
-    if (pPropertyCount < pProperties.size()) pProperties.resize(pPropertyCount);
     return expected(std::move(pProperties), result);
 }
 [[nodiscard]] expected<std::vector<DisplayKHR>> GetDisplayPlaneSupportedDisplaysKHR(PhysicalDevice physicalDevice, 
@@ -12932,12 +12922,11 @@ void DestroySurfaceKHR(SurfaceKHR surface = {},
         &pDisplayCount,
         nullptr);
     if (result < Result::Success) return expected(std::vector<DisplayKHR>{}, result);
-    std::vector<DisplayKHR> pDisplays{pDisplayCount};
+    std::vector<DisplayKHR> pDisplays(pDisplayCount);
     result = pfn_GetDisplayPlaneSupportedDisplaysKHR(physicalDevice,
         planeIndex,
         &pDisplayCount,
         pDisplays.data());
-    if (pDisplayCount < pDisplays.size()) pDisplays.resize(pDisplayCount);
     return expected(std::move(pDisplays), result);
 }
 [[nodiscard]] expected<std::vector<DisplayModePropertiesKHR>> GetDisplayModePropertiesKHR(PhysicalDevice physicalDevice, 
@@ -12949,12 +12938,11 @@ void DestroySurfaceKHR(SurfaceKHR surface = {},
         &pPropertyCount,
         nullptr);
     if (result < Result::Success) return expected(std::vector<DisplayModePropertiesKHR>{}, result);
-    std::vector<DisplayModePropertiesKHR> pProperties{pPropertyCount};
+    std::vector<DisplayModePropertiesKHR> pProperties(pPropertyCount);
     result = pfn_GetDisplayModePropertiesKHR(physicalDevice,
         display,
         &pPropertyCount,
         pProperties.data());
-    if (pPropertyCount < pProperties.size()) pProperties.resize(pPropertyCount);
     return expected(std::move(pProperties), result);
 }
 [[nodiscard]] expected<DisplayModeKHR> CreateDisplayModeKHR(PhysicalDevice physicalDevice, 
@@ -13259,12 +13247,11 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
         &pSurfaceFormatCount,
         nullptr);
     if (result < Result::Success) return expected(std::vector<SurfaceFormat2KHR>{}, result);
-    std::vector<SurfaceFormat2KHR> pSurfaceFormats{pSurfaceFormatCount};
+    std::vector<SurfaceFormat2KHR> pSurfaceFormats(pSurfaceFormatCount);
     result = pfn_GetPhysicalDeviceSurfaceFormats2KHR(physicalDevice,
         &pSurfaceInfo,
         &pSurfaceFormatCount,
         pSurfaceFormats.data());
-    if (pSurfaceFormatCount < pSurfaceFormats.size()) pSurfaceFormats.resize(pSurfaceFormatCount);
     return expected(std::move(pSurfaceFormats), result);
 }
 [[nodiscard]] expected<std::vector<DisplayProperties2KHR>> GetPhysicalDeviceDisplayProperties2KHR(PhysicalDevice physicalDevice) const {
@@ -13274,11 +13261,10 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
         &pPropertyCount,
         nullptr);
     if (result < Result::Success) return expected(std::vector<DisplayProperties2KHR>{}, result);
-    std::vector<DisplayProperties2KHR> pProperties{pPropertyCount};
+    std::vector<DisplayProperties2KHR> pProperties(pPropertyCount);
     result = pfn_GetPhysicalDeviceDisplayProperties2KHR(physicalDevice,
         &pPropertyCount,
         pProperties.data());
-    if (pPropertyCount < pProperties.size()) pProperties.resize(pPropertyCount);
     return expected(std::move(pProperties), result);
 }
 [[nodiscard]] expected<std::vector<DisplayPlaneProperties2KHR>> GetPhysicalDeviceDisplayPlaneProperties2KHR(PhysicalDevice physicalDevice) const {
@@ -13288,11 +13274,10 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
         &pPropertyCount,
         nullptr);
     if (result < Result::Success) return expected(std::vector<DisplayPlaneProperties2KHR>{}, result);
-    std::vector<DisplayPlaneProperties2KHR> pProperties{pPropertyCount};
+    std::vector<DisplayPlaneProperties2KHR> pProperties(pPropertyCount);
     result = pfn_GetPhysicalDeviceDisplayPlaneProperties2KHR(physicalDevice,
         &pPropertyCount,
         pProperties.data());
-    if (pPropertyCount < pProperties.size()) pProperties.resize(pPropertyCount);
     return expected(std::move(pProperties), result);
 }
 [[nodiscard]] expected<std::vector<DisplayModeProperties2KHR>> GetDisplayModeProperties2KHR(PhysicalDevice physicalDevice, 
@@ -13304,12 +13289,11 @@ void DebugReportMessageEXT(DebugReportFlagsEXT flags,
         &pPropertyCount,
         nullptr);
     if (result < Result::Success) return expected(std::vector<DisplayModeProperties2KHR>{}, result);
-    std::vector<DisplayModeProperties2KHR> pProperties{pPropertyCount};
+    std::vector<DisplayModeProperties2KHR> pProperties(pPropertyCount);
     result = pfn_GetDisplayModeProperties2KHR(physicalDevice,
         display,
         &pPropertyCount,
         pProperties.data());
-    if (pPropertyCount < pProperties.size()) pProperties.resize(pPropertyCount);
     return expected(std::move(pProperties), result);
 }
 [[nodiscard]] expected<DisplayPlaneCapabilities2KHR> GetDisplayPlaneCapabilities2KHR(PhysicalDevice physicalDevice, 
@@ -13387,11 +13371,10 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
         &pTimeDomainCount,
         nullptr);
     if (result < Result::Success) return expected(std::vector<TimeDomainEXT>{}, result);
-    std::vector<TimeDomainEXT> pTimeDomains{pTimeDomainCount};
+    std::vector<TimeDomainEXT> pTimeDomains(pTimeDomainCount);
     result = pfn_GetPhysicalDeviceCalibrateableTimeDomainsEXT(physicalDevice,
         &pTimeDomainCount,
         pTimeDomains.data());
-    if (pTimeDomainCount < pTimeDomains.size()) pTimeDomains.resize(pTimeDomainCount);
     return expected(std::move(pTimeDomains), result);
 }
 #if defined(VK_USE_PLATFORM_FUCHSIA)
@@ -13425,11 +13408,10 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
         &pFragmentShadingRateCount,
         nullptr);
     if (result < Result::Success) return expected(std::vector<PhysicalDeviceFragmentShadingRateKHR>{}, result);
-    std::vector<PhysicalDeviceFragmentShadingRateKHR> pFragmentShadingRates{pFragmentShadingRateCount};
+    std::vector<PhysicalDeviceFragmentShadingRateKHR> pFragmentShadingRates(pFragmentShadingRateCount);
     result = pfn_GetPhysicalDeviceFragmentShadingRatesKHR(physicalDevice,
         &pFragmentShadingRateCount,
         pFragmentShadingRates.data());
-    if (pFragmentShadingRateCount < pFragmentShadingRates.size()) pFragmentShadingRates.resize(pFragmentShadingRateCount);
     return expected(std::move(pFragmentShadingRates), result);
 }
 [[nodiscard]] expected<std::vector<PhysicalDeviceToolPropertiesEXT>> GetPhysicalDeviceToolPropertiesEXT(PhysicalDevice physicalDevice) const {
@@ -13439,11 +13421,10 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
         &pToolCount,
         nullptr);
     if (result < Result::Success) return expected(std::vector<PhysicalDeviceToolPropertiesEXT>{}, result);
-    std::vector<PhysicalDeviceToolPropertiesEXT> pToolProperties{pToolCount};
+    std::vector<PhysicalDeviceToolPropertiesEXT> pToolProperties(pToolCount);
     result = pfn_GetPhysicalDeviceToolPropertiesEXT(physicalDevice,
         &pToolCount,
         pToolProperties.data());
-    if (pToolCount < pToolProperties.size()) pToolProperties.resize(pToolCount);
     return expected(std::move(pToolProperties), result);
 }
 [[nodiscard]] expected<std::vector<CooperativeMatrixPropertiesNV>> GetPhysicalDeviceCooperativeMatrixPropertiesNV(PhysicalDevice physicalDevice) const {
@@ -13453,11 +13434,10 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
         &pPropertyCount,
         nullptr);
     if (result < Result::Success) return expected(std::vector<CooperativeMatrixPropertiesNV>{}, result);
-    std::vector<CooperativeMatrixPropertiesNV> pProperties{pPropertyCount};
+    std::vector<CooperativeMatrixPropertiesNV> pProperties(pPropertyCount);
     result = pfn_GetPhysicalDeviceCooperativeMatrixPropertiesNV(physicalDevice,
         &pPropertyCount,
         pProperties.data());
-    if (pPropertyCount < pProperties.size()) pProperties.resize(pPropertyCount);
     return expected(std::move(pProperties), result);
 }
 [[nodiscard]] expected<std::vector<FramebufferMixedSamplesCombinationNV>> GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(PhysicalDevice physicalDevice) const {
@@ -13467,11 +13447,10 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
         &pCombinationCount,
         nullptr);
     if (result < Result::Success) return expected(std::vector<FramebufferMixedSamplesCombinationNV>{}, result);
-    std::vector<FramebufferMixedSamplesCombinationNV> pCombinations{pCombinationCount};
+    std::vector<FramebufferMixedSamplesCombinationNV> pCombinations(pCombinationCount);
     result = pfn_GetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV(physicalDevice,
         &pCombinationCount,
         pCombinations.data());
-    if (pCombinationCount < pCombinations.size()) pCombinations.resize(pCombinationCount);
     return expected(std::move(pCombinations), result);
 }
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
@@ -13484,12 +13463,11 @@ void SubmitDebugUtilsMessageEXT(DebugUtilsMessageSeverityFlagBitsEXT messageSeve
         &pPresentModeCount,
         nullptr);
     if (result < Result::Success) return expected(std::vector<PresentModeKHR>{}, result);
-    std::vector<PresentModeKHR> pPresentModes{pPresentModeCount};
+    std::vector<PresentModeKHR> pPresentModes(pPresentModeCount);
     result = pfn_GetPhysicalDeviceSurfacePresentModes2EXT(physicalDevice,
         &pSurfaceInfo,
         &pPresentModeCount,
         pPresentModes.data());
-    if (pPresentModeCount < pPresentModes.size()) pPresentModes.resize(pPresentModeCount);
     return expected(std::move(pPresentModes), result);
 }
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
@@ -14183,12 +14161,11 @@ void UnmapMemory(DeviceMemory memory) const {
         image,
         &pSparseMemoryRequirementCount,
         nullptr);
-    std::vector<SparseImageMemoryRequirements> pSparseMemoryRequirements{pSparseMemoryRequirementCount};
+    std::vector<SparseImageMemoryRequirements> pSparseMemoryRequirements(pSparseMemoryRequirementCount);
 pfn_GetImageSparseMemoryRequirements(device,
         image,
         &pSparseMemoryRequirementCount,
         pSparseMemoryRequirements.data());
-    if (pSparseMemoryRequirementCount < pSparseMemoryRequirements.size()) pSparseMemoryRequirements.resize(pSparseMemoryRequirementCount);
     return pSparseMemoryRequirements;
 }
 [[nodiscard]] Result QueueBindSparse(Queue queue, 
@@ -14444,12 +14421,11 @@ void DestroyPipelineCache(PipelineCache pipelineCache = {},
         &pDataSize,
         nullptr);
     if (result < Result::Success) return expected(std::vector<void*>{}, result);
-    std::vector<void*> pData{pDataSize};
+    std::vector<void*> pData(pDataSize);
     result = pfn_GetPipelineCacheData(device,
         pipelineCache,
         &pDataSize,
         pData.data());
-    if (pDataSize < pData.size()) pData.resize(pDataSize);
     return expected(std::move(pData), result);
 }
 [[nodiscard]] Result MergePipelineCaches(PipelineCache dstCache, 
@@ -15271,12 +15247,11 @@ void CmdDispatchBase(CommandBuffer commandBuffer,
         &pInfo,
         &pSparseMemoryRequirementCount,
         nullptr);
-    std::vector<SparseImageMemoryRequirements2> pSparseMemoryRequirements{pSparseMemoryRequirementCount};
+    std::vector<SparseImageMemoryRequirements2> pSparseMemoryRequirements(pSparseMemoryRequirementCount);
 pfn_GetImageSparseMemoryRequirements2(device,
         &pInfo,
         &pSparseMemoryRequirementCount,
         pSparseMemoryRequirements.data());
-    if (pSparseMemoryRequirementCount < pSparseMemoryRequirements.size()) pSparseMemoryRequirements.resize(pSparseMemoryRequirementCount);
     return pSparseMemoryRequirements;
 }
 void TrimCommandPool(CommandPool commandPool, 
@@ -15478,12 +15453,11 @@ void DestroySwapchainKHR(SwapchainKHR swapchain = {},
         &pSwapchainImageCount,
         nullptr);
     if (result < Result::Success) return expected(std::vector<Image>{}, result);
-    std::vector<Image> pSwapchainImages{pSwapchainImageCount};
+    std::vector<Image> pSwapchainImages(pSwapchainImageCount);
     result = pfn_GetSwapchainImagesKHR(device,
         swapchain,
         &pSwapchainImageCount,
         pSwapchainImages.data());
-    if (pSwapchainImageCount < pSwapchainImages.size()) pSwapchainImages.resize(pSwapchainImageCount);
     return expected(std::move(pSwapchainImages), result);
 }
 [[nodiscard]] expected<uint32_t> AcquireNextImageKHR(SwapchainKHR swapchain, 
@@ -15758,14 +15732,13 @@ void CmdDrawIndirectByteCountEXT(CommandBuffer commandBuffer,
         &pInfoSize,
         nullptr);
     if (result < Result::Success) return expected(std::vector<void*>{}, result);
-    std::vector<void*> pInfo{pInfoSize};
+    std::vector<void*> pInfo(pInfoSize);
     result = pfn_GetShaderInfoAMD(device,
         pipeline,
         shaderStage,
         infoType,
         &pInfoSize,
         pInfo.data());
-    if (pInfoSize < pInfo.size()) pInfo.resize(pInfoSize);
     return expected(std::move(pInfo), result);
 }
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
@@ -15945,12 +15918,11 @@ void CmdSetViewportWScalingNV(CommandBuffer commandBuffer,
         &pPresentationTimingCount,
         nullptr);
     if (result < Result::Success) return expected(std::vector<PastPresentationTimingGOOGLE>{}, result);
-    std::vector<PastPresentationTimingGOOGLE> pPresentationTimings{pPresentationTimingCount};
+    std::vector<PastPresentationTimingGOOGLE> pPresentationTimings(pPresentationTimingCount);
     result = pfn_GetPastPresentationTimingGOOGLE(device,
         swapchain,
         &pPresentationTimingCount,
         pPresentationTimings.data());
-    if (pPresentationTimingCount < pPresentationTimings.size()) pPresentationTimings.resize(pPresentationTimingCount);
     return expected(std::move(pPresentationTimings), result);
 }
 void CmdSetDiscardRectangleEXT(CommandBuffer commandBuffer, 
@@ -16346,12 +16318,11 @@ void DestroyValidationCacheEXT(ValidationCacheEXT validationCache = {},
         &pDataSize,
         nullptr);
     if (result < Result::Success) return expected(std::vector<void*>{}, result);
-    std::vector<void*> pData{pDataSize};
+    std::vector<void*> pData(pDataSize);
     result = pfn_GetValidationCacheDataEXT(device,
         validationCache,
         &pDataSize,
         pData.data());
-    if (pDataSize < pData.size()) pData.resize(pDataSize);
     return expected(std::move(pData), result);
 }
 [[nodiscard]] Result MergeValidationCachesEXT(ValidationCacheEXT dstCache, 
@@ -16620,11 +16591,10 @@ void CmdSetCheckpointNV(CommandBuffer commandBuffer,
     pfn_GetQueueCheckpointDataNV(queue,
         &pCheckpointDataCount,
         nullptr);
-    std::vector<CheckpointDataNV> pCheckpointData{pCheckpointDataCount};
+    std::vector<CheckpointDataNV> pCheckpointData(pCheckpointDataCount);
 pfn_GetQueueCheckpointDataNV(queue,
         &pCheckpointDataCount,
         pCheckpointData.data());
-    if (pCheckpointDataCount < pCheckpointData.size()) pCheckpointData.resize(pCheckpointDataCount);
     return pCheckpointData;
 }
 [[nodiscard]] Result InitializePerformanceApiINTEL(const InitializePerformanceApiInfoINTEL&  pInitializeInfo) const {
@@ -16856,12 +16826,11 @@ void DestroyDeferredOperationKHR(DeferredOperationKHR operation = {},
         &pExecutableCount,
         nullptr);
     if (result < Result::Success) return expected(std::vector<PipelineExecutablePropertiesKHR>{}, result);
-    std::vector<PipelineExecutablePropertiesKHR> pProperties{pExecutableCount};
+    std::vector<PipelineExecutablePropertiesKHR> pProperties(pExecutableCount);
     result = pfn_GetPipelineExecutablePropertiesKHR(device,
         &pPipelineInfo,
         &pExecutableCount,
         pProperties.data());
-    if (pExecutableCount < pProperties.size()) pProperties.resize(pExecutableCount);
     return expected(std::move(pProperties), result);
 }
 [[nodiscard]] expected<std::vector<PipelineExecutableStatisticKHR>> GetPipelineExecutableStatisticsKHR(const PipelineExecutableInfoKHR&  pExecutableInfo) const {
@@ -16872,12 +16841,11 @@ void DestroyDeferredOperationKHR(DeferredOperationKHR operation = {},
         &pStatisticCount,
         nullptr);
     if (result < Result::Success) return expected(std::vector<PipelineExecutableStatisticKHR>{}, result);
-    std::vector<PipelineExecutableStatisticKHR> pStatistics{pStatisticCount};
+    std::vector<PipelineExecutableStatisticKHR> pStatistics(pStatisticCount);
     result = pfn_GetPipelineExecutableStatisticsKHR(device,
         &pExecutableInfo,
         &pStatisticCount,
         pStatistics.data());
-    if (pStatisticCount < pStatistics.size()) pStatistics.resize(pStatisticCount);
     return expected(std::move(pStatistics), result);
 }
 [[nodiscard]] expected<std::vector<PipelineExecutableInternalRepresentationKHR>> GetPipelineExecutableInternalRepresentationsKHR(const PipelineExecutableInfoKHR&  pExecutableInfo) const {
@@ -16888,12 +16856,11 @@ void DestroyDeferredOperationKHR(DeferredOperationKHR operation = {},
         &pInternalRepresentationCount,
         nullptr);
     if (result < Result::Success) return expected(std::vector<PipelineExecutableInternalRepresentationKHR>{}, result);
-    std::vector<PipelineExecutableInternalRepresentationKHR> pInternalRepresentations{pInternalRepresentationCount};
+    std::vector<PipelineExecutableInternalRepresentationKHR> pInternalRepresentations(pInternalRepresentationCount);
     result = pfn_GetPipelineExecutableInternalRepresentationsKHR(device,
         &pExecutableInfo,
         &pInternalRepresentationCount,
         pInternalRepresentations.data());
-    if (pInternalRepresentationCount < pInternalRepresentations.size()) pInternalRepresentations.resize(pInternalRepresentationCount);
     return expected(std::move(pInternalRepresentations), result);
 }
 void CmdExecuteGeneratedCommandsNV(CommandBuffer commandBuffer, 
@@ -17055,11 +17022,10 @@ void CmdWriteBufferMarker2AMD(CommandBuffer commandBuffer,
     pfn_GetQueueCheckpointData2NV(queue,
         &pCheckpointDataCount,
         nullptr);
-    std::vector<CheckpointData2NV> pCheckpointData{pCheckpointDataCount};
+    std::vector<CheckpointData2NV> pCheckpointData(pCheckpointDataCount);
 pfn_GetQueueCheckpointData2NV(queue,
         &pCheckpointDataCount,
         pCheckpointData.data());
-    if (pCheckpointDataCount < pCheckpointData.size()) pCheckpointData.resize(pCheckpointDataCount);
     return pCheckpointData;
 }
 void CmdSetFragmentShadingRateEnumNV(CommandBuffer commandBuffer, 
