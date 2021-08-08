@@ -212,6 +212,8 @@ PFN_vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV vkGetPhysi
 PFN_vkGetPhysicalDeviceSurfacePresentModes2EXT vkGetPhysicalDeviceSurfacePresentModes2EXT;
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 PFN_vkCreateHeadlessSurfaceEXT vkCreateHeadlessSurfaceEXT;
+PFN_vkAcquireDrmDisplayEXT vkAcquireDrmDisplayEXT;
+PFN_vkGetDrmDisplayEXT vkGetDrmDisplayEXT;
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 PFN_vkAcquireWinrtDisplayNV vkAcquireWinrtDisplayNV;
 PFN_vkGetWinrtDisplayNV vkGetWinrtDisplayNV;
@@ -334,6 +336,8 @@ void vkInitializeInstanceFunctions (VkInstance Instance) {
     vkGetPhysicalDeviceSurfacePresentModes2EXT = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfacePresentModes2EXT>(vkGetInstanceProcAddr(Instance, "vkGetPhysicalDeviceSurfacePresentModes2EXT"));
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
     vkCreateHeadlessSurfaceEXT = reinterpret_cast<PFN_vkCreateHeadlessSurfaceEXT>(vkGetInstanceProcAddr(Instance, "vkCreateHeadlessSurfaceEXT"));
+    vkAcquireDrmDisplayEXT = reinterpret_cast<PFN_vkAcquireDrmDisplayEXT>(vkGetInstanceProcAddr(Instance, "vkAcquireDrmDisplayEXT"));
+    vkGetDrmDisplayEXT = reinterpret_cast<PFN_vkGetDrmDisplayEXT>(vkGetInstanceProcAddr(Instance, "vkGetDrmDisplayEXT"));
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     vkAcquireWinrtDisplayNV = reinterpret_cast<PFN_vkAcquireWinrtDisplayNV>(vkGetInstanceProcAddr(Instance, "vkAcquireWinrtDisplayNV"));
     vkGetWinrtDisplayNV = reinterpret_cast<PFN_vkGetWinrtDisplayNV>(vkGetInstanceProcAddr(Instance, "vkGetWinrtDisplayNV"));
@@ -522,7 +526,6 @@ PFN_vkCmdBeginVideoCodingKHR vkCmdBeginVideoCodingKHR;
 PFN_vkCmdControlVideoCodingKHR vkCmdControlVideoCodingKHR;
 PFN_vkCmdEndVideoCodingKHR vkCmdEndVideoCodingKHR;
 PFN_vkCmdDecodeVideoKHR vkCmdDecodeVideoKHR;
-PFN_vkCmdEncodeVideoKHR vkCmdEncodeVideoKHR;
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 PFN_vkCmdBindTransformFeedbackBuffersEXT vkCmdBindTransformFeedbackBuffersEXT;
 PFN_vkCmdBeginTransformFeedbackEXT vkCmdBeginTransformFeedbackEXT;
@@ -530,6 +533,11 @@ PFN_vkCmdEndTransformFeedbackEXT vkCmdEndTransformFeedbackEXT;
 PFN_vkCmdBeginQueryIndexedEXT vkCmdBeginQueryIndexedEXT;
 PFN_vkCmdEndQueryIndexedEXT vkCmdEndQueryIndexedEXT;
 PFN_vkCmdDrawIndirectByteCountEXT vkCmdDrawIndirectByteCountEXT;
+PFN_vkCreateCuModuleNVX vkCreateCuModuleNVX;
+PFN_vkCreateCuFunctionNVX vkCreateCuFunctionNVX;
+PFN_vkDestroyCuModuleNVX vkDestroyCuModuleNVX;
+PFN_vkDestroyCuFunctionNVX vkDestroyCuFunctionNVX;
+PFN_vkCmdCuLaunchKernelNVX vkCmdCuLaunchKernelNVX;
 PFN_vkGetImageViewHandleNVX vkGetImageViewHandleNVX;
 PFN_vkGetImageViewAddressNVX vkGetImageViewAddressNVX;
 PFN_vkGetShaderInfoAMD vkGetShaderInfoAMD;
@@ -643,6 +651,7 @@ PFN_vkQueueSetPerformanceConfigurationINTEL vkQueueSetPerformanceConfigurationIN
 PFN_vkGetPerformanceParameterINTEL vkGetPerformanceParameterINTEL;
 PFN_vkSetLocalDimmingAMD vkSetLocalDimmingAMD;
 PFN_vkCmdSetFragmentShadingRateKHR vkCmdSetFragmentShadingRateKHR;
+PFN_vkWaitForPresentKHR vkWaitForPresentKHR;
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 PFN_vkAcquireFullScreenExclusiveModeEXT vkAcquireFullScreenExclusiveModeEXT;
 PFN_vkReleaseFullScreenExclusiveModeEXT vkReleaseFullScreenExclusiveModeEXT;
@@ -679,6 +688,9 @@ PFN_vkCreatePrivateDataSlotEXT vkCreatePrivateDataSlotEXT;
 PFN_vkDestroyPrivateDataSlotEXT vkDestroyPrivateDataSlotEXT;
 PFN_vkSetPrivateDataEXT vkSetPrivateDataEXT;
 PFN_vkGetPrivateDataEXT vkGetPrivateDataEXT;
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+PFN_vkCmdEncodeVideoKHR vkCmdEncodeVideoKHR;
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 PFN_vkCmdSetEvent2KHR vkCmdSetEvent2KHR;
 PFN_vkCmdResetEvent2KHR vkCmdResetEvent2KHR;
 PFN_vkCmdWaitEvents2KHR vkCmdWaitEvents2KHR;
@@ -701,12 +713,18 @@ PFN_vkGetMemoryZirconHandlePropertiesFUCHSIA vkGetMemoryZirconHandlePropertiesFU
 PFN_vkGetSemaphoreZirconHandleFUCHSIA vkGetSemaphoreZirconHandleFUCHSIA;
 PFN_vkImportSemaphoreZirconHandleFUCHSIA vkImportSemaphoreZirconHandleFUCHSIA;
 #endif // defined(VK_USE_PLATFORM_FUCHSIA)
+PFN_vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI;
+PFN_vkCmdSubpassShadingHUAWEI vkCmdSubpassShadingHUAWEI;
+PFN_vkCmdBindInvocationMaskHUAWEI vkCmdBindInvocationMaskHUAWEI;
+PFN_vkGetMemoryRemoteAddressNV vkGetMemoryRemoteAddressNV;
 PFN_vkCmdSetPatchControlPointsEXT vkCmdSetPatchControlPointsEXT;
 PFN_vkCmdSetRasterizerDiscardEnableEXT vkCmdSetRasterizerDiscardEnableEXT;
 PFN_vkCmdSetDepthBiasEnableEXT vkCmdSetDepthBiasEnableEXT;
 PFN_vkCmdSetLogicOpEXT vkCmdSetLogicOpEXT;
 PFN_vkCmdSetPrimitiveRestartEnableEXT vkCmdSetPrimitiveRestartEnableEXT;
 PFN_vkCmdSetColorWriteEnableEXT vkCmdSetColorWriteEnableEXT;
+PFN_vkCmdDrawMultiEXT vkCmdDrawMultiEXT;
+PFN_vkCmdDrawMultiIndexedEXT vkCmdDrawMultiIndexedEXT;
 void vkInitializeDeviceFunctions (VkDevice Device) {
     vkDestroyDevice = reinterpret_cast<PFN_vkDestroyDevice>(vkGetDeviceProcAddr(Device, "vkDestroyDevice"));
     vkGetDeviceQueue = reinterpret_cast<PFN_vkGetDeviceQueue>(vkGetDeviceProcAddr(Device, "vkGetDeviceQueue"));
@@ -883,7 +901,6 @@ void vkInitializeDeviceFunctions (VkDevice Device) {
     vkCmdControlVideoCodingKHR = reinterpret_cast<PFN_vkCmdControlVideoCodingKHR>(vkGetDeviceProcAddr(Device, "vkCmdControlVideoCodingKHR"));
     vkCmdEndVideoCodingKHR = reinterpret_cast<PFN_vkCmdEndVideoCodingKHR>(vkGetDeviceProcAddr(Device, "vkCmdEndVideoCodingKHR"));
     vkCmdDecodeVideoKHR = reinterpret_cast<PFN_vkCmdDecodeVideoKHR>(vkGetDeviceProcAddr(Device, "vkCmdDecodeVideoKHR"));
-    vkCmdEncodeVideoKHR = reinterpret_cast<PFN_vkCmdEncodeVideoKHR>(vkGetDeviceProcAddr(Device, "vkCmdEncodeVideoKHR"));
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
     vkCmdBindTransformFeedbackBuffersEXT = reinterpret_cast<PFN_vkCmdBindTransformFeedbackBuffersEXT>(vkGetDeviceProcAddr(Device, "vkCmdBindTransformFeedbackBuffersEXT"));
     vkCmdBeginTransformFeedbackEXT = reinterpret_cast<PFN_vkCmdBeginTransformFeedbackEXT>(vkGetDeviceProcAddr(Device, "vkCmdBeginTransformFeedbackEXT"));
@@ -891,6 +908,11 @@ void vkInitializeDeviceFunctions (VkDevice Device) {
     vkCmdBeginQueryIndexedEXT = reinterpret_cast<PFN_vkCmdBeginQueryIndexedEXT>(vkGetDeviceProcAddr(Device, "vkCmdBeginQueryIndexedEXT"));
     vkCmdEndQueryIndexedEXT = reinterpret_cast<PFN_vkCmdEndQueryIndexedEXT>(vkGetDeviceProcAddr(Device, "vkCmdEndQueryIndexedEXT"));
     vkCmdDrawIndirectByteCountEXT = reinterpret_cast<PFN_vkCmdDrawIndirectByteCountEXT>(vkGetDeviceProcAddr(Device, "vkCmdDrawIndirectByteCountEXT"));
+    vkCreateCuModuleNVX = reinterpret_cast<PFN_vkCreateCuModuleNVX>(vkGetDeviceProcAddr(Device, "vkCreateCuModuleNVX"));
+    vkCreateCuFunctionNVX = reinterpret_cast<PFN_vkCreateCuFunctionNVX>(vkGetDeviceProcAddr(Device, "vkCreateCuFunctionNVX"));
+    vkDestroyCuModuleNVX = reinterpret_cast<PFN_vkDestroyCuModuleNVX>(vkGetDeviceProcAddr(Device, "vkDestroyCuModuleNVX"));
+    vkDestroyCuFunctionNVX = reinterpret_cast<PFN_vkDestroyCuFunctionNVX>(vkGetDeviceProcAddr(Device, "vkDestroyCuFunctionNVX"));
+    vkCmdCuLaunchKernelNVX = reinterpret_cast<PFN_vkCmdCuLaunchKernelNVX>(vkGetDeviceProcAddr(Device, "vkCmdCuLaunchKernelNVX"));
     vkGetImageViewHandleNVX = reinterpret_cast<PFN_vkGetImageViewHandleNVX>(vkGetDeviceProcAddr(Device, "vkGetImageViewHandleNVX"));
     vkGetImageViewAddressNVX = reinterpret_cast<PFN_vkGetImageViewAddressNVX>(vkGetDeviceProcAddr(Device, "vkGetImageViewAddressNVX"));
     vkGetShaderInfoAMD = reinterpret_cast<PFN_vkGetShaderInfoAMD>(vkGetDeviceProcAddr(Device, "vkGetShaderInfoAMD"));
@@ -1004,6 +1026,7 @@ void vkInitializeDeviceFunctions (VkDevice Device) {
     vkGetPerformanceParameterINTEL = reinterpret_cast<PFN_vkGetPerformanceParameterINTEL>(vkGetDeviceProcAddr(Device, "vkGetPerformanceParameterINTEL"));
     vkSetLocalDimmingAMD = reinterpret_cast<PFN_vkSetLocalDimmingAMD>(vkGetDeviceProcAddr(Device, "vkSetLocalDimmingAMD"));
     vkCmdSetFragmentShadingRateKHR = reinterpret_cast<PFN_vkCmdSetFragmentShadingRateKHR>(vkGetDeviceProcAddr(Device, "vkCmdSetFragmentShadingRateKHR"));
+    vkWaitForPresentKHR = reinterpret_cast<PFN_vkWaitForPresentKHR>(vkGetDeviceProcAddr(Device, "vkWaitForPresentKHR"));
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     vkAcquireFullScreenExclusiveModeEXT = reinterpret_cast<PFN_vkAcquireFullScreenExclusiveModeEXT>(vkGetDeviceProcAddr(Device, "vkAcquireFullScreenExclusiveModeEXT"));
     vkReleaseFullScreenExclusiveModeEXT = reinterpret_cast<PFN_vkReleaseFullScreenExclusiveModeEXT>(vkGetDeviceProcAddr(Device, "vkReleaseFullScreenExclusiveModeEXT"));
@@ -1040,6 +1063,9 @@ void vkInitializeDeviceFunctions (VkDevice Device) {
     vkDestroyPrivateDataSlotEXT = reinterpret_cast<PFN_vkDestroyPrivateDataSlotEXT>(vkGetDeviceProcAddr(Device, "vkDestroyPrivateDataSlotEXT"));
     vkSetPrivateDataEXT = reinterpret_cast<PFN_vkSetPrivateDataEXT>(vkGetDeviceProcAddr(Device, "vkSetPrivateDataEXT"));
     vkGetPrivateDataEXT = reinterpret_cast<PFN_vkGetPrivateDataEXT>(vkGetDeviceProcAddr(Device, "vkGetPrivateDataEXT"));
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    vkCmdEncodeVideoKHR = reinterpret_cast<PFN_vkCmdEncodeVideoKHR>(vkGetDeviceProcAddr(Device, "vkCmdEncodeVideoKHR"));
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
     vkCmdSetEvent2KHR = reinterpret_cast<PFN_vkCmdSetEvent2KHR>(vkGetDeviceProcAddr(Device, "vkCmdSetEvent2KHR"));
     vkCmdResetEvent2KHR = reinterpret_cast<PFN_vkCmdResetEvent2KHR>(vkGetDeviceProcAddr(Device, "vkCmdResetEvent2KHR"));
     vkCmdWaitEvents2KHR = reinterpret_cast<PFN_vkCmdWaitEvents2KHR>(vkGetDeviceProcAddr(Device, "vkCmdWaitEvents2KHR"));
@@ -1062,12 +1088,18 @@ void vkInitializeDeviceFunctions (VkDevice Device) {
     vkGetSemaphoreZirconHandleFUCHSIA = reinterpret_cast<PFN_vkGetSemaphoreZirconHandleFUCHSIA>(vkGetDeviceProcAddr(Device, "vkGetSemaphoreZirconHandleFUCHSIA"));
     vkImportSemaphoreZirconHandleFUCHSIA = reinterpret_cast<PFN_vkImportSemaphoreZirconHandleFUCHSIA>(vkGetDeviceProcAddr(Device, "vkImportSemaphoreZirconHandleFUCHSIA"));
 #endif // defined(VK_USE_PLATFORM_FUCHSIA)
+    vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI = reinterpret_cast<PFN_vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI>(vkGetDeviceProcAddr(Device, "vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI"));
+    vkCmdSubpassShadingHUAWEI = reinterpret_cast<PFN_vkCmdSubpassShadingHUAWEI>(vkGetDeviceProcAddr(Device, "vkCmdSubpassShadingHUAWEI"));
+    vkCmdBindInvocationMaskHUAWEI = reinterpret_cast<PFN_vkCmdBindInvocationMaskHUAWEI>(vkGetDeviceProcAddr(Device, "vkCmdBindInvocationMaskHUAWEI"));
+    vkGetMemoryRemoteAddressNV = reinterpret_cast<PFN_vkGetMemoryRemoteAddressNV>(vkGetDeviceProcAddr(Device, "vkGetMemoryRemoteAddressNV"));
     vkCmdSetPatchControlPointsEXT = reinterpret_cast<PFN_vkCmdSetPatchControlPointsEXT>(vkGetDeviceProcAddr(Device, "vkCmdSetPatchControlPointsEXT"));
     vkCmdSetRasterizerDiscardEnableEXT = reinterpret_cast<PFN_vkCmdSetRasterizerDiscardEnableEXT>(vkGetDeviceProcAddr(Device, "vkCmdSetRasterizerDiscardEnableEXT"));
     vkCmdSetDepthBiasEnableEXT = reinterpret_cast<PFN_vkCmdSetDepthBiasEnableEXT>(vkGetDeviceProcAddr(Device, "vkCmdSetDepthBiasEnableEXT"));
     vkCmdSetLogicOpEXT = reinterpret_cast<PFN_vkCmdSetLogicOpEXT>(vkGetDeviceProcAddr(Device, "vkCmdSetLogicOpEXT"));
     vkCmdSetPrimitiveRestartEnableEXT = reinterpret_cast<PFN_vkCmdSetPrimitiveRestartEnableEXT>(vkGetDeviceProcAddr(Device, "vkCmdSetPrimitiveRestartEnableEXT"));
     vkCmdSetColorWriteEnableEXT = reinterpret_cast<PFN_vkCmdSetColorWriteEnableEXT>(vkGetDeviceProcAddr(Device, "vkCmdSetColorWriteEnableEXT"));
+    vkCmdDrawMultiEXT = reinterpret_cast<PFN_vkCmdDrawMultiEXT>(vkGetDeviceProcAddr(Device, "vkCmdDrawMultiEXT"));
+    vkCmdDrawMultiIndexedEXT = reinterpret_cast<PFN_vkCmdDrawMultiIndexedEXT>(vkGetDeviceProcAddr(Device, "vkCmdDrawMultiIndexedEXT"));
 };
 void vkInitializeDeviceDispatchTable (VkDevice Device, VkDeviceDispatchTable & table) {
     table.vkDestroyDevice = reinterpret_cast<PFN_vkDestroyDevice>(vkGetDeviceProcAddr(Device, "vkDestroyDevice"));
@@ -1266,15 +1298,17 @@ void vkInitializeDeviceDispatchTable (VkDevice Device, VkDeviceDispatchTable & t
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
     table.vkCmdDecodeVideoKHR = reinterpret_cast<PFN_vkCmdDecodeVideoKHR>(vkGetDeviceProcAddr(Device, "vkCmdDecodeVideoKHR"));
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
-#if defined(VK_ENABLE_BETA_EXTENSIONS)
-    table.vkCmdEncodeVideoKHR = reinterpret_cast<PFN_vkCmdEncodeVideoKHR>(vkGetDeviceProcAddr(Device, "vkCmdEncodeVideoKHR"));
-#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
     table.vkCmdBindTransformFeedbackBuffersEXT = reinterpret_cast<PFN_vkCmdBindTransformFeedbackBuffersEXT>(vkGetDeviceProcAddr(Device, "vkCmdBindTransformFeedbackBuffersEXT"));
     table.vkCmdBeginTransformFeedbackEXT = reinterpret_cast<PFN_vkCmdBeginTransformFeedbackEXT>(vkGetDeviceProcAddr(Device, "vkCmdBeginTransformFeedbackEXT"));
     table.vkCmdEndTransformFeedbackEXT = reinterpret_cast<PFN_vkCmdEndTransformFeedbackEXT>(vkGetDeviceProcAddr(Device, "vkCmdEndTransformFeedbackEXT"));
     table.vkCmdBeginQueryIndexedEXT = reinterpret_cast<PFN_vkCmdBeginQueryIndexedEXT>(vkGetDeviceProcAddr(Device, "vkCmdBeginQueryIndexedEXT"));
     table.vkCmdEndQueryIndexedEXT = reinterpret_cast<PFN_vkCmdEndQueryIndexedEXT>(vkGetDeviceProcAddr(Device, "vkCmdEndQueryIndexedEXT"));
     table.vkCmdDrawIndirectByteCountEXT = reinterpret_cast<PFN_vkCmdDrawIndirectByteCountEXT>(vkGetDeviceProcAddr(Device, "vkCmdDrawIndirectByteCountEXT"));
+    table.vkCreateCuModuleNVX = reinterpret_cast<PFN_vkCreateCuModuleNVX>(vkGetDeviceProcAddr(Device, "vkCreateCuModuleNVX"));
+    table.vkCreateCuFunctionNVX = reinterpret_cast<PFN_vkCreateCuFunctionNVX>(vkGetDeviceProcAddr(Device, "vkCreateCuFunctionNVX"));
+    table.vkDestroyCuModuleNVX = reinterpret_cast<PFN_vkDestroyCuModuleNVX>(vkGetDeviceProcAddr(Device, "vkDestroyCuModuleNVX"));
+    table.vkDestroyCuFunctionNVX = reinterpret_cast<PFN_vkDestroyCuFunctionNVX>(vkGetDeviceProcAddr(Device, "vkDestroyCuFunctionNVX"));
+    table.vkCmdCuLaunchKernelNVX = reinterpret_cast<PFN_vkCmdCuLaunchKernelNVX>(vkGetDeviceProcAddr(Device, "vkCmdCuLaunchKernelNVX"));
     table.vkGetImageViewHandleNVX = reinterpret_cast<PFN_vkGetImageViewHandleNVX>(vkGetDeviceProcAddr(Device, "vkGetImageViewHandleNVX"));
     table.vkGetImageViewAddressNVX = reinterpret_cast<PFN_vkGetImageViewAddressNVX>(vkGetDeviceProcAddr(Device, "vkGetImageViewAddressNVX"));
     table.vkGetShaderInfoAMD = reinterpret_cast<PFN_vkGetShaderInfoAMD>(vkGetDeviceProcAddr(Device, "vkGetShaderInfoAMD"));
@@ -1398,6 +1432,7 @@ void vkInitializeDeviceDispatchTable (VkDevice Device, VkDeviceDispatchTable & t
     table.vkGetPerformanceParameterINTEL = reinterpret_cast<PFN_vkGetPerformanceParameterINTEL>(vkGetDeviceProcAddr(Device, "vkGetPerformanceParameterINTEL"));
     table.vkSetLocalDimmingAMD = reinterpret_cast<PFN_vkSetLocalDimmingAMD>(vkGetDeviceProcAddr(Device, "vkSetLocalDimmingAMD"));
     table.vkCmdSetFragmentShadingRateKHR = reinterpret_cast<PFN_vkCmdSetFragmentShadingRateKHR>(vkGetDeviceProcAddr(Device, "vkCmdSetFragmentShadingRateKHR"));
+    table.vkWaitForPresentKHR = reinterpret_cast<PFN_vkWaitForPresentKHR>(vkGetDeviceProcAddr(Device, "vkWaitForPresentKHR"));
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     table.vkAcquireFullScreenExclusiveModeEXT = reinterpret_cast<PFN_vkAcquireFullScreenExclusiveModeEXT>(vkGetDeviceProcAddr(Device, "vkAcquireFullScreenExclusiveModeEXT"));
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
@@ -1438,6 +1473,9 @@ void vkInitializeDeviceDispatchTable (VkDevice Device, VkDeviceDispatchTable & t
     table.vkDestroyPrivateDataSlotEXT = reinterpret_cast<PFN_vkDestroyPrivateDataSlotEXT>(vkGetDeviceProcAddr(Device, "vkDestroyPrivateDataSlotEXT"));
     table.vkSetPrivateDataEXT = reinterpret_cast<PFN_vkSetPrivateDataEXT>(vkGetDeviceProcAddr(Device, "vkSetPrivateDataEXT"));
     table.vkGetPrivateDataEXT = reinterpret_cast<PFN_vkGetPrivateDataEXT>(vkGetDeviceProcAddr(Device, "vkGetPrivateDataEXT"));
+#if defined(VK_ENABLE_BETA_EXTENSIONS)
+    table.vkCmdEncodeVideoKHR = reinterpret_cast<PFN_vkCmdEncodeVideoKHR>(vkGetDeviceProcAddr(Device, "vkCmdEncodeVideoKHR"));
+#endif // defined(VK_ENABLE_BETA_EXTENSIONS)
     table.vkCmdSetEvent2KHR = reinterpret_cast<PFN_vkCmdSetEvent2KHR>(vkGetDeviceProcAddr(Device, "vkCmdSetEvent2KHR"));
     table.vkCmdResetEvent2KHR = reinterpret_cast<PFN_vkCmdResetEvent2KHR>(vkGetDeviceProcAddr(Device, "vkCmdResetEvent2KHR"));
     table.vkCmdWaitEvents2KHR = reinterpret_cast<PFN_vkCmdWaitEvents2KHR>(vkGetDeviceProcAddr(Device, "vkCmdWaitEvents2KHR"));
@@ -1466,12 +1504,18 @@ void vkInitializeDeviceDispatchTable (VkDevice Device, VkDeviceDispatchTable & t
 #if defined(VK_USE_PLATFORM_FUCHSIA)
     table.vkImportSemaphoreZirconHandleFUCHSIA = reinterpret_cast<PFN_vkImportSemaphoreZirconHandleFUCHSIA>(vkGetDeviceProcAddr(Device, "vkImportSemaphoreZirconHandleFUCHSIA"));
 #endif // defined(VK_USE_PLATFORM_FUCHSIA)
+    table.vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI = reinterpret_cast<PFN_vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI>(vkGetDeviceProcAddr(Device, "vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI"));
+    table.vkCmdSubpassShadingHUAWEI = reinterpret_cast<PFN_vkCmdSubpassShadingHUAWEI>(vkGetDeviceProcAddr(Device, "vkCmdSubpassShadingHUAWEI"));
+    table.vkCmdBindInvocationMaskHUAWEI = reinterpret_cast<PFN_vkCmdBindInvocationMaskHUAWEI>(vkGetDeviceProcAddr(Device, "vkCmdBindInvocationMaskHUAWEI"));
+    table.vkGetMemoryRemoteAddressNV = reinterpret_cast<PFN_vkGetMemoryRemoteAddressNV>(vkGetDeviceProcAddr(Device, "vkGetMemoryRemoteAddressNV"));
     table.vkCmdSetPatchControlPointsEXT = reinterpret_cast<PFN_vkCmdSetPatchControlPointsEXT>(vkGetDeviceProcAddr(Device, "vkCmdSetPatchControlPointsEXT"));
     table.vkCmdSetRasterizerDiscardEnableEXT = reinterpret_cast<PFN_vkCmdSetRasterizerDiscardEnableEXT>(vkGetDeviceProcAddr(Device, "vkCmdSetRasterizerDiscardEnableEXT"));
     table.vkCmdSetDepthBiasEnableEXT = reinterpret_cast<PFN_vkCmdSetDepthBiasEnableEXT>(vkGetDeviceProcAddr(Device, "vkCmdSetDepthBiasEnableEXT"));
     table.vkCmdSetLogicOpEXT = reinterpret_cast<PFN_vkCmdSetLogicOpEXT>(vkGetDeviceProcAddr(Device, "vkCmdSetLogicOpEXT"));
     table.vkCmdSetPrimitiveRestartEnableEXT = reinterpret_cast<PFN_vkCmdSetPrimitiveRestartEnableEXT>(vkGetDeviceProcAddr(Device, "vkCmdSetPrimitiveRestartEnableEXT"));
     table.vkCmdSetColorWriteEnableEXT = reinterpret_cast<PFN_vkCmdSetColorWriteEnableEXT>(vkGetDeviceProcAddr(Device, "vkCmdSetColorWriteEnableEXT"));
+    table.vkCmdDrawMultiEXT = reinterpret_cast<PFN_vkCmdDrawMultiEXT>(vkGetDeviceProcAddr(Device, "vkCmdDrawMultiEXT"));
+    table.vkCmdDrawMultiIndexedEXT = reinterpret_cast<PFN_vkCmdDrawMultiIndexedEXT>(vkGetDeviceProcAddr(Device, "vkCmdDrawMultiIndexedEXT"));
 };
 #if defined(__GNUC__)
 #	pragma GCC visibility pop

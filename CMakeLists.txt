@@ -24,14 +24,14 @@ if (VK_MODULE_TESTS)
 option(SET_COMPILE_TIME_TRACE "enable clang's -ftime-trace " OFF)
 endif(VK_MODULE_TESTS)
 
-if (VK_MODULE_GENERATE_SOURC OR VK_MODULE_SAMPLES OR VK_MODULE_TESTS)
+if (VK_MODULE_GENERATE_SOURCE OR VK_MODULE_SAMPLES OR VK_MODULE_TESTS)
     find_package(PythonInterp 3 QUIET)
 
     include(FetchContent)
     FetchContent_Declare(
         vulkan_headers
         GIT_REPOSITORY https://github.com/KhronosGroup/Vulkan-Headers
-        GIT_TAG        v1.2.176
+        GIT_TAG        v1.2.186
     )
     FetchContent_GetProperties(vulkan-headers)
     if(NOT vulkan_headers_POPULATED)
@@ -94,7 +94,7 @@ target_compile_options(vk-platform-defines INTERFACE
     )
 
 add_library(vk-module-cpp INTERFACE)
-target_include_directories(vk-module-cpp INTERFACE ${CMAKE_CURRENT_LIST_DIR}/module)
+target_include_directories(vk-module-cpp INTERFACE ${CMAKE_CURRENT_LIST_DIR}/include ${CMAKE_CURRENT_LIST_DIR}/module)
 target_link_libraries(vk-module-cpp INTERFACE vk-module-compiler-options)
 target_compile_features(vk-module-cpp INTERFACE cxx_std_20)
 
@@ -119,8 +119,8 @@ if (NOT WIN32)
 endif()
 
 if (SET_COMPILE_TIME_TRACE)
-target_compile_options(vk-module-cpp INTERFACE -ftime-trace)
-target_compile_options(vulkan-simple-cpp PUBLIC -ftime-trace)
+    target_compile_options(vk-module-cpp INTERFACE -ftime-trace)
+    target_compile_options(vulkan-simple-cpp PUBLIC -ftime-trace)
 endif(SET_COMPILE_TIME_TRACE)
 
 if (VK_MODULE_SAMPLES)
@@ -131,3 +131,8 @@ if (VK_MODULE_TESTS)
     add_subdirectory(test)
 endif (VK_MODULE_TESTS)
 
+
+if (VK_MODULE_GENERATE_SOURCE OR VK_MODULE_SAMPLES OR VK_MODULE_TESTS)
+    add_dependencies(vulkan-simple-cpp generate_source)
+    add_dependencies(vk-module-cpp generate_source)
+endif()

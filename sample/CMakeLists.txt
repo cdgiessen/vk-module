@@ -50,10 +50,10 @@ target_link_libraries(basic_sample_usage vk-module-cpp)
 add_executable(vk-module-triangle-header triangle.cpp)
 target_link_libraries(vk-module-triangle-header
     PRIVATE
-    Vulkan::Headers
-    glfw
+    vk-module-compiler-options
     vk-module-cpp
-    vk-module-compiler-options )
+    glfw
+    )
 
 add_executable(vk-simple-triangle simple_triangle.cpp)
 target_link_libraries(vk-simple-triangle

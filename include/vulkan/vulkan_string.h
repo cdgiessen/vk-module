@@ -89,6 +89,7 @@ const char * to_string(VkPerformanceValueTypeINTEL val);
 const char * to_string(VkLineRasterizationModeEXT val);
 const char * to_string(VkFragmentShadingRateNV val);
 const char * to_string(VkFragmentShadingRateTypeNV val);
+const char * to_string(VkProvokingVertexModeEXT val);
 const char * to_string(VkColorSpaceKHR val);
 const char * to_string(VkPresentModeKHR val);
 const char * to_string(VkDebugReportObjectTypeEXT val);
@@ -119,6 +120,7 @@ const char * to_string(VkPipelineExecutableStatisticFormatKHR val);
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 const char * to_string(VkQueryResultStatusKHR val);
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
+const char * to_string(VkAccelerationStructureMotionInstanceTypeNV val);
 const char * to_string(VkPipelineCacheCreateFlagBits val);
 std::string to_string(VkPipelineCacheCreateFlags flag);
 const char * to_string(VkQueueFlagBits val);
@@ -287,6 +289,8 @@ const char * to_string(VkSubmitFlagBitsKHR val);
 std::string to_string(VkSubmitFlagsKHR flag);
 const char * to_string(VkEventCreateFlagBits val);
 std::string to_string(VkEventCreateFlags flag);
+const char * to_string(VkPipelineLayoutCreateFlagBits val);
+std::string to_string(VkPipelineLayoutCreateFlags flag);
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 const char * to_string(VkVideoCodecOperationFlagBitsKHR val);
 std::string to_string(VkVideoCodecOperationFlagsKHR flag);

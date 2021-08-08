@@ -15,7 +15,7 @@
  */
 #pragma once
 // clang-format off
-#include <vulkan/vulkan.h>
+#include "vulkan/vulkan.h"
 #include "vk_module.h"
 namespace vk {
 constexpr VkAttachmentLoadOp to_c(AttachmentLoadOp value) { return static_cast<VkAttachmentLoadOp>(value);}
@@ -70,6 +70,8 @@ constexpr VkQueryType to_c(QueryType value) { return static_cast<VkQueryType>(va
 constexpr QueryType from_c(VkQueryType value) { return static_cast<QueryType>(value);}
 constexpr VkSubpassContents to_c(SubpassContents value) { return static_cast<VkSubpassContents>(value);}
 constexpr SubpassContents from_c(VkSubpassContents value) { return static_cast<SubpassContents>(value);}
+constexpr VkResult to_c(Result value) { return static_cast<VkResult>(value);}
+constexpr Result from_c(VkResult value) { return static_cast<Result>(value);}
 constexpr VkStencilOp to_c(StencilOp value) { return static_cast<VkStencilOp>(value);}
 constexpr StencilOp from_c(VkStencilOp value) { return static_cast<StencilOp>(value);}
 constexpr VkStructureType to_c(StructureType value) { return static_cast<VkStructureType>(value);}
@@ -160,6 +162,8 @@ constexpr VkFragmentShadingRateNV to_c(FragmentShadingRateNV value) { return sta
 constexpr FragmentShadingRateNV from_c(VkFragmentShadingRateNV value) { return static_cast<FragmentShadingRateNV>(value);}
 constexpr VkFragmentShadingRateTypeNV to_c(FragmentShadingRateTypeNV value) { return static_cast<VkFragmentShadingRateTypeNV>(value);}
 constexpr FragmentShadingRateTypeNV from_c(VkFragmentShadingRateTypeNV value) { return static_cast<FragmentShadingRateTypeNV>(value);}
+constexpr VkProvokingVertexModeEXT to_c(ProvokingVertexModeEXT value) { return static_cast<VkProvokingVertexModeEXT>(value);}
+constexpr ProvokingVertexModeEXT from_c(VkProvokingVertexModeEXT value) { return static_cast<ProvokingVertexModeEXT>(value);}
 constexpr VkColorSpaceKHR to_c(ColorSpaceKHR value) { return static_cast<VkColorSpaceKHR>(value);}
 constexpr ColorSpaceKHR from_c(VkColorSpaceKHR value) { return static_cast<ColorSpaceKHR>(value);}
 constexpr VkPresentModeKHR to_c(PresentModeKHR value) { return static_cast<VkPresentModeKHR>(value);}
@@ -216,6 +220,8 @@ constexpr PipelineExecutableStatisticFormatKHR from_c(VkPipelineExecutableStatis
 constexpr VkQueryResultStatusKHR to_c(QueryResultStatusKHR value) { return static_cast<VkQueryResultStatusKHR>(value);}
 constexpr QueryResultStatusKHR from_c(VkQueryResultStatusKHR value) { return static_cast<QueryResultStatusKHR>(value);}
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
+constexpr VkAccelerationStructureMotionInstanceTypeNV to_c(AccelerationStructureMotionInstanceTypeNV value) { return static_cast<VkAccelerationStructureMotionInstanceTypeNV>(value);}
+constexpr AccelerationStructureMotionInstanceTypeNV from_c(VkAccelerationStructureMotionInstanceTypeNV value) { return static_cast<AccelerationStructureMotionInstanceTypeNV>(value);}
 constexpr VkPipelineCacheCreateFlagBits to_c(PipelineCacheCreateFlagBits value) { return static_cast<VkPipelineCacheCreateFlagBits>(value);}
 constexpr PipelineCacheCreateFlagBits from_c(VkPipelineCacheCreateFlagBits value) { return static_cast<PipelineCacheCreateFlagBits>(value);}
 constexpr VkQueueFlagBits to_c(QueueFlagBits value) { return static_cast<VkQueueFlagBits>(value);}
@@ -376,10 +382,16 @@ constexpr VkPipelineCompilerControlFlagBitsAMD to_c(PipelineCompilerControlFlagB
 constexpr PipelineCompilerControlFlagBitsAMD from_c(VkPipelineCompilerControlFlagBitsAMD value) { return static_cast<PipelineCompilerControlFlagBitsAMD>(value);}
 constexpr VkToolPurposeFlagBitsEXT to_c(ToolPurposeFlagBitsEXT value) { return static_cast<VkToolPurposeFlagBitsEXT>(value);}
 constexpr ToolPurposeFlagBitsEXT from_c(VkToolPurposeFlagBitsEXT value) { return static_cast<ToolPurposeFlagBitsEXT>(value);}
+constexpr VkAccessFlagBits2KHR to_c(AccessFlagBits2KHR value) { return static_cast<VkAccessFlagBits2KHR>(value);}
+constexpr AccessFlagBits2KHR from_c(VkAccessFlagBits2KHR value) { return static_cast<AccessFlagBits2KHR>(value);}
+constexpr VkPipelineStageFlagBits2KHR to_c(PipelineStageFlagBits2KHR value) { return static_cast<VkPipelineStageFlagBits2KHR>(value);}
+constexpr PipelineStageFlagBits2KHR from_c(VkPipelineStageFlagBits2KHR value) { return static_cast<PipelineStageFlagBits2KHR>(value);}
 constexpr VkSubmitFlagBitsKHR to_c(SubmitFlagBitsKHR value) { return static_cast<VkSubmitFlagBitsKHR>(value);}
 constexpr SubmitFlagBitsKHR from_c(VkSubmitFlagBitsKHR value) { return static_cast<SubmitFlagBitsKHR>(value);}
 constexpr VkEventCreateFlagBits to_c(EventCreateFlagBits value) { return static_cast<VkEventCreateFlagBits>(value);}
 constexpr EventCreateFlagBits from_c(VkEventCreateFlagBits value) { return static_cast<EventCreateFlagBits>(value);}
+constexpr VkPipelineLayoutCreateFlagBits to_c(PipelineLayoutCreateFlagBits value) { return static_cast<VkPipelineLayoutCreateFlagBits>(value);}
+constexpr PipelineLayoutCreateFlagBits from_c(VkPipelineLayoutCreateFlagBits value) { return static_cast<PipelineLayoutCreateFlagBits>(value);}
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 constexpr VkVideoCodecOperationFlagBitsKHR to_c(VideoCodecOperationFlagBitsKHR value) { return static_cast<VkVideoCodecOperationFlagBitsKHR>(value);}
 constexpr VideoCodecOperationFlagBitsKHR from_c(VkVideoCodecOperationFlagBitsKHR value) { return static_cast<VideoCodecOperationFlagBitsKHR>(value);}
@@ -442,182 +454,186 @@ constexpr VideoEncodeH264CreateFlagBitsEXT from_c(VkVideoEncodeH264CreateFlagBit
 #endif // defined(VK_USE_PLATFORM_SCREEN_QNX)
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
-constexpr VkFramebufferCreateFlags to_c(FramebufferCreateFlags value) { return static_cast<VkFramebufferCreateFlags>(value);}
-constexpr VkQueryPoolCreateFlags to_c(QueryPoolCreateFlags value) { return static_cast<VkQueryPoolCreateFlags>(value);}
-constexpr VkRenderPassCreateFlags to_c(RenderPassCreateFlags value) { return static_cast<VkRenderPassCreateFlags>(value);}
-constexpr VkSamplerCreateFlags to_c(SamplerCreateFlags value) { return static_cast<VkSamplerCreateFlags>(value);}
-constexpr VkPipelineLayoutCreateFlags to_c(PipelineLayoutCreateFlags value) { return static_cast<VkPipelineLayoutCreateFlags>(value);}
-constexpr VkPipelineCacheCreateFlags to_c(PipelineCacheCreateFlags value) { return static_cast<VkPipelineCacheCreateFlags>(value);}
-constexpr VkPipelineDepthStencilStateCreateFlags to_c(PipelineDepthStencilStateCreateFlags value) { return static_cast<VkPipelineDepthStencilStateCreateFlags>(value);}
-constexpr VkPipelineDynamicStateCreateFlags to_c(PipelineDynamicStateCreateFlags value) { return static_cast<VkPipelineDynamicStateCreateFlags>(value);}
-constexpr VkPipelineColorBlendStateCreateFlags to_c(PipelineColorBlendStateCreateFlags value) { return static_cast<VkPipelineColorBlendStateCreateFlags>(value);}
-constexpr VkPipelineMultisampleStateCreateFlags to_c(PipelineMultisampleStateCreateFlags value) { return static_cast<VkPipelineMultisampleStateCreateFlags>(value);}
-constexpr VkPipelineRasterizationStateCreateFlags to_c(PipelineRasterizationStateCreateFlags value) { return static_cast<VkPipelineRasterizationStateCreateFlags>(value);}
-constexpr VkPipelineViewportStateCreateFlags to_c(PipelineViewportStateCreateFlags value) { return static_cast<VkPipelineViewportStateCreateFlags>(value);}
-constexpr VkPipelineTessellationStateCreateFlags to_c(PipelineTessellationStateCreateFlags value) { return static_cast<VkPipelineTessellationStateCreateFlags>(value);}
-constexpr VkPipelineInputAssemblyStateCreateFlags to_c(PipelineInputAssemblyStateCreateFlags value) { return static_cast<VkPipelineInputAssemblyStateCreateFlags>(value);}
-constexpr VkPipelineVertexInputStateCreateFlags to_c(PipelineVertexInputStateCreateFlags value) { return static_cast<VkPipelineVertexInputStateCreateFlags>(value);}
-constexpr VkPipelineShaderStageCreateFlags to_c(PipelineShaderStageCreateFlags value) { return static_cast<VkPipelineShaderStageCreateFlags>(value);}
-constexpr VkDescriptorSetLayoutCreateFlags to_c(DescriptorSetLayoutCreateFlags value) { return static_cast<VkDescriptorSetLayoutCreateFlags>(value);}
-constexpr VkBufferViewCreateFlags to_c(BufferViewCreateFlags value) { return static_cast<VkBufferViewCreateFlags>(value);}
-constexpr VkInstanceCreateFlags to_c(InstanceCreateFlags value) { return static_cast<VkInstanceCreateFlags>(value);}
-constexpr VkDeviceCreateFlags to_c(DeviceCreateFlags value) { return static_cast<VkDeviceCreateFlags>(value);}
-constexpr VkDeviceQueueCreateFlags to_c(DeviceQueueCreateFlags value) { return static_cast<VkDeviceQueueCreateFlags>(value);}
-constexpr VkQueueFlags to_c(QueueFlags value) { return static_cast<VkQueueFlags>(value);}
-constexpr VkMemoryPropertyFlags to_c(MemoryPropertyFlags value) { return static_cast<VkMemoryPropertyFlags>(value);}
-constexpr VkMemoryHeapFlags to_c(MemoryHeapFlags value) { return static_cast<VkMemoryHeapFlags>(value);}
-constexpr VkAccessFlags to_c(AccessFlags value) { return static_cast<VkAccessFlags>(value);}
-constexpr VkBufferUsageFlags to_c(BufferUsageFlags value) { return static_cast<VkBufferUsageFlags>(value);}
-constexpr VkBufferCreateFlags to_c(BufferCreateFlags value) { return static_cast<VkBufferCreateFlags>(value);}
-constexpr VkShaderStageFlags to_c(ShaderStageFlags value) { return static_cast<VkShaderStageFlags>(value);}
-constexpr VkImageUsageFlags to_c(ImageUsageFlags value) { return static_cast<VkImageUsageFlags>(value);}
-constexpr VkImageCreateFlags to_c(ImageCreateFlags value) { return static_cast<VkImageCreateFlags>(value);}
-constexpr VkImageViewCreateFlags to_c(ImageViewCreateFlags value) { return static_cast<VkImageViewCreateFlags>(value);}
-constexpr VkPipelineCreateFlags to_c(PipelineCreateFlags value) { return static_cast<VkPipelineCreateFlags>(value);}
-constexpr VkColorComponentFlags to_c(ColorComponentFlags value) { return static_cast<VkColorComponentFlags>(value);}
-constexpr VkFenceCreateFlags to_c(FenceCreateFlags value) { return static_cast<VkFenceCreateFlags>(value);}
-constexpr VkSemaphoreCreateFlags to_c(SemaphoreCreateFlags value) { return static_cast<VkSemaphoreCreateFlags>(value);}
-constexpr VkFormatFeatureFlags to_c(FormatFeatureFlags value) { return static_cast<VkFormatFeatureFlags>(value);}
-constexpr VkQueryControlFlags to_c(QueryControlFlags value) { return static_cast<VkQueryControlFlags>(value);}
-constexpr VkQueryResultFlags to_c(QueryResultFlags value) { return static_cast<VkQueryResultFlags>(value);}
-constexpr VkShaderModuleCreateFlags to_c(ShaderModuleCreateFlags value) { return static_cast<VkShaderModuleCreateFlags>(value);}
-constexpr VkEventCreateFlags to_c(EventCreateFlags value) { return static_cast<VkEventCreateFlags>(value);}
-constexpr VkCommandPoolCreateFlags to_c(CommandPoolCreateFlags value) { return static_cast<VkCommandPoolCreateFlags>(value);}
-constexpr VkCommandPoolResetFlags to_c(CommandPoolResetFlags value) { return static_cast<VkCommandPoolResetFlags>(value);}
-constexpr VkCommandBufferResetFlags to_c(CommandBufferResetFlags value) { return static_cast<VkCommandBufferResetFlags>(value);}
-constexpr VkCommandBufferUsageFlags to_c(CommandBufferUsageFlags value) { return static_cast<VkCommandBufferUsageFlags>(value);}
-constexpr VkQueryPipelineStatisticFlags to_c(QueryPipelineStatisticFlags value) { return static_cast<VkQueryPipelineStatisticFlags>(value);}
-constexpr VkMemoryMapFlags to_c(MemoryMapFlags value) { return static_cast<VkMemoryMapFlags>(value);}
-constexpr VkImageAspectFlags to_c(ImageAspectFlags value) { return static_cast<VkImageAspectFlags>(value);}
-constexpr VkSparseMemoryBindFlags to_c(SparseMemoryBindFlags value) { return static_cast<VkSparseMemoryBindFlags>(value);}
-constexpr VkSparseImageFormatFlags to_c(SparseImageFormatFlags value) { return static_cast<VkSparseImageFormatFlags>(value);}
-constexpr VkSubpassDescriptionFlags to_c(SubpassDescriptionFlags value) { return static_cast<VkSubpassDescriptionFlags>(value);}
-constexpr VkPipelineStageFlags to_c(PipelineStageFlags value) { return static_cast<VkPipelineStageFlags>(value);}
-constexpr VkSampleCountFlags to_c(SampleCountFlags value) { return static_cast<VkSampleCountFlags>(value);}
-constexpr VkAttachmentDescriptionFlags to_c(AttachmentDescriptionFlags value) { return static_cast<VkAttachmentDescriptionFlags>(value);}
-constexpr VkStencilFaceFlags to_c(StencilFaceFlags value) { return static_cast<VkStencilFaceFlags>(value);}
-constexpr VkCullModeFlags to_c(CullModeFlags value) { return static_cast<VkCullModeFlags>(value);}
-constexpr VkDescriptorPoolCreateFlags to_c(DescriptorPoolCreateFlags value) { return static_cast<VkDescriptorPoolCreateFlags>(value);}
-constexpr VkDescriptorPoolResetFlags to_c(DescriptorPoolResetFlags value) { return static_cast<VkDescriptorPoolResetFlags>(value);}
-constexpr VkDependencyFlags to_c(DependencyFlags value) { return static_cast<VkDependencyFlags>(value);}
-constexpr VkSubgroupFeatureFlags to_c(SubgroupFeatureFlags value) { return static_cast<VkSubgroupFeatureFlags>(value);}
-constexpr VkIndirectCommandsLayoutUsageFlagsNV to_c(IndirectCommandsLayoutUsageFlagsNV value) { return static_cast<VkIndirectCommandsLayoutUsageFlagsNV>(value);}
-constexpr VkIndirectStateFlagsNV to_c(IndirectStateFlagsNV value) { return static_cast<VkIndirectStateFlagsNV>(value);}
-constexpr VkGeometryFlagsKHR to_c(GeometryFlagsKHR value) { return static_cast<VkGeometryFlagsKHR>(value);}
-constexpr VkGeometryInstanceFlagsKHR to_c(GeometryInstanceFlagsKHR value) { return static_cast<VkGeometryInstanceFlagsKHR>(value);}
-constexpr VkBuildAccelerationStructureFlagsKHR to_c(BuildAccelerationStructureFlagsKHR value) { return static_cast<VkBuildAccelerationStructureFlagsKHR>(value);}
-constexpr VkPrivateDataSlotCreateFlagsEXT to_c(PrivateDataSlotCreateFlagsEXT value) { return static_cast<VkPrivateDataSlotCreateFlagsEXT>(value);}
-constexpr VkAccelerationStructureCreateFlagsKHR to_c(AccelerationStructureCreateFlagsKHR value) { return static_cast<VkAccelerationStructureCreateFlagsKHR>(value);}
-constexpr VkDescriptorUpdateTemplateCreateFlags to_c(DescriptorUpdateTemplateCreateFlags value) { return static_cast<VkDescriptorUpdateTemplateCreateFlags>(value);}
-constexpr VkPipelineCreationFeedbackFlagsEXT to_c(PipelineCreationFeedbackFlagsEXT value) { return static_cast<VkPipelineCreationFeedbackFlagsEXT>(value);}
-constexpr VkPerformanceCounterDescriptionFlagsKHR to_c(PerformanceCounterDescriptionFlagsKHR value) { return static_cast<VkPerformanceCounterDescriptionFlagsKHR>(value);}
-constexpr VkAcquireProfilingLockFlagsKHR to_c(AcquireProfilingLockFlagsKHR value) { return static_cast<VkAcquireProfilingLockFlagsKHR>(value);}
-constexpr VkSemaphoreWaitFlags to_c(SemaphoreWaitFlags value) { return static_cast<VkSemaphoreWaitFlags>(value);}
-constexpr VkPipelineCompilerControlFlagsAMD to_c(PipelineCompilerControlFlagsAMD value) { return static_cast<VkPipelineCompilerControlFlagsAMD>(value);}
-constexpr VkShaderCorePropertiesFlagsAMD to_c(ShaderCorePropertiesFlagsAMD value) { return static_cast<VkShaderCorePropertiesFlagsAMD>(value);}
-constexpr VkDeviceDiagnosticsConfigFlagsNV to_c(DeviceDiagnosticsConfigFlagsNV value) { return static_cast<VkDeviceDiagnosticsConfigFlagsNV>(value);}
-constexpr VkCompositeAlphaFlagsKHR to_c(CompositeAlphaFlagsKHR value) { return static_cast<VkCompositeAlphaFlagsKHR>(value);}
-constexpr VkDisplayPlaneAlphaFlagsKHR to_c(DisplayPlaneAlphaFlagsKHR value) { return static_cast<VkDisplayPlaneAlphaFlagsKHR>(value);}
-constexpr VkSurfaceTransformFlagsKHR to_c(SurfaceTransformFlagsKHR value) { return static_cast<VkSurfaceTransformFlagsKHR>(value);}
-constexpr VkSwapchainCreateFlagsKHR to_c(SwapchainCreateFlagsKHR value) { return static_cast<VkSwapchainCreateFlagsKHR>(value);}
-constexpr VkDisplayModeCreateFlagsKHR to_c(DisplayModeCreateFlagsKHR value) { return static_cast<VkDisplayModeCreateFlagsKHR>(value);}
-constexpr VkDisplaySurfaceCreateFlagsKHR to_c(DisplaySurfaceCreateFlagsKHR value) { return static_cast<VkDisplaySurfaceCreateFlagsKHR>(value);}
+constexpr VkFramebufferCreateFlags to_c(FramebufferCreateFlags value) { return static_cast<VkFramebufferCreateFlags>(value.flags);}
+constexpr VkQueryPoolCreateFlags to_c(QueryPoolCreateFlags value) { return static_cast<VkQueryPoolCreateFlags>(value.flags);}
+constexpr VkRenderPassCreateFlags to_c(RenderPassCreateFlags value) { return static_cast<VkRenderPassCreateFlags>(value.flags);}
+constexpr VkSamplerCreateFlags to_c(SamplerCreateFlags value) { return static_cast<VkSamplerCreateFlags>(value.flags);}
+constexpr VkPipelineLayoutCreateFlags to_c(PipelineLayoutCreateFlags value) { return static_cast<VkPipelineLayoutCreateFlags>(value.flags);}
+constexpr VkPipelineCacheCreateFlags to_c(PipelineCacheCreateFlags value) { return static_cast<VkPipelineCacheCreateFlags>(value.flags);}
+constexpr VkPipelineDepthStencilStateCreateFlags to_c(PipelineDepthStencilStateCreateFlags value) { return static_cast<VkPipelineDepthStencilStateCreateFlags>(value.flags);}
+constexpr VkPipelineDynamicStateCreateFlags to_c(PipelineDynamicStateCreateFlags value) { return static_cast<VkPipelineDynamicStateCreateFlags>(value.flags);}
+constexpr VkPipelineColorBlendStateCreateFlags to_c(PipelineColorBlendStateCreateFlags value) { return static_cast<VkPipelineColorBlendStateCreateFlags>(value.flags);}
+constexpr VkPipelineMultisampleStateCreateFlags to_c(PipelineMultisampleStateCreateFlags value) { return static_cast<VkPipelineMultisampleStateCreateFlags>(value.flags);}
+constexpr VkPipelineRasterizationStateCreateFlags to_c(PipelineRasterizationStateCreateFlags value) { return static_cast<VkPipelineRasterizationStateCreateFlags>(value.flags);}
+constexpr VkPipelineViewportStateCreateFlags to_c(PipelineViewportStateCreateFlags value) { return static_cast<VkPipelineViewportStateCreateFlags>(value.flags);}
+constexpr VkPipelineTessellationStateCreateFlags to_c(PipelineTessellationStateCreateFlags value) { return static_cast<VkPipelineTessellationStateCreateFlags>(value.flags);}
+constexpr VkPipelineInputAssemblyStateCreateFlags to_c(PipelineInputAssemblyStateCreateFlags value) { return static_cast<VkPipelineInputAssemblyStateCreateFlags>(value.flags);}
+constexpr VkPipelineVertexInputStateCreateFlags to_c(PipelineVertexInputStateCreateFlags value) { return static_cast<VkPipelineVertexInputStateCreateFlags>(value.flags);}
+constexpr VkPipelineShaderStageCreateFlags to_c(PipelineShaderStageCreateFlags value) { return static_cast<VkPipelineShaderStageCreateFlags>(value.flags);}
+constexpr VkDescriptorSetLayoutCreateFlags to_c(DescriptorSetLayoutCreateFlags value) { return static_cast<VkDescriptorSetLayoutCreateFlags>(value.flags);}
+constexpr VkBufferViewCreateFlags to_c(BufferViewCreateFlags value) { return static_cast<VkBufferViewCreateFlags>(value.flags);}
+constexpr VkInstanceCreateFlags to_c(InstanceCreateFlags value) { return static_cast<VkInstanceCreateFlags>(value.flags);}
+constexpr VkDeviceCreateFlags to_c(DeviceCreateFlags value) { return static_cast<VkDeviceCreateFlags>(value.flags);}
+constexpr VkDeviceQueueCreateFlags to_c(DeviceQueueCreateFlags value) { return static_cast<VkDeviceQueueCreateFlags>(value.flags);}
+constexpr VkQueueFlags to_c(QueueFlags value) { return static_cast<VkQueueFlags>(value.flags);}
+constexpr VkMemoryPropertyFlags to_c(MemoryPropertyFlags value) { return static_cast<VkMemoryPropertyFlags>(value.flags);}
+constexpr VkMemoryHeapFlags to_c(MemoryHeapFlags value) { return static_cast<VkMemoryHeapFlags>(value.flags);}
+constexpr VkAccessFlags to_c(AccessFlags value) { return static_cast<VkAccessFlags>(value.flags);}
+constexpr VkBufferUsageFlags to_c(BufferUsageFlags value) { return static_cast<VkBufferUsageFlags>(value.flags);}
+constexpr VkBufferCreateFlags to_c(BufferCreateFlags value) { return static_cast<VkBufferCreateFlags>(value.flags);}
+constexpr VkShaderStageFlags to_c(ShaderStageFlags value) { return static_cast<VkShaderStageFlags>(value.flags);}
+constexpr VkImageUsageFlags to_c(ImageUsageFlags value) { return static_cast<VkImageUsageFlags>(value.flags);}
+constexpr VkImageCreateFlags to_c(ImageCreateFlags value) { return static_cast<VkImageCreateFlags>(value.flags);}
+constexpr VkImageViewCreateFlags to_c(ImageViewCreateFlags value) { return static_cast<VkImageViewCreateFlags>(value.flags);}
+constexpr VkPipelineCreateFlags to_c(PipelineCreateFlags value) { return static_cast<VkPipelineCreateFlags>(value.flags);}
+constexpr VkColorComponentFlags to_c(ColorComponentFlags value) { return static_cast<VkColorComponentFlags>(value.flags);}
+constexpr VkFenceCreateFlags to_c(FenceCreateFlags value) { return static_cast<VkFenceCreateFlags>(value.flags);}
+constexpr VkSemaphoreCreateFlags to_c(SemaphoreCreateFlags value) { return static_cast<VkSemaphoreCreateFlags>(value.flags);}
+constexpr VkFormatFeatureFlags to_c(FormatFeatureFlags value) { return static_cast<VkFormatFeatureFlags>(value.flags);}
+constexpr VkQueryControlFlags to_c(QueryControlFlags value) { return static_cast<VkQueryControlFlags>(value.flags);}
+constexpr VkQueryResultFlags to_c(QueryResultFlags value) { return static_cast<VkQueryResultFlags>(value.flags);}
+constexpr VkShaderModuleCreateFlags to_c(ShaderModuleCreateFlags value) { return static_cast<VkShaderModuleCreateFlags>(value.flags);}
+constexpr VkEventCreateFlags to_c(EventCreateFlags value) { return static_cast<VkEventCreateFlags>(value.flags);}
+constexpr VkCommandPoolCreateFlags to_c(CommandPoolCreateFlags value) { return static_cast<VkCommandPoolCreateFlags>(value.flags);}
+constexpr VkCommandPoolResetFlags to_c(CommandPoolResetFlags value) { return static_cast<VkCommandPoolResetFlags>(value.flags);}
+constexpr VkCommandBufferResetFlags to_c(CommandBufferResetFlags value) { return static_cast<VkCommandBufferResetFlags>(value.flags);}
+constexpr VkCommandBufferUsageFlags to_c(CommandBufferUsageFlags value) { return static_cast<VkCommandBufferUsageFlags>(value.flags);}
+constexpr VkQueryPipelineStatisticFlags to_c(QueryPipelineStatisticFlags value) { return static_cast<VkQueryPipelineStatisticFlags>(value.flags);}
+constexpr VkMemoryMapFlags to_c(MemoryMapFlags value) { return static_cast<VkMemoryMapFlags>(value.flags);}
+constexpr VkImageAspectFlags to_c(ImageAspectFlags value) { return static_cast<VkImageAspectFlags>(value.flags);}
+constexpr VkSparseMemoryBindFlags to_c(SparseMemoryBindFlags value) { return static_cast<VkSparseMemoryBindFlags>(value.flags);}
+constexpr VkSparseImageFormatFlags to_c(SparseImageFormatFlags value) { return static_cast<VkSparseImageFormatFlags>(value.flags);}
+constexpr VkSubpassDescriptionFlags to_c(SubpassDescriptionFlags value) { return static_cast<VkSubpassDescriptionFlags>(value.flags);}
+constexpr VkPipelineStageFlags to_c(PipelineStageFlags value) { return static_cast<VkPipelineStageFlags>(value.flags);}
+constexpr VkSampleCountFlags to_c(SampleCountFlags value) { return static_cast<VkSampleCountFlags>(value.flags);}
+constexpr VkAttachmentDescriptionFlags to_c(AttachmentDescriptionFlags value) { return static_cast<VkAttachmentDescriptionFlags>(value.flags);}
+constexpr VkStencilFaceFlags to_c(StencilFaceFlags value) { return static_cast<VkStencilFaceFlags>(value.flags);}
+constexpr VkCullModeFlags to_c(CullModeFlags value) { return static_cast<VkCullModeFlags>(value.flags);}
+constexpr VkDescriptorPoolCreateFlags to_c(DescriptorPoolCreateFlags value) { return static_cast<VkDescriptorPoolCreateFlags>(value.flags);}
+constexpr VkDescriptorPoolResetFlags to_c(DescriptorPoolResetFlags value) { return static_cast<VkDescriptorPoolResetFlags>(value.flags);}
+constexpr VkDependencyFlags to_c(DependencyFlags value) { return static_cast<VkDependencyFlags>(value.flags);}
+constexpr VkSubgroupFeatureFlags to_c(SubgroupFeatureFlags value) { return static_cast<VkSubgroupFeatureFlags>(value.flags);}
+constexpr VkIndirectCommandsLayoutUsageFlagsNV to_c(IndirectCommandsLayoutUsageFlagsNV value) { return static_cast<VkIndirectCommandsLayoutUsageFlagsNV>(value.flags);}
+constexpr VkIndirectStateFlagsNV to_c(IndirectStateFlagsNV value) { return static_cast<VkIndirectStateFlagsNV>(value.flags);}
+constexpr VkGeometryFlagsKHR to_c(GeometryFlagsKHR value) { return static_cast<VkGeometryFlagsKHR>(value.flags);}
+constexpr VkGeometryInstanceFlagsKHR to_c(GeometryInstanceFlagsKHR value) { return static_cast<VkGeometryInstanceFlagsKHR>(value.flags);}
+constexpr VkBuildAccelerationStructureFlagsKHR to_c(BuildAccelerationStructureFlagsKHR value) { return static_cast<VkBuildAccelerationStructureFlagsKHR>(value.flags);}
+constexpr VkPrivateDataSlotCreateFlagsEXT to_c(PrivateDataSlotCreateFlagsEXT value) { return static_cast<VkPrivateDataSlotCreateFlagsEXT>(value.flags);}
+constexpr VkAccelerationStructureCreateFlagsKHR to_c(AccelerationStructureCreateFlagsKHR value) { return static_cast<VkAccelerationStructureCreateFlagsKHR>(value.flags);}
+constexpr VkDescriptorUpdateTemplateCreateFlags to_c(DescriptorUpdateTemplateCreateFlags value) { return static_cast<VkDescriptorUpdateTemplateCreateFlags>(value.flags);}
+constexpr VkPipelineCreationFeedbackFlagsEXT to_c(PipelineCreationFeedbackFlagsEXT value) { return static_cast<VkPipelineCreationFeedbackFlagsEXT>(value.flags);}
+constexpr VkPerformanceCounterDescriptionFlagsKHR to_c(PerformanceCounterDescriptionFlagsKHR value) { return static_cast<VkPerformanceCounterDescriptionFlagsKHR>(value.flags);}
+constexpr VkAcquireProfilingLockFlagsKHR to_c(AcquireProfilingLockFlagsKHR value) { return static_cast<VkAcquireProfilingLockFlagsKHR>(value.flags);}
+constexpr VkSemaphoreWaitFlags to_c(SemaphoreWaitFlags value) { return static_cast<VkSemaphoreWaitFlags>(value.flags);}
+constexpr VkPipelineCompilerControlFlagsAMD to_c(PipelineCompilerControlFlagsAMD value) { return static_cast<VkPipelineCompilerControlFlagsAMD>(value.flags);}
+constexpr VkShaderCorePropertiesFlagsAMD to_c(ShaderCorePropertiesFlagsAMD value) { return static_cast<VkShaderCorePropertiesFlagsAMD>(value.flags);}
+constexpr VkDeviceDiagnosticsConfigFlagsNV to_c(DeviceDiagnosticsConfigFlagsNV value) { return static_cast<VkDeviceDiagnosticsConfigFlagsNV>(value.flags);}
+constexpr VkAccessFlags2KHR to_c(AccessFlags2KHR value) { return static_cast<VkAccessFlags2KHR>(value.flags);}
+constexpr VkPipelineStageFlags2KHR to_c(PipelineStageFlags2KHR value) { return static_cast<VkPipelineStageFlags2KHR>(value.flags);}
+constexpr VkAccelerationStructureMotionInfoFlagsNV to_c(AccelerationStructureMotionInfoFlagsNV value) { return static_cast<VkAccelerationStructureMotionInfoFlagsNV>(value.flags);}
+constexpr VkAccelerationStructureMotionInstanceFlagsNV to_c(AccelerationStructureMotionInstanceFlagsNV value) { return static_cast<VkAccelerationStructureMotionInstanceFlagsNV>(value.flags);}
+constexpr VkCompositeAlphaFlagsKHR to_c(CompositeAlphaFlagsKHR value) { return static_cast<VkCompositeAlphaFlagsKHR>(value.flags);}
+constexpr VkDisplayPlaneAlphaFlagsKHR to_c(DisplayPlaneAlphaFlagsKHR value) { return static_cast<VkDisplayPlaneAlphaFlagsKHR>(value.flags);}
+constexpr VkSurfaceTransformFlagsKHR to_c(SurfaceTransformFlagsKHR value) { return static_cast<VkSurfaceTransformFlagsKHR>(value.flags);}
+constexpr VkSwapchainCreateFlagsKHR to_c(SwapchainCreateFlagsKHR value) { return static_cast<VkSwapchainCreateFlagsKHR>(value.flags);}
+constexpr VkDisplayModeCreateFlagsKHR to_c(DisplayModeCreateFlagsKHR value) { return static_cast<VkDisplayModeCreateFlagsKHR>(value.flags);}
+constexpr VkDisplaySurfaceCreateFlagsKHR to_c(DisplaySurfaceCreateFlagsKHR value) { return static_cast<VkDisplaySurfaceCreateFlagsKHR>(value.flags);}
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
-constexpr VkAndroidSurfaceCreateFlagsKHR to_c(AndroidSurfaceCreateFlagsKHR value) { return static_cast<VkAndroidSurfaceCreateFlagsKHR>(value);}
+constexpr VkAndroidSurfaceCreateFlagsKHR to_c(AndroidSurfaceCreateFlagsKHR value) { return static_cast<VkAndroidSurfaceCreateFlagsKHR>(value.flags);}
 #endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
 #if defined(VK_USE_PLATFORM_VI_NN)
-constexpr VkViSurfaceCreateFlagsNN to_c(ViSurfaceCreateFlagsNN value) { return static_cast<VkViSurfaceCreateFlagsNN>(value);}
+constexpr VkViSurfaceCreateFlagsNN to_c(ViSurfaceCreateFlagsNN value) { return static_cast<VkViSurfaceCreateFlagsNN>(value.flags);}
 #endif // defined(VK_USE_PLATFORM_VI_NN)
 #if defined(VK_USE_PLATFORM_WAYLAND_KHR)
-constexpr VkWaylandSurfaceCreateFlagsKHR to_c(WaylandSurfaceCreateFlagsKHR value) { return static_cast<VkWaylandSurfaceCreateFlagsKHR>(value);}
+constexpr VkWaylandSurfaceCreateFlagsKHR to_c(WaylandSurfaceCreateFlagsKHR value) { return static_cast<VkWaylandSurfaceCreateFlagsKHR>(value.flags);}
 #endif // defined(VK_USE_PLATFORM_WAYLAND_KHR)
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
-constexpr VkWin32SurfaceCreateFlagsKHR to_c(Win32SurfaceCreateFlagsKHR value) { return static_cast<VkWin32SurfaceCreateFlagsKHR>(value);}
+constexpr VkWin32SurfaceCreateFlagsKHR to_c(Win32SurfaceCreateFlagsKHR value) { return static_cast<VkWin32SurfaceCreateFlagsKHR>(value.flags);}
 #endif // defined(VK_USE_PLATFORM_WIN32_KHR)
 #if defined(VK_USE_PLATFORM_XLIB_KHR)
-constexpr VkXlibSurfaceCreateFlagsKHR to_c(XlibSurfaceCreateFlagsKHR value) { return static_cast<VkXlibSurfaceCreateFlagsKHR>(value);}
+constexpr VkXlibSurfaceCreateFlagsKHR to_c(XlibSurfaceCreateFlagsKHR value) { return static_cast<VkXlibSurfaceCreateFlagsKHR>(value.flags);}
 #endif // defined(VK_USE_PLATFORM_XLIB_KHR)
 #if defined(VK_USE_PLATFORM_XCB_KHR)
-constexpr VkXcbSurfaceCreateFlagsKHR to_c(XcbSurfaceCreateFlagsKHR value) { return static_cast<VkXcbSurfaceCreateFlagsKHR>(value);}
+constexpr VkXcbSurfaceCreateFlagsKHR to_c(XcbSurfaceCreateFlagsKHR value) { return static_cast<VkXcbSurfaceCreateFlagsKHR>(value.flags);}
 #endif // defined(VK_USE_PLATFORM_XCB_KHR)
 #if defined(VK_USE_PLATFORM_DIRECTFB_EXT)
-constexpr VkDirectFBSurfaceCreateFlagsEXT to_c(DirectFBSurfaceCreateFlagsEXT value) { return static_cast<VkDirectFBSurfaceCreateFlagsEXT>(value);}
+constexpr VkDirectFBSurfaceCreateFlagsEXT to_c(DirectFBSurfaceCreateFlagsEXT value) { return static_cast<VkDirectFBSurfaceCreateFlagsEXT>(value.flags);}
 #endif // defined(VK_USE_PLATFORM_DIRECTFB_EXT)
 #if defined(VK_USE_PLATFORM_IOS_MVK)
-constexpr VkIOSSurfaceCreateFlagsMVK to_c(IOSSurfaceCreateFlagsMVK value) { return static_cast<VkIOSSurfaceCreateFlagsMVK>(value);}
+constexpr VkIOSSurfaceCreateFlagsMVK to_c(IOSSurfaceCreateFlagsMVK value) { return static_cast<VkIOSSurfaceCreateFlagsMVK>(value.flags);}
 #endif // defined(VK_USE_PLATFORM_IOS_MVK)
 #if defined(VK_USE_PLATFORM_MACOS_MVK)
-constexpr VkMacOSSurfaceCreateFlagsMVK to_c(MacOSSurfaceCreateFlagsMVK value) { return static_cast<VkMacOSSurfaceCreateFlagsMVK>(value);}
+constexpr VkMacOSSurfaceCreateFlagsMVK to_c(MacOSSurfaceCreateFlagsMVK value) { return static_cast<VkMacOSSurfaceCreateFlagsMVK>(value.flags);}
 #endif // defined(VK_USE_PLATFORM_MACOS_MVK)
 #if defined(VK_USE_PLATFORM_METAL_EXT)
-constexpr VkMetalSurfaceCreateFlagsEXT to_c(MetalSurfaceCreateFlagsEXT value) { return static_cast<VkMetalSurfaceCreateFlagsEXT>(value);}
+constexpr VkMetalSurfaceCreateFlagsEXT to_c(MetalSurfaceCreateFlagsEXT value) { return static_cast<VkMetalSurfaceCreateFlagsEXT>(value.flags);}
 #endif // defined(VK_USE_PLATFORM_METAL_EXT)
 #if defined(VK_USE_PLATFORM_FUCHSIA)
-constexpr VkImagePipeSurfaceCreateFlagsFUCHSIA to_c(ImagePipeSurfaceCreateFlagsFUCHSIA value) { return static_cast<VkImagePipeSurfaceCreateFlagsFUCHSIA>(value);}
+constexpr VkImagePipeSurfaceCreateFlagsFUCHSIA to_c(ImagePipeSurfaceCreateFlagsFUCHSIA value) { return static_cast<VkImagePipeSurfaceCreateFlagsFUCHSIA>(value.flags);}
 #endif // defined(VK_USE_PLATFORM_FUCHSIA)
 #if defined(VK_USE_PLATFORM_GGP)
-constexpr VkStreamDescriptorSurfaceCreateFlagsGGP to_c(StreamDescriptorSurfaceCreateFlagsGGP value) { return static_cast<VkStreamDescriptorSurfaceCreateFlagsGGP>(value);}
+constexpr VkStreamDescriptorSurfaceCreateFlagsGGP to_c(StreamDescriptorSurfaceCreateFlagsGGP value) { return static_cast<VkStreamDescriptorSurfaceCreateFlagsGGP>(value.flags);}
 #endif // defined(VK_USE_PLATFORM_GGP)
-constexpr VkHeadlessSurfaceCreateFlagsEXT to_c(HeadlessSurfaceCreateFlagsEXT value) { return static_cast<VkHeadlessSurfaceCreateFlagsEXT>(value);}
+constexpr VkHeadlessSurfaceCreateFlagsEXT to_c(HeadlessSurfaceCreateFlagsEXT value) { return static_cast<VkHeadlessSurfaceCreateFlagsEXT>(value.flags);}
 #if defined(VK_USE_PLATFORM_SCREEN_QNX)
-constexpr VkScreenSurfaceCreateFlagsQNX to_c(ScreenSurfaceCreateFlagsQNX value) { return static_cast<VkScreenSurfaceCreateFlagsQNX>(value);}
+constexpr VkScreenSurfaceCreateFlagsQNX to_c(ScreenSurfaceCreateFlagsQNX value) { return static_cast<VkScreenSurfaceCreateFlagsQNX>(value.flags);}
 #endif // defined(VK_USE_PLATFORM_SCREEN_QNX)
-constexpr VkPeerMemoryFeatureFlags to_c(PeerMemoryFeatureFlags value) { return static_cast<VkPeerMemoryFeatureFlags>(value);}
-constexpr VkMemoryAllocateFlags to_c(MemoryAllocateFlags value) { return static_cast<VkMemoryAllocateFlags>(value);}
-constexpr VkDeviceGroupPresentModeFlagsKHR to_c(DeviceGroupPresentModeFlagsKHR value) { return static_cast<VkDeviceGroupPresentModeFlagsKHR>(value);}
-constexpr VkDebugReportFlagsEXT to_c(DebugReportFlagsEXT value) { return static_cast<VkDebugReportFlagsEXT>(value);}
-constexpr VkCommandPoolTrimFlags to_c(CommandPoolTrimFlags value) { return static_cast<VkCommandPoolTrimFlags>(value);}
-constexpr VkExternalMemoryHandleTypeFlagsNV to_c(ExternalMemoryHandleTypeFlagsNV value) { return static_cast<VkExternalMemoryHandleTypeFlagsNV>(value);}
-constexpr VkExternalMemoryFeatureFlagsNV to_c(ExternalMemoryFeatureFlagsNV value) { return static_cast<VkExternalMemoryFeatureFlagsNV>(value);}
-constexpr VkExternalMemoryHandleTypeFlags to_c(ExternalMemoryHandleTypeFlags value) { return static_cast<VkExternalMemoryHandleTypeFlags>(value);}
-constexpr VkExternalMemoryFeatureFlags to_c(ExternalMemoryFeatureFlags value) { return static_cast<VkExternalMemoryFeatureFlags>(value);}
-constexpr VkExternalSemaphoreHandleTypeFlags to_c(ExternalSemaphoreHandleTypeFlags value) { return static_cast<VkExternalSemaphoreHandleTypeFlags>(value);}
-constexpr VkExternalSemaphoreFeatureFlags to_c(ExternalSemaphoreFeatureFlags value) { return static_cast<VkExternalSemaphoreFeatureFlags>(value);}
-constexpr VkSemaphoreImportFlags to_c(SemaphoreImportFlags value) { return static_cast<VkSemaphoreImportFlags>(value);}
-constexpr VkExternalFenceHandleTypeFlags to_c(ExternalFenceHandleTypeFlags value) { return static_cast<VkExternalFenceHandleTypeFlags>(value);}
-constexpr VkExternalFenceFeatureFlags to_c(ExternalFenceFeatureFlags value) { return static_cast<VkExternalFenceFeatureFlags>(value);}
-constexpr VkFenceImportFlags to_c(FenceImportFlags value) { return static_cast<VkFenceImportFlags>(value);}
-constexpr VkSurfaceCounterFlagsEXT to_c(SurfaceCounterFlagsEXT value) { return static_cast<VkSurfaceCounterFlagsEXT>(value);}
-constexpr VkPipelineViewportSwizzleStateCreateFlagsNV to_c(PipelineViewportSwizzleStateCreateFlagsNV value) { return static_cast<VkPipelineViewportSwizzleStateCreateFlagsNV>(value);}
-constexpr VkPipelineDiscardRectangleStateCreateFlagsEXT to_c(PipelineDiscardRectangleStateCreateFlagsEXT value) { return static_cast<VkPipelineDiscardRectangleStateCreateFlagsEXT>(value);}
-constexpr VkPipelineCoverageToColorStateCreateFlagsNV to_c(PipelineCoverageToColorStateCreateFlagsNV value) { return static_cast<VkPipelineCoverageToColorStateCreateFlagsNV>(value);}
-constexpr VkPipelineCoverageModulationStateCreateFlagsNV to_c(PipelineCoverageModulationStateCreateFlagsNV value) { return static_cast<VkPipelineCoverageModulationStateCreateFlagsNV>(value);}
-constexpr VkPipelineCoverageReductionStateCreateFlagsNV to_c(PipelineCoverageReductionStateCreateFlagsNV value) { return static_cast<VkPipelineCoverageReductionStateCreateFlagsNV>(value);}
-constexpr VkValidationCacheCreateFlagsEXT to_c(ValidationCacheCreateFlagsEXT value) { return static_cast<VkValidationCacheCreateFlagsEXT>(value);}
-constexpr VkDebugUtilsMessageSeverityFlagsEXT to_c(DebugUtilsMessageSeverityFlagsEXT value) { return static_cast<VkDebugUtilsMessageSeverityFlagsEXT>(value);}
-constexpr VkDebugUtilsMessageTypeFlagsEXT to_c(DebugUtilsMessageTypeFlagsEXT value) { return static_cast<VkDebugUtilsMessageTypeFlagsEXT>(value);}
-constexpr VkDebugUtilsMessengerCreateFlagsEXT to_c(DebugUtilsMessengerCreateFlagsEXT value) { return static_cast<VkDebugUtilsMessengerCreateFlagsEXT>(value);}
-constexpr VkDebugUtilsMessengerCallbackDataFlagsEXT to_c(DebugUtilsMessengerCallbackDataFlagsEXT value) { return static_cast<VkDebugUtilsMessengerCallbackDataFlagsEXT>(value);}
-constexpr VkDeviceMemoryReportFlagsEXT to_c(DeviceMemoryReportFlagsEXT value) { return static_cast<VkDeviceMemoryReportFlagsEXT>(value);}
-constexpr VkPipelineRasterizationConservativeStateCreateFlagsEXT to_c(PipelineRasterizationConservativeStateCreateFlagsEXT value) { return static_cast<VkPipelineRasterizationConservativeStateCreateFlagsEXT>(value);}
-constexpr VkDescriptorBindingFlags to_c(DescriptorBindingFlags value) { return static_cast<VkDescriptorBindingFlags>(value);}
-constexpr VkConditionalRenderingFlagsEXT to_c(ConditionalRenderingFlagsEXT value) { return static_cast<VkConditionalRenderingFlagsEXT>(value);}
-constexpr VkResolveModeFlags to_c(ResolveModeFlags value) { return static_cast<VkResolveModeFlags>(value);}
-constexpr VkPipelineRasterizationStateStreamCreateFlagsEXT to_c(PipelineRasterizationStateStreamCreateFlagsEXT value) { return static_cast<VkPipelineRasterizationStateStreamCreateFlagsEXT>(value);}
-constexpr VkPipelineRasterizationDepthClipStateCreateFlagsEXT to_c(PipelineRasterizationDepthClipStateCreateFlagsEXT value) { return static_cast<VkPipelineRasterizationDepthClipStateCreateFlagsEXT>(value);}
-constexpr VkToolPurposeFlagsEXT to_c(ToolPurposeFlagsEXT value) { return static_cast<VkToolPurposeFlagsEXT>(value);}
-constexpr VkSubmitFlagsKHR to_c(SubmitFlagsKHR value) { return static_cast<VkSubmitFlagsKHR>(value);}
+constexpr VkPeerMemoryFeatureFlags to_c(PeerMemoryFeatureFlags value) { return static_cast<VkPeerMemoryFeatureFlags>(value.flags);}
+constexpr VkMemoryAllocateFlags to_c(MemoryAllocateFlags value) { return static_cast<VkMemoryAllocateFlags>(value.flags);}
+constexpr VkDeviceGroupPresentModeFlagsKHR to_c(DeviceGroupPresentModeFlagsKHR value) { return static_cast<VkDeviceGroupPresentModeFlagsKHR>(value.flags);}
+constexpr VkDebugReportFlagsEXT to_c(DebugReportFlagsEXT value) { return static_cast<VkDebugReportFlagsEXT>(value.flags);}
+constexpr VkCommandPoolTrimFlags to_c(CommandPoolTrimFlags value) { return static_cast<VkCommandPoolTrimFlags>(value.flags);}
+constexpr VkExternalMemoryHandleTypeFlagsNV to_c(ExternalMemoryHandleTypeFlagsNV value) { return static_cast<VkExternalMemoryHandleTypeFlagsNV>(value.flags);}
+constexpr VkExternalMemoryFeatureFlagsNV to_c(ExternalMemoryFeatureFlagsNV value) { return static_cast<VkExternalMemoryFeatureFlagsNV>(value.flags);}
+constexpr VkExternalMemoryHandleTypeFlags to_c(ExternalMemoryHandleTypeFlags value) { return static_cast<VkExternalMemoryHandleTypeFlags>(value.flags);}
+constexpr VkExternalMemoryFeatureFlags to_c(ExternalMemoryFeatureFlags value) { return static_cast<VkExternalMemoryFeatureFlags>(value.flags);}
+constexpr VkExternalSemaphoreHandleTypeFlags to_c(ExternalSemaphoreHandleTypeFlags value) { return static_cast<VkExternalSemaphoreHandleTypeFlags>(value.flags);}
+constexpr VkExternalSemaphoreFeatureFlags to_c(ExternalSemaphoreFeatureFlags value) { return static_cast<VkExternalSemaphoreFeatureFlags>(value.flags);}
+constexpr VkSemaphoreImportFlags to_c(SemaphoreImportFlags value) { return static_cast<VkSemaphoreImportFlags>(value.flags);}
+constexpr VkExternalFenceHandleTypeFlags to_c(ExternalFenceHandleTypeFlags value) { return static_cast<VkExternalFenceHandleTypeFlags>(value.flags);}
+constexpr VkExternalFenceFeatureFlags to_c(ExternalFenceFeatureFlags value) { return static_cast<VkExternalFenceFeatureFlags>(value.flags);}
+constexpr VkFenceImportFlags to_c(FenceImportFlags value) { return static_cast<VkFenceImportFlags>(value.flags);}
+constexpr VkSurfaceCounterFlagsEXT to_c(SurfaceCounterFlagsEXT value) { return static_cast<VkSurfaceCounterFlagsEXT>(value.flags);}
+constexpr VkPipelineViewportSwizzleStateCreateFlagsNV to_c(PipelineViewportSwizzleStateCreateFlagsNV value) { return static_cast<VkPipelineViewportSwizzleStateCreateFlagsNV>(value.flags);}
+constexpr VkPipelineDiscardRectangleStateCreateFlagsEXT to_c(PipelineDiscardRectangleStateCreateFlagsEXT value) { return static_cast<VkPipelineDiscardRectangleStateCreateFlagsEXT>(value.flags);}
+constexpr VkPipelineCoverageToColorStateCreateFlagsNV to_c(PipelineCoverageToColorStateCreateFlagsNV value) { return static_cast<VkPipelineCoverageToColorStateCreateFlagsNV>(value.flags);}
+constexpr VkPipelineCoverageModulationStateCreateFlagsNV to_c(PipelineCoverageModulationStateCreateFlagsNV value) { return static_cast<VkPipelineCoverageModulationStateCreateFlagsNV>(value.flags);}
+constexpr VkPipelineCoverageReductionStateCreateFlagsNV to_c(PipelineCoverageReductionStateCreateFlagsNV value) { return static_cast<VkPipelineCoverageReductionStateCreateFlagsNV>(value.flags);}
+constexpr VkValidationCacheCreateFlagsEXT to_c(ValidationCacheCreateFlagsEXT value) { return static_cast<VkValidationCacheCreateFlagsEXT>(value.flags);}
+constexpr VkDebugUtilsMessageSeverityFlagsEXT to_c(DebugUtilsMessageSeverityFlagsEXT value) { return static_cast<VkDebugUtilsMessageSeverityFlagsEXT>(value.flags);}
+constexpr VkDebugUtilsMessageTypeFlagsEXT to_c(DebugUtilsMessageTypeFlagsEXT value) { return static_cast<VkDebugUtilsMessageTypeFlagsEXT>(value.flags);}
+constexpr VkDebugUtilsMessengerCreateFlagsEXT to_c(DebugUtilsMessengerCreateFlagsEXT value) { return static_cast<VkDebugUtilsMessengerCreateFlagsEXT>(value.flags);}
+constexpr VkDebugUtilsMessengerCallbackDataFlagsEXT to_c(DebugUtilsMessengerCallbackDataFlagsEXT value) { return static_cast<VkDebugUtilsMessengerCallbackDataFlagsEXT>(value.flags);}
+constexpr VkDeviceMemoryReportFlagsEXT to_c(DeviceMemoryReportFlagsEXT value) { return static_cast<VkDeviceMemoryReportFlagsEXT>(value.flags);}
+constexpr VkPipelineRasterizationConservativeStateCreateFlagsEXT to_c(PipelineRasterizationConservativeStateCreateFlagsEXT value) { return static_cast<VkPipelineRasterizationConservativeStateCreateFlagsEXT>(value.flags);}
+constexpr VkDescriptorBindingFlags to_c(DescriptorBindingFlags value) { return static_cast<VkDescriptorBindingFlags>(value.flags);}
+constexpr VkConditionalRenderingFlagsEXT to_c(ConditionalRenderingFlagsEXT value) { return static_cast<VkConditionalRenderingFlagsEXT>(value.flags);}
+constexpr VkResolveModeFlags to_c(ResolveModeFlags value) { return static_cast<VkResolveModeFlags>(value.flags);}
+constexpr VkPipelineRasterizationStateStreamCreateFlagsEXT to_c(PipelineRasterizationStateStreamCreateFlagsEXT value) { return static_cast<VkPipelineRasterizationStateStreamCreateFlagsEXT>(value.flags);}
+constexpr VkPipelineRasterizationDepthClipStateCreateFlagsEXT to_c(PipelineRasterizationDepthClipStateCreateFlagsEXT value) { return static_cast<VkPipelineRasterizationDepthClipStateCreateFlagsEXT>(value.flags);}
+constexpr VkToolPurposeFlagsEXT to_c(ToolPurposeFlagsEXT value) { return static_cast<VkToolPurposeFlagsEXT>(value.flags);}
+constexpr VkSubmitFlagsKHR to_c(SubmitFlagsKHR value) { return static_cast<VkSubmitFlagsKHR>(value.flags);}
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
-constexpr VkVideoCodecOperationFlagsKHR to_c(VideoCodecOperationFlagsKHR value) { return static_cast<VkVideoCodecOperationFlagsKHR>(value);}
-constexpr VkVideoCapabilitiesFlagsKHR to_c(VideoCapabilitiesFlagsKHR value) { return static_cast<VkVideoCapabilitiesFlagsKHR>(value);}
-constexpr VkVideoSessionCreateFlagsKHR to_c(VideoSessionCreateFlagsKHR value) { return static_cast<VkVideoSessionCreateFlagsKHR>(value);}
-constexpr VkVideoBeginCodingFlagsKHR to_c(VideoBeginCodingFlagsKHR value) { return static_cast<VkVideoBeginCodingFlagsKHR>(value);}
-constexpr VkVideoEndCodingFlagsKHR to_c(VideoEndCodingFlagsKHR value) { return static_cast<VkVideoEndCodingFlagsKHR>(value);}
-constexpr VkVideoCodingQualityPresetFlagsKHR to_c(VideoCodingQualityPresetFlagsKHR value) { return static_cast<VkVideoCodingQualityPresetFlagsKHR>(value);}
-constexpr VkVideoCodingControlFlagsKHR to_c(VideoCodingControlFlagsKHR value) { return static_cast<VkVideoCodingControlFlagsKHR>(value);}
-constexpr VkVideoDecodeFlagsKHR to_c(VideoDecodeFlagsKHR value) { return static_cast<VkVideoDecodeFlagsKHR>(value);}
-constexpr VkVideoDecodeH264FieldLayoutFlagsEXT to_c(VideoDecodeH264FieldLayoutFlagsEXT value) { return static_cast<VkVideoDecodeH264FieldLayoutFlagsEXT>(value);}
-constexpr VkVideoDecodeH264CreateFlagsEXT to_c(VideoDecodeH264CreateFlagsEXT value) { return static_cast<VkVideoDecodeH264CreateFlagsEXT>(value);}
-constexpr VkVideoDecodeH265CreateFlagsEXT to_c(VideoDecodeH265CreateFlagsEXT value) { return static_cast<VkVideoDecodeH265CreateFlagsEXT>(value);}
-constexpr VkVideoEncodeFlagsKHR to_c(VideoEncodeFlagsKHR value) { return static_cast<VkVideoEncodeFlagsKHR>(value);}
-constexpr VkVideoEncodeRateControlFlagsKHR to_c(VideoEncodeRateControlFlagsKHR value) { return static_cast<VkVideoEncodeRateControlFlagsKHR>(value);}
-constexpr VkVideoEncodeRateControlModeFlagsKHR to_c(VideoEncodeRateControlModeFlagsKHR value) { return static_cast<VkVideoEncodeRateControlModeFlagsKHR>(value);}
-constexpr VkVideoChromaSubsamplingFlagsKHR to_c(VideoChromaSubsamplingFlagsKHR value) { return static_cast<VkVideoChromaSubsamplingFlagsKHR>(value);}
-constexpr VkVideoComponentBitDepthFlagsKHR to_c(VideoComponentBitDepthFlagsKHR value) { return static_cast<VkVideoComponentBitDepthFlagsKHR>(value);}
-constexpr VkVideoEncodeH264CapabilitiesFlagsEXT to_c(VideoEncodeH264CapabilitiesFlagsEXT value) { return static_cast<VkVideoEncodeH264CapabilitiesFlagsEXT>(value);}
-constexpr VkVideoEncodeH264InputModeFlagsEXT to_c(VideoEncodeH264InputModeFlagsEXT value) { return static_cast<VkVideoEncodeH264InputModeFlagsEXT>(value);}
-constexpr VkVideoEncodeH264OutputModeFlagsEXT to_c(VideoEncodeH264OutputModeFlagsEXT value) { return static_cast<VkVideoEncodeH264OutputModeFlagsEXT>(value);}
-constexpr VkVideoEncodeH264CreateFlagsEXT to_c(VideoEncodeH264CreateFlagsEXT value) { return static_cast<VkVideoEncodeH264CreateFlagsEXT>(value);}
+constexpr VkVideoCodecOperationFlagsKHR to_c(VideoCodecOperationFlagsKHR value) { return static_cast<VkVideoCodecOperationFlagsKHR>(value.flags);}
+constexpr VkVideoCapabilitiesFlagsKHR to_c(VideoCapabilitiesFlagsKHR value) { return static_cast<VkVideoCapabilitiesFlagsKHR>(value.flags);}
+constexpr VkVideoSessionCreateFlagsKHR to_c(VideoSessionCreateFlagsKHR value) { return static_cast<VkVideoSessionCreateFlagsKHR>(value.flags);}
+constexpr VkVideoBeginCodingFlagsKHR to_c(VideoBeginCodingFlagsKHR value) { return static_cast<VkVideoBeginCodingFlagsKHR>(value.flags);}
+constexpr VkVideoEndCodingFlagsKHR to_c(VideoEndCodingFlagsKHR value) { return static_cast<VkVideoEndCodingFlagsKHR>(value.flags);}
+constexpr VkVideoCodingQualityPresetFlagsKHR to_c(VideoCodingQualityPresetFlagsKHR value) { return static_cast<VkVideoCodingQualityPresetFlagsKHR>(value.flags);}
+constexpr VkVideoCodingControlFlagsKHR to_c(VideoCodingControlFlagsKHR value) { return static_cast<VkVideoCodingControlFlagsKHR>(value.flags);}
+constexpr VkVideoDecodeFlagsKHR to_c(VideoDecodeFlagsKHR value) { return static_cast<VkVideoDecodeFlagsKHR>(value.flags);}
+constexpr VkVideoDecodeH264FieldLayoutFlagsEXT to_c(VideoDecodeH264FieldLayoutFlagsEXT value) { return static_cast<VkVideoDecodeH264FieldLayoutFlagsEXT>(value.flags);}
+constexpr VkVideoDecodeH264CreateFlagsEXT to_c(VideoDecodeH264CreateFlagsEXT value) { return static_cast<VkVideoDecodeH264CreateFlagsEXT>(value.flags);}
+constexpr VkVideoDecodeH265CreateFlagsEXT to_c(VideoDecodeH265CreateFlagsEXT value) { return static_cast<VkVideoDecodeH265CreateFlagsEXT>(value.flags);}
+constexpr VkVideoEncodeFlagsKHR to_c(VideoEncodeFlagsKHR value) { return static_cast<VkVideoEncodeFlagsKHR>(value.flags);}
+constexpr VkVideoEncodeRateControlFlagsKHR to_c(VideoEncodeRateControlFlagsKHR value) { return static_cast<VkVideoEncodeRateControlFlagsKHR>(value.flags);}
+constexpr VkVideoEncodeRateControlModeFlagsKHR to_c(VideoEncodeRateControlModeFlagsKHR value) { return static_cast<VkVideoEncodeRateControlModeFlagsKHR>(value.flags);}
+constexpr VkVideoChromaSubsamplingFlagsKHR to_c(VideoChromaSubsamplingFlagsKHR value) { return static_cast<VkVideoChromaSubsamplingFlagsKHR>(value.flags);}
+constexpr VkVideoComponentBitDepthFlagsKHR to_c(VideoComponentBitDepthFlagsKHR value) { return static_cast<VkVideoComponentBitDepthFlagsKHR>(value.flags);}
+constexpr VkVideoEncodeH264CapabilitiesFlagsEXT to_c(VideoEncodeH264CapabilitiesFlagsEXT value) { return static_cast<VkVideoEncodeH264CapabilitiesFlagsEXT>(value.flags);}
+constexpr VkVideoEncodeH264InputModeFlagsEXT to_c(VideoEncodeH264InputModeFlagsEXT value) { return static_cast<VkVideoEncodeH264InputModeFlagsEXT>(value.flags);}
+constexpr VkVideoEncodeH264OutputModeFlagsEXT to_c(VideoEncodeH264OutputModeFlagsEXT value) { return static_cast<VkVideoEncodeH264OutputModeFlagsEXT>(value.flags);}
+constexpr VkVideoEncodeH264CreateFlagsEXT to_c(VideoEncodeH264CreateFlagsEXT value) { return static_cast<VkVideoEncodeH264CreateFlagsEXT>(value.flags);}
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
 } // namespace vk
 // clang-format on

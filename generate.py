@@ -102,14 +102,24 @@ class BaseType:
     def __init__(self, node):
         self.name = node.find('name').text
         self.type = None
-        if node.find('type') is not None:
-            self.type = node.find('type').text
-            self.default_value = base_type_default_values[self.type]
+
+        raw_xml_text = ' '.join(node.itertext())
+        type_list = raw_xml_text.split()
+        if type_list[0] is not None:
+            if type_list[0] == 'typedef':
+                self.type = node.find('type').text
+                if self.type == 'void':
+                    self.type = 'void*'
+                    self.default_value = 'nullptr'
+                else:
+                    self.default_value = base_type_default_values[self.type]
+            if type_list[0] == 'struct':
+                pass
 
     def print_base(self, file):
         if self.type is not None:
             file.write(f'using {self.name[2:]} = {self.type};\n')
-    def print_vk_base(self, file):
+    def print_basic(self, file):
         if self.type is not None:
             file.write(f'using {self.name} = {self.type};\n')
 
@@ -211,7 +221,7 @@ class Enum:
             file.write('        default: return "UNKNOWN";\n    }\n}\n')
 
     def print_c_interop(self, file):
-        if self.alias is None and self.underlying_type == 'uint32_t':
+        if self.alias is None:
             file.write(f'constexpr {self.name} to_c({self.name[2:]} value) {{ return static_cast<{self.name}>(value);}}\n')
             file.write(f'constexpr {self.name[2:]} from_c({self.name} value) {{ return static_cast<{self.name[2:]}>(value);}}\n')
 
@@ -341,10 +351,9 @@ class Bitmask:
             file.write(f'    return out.substr(0, out.size() - 3);\n}}\n')
 
     def print_c_interop(self, file):
-        if self.alias is None and self.underlying_type == 'uint32_t':
+        if self.alias is None:
             file.write(f'constexpr {self.name} to_c({self.name[2:]} value) {{ return static_cast<{self.name}>(value);}}\n')
             file.write(f'constexpr {self.name[2:]} from_c({self.name} value) {{ return static_cast<{self.name[2:]}>(value);}}\n')
-
 class EmptyBitmask:
     def __init__(self, name):
         self.name = name
@@ -415,8 +424,8 @@ class Flags:
             file.write(f'using {self.name} = {self.alias};\n')
 
     def print_c_interop(self, file):
-        if self.alias is None and self.underlying_type == 'uint32_t':
-            file.write(f'constexpr {self.name} to_c({self.name[2:]} value) {{ return static_cast<{self.name}>(value);}}\n')
+        if self.alias is None:
+            file.write(f'constexpr {self.name} to_c({self.name[2:]} value) {{ return static_cast<{self.name}>(value.flags);}}\n')
 
 class Handle:
     def __init__(self, node):
@@ -495,7 +504,8 @@ class Variable:
         self.base_type = node.find('type').text
         self.base_type_modified = TrimVkFromAll(self.base_type)
         # special case cause of bitfields
-        if self.base_type_modified == 'GeometryInstanceFlagsKHR':
+        if self.base_type == 'VkGeometryInstanceFlagsKHR':
+            self.base_type = 'uint32_t'
             self.base_type_modified = 'uint32_t'
 
         if node.find('comment') is not None:
@@ -842,7 +852,7 @@ class Structure:
             should_init = self.category == 'struct'
             file.write(f'{self.category} {self.name} {{\n')
             for member in self.members:
-                if self.name == "VkAccelerationStructureInstanceKHR":
+                if self.name in['VkAccelerationStructureInstanceKHR', 'VkAccelerationStructureMatrixMotionInstanceNV','VkAccelerationStructureSRTMotionInstanceNV']:
                     file.write(f'    {member.get_raw_xml().replace("VkGeometryInstanceFlagsKHR", "uint32_t")}')
                 else:
                     file.write(f'    {member.get_raw_xml()}')
@@ -1253,7 +1263,7 @@ class Requires:
                 AppendToDictOfLists(self.enum_dict, extends, ExtEnum(name, enum_value))
             elif bitpos is not None:
                 AppendToDictOfLists(self.bitmask_dict, extends, ExtBitmask(name, int(bitpos)))
-            
+
     def fill_functions(self, functions):
         self.functions.extend([function for function in functions if function.name in self.commands])
 
@@ -1613,7 +1623,7 @@ def print_c_interop(bindings):
     with open(f'module/vk_module_interop.h', 'w') as c_interop:
         c_interop.write(license_header)
         c_interop.write('#pragma once\n// clang-format off\n')
-        c_interop.write('#include <vulkan/vulkan.h>\n')
+        c_interop.write('#include "vulkan/vulkan.h"\n')
         c_interop.write('#include "vk_module.h"\n')
         c_interop.write('namespace vk {\n')
         PrintConsecutivePlatforms(c_interop, bindings.enum_dict.values(), 'print_c_interop')
@@ -1630,7 +1640,7 @@ def print_basic_bindings(bindings):
         for macro in bindings.macro_defines:
             vulkan_core.write(f'{macro.get_text()}\n\n')
         PrintConsecutivePlatforms(vulkan_core, api_constants.values(), 'print_basic')
-        PrintConsecutivePlatforms(vulkan_core, bindings.base_types, 'print_vk_base')
+        PrintConsecutivePlatforms(vulkan_core, bindings.base_types, 'print_basic')
         PrintConsecutivePlatforms(vulkan_core, bindings.enum_dict.values(), 'print_basic')
         PrintConsecutivePlatforms(vulkan_core, bindings.bitmask_dict.values(), 'print_basic')
         vulkan_core.write(bitmask_flags_macro + '\n')

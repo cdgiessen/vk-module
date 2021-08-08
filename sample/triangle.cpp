@@ -101,7 +101,7 @@ vk::SurfaceKHR create_surface_glfw(VkInstance instance, GLFWwindow* window)
 {
     VkSurfaceKHR surface = VK_NULL_HANDLE;
     VkResult err = glfwCreateWindowSurface(instance, window, NULL, &surface);
-    if (err) {
+    if (vk::from_c(err) != vk::Result::Success) {
         const char* error_msg;
         int ret = glfwGetError(&error_msg);
         if (ret != 0) {
