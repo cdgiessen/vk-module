@@ -179,6 +179,9 @@ class Enum:
             for name, value in self.values.items():
                 file.write(f'    {MorphVkEnumName(name, self.enum_name_len)} = {str(value)},\n')
             file.write('};\n')
+            if self.name == "VkResult":
+                for name, value in self.values.items():
+                    file.write(f'const {self.name[2:]} {MorphVkEnumName(name, self.enum_name_len)} = {self.name[2:]}::{MorphVkEnumName(name, self.enum_name_len)};\n')
 
     def print_basic(self, file):
         if self.alias is not None:
