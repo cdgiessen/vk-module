@@ -300,7 +300,7 @@ struct FLAG_TYPE {                                                              
     BASE_TYPE flags = static_cast<BASE_TYPE>(0);                                           \\
                                                                                            \\
     constexpr FLAG_TYPE() noexcept = default;                                              \\
-    constexpr explicit FLAG_TYPE(BASE_TYPE in) noexcept: flags(in){ }                      \\
+    constexpr FLAG_TYPE(BASE_TYPE in) noexcept: flags(in){ }                      \\
     constexpr FLAG_TYPE(FLAG_BITS in) noexcept: flags(static_cast<BASE_TYPE>(in)){ }       \\
     constexpr bool operator==(FLAG_TYPE const& right) const { return flags == right.flags;}\\
     constexpr bool operator!=(FLAG_TYPE const& right) const { return flags != right.flags;}\\

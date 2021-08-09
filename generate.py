@@ -89,7 +89,7 @@ class ApiConstant:
     def print_base(self, file):
         if self.alias is not None:
             file.write(f'constexpr {self.type} {self.name[3:]} = {self.alias[3:]};\n')
-        elif self.value is not None:
+        elif self.value is not None and self.name not in ['VK_TRUE', 'VK_FALSE']:
             file.write(f'constexpr {self.type} {self.name[3:]} = {self.value};\n')
 
     def print_basic(self, file):
@@ -252,18 +252,17 @@ class Bitmask:
 
         for elem in node:
             value = elem.get('value')
-            if elem.get('bitpos') is not None:
+            if value is None and elem.get('bitpos') is not None:
                 value = str(1 << int(elem.get('bitpos')))
             elif elem.get('alias') is not None:
                 if elem.get('name') == "VK_STENCIL_FRONT_AND_BACK":
                     continue #ugly special case
                 value = elem.get("alias")
-                MorphVkEnumName(elem.get("alias"), self.bitmask_name_len)
-            self.values[value] = elem.get('name')
+            self.values[elem.get('name')] = value
 
     def fill_ext_bitmasks(self, bitmask_ext_dict):
         for ext_bit in bitmask_ext_dict:
-            self.values[str(1 << ext_bit.bitpos)] = ext_bit.name
+            self.values[ext_bit.name] = str(ext_bit.bitpos)
 
     def check_platform(self, platform, ext_types):
         if self.name in ext_types:
@@ -274,7 +273,7 @@ class Bitmask:
             file.write(f'using {self.name} = {self.alias[2:]};\n')
         else:
             file.write(f'enum class {self.name[2:]}: {self.underlying_type} {{\n')
-            for bitpos, name in self.values.items():
+            for name, bitpos in self.values.items():
                 file.write(f'    {MorphVkEnumName(name, self.bitmask_name_len)} = ')
                 if all(c.isnumeric() for c in bitpos) or '0x' in bitpos :
                     file.write(f'{bitpos},\n')
@@ -287,14 +286,14 @@ class Bitmask:
             file.write(f'using {self.name} = {self.alias};\n')
         else:
             file.write(f'enum class {self.name}: {self.underlying_type} {{\n')
-            for bitpos, name in self.values.items():
+            for name, bitpos in self.values.items():
                 file.write(f'    {MorphVkEnumName(name, self.bitmask_name_len)} = ')
                 if all(c.isnumeric() for c in bitpos) or '0x' in bitpos :
                     file.write(f'{bitpos},\n')
                 else:
                     file.write(f'{MorphVkEnumName(bitpos, self.bitmask_name_len)},\n')
             file.write('};\n')
-            for name in self.values.values():
+            for name in self.values.keys():
                 file.write(f'const {self.name} {name} = {self.name}::{MorphVkEnumName(name, self.bitmask_name_len)};\n')
 
     def print_string(self, file):
@@ -305,17 +304,21 @@ class Bitmask:
                 return
             file.write(f'inline const char * to_string({self.name[2:]} val) {{\n')
             file.write('    switch(val) {\n')
-            for bitpos, name in self.values.items():
+            already_printed_bits = set()
+            for name, bitpos in self.values.items():
+                if bitpos in already_printed_bits:
+                    continue
                 if not RepresentsIntOrHex(bitpos):
                     continue
                 modified_name = MorphVkEnumName(name, self.bitmask_name_len)
                 file.write(f'        case({self.name[2:]}::{modified_name}): return \"{modified_name}\";\n')
+                already_printed_bits.add(bitpos)
 
             file.write('        default: return "UNKNOWN";\n    }\n}\n')
             file.write(f'inline std::string to_string({self.flags_name[2:]} flag){{\n')
             file.write(f'    if (flag.flags == 0) return \"None\";\n')
             file.write(f'    std::string out;\n')
-            for bitpos, name in self.values.items():
+            for name, bitpos in self.values.items():
                 if not RepresentsIntOrHex(bitpos):
                     continue
                 modified_name = MorphVkEnumName(name, self.bitmask_name_len)
@@ -337,16 +340,21 @@ class Bitmask:
                 return
             file.write(f'const char * to_string({self.name} val) {{\n')
             file.write('    switch(val) {\n')
-            for bitpos, name in self.values.items():
+            already_printed_bits = set()
+            for name, bitpos in self.values.items():
+                if bitpos in already_printed_bits:
+                    continue
                 if not RepresentsIntOrHex(bitpos):
                     continue
                 modified_name = MorphVkEnumName(name, self.bitmask_name_len)
                 file.write(f'        case({self.name}::{modified_name}): return \"{modified_name}\";\n')
+                already_printed_bits.add(bitpos)
+
             file.write('        default: return "UNKNOWN";\n    }\n}\n')
             file.write(f'std::string to_string({self.flags_name} flag){{\n')
             file.write(f'    if (flag.flags == 0) return \"None\";\n')
             file.write(f'    std::string out;\n')
-            for bitpos, name in self.values.items():
+            for name, bitpos in self.values.items():
                 if not RepresentsIntOrHex(bitpos):
                     continue
                 modified_name = MorphVkEnumName(name, self.bitmask_name_len)
@@ -1265,7 +1273,7 @@ class Requires:
                 enum_value = EnumExtValue(int(extnumber), offset, enum.get('dir'))
                 AppendToDictOfLists(self.enum_dict, extends, ExtEnum(name, enum_value))
             elif bitpos is not None:
-                AppendToDictOfLists(self.bitmask_dict, extends, ExtBitmask(name, int(bitpos)))
+                AppendToDictOfLists(self.bitmask_dict, extends, ExtBitmask(name, 1 << int(bitpos)))
 
     def fill_functions(self, functions):
         self.functions.extend([function for function in functions if function.name in self.commands])
@@ -1296,6 +1304,9 @@ class Extension:
         self.requires = []
         for requires in node.findall('require'):
             self.requires.append(Requires(requires, self.ext_num))
+        if self.supported != "disabled":
+            self.str_name = node.findall('require')[0].findall('enum')[1].get('name')
+
 
 class VulkanFeatureLevel:
     def __init__(self,node):
@@ -1446,8 +1457,7 @@ class BindingGenerator:
             if enum.attrib.get('name') == "API Constants":
                 for constant in enum.iter():
                     api_constant = ApiConstant(constant)
-                    if api_constant.name not in ['VK_TRUE', 'VK_FALSE']:
-                        api_constants[api_constant.name] = api_constant
+                    api_constants[api_constant.name] = api_constant
                 break
 
         for xml_type in root.find('types'):
@@ -1644,6 +1654,9 @@ def print_basic_bindings(bindings):
             vulkan_core.write(f'{macro.get_text()}\n\n')
         PrintConsecutivePlatforms(vulkan_core, api_constants.values(), 'print_basic')
         PrintConsecutivePlatforms(vulkan_core, bindings.base_types, 'print_basic')
+        for ext in bindings.ext_list:
+            if ext.supported != "disabled":
+                vulkan_core.write(f'#define {ext.str_name} "{ext.name}"\n')
         PrintConsecutivePlatforms(vulkan_core, bindings.enum_dict.values(), 'print_basic')
         PrintConsecutivePlatforms(vulkan_core, bindings.bitmask_dict.values(), 'print_basic')
         vulkan_core.write(bitmask_flags_macro + '\n')

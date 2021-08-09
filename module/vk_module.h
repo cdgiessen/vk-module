@@ -1908,7 +1908,7 @@ enum class MemoryHeapFlagBits: uint32_t {
     MultiInstance = 2,
 };
 enum class AccessFlagBits: uint32_t {
-    NoneKHR = 1,
+    IndirectCommandRead = 1,
     IndexRead = 2,
     VertexAttributeRead = 4,
     UniformRead = 8,
@@ -1936,6 +1936,7 @@ enum class AccessFlagBits: uint32_t {
     FragmentShadingRateAttachmentReadBitKHR = 8388608,
     CommandPreprocessReadBitNV = 131072,
     CommandPreprocessWriteBitNV = 262144,
+    NoneKHR = 0,
 };
 enum class BufferUsageFlagBits: uint32_t {
     TransferSrc = 1,
@@ -2147,7 +2148,7 @@ enum class SparseMemoryBindFlagBits: uint32_t {
     Metadata = 1,
 };
 enum class PipelineStageFlagBits: uint32_t {
-    NoneKHR = 1,
+    TopOfPipe = 1,
     DrawIndirect = 2,
     VertexInput = 4,
     VertexShader = 8,
@@ -2173,6 +2174,7 @@ enum class PipelineStageFlagBits: uint32_t {
     FragmentDensityProcessBitEXT = 8388608,
     FragmentShadingRateAttachmentBitKHR = 4194304,
     CommandPreprocessBitNV = 131072,
+    NoneKHR = 0,
 };
 enum class CommandPoolCreateFlagBits: uint32_t {
     Transient = 1,
@@ -2711,7 +2713,7 @@ struct FLAG_TYPE {                                                              
     BASE_TYPE flags = static_cast<BASE_TYPE>(0);                                           \
                                                                                            \
     constexpr FLAG_TYPE() noexcept = default;                                              \
-    constexpr explicit FLAG_TYPE(BASE_TYPE in) noexcept: flags(in){ }                      \
+    constexpr FLAG_TYPE(BASE_TYPE in) noexcept: flags(in){ }                      \
     constexpr FLAG_TYPE(FLAG_BITS in) noexcept: flags(static_cast<BASE_TYPE>(in)){ }       \
     constexpr bool operator==(FLAG_TYPE const& right) const { return flags == right.flags;}\
     constexpr bool operator!=(FLAG_TYPE const& right) const { return flags != right.flags;}\
@@ -20960,7 +20962,7 @@ inline std::string to_string(MemoryHeapFlags flag){
 }
 inline const char * to_string(AccessFlagBits val) {
     switch(val) {
-        case(AccessFlagBits::NoneKHR): return "NoneKHR";
+        case(AccessFlagBits::IndirectCommandRead): return "IndirectCommandRead";
         case(AccessFlagBits::IndexRead): return "IndexRead";
         case(AccessFlagBits::VertexAttributeRead): return "VertexAttributeRead";
         case(AccessFlagBits::UniformRead): return "UniformRead";
@@ -20988,13 +20990,14 @@ inline const char * to_string(AccessFlagBits val) {
         case(AccessFlagBits::FragmentShadingRateAttachmentReadBitKHR): return "FragmentShadingRateAttachmentReadBitKHR";
         case(AccessFlagBits::CommandPreprocessReadBitNV): return "CommandPreprocessReadBitNV";
         case(AccessFlagBits::CommandPreprocessWriteBitNV): return "CommandPreprocessWriteBitNV";
+        case(AccessFlagBits::NoneKHR): return "NoneKHR";
         default: return "UNKNOWN";
     }
 }
 inline std::string to_string(AccessFlags flag){
     if (flag.flags == 0) return "None";
     std::string out;
-    if (flag & AccessFlagBits::NoneKHR) out += "NoneKHR | ";
+    if (flag & AccessFlagBits::IndirectCommandRead) out += "IndirectCommandRead | ";
     if (flag & AccessFlagBits::IndexRead) out += "IndexRead | ";
     if (flag & AccessFlagBits::VertexAttributeRead) out += "VertexAttributeRead | ";
     if (flag & AccessFlagBits::UniformRead) out += "UniformRead | ";
@@ -21022,6 +21025,7 @@ inline std::string to_string(AccessFlags flag){
     if (flag & AccessFlagBits::FragmentShadingRateAttachmentReadBitKHR) out += "FragmentShadingRateAttachmentReadBitKHR | ";
     if (flag & AccessFlagBits::CommandPreprocessReadBitNV) out += "CommandPreprocessReadBitNV | ";
     if (flag & AccessFlagBits::CommandPreprocessWriteBitNV) out += "CommandPreprocessWriteBitNV | ";
+    if (flag & AccessFlagBits::NoneKHR) out += "NoneKHR | ";
     return out.substr(0, out.size() - 3);
 }
 inline const char * to_string(BufferUsageFlagBits val) {
@@ -21554,7 +21558,7 @@ inline std::string to_string(SparseMemoryBindFlags flag){
 }
 inline const char * to_string(PipelineStageFlagBits val) {
     switch(val) {
-        case(PipelineStageFlagBits::NoneKHR): return "NoneKHR";
+        case(PipelineStageFlagBits::TopOfPipe): return "TopOfPipe";
         case(PipelineStageFlagBits::DrawIndirect): return "DrawIndirect";
         case(PipelineStageFlagBits::VertexInput): return "VertexInput";
         case(PipelineStageFlagBits::VertexShader): return "VertexShader";
@@ -21580,13 +21584,14 @@ inline const char * to_string(PipelineStageFlagBits val) {
         case(PipelineStageFlagBits::FragmentDensityProcessBitEXT): return "FragmentDensityProcessBitEXT";
         case(PipelineStageFlagBits::FragmentShadingRateAttachmentBitKHR): return "FragmentShadingRateAttachmentBitKHR";
         case(PipelineStageFlagBits::CommandPreprocessBitNV): return "CommandPreprocessBitNV";
+        case(PipelineStageFlagBits::NoneKHR): return "NoneKHR";
         default: return "UNKNOWN";
     }
 }
 inline std::string to_string(PipelineStageFlags flag){
     if (flag.flags == 0) return "None";
     std::string out;
-    if (flag & PipelineStageFlagBits::NoneKHR) out += "NoneKHR | ";
+    if (flag & PipelineStageFlagBits::TopOfPipe) out += "TopOfPipe | ";
     if (flag & PipelineStageFlagBits::DrawIndirect) out += "DrawIndirect | ";
     if (flag & PipelineStageFlagBits::VertexInput) out += "VertexInput | ";
     if (flag & PipelineStageFlagBits::VertexShader) out += "VertexShader | ";
@@ -21612,6 +21617,7 @@ inline std::string to_string(PipelineStageFlags flag){
     if (flag & PipelineStageFlagBits::FragmentDensityProcessBitEXT) out += "FragmentDensityProcessBitEXT | ";
     if (flag & PipelineStageFlagBits::FragmentShadingRateAttachmentBitKHR) out += "FragmentShadingRateAttachmentBitKHR | ";
     if (flag & PipelineStageFlagBits::CommandPreprocessBitNV) out += "CommandPreprocessBitNV | ";
+    if (flag & PipelineStageFlagBits::NoneKHR) out += "NoneKHR | ";
     return out.substr(0, out.size() - 3);
 }
 inline const char * to_string(CommandPoolCreateFlagBits val) {

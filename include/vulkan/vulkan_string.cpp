@@ -2124,7 +2124,7 @@ std::string to_string(VkMemoryHeapFlags flag){
 }
 const char * to_string(VkAccessFlagBits val) {
     switch(val) {
-        case(VkAccessFlagBits::NoneKHR): return "NoneKHR";
+        case(VkAccessFlagBits::IndirectCommandRead): return "IndirectCommandRead";
         case(VkAccessFlagBits::IndexRead): return "IndexRead";
         case(VkAccessFlagBits::VertexAttributeRead): return "VertexAttributeRead";
         case(VkAccessFlagBits::UniformRead): return "UniformRead";
@@ -2152,13 +2152,14 @@ const char * to_string(VkAccessFlagBits val) {
         case(VkAccessFlagBits::FragmentShadingRateAttachmentReadBitKHR): return "FragmentShadingRateAttachmentReadBitKHR";
         case(VkAccessFlagBits::CommandPreprocessReadBitNV): return "CommandPreprocessReadBitNV";
         case(VkAccessFlagBits::CommandPreprocessWriteBitNV): return "CommandPreprocessWriteBitNV";
+        case(VkAccessFlagBits::NoneKHR): return "NoneKHR";
         default: return "UNKNOWN";
     }
 }
 std::string to_string(VkAccessFlags flag){
     if (flag.flags == 0) return "None";
     std::string out;
-    if (flag & VkAccessFlagBits::NoneKHR) out += "NoneKHR | ";
+    if (flag & VkAccessFlagBits::IndirectCommandRead) out += "IndirectCommandRead | ";
     if (flag & VkAccessFlagBits::IndexRead) out += "IndexRead | ";
     if (flag & VkAccessFlagBits::VertexAttributeRead) out += "VertexAttributeRead | ";
     if (flag & VkAccessFlagBits::UniformRead) out += "UniformRead | ";
@@ -2186,6 +2187,7 @@ std::string to_string(VkAccessFlags flag){
     if (flag & VkAccessFlagBits::FragmentShadingRateAttachmentReadBitKHR) out += "FragmentShadingRateAttachmentReadBitKHR | ";
     if (flag & VkAccessFlagBits::CommandPreprocessReadBitNV) out += "CommandPreprocessReadBitNV | ";
     if (flag & VkAccessFlagBits::CommandPreprocessWriteBitNV) out += "CommandPreprocessWriteBitNV | ";
+    if (flag & VkAccessFlagBits::NoneKHR) out += "NoneKHR | ";
     return out.substr(0, out.size() - 3);
 }
 const char * to_string(VkBufferUsageFlagBits val) {
@@ -2718,7 +2720,7 @@ std::string to_string(VkSparseMemoryBindFlags flag){
 }
 const char * to_string(VkPipelineStageFlagBits val) {
     switch(val) {
-        case(VkPipelineStageFlagBits::NoneKHR): return "NoneKHR";
+        case(VkPipelineStageFlagBits::TopOfPipe): return "TopOfPipe";
         case(VkPipelineStageFlagBits::DrawIndirect): return "DrawIndirect";
         case(VkPipelineStageFlagBits::VertexInput): return "VertexInput";
         case(VkPipelineStageFlagBits::VertexShader): return "VertexShader";
@@ -2744,13 +2746,14 @@ const char * to_string(VkPipelineStageFlagBits val) {
         case(VkPipelineStageFlagBits::FragmentDensityProcessBitEXT): return "FragmentDensityProcessBitEXT";
         case(VkPipelineStageFlagBits::FragmentShadingRateAttachmentBitKHR): return "FragmentShadingRateAttachmentBitKHR";
         case(VkPipelineStageFlagBits::CommandPreprocessBitNV): return "CommandPreprocessBitNV";
+        case(VkPipelineStageFlagBits::NoneKHR): return "NoneKHR";
         default: return "UNKNOWN";
     }
 }
 std::string to_string(VkPipelineStageFlags flag){
     if (flag.flags == 0) return "None";
     std::string out;
-    if (flag & VkPipelineStageFlagBits::NoneKHR) out += "NoneKHR | ";
+    if (flag & VkPipelineStageFlagBits::TopOfPipe) out += "TopOfPipe | ";
     if (flag & VkPipelineStageFlagBits::DrawIndirect) out += "DrawIndirect | ";
     if (flag & VkPipelineStageFlagBits::VertexInput) out += "VertexInput | ";
     if (flag & VkPipelineStageFlagBits::VertexShader) out += "VertexShader | ";
@@ -2776,6 +2779,7 @@ std::string to_string(VkPipelineStageFlags flag){
     if (flag & VkPipelineStageFlagBits::FragmentDensityProcessBitEXT) out += "FragmentDensityProcessBitEXT | ";
     if (flag & VkPipelineStageFlagBits::FragmentShadingRateAttachmentBitKHR) out += "FragmentShadingRateAttachmentBitKHR | ";
     if (flag & VkPipelineStageFlagBits::CommandPreprocessBitNV) out += "CommandPreprocessBitNV | ";
+    if (flag & VkPipelineStageFlagBits::NoneKHR) out += "NoneKHR | ";
     return out.substr(0, out.size() - 3);
 }
 const char * to_string(VkCommandPoolCreateFlagBits val) {
