@@ -31,7 +31,7 @@ if (VK_MODULE_GENERATE_SOURCE OR VK_MODULE_SAMPLES OR VK_MODULE_TESTS)
     FetchContent_Declare(
         vulkan_headers
         GIT_REPOSITORY https://github.com/KhronosGroup/Vulkan-Headers
-        GIT_TAG        v1.2.186
+        GIT_TAG        v1.2.194
     )
     FetchContent_GetProperties(vulkan-headers)
     if(NOT vulkan_headers_POPULATED)

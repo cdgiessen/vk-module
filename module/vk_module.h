@@ -132,11 +132,12 @@ enum class AttachmentLoadOp : uint32_t {
     Load = 0,
     Clear = 1,
     DontCare = 2,
+    NoneEXT = 1000400000,
 };
 enum class AttachmentStoreOp : uint32_t {
     Store = 0,
     DontCare = 1,
-    NoneQCOM = 1000301000,
+    NoneEXT = 1000301000,
 };
 enum class BlendFactor : uint32_t {
     Zero = 0,
@@ -1139,6 +1140,8 @@ enum class StructureType : uint32_t {
     PhysicalDeviceDeviceGeneratedCommandsFeaturesNV = 1000277007,
     PhysicalDeviceInheritedViewportScissorFeaturesNV = 1000278000,
     CommandBufferInheritanceViewportScissorInfoNV = 1000278001,
+    PhysicalDeviceShaderIntegerDotProductFeaturesKHR = 1000280000,
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR = 1000280001,
     PhysicalDeviceTexelBufferAlignmentFeaturesEXT = 1000281000,
     PhysicalDeviceTexelBufferAlignmentPropertiesEXT = 1000281001,
     CommandBufferInheritanceRenderPassTransformInfoQCOM = 1000282000,
@@ -1205,11 +1208,22 @@ enum class StructureType : uint32_t {
     VertexInputBindingDescription2EXT = 1000352001,
     VertexInputAttributeDescription2EXT = 1000352002,
     PhysicalDeviceDrmPropertiesEXT = 1000353000,
+    PhysicalDevicePrimitiveTopologyListRestartFeaturesEXT = 1000356000,
     ImportMemoryZirconHandleInfoFUCHSIA = 1000364000,
     MemoryZirconHandlePropertiesFUCHSIA = 1000364001,
     MemoryGetZirconHandleInfoFUCHSIA = 1000364002,
     ImportSemaphoreZirconHandleInfoFUCHSIA = 1000365000,
     SemaphoreGetZirconHandleInfoFUCHSIA = 1000365001,
+    BufferCollectionCreateInfoFUCHSIA = 1000366000,
+    ImportMemoryBufferCollectionFUCHSIA = 1000366001,
+    BufferCollectionImageCreateInfoFUCHSIA = 1000366002,
+    BufferCollectionPropertiesFUCHSIA = 1000366003,
+    BufferConstraintsInfoFUCHSIA = 1000366004,
+    BufferCollectionBufferCreateInfoFUCHSIA = 1000366005,
+    ImageConstraintsInfoFUCHSIA = 1000366006,
+    ImageFormatConstraintsInfoFUCHSIA = 1000366007,
+    SysmemColorSpaceFUCHSIA = 1000366008,
+    BufferCollectionConstraintsInfoFUCHSIA = 1000366009,
     SubpassShadingPipelineCreateInfoHUAWEI = 1000369000,
     PhysicalDeviceSubpassShadingFeaturesHUAWEI = 1000369001,
     PhysicalDeviceSubpassShadingPropertiesHUAWEI = 1000369002,
@@ -1224,6 +1238,7 @@ enum class StructureType : uint32_t {
     QueueFamilyGlobalPriorityPropertiesEXT = 1000388001,
     PhysicalDeviceMultiDrawFeaturesEXT = 1000392000,
     PhysicalDeviceMultiDrawPropertiesEXT = 1000392001,
+    PhysicalDevicePageableDeviceLocalMemoryFeaturesEXT = 1000412000,
     PhysicalDeviceSubgroupProperties = 1000094000,
     BindBufferMemoryInfo = 1000157000,
     BindImageMemoryInfo = 1000157001,
@@ -1414,6 +1429,7 @@ enum class ObjectType : uint32_t {
     DeferredOperationKHR = 1000268000,
     IndirectCommandsLayoutNV = 1000277000,
     PrivateDataSlotEXT = 1000295000,
+    BufferCollectionFUCHSIA = 1000366000,
     SamplerYcbcrConversion = 1000156000,
     DescriptorUpdateTemplate = 1000085000,
 };
@@ -1704,6 +1720,7 @@ enum class DebugReportObjectTypeEXT : uint32_t {
     CuFunctionNvxEXT = 1000029001,
     AccelerationStructureKhrEXT = 1000150000,
     AccelerationStructureNvEXT = 1000165000,
+    BufferCollectionFuchsiaEXT = 1000366000,
 };
 enum class DeviceMemoryReportEventTypeEXT : uint32_t {
     AllocateEXT = 0,
@@ -1828,6 +1845,10 @@ enum class DriverId : uint32_t {
     Moltenvk = 14,
     CoreaviProprietary = 15,
     JuiceProprietary = 16,
+    VerisiliconProprietary = 17,
+    MesaTurnip = 18,
+    MesaV3Dv = 19,
+    MesaPanvk = 20,
 };
 using DriverIdKHR = DriverId;
 enum class ShadingRatePaletteEntryNV : uint32_t {
@@ -2064,6 +2085,8 @@ enum class ColorComponentFlagBits: uint32_t {
 };
 enum class FenceCreateFlagBits: uint32_t {
     Signaled = 1,
+};
+enum class SemaphoreCreateFlagBits: uint32_t {
 };
 enum class FormatFeatureFlagBits: uint32_t {
     SampledImage = 1,
@@ -2394,9 +2417,10 @@ enum class ResolveModeFlagBits: uint32_t {
 };
 enum class GeometryInstanceFlagBitsKHR: uint32_t {
     TriangleFacingCullDisableBitKHR = 1,
-    TriangleFrontCounterclockwiseBitKHR = 2,
+    TriangleFlipFacingBitKHR = 2,
     ForceOpaqueBitKHR = 4,
     ForceNoOpaqueBitKHR = 8,
+    TriangleFrontCounterclockwiseBitKHR = TriangleFlipFacingBitKHR,
 };
 enum class GeometryFlagBitsKHR: uint32_t {
     OpaqueBitKHR = 1,
@@ -2558,7 +2582,7 @@ enum class VideoComponentBitDepthFlagBitsKHR: uint32_t {
     e10BitKHR = 4,
     e12BitKHR = 16,
 };
-enum class VideoCapabilitiesFlagBitsKHR: uint32_t {
+enum class VideoCapabilityFlagBitsKHR: uint32_t {
     ProtectedContentBitKHR = 1,
     SeparateReferenceImagesBitKHR = 2,
 };
@@ -2567,15 +2591,14 @@ enum class VideoSessionCreateFlagBitsKHR: uint32_t {
     ProtectedContentBitKHR = 1,
 };
 enum class VideoCodingQualityPresetFlagBitsKHR: uint32_t {
-    DefaultBitKHR = 0,
     NormalBitKHR = 1,
     PowerBitKHR = 2,
     QualityBitKHR = 4,
 };
-enum class VideoDecodeH264FieldLayoutFlagBitsEXT: uint32_t {
-    OnlyEXT = 0,
-    LineInterlacedPlaneBitEXT = 1,
-    SeparateInterlacedPlaneBitEXT = 2,
+enum class VideoDecodeH264PictureLayoutFlagBitsEXT: uint32_t {
+    ProgressiveEXT = 0,
+    InterlacedInterleavedLinesBitEXT = 1,
+    InterlacedSeparatePlanesBitEXT = 2,
 };
 enum class VideoCodingControlFlagBitsKHR: uint32_t {
     DefaultKHR = 0,
@@ -2598,7 +2621,7 @@ enum class VideoEncodeRateControlModeFlagBitsKHR: uint32_t {
     CbrBitKHR = 1,
     VbrBitKHR = 2,
 };
-enum class VideoEncodeH264CapabilitiesFlagBitsEXT: uint32_t {
+enum class VideoEncodeH264CapabilityFlagBitsEXT: uint32_t {
     CabacBitEXT = 1,
     CavlcBitEXT = 2,
     WeightedBiPredImplicitBitEXT = 4,
@@ -2626,6 +2649,17 @@ enum class VideoEncodeH264CreateFlagBitsEXT: uint32_t {
     Reserved0BitEXT = 1,
 };
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+enum class ImageFormatConstraintsFlagBitsFUCHSIA: uint32_t {
+};
+enum class ImageConstraintsInfoFlagBitsFUCHSIA: uint32_t {
+    CpuReadRarelyFUCHSIA = 1,
+    CpuReadOftenFUCHSIA = 2,
+    CpuWriteRarelyFUCHSIA = 4,
+    CpuWriteOftenFUCHSIA = 8,
+    ProtectedOptionalFUCHSIA = 16,
+};
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
 enum class QueryPoolCreateFlagBits: uint32_t { };
 enum class PipelineDepthStencilStateCreateFlagBits: uint32_t { };
 enum class PipelineDynamicStateCreateFlagBits: uint32_t { };
@@ -2639,7 +2673,6 @@ enum class PipelineVertexInputStateCreateFlagBits: uint32_t { };
 enum class BufferViewCreateFlagBits: uint32_t { };
 enum class InstanceCreateFlagBits: uint32_t { };
 enum class DeviceCreateFlagBits: uint32_t { };
-enum class SemaphoreCreateFlagBits: uint32_t { };
 enum class MemoryMapFlagBits: uint32_t { };
 enum class DescriptorPoolResetFlagBits: uint32_t { };
 enum class DescriptorUpdateTemplateCreateFlagBits: uint32_t { };
@@ -2933,16 +2966,20 @@ DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationStateStreamCreateFlagsEXT, Pipe
 DECLARE_ENUM_FLAG_OPERATORS(PipelineRasterizationDepthClipStateCreateFlagsEXT, PipelineRasterizationDepthClipStateCreateFlagBitsEXT, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(ToolPurposeFlagsEXT, ToolPurposeFlagBitsEXT, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(SubmitFlagsKHR, SubmitFlagBitsKHR, uint32_t)
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+DECLARE_ENUM_FLAG_OPERATORS(ImageFormatConstraintsFlagsFUCHSIA, ImageFormatConstraintsFlagBitsFUCHSIA, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(ImageConstraintsInfoFlagsFUCHSIA, ImageConstraintsInfoFlagBitsFUCHSIA, uint32_t)
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 DECLARE_ENUM_FLAG_OPERATORS(VideoCodecOperationFlagsKHR, VideoCodecOperationFlagBitsKHR, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(VideoCapabilitiesFlagsKHR, VideoCapabilitiesFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(VideoCapabilityFlagsKHR, VideoCapabilityFlagBitsKHR, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VideoSessionCreateFlagsKHR, VideoSessionCreateFlagBitsKHR, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VideoBeginCodingFlagsKHR, VideoBeginCodingFlagBitsKHR, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VideoEndCodingFlagsKHR, VideoEndCodingFlagBitsKHR, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VideoCodingQualityPresetFlagsKHR, VideoCodingQualityPresetFlagBitsKHR, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VideoCodingControlFlagsKHR, VideoCodingControlFlagBitsKHR, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VideoDecodeFlagsKHR, VideoDecodeFlagBitsKHR, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(VideoDecodeH264FieldLayoutFlagsEXT, VideoDecodeH264FieldLayoutFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(VideoDecodeH264PictureLayoutFlagsEXT, VideoDecodeH264PictureLayoutFlagBitsEXT, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VideoDecodeH264CreateFlagsEXT, VideoDecodeH264CreateFlagBitsEXT, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VideoDecodeH265CreateFlagsEXT, VideoDecodeH265CreateFlagBitsEXT, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VideoEncodeFlagsKHR, VideoEncodeFlagBitsKHR, uint32_t)
@@ -2950,7 +2987,7 @@ DECLARE_ENUM_FLAG_OPERATORS(VideoEncodeRateControlFlagsKHR, VideoEncodeRateContr
 DECLARE_ENUM_FLAG_OPERATORS(VideoEncodeRateControlModeFlagsKHR, VideoEncodeRateControlModeFlagBitsKHR, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VideoChromaSubsamplingFlagsKHR, VideoChromaSubsamplingFlagBitsKHR, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VideoComponentBitDepthFlagsKHR, VideoComponentBitDepthFlagBitsKHR, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(VideoEncodeH264CapabilitiesFlagsEXT, VideoEncodeH264CapabilitiesFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(VideoEncodeH264CapabilityFlagsEXT, VideoEncodeH264CapabilityFlagBitsEXT, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VideoEncodeH264InputModeFlagsEXT, VideoEncodeH264InputModeFlagBitsEXT, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VideoEncodeH264OutputModeFlagsEXT, VideoEncodeH264OutputModeFlagBitsEXT, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VideoEncodeH264CreateFlagsEXT, VideoEncodeH264CreateFlagBitsEXT, uint32_t)
@@ -2990,6 +3027,7 @@ VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkValidationCacheEXT)
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkAccelerationStructureKHR)
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkAccelerationStructureNV)
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkPerformanceConfigurationINTEL)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkBufferCollectionFUCHSIA)
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDeferredOperationKHR)
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkPrivateDataSlotEXT)
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkCuModuleNVX)
@@ -3385,6 +3423,18 @@ class PerformanceConfigurationINTEL {
     PerformanceConfigurationINTEL([[maybe_unused]] std::nullptr_t none) noexcept {}
     explicit PerformanceConfigurationINTEL(VkPerformanceConfigurationINTEL handle) noexcept : handle(handle){}
     VkPerformanceConfigurationINTEL get() { return handle; }
+    bool valid() { return handle != 0; }
+    explicit operator bool() const {return handle != 0;};
+    bool operator!() { return handle == 0; }
+};
+
+class BufferCollectionFUCHSIA {
+    VkBufferCollectionFUCHSIA handle = 0;
+    public:
+    BufferCollectionFUCHSIA() = default;
+    BufferCollectionFUCHSIA([[maybe_unused]] std::nullptr_t none) noexcept {}
+    explicit BufferCollectionFUCHSIA(VkBufferCollectionFUCHSIA handle) noexcept : handle(handle){}
+    VkBufferCollectionFUCHSIA get() { return handle; }
     bool valid() { return handle != 0; }
     explicit operator bool() const {return handle != 0;};
     bool operator!() { return handle == 0; }
@@ -9642,6 +9692,12 @@ struct MemoryPriorityAllocateInfoEXT {
     float priority{0.f};
     MemoryPriorityAllocateInfoEXT& setPriority(float priority_) {this->priority = priority_; return *this; }
 };
+struct PhysicalDevicePageableDeviceLocalMemoryFeaturesEXT {
+    StructureType sType{StructureType::PhysicalDevicePageableDeviceLocalMemoryFeaturesEXT};
+    void* pNext = nullptr;
+    Bool32 pageableDeviceLocalMemory{0};
+    PhysicalDevicePageableDeviceLocalMemoryFeaturesEXT& setPageableDeviceLocalMemory(Bool32 pageableDeviceLocalMemory_) {this->pageableDeviceLocalMemory = pageableDeviceLocalMemory_; return *this; }
+};
 struct PhysicalDeviceBufferDeviceAddressFeatures {
     StructureType sType{StructureType::PhysicalDeviceBufferDeviceAddressFeatures};
     void* pNext = nullptr;
@@ -10087,6 +10143,14 @@ struct AttachmentReferenceStencilLayout {
     void* pNext = nullptr;
     ImageLayout stencilLayout{static_cast<ImageLayout>(0)};
     AttachmentReferenceStencilLayout& setStencilLayout(ImageLayout stencilLayout_) {this->stencilLayout = stencilLayout_; return *this; }
+};
+struct PhysicalDevicePrimitiveTopologyListRestartFeaturesEXT {
+    StructureType sType{StructureType::PhysicalDevicePrimitiveTopologyListRestartFeaturesEXT};
+    void* pNext = nullptr;
+    Bool32 primitiveTopologyListRestart{0};
+    Bool32 primitiveTopologyPatchListRestart{0};
+    PhysicalDevicePrimitiveTopologyListRestartFeaturesEXT& setPrimitiveTopologyListRestart(Bool32 primitiveTopologyListRestart_) {this->primitiveTopologyListRestart = primitiveTopologyListRestart_; return *this; }
+    PhysicalDevicePrimitiveTopologyListRestartFeaturesEXT& setPrimitiveTopologyPatchListRestart(Bool32 primitiveTopologyPatchListRestart_) {this->primitiveTopologyPatchListRestart = primitiveTopologyPatchListRestart_; return *this; }
 };
 using AttachmentReferenceStencilLayoutKHR = AttachmentReferenceStencilLayout;
 struct AttachmentDescriptionStencilLayout {
@@ -11511,7 +11575,7 @@ struct VideoFormatPropertiesKHR {
 struct VideoCapabilitiesKHR {
     StructureType sType{StructureType::VideoCapabilitiesKHR};
     void* pNext = nullptr;
-    VideoCapabilitiesFlagsKHR capabilityFlags{};
+    VideoCapabilityFlagsKHR capabilityFlags{};
     DeviceSize minBitstreamBufferOffsetAlignment{0};
     DeviceSize minBitstreamBufferSizeAlignment{0};
     Extent2D videoPictureExtentGranularity{};
@@ -11519,7 +11583,7 @@ struct VideoCapabilitiesKHR {
     Extent2D maxExtent{};
     uint32_t maxReferencePicturesSlotsCount{0};
     uint32_t maxReferencePicturesActiveCount{0};
-    VideoCapabilitiesKHR& setCapabilityFlags(VideoCapabilitiesFlagsKHR capabilityFlags_) {this->capabilityFlags = capabilityFlags_; return *this; }
+    VideoCapabilitiesKHR& setCapabilityFlags(VideoCapabilityFlagsKHR capabilityFlags_) {this->capabilityFlags = capabilityFlags_; return *this; }
     VideoCapabilitiesKHR& setMinBitstreamBufferOffsetAlignment(DeviceSize minBitstreamBufferOffsetAlignment_) {this->minBitstreamBufferOffsetAlignment = minBitstreamBufferOffsetAlignment_; return *this; }
     VideoCapabilitiesKHR& setMinBitstreamBufferSizeAlignment(DeviceSize minBitstreamBufferSizeAlignment_) {this->minBitstreamBufferSizeAlignment = minBitstreamBufferSizeAlignment_; return *this; }
     VideoCapabilitiesKHR& setVideoPictureExtentGranularity(Extent2D videoPictureExtentGranularity_) {this->videoPictureExtentGranularity = videoPictureExtentGranularity_; return *this; }
@@ -11600,9 +11664,9 @@ struct VideoDecodeH264ProfileEXT {
     StructureType sType{StructureType::VideoDecodeH264ProfileEXT};
     const void* pNext = nullptr;
     StdVideoH264ProfileIdc stdProfileIdc{};
-    VideoDecodeH264FieldLayoutFlagsEXT fieldLayout{};
+    VideoDecodeH264PictureLayoutFlagsEXT pictureLayout{};
     VideoDecodeH264ProfileEXT& setStdProfileIdc(StdVideoH264ProfileIdc stdProfileIdc_) {this->stdProfileIdc = stdProfileIdc_; return *this; }
-    VideoDecodeH264ProfileEXT& setFieldLayout(VideoDecodeH264FieldLayoutFlagsEXT fieldLayout_) {this->fieldLayout = fieldLayout_; return *this; }
+    VideoDecodeH264ProfileEXT& setPictureLayout(VideoDecodeH264PictureLayoutFlagsEXT pictureLayout_) {this->pictureLayout = pictureLayout_; return *this; }
 };
 struct VideoDecodeH264CapabilitiesEXT {
     StructureType sType{StructureType::VideoDecodeH264CapabilitiesEXT};
@@ -11852,7 +11916,7 @@ struct VideoEncodeRateControlInfoKHR {
 struct VideoEncodeH264CapabilitiesEXT {
     StructureType sType{StructureType::VideoEncodeH264CapabilitiesEXT};
     const void* pNext = nullptr;
-    VideoEncodeH264CapabilitiesFlagsEXT flags{};
+    VideoEncodeH264CapabilityFlagsEXT flags{};
     VideoEncodeH264InputModeFlagsEXT inputModeFlags{};
     VideoEncodeH264OutputModeFlagsEXT outputModeFlags{};
     Extent2D minPictureSizeInMbs{};
@@ -11863,7 +11927,7 @@ struct VideoEncodeH264CapabilitiesEXT {
     uint8_t maxNumL1Reference{0};
     uint8_t qualityLevelCount{0};
     ExtensionProperties stdExtensionVersion{};
-    VideoEncodeH264CapabilitiesEXT& setFlags(VideoEncodeH264CapabilitiesFlagsEXT flags_) {this->flags = flags_; return *this; }
+    VideoEncodeH264CapabilitiesEXT& setFlags(VideoEncodeH264CapabilityFlagsEXT flags_) {this->flags = flags_; return *this; }
     VideoEncodeH264CapabilitiesEXT& setInputModeFlags(VideoEncodeH264InputModeFlagsEXT inputModeFlags_) {this->inputModeFlags = inputModeFlags_; return *this; }
     VideoEncodeH264CapabilitiesEXT& setOutputModeFlags(VideoEncodeH264OutputModeFlagsEXT outputModeFlags_) {this->outputModeFlags = outputModeFlags_; return *this; }
     VideoEncodeH264CapabilitiesEXT& setMinPictureSizeInMbs(Extent2D minPictureSizeInMbs_) {this->minPictureSizeInMbs = minPictureSizeInMbs_; return *this; }
@@ -12039,6 +12103,7 @@ struct CuModuleCreateInfoNVX {
     const void* pData = nullptr;
     CuModuleCreateInfoNVX& setDataSize(size_t dataSize_) {this->dataSize = dataSize_; return *this; }
     CuModuleCreateInfoNVX& setPData(const void* pData_) {this->pData = pData_; return *this; }
+    CuModuleCreateInfoNVX& setPData(detail::span<const std::byte> pData_) {this->dataSize = pData_.size(); this->pData = pData_.data();  return *this; }
 };
 struct CuFunctionCreateInfoNVX {
     StructureType sType{StructureType::CuFunctionCreateInfoNVX};
@@ -12077,6 +12142,76 @@ struct CuLaunchInfoNVX {
     CuLaunchInfoNVX& setExtraCount(size_t extraCount_) {this->extraCount = extraCount_; return *this; }
     CuLaunchInfoNVX& setPExtras(const void* pExtras_) {this->pExtras = pExtras_; return *this; }
     CuLaunchInfoNVX& setPExtras(detail::span<const std::byte> pExtras_) {this->extraCount = pExtras_.size(); this->pExtras = pExtras_.data();  return *this; }
+};
+struct PhysicalDeviceShaderIntegerDotProductFeaturesKHR {
+    StructureType sType{StructureType::PhysicalDeviceShaderIntegerDotProductFeaturesKHR};
+    void* pNext = nullptr;
+    Bool32 shaderIntegerDotProduct{0};
+    PhysicalDeviceShaderIntegerDotProductFeaturesKHR& setShaderIntegerDotProduct(Bool32 shaderIntegerDotProduct_) {this->shaderIntegerDotProduct = shaderIntegerDotProduct_; return *this; }
+};
+struct PhysicalDeviceShaderIntegerDotProductPropertiesKHR {
+    StructureType sType{StructureType::PhysicalDeviceShaderIntegerDotProductPropertiesKHR};
+    void* pNext = nullptr;
+    Bool32 integerDotProduct8BitUnsignedAccelerated{0};
+    Bool32 integerDotProduct8BitSignedAccelerated{0};
+    Bool32 integerDotProduct8BitMixedSignednessAccelerated{0};
+    Bool32 integerDotProduct4x8BitPackedUnsignedAccelerated{0};
+    Bool32 integerDotProduct4x8BitPackedSignedAccelerated{0};
+    Bool32 integerDotProduct4x8BitPackedMixedSignednessAccelerated{0};
+    Bool32 integerDotProduct16BitUnsignedAccelerated{0};
+    Bool32 integerDotProduct16BitSignedAccelerated{0};
+    Bool32 integerDotProduct16BitMixedSignednessAccelerated{0};
+    Bool32 integerDotProduct32BitUnsignedAccelerated{0};
+    Bool32 integerDotProduct32BitSignedAccelerated{0};
+    Bool32 integerDotProduct32BitMixedSignednessAccelerated{0};
+    Bool32 integerDotProduct64BitUnsignedAccelerated{0};
+    Bool32 integerDotProduct64BitSignedAccelerated{0};
+    Bool32 integerDotProduct64BitMixedSignednessAccelerated{0};
+    Bool32 integerDotProductAccumulatingSaturating8BitUnsignedAccelerated{0};
+    Bool32 integerDotProductAccumulatingSaturating8BitSignedAccelerated{0};
+    Bool32 integerDotProductAccumulatingSaturating8BitMixedSignednessAccelerated{0};
+    Bool32 integerDotProductAccumulatingSaturating4x8BitPackedUnsignedAccelerated{0};
+    Bool32 integerDotProductAccumulatingSaturating4x8BitPackedSignedAccelerated{0};
+    Bool32 integerDotProductAccumulatingSaturating4x8BitPackedMixedSignednessAccelerated{0};
+    Bool32 integerDotProductAccumulatingSaturating16BitUnsignedAccelerated{0};
+    Bool32 integerDotProductAccumulatingSaturating16BitSignedAccelerated{0};
+    Bool32 integerDotProductAccumulatingSaturating16BitMixedSignednessAccelerated{0};
+    Bool32 integerDotProductAccumulatingSaturating32BitUnsignedAccelerated{0};
+    Bool32 integerDotProductAccumulatingSaturating32BitSignedAccelerated{0};
+    Bool32 integerDotProductAccumulatingSaturating32BitMixedSignednessAccelerated{0};
+    Bool32 integerDotProductAccumulatingSaturating64BitUnsignedAccelerated{0};
+    Bool32 integerDotProductAccumulatingSaturating64BitSignedAccelerated{0};
+    Bool32 integerDotProductAccumulatingSaturating64BitMixedSignednessAccelerated{0};
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProduct8BitUnsignedAccelerated(Bool32 integerDotProduct8BitUnsignedAccelerated_) {this->integerDotProduct8BitUnsignedAccelerated = integerDotProduct8BitUnsignedAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProduct8BitSignedAccelerated(Bool32 integerDotProduct8BitSignedAccelerated_) {this->integerDotProduct8BitSignedAccelerated = integerDotProduct8BitSignedAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProduct8BitMixedSignednessAccelerated(Bool32 integerDotProduct8BitMixedSignednessAccelerated_) {this->integerDotProduct8BitMixedSignednessAccelerated = integerDotProduct8BitMixedSignednessAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProduct4x8BitPackedUnsignedAccelerated(Bool32 integerDotProduct4x8BitPackedUnsignedAccelerated_) {this->integerDotProduct4x8BitPackedUnsignedAccelerated = integerDotProduct4x8BitPackedUnsignedAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProduct4x8BitPackedSignedAccelerated(Bool32 integerDotProduct4x8BitPackedSignedAccelerated_) {this->integerDotProduct4x8BitPackedSignedAccelerated = integerDotProduct4x8BitPackedSignedAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProduct4x8BitPackedMixedSignednessAccelerated(Bool32 integerDotProduct4x8BitPackedMixedSignednessAccelerated_) {this->integerDotProduct4x8BitPackedMixedSignednessAccelerated = integerDotProduct4x8BitPackedMixedSignednessAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProduct16BitUnsignedAccelerated(Bool32 integerDotProduct16BitUnsignedAccelerated_) {this->integerDotProduct16BitUnsignedAccelerated = integerDotProduct16BitUnsignedAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProduct16BitSignedAccelerated(Bool32 integerDotProduct16BitSignedAccelerated_) {this->integerDotProduct16BitSignedAccelerated = integerDotProduct16BitSignedAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProduct16BitMixedSignednessAccelerated(Bool32 integerDotProduct16BitMixedSignednessAccelerated_) {this->integerDotProduct16BitMixedSignednessAccelerated = integerDotProduct16BitMixedSignednessAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProduct32BitUnsignedAccelerated(Bool32 integerDotProduct32BitUnsignedAccelerated_) {this->integerDotProduct32BitUnsignedAccelerated = integerDotProduct32BitUnsignedAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProduct32BitSignedAccelerated(Bool32 integerDotProduct32BitSignedAccelerated_) {this->integerDotProduct32BitSignedAccelerated = integerDotProduct32BitSignedAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProduct32BitMixedSignednessAccelerated(Bool32 integerDotProduct32BitMixedSignednessAccelerated_) {this->integerDotProduct32BitMixedSignednessAccelerated = integerDotProduct32BitMixedSignednessAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProduct64BitUnsignedAccelerated(Bool32 integerDotProduct64BitUnsignedAccelerated_) {this->integerDotProduct64BitUnsignedAccelerated = integerDotProduct64BitUnsignedAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProduct64BitSignedAccelerated(Bool32 integerDotProduct64BitSignedAccelerated_) {this->integerDotProduct64BitSignedAccelerated = integerDotProduct64BitSignedAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProduct64BitMixedSignednessAccelerated(Bool32 integerDotProduct64BitMixedSignednessAccelerated_) {this->integerDotProduct64BitMixedSignednessAccelerated = integerDotProduct64BitMixedSignednessAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProductAccumulatingSaturating8BitUnsignedAccelerated(Bool32 integerDotProductAccumulatingSaturating8BitUnsignedAccelerated_) {this->integerDotProductAccumulatingSaturating8BitUnsignedAccelerated = integerDotProductAccumulatingSaturating8BitUnsignedAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProductAccumulatingSaturating8BitSignedAccelerated(Bool32 integerDotProductAccumulatingSaturating8BitSignedAccelerated_) {this->integerDotProductAccumulatingSaturating8BitSignedAccelerated = integerDotProductAccumulatingSaturating8BitSignedAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProductAccumulatingSaturating8BitMixedSignednessAccelerated(Bool32 integerDotProductAccumulatingSaturating8BitMixedSignednessAccelerated_) {this->integerDotProductAccumulatingSaturating8BitMixedSignednessAccelerated = integerDotProductAccumulatingSaturating8BitMixedSignednessAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProductAccumulatingSaturating4x8BitPackedUnsignedAccelerated(Bool32 integerDotProductAccumulatingSaturating4x8BitPackedUnsignedAccelerated_) {this->integerDotProductAccumulatingSaturating4x8BitPackedUnsignedAccelerated = integerDotProductAccumulatingSaturating4x8BitPackedUnsignedAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProductAccumulatingSaturating4x8BitPackedSignedAccelerated(Bool32 integerDotProductAccumulatingSaturating4x8BitPackedSignedAccelerated_) {this->integerDotProductAccumulatingSaturating4x8BitPackedSignedAccelerated = integerDotProductAccumulatingSaturating4x8BitPackedSignedAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProductAccumulatingSaturating4x8BitPackedMixedSignednessAccelerated(Bool32 integerDotProductAccumulatingSaturating4x8BitPackedMixedSignednessAccelerated_) {this->integerDotProductAccumulatingSaturating4x8BitPackedMixedSignednessAccelerated = integerDotProductAccumulatingSaturating4x8BitPackedMixedSignednessAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProductAccumulatingSaturating16BitUnsignedAccelerated(Bool32 integerDotProductAccumulatingSaturating16BitUnsignedAccelerated_) {this->integerDotProductAccumulatingSaturating16BitUnsignedAccelerated = integerDotProductAccumulatingSaturating16BitUnsignedAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProductAccumulatingSaturating16BitSignedAccelerated(Bool32 integerDotProductAccumulatingSaturating16BitSignedAccelerated_) {this->integerDotProductAccumulatingSaturating16BitSignedAccelerated = integerDotProductAccumulatingSaturating16BitSignedAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProductAccumulatingSaturating16BitMixedSignednessAccelerated(Bool32 integerDotProductAccumulatingSaturating16BitMixedSignednessAccelerated_) {this->integerDotProductAccumulatingSaturating16BitMixedSignednessAccelerated = integerDotProductAccumulatingSaturating16BitMixedSignednessAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProductAccumulatingSaturating32BitUnsignedAccelerated(Bool32 integerDotProductAccumulatingSaturating32BitUnsignedAccelerated_) {this->integerDotProductAccumulatingSaturating32BitUnsignedAccelerated = integerDotProductAccumulatingSaturating32BitUnsignedAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProductAccumulatingSaturating32BitSignedAccelerated(Bool32 integerDotProductAccumulatingSaturating32BitSignedAccelerated_) {this->integerDotProductAccumulatingSaturating32BitSignedAccelerated = integerDotProductAccumulatingSaturating32BitSignedAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProductAccumulatingSaturating32BitMixedSignednessAccelerated(Bool32 integerDotProductAccumulatingSaturating32BitMixedSignednessAccelerated_) {this->integerDotProductAccumulatingSaturating32BitMixedSignednessAccelerated = integerDotProductAccumulatingSaturating32BitMixedSignednessAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProductAccumulatingSaturating64BitUnsignedAccelerated(Bool32 integerDotProductAccumulatingSaturating64BitUnsignedAccelerated_) {this->integerDotProductAccumulatingSaturating64BitUnsignedAccelerated = integerDotProductAccumulatingSaturating64BitUnsignedAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProductAccumulatingSaturating64BitSignedAccelerated(Bool32 integerDotProductAccumulatingSaturating64BitSignedAccelerated_) {this->integerDotProductAccumulatingSaturating64BitSignedAccelerated = integerDotProductAccumulatingSaturating64BitSignedAccelerated_; return *this; }
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR& setIntegerDotProductAccumulatingSaturating64BitMixedSignednessAccelerated(Bool32 integerDotProductAccumulatingSaturating64BitMixedSignednessAccelerated_) {this->integerDotProductAccumulatingSaturating64BitMixedSignednessAccelerated = integerDotProductAccumulatingSaturating64BitMixedSignednessAccelerated_; return *this; }
 };
 struct PhysicalDeviceDrmPropertiesEXT {
     StructureType sType{StructureType::PhysicalDeviceDrmPropertiesEXT};
@@ -12227,6 +12362,124 @@ struct MemoryGetRemoteAddressInfoNV {
     MemoryGetRemoteAddressInfoNV& setMemory(DeviceMemory memory_) {this->memory = memory_; return *this; }
     MemoryGetRemoteAddressInfoNV& setHandleType(ExternalMemoryHandleTypeFlagBits handleType_) {this->handleType = handleType_; return *this; }
 };
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+struct ImportMemoryBufferCollectionFUCHSIA {
+    StructureType sType{StructureType::ImportMemoryBufferCollectionFUCHSIA};
+    const void* pNext = nullptr;
+    BufferCollectionFUCHSIA collection{};
+    uint32_t index{0};
+    ImportMemoryBufferCollectionFUCHSIA& setCollection(BufferCollectionFUCHSIA collection_) {this->collection = collection_; return *this; }
+    ImportMemoryBufferCollectionFUCHSIA& setIndex(uint32_t index_) {this->index = index_; return *this; }
+};
+struct BufferCollectionImageCreateInfoFUCHSIA {
+    StructureType sType{StructureType::BufferCollectionImageCreateInfoFUCHSIA};
+    const void* pNext = nullptr;
+    BufferCollectionFUCHSIA collection{};
+    uint32_t index{0};
+    BufferCollectionImageCreateInfoFUCHSIA& setCollection(BufferCollectionFUCHSIA collection_) {this->collection = collection_; return *this; }
+    BufferCollectionImageCreateInfoFUCHSIA& setIndex(uint32_t index_) {this->index = index_; return *this; }
+};
+struct BufferCollectionBufferCreateInfoFUCHSIA {
+    StructureType sType{StructureType::BufferCollectionBufferCreateInfoFUCHSIA};
+    const void* pNext = nullptr;
+    BufferCollectionFUCHSIA collection{};
+    uint32_t index{0};
+    BufferCollectionBufferCreateInfoFUCHSIA& setCollection(BufferCollectionFUCHSIA collection_) {this->collection = collection_; return *this; }
+    BufferCollectionBufferCreateInfoFUCHSIA& setIndex(uint32_t index_) {this->index = index_; return *this; }
+};
+struct BufferCollectionCreateInfoFUCHSIA {
+    StructureType sType{StructureType::BufferCollectionCreateInfoFUCHSIA};
+    const void* pNext = nullptr;
+    zx_handle_t collectionToken{};
+    BufferCollectionCreateInfoFUCHSIA& setCollectionToken(zx_handle_t collectionToken_) {this->collectionToken = collectionToken_; return *this; }
+};
+struct SysmemColorSpaceFUCHSIA {
+    StructureType sType{StructureType::SysmemColorSpaceFUCHSIA};
+    const void* pNext = nullptr;
+    uint32_t colorSpace{0};
+    SysmemColorSpaceFUCHSIA& setColorSpace(uint32_t colorSpace_) {this->colorSpace = colorSpace_; return *this; }
+};
+struct BufferCollectionPropertiesFUCHSIA {
+    StructureType sType{StructureType::BufferCollectionPropertiesFUCHSIA};
+    void* pNext = nullptr;
+    uint32_t memoryTypeBits{0};
+    uint32_t bufferCount{0};
+    uint32_t createInfoIndex{0};
+    uint64_t sysmemPixelFormat{0};
+    FormatFeatureFlags formatFeatures{};
+    SysmemColorSpaceFUCHSIA sysmemColorSpaceIndex{};
+    ComponentMapping samplerYcbcrConversionComponents{};
+    SamplerYcbcrModelConversion suggestedYcbcrModel{static_cast<SamplerYcbcrModelConversion>(0)};
+    SamplerYcbcrRange suggestedYcbcrRange{static_cast<SamplerYcbcrRange>(0)};
+    ChromaLocation suggestedXChromaOffset{static_cast<ChromaLocation>(0)};
+    ChromaLocation suggestedYChromaOffset{static_cast<ChromaLocation>(0)};
+    BufferCollectionPropertiesFUCHSIA& setMemoryTypeBits(uint32_t memoryTypeBits_) {this->memoryTypeBits = memoryTypeBits_; return *this; }
+    BufferCollectionPropertiesFUCHSIA& setBufferCount(uint32_t bufferCount_) {this->bufferCount = bufferCount_; return *this; }
+    BufferCollectionPropertiesFUCHSIA& setCreateInfoIndex(uint32_t createInfoIndex_) {this->createInfoIndex = createInfoIndex_; return *this; }
+    BufferCollectionPropertiesFUCHSIA& setSysmemPixelFormat(uint64_t sysmemPixelFormat_) {this->sysmemPixelFormat = sysmemPixelFormat_; return *this; }
+    BufferCollectionPropertiesFUCHSIA& setFormatFeatures(FormatFeatureFlags formatFeatures_) {this->formatFeatures = formatFeatures_; return *this; }
+    BufferCollectionPropertiesFUCHSIA& setSysmemColorSpaceIndex(SysmemColorSpaceFUCHSIA sysmemColorSpaceIndex_) {this->sysmemColorSpaceIndex = sysmemColorSpaceIndex_; return *this; }
+    BufferCollectionPropertiesFUCHSIA& setSamplerYcbcrConversionComponents(ComponentMapping samplerYcbcrConversionComponents_) {this->samplerYcbcrConversionComponents = samplerYcbcrConversionComponents_; return *this; }
+    BufferCollectionPropertiesFUCHSIA& setSuggestedYcbcrModel(SamplerYcbcrModelConversion suggestedYcbcrModel_) {this->suggestedYcbcrModel = suggestedYcbcrModel_; return *this; }
+    BufferCollectionPropertiesFUCHSIA& setSuggestedYcbcrRange(SamplerYcbcrRange suggestedYcbcrRange_) {this->suggestedYcbcrRange = suggestedYcbcrRange_; return *this; }
+    BufferCollectionPropertiesFUCHSIA& setSuggestedXChromaOffset(ChromaLocation suggestedXChromaOffset_) {this->suggestedXChromaOffset = suggestedXChromaOffset_; return *this; }
+    BufferCollectionPropertiesFUCHSIA& setSuggestedYChromaOffset(ChromaLocation suggestedYChromaOffset_) {this->suggestedYChromaOffset = suggestedYChromaOffset_; return *this; }
+};
+struct BufferCollectionConstraintsInfoFUCHSIA {
+    StructureType sType{StructureType::BufferCollectionConstraintsInfoFUCHSIA};
+    const void* pNext = nullptr;
+    uint32_t minBufferCount{0};
+    uint32_t maxBufferCount{0};
+    uint32_t minBufferCountForCamping{0};
+    uint32_t minBufferCountForDedicatedSlack{0};
+    uint32_t minBufferCountForSharedSlack{0};
+    BufferCollectionConstraintsInfoFUCHSIA& setMinBufferCount(uint32_t minBufferCount_) {this->minBufferCount = minBufferCount_; return *this; }
+    BufferCollectionConstraintsInfoFUCHSIA& setMaxBufferCount(uint32_t maxBufferCount_) {this->maxBufferCount = maxBufferCount_; return *this; }
+    BufferCollectionConstraintsInfoFUCHSIA& setMinBufferCountForCamping(uint32_t minBufferCountForCamping_) {this->minBufferCountForCamping = minBufferCountForCamping_; return *this; }
+    BufferCollectionConstraintsInfoFUCHSIA& setMinBufferCountForDedicatedSlack(uint32_t minBufferCountForDedicatedSlack_) {this->minBufferCountForDedicatedSlack = minBufferCountForDedicatedSlack_; return *this; }
+    BufferCollectionConstraintsInfoFUCHSIA& setMinBufferCountForSharedSlack(uint32_t minBufferCountForSharedSlack_) {this->minBufferCountForSharedSlack = minBufferCountForSharedSlack_; return *this; }
+};
+struct BufferConstraintsInfoFUCHSIA {
+    StructureType sType{StructureType::BufferConstraintsInfoFUCHSIA};
+    const void* pNext = nullptr;
+    BufferCreateInfo createInfo{};
+    FormatFeatureFlags requiredFormatFeatures{};
+    BufferCollectionConstraintsInfoFUCHSIA bufferCollectionConstraints{};
+    BufferConstraintsInfoFUCHSIA& setCreateInfo(BufferCreateInfo createInfo_) {this->createInfo = createInfo_; return *this; }
+    BufferConstraintsInfoFUCHSIA& setRequiredFormatFeatures(FormatFeatureFlags requiredFormatFeatures_) {this->requiredFormatFeatures = requiredFormatFeatures_; return *this; }
+    BufferConstraintsInfoFUCHSIA& setBufferCollectionConstraints(BufferCollectionConstraintsInfoFUCHSIA bufferCollectionConstraints_) {this->bufferCollectionConstraints = bufferCollectionConstraints_; return *this; }
+};
+struct ImageFormatConstraintsInfoFUCHSIA {
+    StructureType sType{StructureType::ImageFormatConstraintsInfoFUCHSIA};
+    const void* pNext = nullptr;
+    ImageCreateInfo imageCreateInfo{};
+    FormatFeatureFlags requiredFormatFeatures{};
+    ImageFormatConstraintsFlagsFUCHSIA flags{};
+    uint64_t sysmemPixelFormat{0};
+    uint32_t colorSpaceCount{0};
+    const SysmemColorSpaceFUCHSIA* pColorSpaces = nullptr;
+    ImageFormatConstraintsInfoFUCHSIA& setImageCreateInfo(ImageCreateInfo imageCreateInfo_) {this->imageCreateInfo = imageCreateInfo_; return *this; }
+    ImageFormatConstraintsInfoFUCHSIA& setRequiredFormatFeatures(FormatFeatureFlags requiredFormatFeatures_) {this->requiredFormatFeatures = requiredFormatFeatures_; return *this; }
+    ImageFormatConstraintsInfoFUCHSIA& setFlags(ImageFormatConstraintsFlagsFUCHSIA flags_) {this->flags = flags_; return *this; }
+    ImageFormatConstraintsInfoFUCHSIA& setSysmemPixelFormat(uint64_t sysmemPixelFormat_) {this->sysmemPixelFormat = sysmemPixelFormat_; return *this; }
+    ImageFormatConstraintsInfoFUCHSIA& setColorSpaceCount(uint32_t colorSpaceCount_) {this->colorSpaceCount = colorSpaceCount_; return *this; }
+    ImageFormatConstraintsInfoFUCHSIA& setPColorSpaces(const SysmemColorSpaceFUCHSIA* pColorSpaces_) {this->pColorSpaces = pColorSpaces_; return *this; }
+    ImageFormatConstraintsInfoFUCHSIA& setPColorSpaces(SysmemColorSpaceFUCHSIA const& pColorSpaces_) {this->pColorSpaces = &pColorSpaces_; return *this; }
+};
+struct ImageConstraintsInfoFUCHSIA {
+    StructureType sType{StructureType::ImageConstraintsInfoFUCHSIA};
+    const void* pNext = nullptr;
+    uint32_t formatConstraintsCount{0};
+    const ImageFormatConstraintsInfoFUCHSIA* pFormatConstraints = nullptr;
+    BufferCollectionConstraintsInfoFUCHSIA bufferCollectionConstraints{};
+    ImageConstraintsInfoFlagsFUCHSIA flags{};
+    ImageConstraintsInfoFUCHSIA& setFormatConstraintsCount(uint32_t formatConstraintsCount_) {this->formatConstraintsCount = formatConstraintsCount_; return *this; }
+    ImageConstraintsInfoFUCHSIA& setPFormatConstraints(const ImageFormatConstraintsInfoFUCHSIA* pFormatConstraints_) {this->pFormatConstraints = pFormatConstraints_; return *this; }
+    ImageConstraintsInfoFUCHSIA& setPFormatConstraints(detail::span<const ImageFormatConstraintsInfoFUCHSIA> pFormatConstraints_) {this->formatConstraintsCount = pFormatConstraints_.size(); this->pFormatConstraints = pFormatConstraints_.data();  return *this; }
+    ImageConstraintsInfoFUCHSIA& setBufferCollectionConstraints(BufferCollectionConstraintsInfoFUCHSIA bufferCollectionConstraints_) {this->bufferCollectionConstraints = bufferCollectionConstraints_; return *this; }
+    ImageConstraintsInfoFUCHSIA& setFlags(ImageConstraintsInfoFlagsFUCHSIA flags_) {this->flags = flags_; return *this; }
+};
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
 namespace detail {
 using PFN_CreateInstance = Result (*) (const InstanceCreateInfo* pCreateInfo, const AllocationCallbacks* pAllocator, Instance* pInstance);
 using PFN_DestroyInstance = void (*) (Instance instance, const AllocationCallbacks* pAllocator);
@@ -12767,9 +13020,17 @@ using PFN_CreateCuFunctionNVX = Result (*) (Device device, const CuFunctionCreat
 using PFN_DestroyCuModuleNVX = void (*) (Device device, CuModuleNVX module, const AllocationCallbacks* pAllocator);
 using PFN_DestroyCuFunctionNVX = void (*) (Device device, CuFunctionNVX function, const AllocationCallbacks* pAllocator);
 using PFN_CmdCuLaunchKernelNVX = void (*) (CommandBuffer commandBuffer, const CuLaunchInfoNVX* pLaunchInfo);
+using PFN_SetDeviceMemoryPriorityEXT = void (*) (Device device, DeviceMemory memory, float priority);
 using PFN_AcquireDrmDisplayEXT = Result (*) (PhysicalDevice physicalDevice, int32_t drmFd, DisplayKHR display);
 using PFN_GetDrmDisplayEXT = Result (*) (PhysicalDevice physicalDevice, int32_t drmFd, uint32_t connectorId, DisplayKHR* display);
 using PFN_WaitForPresentKHR = Result (*) (Device device, SwapchainKHR swapchain, uint64_t presentId, uint64_t timeout);
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+using PFN_CreateBufferCollectionFUCHSIA = Result (*) (Device device, const BufferCollectionCreateInfoFUCHSIA* pCreateInfo, const AllocationCallbacks* pAllocator, BufferCollectionFUCHSIA* pCollection);
+using PFN_SetBufferCollectionBufferConstraintsFUCHSIA = Result (*) (Device device, BufferCollectionFUCHSIA collection, const BufferConstraintsInfoFUCHSIA* pBufferConstraintsInfo);
+using PFN_SetBufferCollectionImageConstraintsFUCHSIA = Result (*) (Device device, BufferCollectionFUCHSIA collection, const ImageConstraintsInfoFUCHSIA* pImageConstraintsInfo);
+using PFN_DestroyBufferCollectionFUCHSIA = void (*) (Device device, BufferCollectionFUCHSIA collection, const AllocationCallbacks* pAllocator);
+using PFN_GetBufferCollectionPropertiesFUCHSIA = Result (*) (Device device, BufferCollectionFUCHSIA collection, BufferCollectionPropertiesFUCHSIA* pProperties);
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
 } //namespace detail
 
 } // namespace vk
@@ -14588,6 +14849,11 @@ struct DeviceFunctions {
     detail::PFN_GetMemoryZirconHandlePropertiesFUCHSIA pfn_GetMemoryZirconHandlePropertiesFUCHSIA = nullptr;
     detail::PFN_GetSemaphoreZirconHandleFUCHSIA pfn_GetSemaphoreZirconHandleFUCHSIA = nullptr;
     detail::PFN_ImportSemaphoreZirconHandleFUCHSIA pfn_ImportSemaphoreZirconHandleFUCHSIA = nullptr;
+    detail::PFN_CreateBufferCollectionFUCHSIA pfn_CreateBufferCollectionFUCHSIA = nullptr;
+    detail::PFN_SetBufferCollectionBufferConstraintsFUCHSIA pfn_SetBufferCollectionBufferConstraintsFUCHSIA = nullptr;
+    detail::PFN_SetBufferCollectionImageConstraintsFUCHSIA pfn_SetBufferCollectionImageConstraintsFUCHSIA = nullptr;
+    detail::PFN_DestroyBufferCollectionFUCHSIA pfn_DestroyBufferCollectionFUCHSIA = nullptr;
+    detail::PFN_GetBufferCollectionPropertiesFUCHSIA pfn_GetBufferCollectionPropertiesFUCHSIA = nullptr;
 #endif // defined(VK_USE_PLATFORM_FUCHSIA)
     detail::PFN_GetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI pfn_GetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI = nullptr;
     detail::PFN_CmdSubpassShadingHUAWEI pfn_CmdSubpassShadingHUAWEI = nullptr;
@@ -14601,6 +14867,7 @@ struct DeviceFunctions {
     detail::PFN_CmdSetColorWriteEnableEXT pfn_CmdSetColorWriteEnableEXT = nullptr;
     detail::PFN_CmdDrawMultiEXT pfn_CmdDrawMultiEXT = nullptr;
     detail::PFN_CmdDrawMultiIndexedEXT pfn_CmdDrawMultiIndexedEXT = nullptr;
+    detail::PFN_SetDeviceMemoryPriorityEXT pfn_SetDeviceMemoryPriorityEXT = nullptr;
 void DestroyDevice(const AllocationCallbacks* pAllocator = nullptr) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
     pfn_DestroyDevice(device,
@@ -17758,6 +18025,45 @@ void CmdSetVertexInputEXT(CommandBuffer commandBuffer,
     return pfn_ImportSemaphoreZirconHandleFUCHSIA(device,
         &pImportSemaphoreZirconHandleInfo);
 }
+[[nodiscard]] expected<BufferCollectionFUCHSIA> CreateBufferCollectionFUCHSIA(const BufferCollectionCreateInfoFUCHSIA&  pCreateInfo, 
+    const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    BufferCollectionFUCHSIA pCollection;
+        Result result = pfn_CreateBufferCollectionFUCHSIA(device,
+        &pCreateInfo,
+        pAllocator,
+        &pCollection);
+    return expected<BufferCollectionFUCHSIA>(pCollection, result);
+}
+[[nodiscard]] Result SetBufferCollectionBufferConstraintsFUCHSIA(BufferCollectionFUCHSIA collection, 
+    const BufferConstraintsInfoFUCHSIA&  pBufferConstraintsInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    return pfn_SetBufferCollectionBufferConstraintsFUCHSIA(device,
+        collection,
+        &pBufferConstraintsInfo);
+}
+[[nodiscard]] Result SetBufferCollectionImageConstraintsFUCHSIA(BufferCollectionFUCHSIA collection, 
+    const ImageConstraintsInfoFUCHSIA&  pImageConstraintsInfo) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    return pfn_SetBufferCollectionImageConstraintsFUCHSIA(device,
+        collection,
+        &pImageConstraintsInfo);
+}
+void DestroyBufferCollectionFUCHSIA(BufferCollectionFUCHSIA collection, 
+    const AllocationCallbacks* pAllocator = nullptr) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    pfn_DestroyBufferCollectionFUCHSIA(device,
+        collection,
+        pAllocator);
+}
+[[nodiscard]] expected<BufferCollectionPropertiesFUCHSIA> GetBufferCollectionPropertiesFUCHSIA(BufferCollectionFUCHSIA collection) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    BufferCollectionPropertiesFUCHSIA pProperties;
+        Result result = pfn_GetBufferCollectionPropertiesFUCHSIA(device,
+        collection,
+        &pProperties);
+    return expected<BufferCollectionPropertiesFUCHSIA>(pProperties, result);
+}
 #endif // defined(VK_USE_PLATFORM_FUCHSIA)
 [[nodiscard]] expected<Extent2D> GetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI(RenderPass renderpass) const {
     VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
@@ -17854,6 +18160,13 @@ void CmdDrawMultiIndexedEXT(CommandBuffer commandBuffer,
         firstInstance,
         stride,
         pVertexOffset);
+}
+void SetDeviceMemoryPriorityEXT(DeviceMemory memory, 
+    float priority) const {
+    VK_MODULE_LEAK_SANITIZER_SUPPRESSION_CODE
+    pfn_SetDeviceMemoryPriorityEXT(device,
+        memory,
+        priority);
 }
 DeviceFunctions() noexcept {}
 explicit DeviceFunctions(InstanceFunctions const& instance_functions, Device device) noexcept 
@@ -18220,6 +18533,11 @@ explicit DeviceFunctions(InstanceFunctions const& instance_functions, Device dev
     pfn_GetMemoryZirconHandlePropertiesFUCHSIA = reinterpret_cast<detail::PFN_GetMemoryZirconHandlePropertiesFUCHSIA>(get_device_proc_addr(device,"vkGetMemoryZirconHandlePropertiesFUCHSIA"));
     pfn_GetSemaphoreZirconHandleFUCHSIA = reinterpret_cast<detail::PFN_GetSemaphoreZirconHandleFUCHSIA>(get_device_proc_addr(device,"vkGetSemaphoreZirconHandleFUCHSIA"));
     pfn_ImportSemaphoreZirconHandleFUCHSIA = reinterpret_cast<detail::PFN_ImportSemaphoreZirconHandleFUCHSIA>(get_device_proc_addr(device,"vkImportSemaphoreZirconHandleFUCHSIA"));
+    pfn_CreateBufferCollectionFUCHSIA = reinterpret_cast<detail::PFN_CreateBufferCollectionFUCHSIA>(get_device_proc_addr(device,"vkCreateBufferCollectionFUCHSIA"));
+    pfn_SetBufferCollectionBufferConstraintsFUCHSIA = reinterpret_cast<detail::PFN_SetBufferCollectionBufferConstraintsFUCHSIA>(get_device_proc_addr(device,"vkSetBufferCollectionBufferConstraintsFUCHSIA"));
+    pfn_SetBufferCollectionImageConstraintsFUCHSIA = reinterpret_cast<detail::PFN_SetBufferCollectionImageConstraintsFUCHSIA>(get_device_proc_addr(device,"vkSetBufferCollectionImageConstraintsFUCHSIA"));
+    pfn_DestroyBufferCollectionFUCHSIA = reinterpret_cast<detail::PFN_DestroyBufferCollectionFUCHSIA>(get_device_proc_addr(device,"vkDestroyBufferCollectionFUCHSIA"));
+    pfn_GetBufferCollectionPropertiesFUCHSIA = reinterpret_cast<detail::PFN_GetBufferCollectionPropertiesFUCHSIA>(get_device_proc_addr(device,"vkGetBufferCollectionPropertiesFUCHSIA"));
 #endif // defined(VK_USE_PLATFORM_FUCHSIA)
     pfn_GetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI = reinterpret_cast<detail::PFN_GetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI>(get_device_proc_addr(device,"vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI"));
     pfn_CmdSubpassShadingHUAWEI = reinterpret_cast<detail::PFN_CmdSubpassShadingHUAWEI>(get_device_proc_addr(device,"vkCmdSubpassShadingHUAWEI"));
@@ -18233,6 +18551,7 @@ explicit DeviceFunctions(InstanceFunctions const& instance_functions, Device dev
     pfn_CmdSetColorWriteEnableEXT = reinterpret_cast<detail::PFN_CmdSetColorWriteEnableEXT>(get_device_proc_addr(device,"vkCmdSetColorWriteEnableEXT"));
     pfn_CmdDrawMultiEXT = reinterpret_cast<detail::PFN_CmdDrawMultiEXT>(get_device_proc_addr(device,"vkCmdDrawMultiEXT"));
     pfn_CmdDrawMultiIndexedEXT = reinterpret_cast<detail::PFN_CmdDrawMultiIndexedEXT>(get_device_proc_addr(device,"vkCmdDrawMultiIndexedEXT"));
+    pfn_SetDeviceMemoryPriorityEXT = reinterpret_cast<detail::PFN_SetDeviceMemoryPriorityEXT>(get_device_proc_addr(device,"vkSetDeviceMemoryPriorityEXT"));
 }
 };
     struct PhysicalDeviceFunctions {
@@ -18859,6 +19178,7 @@ inline const char * to_string(AttachmentLoadOp val) {
         case(AttachmentLoadOp::Load): return "Load";
         case(AttachmentLoadOp::Clear): return "Clear";
         case(AttachmentLoadOp::DontCare): return "DontCare";
+        case(AttachmentLoadOp::NoneEXT): return "NoneEXT";
         default: return "UNKNOWN";
     }
 }
@@ -18866,7 +19186,7 @@ inline const char * to_string(AttachmentStoreOp val) {
     switch(val) {
         case(AttachmentStoreOp::Store): return "Store";
         case(AttachmentStoreOp::DontCare): return "DontCare";
-        case(AttachmentStoreOp::NoneQCOM): return "NoneQCOM";
+        case(AttachmentStoreOp::NoneEXT): return "NoneEXT";
         default: return "UNKNOWN";
     }
 }
@@ -19912,6 +20232,8 @@ inline const char * to_string(StructureType val) {
         case(StructureType::PhysicalDeviceDeviceGeneratedCommandsFeaturesNV): return "PhysicalDeviceDeviceGeneratedCommandsFeaturesNV";
         case(StructureType::PhysicalDeviceInheritedViewportScissorFeaturesNV): return "PhysicalDeviceInheritedViewportScissorFeaturesNV";
         case(StructureType::CommandBufferInheritanceViewportScissorInfoNV): return "CommandBufferInheritanceViewportScissorInfoNV";
+        case(StructureType::PhysicalDeviceShaderIntegerDotProductFeaturesKHR): return "PhysicalDeviceShaderIntegerDotProductFeaturesKHR";
+        case(StructureType::PhysicalDeviceShaderIntegerDotProductPropertiesKHR): return "PhysicalDeviceShaderIntegerDotProductPropertiesKHR";
         case(StructureType::PhysicalDeviceTexelBufferAlignmentFeaturesEXT): return "PhysicalDeviceTexelBufferAlignmentFeaturesEXT";
         case(StructureType::PhysicalDeviceTexelBufferAlignmentPropertiesEXT): return "PhysicalDeviceTexelBufferAlignmentPropertiesEXT";
         case(StructureType::CommandBufferInheritanceRenderPassTransformInfoQCOM): return "CommandBufferInheritanceRenderPassTransformInfoQCOM";
@@ -19978,11 +20300,22 @@ inline const char * to_string(StructureType val) {
         case(StructureType::VertexInputBindingDescription2EXT): return "VertexInputBindingDescription2EXT";
         case(StructureType::VertexInputAttributeDescription2EXT): return "VertexInputAttributeDescription2EXT";
         case(StructureType::PhysicalDeviceDrmPropertiesEXT): return "PhysicalDeviceDrmPropertiesEXT";
+        case(StructureType::PhysicalDevicePrimitiveTopologyListRestartFeaturesEXT): return "PhysicalDevicePrimitiveTopologyListRestartFeaturesEXT";
         case(StructureType::ImportMemoryZirconHandleInfoFUCHSIA): return "ImportMemoryZirconHandleInfoFUCHSIA";
         case(StructureType::MemoryZirconHandlePropertiesFUCHSIA): return "MemoryZirconHandlePropertiesFUCHSIA";
         case(StructureType::MemoryGetZirconHandleInfoFUCHSIA): return "MemoryGetZirconHandleInfoFUCHSIA";
         case(StructureType::ImportSemaphoreZirconHandleInfoFUCHSIA): return "ImportSemaphoreZirconHandleInfoFUCHSIA";
         case(StructureType::SemaphoreGetZirconHandleInfoFUCHSIA): return "SemaphoreGetZirconHandleInfoFUCHSIA";
+        case(StructureType::BufferCollectionCreateInfoFUCHSIA): return "BufferCollectionCreateInfoFUCHSIA";
+        case(StructureType::ImportMemoryBufferCollectionFUCHSIA): return "ImportMemoryBufferCollectionFUCHSIA";
+        case(StructureType::BufferCollectionImageCreateInfoFUCHSIA): return "BufferCollectionImageCreateInfoFUCHSIA";
+        case(StructureType::BufferCollectionPropertiesFUCHSIA): return "BufferCollectionPropertiesFUCHSIA";
+        case(StructureType::BufferConstraintsInfoFUCHSIA): return "BufferConstraintsInfoFUCHSIA";
+        case(StructureType::BufferCollectionBufferCreateInfoFUCHSIA): return "BufferCollectionBufferCreateInfoFUCHSIA";
+        case(StructureType::ImageConstraintsInfoFUCHSIA): return "ImageConstraintsInfoFUCHSIA";
+        case(StructureType::ImageFormatConstraintsInfoFUCHSIA): return "ImageFormatConstraintsInfoFUCHSIA";
+        case(StructureType::SysmemColorSpaceFUCHSIA): return "SysmemColorSpaceFUCHSIA";
+        case(StructureType::BufferCollectionConstraintsInfoFUCHSIA): return "BufferCollectionConstraintsInfoFUCHSIA";
         case(StructureType::SubpassShadingPipelineCreateInfoHUAWEI): return "SubpassShadingPipelineCreateInfoHUAWEI";
         case(StructureType::PhysicalDeviceSubpassShadingFeaturesHUAWEI): return "PhysicalDeviceSubpassShadingFeaturesHUAWEI";
         case(StructureType::PhysicalDeviceSubpassShadingPropertiesHUAWEI): return "PhysicalDeviceSubpassShadingPropertiesHUAWEI";
@@ -19997,6 +20330,7 @@ inline const char * to_string(StructureType val) {
         case(StructureType::QueueFamilyGlobalPriorityPropertiesEXT): return "QueueFamilyGlobalPriorityPropertiesEXT";
         case(StructureType::PhysicalDeviceMultiDrawFeaturesEXT): return "PhysicalDeviceMultiDrawFeaturesEXT";
         case(StructureType::PhysicalDeviceMultiDrawPropertiesEXT): return "PhysicalDeviceMultiDrawPropertiesEXT";
+        case(StructureType::PhysicalDevicePageableDeviceLocalMemoryFeaturesEXT): return "PhysicalDevicePageableDeviceLocalMemoryFeaturesEXT";
         case(StructureType::PhysicalDeviceSubgroupProperties): return "PhysicalDeviceSubgroupProperties";
         case(StructureType::BindBufferMemoryInfo): return "BindBufferMemoryInfo";
         case(StructureType::BindImageMemoryInfo): return "BindImageMemoryInfo";
@@ -20208,6 +20542,7 @@ inline const char * to_string(ObjectType val) {
         case(ObjectType::DeferredOperationKHR): return "DeferredOperationKHR";
         case(ObjectType::IndirectCommandsLayoutNV): return "IndirectCommandsLayoutNV";
         case(ObjectType::PrivateDataSlotEXT): return "PrivateDataSlotEXT";
+        case(ObjectType::BufferCollectionFUCHSIA): return "BufferCollectionFUCHSIA";
         case(ObjectType::SamplerYcbcrConversion): return "SamplerYcbcrConversion";
         case(ObjectType::DescriptorUpdateTemplate): return "DescriptorUpdateTemplate";
         default: return "UNKNOWN";
@@ -20611,6 +20946,7 @@ inline const char * to_string(DebugReportObjectTypeEXT val) {
         case(DebugReportObjectTypeEXT::CuFunctionNvxEXT): return "CuFunctionNvxEXT";
         case(DebugReportObjectTypeEXT::AccelerationStructureKhrEXT): return "AccelerationStructureKhrEXT";
         case(DebugReportObjectTypeEXT::AccelerationStructureNvEXT): return "AccelerationStructureNvEXT";
+        case(DebugReportObjectTypeEXT::BufferCollectionFuchsiaEXT): return "BufferCollectionFuchsiaEXT";
         default: return "UNKNOWN";
     }
 }
@@ -20786,6 +21122,10 @@ inline const char * to_string(DriverId val) {
         case(DriverId::Moltenvk): return "Moltenvk";
         case(DriverId::CoreaviProprietary): return "CoreaviProprietary";
         case(DriverId::JuiceProprietary): return "JuiceProprietary";
+        case(DriverId::VerisiliconProprietary): return "VerisiliconProprietary";
+        case(DriverId::MesaTurnip): return "MesaTurnip";
+        case(DriverId::MesaV3Dv): return "MesaV3Dv";
+        case(DriverId::MesaPanvk): return "MesaPanvk";
         default: return "UNKNOWN";
     }
 }
@@ -21344,6 +21684,8 @@ inline std::string to_string(FenceCreateFlags flag){
     if (flag & FenceCreateFlagBits::Signaled) out += "Signaled | ";
     return out.substr(0, out.size() - 3);
 }
+inline const char * to_string([[maybe_unused]] SemaphoreCreateFlagBits val) { return "UNKNOWN"; }
+inline std::string to_string([[maybe_unused]] SemaphoreCreateFlags flag){ return "UNKNOWN"; }
 inline const char * to_string(FormatFeatureFlagBits val) {
     switch(val) {
         case(FormatFeatureFlagBits::SampledImage): return "SampledImage";
@@ -22275,7 +22617,7 @@ inline std::string to_string(ResolveModeFlags flag){
 inline const char * to_string(GeometryInstanceFlagBitsKHR val) {
     switch(val) {
         case(GeometryInstanceFlagBitsKHR::TriangleFacingCullDisableBitKHR): return "TriangleFacingCullDisableBitKHR";
-        case(GeometryInstanceFlagBitsKHR::TriangleFrontCounterclockwiseBitKHR): return "TriangleFrontCounterclockwiseBitKHR";
+        case(GeometryInstanceFlagBitsKHR::TriangleFlipFacingBitKHR): return "TriangleFlipFacingBitKHR";
         case(GeometryInstanceFlagBitsKHR::ForceOpaqueBitKHR): return "ForceOpaqueBitKHR";
         case(GeometryInstanceFlagBitsKHR::ForceNoOpaqueBitKHR): return "ForceNoOpaqueBitKHR";
         default: return "UNKNOWN";
@@ -22285,7 +22627,7 @@ inline std::string to_string(GeometryInstanceFlagsKHR flag){
     if (flag.flags == 0) return "None";
     std::string out;
     if (flag & GeometryInstanceFlagBitsKHR::TriangleFacingCullDisableBitKHR) out += "TriangleFacingCullDisableBitKHR | ";
-    if (flag & GeometryInstanceFlagBitsKHR::TriangleFrontCounterclockwiseBitKHR) out += "TriangleFrontCounterclockwiseBitKHR | ";
+    if (flag & GeometryInstanceFlagBitsKHR::TriangleFlipFacingBitKHR) out += "TriangleFlipFacingBitKHR | ";
     if (flag & GeometryInstanceFlagBitsKHR::ForceOpaqueBitKHR) out += "ForceOpaqueBitKHR | ";
     if (flag & GeometryInstanceFlagBitsKHR::ForceNoOpaqueBitKHR) out += "ForceNoOpaqueBitKHR | ";
     return out.substr(0, out.size() - 3);
@@ -22683,18 +23025,18 @@ inline std::string to_string(VideoComponentBitDepthFlagsKHR flag){
     if (flag & VideoComponentBitDepthFlagBitsKHR::e12BitKHR) out += "e12BitKHR | ";
     return out.substr(0, out.size() - 3);
 }
-inline const char * to_string(VideoCapabilitiesFlagBitsKHR val) {
+inline const char * to_string(VideoCapabilityFlagBitsKHR val) {
     switch(val) {
-        case(VideoCapabilitiesFlagBitsKHR::ProtectedContentBitKHR): return "ProtectedContentBitKHR";
-        case(VideoCapabilitiesFlagBitsKHR::SeparateReferenceImagesBitKHR): return "SeparateReferenceImagesBitKHR";
+        case(VideoCapabilityFlagBitsKHR::ProtectedContentBitKHR): return "ProtectedContentBitKHR";
+        case(VideoCapabilityFlagBitsKHR::SeparateReferenceImagesBitKHR): return "SeparateReferenceImagesBitKHR";
         default: return "UNKNOWN";
     }
 }
-inline std::string to_string(VideoCapabilitiesFlagsKHR flag){
+inline std::string to_string(VideoCapabilityFlagsKHR flag){
     if (flag.flags == 0) return "None";
     std::string out;
-    if (flag & VideoCapabilitiesFlagBitsKHR::ProtectedContentBitKHR) out += "ProtectedContentBitKHR | ";
-    if (flag & VideoCapabilitiesFlagBitsKHR::SeparateReferenceImagesBitKHR) out += "SeparateReferenceImagesBitKHR | ";
+    if (flag & VideoCapabilityFlagBitsKHR::ProtectedContentBitKHR) out += "ProtectedContentBitKHR | ";
+    if (flag & VideoCapabilityFlagBitsKHR::SeparateReferenceImagesBitKHR) out += "SeparateReferenceImagesBitKHR | ";
     return out.substr(0, out.size() - 3);
 }
 inline const char * to_string(VideoSessionCreateFlagBitsKHR val) {
@@ -22713,7 +23055,6 @@ inline std::string to_string(VideoSessionCreateFlagsKHR flag){
 }
 inline const char * to_string(VideoCodingQualityPresetFlagBitsKHR val) {
     switch(val) {
-        case(VideoCodingQualityPresetFlagBitsKHR::DefaultBitKHR): return "DefaultBitKHR";
         case(VideoCodingQualityPresetFlagBitsKHR::NormalBitKHR): return "NormalBitKHR";
         case(VideoCodingQualityPresetFlagBitsKHR::PowerBitKHR): return "PowerBitKHR";
         case(VideoCodingQualityPresetFlagBitsKHR::QualityBitKHR): return "QualityBitKHR";
@@ -22723,26 +23064,25 @@ inline const char * to_string(VideoCodingQualityPresetFlagBitsKHR val) {
 inline std::string to_string(VideoCodingQualityPresetFlagsKHR flag){
     if (flag.flags == 0) return "None";
     std::string out;
-    if (flag & VideoCodingQualityPresetFlagBitsKHR::DefaultBitKHR) out += "DefaultBitKHR | ";
     if (flag & VideoCodingQualityPresetFlagBitsKHR::NormalBitKHR) out += "NormalBitKHR | ";
     if (flag & VideoCodingQualityPresetFlagBitsKHR::PowerBitKHR) out += "PowerBitKHR | ";
     if (flag & VideoCodingQualityPresetFlagBitsKHR::QualityBitKHR) out += "QualityBitKHR | ";
     return out.substr(0, out.size() - 3);
 }
-inline const char * to_string(VideoDecodeH264FieldLayoutFlagBitsEXT val) {
+inline const char * to_string(VideoDecodeH264PictureLayoutFlagBitsEXT val) {
     switch(val) {
-        case(VideoDecodeH264FieldLayoutFlagBitsEXT::OnlyEXT): return "OnlyEXT";
-        case(VideoDecodeH264FieldLayoutFlagBitsEXT::LineInterlacedPlaneBitEXT): return "LineInterlacedPlaneBitEXT";
-        case(VideoDecodeH264FieldLayoutFlagBitsEXT::SeparateInterlacedPlaneBitEXT): return "SeparateInterlacedPlaneBitEXT";
+        case(VideoDecodeH264PictureLayoutFlagBitsEXT::ProgressiveEXT): return "ProgressiveEXT";
+        case(VideoDecodeH264PictureLayoutFlagBitsEXT::InterlacedInterleavedLinesBitEXT): return "InterlacedInterleavedLinesBitEXT";
+        case(VideoDecodeH264PictureLayoutFlagBitsEXT::InterlacedSeparatePlanesBitEXT): return "InterlacedSeparatePlanesBitEXT";
         default: return "UNKNOWN";
     }
 }
-inline std::string to_string(VideoDecodeH264FieldLayoutFlagsEXT flag){
+inline std::string to_string(VideoDecodeH264PictureLayoutFlagsEXT flag){
     if (flag.flags == 0) return "None";
     std::string out;
-    if (flag & VideoDecodeH264FieldLayoutFlagBitsEXT::OnlyEXT) out += "OnlyEXT | ";
-    if (flag & VideoDecodeH264FieldLayoutFlagBitsEXT::LineInterlacedPlaneBitEXT) out += "LineInterlacedPlaneBitEXT | ";
-    if (flag & VideoDecodeH264FieldLayoutFlagBitsEXT::SeparateInterlacedPlaneBitEXT) out += "SeparateInterlacedPlaneBitEXT | ";
+    if (flag & VideoDecodeH264PictureLayoutFlagBitsEXT::ProgressiveEXT) out += "ProgressiveEXT | ";
+    if (flag & VideoDecodeH264PictureLayoutFlagBitsEXT::InterlacedInterleavedLinesBitEXT) out += "InterlacedInterleavedLinesBitEXT | ";
+    if (flag & VideoDecodeH264PictureLayoutFlagBitsEXT::InterlacedSeparatePlanesBitEXT) out += "InterlacedSeparatePlanesBitEXT | ";
     return out.substr(0, out.size() - 3);
 }
 inline const char * to_string(VideoCodingControlFlagBitsKHR val) {
@@ -22817,36 +23157,36 @@ inline std::string to_string(VideoEncodeRateControlModeFlagsKHR flag){
     if (flag & VideoEncodeRateControlModeFlagBitsKHR::VbrBitKHR) out += "VbrBitKHR | ";
     return out.substr(0, out.size() - 3);
 }
-inline const char * to_string(VideoEncodeH264CapabilitiesFlagBitsEXT val) {
+inline const char * to_string(VideoEncodeH264CapabilityFlagBitsEXT val) {
     switch(val) {
-        case(VideoEncodeH264CapabilitiesFlagBitsEXT::CabacBitEXT): return "CabacBitEXT";
-        case(VideoEncodeH264CapabilitiesFlagBitsEXT::CavlcBitEXT): return "CavlcBitEXT";
-        case(VideoEncodeH264CapabilitiesFlagBitsEXT::WeightedBiPredImplicitBitEXT): return "WeightedBiPredImplicitBitEXT";
-        case(VideoEncodeH264CapabilitiesFlagBitsEXT::Transform8X8BitEXT): return "Transform8X8BitEXT";
-        case(VideoEncodeH264CapabilitiesFlagBitsEXT::ChromaQpOffsetBitEXT): return "ChromaQpOffsetBitEXT";
-        case(VideoEncodeH264CapabilitiesFlagBitsEXT::SecondChromaQpOffsetBitEXT): return "SecondChromaQpOffsetBitEXT";
-        case(VideoEncodeH264CapabilitiesFlagBitsEXT::DeblockingFilterDisabledBitEXT): return "DeblockingFilterDisabledBitEXT";
-        case(VideoEncodeH264CapabilitiesFlagBitsEXT::DeblockingFilterEnabledBitEXT): return "DeblockingFilterEnabledBitEXT";
-        case(VideoEncodeH264CapabilitiesFlagBitsEXT::DeblockingFilterPartialBitEXT): return "DeblockingFilterPartialBitEXT";
-        case(VideoEncodeH264CapabilitiesFlagBitsEXT::MultipleSlicePerFrameBitEXT): return "MultipleSlicePerFrameBitEXT";
-        case(VideoEncodeH264CapabilitiesFlagBitsEXT::EvenlyDistributedSliceSizeBitEXT): return "EvenlyDistributedSliceSizeBitEXT";
+        case(VideoEncodeH264CapabilityFlagBitsEXT::CabacBitEXT): return "CabacBitEXT";
+        case(VideoEncodeH264CapabilityFlagBitsEXT::CavlcBitEXT): return "CavlcBitEXT";
+        case(VideoEncodeH264CapabilityFlagBitsEXT::WeightedBiPredImplicitBitEXT): return "WeightedBiPredImplicitBitEXT";
+        case(VideoEncodeH264CapabilityFlagBitsEXT::Transform8X8BitEXT): return "Transform8X8BitEXT";
+        case(VideoEncodeH264CapabilityFlagBitsEXT::ChromaQpOffsetBitEXT): return "ChromaQpOffsetBitEXT";
+        case(VideoEncodeH264CapabilityFlagBitsEXT::SecondChromaQpOffsetBitEXT): return "SecondChromaQpOffsetBitEXT";
+        case(VideoEncodeH264CapabilityFlagBitsEXT::DeblockingFilterDisabledBitEXT): return "DeblockingFilterDisabledBitEXT";
+        case(VideoEncodeH264CapabilityFlagBitsEXT::DeblockingFilterEnabledBitEXT): return "DeblockingFilterEnabledBitEXT";
+        case(VideoEncodeH264CapabilityFlagBitsEXT::DeblockingFilterPartialBitEXT): return "DeblockingFilterPartialBitEXT";
+        case(VideoEncodeH264CapabilityFlagBitsEXT::MultipleSlicePerFrameBitEXT): return "MultipleSlicePerFrameBitEXT";
+        case(VideoEncodeH264CapabilityFlagBitsEXT::EvenlyDistributedSliceSizeBitEXT): return "EvenlyDistributedSliceSizeBitEXT";
         default: return "UNKNOWN";
     }
 }
-inline std::string to_string(VideoEncodeH264CapabilitiesFlagsEXT flag){
+inline std::string to_string(VideoEncodeH264CapabilityFlagsEXT flag){
     if (flag.flags == 0) return "None";
     std::string out;
-    if (flag & VideoEncodeH264CapabilitiesFlagBitsEXT::CabacBitEXT) out += "CabacBitEXT | ";
-    if (flag & VideoEncodeH264CapabilitiesFlagBitsEXT::CavlcBitEXT) out += "CavlcBitEXT | ";
-    if (flag & VideoEncodeH264CapabilitiesFlagBitsEXT::WeightedBiPredImplicitBitEXT) out += "WeightedBiPredImplicitBitEXT | ";
-    if (flag & VideoEncodeH264CapabilitiesFlagBitsEXT::Transform8X8BitEXT) out += "Transform8X8BitEXT | ";
-    if (flag & VideoEncodeH264CapabilitiesFlagBitsEXT::ChromaQpOffsetBitEXT) out += "ChromaQpOffsetBitEXT | ";
-    if (flag & VideoEncodeH264CapabilitiesFlagBitsEXT::SecondChromaQpOffsetBitEXT) out += "SecondChromaQpOffsetBitEXT | ";
-    if (flag & VideoEncodeH264CapabilitiesFlagBitsEXT::DeblockingFilterDisabledBitEXT) out += "DeblockingFilterDisabledBitEXT | ";
-    if (flag & VideoEncodeH264CapabilitiesFlagBitsEXT::DeblockingFilterEnabledBitEXT) out += "DeblockingFilterEnabledBitEXT | ";
-    if (flag & VideoEncodeH264CapabilitiesFlagBitsEXT::DeblockingFilterPartialBitEXT) out += "DeblockingFilterPartialBitEXT | ";
-    if (flag & VideoEncodeH264CapabilitiesFlagBitsEXT::MultipleSlicePerFrameBitEXT) out += "MultipleSlicePerFrameBitEXT | ";
-    if (flag & VideoEncodeH264CapabilitiesFlagBitsEXT::EvenlyDistributedSliceSizeBitEXT) out += "EvenlyDistributedSliceSizeBitEXT | ";
+    if (flag & VideoEncodeH264CapabilityFlagBitsEXT::CabacBitEXT) out += "CabacBitEXT | ";
+    if (flag & VideoEncodeH264CapabilityFlagBitsEXT::CavlcBitEXT) out += "CavlcBitEXT | ";
+    if (flag & VideoEncodeH264CapabilityFlagBitsEXT::WeightedBiPredImplicitBitEXT) out += "WeightedBiPredImplicitBitEXT | ";
+    if (flag & VideoEncodeH264CapabilityFlagBitsEXT::Transform8X8BitEXT) out += "Transform8X8BitEXT | ";
+    if (flag & VideoEncodeH264CapabilityFlagBitsEXT::ChromaQpOffsetBitEXT) out += "ChromaQpOffsetBitEXT | ";
+    if (flag & VideoEncodeH264CapabilityFlagBitsEXT::SecondChromaQpOffsetBitEXT) out += "SecondChromaQpOffsetBitEXT | ";
+    if (flag & VideoEncodeH264CapabilityFlagBitsEXT::DeblockingFilterDisabledBitEXT) out += "DeblockingFilterDisabledBitEXT | ";
+    if (flag & VideoEncodeH264CapabilityFlagBitsEXT::DeblockingFilterEnabledBitEXT) out += "DeblockingFilterEnabledBitEXT | ";
+    if (flag & VideoEncodeH264CapabilityFlagBitsEXT::DeblockingFilterPartialBitEXT) out += "DeblockingFilterPartialBitEXT | ";
+    if (flag & VideoEncodeH264CapabilityFlagBitsEXT::MultipleSlicePerFrameBitEXT) out += "MultipleSlicePerFrameBitEXT | ";
+    if (flag & VideoEncodeH264CapabilityFlagBitsEXT::EvenlyDistributedSliceSizeBitEXT) out += "EvenlyDistributedSliceSizeBitEXT | ";
     return out.substr(0, out.size() - 3);
 }
 inline const char * to_string(VideoEncodeH264InputModeFlagBitsEXT val) {
@@ -22896,6 +23236,30 @@ inline std::string to_string(VideoEncodeH264CreateFlagsEXT flag){
     return out.substr(0, out.size() - 3);
 }
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+inline const char * to_string([[maybe_unused]] ImageFormatConstraintsFlagBitsFUCHSIA val) { return "UNKNOWN"; }
+inline std::string to_string([[maybe_unused]] ImageFormatConstraintsFlagsFUCHSIA flag){ return "UNKNOWN"; }
+inline const char * to_string(ImageConstraintsInfoFlagBitsFUCHSIA val) {
+    switch(val) {
+        case(ImageConstraintsInfoFlagBitsFUCHSIA::CpuReadRarelyFUCHSIA): return "CpuReadRarelyFUCHSIA";
+        case(ImageConstraintsInfoFlagBitsFUCHSIA::CpuReadOftenFUCHSIA): return "CpuReadOftenFUCHSIA";
+        case(ImageConstraintsInfoFlagBitsFUCHSIA::CpuWriteRarelyFUCHSIA): return "CpuWriteRarelyFUCHSIA";
+        case(ImageConstraintsInfoFlagBitsFUCHSIA::CpuWriteOftenFUCHSIA): return "CpuWriteOftenFUCHSIA";
+        case(ImageConstraintsInfoFlagBitsFUCHSIA::ProtectedOptionalFUCHSIA): return "ProtectedOptionalFUCHSIA";
+        default: return "UNKNOWN";
+    }
+}
+inline std::string to_string(ImageConstraintsInfoFlagsFUCHSIA flag){
+    if (flag.flags == 0) return "None";
+    std::string out;
+    if (flag & ImageConstraintsInfoFlagBitsFUCHSIA::CpuReadRarelyFUCHSIA) out += "CpuReadRarelyFUCHSIA | ";
+    if (flag & ImageConstraintsInfoFlagBitsFUCHSIA::CpuReadOftenFUCHSIA) out += "CpuReadOftenFUCHSIA | ";
+    if (flag & ImageConstraintsInfoFlagBitsFUCHSIA::CpuWriteRarelyFUCHSIA) out += "CpuWriteRarelyFUCHSIA | ";
+    if (flag & ImageConstraintsInfoFlagBitsFUCHSIA::CpuWriteOftenFUCHSIA) out += "CpuWriteOftenFUCHSIA | ";
+    if (flag & ImageConstraintsInfoFlagBitsFUCHSIA::ProtectedOptionalFUCHSIA) out += "ProtectedOptionalFUCHSIA | ";
+    return out.substr(0, out.size() - 3);
+}
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
 inline const char * to_string([[maybe_unused]] QueryPoolCreateFlagBits val) { return "Unknown"; } 
 inline std::string to_string(QueryPoolCreateFlags flag){
     if (flag.flags == 0) return "None";
@@ -22958,11 +23322,6 @@ inline std::string to_string(InstanceCreateFlags flag){
 }
 inline const char * to_string([[maybe_unused]] DeviceCreateFlagBits val) { return "Unknown"; } 
 inline std::string to_string(DeviceCreateFlags flag){
-    if (flag.flags == 0) return "None";
-    return "Unknown";
-}
-inline const char * to_string([[maybe_unused]] SemaphoreCreateFlagBits val) { return "Unknown"; } 
-inline std::string to_string(SemaphoreCreateFlags flag){
     if (flag.flags == 0) return "None";
     return "Unknown";
 }

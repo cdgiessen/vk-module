@@ -159,6 +159,8 @@ const char * to_string(VkColorComponentFlagBits val);
 std::string to_string(VkColorComponentFlags flag);
 const char * to_string(VkFenceCreateFlagBits val);
 std::string to_string(VkFenceCreateFlags flag);
+const char * to_string(VkSemaphoreCreateFlagBits val);
+std::string to_string(VkSemaphoreCreateFlags flag);
 const char * to_string(VkFormatFeatureFlagBits val);
 std::string to_string(VkFormatFeatureFlags flag);
 const char * to_string(VkQueryControlFlagBits val);
@@ -298,14 +300,14 @@ const char * to_string(VkVideoChromaSubsamplingFlagBitsKHR val);
 std::string to_string(VkVideoChromaSubsamplingFlagsKHR flag);
 const char * to_string(VkVideoComponentBitDepthFlagBitsKHR val);
 std::string to_string(VkVideoComponentBitDepthFlagsKHR flag);
-const char * to_string(VkVideoCapabilitiesFlagBitsKHR val);
-std::string to_string(VkVideoCapabilitiesFlagsKHR flag);
+const char * to_string(VkVideoCapabilityFlagBitsKHR val);
+std::string to_string(VkVideoCapabilityFlagsKHR flag);
 const char * to_string(VkVideoSessionCreateFlagBitsKHR val);
 std::string to_string(VkVideoSessionCreateFlagsKHR flag);
 const char * to_string(VkVideoCodingQualityPresetFlagBitsKHR val);
 std::string to_string(VkVideoCodingQualityPresetFlagsKHR flag);
-const char * to_string(VkVideoDecodeH264FieldLayoutFlagBitsEXT val);
-std::string to_string(VkVideoDecodeH264FieldLayoutFlagsEXT flag);
+const char * to_string(VkVideoDecodeH264PictureLayoutFlagBitsEXT val);
+std::string to_string(VkVideoDecodeH264PictureLayoutFlagsEXT flag);
 const char * to_string(VkVideoCodingControlFlagBitsKHR val);
 std::string to_string(VkVideoCodingControlFlagsKHR flag);
 const char * to_string(VkVideoDecodeFlagBitsKHR val);
@@ -316,8 +318,8 @@ const char * to_string(VkVideoEncodeRateControlFlagBitsKHR val);
 std::string to_string(VkVideoEncodeRateControlFlagsKHR flag);
 const char * to_string(VkVideoEncodeRateControlModeFlagBitsKHR val);
 std::string to_string(VkVideoEncodeRateControlModeFlagsKHR flag);
-const char * to_string(VkVideoEncodeH264CapabilitiesFlagBitsEXT val);
-std::string to_string(VkVideoEncodeH264CapabilitiesFlagsEXT flag);
+const char * to_string(VkVideoEncodeH264CapabilityFlagBitsEXT val);
+std::string to_string(VkVideoEncodeH264CapabilityFlagsEXT flag);
 const char * to_string(VkVideoEncodeH264InputModeFlagBitsEXT val);
 std::string to_string(VkVideoEncodeH264InputModeFlagsEXT flag);
 const char * to_string(VkVideoEncodeH264OutputModeFlagBitsEXT val);
@@ -325,6 +327,12 @@ std::string to_string(VkVideoEncodeH264OutputModeFlagsEXT flag);
 const char * to_string(VkVideoEncodeH264CreateFlagBitsEXT val);
 std::string to_string(VkVideoEncodeH264CreateFlagsEXT flag);
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+const char * to_string(VkImageFormatConstraintsFlagBitsFUCHSIA val);
+std::string to_string(VkImageFormatConstraintsFlagsFUCHSIA flag);
+const char * to_string(VkImageConstraintsInfoFlagBitsFUCHSIA val);
+std::string to_string(VkImageConstraintsInfoFlagsFUCHSIA flag);
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 #endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
 #if defined(VK_USE_PLATFORM_VI_NN)

@@ -260,6 +260,8 @@ constexpr VkColorComponentFlagBits to_c(ColorComponentFlagBits value) { return s
 constexpr ColorComponentFlagBits from_c(VkColorComponentFlagBits value) { return static_cast<ColorComponentFlagBits>(value);}
 constexpr VkFenceCreateFlagBits to_c(FenceCreateFlagBits value) { return static_cast<VkFenceCreateFlagBits>(value);}
 constexpr FenceCreateFlagBits from_c(VkFenceCreateFlagBits value) { return static_cast<FenceCreateFlagBits>(value);}
+constexpr VkSemaphoreCreateFlagBits to_c(SemaphoreCreateFlagBits value) { return static_cast<VkSemaphoreCreateFlagBits>(value);}
+constexpr SemaphoreCreateFlagBits from_c(VkSemaphoreCreateFlagBits value) { return static_cast<SemaphoreCreateFlagBits>(value);}
 constexpr VkFormatFeatureFlagBits to_c(FormatFeatureFlagBits value) { return static_cast<VkFormatFeatureFlagBits>(value);}
 constexpr FormatFeatureFlagBits from_c(VkFormatFeatureFlagBits value) { return static_cast<FormatFeatureFlagBits>(value);}
 constexpr VkQueryControlFlagBits to_c(QueryControlFlagBits value) { return static_cast<VkQueryControlFlagBits>(value);}
@@ -399,14 +401,14 @@ constexpr VkVideoChromaSubsamplingFlagBitsKHR to_c(VideoChromaSubsamplingFlagBit
 constexpr VideoChromaSubsamplingFlagBitsKHR from_c(VkVideoChromaSubsamplingFlagBitsKHR value) { return static_cast<VideoChromaSubsamplingFlagBitsKHR>(value);}
 constexpr VkVideoComponentBitDepthFlagBitsKHR to_c(VideoComponentBitDepthFlagBitsKHR value) { return static_cast<VkVideoComponentBitDepthFlagBitsKHR>(value);}
 constexpr VideoComponentBitDepthFlagBitsKHR from_c(VkVideoComponentBitDepthFlagBitsKHR value) { return static_cast<VideoComponentBitDepthFlagBitsKHR>(value);}
-constexpr VkVideoCapabilitiesFlagBitsKHR to_c(VideoCapabilitiesFlagBitsKHR value) { return static_cast<VkVideoCapabilitiesFlagBitsKHR>(value);}
-constexpr VideoCapabilitiesFlagBitsKHR from_c(VkVideoCapabilitiesFlagBitsKHR value) { return static_cast<VideoCapabilitiesFlagBitsKHR>(value);}
+constexpr VkVideoCapabilityFlagBitsKHR to_c(VideoCapabilityFlagBitsKHR value) { return static_cast<VkVideoCapabilityFlagBitsKHR>(value);}
+constexpr VideoCapabilityFlagBitsKHR from_c(VkVideoCapabilityFlagBitsKHR value) { return static_cast<VideoCapabilityFlagBitsKHR>(value);}
 constexpr VkVideoSessionCreateFlagBitsKHR to_c(VideoSessionCreateFlagBitsKHR value) { return static_cast<VkVideoSessionCreateFlagBitsKHR>(value);}
 constexpr VideoSessionCreateFlagBitsKHR from_c(VkVideoSessionCreateFlagBitsKHR value) { return static_cast<VideoSessionCreateFlagBitsKHR>(value);}
 constexpr VkVideoCodingQualityPresetFlagBitsKHR to_c(VideoCodingQualityPresetFlagBitsKHR value) { return static_cast<VkVideoCodingQualityPresetFlagBitsKHR>(value);}
 constexpr VideoCodingQualityPresetFlagBitsKHR from_c(VkVideoCodingQualityPresetFlagBitsKHR value) { return static_cast<VideoCodingQualityPresetFlagBitsKHR>(value);}
-constexpr VkVideoDecodeH264FieldLayoutFlagBitsEXT to_c(VideoDecodeH264FieldLayoutFlagBitsEXT value) { return static_cast<VkVideoDecodeH264FieldLayoutFlagBitsEXT>(value);}
-constexpr VideoDecodeH264FieldLayoutFlagBitsEXT from_c(VkVideoDecodeH264FieldLayoutFlagBitsEXT value) { return static_cast<VideoDecodeH264FieldLayoutFlagBitsEXT>(value);}
+constexpr VkVideoDecodeH264PictureLayoutFlagBitsEXT to_c(VideoDecodeH264PictureLayoutFlagBitsEXT value) { return static_cast<VkVideoDecodeH264PictureLayoutFlagBitsEXT>(value);}
+constexpr VideoDecodeH264PictureLayoutFlagBitsEXT from_c(VkVideoDecodeH264PictureLayoutFlagBitsEXT value) { return static_cast<VideoDecodeH264PictureLayoutFlagBitsEXT>(value);}
 constexpr VkVideoCodingControlFlagBitsKHR to_c(VideoCodingControlFlagBitsKHR value) { return static_cast<VkVideoCodingControlFlagBitsKHR>(value);}
 constexpr VideoCodingControlFlagBitsKHR from_c(VkVideoCodingControlFlagBitsKHR value) { return static_cast<VideoCodingControlFlagBitsKHR>(value);}
 constexpr VkVideoDecodeFlagBitsKHR to_c(VideoDecodeFlagBitsKHR value) { return static_cast<VkVideoDecodeFlagBitsKHR>(value);}
@@ -417,8 +419,8 @@ constexpr VkVideoEncodeRateControlFlagBitsKHR to_c(VideoEncodeRateControlFlagBit
 constexpr VideoEncodeRateControlFlagBitsKHR from_c(VkVideoEncodeRateControlFlagBitsKHR value) { return static_cast<VideoEncodeRateControlFlagBitsKHR>(value);}
 constexpr VkVideoEncodeRateControlModeFlagBitsKHR to_c(VideoEncodeRateControlModeFlagBitsKHR value) { return static_cast<VkVideoEncodeRateControlModeFlagBitsKHR>(value);}
 constexpr VideoEncodeRateControlModeFlagBitsKHR from_c(VkVideoEncodeRateControlModeFlagBitsKHR value) { return static_cast<VideoEncodeRateControlModeFlagBitsKHR>(value);}
-constexpr VkVideoEncodeH264CapabilitiesFlagBitsEXT to_c(VideoEncodeH264CapabilitiesFlagBitsEXT value) { return static_cast<VkVideoEncodeH264CapabilitiesFlagBitsEXT>(value);}
-constexpr VideoEncodeH264CapabilitiesFlagBitsEXT from_c(VkVideoEncodeH264CapabilitiesFlagBitsEXT value) { return static_cast<VideoEncodeH264CapabilitiesFlagBitsEXT>(value);}
+constexpr VkVideoEncodeH264CapabilityFlagBitsEXT to_c(VideoEncodeH264CapabilityFlagBitsEXT value) { return static_cast<VkVideoEncodeH264CapabilityFlagBitsEXT>(value);}
+constexpr VideoEncodeH264CapabilityFlagBitsEXT from_c(VkVideoEncodeH264CapabilityFlagBitsEXT value) { return static_cast<VideoEncodeH264CapabilityFlagBitsEXT>(value);}
 constexpr VkVideoEncodeH264InputModeFlagBitsEXT to_c(VideoEncodeH264InputModeFlagBitsEXT value) { return static_cast<VkVideoEncodeH264InputModeFlagBitsEXT>(value);}
 constexpr VideoEncodeH264InputModeFlagBitsEXT from_c(VkVideoEncodeH264InputModeFlagBitsEXT value) { return static_cast<VideoEncodeH264InputModeFlagBitsEXT>(value);}
 constexpr VkVideoEncodeH264OutputModeFlagBitsEXT to_c(VideoEncodeH264OutputModeFlagBitsEXT value) { return static_cast<VkVideoEncodeH264OutputModeFlagBitsEXT>(value);}
@@ -426,6 +428,12 @@ constexpr VideoEncodeH264OutputModeFlagBitsEXT from_c(VkVideoEncodeH264OutputMod
 constexpr VkVideoEncodeH264CreateFlagBitsEXT to_c(VideoEncodeH264CreateFlagBitsEXT value) { return static_cast<VkVideoEncodeH264CreateFlagBitsEXT>(value);}
 constexpr VideoEncodeH264CreateFlagBitsEXT from_c(VkVideoEncodeH264CreateFlagBitsEXT value) { return static_cast<VideoEncodeH264CreateFlagBitsEXT>(value);}
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+constexpr VkImageFormatConstraintsFlagBitsFUCHSIA to_c(ImageFormatConstraintsFlagBitsFUCHSIA value) { return static_cast<VkImageFormatConstraintsFlagBitsFUCHSIA>(value);}
+constexpr ImageFormatConstraintsFlagBitsFUCHSIA from_c(VkImageFormatConstraintsFlagBitsFUCHSIA value) { return static_cast<ImageFormatConstraintsFlagBitsFUCHSIA>(value);}
+constexpr VkImageConstraintsInfoFlagBitsFUCHSIA to_c(ImageConstraintsInfoFlagBitsFUCHSIA value) { return static_cast<VkImageConstraintsInfoFlagBitsFUCHSIA>(value);}
+constexpr ImageConstraintsInfoFlagBitsFUCHSIA from_c(VkImageConstraintsInfoFlagBitsFUCHSIA value) { return static_cast<ImageConstraintsInfoFlagBitsFUCHSIA>(value);}
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
 #endif // defined(VK_USE_PLATFORM_ANDROID_KHR)
 #if defined(VK_USE_PLATFORM_VI_NN)
@@ -613,16 +621,20 @@ constexpr VkPipelineRasterizationStateStreamCreateFlagsEXT to_c(PipelineRasteriz
 constexpr VkPipelineRasterizationDepthClipStateCreateFlagsEXT to_c(PipelineRasterizationDepthClipStateCreateFlagsEXT value) { return static_cast<VkPipelineRasterizationDepthClipStateCreateFlagsEXT>(value.flags);}
 constexpr VkToolPurposeFlagsEXT to_c(ToolPurposeFlagsEXT value) { return static_cast<VkToolPurposeFlagsEXT>(value.flags);}
 constexpr VkSubmitFlagsKHR to_c(SubmitFlagsKHR value) { return static_cast<VkSubmitFlagsKHR>(value.flags);}
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+constexpr VkImageFormatConstraintsFlagsFUCHSIA to_c(ImageFormatConstraintsFlagsFUCHSIA value) { return static_cast<VkImageFormatConstraintsFlagsFUCHSIA>(value.flags);}
+constexpr VkImageConstraintsInfoFlagsFUCHSIA to_c(ImageConstraintsInfoFlagsFUCHSIA value) { return static_cast<VkImageConstraintsInfoFlagsFUCHSIA>(value.flags);}
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 constexpr VkVideoCodecOperationFlagsKHR to_c(VideoCodecOperationFlagsKHR value) { return static_cast<VkVideoCodecOperationFlagsKHR>(value.flags);}
-constexpr VkVideoCapabilitiesFlagsKHR to_c(VideoCapabilitiesFlagsKHR value) { return static_cast<VkVideoCapabilitiesFlagsKHR>(value.flags);}
+constexpr VkVideoCapabilityFlagsKHR to_c(VideoCapabilityFlagsKHR value) { return static_cast<VkVideoCapabilityFlagsKHR>(value.flags);}
 constexpr VkVideoSessionCreateFlagsKHR to_c(VideoSessionCreateFlagsKHR value) { return static_cast<VkVideoSessionCreateFlagsKHR>(value.flags);}
 constexpr VkVideoBeginCodingFlagsKHR to_c(VideoBeginCodingFlagsKHR value) { return static_cast<VkVideoBeginCodingFlagsKHR>(value.flags);}
 constexpr VkVideoEndCodingFlagsKHR to_c(VideoEndCodingFlagsKHR value) { return static_cast<VkVideoEndCodingFlagsKHR>(value.flags);}
 constexpr VkVideoCodingQualityPresetFlagsKHR to_c(VideoCodingQualityPresetFlagsKHR value) { return static_cast<VkVideoCodingQualityPresetFlagsKHR>(value.flags);}
 constexpr VkVideoCodingControlFlagsKHR to_c(VideoCodingControlFlagsKHR value) { return static_cast<VkVideoCodingControlFlagsKHR>(value.flags);}
 constexpr VkVideoDecodeFlagsKHR to_c(VideoDecodeFlagsKHR value) { return static_cast<VkVideoDecodeFlagsKHR>(value.flags);}
-constexpr VkVideoDecodeH264FieldLayoutFlagsEXT to_c(VideoDecodeH264FieldLayoutFlagsEXT value) { return static_cast<VkVideoDecodeH264FieldLayoutFlagsEXT>(value.flags);}
+constexpr VkVideoDecodeH264PictureLayoutFlagsEXT to_c(VideoDecodeH264PictureLayoutFlagsEXT value) { return static_cast<VkVideoDecodeH264PictureLayoutFlagsEXT>(value.flags);}
 constexpr VkVideoDecodeH264CreateFlagsEXT to_c(VideoDecodeH264CreateFlagsEXT value) { return static_cast<VkVideoDecodeH264CreateFlagsEXT>(value.flags);}
 constexpr VkVideoDecodeH265CreateFlagsEXT to_c(VideoDecodeH265CreateFlagsEXT value) { return static_cast<VkVideoDecodeH265CreateFlagsEXT>(value.flags);}
 constexpr VkVideoEncodeFlagsKHR to_c(VideoEncodeFlagsKHR value) { return static_cast<VkVideoEncodeFlagsKHR>(value.flags);}
@@ -630,7 +642,7 @@ constexpr VkVideoEncodeRateControlFlagsKHR to_c(VideoEncodeRateControlFlagsKHR v
 constexpr VkVideoEncodeRateControlModeFlagsKHR to_c(VideoEncodeRateControlModeFlagsKHR value) { return static_cast<VkVideoEncodeRateControlModeFlagsKHR>(value.flags);}
 constexpr VkVideoChromaSubsamplingFlagsKHR to_c(VideoChromaSubsamplingFlagsKHR value) { return static_cast<VkVideoChromaSubsamplingFlagsKHR>(value.flags);}
 constexpr VkVideoComponentBitDepthFlagsKHR to_c(VideoComponentBitDepthFlagsKHR value) { return static_cast<VkVideoComponentBitDepthFlagsKHR>(value.flags);}
-constexpr VkVideoEncodeH264CapabilitiesFlagsEXT to_c(VideoEncodeH264CapabilitiesFlagsEXT value) { return static_cast<VkVideoEncodeH264CapabilitiesFlagsEXT>(value.flags);}
+constexpr VkVideoEncodeH264CapabilityFlagsEXT to_c(VideoEncodeH264CapabilityFlagsEXT value) { return static_cast<VkVideoEncodeH264CapabilityFlagsEXT>(value.flags);}
 constexpr VkVideoEncodeH264InputModeFlagsEXT to_c(VideoEncodeH264InputModeFlagsEXT value) { return static_cast<VkVideoEncodeH264InputModeFlagsEXT>(value.flags);}
 constexpr VkVideoEncodeH264OutputModeFlagsEXT to_c(VideoEncodeH264OutputModeFlagsEXT value) { return static_cast<VkVideoEncodeH264OutputModeFlagsEXT>(value.flags);}
 constexpr VkVideoEncodeH264CreateFlagsEXT to_c(VideoEncodeH264CreateFlagsEXT value) { return static_cast<VkVideoEncodeH264CreateFlagsEXT>(value.flags);}

@@ -97,7 +97,7 @@
 #define VK_API_VERSION_1_2 VK_MAKE_API_VERSION(0, 1, 2, 0)// Patch version should always be set to 0
 
 // Version of this file
-#define VK_HEADER_VERSION 186
+#define VK_HEADER_VERSION 194
 
 // Complete version of this file
 #define VK_HEADER_VERSION_COMPLETE VK_MAKE_API_VERSION(0, 1, 2, VK_HEADER_VERSION)
@@ -226,7 +226,7 @@ using VkRemoteAddressNV = void*;
 #define VK_EXT_SHADER_SUBGROUP_VOTE_EXTENSION_NAME "VK_EXT_shader_subgroup_vote"
 #define VK_EXT_TEXTURE_COMPRESSION_ASTC_HDR_EXTENSION_NAME "VK_EXT_texture_compression_astc_hdr"
 #define VK_EXT_ASTC_DECODE_MODE_EXTENSION_NAME "VK_EXT_astc_decode_mode"
-#define VK_KHR_MAINTENANCE1_EXTENSION_NAME "VK_KHR_maintenance1"
+#define VK_KHR_MAINTENANCE_1_EXTENSION_NAME "VK_KHR_maintenance1"
 #define VK_KHR_DEVICE_GROUP_CREATION_EXTENSION_NAME "VK_KHR_device_group_creation"
 #define VK_KHR_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME "VK_KHR_external_memory_capabilities"
 #define VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME "VK_KHR_external_memory"
@@ -251,7 +251,7 @@ using VkRemoteAddressNV = void*;
 #define VK_GOOGLE_DISPLAY_TIMING_EXTENSION_NAME "VK_GOOGLE_display_timing"
 #define VK_NV_SAMPLE_MASK_OVERRIDE_COVERAGE_EXTENSION_NAME "VK_NV_sample_mask_override_coverage"
 #define VK_NV_GEOMETRY_SHADER_PASSTHROUGH_EXTENSION_NAME "VK_NV_geometry_shader_passthrough"
-#define VK_NV_VIEWPORT_ARRAY2_EXTENSION_NAME "VK_NV_viewport_array2"
+#define VK_NV_VIEWPORT_ARRAY_2_EXTENSION_NAME "VK_NV_viewport_array2"
 #define VK_NVX_MULTIVIEW_PER_VIEW_ATTRIBUTES_EXTENSION_NAME "VK_NVX_multiview_per_view_attributes"
 #define VK_NV_VIEWPORT_SWIZZLE_EXTENSION_NAME "VK_NV_viewport_swizzle"
 #define VK_EXT_DISCARD_RECTANGLES_EXTENSION_NAME "VK_EXT_discard_rectangles"
@@ -267,7 +267,7 @@ using VkRemoteAddressNV = void*;
 #define VK_KHR_EXTERNAL_FENCE_WIN32_EXTENSION_NAME "VK_KHR_external_fence_win32"
 #define VK_KHR_EXTERNAL_FENCE_FD_EXTENSION_NAME "VK_KHR_external_fence_fd"
 #define VK_KHR_PERFORMANCE_QUERY_EXTENSION_NAME "VK_KHR_performance_query"
-#define VK_KHR_MAINTENANCE2_EXTENSION_NAME "VK_KHR_maintenance2"
+#define VK_KHR_MAINTENANCE_2_EXTENSION_NAME "VK_KHR_maintenance2"
 #define VK_KHR_GET_SURFACE_CAPABILITIES_2_EXTENSION_NAME "VK_KHR_get_surface_capabilities2"
 #define VK_KHR_VARIABLE_POINTERS_EXTENSION_NAME "VK_KHR_variable_pointers"
 #define VK_KHR_GET_DISPLAY_PROPERTIES_2_EXTENSION_NAME "VK_KHR_get_display_properties2"
@@ -308,7 +308,7 @@ using VkRemoteAddressNV = void*;
 #define VK_NV_SHADING_RATE_IMAGE_EXTENSION_NAME "VK_NV_shading_rate_image"
 #define VK_NV_RAY_TRACING_EXTENSION_NAME "VK_NV_ray_tracing"
 #define VK_NV_REPRESENTATIVE_FRAGMENT_TEST_EXTENSION_NAME "VK_NV_representative_fragment_test"
-#define VK_KHR_MAINTENANCE3_EXTENSION_NAME "VK_KHR_maintenance3"
+#define VK_KHR_MAINTENANCE_3_EXTENSION_NAME "VK_KHR_maintenance3"
 #define VK_KHR_DRAW_INDIRECT_COUNT_EXTENSION_NAME "VK_KHR_draw_indirect_count"
 #define VK_EXT_FILTER_CUBIC_EXTENSION_NAME "VK_EXT_filter_cubic"
 #define VK_QCOM_RENDER_PASS_SHADER_RESOLVE_EXTENSION_NAME "VK_QCOM_render_pass_shader_resolve"
@@ -349,7 +349,7 @@ using VkRemoteAddressNV = void*;
 #define VK_EXT_METAL_SURFACE_EXTENSION_NAME "VK_EXT_metal_surface"
 #define VK_EXT_FRAGMENT_DENSITY_MAP_EXTENSION_NAME "VK_EXT_fragment_density_map"
 #define VK_EXT_SCALAR_BLOCK_LAYOUT_EXTENSION_NAME "VK_EXT_scalar_block_layout"
-#define VK_GOOGLE_HLSL_FUNCTIONALITY1_EXTENSION_NAME "VK_GOOGLE_hlsl_functionality1"
+#define VK_GOOGLE_HLSL_FUNCTIONALITY_1_EXTENSION_NAME "VK_GOOGLE_hlsl_functionality1"
 #define VK_GOOGLE_DECORATE_STRING_EXTENSION_NAME "VK_GOOGLE_decorate_string"
 #define VK_EXT_SUBGROUP_SIZE_CONTROL_EXTENSION_NAME "VK_EXT_subgroup_size_control"
 #define VK_KHR_FRAGMENT_SHADING_RATE_EXTENSION_NAME "VK_KHR_fragment_shading_rate"
@@ -387,6 +387,7 @@ using VkRemoteAddressNV = void*;
 #define VK_EXT_SHADER_DEMOTE_TO_HELPER_INVOCATION_EXTENSION_NAME "VK_EXT_shader_demote_to_helper_invocation"
 #define VK_NV_DEVICE_GENERATED_COMMANDS_EXTENSION_NAME "VK_NV_device_generated_commands"
 #define VK_NV_INHERITED_VIEWPORT_SCISSOR_EXTENSION_NAME "VK_NV_inherited_viewport_scissor"
+#define VK_KHR_SHADER_INTEGER_DOT_PRODUCT_EXTENSION_NAME "VK_KHR_shader_integer_dot_product"
 #define VK_EXT_TEXEL_BUFFER_ALIGNMENT_EXTENSION_NAME "VK_EXT_texel_buffer_alignment"
 #define VK_QCOM_RENDER_PASS_TRANSFORM_EXTENSION_NAME "VK_QCOM_render_pass_transform"
 #define VK_EXT_DEVICE_MEMORY_REPORT_EXTENSION_NAME "VK_EXT_device_memory_report"
@@ -419,8 +420,10 @@ using VkRemoteAddressNV = void*;
 #define VK_VALVE_MUTABLE_DESCRIPTOR_TYPE_EXTENSION_NAME "VK_VALVE_mutable_descriptor_type"
 #define VK_EXT_VERTEX_INPUT_DYNAMIC_STATE_EXTENSION_NAME "VK_EXT_vertex_input_dynamic_state"
 #define VK_EXT_PHYSICAL_DEVICE_DRM_EXTENSION_NAME "VK_EXT_physical_device_drm"
+#define VK_EXT_PRIMITIVE_TOPOLOGY_LIST_RESTART_EXTENSION_NAME "VK_EXT_primitive_topology_list_restart"
 #define VK_FUCHSIA_EXTERNAL_MEMORY_EXTENSION_NAME "VK_FUCHSIA_external_memory"
 #define VK_FUCHSIA_EXTERNAL_SEMAPHORE_EXTENSION_NAME "VK_FUCHSIA_external_semaphore"
+#define VK_FUCHSIA_BUFFER_COLLECTION_EXTENSION_NAME "VK_FUCHSIA_buffer_collection"
 #define VK_HUAWEI_SUBPASS_SHADING_EXTENSION_NAME "VK_HUAWEI_subpass_shading"
 #define VK_HUAWEI_INVOCATION_MASK_EXTENSION_NAME "VK_HUAWEI_invocation_mask"
 #define VK_NV_EXTERNAL_MEMORY_RDMA_EXTENSION_NAME "VK_NV_external_memory_rdma"
@@ -429,22 +432,26 @@ using VkRemoteAddressNV = void*;
 #define VK_EXT_COLOR_WRITE_ENABLE_EXTENSION_NAME "VK_EXT_color_write_enable"
 #define VK_EXT_GLOBAL_PRIORITY_QUERY_EXTENSION_NAME "VK_EXT_global_priority_query"
 #define VK_EXT_MULTI_DRAW_EXTENSION_NAME "VK_EXT_multi_draw"
+#define VK_EXT_LOAD_STORE_OP_NONE_EXTENSION_NAME "VK_EXT_load_store_op_none"
+#define VK_EXT_PAGEABLE_DEVICE_LOCAL_MEMORY_EXTENSION_NAME "VK_EXT_pageable_device_local_memory"
 enum class VkAttachmentLoadOp : uint32_t {
     Load = 0,
     Clear = 1,
     DontCare = 2,
+    NoneEXT = 1000400000,
 };
 const VkAttachmentLoadOp VK_ATTACHMENT_LOAD_OP_LOAD = VkAttachmentLoadOp::Load;
 const VkAttachmentLoadOp VK_ATTACHMENT_LOAD_OP_CLEAR = VkAttachmentLoadOp::Clear;
 const VkAttachmentLoadOp VK_ATTACHMENT_LOAD_OP_DONT_CARE = VkAttachmentLoadOp::DontCare;
+const VkAttachmentLoadOp VK_ATTACHMENT_LOAD_OP_NONE_EXT = VkAttachmentLoadOp::NoneEXT;
 enum class VkAttachmentStoreOp : uint32_t {
     Store = 0,
     DontCare = 1,
-    NoneQCOM = 1000301000,
+    NoneEXT = 1000301000,
 };
 const VkAttachmentStoreOp VK_ATTACHMENT_STORE_OP_STORE = VkAttachmentStoreOp::Store;
 const VkAttachmentStoreOp VK_ATTACHMENT_STORE_OP_DONT_CARE = VkAttachmentStoreOp::DontCare;
-const VkAttachmentStoreOp VK_ATTACHMENT_STORE_OP_NONE_QCOM = VkAttachmentStoreOp::NoneQCOM;
+const VkAttachmentStoreOp VK_ATTACHMENT_STORE_OP_NONE_EXT = VkAttachmentStoreOp::NoneEXT;
 enum class VkBlendFactor : uint32_t {
     Zero = 0,
     One = 1,
@@ -1950,6 +1957,8 @@ enum class VkStructureType : uint32_t {
     PhysicalDeviceDeviceGeneratedCommandsFeaturesNV = 1000277007,
     PhysicalDeviceInheritedViewportScissorFeaturesNV = 1000278000,
     CommandBufferInheritanceViewportScissorInfoNV = 1000278001,
+    PhysicalDeviceShaderIntegerDotProductFeaturesKHR = 1000280000,
+    PhysicalDeviceShaderIntegerDotProductPropertiesKHR = 1000280001,
     PhysicalDeviceTexelBufferAlignmentFeaturesEXT = 1000281000,
     PhysicalDeviceTexelBufferAlignmentPropertiesEXT = 1000281001,
     CommandBufferInheritanceRenderPassTransformInfoQCOM = 1000282000,
@@ -2016,11 +2025,22 @@ enum class VkStructureType : uint32_t {
     VertexInputBindingDescription2EXT = 1000352001,
     VertexInputAttributeDescription2EXT = 1000352002,
     PhysicalDeviceDrmPropertiesEXT = 1000353000,
+    PhysicalDevicePrimitiveTopologyListRestartFeaturesEXT = 1000356000,
     ImportMemoryZirconHandleInfoFUCHSIA = 1000364000,
     MemoryZirconHandlePropertiesFUCHSIA = 1000364001,
     MemoryGetZirconHandleInfoFUCHSIA = 1000364002,
     ImportSemaphoreZirconHandleInfoFUCHSIA = 1000365000,
     SemaphoreGetZirconHandleInfoFUCHSIA = 1000365001,
+    BufferCollectionCreateInfoFUCHSIA = 1000366000,
+    ImportMemoryBufferCollectionFUCHSIA = 1000366001,
+    BufferCollectionImageCreateInfoFUCHSIA = 1000366002,
+    BufferCollectionPropertiesFUCHSIA = 1000366003,
+    BufferConstraintsInfoFUCHSIA = 1000366004,
+    BufferCollectionBufferCreateInfoFUCHSIA = 1000366005,
+    ImageConstraintsInfoFUCHSIA = 1000366006,
+    ImageFormatConstraintsInfoFUCHSIA = 1000366007,
+    SysmemColorSpaceFUCHSIA = 1000366008,
+    BufferCollectionConstraintsInfoFUCHSIA = 1000366009,
     SubpassShadingPipelineCreateInfoHUAWEI = 1000369000,
     PhysicalDeviceSubpassShadingFeaturesHUAWEI = 1000369001,
     PhysicalDeviceSubpassShadingPropertiesHUAWEI = 1000369002,
@@ -2035,6 +2055,7 @@ enum class VkStructureType : uint32_t {
     QueueFamilyGlobalPriorityPropertiesEXT = 1000388001,
     PhysicalDeviceMultiDrawFeaturesEXT = 1000392000,
     PhysicalDeviceMultiDrawPropertiesEXT = 1000392001,
+    PhysicalDevicePageableDeviceLocalMemoryFeaturesEXT = 1000412000,
     PhysicalDeviceSubgroupProperties = 1000094000,
     BindBufferMemoryInfo = 1000157000,
     BindImageMemoryInfo = 1000157001,
@@ -2519,6 +2540,8 @@ const VkStructureType VK_STRUCTURE_TYPE_GENERATED_COMMANDS_MEMORY_REQUIREMENTS_I
 const VkStructureType VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEVICE_GENERATED_COMMANDS_FEATURES_NV = VkStructureType::PhysicalDeviceDeviceGeneratedCommandsFeaturesNV;
 const VkStructureType VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INHERITED_VIEWPORT_SCISSOR_FEATURES_NV = VkStructureType::PhysicalDeviceInheritedViewportScissorFeaturesNV;
 const VkStructureType VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_VIEWPORT_SCISSOR_INFO_NV = VkStructureType::CommandBufferInheritanceViewportScissorInfoNV;
+const VkStructureType VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_INTEGER_DOT_PRODUCT_FEATURES_KHR = VkStructureType::PhysicalDeviceShaderIntegerDotProductFeaturesKHR;
+const VkStructureType VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_INTEGER_DOT_PRODUCT_PROPERTIES_KHR = VkStructureType::PhysicalDeviceShaderIntegerDotProductPropertiesKHR;
 const VkStructureType VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TEXEL_BUFFER_ALIGNMENT_FEATURES_EXT = VkStructureType::PhysicalDeviceTexelBufferAlignmentFeaturesEXT;
 const VkStructureType VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TEXEL_BUFFER_ALIGNMENT_PROPERTIES_EXT = VkStructureType::PhysicalDeviceTexelBufferAlignmentPropertiesEXT;
 const VkStructureType VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_RENDER_PASS_TRANSFORM_INFO_QCOM = VkStructureType::CommandBufferInheritanceRenderPassTransformInfoQCOM;
@@ -2585,11 +2608,22 @@ const VkStructureType VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_INPUT_DYNAMIC_STA
 const VkStructureType VK_STRUCTURE_TYPE_VERTEX_INPUT_BINDING_DESCRIPTION_2_EXT = VkStructureType::VertexInputBindingDescription2EXT;
 const VkStructureType VK_STRUCTURE_TYPE_VERTEX_INPUT_ATTRIBUTE_DESCRIPTION_2_EXT = VkStructureType::VertexInputAttributeDescription2EXT;
 const VkStructureType VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRM_PROPERTIES_EXT = VkStructureType::PhysicalDeviceDrmPropertiesEXT;
+const VkStructureType VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRIMITIVE_TOPOLOGY_LIST_RESTART_FEATURES_EXT = VkStructureType::PhysicalDevicePrimitiveTopologyListRestartFeaturesEXT;
 const VkStructureType VK_STRUCTURE_TYPE_IMPORT_MEMORY_ZIRCON_HANDLE_INFO_FUCHSIA = VkStructureType::ImportMemoryZirconHandleInfoFUCHSIA;
 const VkStructureType VK_STRUCTURE_TYPE_MEMORY_ZIRCON_HANDLE_PROPERTIES_FUCHSIA = VkStructureType::MemoryZirconHandlePropertiesFUCHSIA;
 const VkStructureType VK_STRUCTURE_TYPE_MEMORY_GET_ZIRCON_HANDLE_INFO_FUCHSIA = VkStructureType::MemoryGetZirconHandleInfoFUCHSIA;
 const VkStructureType VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_ZIRCON_HANDLE_INFO_FUCHSIA = VkStructureType::ImportSemaphoreZirconHandleInfoFUCHSIA;
 const VkStructureType VK_STRUCTURE_TYPE_SEMAPHORE_GET_ZIRCON_HANDLE_INFO_FUCHSIA = VkStructureType::SemaphoreGetZirconHandleInfoFUCHSIA;
+const VkStructureType VK_STRUCTURE_TYPE_BUFFER_COLLECTION_CREATE_INFO_FUCHSIA = VkStructureType::BufferCollectionCreateInfoFUCHSIA;
+const VkStructureType VK_STRUCTURE_TYPE_IMPORT_MEMORY_BUFFER_COLLECTION_FUCHSIA = VkStructureType::ImportMemoryBufferCollectionFUCHSIA;
+const VkStructureType VK_STRUCTURE_TYPE_BUFFER_COLLECTION_IMAGE_CREATE_INFO_FUCHSIA = VkStructureType::BufferCollectionImageCreateInfoFUCHSIA;
+const VkStructureType VK_STRUCTURE_TYPE_BUFFER_COLLECTION_PROPERTIES_FUCHSIA = VkStructureType::BufferCollectionPropertiesFUCHSIA;
+const VkStructureType VK_STRUCTURE_TYPE_BUFFER_CONSTRAINTS_INFO_FUCHSIA = VkStructureType::BufferConstraintsInfoFUCHSIA;
+const VkStructureType VK_STRUCTURE_TYPE_BUFFER_COLLECTION_BUFFER_CREATE_INFO_FUCHSIA = VkStructureType::BufferCollectionBufferCreateInfoFUCHSIA;
+const VkStructureType VK_STRUCTURE_TYPE_IMAGE_CONSTRAINTS_INFO_FUCHSIA = VkStructureType::ImageConstraintsInfoFUCHSIA;
+const VkStructureType VK_STRUCTURE_TYPE_IMAGE_FORMAT_CONSTRAINTS_INFO_FUCHSIA = VkStructureType::ImageFormatConstraintsInfoFUCHSIA;
+const VkStructureType VK_STRUCTURE_TYPE_SYSMEM_COLOR_SPACE_FUCHSIA = VkStructureType::SysmemColorSpaceFUCHSIA;
+const VkStructureType VK_STRUCTURE_TYPE_BUFFER_COLLECTION_CONSTRAINTS_INFO_FUCHSIA = VkStructureType::BufferCollectionConstraintsInfoFUCHSIA;
 const VkStructureType VK_STRUCTURE_TYPE_SUBPASS_SHADING_PIPELINE_CREATE_INFO_HUAWEI = VkStructureType::SubpassShadingPipelineCreateInfoHUAWEI;
 const VkStructureType VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBPASS_SHADING_FEATURES_HUAWEI = VkStructureType::PhysicalDeviceSubpassShadingFeaturesHUAWEI;
 const VkStructureType VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBPASS_SHADING_PROPERTIES_HUAWEI = VkStructureType::PhysicalDeviceSubpassShadingPropertiesHUAWEI;
@@ -2604,6 +2638,7 @@ const VkStructureType VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_GLOBAL_PRIORITY_QUERY_FE
 const VkStructureType VK_STRUCTURE_TYPE_QUEUE_FAMILY_GLOBAL_PRIORITY_PROPERTIES_EXT = VkStructureType::QueueFamilyGlobalPriorityPropertiesEXT;
 const VkStructureType VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTI_DRAW_FEATURES_EXT = VkStructureType::PhysicalDeviceMultiDrawFeaturesEXT;
 const VkStructureType VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTI_DRAW_PROPERTIES_EXT = VkStructureType::PhysicalDeviceMultiDrawPropertiesEXT;
+const VkStructureType VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PAGEABLE_DEVICE_LOCAL_MEMORY_FEATURES_EXT = VkStructureType::PhysicalDevicePageableDeviceLocalMemoryFeaturesEXT;
 const VkStructureType VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_PROPERTIES = VkStructureType::PhysicalDeviceSubgroupProperties;
 const VkStructureType VK_STRUCTURE_TYPE_BIND_BUFFER_MEMORY_INFO = VkStructureType::BindBufferMemoryInfo;
 const VkStructureType VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_INFO = VkStructureType::BindImageMemoryInfo;
@@ -2811,6 +2846,7 @@ enum class VkObjectType : uint32_t {
     DeferredOperationKHR = 1000268000,
     IndirectCommandsLayoutNV = 1000277000,
     PrivateDataSlotEXT = 1000295000,
+    BufferCollectionFUCHSIA = 1000366000,
     SamplerYcbcrConversion = 1000156000,
     DescriptorUpdateTemplate = 1000085000,
 };
@@ -2857,6 +2893,7 @@ const VkObjectType VK_OBJECT_TYPE_PERFORMANCE_CONFIGURATION_INTEL = VkObjectType
 const VkObjectType VK_OBJECT_TYPE_DEFERRED_OPERATION_KHR = VkObjectType::DeferredOperationKHR;
 const VkObjectType VK_OBJECT_TYPE_INDIRECT_COMMANDS_LAYOUT_NV = VkObjectType::IndirectCommandsLayoutNV;
 const VkObjectType VK_OBJECT_TYPE_PRIVATE_DATA_SLOT_EXT = VkObjectType::PrivateDataSlotEXT;
+const VkObjectType VK_OBJECT_TYPE_BUFFER_COLLECTION_FUCHSIA = VkObjectType::BufferCollectionFUCHSIA;
 const VkObjectType VK_OBJECT_TYPE_SAMPLER_YCBCR_CONVERSION = VkObjectType::SamplerYcbcrConversion;
 const VkObjectType VK_OBJECT_TYPE_DESCRIPTOR_UPDATE_TEMPLATE = VkObjectType::DescriptorUpdateTemplate;
 enum class VkIndirectCommandsTokenTypeNV : uint32_t {
@@ -3309,6 +3346,7 @@ enum class VkDebugReportObjectTypeEXT : uint32_t {
     CuFunctionNvxEXT = 1000029001,
     AccelerationStructureKhrEXT = 1000150000,
     AccelerationStructureNvEXT = 1000165000,
+    BufferCollectionFuchsiaEXT = 1000366000,
 };
 const VkDebugReportObjectTypeEXT VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT = VkDebugReportObjectTypeEXT::UnknownEXT;
 const VkDebugReportObjectTypeEXT VK_DEBUG_REPORT_OBJECT_TYPE_INSTANCE_EXT = VkDebugReportObjectTypeEXT::InstanceEXT;
@@ -3348,6 +3386,7 @@ const VkDebugReportObjectTypeEXT VK_DEBUG_REPORT_OBJECT_TYPE_CU_MODULE_NVX_EXT =
 const VkDebugReportObjectTypeEXT VK_DEBUG_REPORT_OBJECT_TYPE_CU_FUNCTION_NVX_EXT = VkDebugReportObjectTypeEXT::CuFunctionNvxEXT;
 const VkDebugReportObjectTypeEXT VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_KHR_EXT = VkDebugReportObjectTypeEXT::AccelerationStructureKhrEXT;
 const VkDebugReportObjectTypeEXT VK_DEBUG_REPORT_OBJECT_TYPE_ACCELERATION_STRUCTURE_NV_EXT = VkDebugReportObjectTypeEXT::AccelerationStructureNvEXT;
+const VkDebugReportObjectTypeEXT VK_DEBUG_REPORT_OBJECT_TYPE_BUFFER_COLLECTION_FUCHSIA_EXT = VkDebugReportObjectTypeEXT::BufferCollectionFuchsiaEXT;
 enum class VkDeviceMemoryReportEventTypeEXT : uint32_t {
     AllocateEXT = 0,
     FreeEXT = 1,
@@ -3533,6 +3572,10 @@ enum class VkDriverId : uint32_t {
     Moltenvk = 14,
     CoreaviProprietary = 15,
     JuiceProprietary = 16,
+    VerisiliconProprietary = 17,
+    MesaTurnip = 18,
+    MesaV3Dv = 19,
+    MesaPanvk = 20,
 };
 const VkDriverId VK_DRIVER_ID_AMD_PROPRIETARY = VkDriverId::AmdProprietary;
 const VkDriverId VK_DRIVER_ID_AMD_OPEN_SOURCE = VkDriverId::AmdOpenSource;
@@ -3550,6 +3593,10 @@ const VkDriverId VK_DRIVER_ID_MESA_LLVMPIPE = VkDriverId::MesaLlvmpipe;
 const VkDriverId VK_DRIVER_ID_MOLTENVK = VkDriverId::Moltenvk;
 const VkDriverId VK_DRIVER_ID_COREAVI_PROPRIETARY = VkDriverId::CoreaviProprietary;
 const VkDriverId VK_DRIVER_ID_JUICE_PROPRIETARY = VkDriverId::JuiceProprietary;
+const VkDriverId VK_DRIVER_ID_VERISILICON_PROPRIETARY = VkDriverId::VerisiliconProprietary;
+const VkDriverId VK_DRIVER_ID_MESA_TURNIP = VkDriverId::MesaTurnip;
+const VkDriverId VK_DRIVER_ID_MESA_V3DV = VkDriverId::MesaV3Dv;
+const VkDriverId VK_DRIVER_ID_MESA_PANVK = VkDriverId::MesaPanvk;
 using VkDriverIdKHR = VkDriverId;
 enum class VkShadingRatePaletteEntryNV : uint32_t {
     NoInvocationsNV = 0,
@@ -3971,6 +4018,8 @@ enum class VkFenceCreateFlagBits: uint32_t {
     Signaled = 1,
 };
 const VkFenceCreateFlagBits VK_FENCE_CREATE_SIGNALED_BIT = VkFenceCreateFlagBits::Signaled;
+enum class VkSemaphoreCreateFlagBits: uint32_t {
+};
 enum class VkFormatFeatureFlagBits: uint32_t {
     SampledImage = 1,
     StorageImage = 2,
@@ -4531,14 +4580,16 @@ const VkResolveModeFlagBits VK_RESOLVE_MODE_MIN_BIT = VkResolveModeFlagBits::Min
 const VkResolveModeFlagBits VK_RESOLVE_MODE_MAX_BIT = VkResolveModeFlagBits::Max;
 enum class VkGeometryInstanceFlagBitsKHR: uint32_t {
     TriangleFacingCullDisableBitKHR = 1,
-    TriangleFrontCounterclockwiseBitKHR = 2,
+    TriangleFlipFacingBitKHR = 2,
     ForceOpaqueBitKHR = 4,
     ForceNoOpaqueBitKHR = 8,
+    TriangleFrontCounterclockwiseBitKHR = TriangleFlipFacingBitKHR,
 };
 const VkGeometryInstanceFlagBitsKHR VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR = VkGeometryInstanceFlagBitsKHR::TriangleFacingCullDisableBitKHR;
-const VkGeometryInstanceFlagBitsKHR VK_GEOMETRY_INSTANCE_TRIANGLE_FRONT_COUNTERCLOCKWISE_BIT_KHR = VkGeometryInstanceFlagBitsKHR::TriangleFrontCounterclockwiseBitKHR;
+const VkGeometryInstanceFlagBitsKHR VK_GEOMETRY_INSTANCE_TRIANGLE_FLIP_FACING_BIT_KHR = VkGeometryInstanceFlagBitsKHR::TriangleFlipFacingBitKHR;
 const VkGeometryInstanceFlagBitsKHR VK_GEOMETRY_INSTANCE_FORCE_OPAQUE_BIT_KHR = VkGeometryInstanceFlagBitsKHR::ForceOpaqueBitKHR;
 const VkGeometryInstanceFlagBitsKHR VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_KHR = VkGeometryInstanceFlagBitsKHR::ForceNoOpaqueBitKHR;
+const VkGeometryInstanceFlagBitsKHR VK_GEOMETRY_INSTANCE_TRIANGLE_FRONT_COUNTERCLOCKWISE_BIT_KHR = VkGeometryInstanceFlagBitsKHR::TriangleFrontCounterclockwiseBitKHR;
 enum class VkGeometryFlagBitsKHR: uint32_t {
     OpaqueBitKHR = 1,
     NoDuplicateAnyHitInvocationBitKHR = 2,
@@ -4818,12 +4869,12 @@ const VkVideoComponentBitDepthFlagBitsKHR VK_VIDEO_COMPONENT_BIT_DEPTH_INVALID_K
 const VkVideoComponentBitDepthFlagBitsKHR VK_VIDEO_COMPONENT_BIT_DEPTH_8_BIT_KHR = VkVideoComponentBitDepthFlagBitsKHR::e8BitKHR;
 const VkVideoComponentBitDepthFlagBitsKHR VK_VIDEO_COMPONENT_BIT_DEPTH_10_BIT_KHR = VkVideoComponentBitDepthFlagBitsKHR::e10BitKHR;
 const VkVideoComponentBitDepthFlagBitsKHR VK_VIDEO_COMPONENT_BIT_DEPTH_12_BIT_KHR = VkVideoComponentBitDepthFlagBitsKHR::e12BitKHR;
-enum class VkVideoCapabilitiesFlagBitsKHR: uint32_t {
+enum class VkVideoCapabilityFlagBitsKHR: uint32_t {
     ProtectedContentBitKHR = 1,
     SeparateReferenceImagesBitKHR = 2,
 };
-const VkVideoCapabilitiesFlagBitsKHR VK_VIDEO_CAPABILITIES_PROTECTED_CONTENT_BIT_KHR = VkVideoCapabilitiesFlagBitsKHR::ProtectedContentBitKHR;
-const VkVideoCapabilitiesFlagBitsKHR VK_VIDEO_CAPABILITIES_SEPARATE_REFERENCE_IMAGES_BIT_KHR = VkVideoCapabilitiesFlagBitsKHR::SeparateReferenceImagesBitKHR;
+const VkVideoCapabilityFlagBitsKHR VK_VIDEO_CAPABILITY_PROTECTED_CONTENT_BIT_KHR = VkVideoCapabilityFlagBitsKHR::ProtectedContentBitKHR;
+const VkVideoCapabilityFlagBitsKHR VK_VIDEO_CAPABILITY_SEPARATE_REFERENCE_IMAGES_BIT_KHR = VkVideoCapabilityFlagBitsKHR::SeparateReferenceImagesBitKHR;
 enum class VkVideoSessionCreateFlagBitsKHR: uint32_t {
     DefaultKHR = 0,
     ProtectedContentBitKHR = 1,
@@ -4831,23 +4882,21 @@ enum class VkVideoSessionCreateFlagBitsKHR: uint32_t {
 const VkVideoSessionCreateFlagBitsKHR VK_VIDEO_SESSION_CREATE_DEFAULT_KHR = VkVideoSessionCreateFlagBitsKHR::DefaultKHR;
 const VkVideoSessionCreateFlagBitsKHR VK_VIDEO_SESSION_CREATE_PROTECTED_CONTENT_BIT_KHR = VkVideoSessionCreateFlagBitsKHR::ProtectedContentBitKHR;
 enum class VkVideoCodingQualityPresetFlagBitsKHR: uint32_t {
-    DefaultBitKHR = 0,
     NormalBitKHR = 1,
     PowerBitKHR = 2,
     QualityBitKHR = 4,
 };
-const VkVideoCodingQualityPresetFlagBitsKHR VK_VIDEO_CODING_QUALITY_PRESET_DEFAULT_BIT_KHR = VkVideoCodingQualityPresetFlagBitsKHR::DefaultBitKHR;
 const VkVideoCodingQualityPresetFlagBitsKHR VK_VIDEO_CODING_QUALITY_PRESET_NORMAL_BIT_KHR = VkVideoCodingQualityPresetFlagBitsKHR::NormalBitKHR;
 const VkVideoCodingQualityPresetFlagBitsKHR VK_VIDEO_CODING_QUALITY_PRESET_POWER_BIT_KHR = VkVideoCodingQualityPresetFlagBitsKHR::PowerBitKHR;
 const VkVideoCodingQualityPresetFlagBitsKHR VK_VIDEO_CODING_QUALITY_PRESET_QUALITY_BIT_KHR = VkVideoCodingQualityPresetFlagBitsKHR::QualityBitKHR;
-enum class VkVideoDecodeH264FieldLayoutFlagBitsEXT: uint32_t {
-    OnlyEXT = 0,
-    LineInterlacedPlaneBitEXT = 1,
-    SeparateInterlacedPlaneBitEXT = 2,
+enum class VkVideoDecodeH264PictureLayoutFlagBitsEXT: uint32_t {
+    ProgressiveEXT = 0,
+    InterlacedInterleavedLinesBitEXT = 1,
+    InterlacedSeparatePlanesBitEXT = 2,
 };
-const VkVideoDecodeH264FieldLayoutFlagBitsEXT VK_VIDEO_DECODE_H264_PROGRESSIVE_PICTURES_ONLY_EXT = VkVideoDecodeH264FieldLayoutFlagBitsEXT::OnlyEXT;
-const VkVideoDecodeH264FieldLayoutFlagBitsEXT VK_VIDEO_DECODE_H264_FIELD_LAYOUT_LINE_INTERLACED_PLANE_BIT_EXT = VkVideoDecodeH264FieldLayoutFlagBitsEXT::LineInterlacedPlaneBitEXT;
-const VkVideoDecodeH264FieldLayoutFlagBitsEXT VK_VIDEO_DECODE_H264_FIELD_LAYOUT_SEPARATE_INTERLACED_PLANE_BIT_EXT = VkVideoDecodeH264FieldLayoutFlagBitsEXT::SeparateInterlacedPlaneBitEXT;
+const VkVideoDecodeH264PictureLayoutFlagBitsEXT VK_VIDEO_DECODE_H264_PICTURE_LAYOUT_PROGRESSIVE_EXT = VkVideoDecodeH264PictureLayoutFlagBitsEXT::ProgressiveEXT;
+const VkVideoDecodeH264PictureLayoutFlagBitsEXT VK_VIDEO_DECODE_H264_PICTURE_LAYOUT_INTERLACED_INTERLEAVED_LINES_BIT_EXT = VkVideoDecodeH264PictureLayoutFlagBitsEXT::InterlacedInterleavedLinesBitEXT;
+const VkVideoDecodeH264PictureLayoutFlagBitsEXT VK_VIDEO_DECODE_H264_PICTURE_LAYOUT_INTERLACED_SEPARATE_PLANES_BIT_EXT = VkVideoDecodeH264PictureLayoutFlagBitsEXT::InterlacedSeparatePlanesBitEXT;
 enum class VkVideoCodingControlFlagBitsKHR: uint32_t {
     DefaultKHR = 0,
     ResetBitKHR = 1,
@@ -4880,7 +4929,7 @@ enum class VkVideoEncodeRateControlModeFlagBitsKHR: uint32_t {
 const VkVideoEncodeRateControlModeFlagBitsKHR VK_VIDEO_ENCODE_RATE_CONTROL_MODE_NONE_BIT_KHR = VkVideoEncodeRateControlModeFlagBitsKHR::NoneBitKHR;
 const VkVideoEncodeRateControlModeFlagBitsKHR VK_VIDEO_ENCODE_RATE_CONTROL_MODE_CBR_BIT_KHR = VkVideoEncodeRateControlModeFlagBitsKHR::CbrBitKHR;
 const VkVideoEncodeRateControlModeFlagBitsKHR VK_VIDEO_ENCODE_RATE_CONTROL_MODE_VBR_BIT_KHR = VkVideoEncodeRateControlModeFlagBitsKHR::VbrBitKHR;
-enum class VkVideoEncodeH264CapabilitiesFlagBitsEXT: uint32_t {
+enum class VkVideoEncodeH264CapabilityFlagBitsEXT: uint32_t {
     CabacBitEXT = 1,
     CavlcBitEXT = 2,
     WeightedBiPredImplicitBitEXT = 4,
@@ -4893,17 +4942,17 @@ enum class VkVideoEncodeH264CapabilitiesFlagBitsEXT: uint32_t {
     MultipleSlicePerFrameBitEXT = 512,
     EvenlyDistributedSliceSizeBitEXT = 1024,
 };
-const VkVideoEncodeH264CapabilitiesFlagBitsEXT VK_VIDEO_ENCODE_H264_CAPABILITY_CABAC_BIT_EXT = VkVideoEncodeH264CapabilitiesFlagBitsEXT::CabacBitEXT;
-const VkVideoEncodeH264CapabilitiesFlagBitsEXT VK_VIDEO_ENCODE_H264_CAPABILITY_CAVLC_BIT_EXT = VkVideoEncodeH264CapabilitiesFlagBitsEXT::CavlcBitEXT;
-const VkVideoEncodeH264CapabilitiesFlagBitsEXT VK_VIDEO_ENCODE_H264_CAPABILITY_WEIGHTED_BI_PRED_IMPLICIT_BIT_EXT = VkVideoEncodeH264CapabilitiesFlagBitsEXT::WeightedBiPredImplicitBitEXT;
-const VkVideoEncodeH264CapabilitiesFlagBitsEXT VK_VIDEO_ENCODE_H264_CAPABILITY_TRANSFORM_8X8_BIT_EXT = VkVideoEncodeH264CapabilitiesFlagBitsEXT::Transform8X8BitEXT;
-const VkVideoEncodeH264CapabilitiesFlagBitsEXT VK_VIDEO_ENCODE_H264_CAPABILITY_CHROMA_QP_OFFSET_BIT_EXT = VkVideoEncodeH264CapabilitiesFlagBitsEXT::ChromaQpOffsetBitEXT;
-const VkVideoEncodeH264CapabilitiesFlagBitsEXT VK_VIDEO_ENCODE_H264_CAPABILITY_SECOND_CHROMA_QP_OFFSET_BIT_EXT = VkVideoEncodeH264CapabilitiesFlagBitsEXT::SecondChromaQpOffsetBitEXT;
-const VkVideoEncodeH264CapabilitiesFlagBitsEXT VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_DISABLED_BIT_EXT = VkVideoEncodeH264CapabilitiesFlagBitsEXT::DeblockingFilterDisabledBitEXT;
-const VkVideoEncodeH264CapabilitiesFlagBitsEXT VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_ENABLED_BIT_EXT = VkVideoEncodeH264CapabilitiesFlagBitsEXT::DeblockingFilterEnabledBitEXT;
-const VkVideoEncodeH264CapabilitiesFlagBitsEXT VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_PARTIAL_BIT_EXT = VkVideoEncodeH264CapabilitiesFlagBitsEXT::DeblockingFilterPartialBitEXT;
-const VkVideoEncodeH264CapabilitiesFlagBitsEXT VK_VIDEO_ENCODE_H264_CAPABILITY_MULTIPLE_SLICE_PER_FRAME_BIT_EXT = VkVideoEncodeH264CapabilitiesFlagBitsEXT::MultipleSlicePerFrameBitEXT;
-const VkVideoEncodeH264CapabilitiesFlagBitsEXT VK_VIDEO_ENCODE_H264_CAPABILITY_EVENLY_DISTRIBUTED_SLICE_SIZE_BIT_EXT = VkVideoEncodeH264CapabilitiesFlagBitsEXT::EvenlyDistributedSliceSizeBitEXT;
+const VkVideoEncodeH264CapabilityFlagBitsEXT VK_VIDEO_ENCODE_H264_CAPABILITY_CABAC_BIT_EXT = VkVideoEncodeH264CapabilityFlagBitsEXT::CabacBitEXT;
+const VkVideoEncodeH264CapabilityFlagBitsEXT VK_VIDEO_ENCODE_H264_CAPABILITY_CAVLC_BIT_EXT = VkVideoEncodeH264CapabilityFlagBitsEXT::CavlcBitEXT;
+const VkVideoEncodeH264CapabilityFlagBitsEXT VK_VIDEO_ENCODE_H264_CAPABILITY_WEIGHTED_BI_PRED_IMPLICIT_BIT_EXT = VkVideoEncodeH264CapabilityFlagBitsEXT::WeightedBiPredImplicitBitEXT;
+const VkVideoEncodeH264CapabilityFlagBitsEXT VK_VIDEO_ENCODE_H264_CAPABILITY_TRANSFORM_8X8_BIT_EXT = VkVideoEncodeH264CapabilityFlagBitsEXT::Transform8X8BitEXT;
+const VkVideoEncodeH264CapabilityFlagBitsEXT VK_VIDEO_ENCODE_H264_CAPABILITY_CHROMA_QP_OFFSET_BIT_EXT = VkVideoEncodeH264CapabilityFlagBitsEXT::ChromaQpOffsetBitEXT;
+const VkVideoEncodeH264CapabilityFlagBitsEXT VK_VIDEO_ENCODE_H264_CAPABILITY_SECOND_CHROMA_QP_OFFSET_BIT_EXT = VkVideoEncodeH264CapabilityFlagBitsEXT::SecondChromaQpOffsetBitEXT;
+const VkVideoEncodeH264CapabilityFlagBitsEXT VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_DISABLED_BIT_EXT = VkVideoEncodeH264CapabilityFlagBitsEXT::DeblockingFilterDisabledBitEXT;
+const VkVideoEncodeH264CapabilityFlagBitsEXT VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_ENABLED_BIT_EXT = VkVideoEncodeH264CapabilityFlagBitsEXT::DeblockingFilterEnabledBitEXT;
+const VkVideoEncodeH264CapabilityFlagBitsEXT VK_VIDEO_ENCODE_H264_CAPABILITY_DEBLOCKING_FILTER_PARTIAL_BIT_EXT = VkVideoEncodeH264CapabilityFlagBitsEXT::DeblockingFilterPartialBitEXT;
+const VkVideoEncodeH264CapabilityFlagBitsEXT VK_VIDEO_ENCODE_H264_CAPABILITY_MULTIPLE_SLICE_PER_FRAME_BIT_EXT = VkVideoEncodeH264CapabilityFlagBitsEXT::MultipleSlicePerFrameBitEXT;
+const VkVideoEncodeH264CapabilityFlagBitsEXT VK_VIDEO_ENCODE_H264_CAPABILITY_EVENLY_DISTRIBUTED_SLICE_SIZE_BIT_EXT = VkVideoEncodeH264CapabilityFlagBitsEXT::EvenlyDistributedSliceSizeBitEXT;
 enum class VkVideoEncodeH264InputModeFlagBitsEXT: uint32_t {
     FrameBitEXT = 1,
     SliceBitEXT = 2,
@@ -4927,6 +4976,22 @@ enum class VkVideoEncodeH264CreateFlagBitsEXT: uint32_t {
 const VkVideoEncodeH264CreateFlagBitsEXT VK_VIDEO_ENCODE_H264_CREATE_DEFAULT_EXT = VkVideoEncodeH264CreateFlagBitsEXT::DefaultEXT;
 const VkVideoEncodeH264CreateFlagBitsEXT VK_VIDEO_ENCODE_H264_CREATE_RESERVED_0_BIT_EXT = VkVideoEncodeH264CreateFlagBitsEXT::Reserved0BitEXT;
 #endif // defined(VK_ENABLE_BETA_EXTENSIONS)
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+enum class VkImageFormatConstraintsFlagBitsFUCHSIA: uint32_t {
+};
+enum class VkImageConstraintsInfoFlagBitsFUCHSIA: uint32_t {
+    CpuReadRarelyFUCHSIA = 1,
+    CpuReadOftenFUCHSIA = 2,
+    CpuWriteRarelyFUCHSIA = 4,
+    CpuWriteOftenFUCHSIA = 8,
+    ProtectedOptionalFUCHSIA = 16,
+};
+const VkImageConstraintsInfoFlagBitsFUCHSIA VK_IMAGE_CONSTRAINTS_INFO_CPU_READ_RARELY_FUCHSIA = VkImageConstraintsInfoFlagBitsFUCHSIA::CpuReadRarelyFUCHSIA;
+const VkImageConstraintsInfoFlagBitsFUCHSIA VK_IMAGE_CONSTRAINTS_INFO_CPU_READ_OFTEN_FUCHSIA = VkImageConstraintsInfoFlagBitsFUCHSIA::CpuReadOftenFUCHSIA;
+const VkImageConstraintsInfoFlagBitsFUCHSIA VK_IMAGE_CONSTRAINTS_INFO_CPU_WRITE_RARELY_FUCHSIA = VkImageConstraintsInfoFlagBitsFUCHSIA::CpuWriteRarelyFUCHSIA;
+const VkImageConstraintsInfoFlagBitsFUCHSIA VK_IMAGE_CONSTRAINTS_INFO_CPU_WRITE_OFTEN_FUCHSIA = VkImageConstraintsInfoFlagBitsFUCHSIA::CpuWriteOftenFUCHSIA;
+const VkImageConstraintsInfoFlagBitsFUCHSIA VK_IMAGE_CONSTRAINTS_INFO_PROTECTED_OPTIONAL_FUCHSIA = VkImageConstraintsInfoFlagBitsFUCHSIA::ProtectedOptionalFUCHSIA;
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
 enum class VkQueryPoolCreateFlagBits: uint32_t { };
 enum class VkPipelineDepthStencilStateCreateFlagBits: uint32_t { };
 enum class VkPipelineDynamicStateCreateFlagBits: uint32_t { };
@@ -4940,7 +5005,6 @@ enum class VkPipelineVertexInputStateCreateFlagBits: uint32_t { };
 enum class VkBufferViewCreateFlagBits: uint32_t { };
 enum class VkInstanceCreateFlagBits: uint32_t { };
 enum class VkDeviceCreateFlagBits: uint32_t { };
-enum class VkSemaphoreCreateFlagBits: uint32_t { };
 enum class VkMemoryMapFlagBits: uint32_t { };
 enum class VkDescriptorPoolResetFlagBits: uint32_t { };
 enum class VkDescriptorUpdateTemplateCreateFlagBits: uint32_t { };
@@ -5234,16 +5298,20 @@ DECLARE_ENUM_FLAG_OPERATORS(VkPipelineRasterizationStateStreamCreateFlagsEXT, Vk
 DECLARE_ENUM_FLAG_OPERATORS(VkPipelineRasterizationDepthClipStateCreateFlagsEXT, VkPipelineRasterizationDepthClipStateCreateFlagBitsEXT, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VkToolPurposeFlagsEXT, VkToolPurposeFlagBitsEXT, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VkSubmitFlagsKHR, VkSubmitFlagBitsKHR, uint32_t)
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+DECLARE_ENUM_FLAG_OPERATORS(VkImageFormatConstraintsFlagsFUCHSIA, VkImageFormatConstraintsFlagBitsFUCHSIA, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(VkImageConstraintsInfoFlagsFUCHSIA, VkImageConstraintsInfoFlagBitsFUCHSIA, uint32_t)
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
 #if defined(VK_ENABLE_BETA_EXTENSIONS)
 DECLARE_ENUM_FLAG_OPERATORS(VkVideoCodecOperationFlagsKHR, VkVideoCodecOperationFlagBitsKHR, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(VkVideoCapabilitiesFlagsKHR, VkVideoCapabilitiesFlagBitsKHR, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(VkVideoCapabilityFlagsKHR, VkVideoCapabilityFlagBitsKHR, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VkVideoSessionCreateFlagsKHR, VkVideoSessionCreateFlagBitsKHR, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VkVideoBeginCodingFlagsKHR, VkVideoBeginCodingFlagBitsKHR, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VkVideoEndCodingFlagsKHR, VkVideoEndCodingFlagBitsKHR, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VkVideoCodingQualityPresetFlagsKHR, VkVideoCodingQualityPresetFlagBitsKHR, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VkVideoCodingControlFlagsKHR, VkVideoCodingControlFlagBitsKHR, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VkVideoDecodeFlagsKHR, VkVideoDecodeFlagBitsKHR, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(VkVideoDecodeH264FieldLayoutFlagsEXT, VkVideoDecodeH264FieldLayoutFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(VkVideoDecodeH264PictureLayoutFlagsEXT, VkVideoDecodeH264PictureLayoutFlagBitsEXT, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VkVideoDecodeH264CreateFlagsEXT, VkVideoDecodeH264CreateFlagBitsEXT, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VkVideoDecodeH265CreateFlagsEXT, VkVideoDecodeH265CreateFlagBitsEXT, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VkVideoEncodeFlagsKHR, VkVideoEncodeFlagBitsKHR, uint32_t)
@@ -5251,7 +5319,7 @@ DECLARE_ENUM_FLAG_OPERATORS(VkVideoEncodeRateControlFlagsKHR, VkVideoEncodeRateC
 DECLARE_ENUM_FLAG_OPERATORS(VkVideoEncodeRateControlModeFlagsKHR, VkVideoEncodeRateControlModeFlagBitsKHR, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VkVideoChromaSubsamplingFlagsKHR, VkVideoChromaSubsamplingFlagBitsKHR, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VkVideoComponentBitDepthFlagsKHR, VkVideoComponentBitDepthFlagBitsKHR, uint32_t)
-DECLARE_ENUM_FLAG_OPERATORS(VkVideoEncodeH264CapabilitiesFlagsEXT, VkVideoEncodeH264CapabilitiesFlagBitsEXT, uint32_t)
+DECLARE_ENUM_FLAG_OPERATORS(VkVideoEncodeH264CapabilityFlagsEXT, VkVideoEncodeH264CapabilityFlagBitsEXT, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VkVideoEncodeH264InputModeFlagsEXT, VkVideoEncodeH264InputModeFlagBitsEXT, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VkVideoEncodeH264OutputModeFlagsEXT, VkVideoEncodeH264OutputModeFlagBitsEXT, uint32_t)
 DECLARE_ENUM_FLAG_OPERATORS(VkVideoEncodeH264CreateFlagsEXT, VkVideoEncodeH264CreateFlagBitsEXT, uint32_t)
@@ -5290,6 +5358,7 @@ VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkValidationCacheEXT)
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkAccelerationStructureKHR)
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkAccelerationStructureNV)
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkPerformanceConfigurationINTEL)
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkBufferCollectionFUCHSIA)
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDeferredOperationKHR)
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkPrivateDataSlotEXT)
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkCuModuleNVX)
@@ -8916,6 +8985,11 @@ struct VkMemoryPriorityAllocateInfoEXT {
     const  void *                         pNext{};
     float                                priority{};
 };
+struct VkPhysicalDevicePageableDeviceLocalMemoryFeaturesEXT {
+    VkStructureType   sType = VkStructureType::PhysicalDevicePageableDeviceLocalMemoryFeaturesEXT;
+    void *               pNext{};
+    VkBool32                             pageableDeviceLocalMemory{};
+};
 struct VkPhysicalDeviceBufferDeviceAddressFeatures {
     VkStructureType   sType = VkStructureType::PhysicalDeviceBufferDeviceAddressFeatures;
     void *         pNext{};
@@ -9239,6 +9313,12 @@ struct VkAttachmentReferenceStencilLayout {
     VkStructureType sType = VkStructureType::AttachmentReferenceStencilLayout;
     void *     pNext{};
     VkImageLayout                    stencilLayout{};
+};
+struct VkPhysicalDevicePrimitiveTopologyListRestartFeaturesEXT {
+    VkStructureType   sType = VkStructureType::PhysicalDevicePrimitiveTopologyListRestartFeaturesEXT;
+    void *         pNext{};
+    VkBool32                       primitiveTopologyListRestart{};
+    VkBool32                       primitiveTopologyPatchListRestart{};
 };
 using VkAttachmentReferenceStencilLayoutKHR = VkAttachmentReferenceStencilLayout;
 struct VkAttachmentDescriptionStencilLayout {
@@ -10153,7 +10233,7 @@ struct VkVideoFormatPropertiesKHR {
 struct VkVideoCapabilitiesKHR {
     VkStructureType sType = VkStructureType::VideoCapabilitiesKHR;
     void *                             pNext{};
-    VkVideoCapabilitiesFlagsKHR        capabilityFlags{};
+    VkVideoCapabilityFlagsKHR          capabilityFlags{};
     VkDeviceSize                       minBitstreamBufferOffsetAlignment{};
     VkDeviceSize                       minBitstreamBufferSizeAlignment{};
     VkExtent2D                         videoPictureExtentGranularity{};
@@ -10206,9 +10286,9 @@ struct VkVideoDecodeInfoKHR {
 };
 struct VkVideoDecodeH264ProfileEXT {
     VkStructureType sType = VkStructureType::VideoDecodeH264ProfileEXT;
-    const  void *                           pNext{};
-    StdVideoH264ProfileIdc                 stdProfileIdc{};
-    VkVideoDecodeH264FieldLayoutFlagsEXT   fieldLayout{};
+    const  void *                             pNext{};
+    StdVideoH264ProfileIdc                   stdProfileIdc{};
+    VkVideoDecodeH264PictureLayoutFlagsEXT   pictureLayout{};
 };
 struct VkVideoDecodeH264CapabilitiesEXT {
     VkStructureType sType = VkStructureType::VideoDecodeH264CapabilitiesEXT;
@@ -10370,7 +10450,7 @@ struct VkVideoEncodeRateControlInfoKHR {
 struct VkVideoEncodeH264CapabilitiesEXT {
     VkStructureType sType = VkStructureType::VideoEncodeH264CapabilitiesEXT;
     const  void *                            pNext{};
-    VkVideoEncodeH264CapabilitiesFlagsEXT   flags{};
+    VkVideoEncodeH264CapabilityFlagsEXT     flags{};
     VkVideoEncodeH264InputModeFlagsEXT      inputModeFlags{};
     VkVideoEncodeH264OutputModeFlagsEXT     outputModeFlags{};
     VkExtent2D                              minPictureSizeInMbs{};
@@ -10510,6 +10590,45 @@ struct VkCuLaunchInfoNVX {
     size_t                   extraCount{};
     const  void * const *     pExtras{};
 };
+struct VkPhysicalDeviceShaderIntegerDotProductFeaturesKHR {
+    VkStructureType   sType = VkStructureType::PhysicalDeviceShaderIntegerDotProductFeaturesKHR;
+    void *                pNext{};
+    VkBool32                              shaderIntegerDotProduct{};
+};
+struct VkPhysicalDeviceShaderIntegerDotProductPropertiesKHR {
+    VkStructureType   sType = VkStructureType::PhysicalDeviceShaderIntegerDotProductPropertiesKHR;
+    void *                pNext{};
+    VkBool32          integerDotProduct8BitUnsignedAccelerated{};
+    VkBool32          integerDotProduct8BitSignedAccelerated{};
+    VkBool32          integerDotProduct8BitMixedSignednessAccelerated{};
+    VkBool32          integerDotProduct4x8BitPackedUnsignedAccelerated{};
+    VkBool32          integerDotProduct4x8BitPackedSignedAccelerated{};
+    VkBool32          integerDotProduct4x8BitPackedMixedSignednessAccelerated{};
+    VkBool32          integerDotProduct16BitUnsignedAccelerated{};
+    VkBool32          integerDotProduct16BitSignedAccelerated{};
+    VkBool32          integerDotProduct16BitMixedSignednessAccelerated{};
+    VkBool32          integerDotProduct32BitUnsignedAccelerated{};
+    VkBool32          integerDotProduct32BitSignedAccelerated{};
+    VkBool32          integerDotProduct32BitMixedSignednessAccelerated{};
+    VkBool32          integerDotProduct64BitUnsignedAccelerated{};
+    VkBool32          integerDotProduct64BitSignedAccelerated{};
+    VkBool32          integerDotProduct64BitMixedSignednessAccelerated{};
+    VkBool32          integerDotProductAccumulatingSaturating8BitUnsignedAccelerated{};
+    VkBool32          integerDotProductAccumulatingSaturating8BitSignedAccelerated{};
+    VkBool32          integerDotProductAccumulatingSaturating8BitMixedSignednessAccelerated{};
+    VkBool32          integerDotProductAccumulatingSaturating4x8BitPackedUnsignedAccelerated{};
+    VkBool32          integerDotProductAccumulatingSaturating4x8BitPackedSignedAccelerated{};
+    VkBool32          integerDotProductAccumulatingSaturating4x8BitPackedMixedSignednessAccelerated{};
+    VkBool32          integerDotProductAccumulatingSaturating16BitUnsignedAccelerated{};
+    VkBool32          integerDotProductAccumulatingSaturating16BitSignedAccelerated{};
+    VkBool32          integerDotProductAccumulatingSaturating16BitMixedSignednessAccelerated{};
+    VkBool32          integerDotProductAccumulatingSaturating32BitUnsignedAccelerated{};
+    VkBool32          integerDotProductAccumulatingSaturating32BitSignedAccelerated{};
+    VkBool32          integerDotProductAccumulatingSaturating32BitMixedSignednessAccelerated{};
+    VkBool32          integerDotProductAccumulatingSaturating64BitUnsignedAccelerated{};
+    VkBool32          integerDotProductAccumulatingSaturating64BitSignedAccelerated{};
+    VkBool32          integerDotProductAccumulatingSaturating64BitMixedSignednessAccelerated{};
+};
 struct VkPhysicalDeviceDrmPropertiesEXT {
     VkStructureType   sType = VkStructureType::PhysicalDeviceDrmPropertiesEXT;
     void *  pNext{};
@@ -10589,6 +10708,85 @@ struct VkMemoryGetRemoteAddressInfoNV {
     VkDeviceMemory                       memory{};
     VkExternalMemoryHandleTypeFlagBits   handleType{};
 };
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+struct VkImportMemoryBufferCollectionFUCHSIA {
+    VkStructureType   sType = VkStructureType::ImportMemoryBufferCollectionFUCHSIA;
+    const  void *       pNext{};
+    VkBufferCollectionFUCHSIA          collection{};
+    uint32_t                           index{};
+};
+struct VkBufferCollectionImageCreateInfoFUCHSIA {
+    VkStructureType   sType = VkStructureType::BufferCollectionImageCreateInfoFUCHSIA;
+    const  void *       pNext{};
+    VkBufferCollectionFUCHSIA          collection{};
+    uint32_t                           index{};
+};
+struct VkBufferCollectionBufferCreateInfoFUCHSIA {
+    VkStructureType   sType = VkStructureType::BufferCollectionBufferCreateInfoFUCHSIA;
+    const  void *       pNext{};
+    VkBufferCollectionFUCHSIA          collection{};
+    uint32_t                           index{};
+};
+struct VkBufferCollectionCreateInfoFUCHSIA {
+    VkStructureType   sType = VkStructureType::BufferCollectionCreateInfoFUCHSIA;
+    const  void *       pNext{};
+    zx_handle_t                        collectionToken{};
+};
+struct VkSysmemColorSpaceFUCHSIA {
+    VkStructureType   sType = VkStructureType::SysmemColorSpaceFUCHSIA;
+    const  void *      pNext{};
+    uint32_t                          colorSpace{};
+};
+struct VkBufferCollectionPropertiesFUCHSIA {
+    VkStructureType   sType = VkStructureType::BufferCollectionPropertiesFUCHSIA;
+    void *             pNext{};
+    uint32_t                           memoryTypeBits{};
+    uint32_t                           bufferCount{};
+    uint32_t                           createInfoIndex{};
+    uint64_t                           sysmemPixelFormat{};
+    VkFormatFeatureFlags               formatFeatures{};
+    VkSysmemColorSpaceFUCHSIA          sysmemColorSpaceIndex{};
+    VkComponentMapping                 samplerYcbcrConversionComponents{};
+    VkSamplerYcbcrModelConversion      suggestedYcbcrModel{};
+    VkSamplerYcbcrRange                suggestedYcbcrRange{};
+    VkChromaLocation                   suggestedXChromaOffset{};
+    VkChromaLocation                   suggestedYChromaOffset{};
+};
+struct VkBufferCollectionConstraintsInfoFUCHSIA {
+    VkStructureType   sType = VkStructureType::BufferCollectionConstraintsInfoFUCHSIA;
+    const  void *      pNext{};
+    uint32_t                          minBufferCount{};
+    uint32_t                          maxBufferCount{};
+    uint32_t                          minBufferCountForCamping{};
+    uint32_t                          minBufferCountForDedicatedSlack{};
+    uint32_t                          minBufferCountForSharedSlack{};
+};
+struct VkBufferConstraintsInfoFUCHSIA {
+    VkStructureType   sType = VkStructureType::BufferConstraintsInfoFUCHSIA;
+    const  void *                pNext{};
+    VkBufferCreateInfo                          createInfo{};
+    VkFormatFeatureFlags        requiredFormatFeatures{};
+    VkBufferCollectionConstraintsInfoFUCHSIA    bufferCollectionConstraints{};
+};
+struct VkImageFormatConstraintsInfoFUCHSIA {
+    VkStructureType   sType = VkStructureType::ImageFormatConstraintsInfoFUCHSIA;
+    const  void *                             pNext{};
+    VkImageCreateInfo                                        imageCreateInfo{};
+    VkFormatFeatureFlags                                     requiredFormatFeatures{};
+    VkImageFormatConstraintsFlagsFUCHSIA     flags{};
+    uint64_t                                 sysmemPixelFormat{};
+    uint32_t                                                 colorSpaceCount{};
+    const  VkSysmemColorSpaceFUCHSIA *                        pColorSpaces{};
+};
+struct VkImageConstraintsInfoFUCHSIA {
+    VkStructureType   sType = VkStructureType::ImageConstraintsInfoFUCHSIA;
+    const  void *                                       pNext{};
+    uint32_t                                                           formatConstraintsCount{};
+    const  VkImageFormatConstraintsInfoFUCHSIA *  pFormatConstraints{};
+    VkBufferCollectionConstraintsInfoFUCHSIA                           bufferCollectionConstraints{};
+    VkImageConstraintsInfoFlagsFUCHSIA                 flags{};
+};
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
 using PFN_vkCreateInstance = VkResult (*) (const  VkInstanceCreateInfo *  pCreateInfo, const  VkAllocationCallbacks *  pAllocator, VkInstance *  pInstance);
 using PFN_vkDestroyInstance = void (*) (VkInstance   instance, const  VkAllocationCallbacks *  pAllocator);
 using PFN_vkEnumeratePhysicalDevices = VkResult (*) (VkInstance   instance, uint32_t *  pPhysicalDeviceCount, VkPhysicalDevice *  pPhysicalDevices);
@@ -11128,9 +11326,17 @@ using PFN_vkCreateCuFunctionNVX = VkResult (*) (VkDevice   device, const  VkCuFu
 using PFN_vkDestroyCuModuleNVX = void (*) (VkDevice   device, VkCuModuleNVX   module, const  VkAllocationCallbacks *  pAllocator);
 using PFN_vkDestroyCuFunctionNVX = void (*) (VkDevice   device, VkCuFunctionNVX   function, const  VkAllocationCallbacks *  pAllocator);
 using PFN_vkCmdCuLaunchKernelNVX = void (*) (VkCommandBuffer   commandBuffer, const  VkCuLaunchInfoNVX *  pLaunchInfo);
+using PFN_vkSetDeviceMemoryPriorityEXT = void (*) (VkDevice         device, VkDeviceMemory   memory, float            priority);
 using PFN_vkAcquireDrmDisplayEXT = VkResult (*) (VkPhysicalDevice   physicalDevice, int32_t   drmFd, VkDisplayKHR   display);
 using PFN_vkGetDrmDisplayEXT = VkResult (*) (VkPhysicalDevice   physicalDevice, int32_t   drmFd, uint32_t   connectorId, VkDisplayKHR *  display);
 using PFN_vkWaitForPresentKHR = VkResult (*) (VkDevice   device, VkSwapchainKHR   swapchain, uint64_t   presentId, uint64_t   timeout);
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+using PFN_vkCreateBufferCollectionFUCHSIA = VkResult (*) (VkDevice   device, const  VkBufferCollectionCreateInfoFUCHSIA *  pCreateInfo, const  VkAllocationCallbacks *  pAllocator, VkBufferCollectionFUCHSIA *  pCollection);
+using PFN_vkSetBufferCollectionBufferConstraintsFUCHSIA = VkResult (*) (VkDevice   device, VkBufferCollectionFUCHSIA   collection, const  VkBufferConstraintsInfoFUCHSIA *  pBufferConstraintsInfo);
+using PFN_vkSetBufferCollectionImageConstraintsFUCHSIA = VkResult (*) (VkDevice   device, VkBufferCollectionFUCHSIA   collection, const  VkImageConstraintsInfoFUCHSIA *  pImageConstraintsInfo);
+using PFN_vkDestroyBufferCollectionFUCHSIA = void (*) (VkDevice   device, VkBufferCollectionFUCHSIA   collection, const  VkAllocationCallbacks *  pAllocator);
+using PFN_vkGetBufferCollectionPropertiesFUCHSIA = VkResult (*) (VkDevice   device, VkBufferCollectionFUCHSIA   collection, VkBufferCollectionPropertiesFUCHSIA *  pProperties);
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
 extern PFN_vkCreateInstance vkCreateInstance;
 extern PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr;
 extern PFN_vkEnumerateInstanceExtensionProperties vkEnumerateInstanceExtensionProperties;
@@ -11619,6 +11825,11 @@ extern PFN_vkGetMemoryZirconHandleFUCHSIA vkGetMemoryZirconHandleFUCHSIA;
 extern PFN_vkGetMemoryZirconHandlePropertiesFUCHSIA vkGetMemoryZirconHandlePropertiesFUCHSIA;
 extern PFN_vkGetSemaphoreZirconHandleFUCHSIA vkGetSemaphoreZirconHandleFUCHSIA;
 extern PFN_vkImportSemaphoreZirconHandleFUCHSIA vkImportSemaphoreZirconHandleFUCHSIA;
+extern PFN_vkCreateBufferCollectionFUCHSIA vkCreateBufferCollectionFUCHSIA;
+extern PFN_vkSetBufferCollectionBufferConstraintsFUCHSIA vkSetBufferCollectionBufferConstraintsFUCHSIA;
+extern PFN_vkSetBufferCollectionImageConstraintsFUCHSIA vkSetBufferCollectionImageConstraintsFUCHSIA;
+extern PFN_vkDestroyBufferCollectionFUCHSIA vkDestroyBufferCollectionFUCHSIA;
+extern PFN_vkGetBufferCollectionPropertiesFUCHSIA vkGetBufferCollectionPropertiesFUCHSIA;
 #endif // defined(VK_USE_PLATFORM_FUCHSIA)
 extern PFN_vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI;
 extern PFN_vkCmdSubpassShadingHUAWEI vkCmdSubpassShadingHUAWEI;
@@ -11632,6 +11843,7 @@ extern PFN_vkCmdSetPrimitiveRestartEnableEXT vkCmdSetPrimitiveRestartEnableEXT;
 extern PFN_vkCmdSetColorWriteEnableEXT vkCmdSetColorWriteEnableEXT;
 extern PFN_vkCmdDrawMultiEXT vkCmdDrawMultiEXT;
 extern PFN_vkCmdDrawMultiIndexedEXT vkCmdDrawMultiIndexedEXT;
+extern PFN_vkSetDeviceMemoryPriorityEXT vkSetDeviceMemoryPriorityEXT;
 struct VkDeviceDispatchTable {
     PFN_vkDestroyDevice vkDestroyDevice = nullptr;
     PFN_vkGetDeviceQueue vkGetDeviceQueue = nullptr;
@@ -12091,6 +12303,31 @@ struct VkDeviceDispatchTable {
 #else
     void* z_padding_vkImportSemaphoreZirconHandleFUCHSIA = nullptr;
 #endif // defined(VK_USE_PLATFORM_FUCHSIA)
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+    PFN_vkCreateBufferCollectionFUCHSIA vkCreateBufferCollectionFUCHSIA = nullptr;
+#else
+    void* z_padding_vkCreateBufferCollectionFUCHSIA = nullptr;
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+    PFN_vkSetBufferCollectionBufferConstraintsFUCHSIA vkSetBufferCollectionBufferConstraintsFUCHSIA = nullptr;
+#else
+    void* z_padding_vkSetBufferCollectionBufferConstraintsFUCHSIA = nullptr;
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+    PFN_vkSetBufferCollectionImageConstraintsFUCHSIA vkSetBufferCollectionImageConstraintsFUCHSIA = nullptr;
+#else
+    void* z_padding_vkSetBufferCollectionImageConstraintsFUCHSIA = nullptr;
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+    PFN_vkDestroyBufferCollectionFUCHSIA vkDestroyBufferCollectionFUCHSIA = nullptr;
+#else
+    void* z_padding_vkDestroyBufferCollectionFUCHSIA = nullptr;
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+    PFN_vkGetBufferCollectionPropertiesFUCHSIA vkGetBufferCollectionPropertiesFUCHSIA = nullptr;
+#else
+    void* z_padding_vkGetBufferCollectionPropertiesFUCHSIA = nullptr;
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
     PFN_vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI = nullptr;
     PFN_vkCmdSubpassShadingHUAWEI vkCmdSubpassShadingHUAWEI = nullptr;
     PFN_vkCmdBindInvocationMaskHUAWEI vkCmdBindInvocationMaskHUAWEI = nullptr;
@@ -12103,6 +12340,7 @@ struct VkDeviceDispatchTable {
     PFN_vkCmdSetColorWriteEnableEXT vkCmdSetColorWriteEnableEXT = nullptr;
     PFN_vkCmdDrawMultiEXT vkCmdDrawMultiEXT = nullptr;
     PFN_vkCmdDrawMultiIndexedEXT vkCmdDrawMultiIndexedEXT = nullptr;
+    PFN_vkSetDeviceMemoryPriorityEXT vkSetDeviceMemoryPriorityEXT = nullptr;
 };
 
 // This function finds the Vulkan-Loader (vulkan-1.dll, libvulkan.so, libvulkan.dylib, etc) on a system, loads it,

@@ -712,6 +712,11 @@ PFN_vkGetMemoryZirconHandleFUCHSIA vkGetMemoryZirconHandleFUCHSIA;
 PFN_vkGetMemoryZirconHandlePropertiesFUCHSIA vkGetMemoryZirconHandlePropertiesFUCHSIA;
 PFN_vkGetSemaphoreZirconHandleFUCHSIA vkGetSemaphoreZirconHandleFUCHSIA;
 PFN_vkImportSemaphoreZirconHandleFUCHSIA vkImportSemaphoreZirconHandleFUCHSIA;
+PFN_vkCreateBufferCollectionFUCHSIA vkCreateBufferCollectionFUCHSIA;
+PFN_vkSetBufferCollectionBufferConstraintsFUCHSIA vkSetBufferCollectionBufferConstraintsFUCHSIA;
+PFN_vkSetBufferCollectionImageConstraintsFUCHSIA vkSetBufferCollectionImageConstraintsFUCHSIA;
+PFN_vkDestroyBufferCollectionFUCHSIA vkDestroyBufferCollectionFUCHSIA;
+PFN_vkGetBufferCollectionPropertiesFUCHSIA vkGetBufferCollectionPropertiesFUCHSIA;
 #endif // defined(VK_USE_PLATFORM_FUCHSIA)
 PFN_vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI;
 PFN_vkCmdSubpassShadingHUAWEI vkCmdSubpassShadingHUAWEI;
@@ -725,6 +730,7 @@ PFN_vkCmdSetPrimitiveRestartEnableEXT vkCmdSetPrimitiveRestartEnableEXT;
 PFN_vkCmdSetColorWriteEnableEXT vkCmdSetColorWriteEnableEXT;
 PFN_vkCmdDrawMultiEXT vkCmdDrawMultiEXT;
 PFN_vkCmdDrawMultiIndexedEXT vkCmdDrawMultiIndexedEXT;
+PFN_vkSetDeviceMemoryPriorityEXT vkSetDeviceMemoryPriorityEXT;
 void vkInitializeDeviceFunctions (VkDevice Device) {
     vkDestroyDevice = reinterpret_cast<PFN_vkDestroyDevice>(vkGetDeviceProcAddr(Device, "vkDestroyDevice"));
     vkGetDeviceQueue = reinterpret_cast<PFN_vkGetDeviceQueue>(vkGetDeviceProcAddr(Device, "vkGetDeviceQueue"));
@@ -1087,6 +1093,11 @@ void vkInitializeDeviceFunctions (VkDevice Device) {
     vkGetMemoryZirconHandlePropertiesFUCHSIA = reinterpret_cast<PFN_vkGetMemoryZirconHandlePropertiesFUCHSIA>(vkGetDeviceProcAddr(Device, "vkGetMemoryZirconHandlePropertiesFUCHSIA"));
     vkGetSemaphoreZirconHandleFUCHSIA = reinterpret_cast<PFN_vkGetSemaphoreZirconHandleFUCHSIA>(vkGetDeviceProcAddr(Device, "vkGetSemaphoreZirconHandleFUCHSIA"));
     vkImportSemaphoreZirconHandleFUCHSIA = reinterpret_cast<PFN_vkImportSemaphoreZirconHandleFUCHSIA>(vkGetDeviceProcAddr(Device, "vkImportSemaphoreZirconHandleFUCHSIA"));
+    vkCreateBufferCollectionFUCHSIA = reinterpret_cast<PFN_vkCreateBufferCollectionFUCHSIA>(vkGetDeviceProcAddr(Device, "vkCreateBufferCollectionFUCHSIA"));
+    vkSetBufferCollectionBufferConstraintsFUCHSIA = reinterpret_cast<PFN_vkSetBufferCollectionBufferConstraintsFUCHSIA>(vkGetDeviceProcAddr(Device, "vkSetBufferCollectionBufferConstraintsFUCHSIA"));
+    vkSetBufferCollectionImageConstraintsFUCHSIA = reinterpret_cast<PFN_vkSetBufferCollectionImageConstraintsFUCHSIA>(vkGetDeviceProcAddr(Device, "vkSetBufferCollectionImageConstraintsFUCHSIA"));
+    vkDestroyBufferCollectionFUCHSIA = reinterpret_cast<PFN_vkDestroyBufferCollectionFUCHSIA>(vkGetDeviceProcAddr(Device, "vkDestroyBufferCollectionFUCHSIA"));
+    vkGetBufferCollectionPropertiesFUCHSIA = reinterpret_cast<PFN_vkGetBufferCollectionPropertiesFUCHSIA>(vkGetDeviceProcAddr(Device, "vkGetBufferCollectionPropertiesFUCHSIA"));
 #endif // defined(VK_USE_PLATFORM_FUCHSIA)
     vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI = reinterpret_cast<PFN_vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI>(vkGetDeviceProcAddr(Device, "vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI"));
     vkCmdSubpassShadingHUAWEI = reinterpret_cast<PFN_vkCmdSubpassShadingHUAWEI>(vkGetDeviceProcAddr(Device, "vkCmdSubpassShadingHUAWEI"));
@@ -1100,6 +1111,7 @@ void vkInitializeDeviceFunctions (VkDevice Device) {
     vkCmdSetColorWriteEnableEXT = reinterpret_cast<PFN_vkCmdSetColorWriteEnableEXT>(vkGetDeviceProcAddr(Device, "vkCmdSetColorWriteEnableEXT"));
     vkCmdDrawMultiEXT = reinterpret_cast<PFN_vkCmdDrawMultiEXT>(vkGetDeviceProcAddr(Device, "vkCmdDrawMultiEXT"));
     vkCmdDrawMultiIndexedEXT = reinterpret_cast<PFN_vkCmdDrawMultiIndexedEXT>(vkGetDeviceProcAddr(Device, "vkCmdDrawMultiIndexedEXT"));
+    vkSetDeviceMemoryPriorityEXT = reinterpret_cast<PFN_vkSetDeviceMemoryPriorityEXT>(vkGetDeviceProcAddr(Device, "vkSetDeviceMemoryPriorityEXT"));
 };
 void vkInitializeDeviceDispatchTable (VkDevice Device, VkDeviceDispatchTable & table) {
     table.vkDestroyDevice = reinterpret_cast<PFN_vkDestroyDevice>(vkGetDeviceProcAddr(Device, "vkDestroyDevice"));
@@ -1504,6 +1516,21 @@ void vkInitializeDeviceDispatchTable (VkDevice Device, VkDeviceDispatchTable & t
 #if defined(VK_USE_PLATFORM_FUCHSIA)
     table.vkImportSemaphoreZirconHandleFUCHSIA = reinterpret_cast<PFN_vkImportSemaphoreZirconHandleFUCHSIA>(vkGetDeviceProcAddr(Device, "vkImportSemaphoreZirconHandleFUCHSIA"));
 #endif // defined(VK_USE_PLATFORM_FUCHSIA)
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+    table.vkCreateBufferCollectionFUCHSIA = reinterpret_cast<PFN_vkCreateBufferCollectionFUCHSIA>(vkGetDeviceProcAddr(Device, "vkCreateBufferCollectionFUCHSIA"));
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+    table.vkSetBufferCollectionBufferConstraintsFUCHSIA = reinterpret_cast<PFN_vkSetBufferCollectionBufferConstraintsFUCHSIA>(vkGetDeviceProcAddr(Device, "vkSetBufferCollectionBufferConstraintsFUCHSIA"));
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+    table.vkSetBufferCollectionImageConstraintsFUCHSIA = reinterpret_cast<PFN_vkSetBufferCollectionImageConstraintsFUCHSIA>(vkGetDeviceProcAddr(Device, "vkSetBufferCollectionImageConstraintsFUCHSIA"));
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+    table.vkDestroyBufferCollectionFUCHSIA = reinterpret_cast<PFN_vkDestroyBufferCollectionFUCHSIA>(vkGetDeviceProcAddr(Device, "vkDestroyBufferCollectionFUCHSIA"));
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+    table.vkGetBufferCollectionPropertiesFUCHSIA = reinterpret_cast<PFN_vkGetBufferCollectionPropertiesFUCHSIA>(vkGetDeviceProcAddr(Device, "vkGetBufferCollectionPropertiesFUCHSIA"));
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
     table.vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI = reinterpret_cast<PFN_vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI>(vkGetDeviceProcAddr(Device, "vkGetDeviceSubpassShadingMaxWorkgroupSizeHUAWEI"));
     table.vkCmdSubpassShadingHUAWEI = reinterpret_cast<PFN_vkCmdSubpassShadingHUAWEI>(vkGetDeviceProcAddr(Device, "vkCmdSubpassShadingHUAWEI"));
     table.vkCmdBindInvocationMaskHUAWEI = reinterpret_cast<PFN_vkCmdBindInvocationMaskHUAWEI>(vkGetDeviceProcAddr(Device, "vkCmdBindInvocationMaskHUAWEI"));
@@ -1516,6 +1543,7 @@ void vkInitializeDeviceDispatchTable (VkDevice Device, VkDeviceDispatchTable & t
     table.vkCmdSetColorWriteEnableEXT = reinterpret_cast<PFN_vkCmdSetColorWriteEnableEXT>(vkGetDeviceProcAddr(Device, "vkCmdSetColorWriteEnableEXT"));
     table.vkCmdDrawMultiEXT = reinterpret_cast<PFN_vkCmdDrawMultiEXT>(vkGetDeviceProcAddr(Device, "vkCmdDrawMultiEXT"));
     table.vkCmdDrawMultiIndexedEXT = reinterpret_cast<PFN_vkCmdDrawMultiIndexedEXT>(vkGetDeviceProcAddr(Device, "vkCmdDrawMultiIndexedEXT"));
+    table.vkSetDeviceMemoryPriorityEXT = reinterpret_cast<PFN_vkSetDeviceMemoryPriorityEXT>(vkGetDeviceProcAddr(Device, "vkSetDeviceMemoryPriorityEXT"));
 };
 #if defined(__GNUC__)
 #	pragma GCC visibility pop

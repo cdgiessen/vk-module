@@ -1194,6 +1194,8 @@ static_assert( sizeof(vk::PhysicalDeviceMemoryPriorityFeaturesEXT) == sizeof(VkP
 static_assert( std::is_standard_layout<vk::PhysicalDeviceMemoryPriorityFeaturesEXT>::value, "Must be a standard layout type" );
 static_assert( sizeof(vk::MemoryPriorityAllocateInfoEXT) == sizeof(VkMemoryPriorityAllocateInfoEXT), "Must maintain size between types" );
 static_assert( std::is_standard_layout<vk::MemoryPriorityAllocateInfoEXT>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::PhysicalDevicePageableDeviceLocalMemoryFeaturesEXT) == sizeof(VkPhysicalDevicePageableDeviceLocalMemoryFeaturesEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::PhysicalDevicePageableDeviceLocalMemoryFeaturesEXT>::value, "Must be a standard layout type" );
 static_assert( sizeof(vk::PhysicalDeviceBufferDeviceAddressFeatures) == sizeof(VkPhysicalDeviceBufferDeviceAddressFeatures), "Must maintain size between types" );
 static_assert( std::is_standard_layout<vk::PhysicalDeviceBufferDeviceAddressFeatures>::value, "Must be a standard layout type" );
 static_assert( sizeof(vk::PhysicalDeviceBufferDeviceAddressFeaturesKHR) == sizeof(VkPhysicalDeviceBufferDeviceAddressFeaturesKHR), "Must maintain size between types" );
@@ -1320,6 +1322,8 @@ static_assert( sizeof(vk::PhysicalDeviceSeparateDepthStencilLayoutsFeaturesKHR) 
 static_assert( std::is_standard_layout<vk::PhysicalDeviceSeparateDepthStencilLayoutsFeaturesKHR>::value, "Must be a standard layout type" );
 static_assert( sizeof(vk::AttachmentReferenceStencilLayout) == sizeof(VkAttachmentReferenceStencilLayout), "Must maintain size between types" );
 static_assert( std::is_standard_layout<vk::AttachmentReferenceStencilLayout>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::PhysicalDevicePrimitiveTopologyListRestartFeaturesEXT) == sizeof(VkPhysicalDevicePrimitiveTopologyListRestartFeaturesEXT), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::PhysicalDevicePrimitiveTopologyListRestartFeaturesEXT>::value, "Must be a standard layout type" );
 static_assert( sizeof(vk::AttachmentReferenceStencilLayoutKHR) == sizeof(VkAttachmentReferenceStencilLayoutKHR), "Must maintain size between types" );
 static_assert( std::is_standard_layout<vk::AttachmentReferenceStencilLayoutKHR>::value, "Must be a standard layout type" );
 static_assert( sizeof(vk::AttachmentDescriptionStencilLayout) == sizeof(VkAttachmentDescriptionStencilLayout), "Must maintain size between types" );
@@ -1650,6 +1654,10 @@ static_assert( sizeof(vk::CuFunctionCreateInfoNVX) == sizeof(VkCuFunctionCreateI
 static_assert( std::is_standard_layout<vk::CuFunctionCreateInfoNVX>::value, "Must be a standard layout type" );
 static_assert( sizeof(vk::CuLaunchInfoNVX) == sizeof(VkCuLaunchInfoNVX), "Must maintain size between types" );
 static_assert( std::is_standard_layout<vk::CuLaunchInfoNVX>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::PhysicalDeviceShaderIntegerDotProductFeaturesKHR) == sizeof(VkPhysicalDeviceShaderIntegerDotProductFeaturesKHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::PhysicalDeviceShaderIntegerDotProductFeaturesKHR>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::PhysicalDeviceShaderIntegerDotProductPropertiesKHR) == sizeof(VkPhysicalDeviceShaderIntegerDotProductPropertiesKHR), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::PhysicalDeviceShaderIntegerDotProductPropertiesKHR>::value, "Must be a standard layout type" );
 static_assert( sizeof(vk::PhysicalDeviceDrmPropertiesEXT) == sizeof(VkPhysicalDeviceDrmPropertiesEXT), "Must maintain size between types" );
 static_assert( std::is_standard_layout<vk::PhysicalDeviceDrmPropertiesEXT>::value, "Must be a standard layout type" );
 static_assert( sizeof(vk::PhysicalDeviceRayTracingMotionBlurFeaturesNV) == sizeof(VkPhysicalDeviceRayTracingMotionBlurFeaturesNV), "Must maintain size between types" );
@@ -1668,6 +1676,28 @@ static_assert( sizeof(vk::AccelerationStructureMotionInstanceNV) == sizeof(VkAcc
 static_assert( std::is_standard_layout<vk::AccelerationStructureMotionInstanceNV>::value, "Must be a standard layout type" );
 static_assert( sizeof(vk::MemoryGetRemoteAddressInfoNV) == sizeof(VkMemoryGetRemoteAddressInfoNV), "Must maintain size between types" );
 static_assert( std::is_standard_layout<vk::MemoryGetRemoteAddressInfoNV>::value, "Must be a standard layout type" );
+#if defined(VK_USE_PLATFORM_FUCHSIA)
+static_assert( sizeof(vk::ImportMemoryBufferCollectionFUCHSIA) == sizeof(VkImportMemoryBufferCollectionFUCHSIA), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::ImportMemoryBufferCollectionFUCHSIA>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::BufferCollectionImageCreateInfoFUCHSIA) == sizeof(VkBufferCollectionImageCreateInfoFUCHSIA), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::BufferCollectionImageCreateInfoFUCHSIA>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::BufferCollectionBufferCreateInfoFUCHSIA) == sizeof(VkBufferCollectionBufferCreateInfoFUCHSIA), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::BufferCollectionBufferCreateInfoFUCHSIA>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::BufferCollectionCreateInfoFUCHSIA) == sizeof(VkBufferCollectionCreateInfoFUCHSIA), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::BufferCollectionCreateInfoFUCHSIA>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::SysmemColorSpaceFUCHSIA) == sizeof(VkSysmemColorSpaceFUCHSIA), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::SysmemColorSpaceFUCHSIA>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::BufferCollectionPropertiesFUCHSIA) == sizeof(VkBufferCollectionPropertiesFUCHSIA), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::BufferCollectionPropertiesFUCHSIA>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::BufferCollectionConstraintsInfoFUCHSIA) == sizeof(VkBufferCollectionConstraintsInfoFUCHSIA), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::BufferCollectionConstraintsInfoFUCHSIA>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::BufferConstraintsInfoFUCHSIA) == sizeof(VkBufferConstraintsInfoFUCHSIA), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::BufferConstraintsInfoFUCHSIA>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::ImageFormatConstraintsInfoFUCHSIA) == sizeof(VkImageFormatConstraintsInfoFUCHSIA), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::ImageFormatConstraintsInfoFUCHSIA>::value, "Must be a standard layout type" );
+static_assert( sizeof(vk::ImageConstraintsInfoFUCHSIA) == sizeof(VkImageConstraintsInfoFUCHSIA), "Must maintain size between types" );
+static_assert( std::is_standard_layout<vk::ImageConstraintsInfoFUCHSIA>::value, "Must be a standard layout type" );
+#endif // defined(VK_USE_PLATFORM_FUCHSIA)
 static_assert( sizeof(vk::Instance) == sizeof(VkInstance),"Must maintain size between handles");
 static_assert( sizeof(vk::PhysicalDevice) == sizeof(VkPhysicalDevice),"Must maintain size between handles");
 static_assert( sizeof(vk::Device) == sizeof(VkDevice),"Must maintain size between handles");
@@ -1700,6 +1730,7 @@ static_assert( sizeof(vk::ValidationCacheEXT) == sizeof(VkValidationCacheEXT),"M
 static_assert( sizeof(vk::AccelerationStructureKHR) == sizeof(VkAccelerationStructureKHR),"Must maintain size between handles");
 static_assert( sizeof(vk::AccelerationStructureNV) == sizeof(VkAccelerationStructureNV),"Must maintain size between handles");
 static_assert( sizeof(vk::PerformanceConfigurationINTEL) == sizeof(VkPerformanceConfigurationINTEL),"Must maintain size between handles");
+static_assert( sizeof(vk::BufferCollectionFUCHSIA) == sizeof(VkBufferCollectionFUCHSIA),"Must maintain size between handles");
 static_assert( sizeof(vk::DeferredOperationKHR) == sizeof(VkDeferredOperationKHR),"Must maintain size between handles");
 static_assert( sizeof(vk::PrivateDataSlotEXT) == sizeof(VkPrivateDataSlotEXT),"Must maintain size between handles");
 static_assert( sizeof(vk::CuModuleNVX) == sizeof(VkCuModuleNVX),"Must maintain size between handles");

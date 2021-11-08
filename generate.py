@@ -496,9 +496,7 @@ class Variable:
         # attributes
         self.optional = node.get('optional')
         self.len_attrib = node.get('len')
-        if self.len_attrib is not None:
-            if self.len_attrib[:9] == 'latexmath':
-                self.len_attrib = re.search(r'\{[A-Za-z]*\}', self.len_attrib).group()[1:-1]
+
         self.alt_len = node.get('altlen')
         self.length_ref = None
 
